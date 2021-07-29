@@ -1283,7 +1283,10 @@ const graphOutputFileName = ({ file, type }) =>
     ({ name, dir }) => path.resolve(dir, `${name}.${type}`),
   ])();
 
-const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
+const dotToSvg = ({
+  result,
+  commandOptions: { dotFile = "diagram.dot", type = "svg" },
+}) =>
   pipe([
     tap(() => {
       assert(dotFile);

@@ -123,6 +123,8 @@ exports.Function = ({ spec, config }) => {
             pipe([
               pick(["FunctionName"]),
               lambda().getPolicy,
+              get("Policy"),
+              tryCatch(JSON.parse, () => undefined),
               tap((params) => {
                 assert(true);
               }),

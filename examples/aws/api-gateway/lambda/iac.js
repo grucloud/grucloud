@@ -38,7 +38,6 @@ const createResources = ({ provider }) => {
     name: "integration-lambda",
     dependencies: { api, lambdaFunction: lambdaFunction },
     properties: () => ({
-      IntegrationType: "HTTP",
       IntegrationMethod: "POST",
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",

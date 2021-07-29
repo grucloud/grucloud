@@ -9,6 +9,21 @@ const createResources = ({ provider }) => {
     properties: () => config.iam.Policy.lambdaPolicy.properties,
   });
 
+  provider.iam.makePolicy({
+    name: config.iam.Policy.myPolicyToGroup.name,
+    properties: () => config.iam.Policy.myPolicyToGroup.properties,
+  });
+
+  provider.iam.makePolicy({
+    name: config.iam.Policy.myPolicyToRole.name,
+    properties: () => config.iam.Policy.myPolicyToRole.properties,
+  });
+
+  provider.iam.makePolicy({
+    name: config.iam.Policy.myPolicyToUser.name,
+    properties: () => config.iam.Policy.myPolicyToUser.properties,
+  });
+
   provider.iam.makeRole({
     name: config.iam.Role.lambdaRole.name,
     dependencies: ({ resources }) => ({
@@ -23,12 +38,11 @@ const createResources = ({ provider }) => {
   });
 
   provider.lambda.makeFunction({
-    name: config.lambda.Function.lambdaHelloWorld_1.name,
+    name: config.lambda.Function.lambdaHelloWorld.name,
     dependencies: ({ resources }) => ({
-      layers: [resources.lambda.Layer.lambdaLayer],
       role: resources.iam.Role.lambdaRole,
     }),
-    properties: () => config.lambda.Function.lambdaHelloWorld_1.properties,
+    properties: () => config.lambda.Function.lambdaHelloWorld.properties,
   });
 };
 

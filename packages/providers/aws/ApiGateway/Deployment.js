@@ -28,12 +28,12 @@ const {
   shouldRetryOnException,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
-  findNameInTags,
+  findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
-const findId = get("live.DeploymenId");
-const findName = findNameInTags;
+const findId = get("live.DeploymentId");
+const findName = findNameInTagsOrId({ findId });
 
 exports.Deployment = ({ spec, config }) => {
   const apiGateway = () =>
@@ -44,6 +44,20 @@ exports.Deployment = ({ spec, config }) => {
       type: "Api",
       group: "apigateway",
       ids: [live.ApiId],
+    },
+    {
+      type: "Stage",
+      group: "apigateway",
+      ids: pipe([
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Stage",
+            group: "apigateway",
+          }),
+        filter(eq(get("live.DeploymentId"), live.DeploymentId)),
+        pluck("id"),
+      ])(),
     },
   ];
 

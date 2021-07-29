@@ -14,7 +14,7 @@
   "dependencies": {
     "@grucloud/core": "^1.31.0",
     "adm-zip": "^0.5.5",
-    "aws-sdk": "^2.954.0",
+    "aws-sdk": "^2.956.0",
     "chance": "^1.1.7",
     "crypto": "^1.0.1",
     "deep-object-diff": "^1.1.0",

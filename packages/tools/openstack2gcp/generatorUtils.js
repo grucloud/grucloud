@@ -20,6 +20,7 @@ const {
   omit,
   or,
   always,
+  and,
 } = require("rubico");
 
 const pick = require("rubico/pick");
@@ -537,7 +538,7 @@ const writeResources =
         assert(group);
       }),
       () => lives,
-      find(eq(get("type"), type)),
+      find(and([eq(get("type"), type), eq(get("group"), group)])),
       get("resources"),
       map(
         pipe([

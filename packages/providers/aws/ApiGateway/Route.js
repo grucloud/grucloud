@@ -14,7 +14,7 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { unless, callProp, defaultsDeep, size } = require("rubico/x");
+const { isEmpty, callProp, defaultsDeep, size } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({
@@ -46,11 +46,9 @@ exports.Route = ({ spec, config }) => {
         () => live,
         get("Target", ""),
         callProp("replace", "integrations/", ""),
-        tap((params) => {
-          assert(true);
-        }),
-        unless(isEmpty, (target) => [target]),
-      ]),
+        (target) => [target],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 
@@ -120,6 +118,7 @@ exports.Route = ({ spec, config }) => {
         logger.debug(tos({ payload, diff, live }));
       }),
       () => payload,
+      defaultsDeep({ RouteId: live.RouteId }),
       apiGateway().updateRoute,
       tap(() => {
         logger.info(`updated route ${name}`);

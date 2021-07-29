@@ -32,6 +32,6 @@ exports.createZipBuffer = ({ localPath }) =>
     () => path.resolve(localPath),
     fileExist,
     () => new AdmZip(),
-    tap(callProp("addLocalFolder", localPath, "/")),
+    tap(callProp("addLocalFolder", localPath, "")),
     callProp("toBuffer"),
   ])();

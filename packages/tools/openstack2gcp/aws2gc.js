@@ -551,6 +551,61 @@ const writersSpec = [
     ],
   },
   {
+    group: "apigateway",
+    types: [
+      {
+        type: "Api",
+        filterLive: () =>
+          pick([
+            "Name",
+            "ProtocolType",
+            "ApiKeySelectionExpression",
+            "DisableExecuteApiEndpoint",
+            "RouteSelectionExpression",
+          ]),
+      },
+      {
+        type: "Integration",
+        filterLive: () =>
+          pick([
+            "ConnectionType",
+            "Description",
+            "IntegrationMethod",
+            "IntegrationType",
+            "PayloadFormatVersion",
+          ]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          lambdaFunction: { type: "Function", group: "lambda" },
+        }),
+      },
+      {
+        type: "Route",
+        filterLive: () =>
+          pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          integration: { type: "Integration", group: "apigateway" },
+        }),
+      },
+      {
+        type: "Stage",
+        filterLive: () => pick(["StageName", "StageVariables"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+        }),
+      },
+      {
+        type: "Deployment",
+        filterLive: () => pick(["Description"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          stage: { type: "Stage", group: "apigateway" },
+        }),
+      },
+    ],
+  },
+  {
     group: "rds",
     types: [
       {

@@ -19,18 +19,18 @@
                     {
                         "resources": [
                             {
-                                "name": "my-function",
-                                "id": "hhyvw9ro6d",
+                                "name": "my-api",
+                                "id": "k7kwsou72f",
                                 "providerName": "aws",
                                 "type": "Api",
                                 "group": "apigateway",
                                 "live": {
-                                    "ApiEndpoint": "https://hhyvw9ro6d.execute-api.eu-west-2.amazonaws.com",
-                                    "ApiId": "hhyvw9ro6d",
+                                    "ApiEndpoint": "https://k7kwsou72f.execute-api.eu-west-2.amazonaws.com",
+                                    "ApiId": "k7kwsou72f",
                                     "ApiKeySelectionExpression": "$request.header.x-api-key",
-                                    "CreatedDate": "2021-07-28T19:45:35.000Z",
+                                    "CreatedDate": "2021-07-29T19:09:25.000Z",
                                     "DisableExecuteApiEndpoint": false,
-                                    "Name": "my-function",
+                                    "Name": "my-api",
                                     "ProtocolType": "HTTP",
                                     "RouteSelectionExpression": "$request.method $request.path",
                                     "Tags": {
@@ -38,11 +38,11 @@
                                         "gc-project-name": "api-gateway-lambda",
                                         "gc-stage": "dev",
                                         "gc-created-by-provider": "aws",
-                                        "Name": "my-function"
+                                        "Name": "my-api"
                                     }
                                 },
-                                "uri": "aws::apigateway::Api::my-function",
-                                "displayName": "my-function",
+                                "uri": "aws::apigateway::Api::my-api",
+                                "displayName": "my-api",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -61,30 +61,31 @@
                     {
                         "resources": [
                             {
-                                "name": "dev",
-                                "id": "dev",
+                                "name": "my-api-deployment",
+                                "id": "ibyqf9",
                                 "providerName": "aws",
-                                "type": "Stage",
+                                "type": "Deployment",
                                 "group": "apigateway",
                                 "live": {
-                                    "AutoDeploy": true,
-                                    "CreatedDate": "2021-07-28T20:19:33.000Z",
-                                    "DefaultRouteSettings": {
-                                        "DetailedMetricsEnabled": false
-                                    },
-                                    "LastDeploymentStatusMessage": "Deployment attempt failed: Unable to deploy API because no routes exist in this API",
-                                    "LastUpdatedDate": "2021-07-28T20:19:35.000Z",
-                                    "RouteSettings": {},
-                                    "StageName": "dev",
-                                    "StageVariables": {},
-                                    "Tags": {},
-                                    "ApiId": "hhyvw9ro6d"
+                                    "AutoDeployed": false,
+                                    "CreatedDate": "2021-07-29T19:09:49.000Z",
+                                    "DeploymentId": "ibyqf9",
+                                    "DeploymentStatus": "DEPLOYED",
+                                    "Description": "",
+                                    "ApiId": "k7kwsou72f",
+                                    "Tags": {
+                                        "Name": "my-api-deployment",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-created-by-provider": "aws",
+                                        "gc-stage": "dev",
+                                        "gc-project-name": "api-gateway-lambda"
+                                    }
                                 },
-                                "uri": "aws::apigateway::Stage::dev",
-                                "displayName": "dev",
+                                "uri": "aws::apigateway::Deployment::my-api-deployment",
+                                "displayName": "my-api-deployment",
                                 "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -92,7 +93,179 @@
                                         "type": "Api",
                                         "group": "apigateway",
                                         "ids": [
-                                            "hhyvw9ro6d"
+                                            "k7kwsou72f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Stage",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "my-api-stage-dev"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "apigateway::Deployment",
+                        "type": "Deployment",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "integration-lambda",
+                                "id": "eoyicgr",
+                                "providerName": "aws",
+                                "type": "Integration",
+                                "group": "apigateway",
+                                "live": {
+                                    "ConnectionType": "INTERNET",
+                                    "Description": "",
+                                    "IntegrationId": "eoyicgr",
+                                    "IntegrationMethod": "POST",
+                                    "IntegrationType": "AWS_PROXY",
+                                    "IntegrationUri": "arn:aws:lambda:eu-west-2:840541460064:function:my-function",
+                                    "PayloadFormatVersion": "2.0",
+                                    "TimeoutInMillis": 30000,
+                                    "ApiId": "k7kwsou72f",
+                                    "Tags": {
+                                        "Name": "integration-lambda",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-created-by-provider": "aws",
+                                        "gc-stage": "dev",
+                                        "gc-project-name": "api-gateway-lambda"
+                                    }
+                                },
+                                "uri": "aws::apigateway::Integration::integration-lambda",
+                                "displayName": "integration-lambda",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Api",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "k7kwsou72f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Function",
+                                        "group": "lambda",
+                                        "ids": [
+                                            "arn:aws:lambda:eu-west-2:840541460064:function:my-function"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "apigateway::Integration",
+                        "type": "Integration",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "ANY /my-function",
+                                "id": "rw0aspe",
+                                "providerName": "aws",
+                                "type": "Route",
+                                "group": "apigateway",
+                                "live": {
+                                    "ApiKeyRequired": false,
+                                    "AuthorizationType": "NONE",
+                                    "RouteId": "rw0aspe",
+                                    "RouteKey": "ANY /my-function",
+                                    "Target": "integrations/eoyicgr",
+                                    "ApiId": "k7kwsou72f",
+                                    "Tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "api-gateway-lambda",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "my-api"
+                                    }
+                                },
+                                "uri": "aws::apigateway::Route::ANY /my-function",
+                                "displayName": "ANY /my-function",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Api",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "k7kwsou72f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Integration",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "eoyicgr"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "apigateway::Route",
+                        "type": "Route",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "my-api-stage-dev",
+                                "id": "my-api-stage-dev",
+                                "providerName": "aws",
+                                "type": "Stage",
+                                "group": "apigateway",
+                                "live": {
+                                    "CreatedDate": "2021-07-29T19:09:27.000Z",
+                                    "DefaultRouteSettings": {
+                                        "DetailedMetricsEnabled": false
+                                    },
+                                    "DeploymentId": "ibyqf9",
+                                    "LastUpdatedDate": "2021-07-29T19:09:49.000Z",
+                                    "RouteSettings": {},
+                                    "StageName": "my-api-stage-dev",
+                                    "StageVariables": {},
+                                    "Tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "api-gateway-lambda",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "my-api-stage-dev"
+                                    },
+                                    "ApiId": "k7kwsou72f"
+                                },
+                                "uri": "aws::apigateway::Stage::my-api-stage-dev",
+                                "displayName": "my-api-stage-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Api",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "k7kwsou72f"
                                         ]
                                     }
                                 ],
@@ -106,6 +279,213 @@
                         "providerName": "aws"
                     },
                     {
+                        "resources": [],
+                        "groupType": "ec2::ElasticIpAddress",
+                        "type": "ElasticIpAddress",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "ec2::InternetGateway",
+                        "type": "InternetGateway",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "ec2::NatGateway",
+                        "type": "NatGateway",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "ec2::NetworkInterface",
+                        "type": "NetworkInterface",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "ec2::Route",
+                        "type": "Route",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "rt-default-vpc-default",
+                                "id": "rtb-668fbc0e",
+                                "providerName": "aws",
+                                "type": "RouteTable",
+                                "group": "ec2",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": true,
+                                            "RouteTableAssociationId": "rtbassoc-90bf06fb",
+                                            "RouteTableId": "rtb-668fbc0e",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-668fbc0e",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "172.31.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::rt-default-vpc-default",
+                                "displayName": "rt-default-vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::RouteTable",
+                        "type": "RouteTable",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "subnet-default",
+                                "id": "subnet-0f6f085fc384bf8ce",
+                                "providerName": "aws",
+                                "type": "Subnet",
+                                "group": "ec2",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 4091,
+                                    "CidrBlock": "172.31.0.0/20",
+                                    "DefaultForAz": true,
+                                    "MapPublicIpOnLaunch": true,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-0f6f085fc384bf8ce",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0f6f085fc384bf8ce"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-default",
+                                "displayName": "subnet-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Subnet",
+                        "type": "Subnet",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "vpc-default",
+                                "id": "vpc-bbbafcd3",
+                                "providerName": "aws",
+                                "type": "Vpc",
+                                "group": "ec2",
+                                "live": {
+                                    "CidrBlock": "172.31.0.0/16",
+                                    "DhcpOptionsId": "dopt-bb663fd3",
+                                    "State": "available",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "InstanceTenancy": "default",
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "CidrBlockAssociationSet": [
+                                        {
+                                            "AssociationId": "vpc-cidr-assoc-1c035a74",
+                                            "CidrBlock": "172.31.0.0/16",
+                                            "CidrBlockState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "IsDefault": true,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "Default"
+                                        }
+                                    ],
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
+                                },
+                                "uri": "aws::ec2::Vpc::vpc-default",
+                                "displayName": "vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Vpc",
+                        "type": "Vpc",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::Group",
+                        "type": "Group",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
                         "resources": [
                             {
                                 "name": "lambda-policy",
@@ -115,16 +495,16 @@
                                 "group": "iam",
                                 "live": {
                                     "PolicyName": "lambda-policy",
-                                    "PolicyId": "ANPA4HNBM2ZQIC5W5Y6VI",
+                                    "PolicyId": "ANPA4HNBM2ZQKNQLAPRX4",
                                     "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
                                     "AttachmentCount": 1,
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
-                                    "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-07-28T19:45:35.000Z",
-                                    "UpdateDate": "2021-07-28T19:45:35.000Z",
+                                    "Description": "Allow logs",
+                                    "CreateDate": "2021-07-29T19:09:25.000Z",
+                                    "UpdateDate": "2021-07-29T19:09:25.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -153,7 +533,7 @@
                                         "PolicyRoles": [
                                             {
                                                 "RoleName": "lambda-role",
-                                                "RoleId": "AROA4HNBM2ZQLR5D47RHC"
+                                                "RoleId": "AROA4HNBM2ZQLHQAH7YID"
                                             }
                                         ]
                                     },
@@ -198,9 +578,9 @@
                                 "live": {
                                     "Path": "/",
                                     "RoleName": "lambda-role",
-                                    "RoleId": "AROA4HNBM2ZQLR5D47RHC",
+                                    "RoleId": "AROA4HNBM2ZQLHQAH7YID",
                                     "Arn": "arn:aws:iam::840541460064:role/lambda-role",
-                                    "CreateDate": "2021-07-28T19:45:37.000Z",
+                                    "CreateDate": "2021-07-29T19:09:27.000Z",
                                     "AssumeRolePolicyDocument": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -277,6 +657,13 @@
                         "providerName": "aws"
                     },
                     {
+                        "resources": [],
+                        "groupType": "iam::User",
+                        "type": "User",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
                         "resources": [
                             {
                                 "name": "my-function",
@@ -287,10 +674,10 @@
                                 "live": {
                                     "Code": {
                                         "RepositoryType": "S3",
-                                        "Location": "https://awslambda-eu-west-2-tasks.s3.eu-west-2.amazonaws.com/snapshots/840541460064/my-function-abd53cf3-8856-453f-bbf6-19bf6bd31e30?versionId=FfHTcj.eUB6lKrxQodiYmdzE7ywmx3pY&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHQaCWV1LXdlc3QtMiJIMEYCIQCWEHU3avpSPr1IfukZrl3koJv2nDxrWhGRyQVmHHHICwIhALbouq1%2F2X2YjuYHGxo5xbPlMTCtb%2BPPV521FDO2iT4iKvoDCH0QAhoMNDcyMDM4ODY0MTg4Igy0vmrTfhoCp%2BiCzaAq1wPOf0EJ0FixNodbJHHzAo1qte3ygzpcSY3tnqxQcLiY3BXHTab7DCNN6oEO15VldNL5YtiHrSi%2FmOsf5Np2WTSbBulBhjEGHxdklY5vLIzph%2Bt6esEAjfiUUqwC7NOVRraIoH3yywVwNb5sEhodU335BALx7%2F6fx062kXK0AjkrdXrfkM4eDmNCwkdiU9%2FUAZF69PHZ0ePvAg3LQhv3ePzqXMP41K2zUOqf5HLvdhV5%2BZ1thWpG8MfzpdaBBleejBp9rQK3BNr%2FhG1zy1IP2TEfNWbHcX6SYl%2FSspbCz1Z07vCr14ATWql8p9Yic8AzEVb2kKW1%2Bn3xccFrV1LuVlfU%2FEBH1zwj3nVx6N5DrmuEL%2FCj8rYxVQghVfOoK%2BPdtN5gPdazXsHulakRvNu7TWzdTbbIKvADKGpFJfSLawJbOYPjL5RTCCRlmqkDVyZE4Dp6JhnciZZ4qHOOAydRABUpE2A4nioq0KFA73NWpG79VCpebfzw9n92i4qjPPoA1cguR57EWz0d9y4v03z0iXjjLfml0eFNUmX%2FkoF6s2tAhdRNWC500mnx7zwALajXIV4kuIZTVkUW5OtaV5zWIadDXfN1jU1Mvv3XxBdzuNA0q4u3OZ1%2FIaow6%2BeGiAY6pAFVXeaKqqSls8QJgtK%2FdGvnL0zc3lZtiwblhcvZ6208aFnA3C0zngPsEY9yxafrqOfDXpc9O3%2BsoiIq5OM20x9ogVYM1yRB5G5mXtqz0JVp7a6ly9LSceqrUnTTyG6aJUUi4ydUiBuvgx1vRn3vZixZpmC3v10KARDdHxfMsCv%2Bjl4dXgWwRG98VjZ1BFmOPIsEAsY6eu%2FgoReX4SnpjB%2BLCZI9Wg%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210728T210451Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAW3Z5VOU6DHRP667Z%2F20210728%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=35e7fa8bf7acf6f736f9d5c7b088e4836b3358731eaec9d74d3a98ba4bac5744",
+                                        "Location": "https://awslambda-eu-west-2-tasks.s3.eu-west-2.amazonaws.com/snapshots/840541460064/my-function-33d67409-f912-4a87-be58-8dcad5cd5312?versionId=aNPaG_EHrSfzty0geO6HRqJTvFznuNdy&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMiJGMEQCIHl47ggmUxMUxt9nUdxw9PS6OnFSfTUBgLsqTw8OzB%2BgAiAm%2BKXnK6OzYTt2OmUzeQdEsMXD0x1qoKxu52UE0OQ3QyqDBAiU%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAIaDDQ3MjAzODg2NDE4OCIMeU1MHQAxaB0HekqYKtcD5wY1aRUaVFXBFuTRrb0xFISQCP9h1lWsSWcXwseVXqCZt%2BFQL1I8kYxG%2BZvDthGTqanzeMQ6VSNLWdcQpVlBb6YtMn9jvm7OEI9x27HrQ6J0Hz4sAQs8dPuqgBFfFJqs7GfpDXof5pie%2BTrmnmU3%2Fvo9iBG6uupOJmEEeVQO6ot1rd1k5qbKk%2F1L%2FPDewyqJvsp%2BE155EoX4gKI4lVFSI5D1CJMRpLAeJu2cmy%2BIVJyKCtKxoloGVsXXypEWqthH24GoDzKLeDTR2wh2tgM%2BccW%2FPYEWnlupXD3baJvDxkTIcRGP6MLDNwviQfiNhkv%2BekOo97%2FxWCfSUZKY4j%2FFE%2BnACoBRGor%2FtTXmaK5XZ9ItEbnR%2BPWvCVJj%2F4d3u8mrtvce7Ye1pqCYm%2FW4PbWSXNPRBF5xq4Qutlv8KRuqLCywkW%2BYdKv%2FTmDHirH3RY5BqS62rQkst56KnXIe%2BWJMBFWaUYz5iuwiijX2MSyqPfTFc%2BfzoTh3brlOBQZL%2F0NPwZgMZRSRe4r4RkClVeKLwP87If%2FXpM0RusW0acxLiZaMbGxiPLM1EczuyrBiiA%2FEbUTOTc2UDHf5K1ECTWtmwNggTFxT%2BxMBBbQEyNDLJhrMwKDKUurMMNrti4gGOqYBLGoaItG9N%2BkAisj9NzRgii1fwjA9r4XdOrgSe7WH3iCyqluikD7jhwJAqUuYLnUlsMjHJW8f%2FM3oZGmHw1TTf%2F6mZKqsjk6ufJ7g0viLdIFOJcEpNORHNak8oq7cc%2FXlTdAYcGuYCKIjFTIM5Go%2F2APAR29rJbvvUmnhPZ6dAS90wiw95vChHt96FBkqHQfxF5ZiL1q%2FuisFf0JQr9Ey2W7vSSYt%2FA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210729T195828Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAW3Z5VOU6JVQYEC5D%2F20210729%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=a2cd70bc58bd6ae2effb1083007630ddfb0aebc208322edefa4fe9030ca1ac16",
                                         "ImageUri": null,
                                         "ResolvedImageUri": null,
-                                        "Data": "UEsDBBQAAAAIANl2/FKLR3/ShAAAAJoAAAAQAAAALi9teS1mdW5jdGlvbi5qcz2MwQqCQBRF937FzZVCiLRUbNMmImrRF4zOswSdkfee0RD9e2OLNpfD4XDpNXtWKR7G2ZEYDYwE1yGjJznN0ezxToDOO1EwyRyBYrVKQNToIgdvqcKuLLc/2XobKpxu10shyoO7D33I0iONo0fPfsLZTK01mzRf+08dh0kXdv//Oon2C1BLAQIUAxQAAAAIANl2/FKLR3/ShAAAAJoAAAAQAAAAAAAAAAAAAACkgQAAAAAuL215LWZ1bmN0aW9uLmpzUEsFBgAAAAABAAEAPgAAALIAAAAAAA=="
+                                        "Data": "UEsDBBQAAAAIABhc/VKotpb1igAAAKIAAAAOAAAAbXktZnVuY3Rpb24uanM9jcEKgkAURfd+xcWVQoi0VGzjIomoRV8wOs8SxnnyZiaS6N8bW7S5XA7ncum1sHhXPJTVhgQNlFvtgIyeZH2O5oB3AgxsnYeQW2KhaG0QcF754FrWVGFflrsf7FmvFU6366VwXiZ7n8Y1SzsyhjEKzzhKaA0HjbOae63SfNt96hhCPoj9/9RJpF9QSwECFAMUAAAACAAYXP1SqLaW9YoAAACiAAAADgAAAAAAAAAAAAAApIEAAAAAbXktZnVuY3Rpb24uanNQSwUGAAAAAAEAAQA8AAAAtgAAAAAA"
                                     },
                                     "Tags": {
                                         "gc-project-name": "api-gateway-lambda",
@@ -304,19 +691,19 @@
                                     "Runtime": "nodejs14.x",
                                     "Role": "arn:aws:iam::840541460064:role/lambda-role",
                                     "Handler": "my-function.handler",
-                                    "CodeSize": 262,
+                                    "CodeSize": 264,
                                     "Description": "",
                                     "Timeout": 3,
                                     "MemorySize": 128,
-                                    "LastModified": "2021-07-28T19:45:49.276+0000",
-                                    "CodeSha256": "h5ztP23XPBQUHZQNwnZV7YE+EPSbT6weraBE9AKm8Yo=",
+                                    "LastModified": "2021-07-29T19:09:46.757+0000",
+                                    "CodeSha256": "epSPSoYwuLxQB5M30lMurLRGsSroue4i1x9ANZgtmwA=",
                                     "Version": "$LATEST",
                                     "KMSKeyArn": null,
                                     "TracingConfig": {
                                         "Mode": "PassThrough"
                                     },
                                     "MasterArn": null,
-                                    "RevisionId": "32cbd36a-e704-4bca-a1f5-a696ffcf6713",
+                                    "RevisionId": "cdeca69b-b2fe-420b-b8a6-50b49d9ed8a0",
                                     "Layers": [],
                                     "State": null,
                                     "StateReason": null,
@@ -326,7 +713,27 @@
                                     "LastUpdateStatusReasonCode": null,
                                     "PackageType": "Zip",
                                     "SigningProfileVersionArn": null,
-                                    "SigningJobArn": null
+                                    "SigningJobArn": null,
+                                    "Policy": {
+                                        "Version": "2012-10-17",
+                                        "Id": "default",
+                                        "Statement": [
+                                            {
+                                                "Sid": "eoyicgr",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "Service": "apigateway.amazonaws.com"
+                                                },
+                                                "Action": "lambda:InvokeFunction",
+                                                "Resource": "arn:aws:lambda:eu-west-2:840541460064:function:my-function",
+                                                "Condition": {
+                                                    "ArnLike": {
+                                                        "AWS:SourceArn": "arn:aws:execute-api:eu-west-2:840541460064:k7kwsou72f/*/*/my-function"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
                                 },
                                 "uri": "aws::lambda::Function::my-function",
                                 "displayName": "my-function",

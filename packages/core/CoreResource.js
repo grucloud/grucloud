@@ -152,10 +152,21 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
     get("items", []), // remove
     filter(not(get("error"))),
     map(decorateLive({ client, config, options, readOnly, lives })),
-    tap((params) => {
-      assert(params);
+    tap((results) => {
+      assert(Array.isArray(results));
     }),
-    callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+    callProp("sort", (a, b) =>
+      pipe([
+        tap(() => {
+          assert(a);
+          assert(a.name.localeCompare);
+          assert(a.name);
+          assert(b);
+          assert(b.name);
+        }),
+        () => a.name.localeCompare(b.name),
+      ])()
+    ),
   ]);
 
 const createClient = ({

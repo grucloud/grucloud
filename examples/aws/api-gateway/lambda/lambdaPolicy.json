@@ -9,6 +9,6 @@
       }
     ]
   },
-  "Description": "Allow ec2:Describe",
+  "Description": "Allow logs",
   "Path": "/"
 }

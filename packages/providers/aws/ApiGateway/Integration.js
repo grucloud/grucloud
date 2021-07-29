@@ -14,7 +14,7 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { pluck, defaultsDeep, size } = require("rubico/x");
+const { pluck, defaultsDeep, size, when, isEmpty } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({
   prefix: "Integration",
@@ -27,23 +27,36 @@ const {
   shouldRetryOnException,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
-  findNameInTags,
+  findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
 
 const findId = get("live.IntegrationId");
-const findName = findNameInTags;
+const findName = findNameInTagsOrId({ findId });
 
 exports.Integration = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
-
+  const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
       group: "apigateway",
       ids: [live.ApiId],
+    },
+    {
+      type: "Function",
+      group: "lambda",
+      ids: pipe([
+        () => live,
+        when(
+          eq(get("IntegrationType"), "AWS_PROXY"),
+          () => live.IntegrationUri
+        ),
+        (id) => [id],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 
@@ -85,6 +98,9 @@ exports.Integration = ({ spec, config }) => {
             ])()
         )()
       ),
+      tap((results) => {
+        logger.info(`getList integration  ${tos(results)}`);
+      }),
       (items = []) => ({
         total: size(items),
         items,
@@ -98,7 +114,11 @@ exports.Integration = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
-  const create = ({ name, payload }) =>
+  const create = ({
+    name,
+    payload,
+    resolvedDependencies: { api, lambdaFunction },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create integration: ${name}`);
@@ -107,7 +127,25 @@ exports.Integration = ({ spec, config }) => {
       () => payload,
       buildPayloadDescriptionTags,
       apiGateway().createIntegration,
-      tap(() => {
+      tap.if(
+        () => lambdaFunction,
+        ({ IntegrationId }) =>
+          pipe([
+            () => ({
+              Action: "lambda:InvokeFunction",
+              FunctionName: lambdaFunction.resource.name,
+              Principal: "apigateway.amazonaws.com",
+              StatementId: IntegrationId,
+              SourceArn: `arn:aws:execute-api:${
+                config.region
+              }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+                lambdaFunction.resource.name
+              }`,
+            }),
+            lambda().addPermission,
+          ])()
+      ),
+      tap((params) => {
         logger.info(`created integration ${name}`);
       }),
     ])();
@@ -125,9 +163,41 @@ exports.Integration = ({ spec, config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
+  const lambdaRemovePermission = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => live,
+      tap.if(
+        eq(get("IntegrationType"), "AWS_PROXY"),
+        pipe([
+          () => ({
+            FunctionName: live.IntegrationUri,
+            StatementId: live.IntegrationId,
+          }),
+          tryCatch(lambda().removePermission, (error) =>
+            pipe([
+              tap(() => {
+                logger.error(`lambdaRemovePermission ${tos(error)}`);
+              }),
+              () => {
+                throw error;
+              },
+            ])()
+          ),
+        ])
+      ),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
   const destroy = ({ live }) =>
     pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => lambdaRemovePermission({ live }),
       () => live,
       pick(["ApiId", "IntegrationId"]),
       tap((params) => {

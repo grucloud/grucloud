@@ -22,6 +22,7 @@ const {
   identity,
   isFunction,
   includes,
+  when,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -456,13 +457,15 @@ exports.findNameInTagsOrId =
   ({ live }) =>
     pipe([
       tap(() => {
+        //TODO move assert up
+        assert(findId);
         if (!live) {
           assert(live);
         }
       }),
       () => ({ live }),
       findNameInTags,
-      switchCase([isEmpty, () => findId({ live }), identity]),
+      when(isEmpty, pipe([() => findId({ live })])),
       tap((name) => {
         if (!name) {
           assert(name, `cannot find name or id for ${tos(live)}`);
