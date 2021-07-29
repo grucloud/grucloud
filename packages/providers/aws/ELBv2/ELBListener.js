@@ -61,6 +61,7 @@ exports.ELBListener = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "LoadBalancer",
+          group: "elb",
           providerName,
           id: live.LoadBalancerArn,
         }),

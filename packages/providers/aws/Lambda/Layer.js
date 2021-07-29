@@ -37,7 +37,8 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const {
   createEndpoint,
   shouldRetryOnException,
-  tagsExtract,
+  tagsExtractFromDescription,
+  tagsRemoveFromDescription,
 } = require("../AwsCommon");
 
 const findId = get("live.LayerArn");
@@ -64,16 +65,8 @@ exports.Layer = ({ spec, config }) => {
       })),
       map(
         assign({
-          Tags: tagsExtract,
-          Description: pipe([
-            get("Description", ""),
-            callProp("split", "tags:"),
-            first,
-            callProp("trim"),
-            tap((Description) => {
-              assert(Description);
-            }),
-          ]),
+          Tags: tagsExtractFromDescription,
+          Description: tagsRemoveFromDescription,
           Content: ({ LayerVersionArn }) =>
             pipe([
               () => lambda().getLayerVersionByArn({ Arn: LayerVersionArn }),

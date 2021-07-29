@@ -78,12 +78,11 @@ exports.createResources = createResources;
 
 exports.createStack = async () => {
   const provider = AwsProvider({ config: require("./config") });
-  const resources = await createResources({
+  createResources({
     provider,
   });
 
   return {
     provider,
-    resources,
   };
 };

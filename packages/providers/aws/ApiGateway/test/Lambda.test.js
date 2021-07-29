@@ -13,8 +13,8 @@ describe("Lambda", async function () {
     const zipEntries = zip.getEntries();
 
     zipEntries.forEach(function (zipEntry) {
-      //console.log(zipEntry.toString()); // outputs zip entries information
-      //console.log(zip.readAsText(zipEntry.entryName));
+      console.log(zipEntry.toString()); // outputs zip entries information
+      console.log(zip.readAsText(zipEntry.entryName));
     });
     //zip.extractAllTo(/*target path*/ "/home/me/zipcontent/", /*overwrite*/ true);
   });

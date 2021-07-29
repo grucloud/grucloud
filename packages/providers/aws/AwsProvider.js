@@ -9,6 +9,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
 
+const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
@@ -18,13 +19,13 @@ const AwsELBv2 = require("./ELBv2");
 const AwsIam = require("./IAM");
 const AwsKMS = require("./KMS");
 const AwsLambda = require("./Lambda");
-
 const AwsRDS = require("./RDS");
 const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
 const fnSpecs = () => [
+  ...ApiGateway(),
   ...AutoScaling(),
   ...AwsCertificateManager(),
   ...AwsCloudFront(),
@@ -80,6 +81,7 @@ exports.AwsProvider = ({
 
   AWS.config.apiVersions = {
     acm: "2015-12-08",
+    apigatewayv2: "2018-11-29",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
     ec2: "2016-11-15",

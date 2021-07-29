@@ -378,12 +378,22 @@ const isOurMinionFactory =
 exports.isOurMinionFactory = isOurMinionFactory;
 exports.isOurMinion = isOurMinionFactory({});
 
-exports.tagsExtract = pipe([
+exports.tagsExtractFromDescription = pipe([
   get("Description", ""),
   callProp("split", "tags:"),
   last,
   tryCatch(JSON.parse, () => ({})),
   tap((Tags) => {
+    assert(true);
+  }),
+]);
+
+exports.tagsRemoveFromDescription = pipe([
+  get("Description", ""),
+  callProp("split", "tags:"),
+  first,
+  callProp("trim"),
+  tap((Description) => {
     assert(true);
   }),
 ]);
@@ -428,19 +438,14 @@ const findNameInTags = ({ live }) =>
       }
     }),
     () => live,
-    get("Tags"),
-    find(eq(get("Key"), configProviderDefault.nameKey)),
-    get("Value"),
+    get("Tags", []),
+    tap((params) => {
+      assert(true);
+    }),
     switchCase([
-      isEmpty,
-      () => {
-        logger.debug(
-          `findNameInTags: no name in tags: ${JSON.stringify(live.Tags)}`
-        );
-      },
-      (Value) => {
-        return Value;
-      },
+      Array.isArray,
+      pipe([find(eq(get("Key"), configProviderDefault.nameKey)), get("Value")]),
+      pipe([get(configProviderDefault.nameKey)]),
     ]),
   ])();
 

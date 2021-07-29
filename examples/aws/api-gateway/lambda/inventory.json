@@ -1,0 +1,373 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "dotFile": "diagram-live.dot",
+        "title": "lambda",
+        "graph": true
+    },
+    "programOptions": {
+        "json": "inventory.json"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "name": "my-function",
+                                "id": "hhyvw9ro6d",
+                                "providerName": "aws",
+                                "type": "Api",
+                                "group": "apigateway",
+                                "live": {
+                                    "ApiEndpoint": "https://hhyvw9ro6d.execute-api.eu-west-2.amazonaws.com",
+                                    "ApiId": "hhyvw9ro6d",
+                                    "ApiKeySelectionExpression": "$request.header.x-api-key",
+                                    "CreatedDate": "2021-07-28T19:45:35.000Z",
+                                    "DisableExecuteApiEndpoint": false,
+                                    "Name": "my-function",
+                                    "ProtocolType": "HTTP",
+                                    "RouteSelectionExpression": "$request.method $request.path",
+                                    "Tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "api-gateway-lambda",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "my-function"
+                                    }
+                                },
+                                "uri": "aws::apigateway::Api::my-function",
+                                "displayName": "my-function",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "apigateway::Api",
+                        "type": "Api",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "dev",
+                                "id": "dev",
+                                "providerName": "aws",
+                                "type": "Stage",
+                                "group": "apigateway",
+                                "live": {
+                                    "AutoDeploy": true,
+                                    "CreatedDate": "2021-07-28T20:19:33.000Z",
+                                    "DefaultRouteSettings": {
+                                        "DetailedMetricsEnabled": false
+                                    },
+                                    "LastDeploymentStatusMessage": "Deployment attempt failed: Unable to deploy API because no routes exist in this API",
+                                    "LastUpdatedDate": "2021-07-28T20:19:35.000Z",
+                                    "RouteSettings": {},
+                                    "StageName": "dev",
+                                    "StageVariables": {},
+                                    "Tags": {},
+                                    "ApiId": "hhyvw9ro6d"
+                                },
+                                "uri": "aws::apigateway::Stage::dev",
+                                "displayName": "dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Api",
+                                        "group": "apigateway",
+                                        "ids": [
+                                            "hhyvw9ro6d"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "apigateway::Stage",
+                        "type": "Stage",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-policy",
+                                "id": "arn:aws:iam::840541460064:policy/lambda-policy",
+                                "providerName": "aws",
+                                "type": "Policy",
+                                "group": "iam",
+                                "live": {
+                                    "PolicyName": "lambda-policy",
+                                    "PolicyId": "ANPA4HNBM2ZQIC5W5Y6VI",
+                                    "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
+                                    "Path": "/",
+                                    "DefaultVersionId": "v1",
+                                    "AttachmentCount": 1,
+                                    "PermissionsBoundaryUsageCount": 0,
+                                    "IsAttachable": true,
+                                    "Description": "Allow ec2:Describe",
+                                    "CreateDate": "2021-07-28T19:45:35.000Z",
+                                    "UpdateDate": "2021-07-28T19:45:35.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "api-gateway-lambda"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "lambda-policy"
+                                        }
+                                    ],
+                                    "EntitiesForPolicy": {
+                                        "PolicyGroups": [],
+                                        "PolicyUsers": [],
+                                        "PolicyRoles": [
+                                            {
+                                                "RoleName": "lambda-role",
+                                                "RoleId": "AROA4HNBM2ZQLR5D47RHC"
+                                            }
+                                        ]
+                                    },
+                                    "PolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Action": [
+                                                    "logs:*"
+                                                ],
+                                                "Effect": "Allow",
+                                                "Resource": "*"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::iam::Policy::lambda-policy",
+                                "displayName": "lambda-policy",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Policy",
+                        "type": "Policy",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-role",
+                                "id": "arn:aws:iam::840541460064:role/lambda-role",
+                                "providerName": "aws",
+                                "type": "Role",
+                                "group": "iam",
+                                "live": {
+                                    "Path": "/",
+                                    "RoleName": "lambda-role",
+                                    "RoleId": "AROA4HNBM2ZQLR5D47RHC",
+                                    "Arn": "arn:aws:iam::840541460064:role/lambda-role",
+                                    "CreateDate": "2021-07-28T19:45:37.000Z",
+                                    "AssumeRolePolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Sid": "",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "Service": "lambda.amazonaws.com"
+                                                },
+                                                "Action": "sts:AssumeRole"
+                                            }
+                                        ]
+                                    },
+                                    "MaxSessionDuration": 3600,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "lambda-role"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "api-gateway-lambda"
+                                        }
+                                    ],
+                                    "InstanceProfiles": [],
+                                    "AttachedPolicies": [
+                                        {
+                                            "PolicyName": "lambda-policy",
+                                            "PolicyArn": "arn:aws:iam::840541460064:policy/lambda-policy"
+                                        }
+                                    ],
+                                    "Policies": []
+                                },
+                                "uri": "aws::iam::Role::lambda-role",
+                                "displayName": "lambda-role",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Policy",
+                                        "group": "iam",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:policy/lambda-policy"
+                                        ]
+                                    },
+                                    {
+                                        "type": "OpenIDConnectProvider",
+                                        "group": "iam",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Role",
+                        "type": "Role",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "my-function",
+                                "id": "arn:aws:lambda:eu-west-2:840541460064:function:my-function",
+                                "providerName": "aws",
+                                "type": "Function",
+                                "group": "lambda",
+                                "live": {
+                                    "Code": {
+                                        "RepositoryType": "S3",
+                                        "Location": "https://awslambda-eu-west-2-tasks.s3.eu-west-2.amazonaws.com/snapshots/840541460064/my-function-abd53cf3-8856-453f-bbf6-19bf6bd31e30?versionId=FfHTcj.eUB6lKrxQodiYmdzE7ywmx3pY&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHQaCWV1LXdlc3QtMiJIMEYCIQCWEHU3avpSPr1IfukZrl3koJv2nDxrWhGRyQVmHHHICwIhALbouq1%2F2X2YjuYHGxo5xbPlMTCtb%2BPPV521FDO2iT4iKvoDCH0QAhoMNDcyMDM4ODY0MTg4Igy0vmrTfhoCp%2BiCzaAq1wPOf0EJ0FixNodbJHHzAo1qte3ygzpcSY3tnqxQcLiY3BXHTab7DCNN6oEO15VldNL5YtiHrSi%2FmOsf5Np2WTSbBulBhjEGHxdklY5vLIzph%2Bt6esEAjfiUUqwC7NOVRraIoH3yywVwNb5sEhodU335BALx7%2F6fx062kXK0AjkrdXrfkM4eDmNCwkdiU9%2FUAZF69PHZ0ePvAg3LQhv3ePzqXMP41K2zUOqf5HLvdhV5%2BZ1thWpG8MfzpdaBBleejBp9rQK3BNr%2FhG1zy1IP2TEfNWbHcX6SYl%2FSspbCz1Z07vCr14ATWql8p9Yic8AzEVb2kKW1%2Bn3xccFrV1LuVlfU%2FEBH1zwj3nVx6N5DrmuEL%2FCj8rYxVQghVfOoK%2BPdtN5gPdazXsHulakRvNu7TWzdTbbIKvADKGpFJfSLawJbOYPjL5RTCCRlmqkDVyZE4Dp6JhnciZZ4qHOOAydRABUpE2A4nioq0KFA73NWpG79VCpebfzw9n92i4qjPPoA1cguR57EWz0d9y4v03z0iXjjLfml0eFNUmX%2FkoF6s2tAhdRNWC500mnx7zwALajXIV4kuIZTVkUW5OtaV5zWIadDXfN1jU1Mvv3XxBdzuNA0q4u3OZ1%2FIaow6%2BeGiAY6pAFVXeaKqqSls8QJgtK%2FdGvnL0zc3lZtiwblhcvZ6208aFnA3C0zngPsEY9yxafrqOfDXpc9O3%2BsoiIq5OM20x9ogVYM1yRB5G5mXtqz0JVp7a6ly9LSceqrUnTTyG6aJUUi4ydUiBuvgx1vRn3vZixZpmC3v10KARDdHxfMsCv%2Bjl4dXgWwRG98VjZ1BFmOPIsEAsY6eu%2FgoReX4SnpjB%2BLCZI9Wg%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210728T210451Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAW3Z5VOU6DHRP667Z%2F20210728%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=35e7fa8bf7acf6f736f9d5c7b088e4836b3358731eaec9d74d3a98ba4bac5744",
+                                        "ImageUri": null,
+                                        "ResolvedImageUri": null,
+                                        "Data": "UEsDBBQAAAAIANl2/FKLR3/ShAAAAJoAAAAQAAAALi9teS1mdW5jdGlvbi5qcz2MwQqCQBRF937FzZVCiLRUbNMmImrRF4zOswSdkfee0RD9e2OLNpfD4XDpNXtWKR7G2ZEYDYwE1yGjJznN0ezxToDOO1EwyRyBYrVKQNToIgdvqcKuLLc/2XobKpxu10shyoO7D33I0iONo0fPfsLZTK01mzRf+08dh0kXdv//Oon2C1BLAQIUAxQAAAAIANl2/FKLR3/ShAAAAJoAAAAQAAAAAAAAAAAAAACkgQAAAAAuL215LWZ1bmN0aW9uLmpzUEsFBgAAAAABAAEAPgAAALIAAAAAAA=="
+                                    },
+                                    "Tags": {
+                                        "gc-project-name": "api-gateway-lambda",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "my-function"
+                                    },
+                                    "FunctionName": "my-function",
+                                    "FunctionArn": "arn:aws:lambda:eu-west-2:840541460064:function:my-function",
+                                    "Runtime": "nodejs14.x",
+                                    "Role": "arn:aws:iam::840541460064:role/lambda-role",
+                                    "Handler": "my-function.handler",
+                                    "CodeSize": 262,
+                                    "Description": "",
+                                    "Timeout": 3,
+                                    "MemorySize": 128,
+                                    "LastModified": "2021-07-28T19:45:49.276+0000",
+                                    "CodeSha256": "h5ztP23XPBQUHZQNwnZV7YE+EPSbT6weraBE9AKm8Yo=",
+                                    "Version": "$LATEST",
+                                    "KMSKeyArn": null,
+                                    "TracingConfig": {
+                                        "Mode": "PassThrough"
+                                    },
+                                    "MasterArn": null,
+                                    "RevisionId": "32cbd36a-e704-4bca-a1f5-a696ffcf6713",
+                                    "Layers": [],
+                                    "State": null,
+                                    "StateReason": null,
+                                    "StateReasonCode": null,
+                                    "LastUpdateStatus": null,
+                                    "LastUpdateStatusReason": null,
+                                    "LastUpdateStatusReasonCode": null,
+                                    "PackageType": "Zip",
+                                    "SigningProfileVersionArn": null,
+                                    "SigningJobArn": null
+                                },
+                                "uri": "aws::lambda::Function::my-function",
+                                "displayName": "my-function",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Role",
+                                        "group": "iam",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:role/lambda-role"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Layer",
+                                        "group": "lambda",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "lambda::Function",
+                        "type": "Function",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "lambda::Layer",
+                        "type": "Layer",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

@@ -39,6 +39,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
         lives.getById({
           providerName: config.providerName,
           type: "SecurityGroup",
+          group: "ec2",
           id: GroupId,
         }),
       switchCase([
