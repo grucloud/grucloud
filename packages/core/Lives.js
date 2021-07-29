@@ -35,12 +35,17 @@ exports.createLives = (livesRaw = []) => {
       }),
     ])();
 
-  const getByType = ({ providerName, type }) =>
+  const getByType = ({ providerName, type, group }) =>
     pipe([
+      tap(() => {
+        //assert(group);
+      }),
       () => mapPerProvider.get(providerName) || new Map(),
-      (mapPerType) => mapPerType.get(type),
+      (mapPerType) => mapPerType.get(JSON.stringify({ type, group })),
       tap.if(isEmpty, () => {
-        logger.error(`cannot find type ${type} on provider ${providerName}`);
+        logger.info(
+          `getByType cannot find type ${group}::${type} on provider ${providerName}`
+        );
       }),
       get("resources", []),
       tap((resources) => {
@@ -48,15 +53,21 @@ exports.createLives = (livesRaw = []) => {
           `getByType ${JSON.stringify({
             providerName,
             type,
+            group,
             count: size(resources),
           })}`
         );
       }),
     ])();
 
-  const getById = ({ providerName, type, id }) =>
+  const getById = ({ providerName, type, group, id }) =>
     pipe([
-      () => getByType({ providerName, type }),
+      tap(() => {
+        assert(type);
+        //assert(group);
+        assert(id);
+      }),
+      () => getByType({ providerName, type, group }),
       tap.if(isEmpty, () => {
         logger.error(`cannot find type ${type} on provider ${providerName}`);
       }),
@@ -71,9 +82,12 @@ exports.createLives = (livesRaw = []) => {
       }),
     ])();
 
-  const getByName = ({ providerName, type, name }) =>
+  const getByName = ({ providerName, type, group, name }) =>
     pipe([
-      () => getByType({ providerName, type }),
+      tap(() => {
+        //assert(group);
+      }),
+      () => getByType({ providerName, type, group }),
       tap.if(isEmpty, () => {
         logger.error(`cannot find type ${type} on provider ${providerName}`);
       }),
@@ -87,10 +101,12 @@ exports.createLives = (livesRaw = []) => {
     get error() {
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, type, resource }) => {
+    addResource: ({ providerName, type, group, resource }) => {
       assert(providerName);
       assert(type);
+      //assert(group);
 
+      //TODO
       if (isEmpty(resource.live)) {
         logger.error(`live addResource no live for ${type}`);
         assert(true);
@@ -103,13 +119,19 @@ exports.createLives = (livesRaw = []) => {
         `live addResource ${JSON.stringify({
           providerName,
           type,
+          group,
           mapPerTypeSize: mapPerType.size,
         })}`
       );
       logger.debug(`live addResource ${JSON.stringify(resource)}`);
 
       pipe([
-        () => mapPerType.get(type) || { type, resources: [] },
+        () =>
+          mapPerType.get(JSON.stringify({ type, group })) || {
+            type,
+            group,
+            resources: [],
+          },
         get("resources"),
         tap((resources) => {
           assert(Array.isArray(resources));
@@ -117,8 +139,9 @@ exports.createLives = (livesRaw = []) => {
         filter(not(eq(get("id", ""), resource.id))),
         (resources) => [...resources, resource],
         tap((resources) => {
-          mapPerType.set(type, {
+          mapPerType.set(JSON.stringify({ type, group }), {
             type,
+            group,
             providerName,
             resources,
           });
@@ -137,6 +160,7 @@ exports.createLives = (livesRaw = []) => {
     }) => {
       assert(providerName);
       assert(type);
+      //assert(group);
       assert(Array.isArray(resources) || latestError);
       logger.debug(
         `live addResources ${JSON.stringify({
@@ -148,7 +172,12 @@ exports.createLives = (livesRaw = []) => {
       );
 
       const mapPerType = mapPerProvider.get(providerName) || new Map();
-      mapPerType.set(type, { type, group, resources, error: latestError });
+      mapPerType.set(JSON.stringify({ type, group }), {
+        type,
+        group,
+        resources,
+        error: latestError,
+      });
       mapPerProvider.set(providerName, mapPerType);
     },
     get json() {
@@ -161,9 +190,13 @@ exports.createLives = (livesRaw = []) => {
     },
     setByProvider: ({ providerName, livesPerProvider }) => {
       const mapPerType = new Map(
-        map((livesPerProvider) => [livesPerProvider.type, livesPerProvider])(
-          livesPerProvider
-        )
+        map((livesPerProvider) => [
+          JSON.stringify({
+            type: livesPerProvider.type,
+            group: livesPerProvider.group,
+          }),
+          livesPerProvider,
+        ])(livesPerProvider)
       );
       mapPerProvider.set(providerName, mapPerType);
     },

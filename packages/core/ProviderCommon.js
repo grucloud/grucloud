@@ -67,8 +67,18 @@ exports.isValidPlan = not(isEmpty);
 exports.getField = ({ resource = {}, live } = {}, field) =>
   get(field, notAvailable(resource.name, field))(live);
 
-//TODO group
-exports.clientByType = ({ type }) => find(eq(get("spec.type"), type));
+exports.findClient = (clients) =>
+  pipe([
+    tap(({ type, group }) => {
+      assert(type);
+      //assert(group);
+    }),
+    ({ type, group }) =>
+      pipe([
+        () => clients,
+        find(and([eq(get("spec.type"), type), eq(get("spec.group"), group)])),
+      ])(),
+  ]);
 
 const isTypesMatch = ({ typeToMatch }) =>
   switchCase([
@@ -92,6 +102,7 @@ const findDependentType = ({ type, specs }) =>
     find(eq(get("type"), type)),
     get("dependsOn", []),
     flatMap((type) => findDependentType({ type, specs })),
+    //TODO prepend
     (results) => [type, ...results],
     tap((results) => {
       //logger.debug(`findDependentTypes ${type}, result: ${results}`);
@@ -138,6 +149,9 @@ const filterByType = ({ types = [], targetTypes }) =>
             or([
               isEmpty, //TOD never empty
               pipe([
+                tap((params) => {
+                  assert(true);
+                }),
                 (types) => findDependentTypes({ types, clients }),
                 tap((dependentTypes) => {
                   assert(client);
@@ -177,9 +191,10 @@ exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
       );
     }),
     filter(not(get("spec.listHide"))),
+    //TODO unless
     switchCase([
       () => all,
-      (clients) => clients,
+      identity,
       filterByType({ types, all, targetTypes }),
     ]),
     tap((clients) => {
