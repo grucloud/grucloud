@@ -5,11 +5,20 @@ const { Stage, compareStage } = require("./Stage");
 const { Deployment, compareDeployment } = require("./Deployment");
 const { Route, compareRoute } = require("./Route");
 const { Integration, compareIntegration } = require("./Integration");
+const { DomainName, compareDomainName } = require("./DomainName");
 
 const GROUP = "apigateway";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
+    {
+      type: "DomainName",
+      dependsOn: ["acm::Certificate"],
+      Client: DomainName,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compareDomainName,
+    },
     {
       type: "Api",
       Client: Api,

@@ -70,7 +70,9 @@
 
 ## Aws
 
-- get http://cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com Request failed with status code 403
+- dependency hosted zone => domain
+- ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
+  4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
 - throw error => throw Error(error.message);

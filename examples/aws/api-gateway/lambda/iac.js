@@ -1,3 +1,4 @@
+const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const lambdaPolicy = require("./lambdaPolicy.json");
@@ -5,6 +6,24 @@ const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 
 const createResources = ({ provider }) => {
   const { config } = provider;
+
+  const domain = provider.route53Domain.useDomain({
+    name: config.domainName,
+  });
+
+  const hostedZone = provider.route53.makeHostedZone({
+    name: `${config.domainName}.`,
+    dependencies: { domain },
+  });
+
+  const certificate = provider.acm.makeCertificate({
+    name: config.domainName,
+  });
+
+  provider.route53.makeRecord({
+    name: `certificate-validation-${config.domainName}.`,
+    dependencies: { hostedZone, certificate },
+  });
 
   const iamPolicy = provider.iam.makePolicy({
     name: "lambda-policy",
@@ -29,9 +48,18 @@ const createResources = ({ provider }) => {
 
   const api = provider.apigateway.makeApi({
     name: "my-api",
-    properties: () => ({
-      //RouteKey: config.apigateway.route.name,
-    }),
+    properties: () => ({}),
+  });
+
+  const apiGatewayDomainName = provider.apigateway.makeDomainName({
+    name: config.domainName,
+    dependencies: { certificate },
+    properties: () => ({}),
+  });
+
+  provider.route53.makeRecord({
+    name: `api-gateway-alias-record`,
+    dependencies: { apiGatewayDomainName, hostedZone },
   });
 
   const integration = provider.apigateway.makeIntegration({
