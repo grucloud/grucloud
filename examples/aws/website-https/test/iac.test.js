@@ -3,7 +3,7 @@ const cli = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-describe.skip("ApiGateway Lambda", async function () {
+describe("CloudFront WebSite HTTPS", async function () {
   before(async function () {});
   it("run", async function () {
     const infra = await createStack({ config });

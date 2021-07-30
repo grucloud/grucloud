@@ -5,6 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-live": "gc list --our --all --graph"
   },
   "author": "",
@@ -14,5 +15,8 @@
     "@grucloud/provider-k8s": "^1.31.0",
     "axios": "^0.21.1",
     "rubico": "^1.6.27"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

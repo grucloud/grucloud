@@ -173,7 +173,7 @@ exports.createStack = async ({ stage }) => {
     stage,
   });
 
-  const keyPair = provider.ec2.useKeyPair({
+  const keyPair = provider.ec2.makeKeyPair({
     name: provider.config.keyPair.name,
   });
 

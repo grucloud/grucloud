@@ -5,6 +5,7 @@
   "description": "",
   "main": "iac.js",
   "scripts": {
+    "test": "mocha",
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",
@@ -12,5 +13,8 @@
   "dependencies": {
     "@grucloud/core": "^1.31.0",
     "@grucloud/provider-aws": "^1.31.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

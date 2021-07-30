@@ -91,18 +91,6 @@ module.exports = ({ resources, provider }) => {
           },
         },
         {
-          name: `get ${bucketStorageUrl}`,
-          command: async ({}) => {
-            await retryCallOnError({
-              name: `get  ${bucketStorageUrl}`,
-              fn: () => axios.get(bucketStorageUrl),
-              shouldRetryOnException: ({ error }) =>
-                [404].includes(error.response?.status),
-              config: { retryCount: 20, retryDelay: 5e3 },
-            });
-          },
-        },
-        {
           name: `get distribution default page`,
           command: async ({ distrubutionUrl }) => {
             await retryCallOnError({

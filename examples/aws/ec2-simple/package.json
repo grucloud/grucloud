@@ -5,14 +5,17 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "graph-live": "gc list --graph"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.31.0",
     "@grucloud/provider-aws": "^1.31.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

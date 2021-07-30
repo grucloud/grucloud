@@ -65,7 +65,7 @@ exports.createLives = (livesRaw = []) => {
       tap(() => {
         assert(type);
         //assert(group);
-        assert(id);
+        //assert(id);
       }),
       () => getByType({ providerName, type, group }),
       tap.if(isEmpty, () => {

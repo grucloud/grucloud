@@ -1,11 +1,11 @@
 {
   "name": "api-gateway-lambda",
   "version": "1.31.0",
-  "description": "",
+  "description": "AWS Api Gateway with Lambda function",
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha 'test/**/*.test.js'"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

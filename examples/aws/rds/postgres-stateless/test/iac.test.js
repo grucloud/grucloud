@@ -3,7 +3,7 @@ const cli = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-describe.skip("ApiGateway Lambda", async function () {
+describe.skip("RDS Postgres Stateless", async function () {
   before(async function () {});
   it("run", async function () {
     const infra = await createStack({ config });

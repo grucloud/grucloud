@@ -33,7 +33,7 @@ const createResources = async ({ provider }) => {
   });
 
   await map((file) =>
-    provider.makeObject({
+    provider.s3.makeObject({
       name: file,
       dependencies: { bucket: websiteBucket },
       properties: () => ({

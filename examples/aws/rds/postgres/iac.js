@@ -52,7 +52,7 @@ const createResources = async ({ provider }) => {
   });
 
   const subnets = await map((subnet) =>
-    provider.makeSubnet({
+    provider.ec2.makeSubnet({
       name: subnet.name,
       dependencies: { vpc },
       properties: () => subnet.properties,
