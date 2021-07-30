@@ -72,9 +72,9 @@ const decorateLive =
   (live) =>
     pipe([
       tap((params) => {
-        assert(live);
+        assert(lives);
         if (!live) {
-          assert(lives);
+          assert(live);
         }
 
         if (client.spec.listOnly) {
