@@ -6,6 +6,7 @@ const { Deployment, compareDeployment } = require("./Deployment");
 const { Route, compareRoute } = require("./Route");
 const { Integration, compareIntegration } = require("./Integration");
 const { DomainName, compareDomainName } = require("./DomainName");
+const { ApiMapping, compareApiMapping } = require("./ApiMapping");
 
 const GROUP = "apigateway";
 
@@ -26,6 +27,7 @@ module.exports = () =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareApi,
     },
+
     {
       type: "Stage",
       dependsOn: ["apigateway::Api"],
@@ -33,6 +35,18 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareStage,
+    },
+    {
+      type: "ApiMapping",
+      dependsOn: [
+        "apigateway::Api",
+        "apigateway::Stage",
+        "apigateway::DomainName",
+      ],
+      Client: ApiMapping,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compareApiMapping,
     },
     {
       type: "Integration",

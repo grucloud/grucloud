@@ -131,13 +131,13 @@ exports.Route = ({ spec, config }) => {
       () => live,
       pick(["ApiId", "RouteId"]),
       tap((params) => {
-        logger.info(`destroy route ${JSON.stringify({ params })}`);
+        logger.info(`destroy route ${JSON.stringify(params)}`);
         assert(live.ApiId);
         assert(live.RouteId);
       }),
       tap(apiGateway().deleteRoute),
       tap((params) => {
-        logger.debug(`destroyed route ${JSON.stringify({ params })}`);
+        logger.debug(`destroyed route ${JSON.stringify(params)}`);
       }),
     ])();
 

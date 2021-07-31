@@ -72,7 +72,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  const route = provider.apigateway.makeRoute({
+  provider.apigateway.makeRoute({
     name: config.apigateway.route.name,
     dependencies: { api, integration },
     properties: () => ({}),
@@ -82,6 +82,12 @@ const createResources = ({ provider }) => {
     name: "my-api-stage-dev",
     dependencies: { api },
     properties: () => ({}),
+  });
+
+  provider.apigateway.makeApiMapping({
+    name: "api-mapping-dev",
+    dependencies: { api, stage, domainName: apiGatewayDomainName },
+    properties: () => ({ ApiMappingKey: "my-function" }),
   });
 
   provider.apigateway.makeDeployment({
