@@ -13,6 +13,7 @@ const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
+const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const AwsEC2 = require("./EC2");
 const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
@@ -29,6 +30,7 @@ const fnSpecs = () => [
   ...AutoScaling(),
   ...AwsCertificateManager(),
   ...AwsCloudFront(),
+  ...CognitoIdentityServiceProvider(),
   ...AwsEC2(),
   ...AwsEKS(),
   ...AwsELBv2(),
@@ -85,6 +87,7 @@ exports.AwsProvider = ({
     apigatewayv2: "2018-11-29",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    cognitoidentityserviceprovider: "2016-04-18",
     ec2: "2016-11-15",
     eks: "2017-11-01",
     elb: "2012-06-01",
