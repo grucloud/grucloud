@@ -28,6 +28,7 @@ const {
   size,
   includes,
   identity,
+  unless,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -91,6 +92,7 @@ const getHostedZone = ({ resource: { name, dependencies }, lives }) =>
       ]),
     ]),
   ])();
+const removeLastCharacter = callProp("slice", 0, -1);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
@@ -107,8 +109,7 @@ exports.Route53Record = ({ spec, config }) => {
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
-        // Remove last dot
-        callProp("slice", 0, -1),
+        removeLastCharacter,
         (DNSName) =>
           pipe([
             () =>
@@ -118,6 +119,51 @@ exports.Route53Record = ({ spec, config }) => {
                 providerName,
               }),
             filter(eq(get("live.DNSName"), DNSName)),
+            pluck("id"),
+          ])(),
+      ])(),
+    },
+    {
+      type: "DomainName",
+      group: "apigateway",
+      ids: pipe([
+        () => live,
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "DomainName",
+                group: "apigateway",
+                providerName,
+              }),
+            filter(
+              eq(
+                get("live.DomainNameConfigurations[0].ApiGatewayDomainName"),
+                DNSName
+              )
+            ),
+            pluck("id"),
+          ])(),
+      ])(),
+    },
+    {
+      type: "Distribution",
+      group: "cloudFront",
+      ids: pipe([
+        () => live,
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "Distribution",
+                group: "cloudFront",
+                providerName,
+              }),
+            filter(eq(get("live.DomainName"), DNSName)),
             pluck("id"),
           ])(),
       ])(),
@@ -481,9 +527,8 @@ exports.Route53Record = ({ spec, config }) => {
   const certificateRecord = ({ certificate }) =>
     pipe([
       () => certificate,
-      switchCase([
+      unless(
         isEmpty,
-        () => ({}),
         pipe([
           () => ({
             Name: getField(
@@ -501,32 +546,68 @@ exports.Route53Record = ({ spec, config }) => {
             TTL: 300,
             Type: "CNAME",
           }),
-        ]),
-      ]),
+        ])
+      ),
     ])();
 
   const loadBalancerRecord = ({ loadBalancer, hostedZone }) =>
     pipe([
       () => loadBalancer,
-      switchCase([
-        isEmpty,
-        () => ({}),
-        () => ({
-          Name: hostedZone.config.Name,
-          Type: "A",
-          AliasTarget: {
-            HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
-            DNSName: `${getField(loadBalancer, "DNSName")}.`,
-            EvaluateTargetHealth: false,
-          },
-        }),
-      ]),
+      unless(isEmpty, () => ({
+        Name: hostedZone.config.Name,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
+          DNSName: `${getField(loadBalancer, "DNSName")}.`,
+          EvaluateTargetHealth: false,
+        },
+      })),
+    ])();
+
+  const apiGatewayRecord = ({ apiGatewayDomainName, hostedZone }) =>
+    pipe([
+      () => apiGatewayDomainName,
+      unless(isEmpty, () => ({
+        Name: hostedZone.config.Name,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: getField(
+            apiGatewayDomainName,
+            "DomainNameConfigurations[0].HostedZoneId"
+          ),
+          DNSName: `${getField(
+            apiGatewayDomainName,
+            "DomainNameConfigurations[0].ApiGatewayDomainName"
+          )}.`,
+          EvaluateTargetHealth: false,
+        },
+      })),
+    ])();
+
+  const distributionRecord = ({ distribution, hostedZone }) =>
+    pipe([
+      () => distribution,
+      unless(isEmpty, () => ({
+        Name: hostedZone.config.Name,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: "Z2FDTNDATAQYW2",
+          DNSName: `${getField(distribution, "DomainName")}.`,
+          EvaluateTargetHealth: false,
+        },
+      })),
     ])();
 
   const configDefault = ({
     name,
     properties,
-    dependencies: { certificate, loadBalancer, hostedZone },
+    dependencies: {
+      certificate,
+      loadBalancer,
+      hostedZone,
+      apiGatewayDomainName,
+      distribution,
+    },
   }) =>
     pipe([
       tap(() => {
@@ -535,6 +616,8 @@ exports.Route53Record = ({ spec, config }) => {
       () => properties,
       defaultsDeep(certificateRecord({ certificate })),
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
+      defaultsDeep(apiGatewayRecord({ apiGatewayDomainName, hostedZone })),
+      defaultsDeep(distributionRecord({ distribution, hostedZone })),
       defaultsDeep({ Name: name }),
     ])();
 

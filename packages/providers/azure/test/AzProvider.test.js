@@ -1,6 +1,9 @@
 const assert = require("assert");
+const { pipe, tap, get } = require("rubico");
+const path = require("path");
 const { AzureProvider } = require("../AzureProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -28,8 +31,10 @@ describe("AzProvider", async function () {
       name: "azure",
       config: () => ({ location: "uksouth" }),
     });
-    resourceGroup = provider.makeResourceGroup({ name: rgName });
-    virtualNetwork = provider.makeVirtualNetwork({
+    resourceGroup = provider.resourceManagement.makeResourceGroup({
+      name: rgName,
+    });
+    virtualNetwork = provider.virtualNetworks.makeVirtualNetwork({
       name: vnName,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -44,7 +49,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    securityGroup = provider.makeSecurityGroup({
+    securityGroup = provider.virtualNetworks.makeSecurityGroup({
       name: `security-group`,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -67,7 +72,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const publicIpAddress = provider.makePublicIpAddress({
+    const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
       name: `ip`,
       dependencies: {
         resourceGroup,
@@ -78,7 +83,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const networkInterface = provider.makeNetworkInterface({
+    const networkInterface = provider.virtualNetworks.makeNetworkInterface({
       name: `network-interface`,
       dependencies: {
         resourceGroup,
@@ -101,11 +106,11 @@ describe("AzProvider", async function () {
       }),
     });
 
-    const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
-    assert(MACHINE_ADMIN_USERNAME);
-    assert(MACHINE_ADMIN_PASSWORD);
+    // const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
+    // assert(MACHINE_ADMIN_USERNAME);
+    // assert(MACHINE_ADMIN_PASSWORD);
 
-    const vm = provider.makeVirtualMachine({
+    const vm = provider.compute.makeVirtualMachine({
       name: `vm`,
       dependencies: {
         resourceGroup,
@@ -136,10 +141,24 @@ describe("AzProvider", async function () {
   });
   after(async () => {});
   it("az info", async function () {
-    const info = provider.info();
-    assert(info.subscriptionId);
-    assert(info.tenantId);
-    assert(info.appId);
+    const programOptions = {
+      workingDirectory: path.resolve(__dirname, "../../../../examples/multi"),
+    };
+
+    const cli = await Cli({
+      programOptions,
+      createStack: () => ({ provider }),
+      config,
+    });
+    pipe([
+      cli.info,
+      get("results[0]"),
+      (info) => {
+        assert(info.subscriptionId);
+        assert(info.tenantId);
+        assert(info.appId);
+      },
+    ])();
   });
   it.skip("az apply and destroy", async function () {
     await testPlanDeploy({ provider, full: true });

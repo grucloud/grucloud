@@ -3,131 +3,236 @@ const {
   map,
   pipe,
   tap,
+  set,
   get,
   eq,
   not,
   assign,
-  tryCatch,
-  or,
+  filter,
   omit,
+  tryCatch,
   switchCase,
+  pick,
 } = require("rubico");
-const { find, first, defaultsDeep, isEmpty, size, pluck } = require("rubico/x");
+const {
+  pluck,
+  first,
+  identity,
+  defaultsDeep,
+  isEmpty,
+  size,
+  includes,
+  unless,
+} = require("rubico/x");
+const crypto = require("crypto");
+const path = require("path");
 const { detailedDiff } = require("deep-object-diff");
+const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  buildTagsObject,
-} = require("@grucloud/core/Common");
-const {
-  createEndpoint,
-  buildTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { buildTagsObject } = require("@grucloud/core/Common");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.FunctionName");
-const findName = findId;
+const findId = get("live.FunctionArn");
+const findName = get("live.FunctionName");
 
 exports.Function = ({ spec, config }) => {
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = async ({ params } = {}) =>
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Role",
+      group: "iam",
+      ids: [live.Role],
+    },
+    {
+      type: "Layer",
+      group: "lambda",
+      ids: pipe([
+        () => live,
+        get("Layers"),
+        (layersFunction) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Layer",
+                group: "lambda",
+              }),
+            filter(
+              pipe([
+                get("live.LayerVersionArn"),
+                (layerVersionArn) =>
+                  pipe([() => layersFunction, includes(layerVersionArn)])(),
+              ])
+            ),
+          ])(),
+        pluck("id"),
+      ])(),
+    },
+  ];
+
+  const listFunctions = ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList ${tos(params)}`);
+        logger.info(`listFunctions ${tos(params)}`);
       }),
       () => lambda().listFunctions(params),
       get("Functions"),
+      map((fun) =>
+        pipe([
+          () => fun,
+          tryCatch(
+            pipe([
+              pick(["FunctionName"]),
+              lambda().getFunction,
+              pick(["Code", "Tags"]),
+              assign({
+                Code: pipe([
+                  get("Code"),
+                  assign({
+                    Data: pipe([fetchZip()]),
+                  }),
+                ]),
+              }),
+            ]),
+            (error) => pipe([() => ({ error })])()
+          ),
+          defaultsDeep(fun),
+        ])()
+      ),
       map(
         assign({
-          Tags: pipe([
-            ({ FunctionArn }) => lambda().listTags({ Resource: FunctionArn }),
-            get("TagList"),
+          Layers: pipe([get("Layers"), pluck("Arn")]),
+          CodeSigningConfigArn: pipe([
+            pick(["FunctionName"]),
+            lambda().getFunctionCodeSigningConfig,
+            get("CodeSigningConfigArn"),
           ]),
+          ReservedConcurrentExecutions: pipe([
+            pick(["FunctionName"]),
+            lambda().getFunctionConcurrency,
+            get("ReservedConcurrentExecutions"),
+          ]),
+          Policy: tryCatch(
+            pipe([
+              pick(["FunctionName"]),
+              lambda().getPolicy,
+              get("Policy"),
+              tryCatch(JSON.parse, () => undefined),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+            pipe([
+              switchCase([
+                eq(get("code"), "ResourceNotFoundException"),
+                () => undefined,
+                (error) => {
+                  throw error;
+                },
+              ]),
+            ])
+          ),
         })
       ),
       tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
+        logger.debug(`listFunctions: result: ${tos(results)}`);
       }),
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
+  const getList = () =>
+    pipe([
+      tap(() => {
+        logger.info(`getList function`);
+      }),
+      listFunctions,
       (items = []) => ({
         total: size(items),
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
+        logger.info(`getList function #total: ${total}`);
       }),
     ])();
 
-  const getById = ({ id }) =>
+  const getByName = ({ name }) =>
     pipe([
       tap(() => {
-        logger.info(`getById ${id}`);
+        logger.info(`getByName ${name}`);
       }),
-      tryCatch(
-        () => lambda().getFunction({ FunctionName: id }),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => undefined,
-          (error) => {
-            throw error;
-          },
-        ])
-      ),
+      () => listFunctions({ FunctionName: name }),
+      first,
       tap((result) => {
-        logger.debug(`getById result: ${tos(result)}`);
+        logger.debug(`getByName result: ${tos(result)}`);
       }),
     ])();
 
-  const getByName = ({ name }) => getById({ id: name });
-
-  const isInstanceUp = not(isEmpty);
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
+  const isUpByName = pipe([getByName, not(isEmpty)]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
-        logger.info(`create: ${name}`);
+        logger.info(`create lambda: ${name}`);
         logger.debug(tos(payload));
       }),
-      () => lambda().createFunction(payload),
+      () =>
+        retryCall({
+          name: `createFunction: ${name}`,
+          fn: () => lambda().createFunction(payload),
+          config: { retryCount: 10, retryDelay: 2e3 },
+          shouldRetryOnException: ({ error }) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `createFunction isExpectedException ${tos(error)}`
+                );
+              }),
+              () => error,
+              get("message"),
+              includes(
+                "The role defined for the function cannot be assumed by Lambda"
+              ),
+            ])(),
+        }),
       get("Function"),
-      // tap((fun) =>
-      //   retryCall({
-      //     name: `key isUpById: ${name}`,
-      //     fn: () => isUpById({ name, id: FunctionName }),
-      //     config,
-      //   })
-      // ),
-      tap((xxx) => {
+      tap((FunctionName) =>
+        retryCall({
+          name: `key isUpByName: ${name}`,
+          fn: () => isUpByName({ name: FunctionName }),
+          config,
+        })
+      ),
+      tap(() => {
         logger.info(`created`);
       }),
     ])();
 
-  //TODO
-  const update = async ({ name, payload, diff, live }) =>
+  const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`update: ${name}`);
+        logger.info(`update function: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
-      () => lambda().updateFunctionCode(),
+      () => ({
+        FunctionName: payload.FunctionName,
+        ZipFile: payload.Code.ZipFile,
+      }),
+      lambda().updateFunctionCode,
       tap(() => {
-        logger.info(`updated`);
+        logger.info(`updated function ${name}`);
       }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
-
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => ({ id: findId({ live }) }),
       ({ id }) =>
@@ -142,21 +247,39 @@ exports.Function = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,
-    dependencies: { role },
+    dependencies: { role, layers = [] },
+    programOptions,
   }) =>
     pipe([
       tap(() => {
+        assert(programOptions);
         assert(role, "missing role dependencies");
+        assert(Array.isArray(layers), "layers must be an array");
       }),
-      () => properties,
-      defaultsDeep({
-        FunctionName: name,
-        Role: getField(role, "Arn"),
-        Tags: buildTagsObject({ config, namespace, name }),
+      () =>
+        createZipBuffer({
+          localPath: path.resolve(programOptions.workingDirectory, name),
+        }),
+      (ZipFile) =>
+        pipe([
+          () => properties,
+          defaultsDeep({
+            FunctionName: name,
+            Role: getField(role, "Arn"),
+            Tags: buildTagsObject({ config, namespace, name }),
+            Layers: pipe([
+              () => layers,
+              map((layer) => getField(layer, "LayerVersionArn")),
+            ])(),
+            Code: { ZipFile },
+          }),
+        ])(),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
@@ -171,11 +294,25 @@ exports.Function = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    findDependencies,
   };
 };
 
 const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
 const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
+
+const computeHash256 = ({ target }) =>
+  pipe([
+    () => crypto.createHash("sha256"),
+    (hash256) =>
+      pipe([
+        () => hash256.update(target.Code.ZipFile),
+        () => hash256.digest("base64"),
+      ])(),
+  ])();
+
+const isEqualHash256 = ({ target, live }) =>
+  pipe([() => computeHash256({ target }), eq(identity, live.CodeSha256)])();
 
 exports.compareFunction = pipe([
   assign({
@@ -186,10 +323,24 @@ exports.compareFunction = pipe([
     targetDiff: pipe([
       () => detailedDiff(target, live),
       omit(["added", "deleted"]),
+      unless(
+        () => isEqualHash256({ target, live }),
+        assign({ updated: () => ({ CodeSha256: live.CodeSha256 }) })
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])(),
     liveDiff: pipe([
-      () => detailedDiff(live, target),
+      () => detailedDiff(target, live),
       omit(["added", "deleted"]),
+      tap((params) => {
+        assert(true);
+      }),
+      unless(
+        () => isEqualHash256({ target, live }),
+        assign({ updated: () => ({ CodeSha256: computeHash256({ target }) }) })
+      ),
     ])(),
   }),
   tap((diff) => {

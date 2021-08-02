@@ -137,7 +137,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           logger.debug(`getById ${id} NoSuchDistribution`);
         },
         (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
+          logger.error(`getById error: ${tos(error)}`);
           throw Error(error.message);
         },
       ])
@@ -146,6 +146,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.debug(`getById result: ${tos(result)}`);
     }),
   ]);
+
   const isInstanceUp = eq(get("Status"), "Deployed");
   const isUpById = isUpByIdCore({
     isInstanceUp,

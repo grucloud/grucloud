@@ -179,6 +179,12 @@ exports.DBInstance = ({ spec, config }) => {
     dependencies: { dbSubnetGroup, securityGroups },
   }) =>
     pipe([
+      tap(() => {
+        assert(
+          !isEmpty(properties.MasterUserPassword),
+          "MasterUserPassword is empty"
+        );
+      }),
       () => properties,
       defaultsDeep({
         DBInstanceIdentifier: name,

@@ -13,7 +13,7 @@ const createResources = async ({ provider }) => {
   });
 
   const internetGateway = provider.ec2.makeInternetGateway({
-    name: "ig",
+    name: config.rds.internetGateway.name,
     dependencies: { vpc },
   });
 
@@ -52,7 +52,7 @@ const createResources = async ({ provider }) => {
   });
 
   const subnets = await map((subnet) =>
-    provider.makeSubnet({
+    provider.ec2.makeSubnet({
       name: subnet.name,
       dependencies: { vpc },
       properties: () => subnet.properties,
@@ -87,8 +87,8 @@ const createResources = async ({ provider }) => {
   };
 };
 
-exports.createStack = async ({ config, stage }) => {
-  const provider = AwsProvider({ config, stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider);
   const resources = await createResources({ provider });
 
   return {

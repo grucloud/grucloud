@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "e2e": "gc d -a -f && gc run --onDestroyed && gc d -a && gc l && gc a -f && gc a && gc run --onDeployed && gc d -f && gc d && gc l"
@@ -16,5 +17,8 @@
     "@grucloud/provider-mock": "^1.31.0",
     "rubico": "^1.6.27",
     "url-join": "^4.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

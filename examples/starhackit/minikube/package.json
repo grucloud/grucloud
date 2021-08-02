@@ -5,6 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "e2e": "gc d -f && gc d  && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
@@ -15,5 +16,8 @@
     "@grucloud/core": "^1.31.0",
     "@grucloud/provider-k8s": "^1.31.0",
     "rubico": "^1.6.27"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

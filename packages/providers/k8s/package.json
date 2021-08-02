@@ -6,7 +6,8 @@
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/k8s",
   "scripts": {
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "NODE_PATH=. mocha './test/**/*.test.js'"
+    "test": "NODE_PATH=. mocha './test/**/*.test.js' '../../modules/k8s/**/iac.test.js' ",
+    "coverage": "nyc npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +20,8 @@
     "url-join": "^4.0.1"
   },
   "devDependencies": {
-    "mocha": "^8.3.2"
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0"
   },
   "repository": {
     "type": "git",
@@ -29,5 +31,24 @@
     "Kubernetes",
     "Infrastructure as Code",
     "GruCloud"
-  ]
+  ],
+  "nyc": {
+    "include": [
+      "**/*.js"
+    ],
+    "exclude": [
+      "**/*.spec.js",
+      "**/*test*.js",
+      "coverage"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "all": true
+  }
 }

@@ -5,7 +5,7 @@
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +15,8 @@
     "@grucloud/provider-aws": "^1.31.0",
     "rubico": "^1.6.26",
     "ssh2": "^0.8.9"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

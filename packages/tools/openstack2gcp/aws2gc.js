@@ -15,12 +15,14 @@ const {
   map,
 } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
+const AdmZip = require("adm-zip");
+const path = require("path");
 const { createProgramOptions, generatorMain } = require("./generatorUtils");
 
 const { configTpl } = require("./src/configTpl");
 const { iacTpl } = require("./src/aws/iacTpl");
 
-const { findLiveById, hasDependency } = require("./generatorUtils");
+const { hasDependency } = require("./generatorUtils");
 
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
@@ -479,6 +481,127 @@ const writersSpec = [
           certificate: { type: "Certificate", group: "acm" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
+      },
+    ],
+  },
+  {
+    group: "lambda",
+    types: [
+      {
+        type: "Layer",
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {
+                assert(resource.name);
+                assert(live.Content.Data);
+              }),
+              () => live,
+              pick([
+                "LayerName",
+                "Description",
+                "CompatibleRuntimes",
+                "LicenseInfo",
+              ]),
+              tap((params) => {
+                assert(true);
+              }),
+              tap(
+                pipe([
+                  () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
+                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                ])
+              ),
+            ])(),
+      },
+      {
+        type: "Function",
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {
+                assert(resource.name);
+                assert(live.Code.Data);
+              }),
+              () => live,
+              pick([
+                "FunctionName",
+                "Handler",
+                "PackageType",
+                "Runtime",
+                "Description",
+                "LicenseInfo",
+                "Timeout",
+                "MemorySize",
+              ]),
+              tap(
+                pipe([
+                  () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
+                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                ])
+              ),
+            ])(),
+        dependencies: () => ({
+          layers: { type: "Layer", group: "lambda" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "apigateway",
+    types: [
+      {
+        type: "Api",
+        filterLive: () =>
+          pick([
+            "Name",
+            "ProtocolType",
+            "ApiKeySelectionExpression",
+            "DisableExecuteApiEndpoint",
+            "RouteSelectionExpression",
+          ]),
+      },
+      {
+        type: "Integration",
+        filterLive: () =>
+          pick([
+            "ConnectionType",
+            "Description",
+            "IntegrationMethod",
+            "IntegrationType",
+            "PayloadFormatVersion",
+          ]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          lambdaFunction: { type: "Function", group: "lambda" },
+        }),
+      },
+      {
+        type: "Route",
+        filterLive: () =>
+          pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          integration: { type: "Integration", group: "apigateway" },
+        }),
+      },
+      {
+        type: "Stage",
+        filterLive: () => pick(["StageName", "StageVariables"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+        }),
+      },
+      {
+        type: "Deployment",
+        filterLive: () => pick(["Description"]),
+        dependencies: () => ({
+          api: { type: "Api", group: "apigateway" },
+          stage: { type: "Stage", group: "apigateway" },
+        }),
       },
     ],
   },

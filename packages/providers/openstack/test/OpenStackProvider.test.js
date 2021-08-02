@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { OpenStackProvider } = require("../OpenStackProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("OpenStackProvider", async function () {
   let config;
@@ -21,8 +21,14 @@ describe("OpenStackProvider", async function () {
   });
   after(async () => {});
   it("openstack list", async function () {
-    const result = await cliCommands.list({
-      infra: { provider },
+    const cli = await Cli({
+      createStack: () => ({
+        provider,
+      }),
+      config,
+    });
+
+    const result = await cli.list({
       commandOptions: { all: true },
     });
     assert(!result.error);

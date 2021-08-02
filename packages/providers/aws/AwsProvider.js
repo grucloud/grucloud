@@ -9,25 +9,28 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
 
+const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
+const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const AwsEC2 = require("./EC2");
 const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
 const AwsIam = require("./IAM");
 const AwsKMS = require("./KMS");
 const AwsLambda = require("./Lambda");
-
 const AwsRDS = require("./RDS");
 const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
 const fnSpecs = () => [
+  ...ApiGateway(),
   ...AutoScaling(),
   ...AwsCertificateManager(),
   ...AwsCloudFront(),
+  ...CognitoIdentityServiceProvider(),
   ...AwsEC2(),
   ...AwsEKS(),
   ...AwsELBv2(),
@@ -73,6 +76,7 @@ exports.AwsProvider = ({
   name = "aws",
   stage = "dev",
   config,
+  programOptions,
   configs = [],
   ...other
 }) => {
@@ -80,8 +84,10 @@ exports.AwsProvider = ({
 
   AWS.config.apiVersions = {
     acm: "2015-12-08",
+    apigatewayv2: "2018-11-29",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    cognitoidentityserviceprovider: "2016-04-18",
     ec2: "2016-11-15",
     eks: "2017-11-01",
     elb: "2012-06-01",
@@ -146,20 +152,19 @@ exports.AwsProvider = ({
       }),
     ])();
 
-  const mergedConfig = mergeConfig({ config, configs });
-
   const info = () => ({
     accountId,
     zone,
-    config: omit(["accountId", "zone"])(mergedConfig),
+    config: omit(["accountId", "zone"])(mergeConfig({ config, configs })),
   });
 
   return CoreProvider({
     ...other,
     type: "aws",
     name,
+    programOptions,
     get config() {
-      return mergedConfig;
+      return mergeConfig({ config, configs });
     },
     fnSpecs,
     start,

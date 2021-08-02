@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cli");
 const { createStack } = require("../example/iac");
 const config = require("../example/config");
 
@@ -13,23 +13,19 @@ describe("AWS VPC Module", async function () {
     }
   });
   it("run", async function () {
-    const infra = await createStack({ config });
+    const cli = await Cli({ createStack, config });
 
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
-    await cliCommands.planApply({
-      infra,
+    await cli.planApply({
       commandOptions: { force: true },
     });
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
     // TODO list should be empty
-    const result = await cliCommands.list({
-      infra,
+    const result = await cli.list({
       commandOptions: { our: true },
     });
     assert(result);

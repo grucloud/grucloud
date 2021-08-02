@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -51,21 +51,27 @@ describe("GcpServiceAccount", async function () {
     const serviceAccountLive = await serviceAccount.getLive();
     assert(serviceAccountLive);
 
-    const providerEmpty = GoogleProvider({
-      config: () => ({
-        projectId: "grucloud-test",
-      }),
-    });
     {
-      const result = await cliCommands.planDestroy({
-        infra: { provider: providerEmpty },
+      const providerEmpty = GoogleProvider({
+        config: () => ({
+          projectId: "grucloud-test",
+        }),
+      });
+      const cli = await Cli({
+        createStack: () => ({ provider: providerEmpty }),
+      });
+
+      const result = await cli.planDestroy({
         commandOptions: { force: true, types },
       });
       assert(!result.error, "destroyAll failed");
     }
     {
-      const result = await cliCommands.planDestroy({
-        infra: { provider },
+      const cli = await Cli({
+        createStack: () => ({ provider }),
+      });
+
+      const result = await cli.planDestroy({
         commandOptions: { force: true, types, all: false },
       });
       assert(!result.error, "destroyAll failed");

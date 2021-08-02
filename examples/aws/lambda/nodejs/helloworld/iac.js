@@ -1,5 +1,4 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
-const AdmZip = require("adm-zip");
 
 const lambdaPolicy = require("./lambdaPolicy.json");
 const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
@@ -18,14 +17,19 @@ const createResources = async ({ provider }) => {
     properties: () => lambdaAssumePolicy,
   });
 
-  const zip = new AdmZip();
-  zip.addLocalFile("helloworld.js");
-
-  const lambda = provider.lambda.makeFunction({
-    name: "lambda-hello-world-1",
+  const layer = provider.lambda.makeLayer({
+    name: "lambda-layer",
     dependencies: { role: iamRole },
     properties: () => ({
-      Code: { ZipFile: zip.toBuffer() },
+      CompatibleRuntimes: ["nodejs"],
+      Description: "My Layer",
+    }),
+  });
+
+  const lambda = provider.lambda.makeFunction({
+    name: "lambda-hello-world",
+    dependencies: { role: iamRole, layers: [layer] },
+    properties: () => ({
       PackageType: "Zip",
       Handler: "helloworld.handler",
       Runtime: "nodejs14.x",
@@ -35,8 +39,8 @@ const createResources = async ({ provider }) => {
   return {};
 };
 
-exports.createStack = async ({ config, stage }) => {
-  const provider = AwsProvider({ config, stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, { config: require("./config") });
   const resources = await createResources({ provider });
 
   return {

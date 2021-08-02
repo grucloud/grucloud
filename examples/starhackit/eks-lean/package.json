@@ -6,6 +6,7 @@
   "description": "Deploying starhackit on AWS EKS without the Load Balancer Controller",
   "main": "index.js",
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
@@ -23,5 +24,8 @@
     "@grucloud/provider-k8s": "^1.31.0",
     "axios": "^0.21.1",
     "rubico": "^1.6.27"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

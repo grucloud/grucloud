@@ -2,6 +2,40 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "aws2gc-api-gateway",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "aws2gc",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/aws/api-gateway-lambda",
+      "port": 9229
+    },
+    {
+      "name": "aws2gc-lambda",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "aws2gc",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/aws/lambda",
+      "port": 9229
+    },
+    {
       "name": "aws2gc-ec2",
       "type": "node",
       "request": "launch",

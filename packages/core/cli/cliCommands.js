@@ -34,7 +34,9 @@ const {
   size,
   first,
   identity,
+  isFunction,
 } = require("rubico/x");
+const { envLoader } = require("../EnvLoader");
 
 const logger = require("../logger")({ prefix: "CliCommands" });
 const YAML = require("./json2yaml");
@@ -43,6 +45,7 @@ const {
   displayProviderList,
   setupProviders,
 } = require("./cliUtils");
+const { createProviderMaker } = require("./infra");
 const {
   displayPlan,
   displayPlanSummary,
@@ -354,7 +357,7 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
-      setupProviders({ commandOptions }),
+      setupProviders({ commandOptions, programOptions }),
       doPlanQuery({ commandOptions, programOptions }),
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
@@ -381,8 +384,6 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     ]),
     DisplayAndThrow({ name: "Plan" })
   )();
-
-exports.planQuery = planQuery;
 
 const commandToFunction = (command) =>
   `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
@@ -456,7 +457,7 @@ const planRunScript = async ({
         logger.debug("planRunScript");
       }),
       () => infra,
-      setupProviders({ commandOptions }),
+      setupProviders({ commandOptions, programOptions }),
       tap((input) => {
         assert(input.providerGru);
       }),
@@ -509,8 +510,6 @@ const planRunScript = async ({
     ]),
     DisplayAndThrow({ name: "Run Script" })
   )();
-
-exports.planRunScript = planRunScript;
 
 // Plan Apply
 
@@ -715,7 +714,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
-      setupProviders({ commandOptions }),
+      setupProviders({ commandOptions, programOptions }),
       ({ providerGru }) =>
         pipe([
           async () => {
@@ -769,7 +768,6 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Plan Apply" })
   )();
 
-exports.planApply = planApply;
 // Plan Destroy
 
 const processHasNoPlan = () => {
@@ -850,7 +848,7 @@ const displayDestroyErrors = pipe([
   }),
 ]);
 
-exports.planDestroy = async ({
+const planDestroy = async ({
   infra,
   commandOptions = {},
   programOptions = {},
@@ -935,7 +933,7 @@ exports.planDestroy = async ({
   return tryCatch(
     pipe([
       () => infra,
-      setupProviders({ commandOptions }),
+      setupProviders({ commandOptions, programOptions }),
       ({ providerGru }) =>
         pipe([
           () =>
@@ -1089,7 +1087,7 @@ const displayListResult = pipe([
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
-    setupProviders({ commandOptions }),
+    setupProviders({ commandOptions, programOptions }),
     ({ providerGru }) =>
       pipe([
         () =>
@@ -1151,7 +1149,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
   ]);
 
 //List all
-exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     listDoOk({ commandOptions, programOptions }),
     DisplayAndThrow({ name: "List" })
@@ -1163,7 +1161,7 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     tap(() => {
       logger.info(`output`);
     }),
-    setupProviders({ commandOptions }),
+    setupProviders({ commandOptions, programOptions }),
     ({ providerGru }) => providerGru.getProviders(),
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
@@ -1210,19 +1208,19 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     }),
   ]);
 
-exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     OutputDoOk({ commandOptions, programOptions }),
     DisplayAndThrow({ name: "Output" })
   )(infra);
 
 //Init
-const DoCommand = ({ commandOptions, command }) =>
+const DoCommand = ({ commandOptions, programOptions, command }) =>
   pipe([
-    tap((xxx) => {
+    tap(() => {
       logger.debug(`DoCommand ${command}`);
     }),
-    setupProviders({ commandOptions }),
+    setupProviders({ commandOptions, programOptions }),
     ({ providerGru }) => providerGru.getProviders(),
     map(
       tryCatch(
@@ -1248,7 +1246,7 @@ const DoCommand = ({ commandOptions, command }) =>
     ]),
   ]);
 
-exports.info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
       tap((xxx) => {
@@ -1262,13 +1260,13 @@ exports.info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Info" })
   )(infra);
 
-exports.init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     DoCommand({ commandOptions, programOptions, command: "init" }),
     DisplayAndThrow({ name: "Init" })
   )(infra);
 
-exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     DoCommand({ commandOptions, programOptions, command: "unInit" }),
     DisplayAndThrow({ name: "UnInit" })
@@ -1283,7 +1281,10 @@ const graphOutputFileName = ({ file, type }) =>
     ({ name, dir }) => path.resolve(dir, `${name}.${type}`),
   ])();
 
-const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
+const dotToSvg = ({
+  result,
+  commandOptions: { dotFile = "diagram.dot", type = "svg" },
+}) =>
   pipe([
     tap(() => {
       assert(dotFile);
@@ -1317,7 +1318,7 @@ const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
     }),
   ])();
 
-exports.graphTarget = async ({ infra, config, commandOptions = {} }) =>
+const graphTarget = ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1381,7 +1382,7 @@ const pumlToSvg =
       ]),
     ])();
 
-exports.graphTree = ({ infra, config, commandOptions = {} }) =>
+const graphTree = ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1401,3 +1402,55 @@ exports.graphTree = ({ infra, config, commandOptions = {} }) =>
     ]),
     DisplayAndThrow({ name: "tree" })
   )();
+
+exports.Cli = ({
+  programOptions = {},
+  createStack,
+  config = () => ({}),
+  stage,
+} = {}) =>
+  pipe([
+    tap(() => {
+      assert(isFunction(createStack), "createStack must be a function");
+      assert(isFunction(config), "config must be a function");
+    }),
+    tap(() => {
+      envLoader({ configDir: programOptions.workingDirectory });
+    }),
+    () =>
+      createStack({
+        config,
+        createProvider: createProviderMaker({ programOptions, config, stage }),
+      }),
+    (infra) =>
+      pipe([
+        () => infra,
+        tap.if(isEmpty, () => {
+          throw Error("no infra provided in createStack");
+        }),
+        () => ({
+          list: ({ commandOptions }) =>
+            list({ infra, programOptions, commandOptions }),
+          planApply: ({ commandOptions }) =>
+            planApply({ infra, programOptions, commandOptions }),
+          planQuery: ({ commandOptions }) =>
+            planQuery({ infra, programOptions, commandOptions }),
+          planDestroy: ({ commandOptions }) =>
+            planDestroy({ infra, programOptions, commandOptions }),
+          planRunScript: ({ commandOptions }) =>
+            planRunScript({ infra, programOptions, commandOptions }),
+          info: ({ commandOptions } = {}) =>
+            info({ infra, programOptions, commandOptions }),
+          init: ({ commandOptions }) =>
+            init({ infra, programOptions, commandOptions }),
+          unInit: ({ commandOptions }) =>
+            unInit({ infra, programOptions, commandOptions }),
+          output: ({ commandOptions }) =>
+            output({ infra, programOptions, commandOptions }),
+          graphTree: ({ commandOptions }) =>
+            graphTree({ infra, programOptions, commandOptions }),
+          graphTarget: ({ commandOptions }) =>
+            graphTarget({ infra, programOptions, commandOptions }),
+        }),
+      ])(),
+  ])();

@@ -4,18 +4,21 @@ const sinon = require("sinon");
 const { createResources } = require("./MockStack");
 const config404 = require("./config/config.404");
 const { MockProvider } = require("../MockProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
+
 const { tos } = require("@grucloud/core/tos");
 
-const makehookGlobal = ({ onDeployed, onDestroyed }) => () => ({
-  name: "mock",
-  onDeployed: {
-    init: onDeployed.init,
-  },
-  onDestroyed: {
-    init: onDestroyed.init,
-  },
-});
+const makehookGlobal =
+  ({ onDeployed, onDestroyed }) =>
+  () => ({
+    name: "mock",
+    onDeployed: {
+      init: onDeployed.init,
+    },
+    onDestroyed: {
+      init: onDestroyed.init,
+    },
+  });
 
 const makeHookGlobalThrowInit = () => () => ({
   name: "mock-run-ondeployed-init-throw",
@@ -41,17 +44,17 @@ describe("MockProviderHooksGlobal", async function () {
 
     const hookGlobal = makehookGlobal({ onDeployed, onDestroyed });
 
-    const infra = { stacks: [{ provider, resources }], hookGlobal };
+    const cli = await Cli({
+      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+    });
 
-    await cliCommands.planApply({
-      infra,
+    await cli.planApply({
       commandOptions: { force: true },
     });
 
     assert(onDeployed.init.called);
 
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
     assert(onDestroyed.init.called);
@@ -67,11 +70,12 @@ describe("MockProviderHooksGlobal", async function () {
     });
     const resources = await createResources({ provider });
 
-    const infra = { stacks: [{ provider, resources }], hookGlobal };
+    const cli = await Cli({
+      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+    });
 
     try {
-      await cliCommands.planApply({
-        infra,
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -82,8 +86,7 @@ describe("MockProviderHooksGlobal", async function () {
     assert(onDeployed.init.called);
 
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true, all: true },
       });
       assert(false, "should not be here");
@@ -99,10 +102,11 @@ describe("MockProviderHooksGlobal", async function () {
 
     const hookGlobal = makeHookGlobalThrowInit();
 
-    const infra = { stacks: [{ provider, resources }], hookGlobal };
+    const cli = await Cli({
+      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+    });
     try {
-      const result = await cliCommands.planApply({
-        infra,
+      const result = await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here", result);
@@ -113,8 +117,7 @@ describe("MockProviderHooksGlobal", async function () {
       assert(resultHook.error);
     }
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -130,11 +133,11 @@ describe("MockProviderHooksGlobal", async function () {
 
     const hookGlobal = makeHookGlobalThrowInit();
 
-    const infra = { stacks: [{ provider, resources }], hookGlobal };
-
+    const cli = await Cli({
+      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+    });
     try {
-      await cliCommands.planRunScript({
-        infra,
+      await cli.planRunScript({
         commandOptions: { onDeployedGlobal: true },
       });
       assert(false, "should not be here");
@@ -182,10 +185,12 @@ describe("MockProviderHooksGlobal", async function () {
       },
     });
 
-    const infra = { stacks: [{ provider, resources }], hookGlobal };
+    const cli = await Cli({
+      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+    });
+
     try {
-      await cliCommands.planApply({
-        infra,
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -195,8 +200,7 @@ describe("MockProviderHooksGlobal", async function () {
       assert(resultHook.error);
     }
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");

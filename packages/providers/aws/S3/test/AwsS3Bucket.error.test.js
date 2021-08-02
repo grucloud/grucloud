@@ -1,7 +1,8 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
+
 const chance = require("chance")();
 
 const types = ["Bucket"];
@@ -23,13 +24,19 @@ describe("AwsS3BucketErrors", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
+    const cli = await Cli({
+      createStack: () => ({
+        provider,
+      }),
+      config,
+    });
+
     provider.s3.makeBucket({
       name: "bucket",
       properties: () => ({}),
     });
     try {
-      await cliCommands.planApply({
-        infra: { provider },
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert("should not be here");
@@ -45,6 +52,12 @@ describe("AwsS3BucketErrors", async function () {
   it("s3Bucket acl error", async function () {
     const provider = AwsProvider({
       config: () => ({ projectName: "gru-test" }),
+    });
+    const cli = await Cli({
+      createStack: () => ({
+        provider,
+      }),
+      config,
     });
     provider.s3.makeBucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
@@ -104,16 +117,14 @@ describe("AwsS3BucketErrors", async function () {
     });
 
     {
-      const result = await cliCommands.planDestroy({
-        infra: { provider },
+      const result = await cli.planDestroy({
         commandOptions: { force: true, types },
       });
       assert(!result.error);
     }
 
     try {
-      await cliCommands.planApply({
-        infra: { provider },
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert("should not be here");

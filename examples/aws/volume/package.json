@@ -5,6 +5,7 @@
   "description": "Example of an EBS volume attached to an EC2 Instance",
   "main": "index.js",
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
@@ -16,5 +17,8 @@
     "@grucloud/provider-aws": "^1.31.0",
     "ping": "^0.4.1",
     "ssh2": "^0.8.9"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

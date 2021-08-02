@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l"
@@ -17,5 +18,8 @@
     "ping": "^0.4.1",
     "rubico": "^1.6.27",
     "ssh2": "^0.8.9"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

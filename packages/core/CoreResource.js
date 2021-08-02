@@ -72,8 +72,11 @@ const decorateLive =
   (live) =>
     pipe([
       tap((params) => {
-        assert(live);
         assert(lives);
+        if (!live) {
+          assert(live);
+        }
+
         if (client.spec.listOnly) {
           assert(true);
         }
@@ -149,10 +152,21 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
     get("items", []), // remove
     filter(not(get("error"))),
     map(decorateLive({ client, config, options, readOnly, lives })),
-    tap((params) => {
-      assert(params);
+    tap((results) => {
+      assert(Array.isArray(results));
     }),
-    callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+    callProp("sort", (a, b) =>
+      pipe([
+        tap(() => {
+          assert(a);
+          assert(a.name.localeCompare);
+          assert(a.name);
+          assert(b);
+          assert(b.name);
+        }),
+        () => a.name.localeCompare(b.name),
+      ])()
+    ),
   ]);
 
 const createClient = ({
@@ -216,10 +230,7 @@ const createClient = ({
                 live,
                 lives,
               }),
-            resources: () =>
-              getResourcesByType({
-                type: spec.type,
-              }),
+            resources: () => getResourcesByType(spec),
           }),
           ({ resource, resources }) =>
             spec.isOurMinion({
@@ -242,7 +253,7 @@ const createClient = ({
           cannotBeDeleted({
             live,
             lives,
-            resources: getResourcesByType({ type: spec.type }),
+            resources: getResourcesByType(spec),
             resource,
             config,
           }),
@@ -260,7 +271,7 @@ const createClient = ({
                   client.getList({
                     lives,
                     deep: true,
-                    resources: getResourcesByType({ type: client.spec.type }),
+                    resources: getResourcesByType(client.spec),
                   }),
                 decorateLives({
                   client,
@@ -304,11 +315,19 @@ exports.ResourceMaker = ({
   spec,
   provider,
   config,
+  programOptions,
 }) => {
   const { type, group } = spec;
   assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(
-    `ResourceMaker: ${tos({ type, resourceName, namespace, meta })}`
+    `ResourceMaker: ${JSON.stringify({
+      type,
+      group,
+      resourceName,
+      namespace,
+      meta,
+      programOptions,
+    })}`
   );
 
   const getDependencies = pipe([
@@ -345,7 +364,7 @@ exports.ResourceMaker = ({
           properties,
           resolveConfig,
           deep,
-          resources: provider.getResourcesByType({ type }),
+          resources: provider.getResourcesByType(spec),
           properties,
           lives: provider.lives,
         }),
@@ -359,6 +378,7 @@ exports.ResourceMaker = ({
               provider.lives.addResource({
                 providerName: config.providerName,
                 type,
+                group,
                 resource,
               });
             }),
@@ -374,6 +394,9 @@ exports.ResourceMaker = ({
 
   const findLive = ({}) =>
     pipe([
+      tap(() => {
+        //assert(group);
+      }),
       () =>
         provider.lives.getByType({ providerName: provider.name, type, group }),
       tap((xxx) => {
@@ -389,11 +412,11 @@ exports.ResourceMaker = ({
                 pipe([
                   () =>
                     provider
-                      .clientByType({ type })
+                      .clientByType({ type, group })
                       .findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
-                      `findLive ${type} resourceName: ${resourceName} liveName: ${liveName}`
+                      `findLive ${group}::${type} resourceName: ${resourceName} liveName: ${liveName}`
                     );
                   }),
                   (liveName) => isDeepEqual(resourceName, liveName),
@@ -610,6 +633,7 @@ exports.ResourceMaker = ({
             () => results,
             pluck("error"),
             reduce((acc, value) => [...acc, value.message], []),
+            //TODO callProp
             (messages) => messages.join("\n"),
             tap((message) => {
               logger.debug(
@@ -695,6 +719,7 @@ exports.ResourceMaker = ({
                 dependencies: resolvedDependencies,
                 live,
                 lives: provider.lives,
+                programOptions,
               }),
             tap((result) => {
               // logger.debug(
@@ -730,6 +755,7 @@ exports.ResourceMaker = ({
           attributes,
           resolvedDependencies,
           lives: provider.lives,
+          programOptions,
         }),
       () => getLive({ deep: true }),
       tap((live) => {

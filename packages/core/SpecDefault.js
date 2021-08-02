@@ -11,7 +11,7 @@ const SpecDefault = ({ providerName }) => ({
   isOurMinion: () => false,
   propertiesDefault: {},
   makeResource:
-    ({ provider, spec }) =>
+    ({ provider, spec, programOptions }) =>
     ({
       name,
       meta,
@@ -35,11 +35,12 @@ const SpecDefault = ({ providerName }) => ({
             spec,
             provider,
             config: defaultsDeep(provider.config)(configUser),
+            programOptions,
           }),
         tap((resource) => provider.targetResourcesAdd(resource)),
       ])(),
   useResource:
-    ({ provider, spec }) =>
+    ({ provider, spec, programOptions }) =>
     ({
       name,
       meta,
@@ -64,11 +65,12 @@ const SpecDefault = ({ providerName }) => ({
             spec: assign({ listOnly: () => true })(spec),
             provider,
             config: defaultsDeep(provider.config)(configUser),
+            programOptions,
           }),
         tap((resource) => provider.targetResourcesAdd(resource)),
       ])(),
   useDefaultResource:
-    ({ provider, spec }) =>
+    ({ provider, spec, programOptions }) =>
     ({
       name,
       meta,
@@ -99,6 +101,7 @@ const SpecDefault = ({ providerName }) => ({
             spec: assign({ listOnly: () => true })(spec),
             provider,
             config: defaultsDeep(provider.config)(configUser),
+            programOptions,
           }),
         tap((resource) => provider.targetResourcesAdd(resource)),
       ])(),

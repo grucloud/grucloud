@@ -51,5 +51,5 @@ module.exports = ({ stage, region }) => ({
       }),
     },
   },
-  keyPair: { name: "kp" },
+  keyPair: { name: "kp-postgres-stateless" },
 });

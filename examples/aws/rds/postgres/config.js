@@ -5,6 +5,9 @@ module.exports = ({ stage, region }) => ({
     vpc: {
       name: "vpc-postgres",
     },
+    internetGateway: {
+      name: "ig-postgres",
+    },
     subnets: [
       {
         name: "subnet-1",

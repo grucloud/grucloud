@@ -6,7 +6,8 @@
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "mocha --exit './test/**/*.test.js'"
+    "test": "mocha --exit './test/**/*.test.js' '../../../examples/google/**/iac.test.js'",
+    "coverage": "nyc npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -21,7 +22,8 @@
     "url-join": "^4.0.1"
   },
   "devDependencies": {
-    "mocha": "^8.3.2"
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0"
   },
   "repository": {
     "type": "git",
@@ -31,5 +33,24 @@
     "GCP",
     "GruCloud",
     "Infrastructure as Code"
-  ]
+  ],
+  "nyc": {
+    "include": [
+      "**/*.js"
+    ],
+    "exclude": [
+      "**/*.spec.js",
+      "**/*test*.js",
+      "coverage"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "all": true
+  }
 }

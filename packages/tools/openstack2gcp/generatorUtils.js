@@ -13,16 +13,18 @@ const {
   map,
   fork,
   filter,
-  flatMap,
+  tryCatch,
   switchCase,
   assign,
   not,
   omit,
   or,
   always,
+  and,
 } = require("rubico");
 
 const pick = require("rubico/pick");
+const { keys } = require("rubico/x");
 
 const {
   first,
@@ -105,18 +107,24 @@ const buildProperties = ({
       Tags: pipe([
         () => resource,
         get("live.Tags", []),
-        filter(
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          Array.isArray,
+          filter(
+            pipe([
+              get("Key", ""),
+              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
+            ])
+          ),
           pipe([
-            get("Key", ""),
-            tap((params) => {
-              assert(true);
-            }),
-            not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
-            tap((params) => {
-              assert(true);
-            }),
-          ])
-        ),
+            keys,
+            filter(
+              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")]))
+            ),
+          ]),
+        ]),
       ]),
     }),
     switchCase([pipe([get("Tags"), isEmpty]), omit(["Tags"]), identity]),
@@ -313,13 +321,16 @@ const readModel = (options) =>
 exports.readModel = readModel;
 
 const readMapping = (options) =>
-  pipe([
-    tap(() => {
-      console.log("readMapping", options.mapping);
-    }),
-    () => fs.readFile(path.resolve(options.mapping), "utf-8"),
-    JSON.parse,
-  ]);
+  tryCatch(
+    pipe([
+      tap(() => {
+        console.log("readMapping", options.mapping);
+      }),
+      () => fs.readFile(path.resolve(options.mapping), "utf-8"),
+      JSON.parse,
+    ]),
+    () => ({})
+  );
 
 exports.readMapping = readMapping;
 
@@ -527,7 +538,7 @@ const writeResources =
         assert(group);
       }),
       () => lives,
-      find(eq(get("type"), type)),
+      find(and([eq(get("type"), type), eq(get("group"), group)])),
       get("resources"),
       map(
         pipe([

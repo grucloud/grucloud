@@ -7,7 +7,7 @@ const {
 } = require("@grucloud/core/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
 
-describe("AwsVolume", async function () {
+describe.skip("AwsVolume", async function () {
   const types = ["Volume", "Instance"];
   let config;
   let provider;

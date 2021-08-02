@@ -18,6 +18,7 @@
   },
   "author": "Frederic Heem",
   "dependencies": {
+    "adm-zip": "^0.5.5",
     "change-case": "^4.1.2",
     "commander": "^8.0.0",
     "ipaddr.js": "^2.0.1",

@@ -135,6 +135,7 @@ exports.ELBRule = ({ spec, config }) => {
           lives.getById({
             providerName: config.providerName,
             type: "Listener",
+            group: "elb",
             id: ListenerArn,
           }),
         tap((listener) => {

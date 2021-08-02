@@ -9,6 +9,8 @@ module.exports = ({ resources: { dbInstance }, provider }) => {
     onDeployed: {
       init: async () => {
         const dbInstanceLive = await dbInstance.getLive();
+        assert(dbInstanceLive);
+        assert(process.env.MASTER_USER_PASSWORD);
 
         const client = new Client({
           user: dbInstanceLive.MasterUsername,

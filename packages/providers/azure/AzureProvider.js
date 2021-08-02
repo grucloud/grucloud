@@ -378,15 +378,13 @@ exports.AzureProvider = ({ name = "azure", config, ...other }) => {
 
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
 
-  const { TENANT_ID, APP_ID, PASSWORD, SUBSCRIPTION_ID } = process.env;
-
   let bearerToken;
   const start = async () => {
     checkEnv(mandatoryEnvs);
     const result = await AzAuthorize({
-      tenantId: TENANT_ID,
-      appId: APP_ID,
-      password: PASSWORD,
+      tenantId: process.env.TENANT_ID,
+      appId: process.env.APP_ID,
+      password: process.env.PASSWORD,
     });
     bearerToken = result.bearerToken;
   };
@@ -398,9 +396,9 @@ exports.AzureProvider = ({ name = "azure", config, ...other }) => {
   };
 
   const info = () => ({
-    subscriptionId: SUBSCRIPTION_ID,
-    tenantId: TENANT_ID,
-    appId: APP_ID,
+    subscriptionId: process.env.SUBSCRIPTION_ID,
+    tenantId: process.env.TENANT_ID,
+    appId: process.env.APP_ID,
   });
 
   const core = CoreProvider({

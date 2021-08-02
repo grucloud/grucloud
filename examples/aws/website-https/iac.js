@@ -8,7 +8,7 @@ const hook = require("./hook");
 const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
-  const config = provider.config;
+  const { config } = provider;
   const { rootDomainName, DomainName, websiteDir, stage } = config;
   assert(rootDomainName);
   assert(DomainName);
@@ -33,7 +33,7 @@ const createResources = async ({ provider }) => {
   });
 
   await map((file) =>
-    provider.makeObject({
+    provider.s3.makeObject({
       name: file,
       dependencies: { bucket: websiteBucket },
       properties: () => ({
@@ -63,7 +63,6 @@ const createResources = async ({ provider }) => {
   const hostedZone = provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
-    properties: ({}) => ({}),
   });
 
   const recordValidation = provider.route53.makeRecord({
@@ -133,26 +132,14 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  const hostedZoneName = `${makeDomainName({
-    DomainName,
-    stage,
-  })}.`;
+  // const hostedZoneName = `${makeDomainName({
+  //   DomainName,
+  //   stage,
+  // })}.`;
 
   const recordCloudFront = provider.route53.makeRecord({
-    name: hostedZoneName,
+    name: `distribution-alias-${domainName}`,
     dependencies: { hostedZone, distribution },
-    //TODO this code should be handled by Route53Record
-    properties: ({ dependencies: { distribution } }) => {
-      return {
-        Name: hostedZoneName,
-        Type: "A",
-        AliasTarget: {
-          HostedZoneId: "Z2FDTNDATAQYW2",
-          DNSName: `${distribution?.live?.DomainName}.`,
-          EvaluateTargetHealth: false,
-        },
-      };
-    },
   });
 
   return {

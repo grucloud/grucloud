@@ -13,13 +13,16 @@ const {
   not,
 } = require("rubico");
 const {
+  callProp,
   first,
+  last,
   find,
   isEmpty,
   forEach,
   identity,
   isFunction,
   includes,
+  when,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -38,13 +41,11 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         fn: () => endpoint[name](...args).promise(),
         isExpectedResult: () => true,
+        config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
-            () => error,
-            or([
-              eq(get("code"), "Throttling"),
-              eq(get("code"), "UnknownEndpoint"),
-            ]),
+            () => ["Throttling", "UnknownEndpoint", "TooManyRequestsException"],
+            includes(error.code),
             tap((retry) => {
               logger.debug(
                 `shouldRetryOnException: ${name}:  retry: ${retry}, ${tos({
@@ -110,6 +111,7 @@ exports.shouldRetryOnException = ({ error, name }) =>
       logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
       error.stack && logger.error(error.stack);
     }),
+    () => error,
     //TODO find out error code we can retry on
     or([
       () => [503].includes(error.statusCode),
@@ -118,7 +120,7 @@ exports.shouldRetryOnException = ({ error, name }) =>
     tap((retry) => {
       logger.error(`aws shouldRetryOnException retry: ${retry}`);
     }),
-  ])(error);
+  ])();
 
 //TODO use pipe
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
@@ -246,6 +248,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     providerName,
     createdByProviderKey,
   } = config;
+  //assert(tags);
   return pipe([
     () => tags,
     tap(() => {
@@ -374,6 +377,26 @@ const isOurMinionFactory =
 exports.isOurMinionFactory = isOurMinionFactory;
 exports.isOurMinion = isOurMinionFactory({});
 
+exports.tagsExtractFromDescription = pipe([
+  get("Description", ""),
+  callProp("split", "tags:"),
+  last,
+  tryCatch(JSON.parse, () => ({})),
+  tap((Tags) => {
+    assert(true);
+  }),
+]);
+
+exports.tagsRemoveFromDescription = pipe([
+  get("Description", ""),
+  callProp("split", "tags:"),
+  first,
+  callProp("trim"),
+  tap((Description) => {
+    assert(true);
+  }),
+]);
+
 const findNamespaceInTags =
   (config) =>
   ({ live }) =>
@@ -414,19 +437,14 @@ const findNameInTags = ({ live }) =>
       }
     }),
     () => live,
-    get("Tags"),
-    find(eq(get("Key"), configProviderDefault.nameKey)),
-    get("Value"),
+    get("Tags", []),
+    tap((params) => {
+      assert(true);
+    }),
     switchCase([
-      isEmpty,
-      () => {
-        logger.debug(
-          `findNameInTags: no name in tags: ${JSON.stringify(live.Tags)}`
-        );
-      },
-      (Value) => {
-        return Value;
-      },
+      Array.isArray,
+      pipe([find(eq(get("Key"), configProviderDefault.nameKey)), get("Value")]),
+      pipe([get(configProviderDefault.nameKey)]),
     ]),
   ])();
 
@@ -437,38 +455,21 @@ exports.findNameInTagsOrId =
   ({ live }) =>
     pipe([
       tap(() => {
+        //TODO move assert up
+        assert(findId);
         if (!live) {
           assert(live);
         }
       }),
       () => ({ live }),
       findNameInTags,
-      switchCase([isEmpty, () => findId({ live }), identity]),
+      when(isEmpty, pipe([() => findId({ live })])),
       tap((name) => {
         if (!name) {
           assert(name, `cannot find name or id for ${tos(live)}`);
         }
       }),
     ])();
-
-exports.findNameInDescription = ({ Description = "" }) => {
-  const tags = Description.split("tags:")[1];
-  if (tags) {
-    try {
-      const tagsJson = JSON.parse(tags);
-      const tag = tagsJson.find(
-        (tag) => tag.Key === configProviderDefault.nameKey
-      );
-      if (tag?.Value) {
-        logger.debug(`findNameInDescription ${tag.Value}`);
-        return tag.Value;
-      }
-    } catch (error) {
-      logger.error(`findNameInDescription ${error}`);
-    }
-  }
-  logger.debug(`findNameInDescription: cannot find name`);
-};
 
 exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(

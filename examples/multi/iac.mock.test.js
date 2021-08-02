@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const MockStack1 = require("../mock/mock/iac");
 const MockStack2 = require("../mock/mock-simple/iac");
@@ -16,26 +16,22 @@ describe("Mock Multi", async function () {
     }
   });
   it("run mocks example", async function () {
-    const stack1 = await MockStack1.createStack({ config });
-    const stack2 = await MockStack2.createStack({ config });
+    const cli1 = await Cli({ createStack: MockStack1.createStack, config });
+    const cli2 = await Cli({ createStack: MockStack2.createStack, config });
 
-    await cliCommands.planApply({
-      infra: stack2,
+    await cli2.planApply({
       commandOptions: { force: true },
     });
 
-    await cliCommands.planApply({
-      infra: stack1,
+    await cli1.planApply({
       commandOptions: { force: true },
     });
 
-    await cliCommands.planDestroy({
-      infra: stack2,
+    await cli2.planDestroy({
       commandOptions: { force: true },
     });
 
-    await cliCommands.planDestroy({
-      infra: stack1,
+    await cli1.planDestroy({
       commandOptions: { force: true },
     });
   });

@@ -14,7 +14,7 @@ const {
   get,
   assign,
 } = require("rubico");
-const { pluck, isEmpty, identity } = require("rubico/x");
+const { pluck, isEmpty, when } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
@@ -232,18 +232,20 @@ const filterProvider =
 exports.filterProvider = filterProvider;
 
 exports.setupProviders =
-  ({ commandOptions = {} } = {}) =>
+  ({ commandOptions = {}, programOptions } = {}) =>
   (infra) =>
     pipe([
       tap(() => {
-        logger.debug(`setupProviders ${JSON.stringify(commandOptions)}`);
+        logger.debug(
+          `setupProviders ${JSON.stringify({ commandOptions, programOptions })}`
+        );
         assert(infra);
       }),
       () => infra,
       assign({
         stacks: pipe([
           get("stacks"),
-          switchCase([isEmpty, () => [infra], identity]),
+          when(isEmpty, () => [infra]),
           //TODO infra validation, has provider ?
           filter(not(isEmpty)),
           filter(filterProvider({ commandOptions })),
@@ -253,7 +255,11 @@ exports.setupProviders =
         ]),
       }),
       (infraNew) => ({
-        providerGru: ProviderGru({ commandOptions, ...infraNew }),
+        providerGru: ProviderGru({
+          commandOptions,
+          programOptions,
+          ...infraNew,
+        }),
       }),
       tap((xx) => {
         //logger.debug("setupProviders");

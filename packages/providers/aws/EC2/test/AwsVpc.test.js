@@ -9,7 +9,7 @@ const {
 } = require("@grucloud/core/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
 
-describe("AwsVpc", async function () {
+describe.skip("AwsVpc", async function () {
   const vpcName = "vpc-test";
   const types = ["Vpc"];
   let config;

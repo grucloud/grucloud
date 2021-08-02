@@ -2,7 +2,8 @@ const assert = require("assert");
 const path = require("path");
 const { isDeepEqual } = require("rubico/x");
 
-const { envFromFile, ConfigLoader } = require("../ConfigLoader");
+const { ConfigLoader } = require("../ConfigLoader");
+const { envFromFile } = require("../EnvLoader");
 
 const envFile = path.join(__dirname, "./test.env");
 

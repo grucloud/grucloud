@@ -91,18 +91,6 @@ module.exports = ({ resources, provider }) => {
           },
         },
         {
-          name: `get ${bucketStorageUrl}`,
-          command: async ({}) => {
-            await retryCallOnError({
-              name: `get  ${bucketStorageUrl}`,
-              fn: () => axios.get(bucketStorageUrl),
-              shouldRetryOnException: ({ error }) =>
-                [404].includes(error.response?.status),
-              config: { retryCount: 20, retryDelay: 5e3 },
-            });
-          },
-        },
-        {
           name: `get distribution default page`,
           command: async ({ distrubutionUrl }) => {
             await retryCallOnError({
@@ -143,30 +131,30 @@ module.exports = ({ resources, provider }) => {
             });
           },
         },
-        {
-          name: `dig default nameserver ${domainName}`,
-          command: async ({}) => {
-            await checkDig({
-              domain: domainName,
-            });
-          },
-        },
-        {
-          name: `get ${bucketUrl}`,
-          command: async () => {
-            await retryCallOnError({
-              name: `get  ${bucketUrl}`,
-              fn: () => axios.get(bucketUrl),
-              shouldRetryOnException: ({ error }) =>
-                [404].includes(error.response?.status),
-              isExpectedResult: (result) => {
-                assert.equal(result.headers["content-type"], `text/html`);
-                return [200].includes(result.status);
-              },
-              config: { retryCount: 200, retryDelay: 5e3 },
-            });
-          },
-        },
+        // {
+        //   name: `dig default nameserver ${domainName}`,
+        //   command: async ({}) => {
+        //     await checkDig({
+        //       domain: domainName,
+        //     });
+        //   },
+        // },
+        // {
+        //   name: `get ${bucketUrl}`,
+        //   command: async () => {
+        //     await retryCallOnError({
+        //       name: `get  ${bucketUrl}`,
+        //       fn: () => axios.get(bucketUrl),
+        //       shouldRetryOnException: ({ error }) =>
+        //         [404].includes(error.response?.status),
+        //       isExpectedResult: (result) => {
+        //         assert.equal(result.headers["content-type"], `text/html`);
+        //         return [200].includes(result.status);
+        //       },
+        //       config: { retryCount: 200, retryDelay: 5e3 },
+        //     });
+        //   },
+        // },
       ],
     },
   };

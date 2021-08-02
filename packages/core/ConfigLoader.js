@@ -13,76 +13,6 @@ const checkFileExist = (fileName) => {
   }
 };
 
-const envFromFile = ({ envFile }) => {
-  assert(envFile);
-  logger.info(`envFromFile: ${envFile}`);
-  return pipe([
-    tap(() => {
-      checkFileExist(envFile);
-    }),
-    () => fs.readFileSync(envFile, "utf8"),
-    (content) => content.split(/\r?\n/),
-    filter((line) => !line.match(/^\s*#/)),
-    map((line) => line.split("=")),
-    filter(([key, value]) => !isEmpty(key) && !isEmpty(value)),
-    map(([key, value]) => [
-      // Remove surrounding spaces from key and value
-      key.trim(),
-      value.trim(),
-    ]),
-    map(([key, value]) => [
-      key,
-      // Remove single, double quotes from value
-      value.replace(/^['"](.+)['"]$/g, "$1"),
-    ]),
-    //tap(console.log),
-    map(([key, value]) => {
-      logger.debug(`envFromFile: key: ${key}`);
-      process.env[key] = value;
-      return [key, value];
-    }),
-  ])();
-};
-
-exports.envFromFile = envFromFile;
-
-const envFromDefault = ({ configDir }) => {
-  assert(configDir);
-  logger.info(`envFromDefault: ${configDir}`);
-  pipe([
-    () => npath.join(configDir, `default.env`),
-    switchCase([
-      (envFile) => fs.existsSync(envFile),
-      (envFile) => envFromFile({ envFile }),
-      () => {
-        logger.info(
-          `default environment file ${configDir}/default.env  does not exist`
-        );
-      },
-    ]),
-  ])();
-};
-
-const envFromStage = ({ configDir, stage }) => {
-  assert(configDir);
-  assert(stage);
-  logger.info(`envFromStage: ${(configDir, stage)}`);
-  pipe([
-    () => npath.join(configDir, `${stage}.env`),
-    // TODO rubico when
-    switchCase([
-      (envFile) => fs.existsSync(envFile),
-      (envFile) => envFromFile({ envFile }),
-      () => {},
-    ]),
-  ])();
-};
-
-const envLoader = ({ configDir, stage }) => {
-  envFromDefault({ configDir });
-  envFromStage({ configDir, stage });
-};
-
 const configFromDefault = ({ configDir }) =>
   pipe([
     () => npath.join(configDir, "config.js"),
@@ -100,7 +30,6 @@ exports.ConfigLoader = ({
   logger.info(`ConfigLoader ${baseDir}, ${stage}`);
   const configDir = npath.join(baseDir, path);
   process.env.CONFIG_DIR = configDir;
-  envLoader({ configDir, stage });
 
   return configFromDefault({ configDir });
 };

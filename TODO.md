@@ -1,5 +1,6 @@
 ## Bugs
 
+- gc d -t Api
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -65,8 +66,14 @@
 
 ## Aws2gc
 
+- EKS cluster tags
+
 ## Aws
 
+- dependency hosted zone => domain
+- ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
+  4:key/79507edb-c301-43a8-8217-524d24f6daa7
+- ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
 - throw error => throw Error(error.message);
 - useCertificate or make Certificate ?
@@ -109,6 +116,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+- examples vm-ssh key: create key pair with https://github.com/juliangruber/keypair
 
 - ✖ VmInstance 0/1 Request failed with status code 400 Invalid value for field 'resource.networkInterfaces[0].subnetwork': 'projects/grucloud-test/regions/europe-west4/subnetworks/default'. The referenced subnetwork resource cannot be found.
 - vminstance with service account

@@ -147,6 +147,7 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
         id: GroupId,
         providerName: config.providerName,
         type: "SecurityGroup",
+        group: "ec2",
       }),
     tap((params) => {
       assert(true);

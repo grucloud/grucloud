@@ -28,8 +28,11 @@ const commandFactory = (connection) => (command) => {
     });
   });
 };
+//TODO read key name from config
+const readPrivateKey = ({ keyName }) =>
+  require("fs").readFileSync(path.resolve(__dirname, `${keyName}.pem`));
 
-const sshConnect = async ({ host, username = "ec2-user" }) =>
+const sshConnect = async ({ host, username = "ec2-user", keyName }) =>
   await new Promise((resolve, reject) => {
     const conn = new Client();
     conn
@@ -45,8 +48,8 @@ const sshConnect = async ({ host, username = "ec2-user" }) =>
         host,
         port: 22,
         username,
-        agent: process.env.SSH_AUTH_SOCK,
-        //privateKey,
+        //agent: process.env.SSH_AUTH_SOCK,
+        privateKey: readPrivateKey({ keyName }),
       });
   });
 
@@ -79,7 +82,10 @@ module.exports = ({
             await retryCall({
               name: `ssh ${host}`,
               fn: async () => {
-                const connection = await sshConnect({ host });
+                const connection = await sshConnect({
+                  host,
+                  keyName: provider.config.keyPair.name,
+                });
                 const command = commandFactory(connection);
                 await command("sudo yum -y install docker");
                 await command("sudo service docker start");

@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 describe("MockProviderCornerCase", async function () {
   let config;

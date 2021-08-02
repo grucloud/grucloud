@@ -2,7 +2,7 @@ const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const chance = require("chance")();
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -10,6 +10,7 @@ const {
 } = require("@grucloud/core/E2ETestUtils");
 
 describe("GcpIamBinding", async function () {
+  let cli;
   let config;
   let provider;
   let iamBindingServiceAccount;
@@ -47,19 +48,27 @@ describe("GcpIamBinding", async function () {
   });
   after(async () => {});
   it("iamBinding apply and destroy", async function () {
-    const resultApply = await cliCommands.planApply({
-      infra: { provider },
-      commandOptions: { force: true },
-    });
+    {
+      const cli = await Cli({
+        createStack: () => ({ provider }),
+      });
 
-    const live = await iamBindingServiceAccount.getLive();
-    assert(live.members);
-    assert(live.role);
+      const resultApply = await cli.planApply({
+        commandOptions: { force: true },
+      });
+
+      const live = await iamBindingServiceAccount.getLive();
+      assert(live.members);
+      assert(live.role);
+    }
     {
       const provider = GoogleProvider({
         config: () => ({
           projectId: "grucloud-test",
         }),
+      });
+      const cli = await Cli({
+        createStack: () => ({ provider }),
       });
 
       const saName = `sa-${chance.guid().slice(0, 15)}`;
@@ -76,8 +85,7 @@ describe("GcpIamBinding", async function () {
       });
 
       {
-        const { error, resultQuery } = await cliCommands.planQuery({
-          infra: { provider },
+        const { error, resultQuery } = await cli.planQuery({
           commandOptions: { force: true },
         });
         assert(!error, "planQuery failed");
@@ -98,7 +106,9 @@ describe("GcpIamBinding", async function () {
         projectId: "grucloud-test",
       }),
     });
-
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
     const email = "user:joe@gmail.com";
     const iamBindingEmail = provider.iam.makeBinding({
       name: roleEditor,
@@ -107,8 +117,7 @@ describe("GcpIamBinding", async function () {
 
     try {
       {
-        const result = await cliCommands.planApply({
-          infra: { provider },
+        const result = await cli.planApply({
           commandOptions: { force: true },
         });
         assert("should not be here");
