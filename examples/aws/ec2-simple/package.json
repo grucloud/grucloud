@@ -1,6 +1,6 @@
 {
   "name": "ec2-simple",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "description": "Simple EC2 Instance with GruCloud",
   "main": "index.js",
   "private": true,
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.31.0",
-    "@grucloud/provider-aws": "^1.31.0"
+    "@grucloud/core": "^1.32.0",
+    "@grucloud/provider-aws": "^1.32.0"
   },
   "devDependencies": {
     "mocha": "^9.0.3"

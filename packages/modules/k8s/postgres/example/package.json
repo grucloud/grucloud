@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-k8s-postgres",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "description": "Grucloud example for the k8s postgres module",
   "main": "iac.js",
   "private": true,
@@ -13,9 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.31.0",
-    "@grucloud/module-k8s-postgres": "^1.31.0",
-    "@grucloud/provider-k8s": "^1.31.0",
+    "@grucloud/core": "^1.32.0",
+    "@grucloud/module-k8s-postgres": "^1.32.0",
+    "@grucloud/provider-k8s": "^1.32.0",
     "rubico": "^1.6.21"
   },
   "devDependencies": {

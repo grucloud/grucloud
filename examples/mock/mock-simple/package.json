@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-mock-simple",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.31.0",
-    "@grucloud/provider-mock": "^1.31.0"
+    "@grucloud/core": "^1.32.0",
+    "@grucloud/provider-mock": "^1.32.0"
   },
   "devDependencies": {
     "mocha": "^9.0.3"
