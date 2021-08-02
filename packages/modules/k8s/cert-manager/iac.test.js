@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { Cli } = require("@grucloud/core/cli/cli");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const { createStack } = require("./iac");
 const config = require("./config");

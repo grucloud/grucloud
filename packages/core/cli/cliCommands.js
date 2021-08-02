@@ -1439,7 +1439,7 @@ exports.Cli = ({
             planDestroy({ infra, programOptions, commandOptions }),
           planRunScript: ({ commandOptions }) =>
             planRunScript({ infra, programOptions, commandOptions }),
-          info: ({ commandOptions }) =>
+          info: ({ commandOptions } = {}) =>
             info({ infra, programOptions, commandOptions }),
           init: ({ commandOptions }) =>
             init({ infra, programOptions, commandOptions }),
