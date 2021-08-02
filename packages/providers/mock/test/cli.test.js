@@ -178,9 +178,9 @@ describe("cli", function () {
         configFileDefault,
         "list",
       ],
-      onExit: ({ code, error }) => {
-        assert.equal(error.code, 422);
-        assert.equal(error.error.message, "no provider provided");
+      onExit: ({ code, error: { message } }) => {
+        assert.equal(code, -1);
+        assert.equal(message, "no infra provided in createStack");
       },
     });
   });

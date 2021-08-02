@@ -385,8 +385,6 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Plan" })
   )();
 
-exports.planQuery = planQuery;
-
 const commandToFunction = (command) =>
   `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
 
@@ -512,8 +510,6 @@ const planRunScript = async ({
     ]),
     DisplayAndThrow({ name: "Run Script" })
   )();
-
-exports.planRunScript = planRunScript;
 
 // Plan Apply
 
@@ -772,7 +768,6 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Plan Apply" })
   )();
 
-exports.planApply = planApply;
 // Plan Destroy
 
 const processHasNoPlan = () => {
@@ -1020,8 +1015,6 @@ const planDestroy = async ({
   )();
 };
 
-exports.planDestroy = planDestroy;
-
 const countResources = pipe([
   tap((perProviders) => {
     assert(Array.isArray(perProviders));
@@ -1161,7 +1154,6 @@ const list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     listDoOk({ commandOptions, programOptions }),
     DisplayAndThrow({ name: "List" })
   )(infra);
-exports.list = list;
 
 //Output
 const OutputDoOk = ({ commandOptions, programOptions }) =>
@@ -1222,7 +1214,6 @@ const output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Output" })
   )(infra);
 
-exports.output = output;
 //Init
 const DoCommand = ({ commandOptions, programOptions, command }) =>
   pipe([
@@ -1268,7 +1259,6 @@ const info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     ]),
     DisplayAndThrow({ name: "Info" })
   )(infra);
-exports.info = info;
 
 const init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
@@ -1276,15 +1266,11 @@ const init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "Init" })
   )(infra);
 
-exports.init = init;
-
 const unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     DoCommand({ commandOptions, programOptions, command: "unInit" }),
     DisplayAndThrow({ name: "UnInit" })
   )(infra);
-
-exports.unInit = unInit;
 
 const graphOutputFileName = ({ file, type }) =>
   pipe([
@@ -1348,7 +1334,6 @@ const graphTarget = ({ infra, config, commandOptions = {} }) =>
     ]),
     DisplayAndThrow({ name: "graphTarget" })
   )();
-exports.graphTarget = graphTarget;
 
 const pumlToSvg =
   ({ commandOptions: { pumlFile, type = "png", plantumlJar } }) =>
@@ -1418,9 +1403,12 @@ const graphTree = ({ infra, config, commandOptions = {} }) =>
     DisplayAndThrow({ name: "tree" })
   )();
 
-exports.graphTree = graphTree;
-
-exports.Cli = ({ programOptions = {}, createStack, config, stage } = {}) =>
+exports.Cli = ({
+  programOptions = {},
+  createStack,
+  config = () => ({}),
+  stage,
+} = {}) =>
   pipe([
     tap(() => {
       assert(isFunction(createStack), "createStack must be a function");

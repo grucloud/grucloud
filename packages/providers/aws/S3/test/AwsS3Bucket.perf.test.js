@@ -2,7 +2,7 @@ const assert = require("assert");
 const { map, pipe } = require("rubico");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("AwsS3BucketPerf", async function () {
   let config;
@@ -21,7 +21,11 @@ describe("AwsS3BucketPerf", async function () {
       name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });
-
+    const cli = await Cli({
+      createStack: () => ({
+        provider,
+      }),
+    });
     const maxBuckets = 10;
     await pipe([
       (maxBuckets) =>
@@ -42,14 +46,12 @@ describe("AwsS3BucketPerf", async function () {
 
     await provider.start();
 
-    const resultApply = await cliCommands.planApply({
-      infra: { provider },
+    const resultApply = await cli.planApply({
       commandOptions: { force: true },
     });
     assert(!resultApply.error);
 
-    const resultDestroy = await cliCommands.planDestroy({
-      infra: { provider },
+    const resultDestroy = await cli.planDestroy({
       commandOptions: { force: true, options: { types } },
     });
     assert(!resultDestroy.error);

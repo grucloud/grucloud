@@ -6,7 +6,7 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["Bucket", "Object"];
@@ -73,10 +73,13 @@ describe("AwsS3Object", async function () {
     await testPlanDeploy({ provider, types });
 
     const providerNext = await createStackNext({ config });
-
+    const cli = await Cli({
+      createStack: () => ({
+        provider: providerNext,
+      }),
+    });
     {
-      const result = await cliCommands.planQuery({
-        infra: { provider: providerNext },
+      const result = await cli.planQuery({
         commandOptions: {},
       });
 

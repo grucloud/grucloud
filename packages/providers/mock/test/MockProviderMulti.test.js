@@ -3,7 +3,7 @@ const { eq, get } = require("rubico");
 
 const { find, groupBy } = require("rubico/x");
 const { MockProvider } = require("../MockProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("MockProviderMulti", async function () {
   const providerName1 = "provider1";
@@ -42,12 +42,13 @@ describe("MockProviderMulti", async function () {
   });
 
   it("multi  apply", async function () {
-    const infra = {
-      stacks: [{ provider: provider1 }, { provider: provider2 }],
-    };
+    const cli = await Cli({
+      createStack: () => ({
+        stacks: [{ provider: provider1 }, { provider: provider2 }],
+      }),
+    });
     {
-      const result = await cliCommands.list({
-        infra,
+      const result = await cli.list({
         commandOptions: { provider: [providerName2] },
       });
       assert(!result.error);
@@ -55,29 +56,24 @@ describe("MockProviderMulti", async function () {
       assert.equal(mapProvider.size, 1);
     }
     {
-      const result = await cliCommands.planQuery({
-        infra,
+      const result = await cli.planQuery({
         commandOptions: { force: true },
       });
       assert(!result.error);
     }
     {
-      await cliCommands.planApply({
-        infra,
+      await cli.planApply({
         commandOptions: { force: true },
       });
     }
     {
-      const result = await cliCommands.list({
-        infra,
-      });
+      const result = await cli.list({});
       assert(!result.error);
       const mapProvider = groupBy("providerName")(result.results);
       assert.equal(mapProvider.size, 2);
     }
     {
-      const result = await cliCommands.planDestroy({
-        infra,
+      const result = await cli.planDestroy({
         commandOptions: { force: true },
       });
       assert(!result.error);

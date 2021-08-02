@@ -6,7 +6,7 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("Route53HostedZone", async function () {
   let config;
@@ -114,8 +114,13 @@ describe("Route53HostedZone", async function () {
 
     const { provider: providerNext } = await createStackNext({ config });
 
-    const { error, resultQuery } = await cliCommands.planQuery({
-      infra: { provider: providerNext },
+    const cli = await Cli({
+      createStack: () => ({
+        provider: providerNext,
+      }),
+    });
+
+    const { error, resultQuery } = await cli.planQuery({
       commandOptions: {},
     });
 
@@ -131,8 +136,7 @@ describe("Route53HostedZone", async function () {
     //assert.equal(updateRecord.action, "UPDATE");
     //assert(updateRecord.diff.updated.ResourceRecords);
     {
-      const result = await cliCommands.planApply({
-        infra: { provider: providerNext },
+      const result = await cli.planApply({
         commandOptions: { force: true },
       });
       assert(!result.error);

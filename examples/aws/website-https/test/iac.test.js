@@ -25,5 +25,5 @@ describe("CloudFront WebSite HTTPS", async function () {
       commandOptions: { our: true },
     });
     assert(result);
-  });
+  }).timeout(15 * 60e3);
 });

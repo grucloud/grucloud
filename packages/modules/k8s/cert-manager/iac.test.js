@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cli");
+
 const { createStack } = require("./iac");
 const config = require("./config");
 
@@ -13,41 +14,33 @@ describe("K8S Cert Manager Module", async function () {
     }
   });
   it("run", async function () {
-    const infra = await createStack({ config });
+    const cli = await Cli({ createStack, config });
 
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
-    await cliCommands.planQuery({ infra });
-    await cliCommands.planApply({
-      infra,
+    await cli.planQuery({});
+    await cli.planApply({
       commandOptions: { force: true },
     });
-    await cliCommands.planApply({
-      infra,
+    await cli.planApply({
       commandOptions: {},
     });
-    await cliCommands.planQuery({ infra });
-    await cliCommands.planRunScript({
-      infra,
+    await cli.planQuery({});
+    await cli.planRunScript({
       commandOptions: { onDeployed: true },
     });
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
-    await cliCommands.planRunScript({
-      infra,
+    await cli.planRunScript({
       commandOptions: { onDestroyed: true },
     });
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: {},
     });
     // TODO list should be empty
-    const result = await cliCommands.list({
-      infra,
+    const result = await cli.list({
       commandOptions: { our: true },
     });
     assert(result);

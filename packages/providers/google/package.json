@@ -6,7 +6,7 @@
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "mocha --exit './test/**/*.test.js'"
+    "test": "mocha --exit './test/**/*.test.js' '../../../examples/google/**/iac.test.js'"
   },
   "author": "",
   "license": "ISC",

@@ -6,16 +6,17 @@ const prompts = require("prompts");
 const sinon = require("sinon");
 
 const { MockProvider } = require("../MockProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
-
-const toJSON = (x) => JSON.stringify(x, null, 4);
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("MockProviderCli", async function () {
   before(async () => {});
   it("init and uninit error", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
-    const infra = { provider };
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
+
     const errorMessage = "stub-error";
 
     provider.init = sinon
@@ -35,8 +36,7 @@ describe("MockProviderCli", async function () {
       assert(result.provider);
     };
     try {
-      await cliCommands.init({
-        infra,
+      await cli.init({
         commandOptions: {},
       });
       assert("should not be here");
@@ -44,8 +44,7 @@ describe("MockProviderCli", async function () {
       checkError(ex);
     }
     try {
-      await cliCommands.unInit({
-        infra,
+      await cli.unInit({
         commandOptions: {},
       });
       assert("should not be here");
@@ -67,8 +66,7 @@ describe("MockProviderCli", async function () {
       map(
         tryCatch(
           async ({ command, options = {} }) => {
-            const result = await cliCommands[command]({
-              infra,
+            const result = await cli[command]({
               commandOptions: options,
             });
             assert(result.error);
@@ -98,37 +96,32 @@ describe("MockProviderCli", async function () {
     const infra = { provider, resources };
 
     {
-      const info = await cliCommands.info({
-        infra,
+      const info = await cli.info({
         commandOptions: {},
       });
       assert(!info.error);
       assert(info.results);
     }
     {
-      const init = await cliCommands.init({
-        infra,
+      const init = await cli.init({
         commandOptions: {},
       });
       assert(!init.error);
     }
     {
-      const unInit = await cliCommands.unInit({
-        infra,
+      const unInit = await cli.unInit({
         commandOptions: {},
       });
       assert(!unInit.error);
     }
     {
-      const output = await cliCommands.output({
-        infra,
+      const output = await cli.output({
         commandOptions: { type: "Ip", name: "myip", field: "id" },
       });
       assert(!output);
     }
     {
-      const result = await cliCommands.planDestroy({
-        infra,
+      const result = await cli.planDestroy({
         commandOptions: { force: true, name: "volume" },
       });
       assert(!result.error);
@@ -137,24 +130,19 @@ describe("MockProviderCli", async function () {
         "volume"
       );
     }
-    const resultDestroy = await cliCommands.planDestroy({
-      infra,
+    const resultDestroy = await cli.planDestroy({
       commandOptions: { force: true },
     });
 
     prompts.inject([false]);
 
-    await cliCommands.planApply({
-      infra,
-    });
+    await cli.planApply({});
 
     prompts.inject([true]);
 
-    await cliCommands.planApply({
-      infra,
-    });
+    await cli.planApply({});
     {
-      const output = await cliCommands.output({
+      const output = await cli.output({
         infra,
         commandOptions: { type: "Ip", name: "myip", field: "id" },
         programOptions: {},
@@ -162,20 +150,15 @@ describe("MockProviderCli", async function () {
       assert(output);
     }
     prompts.inject([false]);
-    await cliCommands.planDestroy({
-      infra,
-    });
+    await cli.planDestroy({});
 
     prompts.inject([true]);
     {
-      const result = await cliCommands.planDestroy({
-        infra,
-      });
+      const result = await cli.planDestroy({});
       assert(result);
     }
     {
-      const result = await cliCommands.list({
-        infra,
+      const result = await cli.list({
         commandOptions: { our: true },
       });
       assert(result);

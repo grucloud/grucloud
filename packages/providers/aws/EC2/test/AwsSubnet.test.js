@@ -8,7 +8,7 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe.skip("AwsSubnet", async function () {
   const types = ["Vpc", "Subnet"];
@@ -69,9 +69,12 @@ describe.skip("AwsSubnet", async function () {
         name: subnet.name,
       })
     );
-
-    const result = await cliCommands.list({
-      infra: { provider },
+    const cli = await Cli({
+      createStack: () => ({
+        provider,
+      }),
+    });
+    const result = await cli.list({
       commandOptions: { our: true, types: ["Subnet"] },
     });
     assert(!result.error);

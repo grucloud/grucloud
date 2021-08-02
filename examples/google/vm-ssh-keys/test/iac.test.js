@@ -2,13 +2,11 @@ const assert = require("assert");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
-const path = require("path");
 
-describe("RDS Postgres Stateless", async function () {
+describe("Gcp SSH keys", async function () {
   before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack, config });
+    const cli = await Cli({ createStack, config });
 
     await cli.planDestroy({
       commandOptions: { force: true },
@@ -27,5 +25,5 @@ describe("RDS Postgres Stateless", async function () {
       commandOptions: { our: true },
     });
     assert(result);
-  }).timeout(15 * 60e3);
+  });
 });

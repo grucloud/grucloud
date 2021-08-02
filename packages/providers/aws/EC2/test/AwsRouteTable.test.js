@@ -5,7 +5,6 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 const testName = "rt";
 
@@ -67,14 +66,6 @@ describe.skip("AwsRouteTable", async function () {
   it("rt apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider });
-
-      const result = await cliCommands.list({
-        infra: { provider },
-        commandOptions: { our: true, types: ["RouteTable"] },
-      });
-      assert(!result.error);
-      assert(result.results);
-
       await testPlanDestroy({ provider });
     } catch (error) {
       throw error;

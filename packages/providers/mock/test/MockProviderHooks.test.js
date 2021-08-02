@@ -4,7 +4,8 @@ const sinon = require("sinon");
 const { createResources } = require("./MockStack");
 const config404 = require("./config/config.404");
 const { MockProvider } = require("../MockProvider");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
+
 const { tos } = require("@grucloud/core/tos");
 
 describe("MockProviderHooks", async function () {
@@ -14,6 +15,10 @@ describe("MockProviderHooks", async function () {
 
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
+
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
 
     provider.hookAdd({
       name: "mock-test",
@@ -28,14 +33,12 @@ describe("MockProviderHooks", async function () {
     });
     const infra = { provider };
 
-    await cliCommands.planApply({
-      infra,
+    await cli.planApply({
       commandOptions: { force: true },
     });
     assert(onDeployed.init.called);
 
-    await cliCommands.planDestroy({
-      infra,
+    await cli.planDestroy({
       commandOptions: { force: true },
     });
     assert(onDestroyed.init.called);
@@ -60,11 +63,11 @@ describe("MockProviderHooks", async function () {
         },
       },
     });
-    const infra = { provider };
-
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
     try {
-      await cliCommands.planApply({
-        infra,
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -75,8 +78,7 @@ describe("MockProviderHooks", async function () {
     assert(onDeployed.init.called);
 
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true, all: true },
       });
       assert(false, "should not be here");
@@ -89,6 +91,11 @@ describe("MockProviderHooks", async function () {
   });
   it("planApply init throw ", async function () {
     const provider = MockProvider({ config: () => ({}) });
+
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
+
     const resources = await createResources({ provider });
     provider.hookAdd({
       name: "mock-init-throw",
@@ -106,10 +113,8 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
     try {
-      const result = await cliCommands.planApply({
-        infra,
+      const result = await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here", result);
@@ -123,8 +128,7 @@ describe("MockProviderHooks", async function () {
       assert(resultHooks.results[0].error);
     }
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -138,6 +142,11 @@ describe("MockProviderHooks", async function () {
   });
   it("run --onDeployed init throw ", async function () {
     const provider = MockProvider({ config: () => ({}) });
+
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
+
     const resources = await createResources({ provider });
     provider.hookAdd({
       name: "mock-run-ondeployed-init-throw",
@@ -150,10 +159,8 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
     try {
-      await cliCommands.planRunScript({
-        infra,
+      await cli.planRunScript({
         commandOptions: { onDeployed: true },
       });
       assert(false, "should not be here");
@@ -165,6 +172,11 @@ describe("MockProviderHooks", async function () {
 
   it("action throw ", async function () {
     const provider = MockProvider({ config: () => ({}) });
+
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
+
     const resources = await createResources({ provider });
     const message = "i throw in a command";
     provider.hookAdd({
@@ -203,10 +215,8 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
     try {
-      await cliCommands.planApply({
-        infra,
+      await cli.planApply({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
@@ -217,8 +227,7 @@ describe("MockProviderHooks", async function () {
       assert(resultHooks.results[0].error);
     }
     try {
-      await cliCommands.planDestroy({
-        infra,
+      await cli.planDestroy({
         commandOptions: { force: true },
       });
       assert(false, "should not be here");

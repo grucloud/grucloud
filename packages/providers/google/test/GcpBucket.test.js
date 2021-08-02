@@ -3,7 +3,7 @@ const assert = require("assert");
 const chance = require("chance")();
 const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const cliCommands = require("@grucloud/core/cli/cliCommands");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -77,6 +77,12 @@ describe("GcpBucket", async function () {
         }),
       });
 
+      const cli = await Cli({
+        createStack: () => ({
+          provider,
+        }),
+      });
+
       const bucket = provider.storage.makeBucket({
         name: bucketName,
         properties: () => ({}),
@@ -91,8 +97,7 @@ describe("GcpBucket", async function () {
         }),
       });
       {
-        const { error, resultQuery } = await cliCommands.planQuery({
-          infra: { provider },
+        const { error, resultQuery } = await cli.planQuery({
           commandOptions: { force: true },
         });
         assert(!error);
@@ -101,8 +106,7 @@ describe("GcpBucket", async function () {
         assert.equal(plan.resultCreate[0].action, "UPDATE");
       }
 
-      const resultApply = await cliCommands.planApply({
-        infra: { provider },
+      const resultApply = await cli.planApply({
         commandOptions: { force: true },
       });
       assert(!resultApply.error);
