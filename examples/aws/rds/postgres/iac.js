@@ -87,8 +87,8 @@ const createResources = async ({ provider }) => {
   };
 };
 
-exports.createStack = async ({ config, stage }) => {
-  const provider = AwsProvider({ config, stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider);
   const resources = await createResources({ provider });
 
   return {

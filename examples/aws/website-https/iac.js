@@ -8,7 +8,7 @@ const hook = require("./hook");
 const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
-  const config = provider.config;
+  const { config } = provider;
   const { rootDomainName, DomainName, websiteDir, stage } = config;
   assert(rootDomainName);
   assert(DomainName);

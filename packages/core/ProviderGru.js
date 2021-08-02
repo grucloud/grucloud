@@ -101,7 +101,12 @@ const buildDependsOnReverse = (stacks) =>
     }),
   ])();
 
-exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
+exports.ProviderGru = ({
+  commandOptions,
+  programOptions,
+  hookGlobal,
+  stacks,
+}) => {
   assert(Array.isArray(stacks));
 
   const lives = createLives();
@@ -112,7 +117,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     () => stacks,
     forEach(({ provider, resources, hooks }) =>
       pipe([
-        //TODO no longer required
         () => provider.register({ resources, hooks }),
         () => provider.setLives(lives),
       ])()

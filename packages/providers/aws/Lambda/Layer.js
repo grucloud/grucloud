@@ -24,12 +24,14 @@ const {
   unless,
 } = require("rubico/x");
 const crypto = require("crypto");
+const path = require("path");
 
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Layer",
 });
+
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
@@ -187,10 +189,13 @@ exports.Layer = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProps },
     namespace,
+    programOptions,
   }) =>
     pipe([
-      tap(() => {}),
-      () => createZipBuffer({ localPath: name }),
+      () =>
+        createZipBuffer({
+          localPath: path.resolve(programOptions.workingDirectory, name),
+        }),
       (ZipFile) =>
         pipe([
           () => otherProps,

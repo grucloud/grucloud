@@ -7,7 +7,7 @@
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Module'",
     "graph-live": "gc list --graph -a  --title 'Load Balancer Module' --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +17,8 @@
     "@grucloud/module-aws-load-balancer": "^1.31.0",
     "@grucloud/module-aws-vpc": "^1.31.0",
     "@grucloud/provider-aws": "^1.31.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }

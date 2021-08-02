@@ -1,20 +1,13 @@
 #!/usr/bin/env node
-//require("dotenv").config();
 const Duration = require("duration");
-const YAML = require("./json2yaml");
 const pkg = require("../package.json");
 const { createProgram } = require("./program");
-const commands = require("./cliCommands");
 const { convertError } = require("../Common");
 const logger = require("../logger")({ prefix: "CliMain" });
 const executableName = "gc";
 
 exports.main = async ({ argv, onExit }) => {
-  const program = createProgram({
-    version: pkg.version,
-    argv,
-    commands,
-  });
+  const program = createProgram();
 
   logger.info(`GruCloud ${pkg.version}`);
   logger.info(new Date().toUTCString());

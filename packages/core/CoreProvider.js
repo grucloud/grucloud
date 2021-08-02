@@ -90,6 +90,7 @@ const createResourceMakers = ({
   provider,
   filterResource = identity,
   prefix,
+  programOptions,
 }) =>
   pipe([
     () => specs,
@@ -101,6 +102,7 @@ const createResourceMakers = ({
           spec[`${prefix}Resource`]({
             provider,
             spec,
+            programOptions,
           })
         )(acc),
       {}
@@ -114,6 +116,7 @@ function CoreProvider({
   name: providerName,
   dependencies = {},
   type,
+  programOptions = { workingDirectory: process.cwd() },
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
   fnSpecs,
@@ -1745,14 +1748,23 @@ function CoreProvider({
         specs,
         prefix: "make",
         filterResource: not(get("listOnly")),
+        programOptions,
       })
     ),
-    defaultsDeep(createResourceMakers({ provider, specs, prefix: "use" })),
+    defaultsDeep(
+      createResourceMakers({
+        provider,
+        specs,
+        prefix: "use",
+        programOptions,
+      })
+    ),
     defaultsDeep(
       createResourceMakers({
         provider,
         specs,
         prefix: "useDefault",
+        programOptions,
       })
     ),
   ])();

@@ -25,7 +25,7 @@ const {
   unless,
 } = require("rubico/x");
 const crypto = require("crypto");
-
+const path = require("path");
 const { detailedDiff } = require("deep-object-diff");
 const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 
@@ -252,13 +252,18 @@ exports.Function = ({ spec, config }) => {
     namespace,
     properties,
     dependencies: { role, layers = [] },
+    programOptions,
   }) =>
     pipe([
       tap(() => {
+        assert(programOptions);
         assert(role, "missing role dependencies");
         assert(Array.isArray(layers), "layers must be an array");
       }),
-      () => createZipBuffer({ localPath: name }),
+      () =>
+        createZipBuffer({
+          localPath: path.resolve(programOptions.workingDirectory, name),
+        }),
       (ZipFile) =>
         pipe([
           () => properties,

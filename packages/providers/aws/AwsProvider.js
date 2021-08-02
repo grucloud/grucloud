@@ -74,6 +74,7 @@ exports.AwsProvider = ({
   name = "aws",
   stage = "dev",
   config,
+  programOptions,
   configs = [],
   ...other
 }) => {
@@ -148,20 +149,19 @@ exports.AwsProvider = ({
       }),
     ])();
 
-  const mergedConfig = mergeConfig({ config, configs });
-
   const info = () => ({
     accountId,
     zone,
-    config: omit(["accountId", "zone"])(mergedConfig),
+    config: omit(["accountId", "zone"])(mergeConfig({ config, configs })),
   });
 
   return CoreProvider({
     ...other,
     type: "aws",
     name,
+    programOptions,
     get config() {
-      return mergedConfig;
+      return mergeConfig({ config, configs });
     },
     fnSpecs,
     start,

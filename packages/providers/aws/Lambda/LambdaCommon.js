@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
 const { callProp } = require("rubico/x");
 const Axios = require("axios");
-const path = require("path");
 const fs = require("fs").promises;
 const AdmZip = require("adm-zip");
 
@@ -29,7 +28,10 @@ const fileExist = (path) =>
 
 exports.createZipBuffer = ({ localPath }) =>
   pipe([
-    () => path.resolve(localPath),
+    tap(() => {
+      assert(localPath);
+    }),
+    () => localPath,
     fileExist,
     () => new AdmZip(),
     tap(callProp("addLocalFolder", localPath, "")),

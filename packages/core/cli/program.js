@@ -1,9 +1,11 @@
 const assert = require("assert");
 const path = require("path");
 const { Command } = require("commander");
-const { pipe, tryCatch, tap } = require("rubico");
+const { pipe, tryCatch, tap, assign } = require("rubico");
 const { last } = require("rubico/x");
 const os = require("os");
+const pkg = require("../package.json");
+const { Cli } = require("./cliCommands");
 
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
@@ -53,17 +55,15 @@ const handleError = (error) => {
 
 const defautTitle = last(process.cwd().split(path.sep));
 
-exports.createProgram = ({ version, commands }) => {
+exports.createProgram = () => {
   const program = new Command();
   program.storeOptionsAsProperties(false);
   program.allowUnknownOption(); // For testing
-  program.version(version);
+  program.version(pkg.version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
-  program.option(
-    "-c, --config <file>",
-    "config file, default is config/default.js"
-  );
+  program.option("-c, --config <file>", "config file, default is config.js");
   program.option("-j, --json <file>", "write result to a file in json format");
+  program.option("-d, --workingDirectory <file>", "The working directory.");
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
@@ -77,29 +77,34 @@ exports.createProgram = ({ version, commands }) => {
       pipe([
         () => program.opts(),
         (programOptions) =>
-          pipe([
-            () => programOptions,
-            tryCatch(
-              pipe([
-                infraOptions,
-                createInfra({ commandOptions }),
-                tap(() => {
-                  assert(
-                    commands[commandName],
-                    `${commandName} is not a function`
-                  );
+          tryCatch(
+            pipe([
+              () => programOptions,
+              infraOptions,
+              createInfra({ commandOptions }),
+              tap((params) => {
+                assert(true);
+              }),
+              ({ createStack, config, stage }) =>
+                Cli({
+                  createStack,
+                  config,
+                  stage,
+                  programOptions,
                 }),
-                ({ infra, config }) =>
-                  commands[commandName]({
-                    infra,
-                    config,
-                    commandOptions,
-                    programOptions,
-                  }),
-              ]),
-              handleError
-            ),
-          ])(),
+              tap((cli) => {
+                assert(
+                  cli[commandName],
+                  `command '${commandName}' not implemented`
+                );
+              }),
+              (cli) =>
+                cli[commandName]({
+                  commandOptions,
+                }),
+            ]),
+            handleError
+          )(),
       ])();
 
   program

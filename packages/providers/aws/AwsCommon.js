@@ -41,13 +41,11 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         fn: () => endpoint[name](...args).promise(),
         isExpectedResult: () => true,
+        config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
-            () => error,
-            or([
-              eq(get("code"), "Throttling"),
-              eq(get("code"), "UnknownEndpoint"),
-            ]),
+            () => ["Throttling", "UnknownEndpoint", "TooManyRequestsException"],
+            includes(error.code),
             tap((retry) => {
               logger.debug(
                 `shouldRetryOnException: ${name}:  retry: ${retry}, ${tos({

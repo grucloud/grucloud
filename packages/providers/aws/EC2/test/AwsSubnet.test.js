@@ -10,7 +10,7 @@ const {
 const { CheckAwsTags } = require("../../AwsTagCheck");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
-describe("AwsSubnet", async function () {
+describe.skip("AwsSubnet", async function () {
   const types = ["Vpc", "Subnet"];
   let config;
   let provider;

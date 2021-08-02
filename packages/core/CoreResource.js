@@ -315,11 +315,19 @@ exports.ResourceMaker = ({
   spec,
   provider,
   config,
+  programOptions,
 }) => {
   const { type, group } = spec;
   assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(
-    `ResourceMaker: ${tos({ type, group, resourceName, namespace, meta })}`
+    `ResourceMaker: ${JSON.stringify({
+      type,
+      group,
+      resourceName,
+      namespace,
+      meta,
+      programOptions,
+    })}`
   );
 
   const getDependencies = pipe([
@@ -711,6 +719,7 @@ exports.ResourceMaker = ({
                 dependencies: resolvedDependencies,
                 live,
                 lives: provider.lives,
+                programOptions,
               }),
             tap((result) => {
               // logger.debug(

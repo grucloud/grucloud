@@ -93,9 +93,6 @@ exports.ApiMapping = ({ spec, config }) => {
                     get("Tags"),
                     assign({ Name: get(buildTagKey({ ApiMappingId })) }),
                     omit([buildTagKey({ ApiMappingId })]),
-                    tap((params) => {
-                      assert(true);
-                    }),
                   ])(),
               })
             ),

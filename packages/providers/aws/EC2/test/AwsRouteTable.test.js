@@ -10,7 +10,7 @@ const cliCommands = require("@grucloud/core/cli/cliCommands");
 const testName = "rt";
 
 const buildName = (name) => `${testName}-${name}`;
-describe("AwsRouteTable", async function () {
+describe.skip("AwsRouteTable", async function () {
   let config;
   let provider;
   let vpc;

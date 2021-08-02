@@ -1,32 +1,31 @@
 const assert = require("assert");
-const cli = require("@grucloud/core/cli/cliCommands");
+const path = require("path");
+
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-describe.skip("Lambda", async function () {
+describe("Lambda", async function () {
   before(async function () {});
   it("run", async function () {
-    const infra = await createStack({ config });
+    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
+
+    const cli = await Cli({ programOptions, createStack, config });
 
     await cli.planDestroy({
-      infra,
       commandOptions: { force: true },
     });
     await cli.planApply({
-      infra,
       commandOptions: { force: true },
     });
     await cli.list({
-      infra,
       commandOptions: { our: true, graph: true },
     });
     await cli.planDestroy({
-      infra,
       commandOptions: { force: true },
     });
     // TODO list should be empty
     const result = await cli.list({
-      infra,
       commandOptions: { our: true },
     });
     assert(result);

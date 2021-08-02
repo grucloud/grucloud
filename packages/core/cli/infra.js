@@ -1,42 +1,34 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const {
-  map,
-  pipe,
-  switchCase,
-  reduce,
-  tap,
-  assign,
-  all,
-  filter,
-  not,
-  any,
-  or,
-  tryCatch,
-  get,
-} = require("rubico");
+const { pipe, tap, filter, not, tryCatch, get } = require("rubico");
+const { isEmpty, isFunction } = require("rubico/x");
 const { ConfigLoader } = require("../ConfigLoader");
 const logger = require("../logger")({ prefix: "Infra" });
 
-const creatInfraFromFile = async ({
-  commandOptions,
-  programOptions,
-  infraFileName,
-  config,
-  stage,
-}) => {
+const createProviderMaker =
+  ({ programOptions, stage, config }) =>
+  (provider, { config: configUser } = {}) =>
+    pipe([
+      tap(() => {
+        assert(isFunction(provider), "provider must be a function");
+      }),
+      () =>
+        provider({
+          configs: pipe([() => [configUser, config], filter(not(isEmpty))])(),
+          programOptions,
+          stage,
+        }),
+    ])();
+
+exports.createProviderMaker = createProviderMaker;
+
+const createStackFromFile = ({ infraFileName }) => {
   const InfraCode = require(infraFileName);
   if (!InfraCode.createStack) {
     throw { code: 400, message: `no createStack provided` };
   }
-
-  const infra = await InfraCode.createStack({ config, stage });
-  if (!infra) {
-    throw { code: 400, message: `no infra provided` };
-  }
-
-  return infra;
+  return InfraCode.createStack;
 };
 
 const resolveFilename = ({ fileName, defaultName }) =>
@@ -69,7 +61,6 @@ exports.createInfra =
       fileName: infraFileName,
       defaultName: "iac.js",
     });
-    //console.log(`Using ${infraFileNameFull}`);
     checkFileExist({ fileName: infraFileNameFull });
 
     const config = requireConfig({ fileName: configFileName, stage });
@@ -77,12 +68,6 @@ exports.createInfra =
     return {
       config,
       stage,
-      infra: await creatInfraFromFile({
-        commandOptions,
-        programOptions,
-        infraFileName: infraFileNameFull,
-        config,
-        stage,
-      }),
+      createStack: createStackFromFile({ infraFileName: infraFileNameFull }),
     };
   };
