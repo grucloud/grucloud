@@ -8,14 +8,14 @@ const logger = require("../logger")({ prefix: "Infra" });
 
 const createProviderMaker =
   ({ programOptions, stage, config }) =>
-  (provider, { config: configUser } = {}) =>
+  (provider, { config: configUser, configs = [] } = {}) =>
     pipe([
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
       }),
       () =>
         provider({
-          configs: pipe([() => [configUser, config], filter(not(isEmpty))])(),
+          configs: [configUser, ...configs, config],
           programOptions,
           stage,
         }),

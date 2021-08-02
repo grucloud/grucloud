@@ -13,7 +13,7 @@ const createResources = async ({ provider }) => {
   });
 
   const internetGateway = provider.ec2.makeInternetGateway({
-    name: "ig",
+    name: config.rds.internetGateway.name,
     dependencies: { vpc },
   });
 

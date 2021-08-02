@@ -167,10 +167,9 @@ const createResources = async ({
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ stage }) => {
-  const provider = AwsProvider({
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs,
-    stage,
   });
 
   const keyPair = provider.ec2.makeKeyPair({

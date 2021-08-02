@@ -755,6 +755,7 @@ exports.ResourceMaker = ({
           attributes,
           resolvedDependencies,
           lives: provider.lives,
+          programOptions,
         }),
       () => getLive({ deep: true }),
       tap((live) => {

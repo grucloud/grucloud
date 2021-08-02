@@ -25,7 +25,7 @@ describe("AwsKeyPair", async function () {
   after(async () => {});
   it("keyPair create", async function () {
     const keyPair = provider.ec2.makeKeyPair({
-      name: "kp",
+      name: "kp-test",
     });
     try {
       await provider.start();

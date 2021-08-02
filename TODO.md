@@ -117,7 +117,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-- examples vm-ssh key: create key pair
+- examples vm-ssh key: create key pair with https://github.com/juliangruber/keypair
 
 - ✖ VmInstance 0/1 Request failed with status code 400 Invalid value for field 'resource.networkInterfaces[0].subnetwork': 'projects/grucloud-test/regions/europe-west4/subnetworks/default'. The referenced subnetwork resource cannot be found.
 - vminstance with service account

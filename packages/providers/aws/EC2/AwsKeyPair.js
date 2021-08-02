@@ -64,13 +64,14 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
       ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createKeyPair-property
-  const create = async ({ payload, name }) =>
+  const create = ({ payload, name, programOptions }) =>
     pipe([
       tap(() => {
         logger.info(`create keyPair ${name}`);
+        assert(programOptions.workingDirectory);
       }),
       () => ec2().createKeyPair(payload),
-      tap(saveKeyToFile({})),
+      tap(saveKeyToFile({ directory: programOptions.workingDirectory })),
       tap(() =>
         retryCall({
           name: `keyPair isUpByName: ${name}`,

@@ -3,7 +3,7 @@ const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const path = require("path");
 
-describe.skip("Gcp Website HTTPS", async function () {
+describe("EC2 KeyPair", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
@@ -26,5 +26,5 @@ describe.skip("Gcp Website HTTPS", async function () {
       commandOptions: { our: true },
     });
     assert(result);
-  });
+  }).timeout(15 * 60e3);
 });

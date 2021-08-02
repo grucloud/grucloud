@@ -1,16 +1,16 @@
 const assert = require("assert");
 const path = require("path");
 const { map } = require("rubico");
-const { resolve } = require("path");
-const { readdir } = require("fs").promises;
 const mime = require("mime-types");
 
 const { GoogleProvider } = require("@grucloud/provider-google");
 const hook = require("./hook");
 const { getFiles } = require("./utils");
 
-exports.createStack = async () => {
-  const provider = GoogleProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, {
+    config: require("./config"),
+  });
 
   const { bucketName, websiteDir } = provider.config;
   assert(bucketName);
