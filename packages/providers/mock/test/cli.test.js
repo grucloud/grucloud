@@ -162,8 +162,8 @@ describe("cli", function () {
         "list",
       ],
       onExit: ({ code, error: { message } }) => {
-        assert.equal(code, 400);
-        assert.equal(message, "no infra provided");
+        assert.equal(code, -1);
+        assert.equal(message, "no infra provided in createStack");
       },
     });
   });

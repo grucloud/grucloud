@@ -3,7 +3,7 @@ const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-describe.skip("RDS Postgres Stateless", async function () {
+describe("RDS Postgres Stateless", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };

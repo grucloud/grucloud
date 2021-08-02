@@ -1436,8 +1436,9 @@ exports.Cli = ({ programOptions = {}, createStack, config, stage } = {}) =>
       }),
     (infra) =>
       pipe([
-        tap(() => {
-          assert(true);
+        () => infra,
+        tap.if(isEmpty, () => {
+          throw Error("no infra provided in createStack");
         }),
         () => ({
           list: ({ commandOptions }) =>
