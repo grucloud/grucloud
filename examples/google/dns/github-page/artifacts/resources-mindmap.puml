@@ -1,7 +1,8 @@
 @startmindmap
-title Resources for project google
+title Resources for project github-page
 skinparam monochrome true
 + Infra
 ++ google
-
++++ dns
+++++ ManagedZone (1)
 @endmindmap

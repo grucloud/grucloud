@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project simple
+skinparam monochrome true
++ Infra
+++ google
++++ storage
+++++ Bucket (1)
+++++ Object (1)
+@endmindmap
