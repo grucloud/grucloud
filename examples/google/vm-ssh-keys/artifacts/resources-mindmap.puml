@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project vm-ssh-keys
+skinparam monochrome true
++ Infra
+++ google
++++ compute
+++++ Address (1)
+++++ Firewall (2)
+++++ VmInstance (1)
+@endmindmap

@@ -64,6 +64,19 @@ exports.nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 exports.isValidPlan = not(isEmpty);
 
+exports.mergeConfig = ({ configDefault = {}, config, configs = [] }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () => [...configs, config],
+    filter((x) => x),
+    reduce((acc, config) => defaultsDeep(acc)(config(acc)), configDefault),
+    tap((merged) => {
+      logger.info(`mergeConfig : ${tos(merged)}`);
+    }),
+  ])();
+
 exports.getField = ({ resource = {}, live } = {}, field) =>
   get(field, notAvailable(resource.name, field))(live);
 

@@ -5,44 +5,22 @@ skinparam monochrome true
 ++ aws
 +++ route53Domain
 ++++ Domain (1)
-+++++ grucloud.org
 +++ route53
 ++++ HostedZone (1)
-+++++ mod-aws-load-balancer.grucloud.org.
 ++++ Record (2)
-+++++ certificate-validation-mod-aws-load-balancer.grucloud.org.
-+++++ load-balancer-dns-record-alias-mod-aws-load-balancer.grucloud.org.
 +++ acm
 ++++ Certificate (1)
-+++++ mod-aws-load-balancer.grucloud.org
 +++ ec2
 ++++ Vpc (1)
-+++++ vpc-module-load-balancer
 ++++ InternetGateway (1)
-+++++ internet-gateway
 ++++ Subnet (2)
-+++++ subnet-public-a
-+++++ subnet-public-b
 ++++ RouteTable (1)
-+++++ route-table-public
 ++++ Route (1)
-+++++ route-public
 ++++ SecurityGroup (1)
-+++++ security-group-load-balancer
 ++++ SecurityGroupRuleIngress (2)
-+++++ sg-rule-ingress-lb-http
-+++++ sg-rule-ingress-lb-https
 +++ elb
 ++++ LoadBalancer (1)
-+++++ load-balancer
 ++++ TargetGroup (2)
-+++++ target-group-web
-+++++ target-group-rest
 ++++ Listener (2)
-+++++ listener-http
-+++++ listener-https
 ++++ Rule (3)
-+++++ rule-http-redirect-https
-+++++ rule-web-https
-+++++ rule-rest-https
 @endmindmap

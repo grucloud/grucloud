@@ -29,7 +29,7 @@ git clone git@github.com:grucloud/grucloud.git
 ```
 
 ```bash
-cd grucloud/examples/azure
+cd grucloud/examples/azure/vm
 ```
 
 ```bash
@@ -74,19 +74,18 @@ const assert = require("assert");
 const { AzureProvider } = require("@grucloud/provider-azure");
 
 exports.createStack = async ({ createProvider }) => {
-  assert(stage);
   // Create an Azure provider
   const provider = createProvider(AzureProvider, {
     config: require("./config"),
   });
-
+  const { stage } = provider.config;
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
-  const rg = provider.makeResourceGroup({
+  const rg = provider.resourceManagement.makeResourceGroup({
     name: `resource-group-${stage}`,
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
-  const vnet = provider.makeVirtualNetwork({
+  const vnet = provider.virtualNetworks.makeVirtualNetwork({
     name: `virtual-network-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
@@ -105,7 +104,7 @@ exports.createStack = async ({ createProvider }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
-  const sg = provider.makeSecurityGroup({
+  const sg = provider.virtualNetworks.makeSecurityGroup({
     name: `security-group-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
@@ -130,7 +129,7 @@ exports.createStack = async ({ createProvider }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
-  const publicIpAddress = provider.makePublicIpAddress({
+  const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
     name: `ip-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -142,7 +141,7 @@ exports.createStack = async ({ createProvider }) => {
     }),
   });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
-  const networkInterface = provider.makeNetworkInterface({
+  const networkInterface = provider.virtualNetworks.makeNetworkInterface({
     name: `network-interface-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -170,7 +169,7 @@ exports.createStack = async ({ createProvider }) => {
   assert(MACHINE_ADMIN_PASSWORD);
 
   // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/createorupdate
-  const vm = provider.makeVirtualMachine({
+  const vm = provider.compute.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {
       resourceGroup: rg,

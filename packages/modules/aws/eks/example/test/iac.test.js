@@ -4,7 +4,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 
-describe.only("EKS Module", async function () {
+describe("EKS Module", async function () {
   before(async function () {
     try {
       ConfigLoader({ path: "../../examples/multi" });

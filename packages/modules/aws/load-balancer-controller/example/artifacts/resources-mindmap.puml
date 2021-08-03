@@ -5,54 +5,22 @@ skinparam monochrome true
 ++ aws
 +++ ec2
 ++++ Vpc (1)
-+++++ vpc
 ++++ InternetGateway (1)
-+++++ internet-gateway
 ++++ Subnet (4)
-+++++ subnet-public-a
-+++++ subnet-public-b
-+++++ subnet-private-a
-+++++ subnet-private-b
 ++++ RouteTable (3)
-+++++ route-table-public
-+++++ route-table-private-a
-+++++ route-table-private-b
 ++++ Route (3)
-+++++ route-public
-+++++ route-private-a
-+++++ route-private-b
 ++++ ElasticIpAddress (1)
-+++++ iep
 ++++ NatGateway (1)
-+++++ nat-gateway
 ++++ SecurityGroup (2)
-+++++ security-group-cluster
-+++++ security-group-node
 ++++ SecurityGroupRuleIngress (2)
-+++++ sg-cluster-rule-ingress-https
-+++++ sg-rule-node-group-ingress-cluster
 ++++ SecurityGroupRuleEgress (1)
-+++++ sg-cluster-rule-egress
 +++ iam
 ++++ Policy (6)
-+++++ AmazonEKSClusterPolicy
-+++++ AmazonEKSVPCResourceController
-+++++ AmazonEKSWorkerNodePolicy
-+++++ AmazonEC2ContainerRegistryReadOnly
-+++++ AmazonEKS_CNI_Policy
-+++++ AWSLoadBalancerControllerIAMPolicy
 ++++ Role (3)
-+++++ role-cluster
-+++++ role-node-group
-+++++ role-load-balancer
 ++++ OpenIDConnectProvider (1)
-+++++ oidc-eks
 +++ kms
 ++++ Key (1)
-+++++ eks-key
 +++ eks
 ++++ Cluster (1)
-+++++ cluster
 ++++ NodeGroup (1)
-+++++ node-group-private-cluster
 @endmindmap

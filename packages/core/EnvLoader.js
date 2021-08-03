@@ -1,4 +1,4 @@
-const { map, pipe, tap, filter, switchCase, tryCatch } = require("rubico");
+const { map, pipe, tap, filter, switchCase } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
