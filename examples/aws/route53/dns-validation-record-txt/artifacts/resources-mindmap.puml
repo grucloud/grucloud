@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project dns-validation-record-txt
+skinparam monochrome true
++ Infra
+++ aws
++++ route53
+++++ HostedZone (1)
+++++ Record (1)
+@endmindmap

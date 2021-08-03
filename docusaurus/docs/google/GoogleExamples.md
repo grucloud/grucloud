@@ -5,10 +5,6 @@ title: Google Examples
 
 ## Virtual Machine
 
-### [Virtual Machine](https://github.com/grucloud/grucloud/tree/main/examples/google/vm)
-
-![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm/artifacts/diagram-target.svg)
-
 ### [Virtual Machine inside a VPC](https://github.com/grucloud/grucloud/tree/main/examples/google/vm-network)
 
 ![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-network/artifacts/diagram-target.svg)

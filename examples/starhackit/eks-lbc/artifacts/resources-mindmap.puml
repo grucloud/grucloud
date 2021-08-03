@@ -1,0 +1,52 @@
+@startmindmap
+title Resources for project eks-lbc
+skinparam monochrome true
++ Infra
+++ aws
++++ route53Domain
+++++ Domain (1)
++++ route53
+++++ HostedZone (1)
+++++ Record (2)
++++ acm
+++++ Certificate (1)
++++ ec2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ Route (3)
+++++ ElasticIpAddress (1)
+++++ NatGateway (1)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (2)
+++++ SecurityGroupRuleEgress (1)
++++ iam
+++++ Policy (6)
+++++ Role (3)
+++++ OpenIDConnectProvider (1)
++++ kms
+++++ Key (1)
++++ eks
+++++ Cluster (1)
+++++ NodeGroup (1)
++++ elb
+++++ LoadBalancer (1)
+-- k8s
+--- CustomResourceDefinition (7)
+--- Namespace (2)
+--- ServiceAccount (4)
+--- ClusterRole (12)
+--- ClusterRoleBinding (10)
+--- Role (4)
+--- RoleBinding (4)
+--- Service (7)
+--- Deployment (6)
+--- MutatingWebhookConfiguration (2)
+--- ValidatingWebhookConfiguration (2)
+--- Certificate (1)
+--- Issuer (1)
+--- ConfigMap (2)
+--- StatefulSet (2)
+--- Ingress (1)
+@endmindmap
