@@ -29,9 +29,9 @@ title: Aws Examples
 
 ### Route53
 
-#### [Route53Record](https://github.com/grucloud/grucloud/tree/main/examples/aws/route53)
+#### [Route53Record](https://github.com/grucloud/grucloud/tree/main/examples/aws/route53/dns-validation-record-txt)
 
-![Route53Record](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/route53/artifacts/diagram-target.svg)
+![Route53Record](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/route53/dns-validation-record-txt/artifacts/diagram-target.svg)
 
 ## Hybrid use cases
 

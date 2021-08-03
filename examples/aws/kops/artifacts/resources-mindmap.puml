@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project kops
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Policy (5)
+++++ Group (1)
+++++ User (1)
++++ route53
+++++ HostedZone (2)
+++++ Record (1)
++++ s3
+++++ Bucket (1)
+@endmindmap
