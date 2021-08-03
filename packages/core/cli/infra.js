@@ -8,7 +8,7 @@ const logger = require("../logger")({ prefix: "Infra" });
 
 const createProviderMaker =
   ({ programOptions, stage, config }) =>
-  (provider, { config: configUser, configs = [], manifests } = {}) =>
+  (provider, { config: configUser, configs = [], ...otherProps } = {}) =>
     pipe([
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
@@ -18,7 +18,7 @@ const createProviderMaker =
           configs: [configUser, ...configs, config],
           programOptions,
           stage,
-          manifests,
+          ...otherProps,
         }),
     ])();
 

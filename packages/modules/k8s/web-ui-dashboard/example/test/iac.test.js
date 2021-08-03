@@ -1,10 +1,11 @@
 const assert = require("assert");
+const path = require("path");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const { createStack } = require("../iac");
 
-describe("K8S WebUiDashboard Module", async function () {
+describe.skip("K8S WebUiDashboard Module", async function () {
   before(async function () {
     try {
       ConfigLoader({ path: "../../../../examples/multi" });
@@ -13,7 +14,8 @@ describe("K8S WebUiDashboard Module", async function () {
     }
   });
   it("run", async function () {
-    const cli = await Cli({ createStack });
+    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
+    const cli = await Cli({ programOptions, createStack });
 
     await cli.graphTree({
       commandOptions: { full: true },

@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project iam-policy
+skinparam monochrome true
++ Infra
+++ google
++++ iam
+++++ ServiceAccount (1)
+++++ Policy (1)
+@endmindmap

@@ -1,0 +1,22 @@
+{
+  "name": "@grucloud/example-google-vm-simple",
+  "version": "1.31.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
+    "e2e": "gc d -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.31.0",
+    "@grucloud/provider-google": "^1.31.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
+  }
+}

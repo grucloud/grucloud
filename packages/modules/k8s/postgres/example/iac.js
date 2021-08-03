@@ -4,9 +4,9 @@ const PostgresStack = require("@grucloud/module-k8s-postgres");
 
 // TODO use PostgresStack.hook
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({
-    configs: [config, PostgresStack.config],
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(K8sProvider, {
+    configs: [require("./config"), PostgresStack.config],
   });
 
   const namespace = provider.makeNamespace({

@@ -3,30 +3,7 @@ title Resources for project k8s
 skinparam monochrome true
 + Infra
 ++ k8s
-+++ ServiceAccount (2)
-++++ dashboard-admin-user
-++++ kubernetes-dashboard
-+++ ClusterRoleBinding (2)
-++++ dashboard-admin-user
-++++ kubernetes-dashboard
 +++ Namespace (1)
-++++ kubernetes-dashboard
-+++ Service (2)
-++++ kubernetes-dashboard
-++++ dashboard-metrics-scraper
-+++ Secret (3)
-++++ kubernetes-dashboard-certs
-++++ kubernetes-dashboard-csrf
-++++ kubernetes-dashboard-key-holder
-+++ ConfigMap (1)
-++++ kubernetes-dashboard-settings
-+++ Role (1)
-++++ kubernetes-dashboard
-+++ ClusterRole (1)
-++++ kubernetes-dashboard
-+++ RoleBinding (1)
-++++ kubernetes-dashboard
-+++ Deployment (2)
-++++ kubernetes-dashboard
-++++ dashboard-metrics-scraper
++++ Service (1)
++++ Deployment (1)
 @endmindmap

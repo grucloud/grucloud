@@ -3,6 +3,11 @@ title Resources for project aws
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
-++++ Instance (1)
++++ route53Domain
+++++ Domain (1)
++++ route53
+++++ HostedZone (1)
+++++ Record (1)
++++ acm
+++++ Certificate (1)
 @endmindmap

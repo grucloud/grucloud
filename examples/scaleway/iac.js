@@ -35,9 +35,12 @@ const createResources = async ({ provider }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   // Create Scaleway provider
-  const provider = ScalewayProvider({ name: "scaleway", config });
+  const provider = createProvider(ScalewayProvider, {
+    name: "scaleway",
+    config: require("./config"),
+  });
   const resources = await createResources({ provider });
 
   return {

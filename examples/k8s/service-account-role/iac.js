@@ -7,10 +7,10 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const podPolicy = require("./pod-policy.json");
 
-const createAwsStack = async ({ config }) => {
-  const provider = AwsProvider({ config });
+const createAwsStack = async ({ createProvider, config }) => {
+  const provider = createProvider(AwsProvider, { config });
 
-  const iamPodPolicy = provider.makeIamPolicy({
+  const iamPodPolicy = provider.iam.makePolicy({
     name: "PodPolicy",
     properties: () => ({
       PolicyDocument: podPolicy,
@@ -18,7 +18,7 @@ const createAwsStack = async ({ config }) => {
     }),
   });
 
-  const rolePod = provider.makeIamRole({
+  const rolePod = provider.iam.makeRole({
     name: "role-pod",
     dependencies: { policies: [iamPodPolicy] },
     properties: () => ({
@@ -44,11 +44,12 @@ const createAwsStack = async ({ config }) => {
 };
 
 const createK8sStack = async ({
+  createProvider,
   config,
   resources: { rolePod },
   dependencies,
 }) => {
-  const provider = K8sProvider({ config, dependencies });
+  const provider = createProvider(K8sProvider, { config, dependencies });
   const { ui, namespaceName } = provider.config;
   assert(ui);
   assert(namespaceName);
@@ -119,9 +120,13 @@ const createK8sStack = async ({
   };
 };
 
-exports.createStack = async () => {
-  const awsStack = await createAwsStack({ config: require("./configAws") });
+exports.createStack = async ({ createProvider }) => {
+  const awsStack = await createAwsStack({
+    createProvider,
+    config: require("./configAws"),
+  });
   const k8sStack = await createK8sStack({
+    createProvider,
     config: require("./configK8s"),
     resources: awsStack.resources,
     dependencies: { aws: awsStack.provider },
@@ -135,7 +140,7 @@ exports.createStack = async () => {
   });
   const { ingress } = k8sStack.resources;
 
-  const loadBalancerRecord = await awsStack.provider.route53.makeRoute53Record({
+  const loadBalancerRecord = await awsStack.provider.route53.makeRecord({
     name: `record-alias-load-balancer-${domainName}.`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies: { ingress } }) => {

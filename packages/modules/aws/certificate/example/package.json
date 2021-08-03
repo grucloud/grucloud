@@ -7,7 +7,7 @@
   "scripts": {
     "graph-target": "gc graph --title 'Certificate Module'",
     "graph-live": "gc list --graph --title 'Certificate Module'",
-    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
+    "test": "mocha --exit"
   },
   "keywords": [
     "SSL",

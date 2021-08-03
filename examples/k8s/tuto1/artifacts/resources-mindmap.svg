@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="228px" preserveAspectRatio="none" style="width:350px;height:228px;background:#FFFFFF;" version="1.1" viewBox="0 0 350 228" width="350px" zoomAndPan="magnify"><defs><filter height="300%" id="f12nzdonqo79nx" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="none" height="26.4883" style="stroke:none;stroke-width:1.0;" width="208" x="41" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="198" x="46" y="33.5352">Resources for project tuto1</text><rect fill="#F8F8F8" filter="url(#f12nzdonqo79nx)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="52" x="10" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="137.5117">Infra</text><rect fill="#F8F8F8" filter="url(#f12nzdonqo79nx)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="44" x="112" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="24" x="122" y="137.5117">k8s</text><rect fill="#F8F8F8" filter="url(#f12nzdonqo79nx)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="121" x="206" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="101" x="216" y="81.0234">Namespace (1)</text><path d="M156,132.2207 L166,132.2207 C181,132.2207 181,75.7324 196,75.7324 L206,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><rect fill="#F8F8F8" filter="url(#f12nzdonqo79nx)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="91" x="206" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="216" y="137.5117">Service (1)</text><path d="M156,132.2207 L166,132.2207 C181,132.2207 181,132.2207 196,132.2207 L206,132.2207 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><rect fill="#F8F8F8" filter="url(#f12nzdonqo79nx)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="125" x="206" y="170.4648"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105" x="216" y="194">Deployment (1)</text><path d="M156,132.2207 L166,132.2207 C181,132.2207 181,188.709 196,188.709 L206,188.709 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M62,132.2207 L72,132.2207 C87,132.2207 87,132.2207 102,132.2207 L112,132.2207 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[044b7a59a7bf29f9faa8e38aff3d7d51]
+@startmindmap
+title Resources for project tuto1
+skinparam monochrome true
++ Infra
+++ k8s
++++ Namespace (1)
++++ Service (1)
++++ Deployment (1)
+@endmindmap
+
+PlantUML version 1.2021.8(Sat Jun 26 05:20:59 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

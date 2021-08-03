@@ -4,7 +4,7 @@ const { createStack } = require("../iac");
 const config = require("../config");
 const path = require("path");
 
-describe("EC2 simple instance", async function () {
+describe.skip("EC2 simple instance", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };

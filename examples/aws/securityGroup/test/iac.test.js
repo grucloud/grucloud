@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const config = require("../config");
@@ -6,7 +7,8 @@ const config = require("../config");
 describe("SecurityGroup", async function () {
   before(async function () {});
   it("run", async function () {
-    const cli = await Cli({ createStack, config });
+    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
+    const cli = await Cli({ programOptions, createStack, config });
 
     await cli.graphTree({
       commandOptions: {},

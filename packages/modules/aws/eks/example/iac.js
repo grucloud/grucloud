@@ -2,9 +2,9 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const ModuleAwsEKS = require("@grucloud/module-aws-eks");
 
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({
-    configs: [ModuleAwsVpc.config, ModuleAwsEKS.config, config],
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
+    configs: [require("./config"), ModuleAwsVpc.config, ModuleAwsEKS.config],
   });
 
   const vpcResources = await ModuleAwsVpc.createResources({

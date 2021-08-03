@@ -1361,13 +1361,12 @@ const pumlToSvg =
         assert(type);
         logger.debug(`pumlToSvg`);
       }),
-      tap(() =>
-        fse.outputFile(path.resolve(workingDirectory, pumlFile), result)
-      ),
-      tap(() => {
-        console.log(`Resource tree file written to: ${pumlFile}`);
+      () => path.resolve(workingDirectory, pumlFile),
+      tap((pumlFileFull) => fse.outputFile(pumlFileFull, result)),
+      tap((pumlFileFull) => {
+        console.log(`Resource tree file written to: ${pumlFileFull}`);
       }),
-      () => `java -jar ${plantumlJar} -t${type} ${pumlFile}`,
+      (pumlFileFull) => `java -jar ${plantumlJar} -t${type} ${pumlFileFull}`,
       tap((command) => {
         console.log(`Executing: '${command}'`);
       }),
@@ -1430,6 +1429,7 @@ exports.Cli = ({
 } = {}) =>
   pipe([
     tap(() => {
+      logger.debug(`Cli ${JSON.stringify({ programOptions, stage })}`);
       assert(isFunction(createStack), "createStack must be a function");
       assert(isFunction(config), "config must be a function");
     }),
@@ -1452,7 +1452,7 @@ exports.Cli = ({
             assign({
               infra: () => infra,
               programOptions: pipe([
-                get("programOptions", {}),
+                () => programOptions,
                 defaultsDeep({ workingDirectory: process.cwd() }),
               ]),
             }),
@@ -1491,7 +1491,7 @@ exports.Cli = ({
             assign({
               infra: () => infra,
               programOptions: pipe([
-                get("programOptions", {}),
+                () => programOptions,
                 defaultsDeep({ workingDirectory: process.cwd() }),
               ]),
             }),
@@ -1517,7 +1517,7 @@ exports.Cli = ({
             assign({
               infra: () => infra,
               programOptions: pipe([
-                get("programOptions", {}),
+                () => programOptions,
                 defaultsDeep({ workingDirectory: process.cwd() }),
               ]),
             }),

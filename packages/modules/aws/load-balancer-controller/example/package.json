@@ -7,7 +7,7 @@
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Controller Module'",
     "graph-live": "gc list --graph --title 'Load Balancer Controller Module'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +17,8 @@
     "@grucloud/module-aws-load-balancer-controller": "^1.33.0",
     "@grucloud/module-aws-vpc": "^1.33.0",
     "@grucloud/provider-aws": "^1.33.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }

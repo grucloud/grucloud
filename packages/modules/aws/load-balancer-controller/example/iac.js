@@ -3,13 +3,12 @@ const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const ModuleAwsEks = require("@grucloud/module-aws-eks");
 const ModuleAwsLoadBalancerController = require("@grucloud/module-aws-load-balancer-controller");
 
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       ModuleAwsEks.config,
       ModuleAwsVpc.config,
       ModuleAwsLoadBalancerController.config,
-      config,
     ],
   });
 

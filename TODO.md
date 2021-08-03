@@ -70,6 +70,7 @@
 
 ## Aws
 
+- RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com
 - dependency hosted zone => domain
 - ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
   4:key/79507edb-c301-43a8-8217-524d24f6daa7

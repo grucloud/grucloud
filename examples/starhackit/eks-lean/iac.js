@@ -12,9 +12,8 @@ const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 
 const BaseStack = require("../base/k8sStackBase");
 
-const createAwsStack = async ({ stage }) => {
-  const provider = AwsProvider({
-    stage,
+const createAwsStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       ModuleAwsCertificate.config,
       ModuleAwsEks.config,
@@ -136,9 +135,8 @@ const createAwsStack = async ({ stage }) => {
   };
 };
 
-const createK8sStack = async ({ stackAws, stage }) => {
-  const provider = K8sProvider({
-    stage,
+const createK8sStack = async ({ createProvider, stackAws }) => {
+  const provider = createProvider(K8sProvider, {
     configs: [require("./configK8s"), ...BaseStack.configs],
     dependencies: { aws: stackAws.provider },
   });
@@ -155,9 +153,9 @@ const createK8sStack = async ({ stackAws, stage }) => {
   };
 };
 
-exports.createStack = async ({ stage }) => {
-  const stackAws = await createAwsStack({ stage });
-  const stackK8s = await createK8sStack({ stackAws, stage });
+exports.createStack = async ({ createProvider }) => {
+  const stackAws = await createAwsStack({ createProvider });
+  const stackK8s = await createK8sStack({ createProvider, stackAws });
 
   return {
     hookGlobal: require("./hookGlobal"),

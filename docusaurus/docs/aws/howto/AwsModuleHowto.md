@@ -227,8 +227,10 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 // const ModuleAwsVpc = require("../iac"); When the package is not published yet.
 
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({ configs: [config, ModuleAwsVpc.config] });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
+    configs: [require("./config"), ModuleAwsVpc.config],
+  });
   const resources = await ModuleAwsVpc.createResources({
     provider,
   });

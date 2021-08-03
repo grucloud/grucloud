@@ -9,7 +9,7 @@ const createResources = async ({ provider, resources: {} }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async () => {
+exports.createStack = async ({ createProvider }) => {
   const provider = AzureProvider({ config: require("./config") });
   const { stage } = provider.config;
   assert(stage, "missing stage");

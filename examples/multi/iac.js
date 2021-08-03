@@ -38,8 +38,8 @@ const ScalewayStack = require("../scaleway/iac");
 
 const MockStack = require("../mock/mock/iac");
 
-const createAws = async ({}) => {
-  const provider = AwsProvider({
+const createAws = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       require("./configAws"),
       AwsStackEC2.config,
@@ -111,9 +111,9 @@ const createAws = async ({}) => {
   return { provider };
 };
 
-const createGoogle = async ({}) => {
+const createGoogle = async ({ createProvider }) => {
   // Google
-  const provider = GoogleProvider({
+  const provider = createProvider(GoogleProvider, {
     config: require("./configGcp"),
   });
   const { stage } = provider.config;
@@ -153,8 +153,8 @@ const createGoogle = async ({}) => {
   return { provider };
 };
 
-const createAzure = async ({ config }) => {
-  const provider = AzureProvider({
+const createAzure = async ({ createProvider }) => {
+  const provider = createProvider(AzureProvider, {
     config: require("./configAzure"),
   });
   const resources = await AzureStack.createResources({ provider });
@@ -178,14 +178,14 @@ const createMock = async ({ config }) => {
   return { provider, resources };
 };
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       //await createMock({ config }),
-      await createAws({ config }),
+      await createAws({ createProvider }),
       //await createAwsUsEast1({ config }),
-      await createAzure({ config }),
-      await createGoogle({ config }),
+      await createAzure({ createProvider }),
+      await createGoogle({ createProvider }),
       //await createScaleway({ config }),
     ],
   };

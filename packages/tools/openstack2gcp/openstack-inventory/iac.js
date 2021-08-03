@@ -10,8 +10,10 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async () => {
-  const provider = OpenStackProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(OpenStackProvider, {
+    config: require("./config"),
+  });
   const resources = await createResources({ provider });
 
   return {

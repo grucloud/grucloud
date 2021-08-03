@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project example
+skinparam monochrome true
++ Infra
+++ k8s
++++ Namespace (1)
+++++ test-redis
++++ StatefulSet (1)
+++++ redis
++++ Service (1)
+++++ redis
+@endmindmap

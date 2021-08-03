@@ -66,8 +66,10 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async () => {
-  const provider = GoogleProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, {
+    config: require("./config"),
+  });
   const { stage } = provider.config;
   assert(stage, "missing stage");
   const serviceAccount = provider.iam.makeServiceAccount({

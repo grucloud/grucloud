@@ -7,7 +7,7 @@
   "scripts": {
     "graph-target": "gc graph --title 'EKS Module'",
     "graph-live": "gc list --graph --title 'EKS Module'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +17,8 @@
     "@grucloud/module-aws-vpc": "^1.33.0",
     "@grucloud/provider-aws": "^1.33.0",
     "rubico": "^1.6.27"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }

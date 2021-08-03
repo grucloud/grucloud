@@ -73,10 +73,12 @@ Now it is time to edit the infrastructure **iac.js** file that describes the arc
 const assert = require("assert");
 const { AzureProvider } = require("@grucloud/provider-azure");
 
-exports.createStack = async ({ config, stage }) => {
+exports.createStack = async ({ createProvider }) => {
   assert(stage);
   // Create an Azure provider
-  const provider = AzureProvider({ config });
+  const provider = createProvider(AzureProvider, {
+    config: require("./config"),
+  });
 
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = provider.makeResourceGroup({
