@@ -34,7 +34,8 @@ describe("MockProvider", async function () {
 
   before(async () => {
     stack = await createStack({
-      config: () => ({ createAxios }),
+      createProvider: (provider) =>
+        provider({ config: () => ({ createAxios }) }),
     });
     provider = stack.provider;
     await provider.start();

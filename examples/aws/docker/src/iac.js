@@ -4,27 +4,27 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const { AzureProvider } = require("@grucloud/provider-azure");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: AwsProvider({
+        provider: createProvider(AwsProvider, {
           config: () => ({ region: process.env.AWS_REGION }),
         }),
       },
       {
-        provider: GoogleProvider({
+        provider: createProvider(GoogleProvider, {
           configs: [config, () => ({ region: process.env.GCP_REGION })],
         }),
       },
       {
-        provider: AzureProvider({
+        provider: createProvider(AzureProvider, {
           config: () => ({
             location: process.env.LOCATION,
           }),
         }),
       },
-      { provider: K8sProvider({ config }) },
+      { provider: createProvider(K8sProvider, { config: () => ({}) }) },
     ],
   };
 };

@@ -1,10 +1,10 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: AwsProvider({
+        provider: createProvider(AwsProvider, {
           config: () => ({ region: process.env.AWS_REGION }),
         }),
       },

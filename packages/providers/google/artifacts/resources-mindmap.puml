@@ -3,5 +3,11 @@ title Resources for project google
 skinparam monochrome true
 + Infra
 ++ google
-
++++ iam
+++++ ServiceAccount (1)
++++ compute
+++++ Address (1)
+++++ Firewall (2)
+++++ Disk (1)
+++++ VmInstance (1)
 @endmindmap

@@ -103,8 +103,8 @@ It is now time to create a K8s provider and uses the generated **createResources
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const { createResources } = require("../resources");
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({ config });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(K8sProvider, { config: require("./config") });
   const resources = await createResources({ provider });
   return { provider, resources };
 };

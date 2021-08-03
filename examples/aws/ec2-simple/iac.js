@@ -1,7 +1,7 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-exports.createStack = async ({ stage }) => {
-  const provider = AwsProvider({ config: require("./config"), stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, { config: require("./config") });
   const { config } = provider;
   const ec2Instance = provider.ec2.makeInstance({
     name: config.ec2Instance.name,

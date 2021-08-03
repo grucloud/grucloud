@@ -5,13 +5,9 @@ skinparam monochrome true
 ++ aws
 +++ route53Domain
 ++++ Domain (1)
-+++++ grucloud.org
 +++ route53
 ++++ HostedZone (1)
-+++++ example-module-aws-certificate.grucloud.org.
 ++++ Record (1)
-+++++ certificate-validation-example-module-aws-certificate.grucloud.org.
 +++ acm
 ++++ Certificate (1)
-+++++ example-module-aws-certificate.grucloud.org
 @endmindmap

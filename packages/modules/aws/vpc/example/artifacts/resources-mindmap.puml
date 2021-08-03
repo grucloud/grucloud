@@ -5,24 +5,10 @@ skinparam monochrome true
 ++ aws
 +++ ec2
 ++++ Vpc (1)
-+++++ vpc
 ++++ InternetGateway (1)
-+++++ internet-gateway
 ++++ Subnet (4)
-+++++ subnet-public-a
-+++++ subnet-public-b
-+++++ subnet-private-a
-+++++ subnet-private-b
 ++++ RouteTable (3)
-+++++ route-table-public
-+++++ route-table-private-a
-+++++ route-table-private-b
 ++++ Route (3)
-+++++ route-public
-+++++ route-private-a
-+++++ route-private-b
 ++++ ElasticIpAddress (1)
-+++++ iep
 ++++ NatGateway (1)
-+++++ nat-gateway
 @endmindmap

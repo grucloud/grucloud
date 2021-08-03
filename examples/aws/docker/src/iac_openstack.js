@@ -1,10 +1,10 @@
 const { OpenStackProvider } = require("@grucloud/provider-openstack");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: OpenStackProvider({
+        provider: createProvider(OpenStackProvider, {
           config: () => ({}),
         }),
       },

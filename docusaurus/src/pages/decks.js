@@ -131,8 +131,8 @@ if (ExecutionEnvironment.canUseDOM) {
           >
             {`const { GoogleProvider } = require("@grucloud/provider-google");
 
-exports.createStack = async ({ config }) => {
-  const provider = GoogleProvider({ config });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, { config: require("./config") });
 
   const server = provider.compute.makeVmInstance({
     name: "webserver",

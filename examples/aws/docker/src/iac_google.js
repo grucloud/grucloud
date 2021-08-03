@@ -1,11 +1,11 @@
 const { GoogleProvider } = require("@grucloud/provider-google");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: GoogleProvider({
-          configs: [config, () => ({ region: process.env.GCP_REGION })],
+        provider: createProvider(GoogleProvider, {
+          configs: [() => ({ region: process.env.GCP_REGION })],
         }),
       },
     ],

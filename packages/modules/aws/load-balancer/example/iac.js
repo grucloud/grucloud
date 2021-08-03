@@ -5,9 +5,8 @@ const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 
-exports.createStack = async ({ stage }) => {
-  const provider = AwsProvider({
-    stage,
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       ModuleAwsCertificate.config,
       //ModuleAwsVpc.config,

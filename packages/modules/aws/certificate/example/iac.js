@@ -2,9 +2,9 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({
-    configs: [config, ModuleAwsCertificate.config],
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
+    configs: [require("./config"), ModuleAwsCertificate.config],
   });
 
   assert(provider.config.certificate);

@@ -10,8 +10,8 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const ModuleCertManager = require("@grucloud/module-k8s-cert-manager");
 const ModuleK8sLoadBalancerController = require("@grucloud/module-k8s-aws-load-balancer-controller");
 
-const createStackAws = async () => {
-  const provider = AwsProvider({
+const createStackAws = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       require("./configAws"),
       ModuleAwsLoadBalancerController.config,
@@ -44,8 +44,8 @@ const createStackAws = async () => {
   };
 };
 
-const createStackK8s = async ({ stackAws }) => {
-  const provider = K8sProvider({
+const createStackK8s = async ({ createProvider, stackAws }) => {
+  const provider = createProvider(K8sProvider, {
     configs: [
       require("./configK8s"),
       ModuleK8sLoadBalancerController.config,
@@ -68,9 +68,9 @@ const createStackK8s = async ({ stackAws }) => {
   return { provider, resources: { certResources, lbcResources } };
 };
 
-exports.createStack = async () => {
-  const stackAws = await createStackAws();
-  const stackK8s = await createStackK8s({ stackAws });
+exports.createStack = async ({ createProvider }) => {
+  const stackAws = await createStackAws({ createProvider });
+  const stackK8s = await createStackK8s({ createProvider, stackAws });
   return {
     //TODO hookGlobal: require("./hookGlobal"),
     stacks: [stackAws, stackK8s],

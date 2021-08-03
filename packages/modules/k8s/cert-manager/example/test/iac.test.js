@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
@@ -13,7 +14,9 @@ describe("K8S Cert Manager Module", async function () {
     }
   });
   it("run", async function () {
-    const cli = await Cli({ createStack });
+    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
+
+    const cli = await Cli({ programOptions, createStack });
 
     await cli.graphTree({
       commandOptions: { full: true },

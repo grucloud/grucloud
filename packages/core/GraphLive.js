@@ -42,21 +42,24 @@ const ResourceTypesHide = ["Namespace"];
 
 const nodeNameFromResource = (resource) => resource.name || resource.id;
 
-const buildNode = ({
-  namespace,
-  options: {
-    cluster: { node },
-  },
-}) => (resource) => `"${resource.type}::${namespace}::${resource.id}" [label=<
+const buildNode =
+  ({
+    namespace,
+    options: {
+      cluster: { node },
+    },
+  }) =>
+  (resource) =>
+    `"${resource.type}::${namespace}::${resource.id}" [label=<
   <table color='${node.color}' border="0">
      <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
-  node.type.pointSize
-}"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+      node.type.pointSize
+    }"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
-  node.name.pointSize
-}">${formatNodeName({
-  name: nodeNameFromResource(resource),
-})}</FONT><br align="left" /></td></tr>
+      node.name.pointSize
+    }">${formatNodeName({
+      name: nodeNameFromResource(resource),
+    })}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
 const buildSubGraph = ({ providerName, options, namespace, resources }) =>
@@ -82,33 +85,35 @@ const resourceNameFilterDefault = and([
   //({ name }) => !name.startsWith("default"),
 ]);
 
-const filterResources = ({
-  namespacesHide = NamespacesHide,
-  resourceTypesHide = ResourceTypesHide,
-  resourceNameFilter = resourceNameFilterDefault,
-}) => (resources) =>
-  pipe([
-    tap(() => {
-      logger.debug(`filterResources #resources ${size(resources)}`);
-    }),
-    () => resources,
-    filter(not(isEmpty)),
-    filter(
-      and([
-        get("show"),
-        (resource) => not(includes(resource.namespace))(namespacesHide),
-        (resource) => not(includes(resource.type))(resourceTypesHide),
-        resourceNameFilter,
-      ])
-    ),
-    tap((filteredResources) => {
-      logger.debug(
-        `filterResources filtered #resources ${size(resources)} to ${size(
-          filteredResources
-        )}`
-      );
-    }),
-  ])();
+const filterResources =
+  ({
+    namespacesHide = NamespacesHide,
+    resourceTypesHide = ResourceTypesHide,
+    resourceNameFilter = resourceNameFilterDefault,
+  }) =>
+  (resources) =>
+    pipe([
+      tap(() => {
+        logger.debug(`filterResources #resources ${size(resources)}`);
+      }),
+      () => resources,
+      filter(not(isEmpty)),
+      filter(
+        and([
+          get("show"),
+          (resource) => not(includes(resource.namespace))(namespacesHide),
+          (resource) => not(includes(resource.type))(resourceTypesHide),
+          resourceNameFilter,
+        ])
+      ),
+      tap((filteredResources) => {
+        logger.debug(
+          `filterResources filtered #resources ${size(resources)} to ${size(
+            filteredResources
+          )}`
+        );
+      }),
+    ])();
 
 const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
@@ -191,17 +196,8 @@ const associationIdString = ({
     }),
     () => resources,
     switchCase([
+      pipe([find(eq(get("id"), idTo)), get("show")]),
       pipe([
-        find(eq(get("id"), idTo)),
-        get("show"),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
-      ]),
-      pipe([
-        tap((xxx) => {
-          logger.debug(``);
-        }),
         () => ({
           nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom }),
           nodeTo: buildNodeToId({
@@ -240,14 +236,8 @@ const associationIdObject = ({
           ])
         ),
         get("show"),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
       ]),
       pipe([
-        tap((xxx) => {
-          logger.debug(``);
-        }),
         () => ({
           nodeFrom: `"${buildNodeFrom({ type, namespaceFrom, idFrom })}"`,
           nodeTo: `"${dependency.type}::${dependencyId.namespace}::${dependencyId.name}"`,

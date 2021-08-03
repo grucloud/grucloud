@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project service-account-role
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Policy (1)
+++++ Role (1)
++++ route53
+++++ HostedZone (1)
+++++ Record (1)
+-- k8s
+--- Namespace (1)
+--- ServiceAccount (1)
+--- Ingress (1)
+@endmindmap

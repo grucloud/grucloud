@@ -187,9 +187,9 @@ const createResources = async ({ provider, resources: { namespace } }) => {
 exports.createResources = createResources;
 // Only for "gc graph"
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({
-    config,
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(K8sProvider, {
+    config: require("./config"),
   });
 
   const namespace = provider.makeNamespace({

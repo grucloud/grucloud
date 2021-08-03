@@ -20,7 +20,7 @@
     "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
     "test:example": "node test/testExamples.js",
     "start:mock": "nodemon node packages/tools/mockServer/MockServerRun.js",
-    "cpd": "jscpd --ignore '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages",
+    "cpd": "jscpd --ignore resource.js --ignore '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages",
     "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
     "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh",
     "np": "np --test-script  test:mock"

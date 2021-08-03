@@ -1,13 +1,17 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, filter, map } = require("rubico");
+const { pipe, eq, get, tap, filter, map, not, reduce } = require("rubico");
 
-const { defaultsDeep, isFunction, pluck, find } = require("rubico/x");
+const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
 
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const AzClient = require("./AzClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const AzTag = require("./AzTag");
-const { getField, notAvailable } = require("@grucloud/core/ProviderCommon");
+const {
+  getField,
+  notAvailable,
+  mergeConfig,
+} = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { isUpByIdCore } = require("@grucloud/core/Common");
 const { checkEnv } = require("@grucloud/core/Utils");
@@ -373,9 +377,12 @@ const fnSpecs = (config) => {
   ];
 };
 
-exports.AzureProvider = ({ name = "azure", config, ...other }) => {
-  assert(isFunction(config), "config must be a function");
-
+exports.AzureProvider = ({
+  name = "azure",
+  config,
+  configs = [],
+  ...other
+}) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
 
   let bearerToken;
@@ -395,10 +402,14 @@ exports.AzureProvider = ({ name = "azure", config, ...other }) => {
     retryDelay: 10e3,
   };
 
+  const mergeConfigAzure = () =>
+    mergeConfig({ configDefault: configProviderDefault, config, configs });
+
   const info = () => ({
     subscriptionId: process.env.SUBSCRIPTION_ID,
     tenantId: process.env.TENANT_ID,
     appId: process.env.APP_ID,
+    config: mergeConfigAzure(),
   });
 
   const core = CoreProvider({
@@ -407,10 +418,7 @@ exports.AzureProvider = ({ name = "azure", config, ...other }) => {
     name,
     mandatoryConfigKeys: ["location"],
     get config() {
-      return pipe([
-        () => config(configProviderDefault),
-        defaultsDeep(configProviderDefault),
-      ])();
+      return mergeConfigAzure();
     },
     fnSpecs,
     start,

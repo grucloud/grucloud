@@ -1,10 +1,10 @@
 const { AzureProvider } = require("@grucloud/provider-azure");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: AzureProvider({
+        provider: createProvider(AzureProvider, {
           config: () => ({
             location: process.env.LOCATION,
           }),

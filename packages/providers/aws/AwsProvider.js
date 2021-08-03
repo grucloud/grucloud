@@ -8,6 +8,7 @@ const { tos } = require("@grucloud/core/tos");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
+const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
@@ -120,11 +121,21 @@ exports.AwsProvider = ({
 
   const getRegionDefault = () => region || AWS.config.region;
 
+  const configDefault = {
+    stage,
+    zone: () => zone,
+    accountId: () => accountId,
+    region: getRegionDefault(),
+  };
+
+  const mergeConfigAws = () => mergeConfig({ configDefault, config, configs });
+
   const getRegion = (config) => config.region || getRegionDefault();
   const getZone = ({ zones, config }) => config.zone() || first(zones);
+
   const start = async () => {
     accountId = await fetchAccountId();
-    const merged = mergeConfig({ config, configs });
+    const merged = mergeConfigAws();
     region = getRegion(merged);
     zones = await getAvailabilityZonesName({ region });
     assert(zones, `no zones for region ${region}`);
@@ -137,25 +148,10 @@ exports.AwsProvider = ({
     });
   };
 
-  const mergeConfig = ({ config, configs }) =>
-    pipe([
-      () => [...configs, config],
-      filter((x) => x),
-      reduce((acc, config) => defaultsDeep(acc)(config(acc)), {
-        stage,
-        zone: () => zone,
-        accountId: () => accountId,
-        region: getRegionDefault(),
-      }),
-      tap((merged) => {
-        logger.info(`mergeConfig : ${tos(merged)}`);
-      }),
-    ])();
-
   const info = () => ({
     accountId,
     zone,
-    config: omit(["accountId", "zone"])(mergeConfig({ config, configs })),
+    config: omit(["accountId", "zone"])(mergeConfigAws()),
   });
 
   return CoreProvider({
@@ -164,7 +160,7 @@ exports.AwsProvider = ({
     name,
     programOptions,
     get config() {
-      return mergeConfig({ config, configs });
+      return mergeConfigAws();
     },
     fnSpecs,
     start,

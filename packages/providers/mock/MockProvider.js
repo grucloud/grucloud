@@ -12,7 +12,7 @@ const { createAxiosMock } = require("./MockAxios");
 
 const logger = require("@grucloud/core/logger")({ prefix: "MockProvider" });
 const { tos } = require("@grucloud/core/tos");
-const { getField } = require("@grucloud/core/ProviderCommon");
+const { getField, mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const fnSpecs = (config) => {
   const { createAxios } = config;
@@ -79,12 +79,8 @@ const fnSpecs = (config) => {
           url: `/server`,
           config,
           configDefault: async ({ name, properties, dependencies: { ip } }) => {
-            const {
-              machineType,
-              diskType,
-              diskSizeGb,
-              ...otherProperties
-            } = properties;
+            const { machineType, diskType, diskSizeGb, ...otherProperties } =
+              properties;
             return defaultsDeep({
               name,
               zone: `projects/${config.project}/zones/${config.zone}`,
@@ -128,13 +124,18 @@ const fnSpecs = (config) => {
 };
 const providerType = "mock";
 
-exports.MockProvider = ({ name = providerType, config, ...other }) => {
-  assert(isFunction(config));
+exports.MockProvider = ({
+  name = providerType,
+  config,
+  configs = [],
+  ...other
+}) => {
+  //assert(isFunction(config));
 
   const configDefault = {
     retryCount: 2,
     retryDelay: 100,
-    mockCloud: MockCloud(config.mockCloudInitStates),
+    mockCloud: MockCloud(),
     createAxios: createAxiosMock,
   };
 
@@ -144,14 +145,16 @@ exports.MockProvider = ({ name = providerType, config, ...other }) => {
   };
 
   const info = () => {
-    return { ...config };
+    return mergeConfigMock();
   };
+
+  const mergeConfigMock = () => mergeConfig({ configDefault, config, configs });
 
   return CoreProvider({
     type: providerType,
     name,
     get config() {
-      return defaultsDeep(configDefault)(config());
+      return mergeConfigMock();
     },
     fnSpecs,
     start,

@@ -72,8 +72,8 @@ const createResource = async ({ provider }) => {
   return { namespace, service, deployment };
 };
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({ config });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(K8sProvider, { config: require("./config") });
   const resources = await createResource({ provider });
   return { provider, resources, hooks: [require("./hook")] };
 };

@@ -18,9 +18,8 @@ const BaseStack = require("../base/k8sStackBase");
 
 const { createIngress } = require("./eksIngress");
 
-const createAwsStack = async ({ stage }) => {
-  const provider = AwsProvider({
-    stage,
+const createAwsStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, {
     configs: [
       ModuleAwsCertificate.config,
       ModuleAwsEks.config,
@@ -80,9 +79,8 @@ const createAwsStack = async ({ stage }) => {
   };
 };
 
-const createK8sStack = async ({ stackAws, stage }) => {
-  const provider = K8sProvider({
-    stage,
+const createK8sStack = async ({ createProvider, stackAws }) => {
+  const provider = createProvider(K8sProvider, {
     configs: [
       require("./configK8s"),
       ModuleCertManager.config,
@@ -100,12 +98,11 @@ const createK8sStack = async ({ stackAws, stage }) => {
     provider,
   });
 
-  const k8sLoadBalancerResources = await ModuleK8sAwsLoadBalancer.createResources(
-    {
+  const k8sLoadBalancerResources =
+    await ModuleK8sAwsLoadBalancer.createResources({
       provider,
       resources: stackAws.resources,
-    }
-  );
+    });
 
   const baseStackResources = await BaseStack.createResources({
     provider,
@@ -133,9 +130,9 @@ const createK8sStack = async ({ stackAws, stage }) => {
   };
 };
 
-exports.createStack = async ({ stage }) => {
-  const stackAws = await createAwsStack({ stage });
-  const stackK8s = await createK8sStack({ stackAws, stage });
+exports.createStack = async ({ createProvider }) => {
+  const stackAws = await createAwsStack({ createProvider });
+  const stackK8s = await createK8sStack({ createProvider, stackAws });
 
   const { hostedZone, eks } = stackAws.resources;
   assert(hostedZone);

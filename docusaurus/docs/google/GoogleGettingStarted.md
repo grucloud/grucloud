@@ -240,8 +240,10 @@ const createResources = async ({ provider }) => {
   };
 };
 
-exports.createStack = async ({ config, stage }) => {
-  const provider = GoogleProvider({ config, stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, {
+    config: require("./config"),
+  });
   const resources = await createResources({ provider });
 
   return {

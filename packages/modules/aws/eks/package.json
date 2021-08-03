@@ -3,10 +3,7 @@
   "version": "1.33.0",
   "description": "Grucloud module to manage an EKS Cluster",
   "main": "iac.js",
-  "scripts": {
-    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "mocha --exit 'test/**/*.test.js'"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -14,9 +11,6 @@
     "@grucloud/module-aws-vpc": "^1.33.0",
     "@grucloud/provider-aws": "^1.33.0",
     "rubico": "^1.6.27"
-  },
-  "devDependencies": {
-    "mocha": "^8.3.2"
   },
   "keywords": [
     "aws",

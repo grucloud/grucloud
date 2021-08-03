@@ -9,8 +9,10 @@ const createResources = async ({ provider, resources: {} }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async () => {
-  const provider = GoogleProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, {
+    config: require("./config"),
+  });
   const { stage } = provider.config;
   assert(stage, "missing stage");
 

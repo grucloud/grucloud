@@ -2,8 +2,10 @@ const path = require("path");
 
 const { GoogleProvider } = require("@grucloud/provider-google");
 
-exports.createStack = async () => {
-  const provider = GoogleProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(GoogleProvider, {
+    config: require("./config"),
+  });
 
   const myBucket = provider.storage.makeBucket({
     name: `grucloud-test`,

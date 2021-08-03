@@ -141,8 +141,10 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async () => {
-  const provider = AzureProvider({ config: require("./config") });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AzureProvider, {
+    config: require("./config"),
+  });
   const resources = await createResources({ provider });
 
   return {

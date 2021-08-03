@@ -4,9 +4,9 @@ const RedisStack = require("@grucloud/module-k8s-redis");
 
 // TODO use RedisStack.hook
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({
-    configs: [config, RedisStack.config],
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(K8sProvider, {
+    configs: [RedisStack.config],
   });
 
   const namespace = provider.makeNamespace({
