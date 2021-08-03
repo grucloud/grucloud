@@ -51,22 +51,6 @@ describe("AwsElasticIpAddress", async function () {
       })
     );
 
-    const result = await cliCommands.list({
-      infra: { provider },
-      commandOptions: { our: true, types: ["ElasticIpAddress"] },
-    });
-    assert(!result.error);
-    assert(result.results);
-    //TODO
-    /*
-    const {
-      results: [eips],
-    } = provider.listLives({ options: { types: ["ElasticIpAddress"] } });
-    const resource = eips.resources[0].data;
-    assert.equal(eips.type, "ElasticIpAddress");
-    assert.equal(resource.Domain, "vpc");
-    assert(resource.PublicIp);
-*/
     await testPlanDestroy({ provider, types });
   });
 });

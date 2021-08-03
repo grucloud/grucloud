@@ -4,7 +4,9 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 
-describe("AWS VPC Module", async function () {
+const title = "VPC Module";
+
+describe(title, async function () {
   before(async function () {
     try {
       ConfigLoader({ path: "../../examples/multi" });
@@ -17,22 +19,29 @@ describe("AWS VPC Module", async function () {
     const cli = await Cli({ programOptions, createStack });
 
     await cli.graphTree({
-      commandOptions: {},
+      commandOptions: { title },
     });
 
     await cli.graphTarget({
-      commandOptions: {},
+      commandOptions: { title },
     });
 
     await cli.planDestroy({
       commandOptions: { force: true },
     });
+
     await cli.planApply({
       commandOptions: { force: true },
     });
+
+    await cli.list({
+      commandOptions: { our: true, title, graph: true },
+    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
     });
+
     // TODO list should be empty
     const result = await cli.list({
       commandOptions: { our: true },

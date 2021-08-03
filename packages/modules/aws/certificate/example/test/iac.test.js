@@ -4,6 +4,8 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 
+const title = "Certificate Module";
+
 describe("Certificate Module", async function () {
   before(async function () {
     try {
@@ -17,35 +19,27 @@ describe("Certificate Module", async function () {
     const cli = await Cli({ programOptions, createStack });
 
     await cli.graphTree({
-      commandOptions: {},
+      commandOptions: { title },
     });
 
     await cli.graphTarget({
-      commandOptions: {},
+      commandOptions: { title },
     });
 
     await cli.planDestroy({
       commandOptions: { force: true },
     });
-    await cli.planQuery({});
+
     await cli.planApply({
       commandOptions: { force: true },
     });
-    await cli.planApply({
-      commandOptions: {},
+
+    await cli.list({
+      commandOptions: { our: true, graph: true, title },
     });
-    await cli.planQuery({});
-    await cli.planRunScript({
-      commandOptions: { onDeployed: true },
-    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
-    });
-    await cli.planRunScript({
-      commandOptions: { onDestroyed: true },
-    });
-    await cli.planDestroy({
-      commandOptions: {},
     });
     // TODO list should be empty
     const result = await cli.list({

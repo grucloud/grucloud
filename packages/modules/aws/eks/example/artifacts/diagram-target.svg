@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1221)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-1221 1249,-1221 1249,4 -4,4"/>
-<text text-anchor="start" x="538.5" y="-1192.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project example</text>
-<text text-anchor="start" x="618.5" y="-1176.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="538.5" y="-1155.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="518.5" y="-1192.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project EKS Module</text>
+<text text-anchor="start" x="619" y="-1176.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="518.5" y="-1155.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-1133 1237,-1133 1237,-8 8,-8"/>
@@ -22,15 +22,15 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="58,-54 58,-542 1113,-542 1113,-54 58,-54"/>
 <text text-anchor="start" x="564.5" y="-65" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">VPC</text>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_aws_EKS</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="16,-641 16,-1125 1229,-1125 1229,-641 16,-641"/>
-<text text-anchor="start" x="601.5" y="-652" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">EKS</text>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_aws_</title>
 <polygon fill="#eeeeee" stroke="#eeeeee" points="692,-550 692,-633 789,-633 789,-550 692,-550"/>
 <text text-anchor="start" x="740.36" y="-554.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_aws_EKS</title>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="16,-641 16,-1125 1229,-1125 1229,-641 16,-641"/>
+<text text-anchor="start" x="601.5" y="-652" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">EKS</text>
 </g>
 <!-- Vpc::vpc -->
 <g id="node1" class="node">

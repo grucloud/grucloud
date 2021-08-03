@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project example
+title Resources for project EKS Module
 skinparam monochrome true
 + Infra
 ++ aws

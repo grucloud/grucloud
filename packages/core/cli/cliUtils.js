@@ -15,7 +15,7 @@ const {
   get,
   assign,
 } = require("rubico");
-const { pluck, isEmpty, when } = require("rubico/x");
+const { pluck, isEmpty, when, callProp, last } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
@@ -297,4 +297,12 @@ exports.saveToJson = ({
           ),
       ])
     ),
+  ])();
+
+exports.defaultTitle = (programOptions) =>
+  pipe([
+    () => programOptions,
+    get("workingDirectory", process.cwd()),
+    callProp("split", path.sep),
+    last,
   ])();

@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project postgres
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ Subnet (2)
+++++ RouteTable (1)
+++++ Route (1)
++++ rds
+++++ DBSubnetGroup (1)
+++++ DBInstance (1)
+@endmindmap

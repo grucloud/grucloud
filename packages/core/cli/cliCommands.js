@@ -48,6 +48,7 @@ const {
   displayProviderList,
   setupProviders,
   saveToJson,
+  defaultTitle,
 } = require("./cliUtils");
 const { createProviderMaker } = require("./infra");
 const {
@@ -58,9 +59,6 @@ const {
 } = require("./displayUtils");
 const { convertError, HookType } = require("../Common");
 const { tos } = require("../tos");
-
-const defaultTitle = (programOptions) =>
-  last(programOptions.workingDirectory.split(path.sep));
 
 const DisplayAndThrow =
   ({ name }) =>
@@ -1347,42 +1345,42 @@ const pumlToSvg =
         logger.debug(`pumlToSvg`);
       }),
       () => path.resolve(workingDirectory, pumlFile),
-      tap((pumlFileFull) => fse.outputFile(pumlFileFull, result)),
-      tap((pumlFileFull) => {
-        console.log(`Resource tree file written to: ${pumlFileFull}`);
-      }),
-      (pumlFileFull) => `java -jar ${plantumlJar} -t${type} ${pumlFileFull}`,
-      tap((command) => {
-        console.log(`Executing: '${command}'`);
-      }),
-      (command) =>
-        shell.exec(command, {
-          silent: true,
-        }),
-      tap((result) => {
-        assert(true);
-      }),
-      switchCase([
-        eq(get("code"), 0),
+      (pumlFileFull) =>
         pipe([
-          get("stdout"),
-          pipe([
-            (stdout) => {
-              assert(true);
-            },
-            () => graphOutputFileName({ file: pumlFile, type }),
-            tap((outputPicture) => {
-              shell.exec(`open ${outputPicture}`, { silent: true });
+          tap(() => fse.outputFile(pumlFileFull, result)),
+          tap(() => {
+            console.log(`Resource tree file written to: ${pumlFileFull}`);
+          }),
+          () => `java -jar ${plantumlJar} -t${type} ${pumlFileFull}`,
+          tap((command) => {
+            console.log(`Executing: '${command}'`);
+          }),
+          (command) =>
+            shell.exec(command, {
+              silent: true,
             }),
+          switchCase([
+            eq(get("code"), 0),
+            pipe([
+              get("stdout"),
+              pipe([
+                (stdout) => {
+                  assert(true);
+                },
+                () => graphOutputFileName({ file: pumlFileFull, type }),
+                tap((outputPicture) => {
+                  shell.exec(`open ${outputPicture}`, { silent: true });
+                }),
+              ]),
+            ]),
+            pipe([
+              get("stderr"),
+              (stderr) => {
+                throw Error(stderr);
+              },
+            ]),
           ]),
-        ]),
-        pipe([
-          get("stderr"),
-          (stderr) => {
-            throw Error(stderr);
-          },
-        ]),
-      ]),
+        ])(),
     ])();
 
 const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
