@@ -47,6 +47,7 @@ const {
   runAsyncCommand,
   displayProviderList,
   setupProviders,
+  saveToJson,
 } = require("./cliUtils");
 const { createProviderMaker } = require("./infra");
 const {
@@ -119,32 +120,16 @@ const hasPlans = pipe([
   }),
   get("results"),
   //filter(not(get("error"))),
-  find(
+  any(
     or([
       pipe([get("resultCreate"), not(isEmpty)]),
       pipe([get("resultDestroy"), not(isEmpty)]),
     ])
   ),
-  not(isEmpty),
   tap((hasPlan) => {
     logger.debug(`hasPlans ${hasPlan}`);
   }),
 ]);
-
-const saveToJson = ({
-  command,
-  commandOptions,
-  programOptions = {},
-  result,
-}) => {
-  if (!programOptions.json) {
-    return;
-  }
-  fs.writeFileSync(
-    programOptions.json,
-    JSON.stringify({ command, commandOptions, programOptions, result }, null, 4)
-  );
-};
 
 const displayLiveError = (result) =>
   pipe([
@@ -1433,109 +1418,102 @@ exports.Cli = ({
       assert(isFunction(createStack), "createStack must be a function");
       assert(isFunction(config), "config must be a function");
     }),
-    tap(() => {
+    () => ({
+      programOptions: pipe([
+        () => programOptions,
+        defaultsDeep({ workingDirectory: process.cwd() }),
+      ])(),
+    }),
+    tap(({ programOptions }) => {
       envLoader({ configDir: programOptions.workingDirectory });
     }),
-    () =>
-      createStack({
-        config,
-        createProvider: createProviderMaker({ programOptions, config, stage }),
-      }),
-    (infra) =>
-      pipe([
-        () => infra,
-        tap.if(isEmpty, () => {
-          throw Error("no infra provided in createStack");
+    assign({
+      infra: ({ programOptions }) =>
+        createStack({
+          config,
+          createProvider: createProviderMaker({
+            programOptions,
+            config,
+            stage,
+          }),
         }),
-        () => ({
-          list: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    title: defaultTitle(programOptions),
-                    dotFile: path.resolve(
-                      programOptions.workingDirectory,
-                      "artifacts/diagram-live.dot"
-                    ),
-                  }),
-                ])(),
-            }),
-            list,
-          ]),
-          planApply: ({ commandOptions }) =>
-            planApply({ infra, programOptions, commandOptions }),
-          planQuery: ({ commandOptions }) =>
-            planQuery({ infra, programOptions, commandOptions }),
-          planDestroy: ({ commandOptions }) =>
-            planDestroy({ infra, programOptions, commandOptions }),
-          planRunScript: ({ commandOptions }) =>
-            planRunScript({ infra, programOptions, commandOptions }),
-          info: ({ commandOptions } = {}) =>
-            info({ infra, programOptions, commandOptions }),
-          init: ({ commandOptions }) =>
-            init({ infra, programOptions, commandOptions }),
-          unInit: ({ commandOptions }) =>
-            unInit({ infra, programOptions, commandOptions }),
-          output: ({ commandOptions }) =>
-            output({ infra, programOptions, commandOptions }),
-          graphTree: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    pumlFile: "artifacts/resources-mindmap.puml",
-                    type: "svg",
-                    title: defaultTitle(programOptions),
-                    plantumlJar: path.resolve(
-                      os.homedir(),
-                      "Downloads",
-                      "plantuml.jar"
-                    ),
-                  }),
-                ])(),
-            }),
-            graphTree,
-          ]),
-          graphTarget: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    title: defaultTitle(programOptions),
-                    dotFile: path.resolve(
-                      programOptions.workingDirectory,
-                      "artifacts/diagram-target.dot"
-                    ),
-                  }),
-                ])(),
-            }),
-            graphTarget,
-          ]),
-        }),
-      ])(),
+    }),
+    tap.if(not(get("infra")), () => {
+      throw Error("no infra provided in createStack");
+    }),
+    ({ infra, programOptions }) => ({
+      list: ({ commandOptions }) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions,
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                title: defaultTitle(programOptions),
+                dotFile: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/diagram-live.dot"
+                ),
+              }),
+            ])(),
+          }),
+          list,
+        ])(),
+      planApply: ({ commandOptions }) =>
+        planApply({ infra, programOptions, commandOptions }),
+      planQuery: ({ commandOptions }) =>
+        planQuery({ infra, programOptions, commandOptions }),
+      planDestroy: ({ commandOptions }) =>
+        planDestroy({ infra, programOptions, commandOptions }),
+      planRunScript: ({ commandOptions }) =>
+        planRunScript({ infra, programOptions, commandOptions }),
+      info: ({ commandOptions } = {}) =>
+        info({ infra, programOptions, commandOptions }),
+      init: ({ commandOptions }) =>
+        init({ infra, programOptions, commandOptions }),
+      unInit: ({ commandOptions }) =>
+        unInit({ infra, programOptions, commandOptions }),
+      output: ({ commandOptions }) =>
+        output({ infra, programOptions, commandOptions }),
+      graphTree: ({ commandOptions }) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions,
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                pumlFile: "artifacts/resources-mindmap.puml",
+                type: "svg",
+                title: defaultTitle(programOptions),
+                plantumlJar: path.resolve(
+                  os.homedir(),
+                  "Downloads",
+                  "plantuml.jar"
+                ),
+              }),
+            ])(),
+          }),
+          graphTree,
+        ])(),
+      graphTarget: ({ commandOptions }) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions,
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                title: defaultTitle(programOptions),
+                dotFile: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/diagram-target.dot"
+                ),
+              }),
+            ])(),
+          }),
+          graphTarget,
+        ])(),
+    }),
   ])();

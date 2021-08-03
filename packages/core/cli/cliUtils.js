@@ -1,6 +1,7 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
-
+const fse = require("fs-extra");
+const path = require("path");
 const {
   map,
   pipe,
@@ -265,3 +266,35 @@ exports.setupProviders =
         //logger.debug("setupProviders");
       }),
     ])();
+
+exports.saveToJson = ({
+  command,
+  commandOptions,
+  programOptions = {},
+  result,
+}) =>
+  pipe([
+    tap(() => {
+      assert(programOptions.workingDirectory);
+    }),
+    () => programOptions.json,
+    when(
+      not(isEmpty),
+      pipe([
+        () =>
+          path.resolve(programOptions.workingDirectory, programOptions.json),
+        tap((fullPath) => {
+          logger.debug(`saveToJson: ${fullPath}`);
+        }),
+        (fullPath) =>
+          fse.outputFile(
+            fullPath,
+            JSON.stringify(
+              { command, commandOptions, programOptions, result },
+              null,
+              4
+            )
+          ),
+      ])
+    ),
+  ])();
