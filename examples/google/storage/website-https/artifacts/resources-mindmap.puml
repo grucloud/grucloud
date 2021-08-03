@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project website-https
+skinparam monochrome true
++ Infra
+++ google
++++ storage
+++++ Bucket (1)
+++++ Object (1)
++++ compute
+++++ SslCertificate (1)
+++++ BackendBucket (1)
+++++ UrlMap (1)
+++++ HttpsTargetProxy (1)
+++++ GlobalForwardingRule (1)
+@endmindmap

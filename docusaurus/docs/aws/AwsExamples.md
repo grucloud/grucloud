@@ -41,4 +41,4 @@ title: Aws Examples
 
 ### [Kops](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops)
 
-![KopsDiagramTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-target.svg)
+![KopsDiagramTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/artifacts/diagram-target.svg)
