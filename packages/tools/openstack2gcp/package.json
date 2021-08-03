@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/openstack2gcp",
-  "version": "1.33.0",
+  "version": "1.34.0",
   "description": "Generate infrastructure as code from live resources",
   "bin": {
     "openstack2gcp": "./OpenStack2Gcp.js"

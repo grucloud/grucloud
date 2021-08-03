@@ -1,6 +1,6 @@
 {
   "name": "example-grucloud-infra-aws",
-  "version": "1.33.0",
+  "version": "1.34.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.33.0",
-    "@grucloud/provider-aws": "^1.33.0",
+    "@grucloud/core": "^1.34.0",
+    "@grucloud/provider-aws": "^1.34.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {
