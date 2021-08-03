@@ -8,4 +8,4 @@ The purpose of this example is to deploy a simple S3Bucket and S3Object
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

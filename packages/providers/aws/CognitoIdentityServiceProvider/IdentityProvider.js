@@ -8,6 +8,7 @@ const {
   switchCase,
   not,
   filter,
+  flatMap,
   eq,
   pick,
 } = require("rubico");

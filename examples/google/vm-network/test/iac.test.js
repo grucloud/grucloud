@@ -8,6 +8,14 @@ describe("Gcp VM in network", async function () {
   it("run", async function () {
     const cli = await Cli({ createStack, config });
 
+    await cli.graphTree({
+      commandOptions: {},
+    });
+
+    await cli.graphTarget({
+      commandOptions: {},
+    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
     });

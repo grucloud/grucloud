@@ -5,6 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph --title 'Prometheus'",
     "graph-live": "gc list --graph --title 'Prometheus'"
   },
@@ -31,5 +32,8 @@
     "@grucloud/provider-k8s": "^1.32.0",
     "js-yaml": "^4.1.0",
     "rubico": "*"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }

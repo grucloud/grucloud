@@ -11,7 +11,7 @@ The GruCloud Command Line Interface **gc** reads a description in Javascript and
 
 For this tutorial, we will define a [Namespace](https://www.grucloud.com/docs/k8s/resources/Namespace), a [Service](https://www.grucloud.com/docs/k8s/resources/Service), and a [Deployment](https://www.grucloud.com/docs/k8s/resources/Deployment) to deploy an Nginx web server.
 
-![diagram-target](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/diagram-target.svg)
+![diagram-target](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/artifacts/diagram-target.svg)
 
 > This diagram is generated from the code with `gc graph`
 
@@ -436,7 +436,7 @@ Provider: k8s
 Command "gc list --our --all --graph" executed in 0s
 ```
 
-![diagram-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/diagram-live.svg)
+![diagram-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/artifacts/diagram-live.svg)
 
 Notice the relationship between the Pod, ReplicaSet and Deployment.
 

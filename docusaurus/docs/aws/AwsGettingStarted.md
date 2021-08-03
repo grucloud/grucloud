@@ -2,7 +2,7 @@ This tutorial explains the deployment automation of a simple [AWS EC2 instance](
 
 Instead of manually creating, updating, and destroying EC2 instances, the infrastructure will be described as Javascript code. The GruCloud CLI then reads this code, retrieves the lives resources through the AWS API, and decides what needs to be created, updated, or destroyed.
 
-![graph-diagram-ec2.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-target.svg)
+![graph-diagram-ec2.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/artifacts/diagram-target.svg)
 
 ## Requirements
 
@@ -154,8 +154,8 @@ In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/E
 // iac.js
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-exports.createStack = async ({ stage }) => {
-  const provider = AwsProvider({ config: require("./config"), stage });
+exports.createStack = async ({ createProvider }) => {
+  const provider = createProvider(AwsProvider, { config: require("./config") });
   const { config } = provider;
   const ec2Instance = provider.ec2.makeInstance({
     name: config.ec2Instance.name,
@@ -306,7 +306,7 @@ gc list --graph --all
 
 This will include the default AWS resources such as VPC, subnet, internet gateway, and security group.
 
-![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-live.svg)
+![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/artifacts/diagram-live.svg)
 
 To list only the resources created by GruCloud:
 
@@ -599,4 +599,4 @@ gc graph
 
 Here is the graph of a typical web application managed by Kubernetes running on AWS where the master node is managed by EKS.
 
-![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg)
+![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/artifacts/diagram-target.svg)

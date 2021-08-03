@@ -5,6 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph --title 'Cert Manager'",
     "graph-live": "gc list --graph --title 'Cert Manager'"
   },
@@ -27,5 +28,8 @@
     "@grucloud/core": "^1.32.0",
     "@grucloud/module-k8s-crunchy-postgres": "^1.32.0",
     "@grucloud/provider-k8s": "^1.32.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }

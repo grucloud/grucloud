@@ -33,6 +33,7 @@ module.exports = ({ resources: { dbInstance }, provider }) => {
             const db = "dbdev";
             try {
               await client.query(`CREATE DATABASE ${db}`);
+              //TODO client disconnnect
             } catch (error) {
               if (error.message !== `database "${db}" already exists`) {
                 throw error;

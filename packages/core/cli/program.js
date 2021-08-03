@@ -32,18 +32,18 @@ const optionExcludesByTypes = [
 const optionFileResourceTree = [
   "--pumlFile <file>",
   "plantuml output file name",
-  "resources-mindmap.puml",
+  "artifacts/resources-mindmap.puml",
 ];
 
 const optionDotFileTarget = [
   "--dot-file <dotFile>",
   "output 'dot' file name for the target diagam",
-  "diagram-target.dot",
+  "artifacts/diagram-target.dot",
 ];
 const optionDotFileLive = [
   "--dot-file <dotFile>",
   "output 'dot' file name for the live diagram",
-  "diagram-live.dot",
+  "artifacts/diagram-live.dot",
 ];
 
 const handleError = (error) => {

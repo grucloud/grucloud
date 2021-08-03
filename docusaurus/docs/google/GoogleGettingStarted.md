@@ -11,7 +11,7 @@ This basic infrastructure is going to be described and configured in Javascript 
 
 This diagram represents the target resources that will be deployed:
 
-![graph-target-gpc-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/diagram-target.svg)
+![graph-target-gpc-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/artifacts/diagram-target.svg)
 
 > The diagram is generated with `gc graph`
 
@@ -673,7 +673,7 @@ Provider: google
 Command "gc l" executed in 12s
 ```
 
-![graph-live-gcp-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/diagram-live.svg)
+![graph-live-gcp-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/artifacts/diagram-live.svg)
 
 Notice the default `Network`, `Subnet`, and 4 `Firewall` rules.
 

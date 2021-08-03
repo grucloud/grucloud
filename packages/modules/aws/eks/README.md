@@ -62,7 +62,7 @@ module.exports = ({}) => ({
 gc graph
 ```
 
-![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/diagram-target.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/artifacts/diagram-target.svg)
 
 ## Example
 

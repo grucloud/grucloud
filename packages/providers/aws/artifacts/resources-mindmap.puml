@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project aws
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Instance (1)
+@endmindmap

@@ -5,7 +5,7 @@
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "author": "",
   "license": "ISC",

@@ -1,0 +1,133 @@
+@startmindmap
+title Resources for project example
+skinparam monochrome true
++ Infra
+++ k8s
++++ Namespace (2)
+++++ pgo
+++++ monitoring
++++ Alertmanager (1)
+++++ main
++++ PodDisruptionBudget (2)
+++++ alertmanager-main
+++++ prometheus-k8s
++++ PrometheusRule (7)
+++++ alertmanager-main-rules
+++++ kube-prometheus-rules
+++++ kube-state-metrics-rules
+++++ kubernetes-monitoring-rules
+++++ node-exporter-rules
+++++ prometheus-operator-rules
+++++ prometheus-k8s-prometheus-rules
++++ Secret (2)
+++++ alertmanager-main
+++++ grafana-datasources
++++ Service (8)
+++++ alertmanager-main
+++++ blackbox-exporter
+++++ grafana
+++++ kube-state-metrics
+++++ node-exporter
+++++ prometheus-adapter
+++++ prometheus-k8s
+++++ prometheus-operator
++++ ServiceAccount (8)
+++++ alertmanager-main
+++++ blackbox-exporter
+++++ grafana
+++++ kube-state-metrics
+++++ node-exporter
+++++ prometheus-adapter
+++++ prometheus-k8s
+++++ prometheus-operator
++++ ServiceMonitor (13)
+++++ alertmanager
+++++ blackbox-exporter
+++++ grafana
+++++ kube-state-metrics
+++++ kube-apiserver
+++++ coredns
+++++ kube-controller-manager
+++++ kube-scheduler
+++++ kubelet
+++++ node-exporter
+++++ prometheus-adapter
+++++ prometheus-operator
+++++ prometheus-k8s
++++ ClusterRole (8)
+++++ blackbox-exporter
+++++ kube-state-metrics
+++++ node-exporter
+++++ prometheus-adapter
+++++ system:aggregated-metrics-reader
+++++ resource-metrics-server-resources
+++++ prometheus-k8s
+++++ prometheus-operator
++++ ClusterRoleBinding (7)
+++++ blackbox-exporter
+++++ kube-state-metrics
+++++ node-exporter
+++++ prometheus-adapter
+++++ resource-metrics:system:auth-delegator
+++++ prometheus-k8s
+++++ prometheus-operator
++++ ConfigMap (26)
+++++ blackbox-exporter-configuration
+++++ grafana-dashboard-apiserver
+++++ grafana-dashboard-cluster-total
+++++ grafana-dashboard-controller-manager
+++++ grafana-dashboard-k8s-resources-cluster
+++++ grafana-dashboard-k8s-resources-namespace
+++++ grafana-dashboard-k8s-resources-node
+++++ grafana-dashboard-k8s-resources-pod
+++++ grafana-dashboard-k8s-resources-workload
+++++ grafana-dashboard-k8s-resources-workloads-namespace
+++++ grafana-dashboard-kubelet
+++++ grafana-dashboard-namespace-by-pod
+++++ grafana-dashboard-namespace-by-workload
+++++ grafana-dashboard-node-cluster-rsrc-use
+++++ grafana-dashboard-node-rsrc-use
+++++ grafana-dashboard-nodes
+++++ grafana-dashboard-persistentvolumesusage
+++++ grafana-dashboard-pod-total
+++++ grafana-dashboard-prometheus-remote-write
+++++ grafana-dashboard-prometheus
+++++ grafana-dashboard-proxy
+++++ grafana-dashboard-scheduler
+++++ grafana-dashboard-statefulset
+++++ grafana-dashboard-workload-total
+++++ grafana-dashboards
+++++ adapter-config
++++ Deployment (5)
+++++ blackbox-exporter
+++++ grafana
+++++ kube-state-metrics
+++++ prometheus-adapter
+++++ prometheus-operator
++++ DaemonSet (1)
+++++ node-exporter
++++ APIService (1)
+++++ v1beta1.metrics.k8s.io
++++ RoleBinding (5)
+++++ resource-metrics-auth-reader
+++++ prometheus-k8s-config
+++++ prometheus-k8s
+++++ prometheus-k8s
+++++ prometheus-k8s
++++ Prometheus (1)
+++++ k8s
++++ Role (4)
+++++ prometheus-k8s-config
+++++ prometheus-k8s
+++++ prometheus-k8s
+++++ prometheus-k8s
++++ CustomResourceDefinition (8)
+++++ alertmanagerconfigs.monitoring.coreos.com
+++++ alertmanagers.monitoring.coreos.com
+++++ podmonitors.monitoring.coreos.com
+++++ probes.monitoring.coreos.com
+++++ prometheuses.monitoring.coreos.com
+++++ prometheusrules.monitoring.coreos.com
+++++ servicemonitors.monitoring.coreos.com
+++++ thanosrulers.monitoring.coreos.com
+@endmindmap

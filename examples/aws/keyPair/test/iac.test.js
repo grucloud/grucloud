@@ -9,6 +9,14 @@ describe("EC2 KeyPair", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack });
 
+    await cli.graphTree({
+      commandOptions: {},
+    });
+
+    await cli.graphTarget({
+      commandOptions: {},
+    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
     });

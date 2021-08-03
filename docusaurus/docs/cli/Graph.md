@@ -11,7 +11,7 @@ gc graph
 
 ```
 dot file written to: grucloud.dot
-output saved to: diagram-target.svg
+output saved to: artifacts/diagram-target.svg
 Command "gc graph" executed in 0s
 
 ```

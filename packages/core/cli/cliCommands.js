@@ -26,6 +26,7 @@ const {
 } = require("rubico");
 const {
   find,
+  last,
   pluck,
   isEmpty,
   flatten,
@@ -35,9 +36,11 @@ const {
   first,
   identity,
   isFunction,
+  defaultsDeep,
 } = require("rubico/x");
 const { envLoader } = require("../EnvLoader");
-
+const fse = require("fs-extra");
+const os = require("os");
 const logger = require("../logger")({ prefix: "CliCommands" });
 const YAML = require("./json2yaml");
 const {
@@ -54,6 +57,9 @@ const {
 } = require("./displayUtils");
 const { convertError, HookType } = require("../Common");
 const { tos } = require("../tos");
+
+const defaultTitle = (programOptions) =>
+  last(programOptions.workingDirectory.split(path.sep));
 
 const DisplayAndThrow =
   ({ name }) =>
@@ -1049,12 +1055,17 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
     )}`
   );
 };
-const doGraphLive = ({ providerGru, lives, commandOptions }) =>
+const doGraphLive = ({
+  providerGru,
+  lives,
+  commandOptions,
+  programOptions = {},
+}) =>
   tap.if(
     () => commandOptions.graph,
     pipe([
       () => providerGru.buildGraphLive({ lives, options: commandOptions }),
-      (result) => dotToSvg({ commandOptions, result }),
+      (result) => dotToSvg({ commandOptions, programOptions, result }),
     ])
   )();
 
@@ -1284,13 +1295,14 @@ const graphOutputFileName = ({ file, type }) =>
 const dotToSvg = ({
   result,
   commandOptions: { dotFile = "diagram.dot", type = "svg" },
+  programOptions: { workingDirectory = process.cwd() },
 }) =>
   pipe([
     tap(() => {
       assert(dotFile);
       logger.debug(`dotToSvg`);
     }),
-    tap(() => fs.writeFileSync(dotFile, result)),
+    tap(() => fse.outputFile(path.resolve(workingDirectory, dotFile), result)),
     tap(() => {
       //console.log(`dot file written to: ${file}`);
     }),
@@ -1318,7 +1330,7 @@ const dotToSvg = ({
     }),
   ])();
 
-const graphTarget = ({ infra, config, commandOptions = {} }) =>
+const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1330,21 +1342,28 @@ const graphTarget = ({ infra, config, commandOptions = {} }) =>
       ({ providerGru }) =>
         providerGru.buildGraphTarget({ options: commandOptions }),
       // TODO add title from config.projectName
-      (result) => dotToSvg({ commandOptions, result }),
+      (result) => dotToSvg({ commandOptions, programOptions, result }),
     ]),
     DisplayAndThrow({ name: "graphTarget" })
   )();
 
 const pumlToSvg =
-  ({ commandOptions: { pumlFile, type = "png", plantumlJar } }) =>
+  ({
+    commandOptions: { pumlFile, type, plantumlJar },
+    programOptions: { workingDirectory = process.cwd() },
+  }) =>
   (result) =>
     pipe([
       tap(() => {
         assert(result);
         assert(pumlFile);
+        assert(plantumlJar);
+        assert(type);
         logger.debug(`pumlToSvg`);
       }),
-      tap(() => fs.writeFileSync(pumlFile, result)),
+      tap(() =>
+        fse.outputFile(path.resolve(workingDirectory, pumlFile), result)
+      ),
       tap(() => {
         console.log(`Resource tree file written to: ${pumlFile}`);
       }),
@@ -1382,7 +1401,7 @@ const pumlToSvg =
       ]),
     ])();
 
-const graphTree = ({ infra, config, commandOptions = {} }) =>
+const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1398,7 +1417,7 @@ const graphTree = ({ infra, config, commandOptions = {} }) =>
         assert(true);
       }),
       // TODO add title from config.projectName
-      pumlToSvg({ commandOptions }),
+      pumlToSvg({ commandOptions, programOptions }),
     ]),
     DisplayAndThrow({ name: "tree" })
   )();
@@ -1429,8 +1448,29 @@ exports.Cli = ({
           throw Error("no infra provided in createStack");
         }),
         () => ({
-          list: ({ commandOptions }) =>
-            list({ infra, programOptions, commandOptions }),
+          list: pipe([
+            assign({
+              infra: () => infra,
+              programOptions: pipe([
+                get("programOptions", {}),
+                defaultsDeep({ workingDirectory: process.cwd() }),
+              ]),
+            }),
+            assign({
+              commandOptions: ({ commandOptions = {}, programOptions }) =>
+                pipe([
+                  () => commandOptions,
+                  defaultsDeep({
+                    title: defaultTitle(programOptions),
+                    dotFile: path.resolve(
+                      programOptions.workingDirectory,
+                      "artifacts/diagram-live.dot"
+                    ),
+                  }),
+                ])(),
+            }),
+            list,
+          ]),
           planApply: ({ commandOptions }) =>
             planApply({ infra, programOptions, commandOptions }),
           planQuery: ({ commandOptions }) =>
@@ -1447,10 +1487,55 @@ exports.Cli = ({
             unInit({ infra, programOptions, commandOptions }),
           output: ({ commandOptions }) =>
             output({ infra, programOptions, commandOptions }),
-          graphTree: ({ commandOptions }) =>
-            graphTree({ infra, programOptions, commandOptions }),
-          graphTarget: ({ commandOptions }) =>
-            graphTarget({ infra, programOptions, commandOptions }),
+          graphTree: pipe([
+            assign({
+              infra: () => infra,
+              programOptions: pipe([
+                get("programOptions", {}),
+                defaultsDeep({ workingDirectory: process.cwd() }),
+              ]),
+            }),
+            assign({
+              commandOptions: ({ commandOptions = {}, programOptions }) =>
+                pipe([
+                  () => commandOptions,
+                  defaultsDeep({
+                    pumlFile: "artifacts/resources-mindmap.puml",
+                    type: "svg",
+                    title: defaultTitle(programOptions),
+                    plantumlJar: path.resolve(
+                      os.homedir(),
+                      "Downloads",
+                      "plantuml.jar"
+                    ),
+                  }),
+                ])(),
+            }),
+            graphTree,
+          ]),
+          graphTarget: pipe([
+            assign({
+              infra: () => infra,
+              programOptions: pipe([
+                get("programOptions", {}),
+                defaultsDeep({ workingDirectory: process.cwd() }),
+              ]),
+            }),
+            assign({
+              commandOptions: ({ commandOptions = {}, programOptions }) =>
+                pipe([
+                  () => commandOptions,
+                  defaultsDeep({
+                    title: defaultTitle(programOptions),
+                    dotFile: path.resolve(
+                      programOptions.workingDirectory,
+                      "artifacts/diagram-target.dot"
+                    ),
+                  }),
+                ])(),
+            }),
+            graphTarget,
+          ]),
         }),
       ])(),
   ])();

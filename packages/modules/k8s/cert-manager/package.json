@@ -4,7 +4,6 @@
   "description": "Grucloud module for the k8s cert-manager",
   "main": "iac.js",
   "scripts": {
-    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "gen-code": "k8s-manifest2code --input cert-manager.yaml",
     "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.3.1/cert-manager.yaml"
@@ -17,9 +16,6 @@
     "@grucloud/provider-k8s": "^1.32.0",
     "js-yaml": "^4.1.0",
     "rubico": "^1.6.21"
-  },
-  "devDependencies": {
-    "mocha": "^8.3.2"
   },
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/cert-manager",
   "repository": {

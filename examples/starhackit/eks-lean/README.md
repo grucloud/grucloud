@@ -43,9 +43,9 @@ From the infrastructure code, 2 kinds of visual representation can be generated 
 
 #### Diagram
 
-The following [diagram](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg) shows the AWS and K8s resources and their relashionship:
+The following [diagram](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/artifacts/diagram-target.svg) shows the AWS and K8s resources and their relashionship:
 
-![diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg)
+![artifacts/diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/artifacts/diagram-target.svg)
 
 ## Workflow
 
@@ -184,7 +184,7 @@ Let's list and produce a diagram of the AWS resources freshly created:
 gc list -p aws --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-live.svg)
+![artifacts/diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/artifacts/diagram-live.svg)
 
 Notice that the _NodeGroup_ has created an _AutoScaling Group_, which in turn creates EC2 instances, instance profiles, and volumes.
 

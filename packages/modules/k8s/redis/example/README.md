@@ -2,7 +2,7 @@
 
 This example demonstrate how to use the GruCloud Kubernetes Redis module.
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)
 
 ## Config
 

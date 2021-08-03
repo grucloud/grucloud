@@ -15,6 +15,7 @@ module.exports = () =>
         "ec2::Subnet",
         "ec2::InternetGateway",
         "ec2::NetworkInterface",
+        "ec2::SecurityGroup",
       ],
       Client: ELBLoadBalancerV2,
       isOurMinion,

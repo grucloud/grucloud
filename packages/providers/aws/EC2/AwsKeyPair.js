@@ -54,6 +54,9 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     ({ directory = process.cwd() }) =>
     ({ KeyMaterial, KeyName }) =>
       pipe([
+        tap(() => {
+          logger.info(`saveKeyToFile '${directory}'`);
+        }),
         () =>
           fs.writeFile(
             path.resolve(directory, `${KeyName}.pem`),

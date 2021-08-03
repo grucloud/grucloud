@@ -5,9 +5,9 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "graph-target": "gc graph --title 'Postgres Module'",
     "graph-live": "gc list --graph --title 'Postgres Module'",
-    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",

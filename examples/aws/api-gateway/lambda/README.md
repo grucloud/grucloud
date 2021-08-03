@@ -8,4 +8,4 @@ The purpose of this example is to deploy server a lambda function with the API G
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

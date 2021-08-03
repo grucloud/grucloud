@@ -10,6 +10,14 @@ describe("RDS Postgres Stateless", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack, config });
 
+    await cli.graphTree({
+      commandOptions: {},
+    });
+
+    await cli.graphTarget({
+      commandOptions: {},
+    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
     });

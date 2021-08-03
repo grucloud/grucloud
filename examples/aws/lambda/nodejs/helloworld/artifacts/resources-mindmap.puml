@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project helloworld
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Policy (1)
+++++ Role (1)
++++ lambda
+++++ Layer (1)
+++++ Function (1)
+@endmindmap

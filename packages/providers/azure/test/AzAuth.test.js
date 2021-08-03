@@ -1,13 +1,11 @@
 const assert = require("assert");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
+const { envLoader } = require("@grucloud/core/EnvLoader");
 const { AzAuthorize } = require("../AzAuthorize");
 
 describe("AzAuth", function () {
-  let config;
-
   before(async function () {
     try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
+      envLoader({ configDir: "../../../examples/multi" });
     } catch (error) {
       assert(error.code, 422);
       this.skip();
