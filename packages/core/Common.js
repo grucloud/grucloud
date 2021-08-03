@@ -318,6 +318,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
       assert(stage);
       assert(providerName);
     }),
+    //TODO remove switch
     switchCase([
       and([
         eq(get(stageTagKey), stage),
