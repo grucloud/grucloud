@@ -12,6 +12,14 @@ describe("Lambda", async function () {
 
     const cli = await Cli({ programOptions, createStack, config });
 
+    await cli.graphTree({
+      commandOptions: {},
+    });
+
+    await cli.graphTarget({
+      commandOptions: {},
+    });
+
     await cli.planDestroy({
       commandOptions: { force: true },
     });

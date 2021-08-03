@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project securityGroup
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Vpc (1)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (2)
+++++ SecurityGroupRuleEgress (1)
+@endmindmap

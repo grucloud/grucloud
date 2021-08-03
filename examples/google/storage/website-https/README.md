@@ -14,7 +14,7 @@ For this reason, this example uses _AWS Route53_.
 
 This deployment is composed of the resources depicted in the following diagram:
 
-![GraphTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-target.svg)
+![GraphTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/artifacts/diagram-target.svg)
 
 > The command `gc graph` generates this diagram from the code [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js).
 
@@ -237,7 +237,7 @@ Verity the state of the resource with the **gc list** command, the _--graph_ gen
 gc list --graph
 ```
 
-![GraphLive](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-live.svg)
+![GraphLive](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/artifacts/diagram-live.svg)
 
 ```
 Listing resources on 1 provider: google

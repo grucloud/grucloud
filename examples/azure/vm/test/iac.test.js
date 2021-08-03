@@ -4,11 +4,19 @@ const { createStack } = require("../iac");
 const config = require("../config");
 const path = require("path");
 
-describe("Azure Vm Network", async function () {
+describe("Azure VM", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack, config });
+
+    await cli.graphTree({
+      commandOptions: {},
+    });
+
+    await cli.graphTarget({
+      commandOptions: {},
+    });
 
     await cli.planDestroy({
       commandOptions: { force: true },

@@ -16,16 +16,16 @@ Below is a list of official modules for the AWS provider:
 
 ### Aws Certificate Module
 
-![Aws Certificate Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/example/diagram-target.svg)
+![Aws Certificate Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/example/artifacts/diagram-target.svg)
 
 ### Aws VPC Module
 
-![Aws Vpc Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/diagram-target.svg)
+![Aws Vpc Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/artifacts/diagram-target.svg)
 
 ### Aws EKS Module
 
-![Aws EKS Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/diagram-target.svg)
+![Aws EKS Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/artifacts/diagram-target.svg)
 
 ### Aws Load Balancer Module
 
-![Aws Load Balancer Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/load-balancer/example/diagram-target.svg)
+![Aws Load Balancer Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/load-balancer/example/artifacts/diagram-target.svg)

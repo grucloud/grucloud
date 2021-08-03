@@ -20,7 +20,7 @@ const sslCertificate = provider.compute.makeSslCertificate({
 
 - [Https Website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https)
 
-![website-https/diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-target.svg)
+![website-https/artifacts/diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/artifacts/diagram-target.svg)
 
 ### Properties
 

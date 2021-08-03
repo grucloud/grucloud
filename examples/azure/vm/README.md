@@ -2,7 +2,7 @@
 
 The purpose of this example is to deploy automatically a virtual machine attached to a public IP address, inside a VPC, secured by firewall rules.
 
-![diagram-target](diagram-target.svg)
+![diagram-target](artifacts/diagram-target.svg)
 
 The infrastructure is described in [iac.js](./iac.js), and configured in [config.js](./config.js).
 
@@ -179,7 +179,7 @@ To list the live resources which has been created as well as a diagram, use the 
 gc list --graph
 ```
 
-![diagram-live](diagram-live.svg)
+![diagram-live](artifacts/diagram-live.svg)
 
 The live and target diagram should be indentical from a topology point of view.
 

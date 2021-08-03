@@ -13,11 +13,22 @@
       "port": 9229
     },
     {
+      "name": "Tree",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["tree"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "List -g",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list"],
+      "runtimeArgs": ["list", "-g"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

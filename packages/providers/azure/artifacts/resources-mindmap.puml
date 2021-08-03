@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project azure
+skinparam monochrome true
++ Infra
+++ azure
++++ resourceManagement
+++++ ResourceGroup (1)
++++ virtualNetworks
+++++ VirtualNetwork (1)
+++++ SecurityGroup (1)
+++++ PublicIpAddress (1)
+++++ NetworkInterface (1)
++++ compute
+++++ VirtualMachine (1)
+@endmindmap

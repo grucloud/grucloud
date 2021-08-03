@@ -71,20 +71,6 @@ module.exports = ({ resources: { eip, ec2Instance }, provider }) => {
             assert(alive, `cannot ping ${host}`);
           },
         },*/
-        {
-          name: "SSH",
-          command: async ({ host }) => {
-            await retryCall({
-              name: `ssh ${host}`,
-              fn: async () => {
-                await testSsh({ host, keyName: provider.config.keyPair.name });
-                return true;
-              },
-              shouldRetryOnException: () => true,
-              config: { retryCount: 40, retryDelay: 5e3 },
-            });
-          },
-        },
       ],
     },
     onDestroyed: {

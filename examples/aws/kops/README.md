@@ -4,7 +4,7 @@ The section ['setup your environment'](https://kops.sigs.k8s.io/getting_started/
 
 Below is the diagram generated from the target code, it illustrates the resources and their association with each other:
 
-![kops-graph](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-target.svg)
+![kops-graph](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/artifacts/diagram-target.svg)
 
 > Regarding this DNS scenario, the case of a subdomain where a top-level hosted zone already exists is implemented.
 

@@ -4,7 +4,7 @@ The [AWS VPC Grucloud module](https://www.npmjs.com/package/@grucloud/module-aws
 
 Once again, a picture is worth a thousands words. This module packs and configures all these resources ready to be consumed by your application.
 
-![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/diagram-target.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/artifacts/diagram-target.svg)
 
 ## Resources
 

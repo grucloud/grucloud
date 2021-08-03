@@ -50,4 +50,4 @@ gc destroy
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

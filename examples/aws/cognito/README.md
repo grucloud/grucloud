@@ -10,7 +10,7 @@ See the [AWS Getting Started](https://www.grucloud.com/docs/aws/AwsGettingStarte
 gc graph
 ```
 
-![Graph](./diagram-target.svg)
+![Graph](./artifacts/diagram-target.svg)
 
 ## Live diagram
 
@@ -18,4 +18,4 @@ gc graph
 gc list --graph
 ```
 
-![Graph-Live](./diagram-live.svg)
+![Graph-Live](./artifacts/diagram-live.svg)

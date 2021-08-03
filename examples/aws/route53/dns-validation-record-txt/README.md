@@ -14,4 +14,4 @@ A TXT record will be created for that purpose.
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

@@ -1,0 +1,22 @@
+@startmindmap
+title Resources for project postgres-stateless
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ KeyPair (1)
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ Route (3)
+++++ ElasticIpAddress (2)
+++++ NatGateway (1)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (2)
+++++ Image (1)
+++++ Instance (1)
++++ rds
+++++ DBSubnetGroup (1)
+++++ DBCluster (1)
+@endmindmap

@@ -8,4 +8,4 @@ The purpose of this example is to deploy a virtual machine with can be accessed 
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

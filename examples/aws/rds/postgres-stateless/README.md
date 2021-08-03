@@ -8,4 +8,4 @@ The purpose of this example is to deploy a stateless aurora postgres database.
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)

@@ -1,6 +1,7 @@
 const assert = require("assert");
 const {
   pipe,
+  set,
   get,
   tap,
   eq,
@@ -8,11 +9,18 @@ const {
   assign,
   or,
   pick,
-  and,
+  map,
   not,
   omit,
 } = require("rubico");
-const { find, first, isEmpty, isFunction, identity } = require("rubico/x");
+const {
+  find,
+  first,
+  isEmpty,
+  isFunction,
+  identity,
+  when,
+} = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -33,9 +41,14 @@ exports.getNamespace = getNamespace;
 
 const pickCompare = ({ metadata, spec, data }) => ({
   metadata: pick(["annotations", "labels"])(metadata),
-  spec,
+  spec: pipe([
+    get("template.spec.containers[0].volumeMounts"),
+    map(omit(["readOnly"])),
+    (volumeMounts) => set("template.spec.containers[0]", volumeMounts)(spec),
+  ])(spec),
   data,
 });
+
 const filterTarget = ({ config, target }) =>
   pipe([() => target, pickCompare])();
 
@@ -54,11 +67,18 @@ exports.compare = pipe([
     liveDiff: pipe([
       () => detailedDiff(live, target),
       omit(["deleted"]),
-      switchCase([
+      //TODO refactor
+      when(
+        pipe([get("added.spec.template.spec.containers[0].env"), isEmpty]),
+        omit(["added.spec.template.spec.containers[0].env"])
+      ),
+      when(
         pipe([get("added.metadata.annotations"), isEmpty]),
-        omit(["added.metadata.annotations"]),
-        identity,
-      ]),
+        omit(["added.metadata.annotations"])
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])(),
   }),
   tap((diff) => {

@@ -8,4 +8,4 @@ The purpose of this example is to deploy an EC2 instance.
 gc graph
 ```
 
-![Graph](./diagram-target.svg)
+![Graph](./artifacts/diagram-target.svg)

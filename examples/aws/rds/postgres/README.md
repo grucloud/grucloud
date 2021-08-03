@@ -8,7 +8,7 @@ The purpose of this example is to deploy a postgres database with RDS, accesible
 gc graph
 ```
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](artifacts/diagram-target.svg)
 
 ## Configuration
 
