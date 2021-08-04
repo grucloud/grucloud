@@ -2,7 +2,7 @@ const assert = require("assert");
 const plu = require("pluralize");
 const prompts = require("prompts");
 const colors = require("colors/safe");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const shell = require("shelljs");
 
@@ -1404,6 +1404,39 @@ const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
     DisplayAndThrow({ name: "tree" })
   )();
 
+const genCode = ({ infra, commandOptions = {}, programOptions }) =>
+  tryCatch(
+    pipe([
+      tap(() => {
+        logger.debug(
+          `genCode ${JSON.stringify({ commandOptions, programOptions })}`
+        );
+      }),
+      () => infra,
+      setupProviders({ commandOptions }),
+      ({ providerGru }) =>
+        providerGru.generateCode({ commandOptions, programOptions }),
+    ]),
+    DisplayAndThrow({ name: "genCode" })
+  )();
+
+const projectNameDefault = ({ programOptions }) =>
+  tryCatch(
+    pipe([
+      () => path.resolve(programOptions.workingDirectory, "package.json"),
+      (filename) => fs.readFile(filename, "utf-8"),
+      JSON.parse,
+      get("name"),
+    ]),
+    (error) =>
+      pipe([
+        tap((params) => {
+          assert(error);
+        }),
+        () => "GruCloud Project",
+      ])()
+  )();
+
 exports.Cli = ({
   programOptions = {},
   createStack,
@@ -1512,6 +1545,20 @@ exports.Cli = ({
             ])(),
           }),
           graphTarget,
+        ])(),
+      genCode: ({ commandOptions }) =>
+        pipe([
+          async () => ({
+            infra,
+            programOptions,
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                projectName: await projectNameDefault({ programOptions }),
+              }),
+            ])(),
+          }),
+          genCode,
         ])(),
     }),
   ])();

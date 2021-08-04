@@ -10,6 +10,8 @@ const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
+const { generateCode } = require("./Aws2gc");
+
 const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
@@ -165,5 +167,6 @@ exports.AwsProvider = ({
     fnSpecs,
     start,
     info,
+    generateCode,
   });
 };

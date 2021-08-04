@@ -234,5 +234,21 @@ exports.createProgram = () => {
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "graphTree", program }));
 
+  program
+    .command("gencode")
+    .description("Generate infrastruture code from deployed resources")
+    .alias("c")
+    .option("--projectName <value>", "The project name")
+    .option("--input <file>", "lives resources", "artifacts/inventory.json")
+    .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
+    .option(
+      "-c, --outputConfig <file>",
+      "config.js output",
+      "artifacts/config.js"
+    )
+    .option("-m, --mapping <file>", "mapping file", "mapping.json")
+    .option(...optionFilteredByProvider)
+    .action(runCommand({ commandName: "genCode", program }));
+
   return program;
 };

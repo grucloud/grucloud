@@ -125,6 +125,7 @@ function CoreProvider({
   init = () => {},
   unInit = () => {},
   start = () => {},
+  generateCode = () => {},
 }) {
   let _lives;
   const setLives = (livesToSet) => {
@@ -1738,6 +1739,7 @@ function CoreProvider({
     start: startBase,
     specs,
     mapNameToResource,
+    generateCode,
   };
 
   return pipe([
