@@ -11,7 +11,14 @@ const {
   or,
   omit,
 } = require("rubico");
-const { find, first, defaultsDeep, isEmpty, size } = require("rubico/x");
+const {
+  find,
+  first,
+  defaultsDeep,
+  isEmpty,
+  size,
+  callProp,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({
@@ -196,9 +203,14 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
+  const isDefault = pipe([
+    get("live.Alias", ""),
+    callProp("startsWith", "alias/aws/"),
+  ]);
+
   const cannotBeDeleted = or([
     eq(get("live.KeyState"), "PendingDeletion"),
-    pipe([get("live.Alias", ""), (alias) => alias.startsWith("alias/aws/")]),
+    isDefault,
   ]);
 
   return {
@@ -212,6 +224,7 @@ exports.KmsKey = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted,
+    isDefault,
     shouldRetryOnException,
   };
 };
