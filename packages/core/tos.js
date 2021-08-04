@@ -13,6 +13,7 @@ const exlusionList = {
   appId: hiddenCredentials,
   password: hiddenCredentials,
   adminPassword: hiddenCredentials,
+  MasterUserPassword: hiddenCredentials,
 };
 
 const exlusionListKeys = Object.keys(exlusionList);
