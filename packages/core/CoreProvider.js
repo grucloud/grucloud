@@ -144,11 +144,7 @@ function CoreProvider({
     defaultsDeep(configProviderDefault),
   ])();
 
-  logger.debug(
-    `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
-      providerConfig
-    )}`
-  );
+  logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
   const hookMap = new Map();
 

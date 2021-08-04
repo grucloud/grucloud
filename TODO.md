@@ -19,7 +19,6 @@
 ## Common:
 
 - TODO add client.toString()
-- gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 -
 - add projectName and use it as the title of the graph
@@ -66,6 +65,7 @@
 
 ## Aws2gc
 
+- generate default.env, .i.e MASTER_USERNAME and MASTER_USER_PASSWORD
 - EKS cluster tags
 
 ## Aws

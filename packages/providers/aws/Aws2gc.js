@@ -60,6 +60,21 @@ const writersSpec = [
         ]),
       },
       {
+        type: "User",
+        filterLive: () => pick(["UserName", "Path"]),
+        dependencies: () => ({
+          iamGroups: { type: "Group", group: "iam" },
+          policies: { type: "Policy", group: "iam" },
+        }),
+      },
+      {
+        type: "Group",
+        filterLive: () => pick(["GroupName", "Path"]),
+        dependencies: () => ({
+          policies: { type: "Policy", group: "iam" },
+        }),
+      },
+      {
         type: "Role",
         filterLive: () =>
           pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
@@ -495,7 +510,7 @@ const writersSpec = [
     types: [
       {
         type: "HostedZone",
-        filterLive: () => pick(["Name"]),
+        filterLive: () => pick([]),
       },
       {
         type: "Record",
@@ -646,20 +661,48 @@ const writersSpec = [
       {
         type: "DBCluster",
         filterLive: () =>
-          pick([
-            "DatabaseName",
-            "Engine",
-            "EngineVersion",
-            "EngineMode",
-            "Port",
-            "ScalingConfiguration",
-            "MasterUsername",
-            "AvailabilityZones",
+          pipe([
+            pick([
+              "DatabaseName",
+              "Engine",
+              "EngineVersion",
+              "EngineMode",
+              "Port",
+              "ScalingConfigurationInfo",
+              "PreferredBackupWindow",
+              "PreferredMaintenanceWindow",
+            ]),
+            tap((params) => {
+              assert(true);
+            }),
+            assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
+            omit(["ScalingConfigurationInfo"]),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
+
+        environmentVariables: () => ["MasterUsername", "MasterUserPassword"],
         dependencies: () => ({
           dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
           securityGroups: { type: "SecurityGroup", group: "ec2" },
-          key: { type: "Key", group: "kms" },
+          key: {
+            type: "Key",
+            group: "kms",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  tap(() => {
+                    assert(dependency);
+                  }),
+                  () => dependency,
+                  not(get("isDefault")),
+                  tap((result) => {
+                    assert(true);
+                  }),
+                ])(),
+          },
         }),
       },
       {
@@ -671,7 +714,11 @@ const writersSpec = [
             "EngineVersion",
             "AllocatedStorage",
             "MaxAllocatedStorage",
+            "PubliclyAccessible",
+            "PreferredBackupWindow",
+            "BackupRetentionPeriod",
           ]),
+        environmentVariables: () => ["MasterUsername", "MasterUserPassword"],
         dependencies: () => ({
           dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
           securityGroups: { type: "SecurityGroup", group: "ec2" },

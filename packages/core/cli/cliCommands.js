@@ -1563,6 +1563,10 @@ exports.Cli = ({
                   programOptions.workingDirectory,
                   "artifacts/config.js"
                 ),
+                outputEnv: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/default.env"
+                ),
               }),
             ])(),
           }),
@@ -1571,7 +1575,7 @@ exports.Cli = ({
     }),
   ])();
 
-exports.testEnd2End = ({ cli, title }) =>
+exports.testEnd2End = ({ cli, title, listOptions }) =>
   pipe([
     () =>
       cli.graphTree({
@@ -1596,6 +1600,7 @@ exports.testEnd2End = ({ cli, title }) =>
         },
         commandOptions: {
           graph: true,
+          ...listOptions,
         },
       }),
     () =>

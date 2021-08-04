@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs").promises;
-const { camelCase } = require("change-case");
+const { camelCase, snakeCase } = require("change-case");
 const prettier = require("prettier");
 
 const {
@@ -20,6 +20,7 @@ const {
   or,
   always,
   and,
+  reduce,
 } = require("rubico");
 
 const {
@@ -34,6 +35,10 @@ const {
   defaultsDeep,
   keys,
   includes,
+  isString,
+  isObject,
+  isFunction,
+  unless,
 } = require("rubico/x");
 
 const ResourceVarNameDefault = pipe([
@@ -82,14 +87,20 @@ const findDependencyNames = ({
     }),
   ])();
 
+const envVarName = ({ resource, envVar }) =>
+  `${snakeCase(resource.name).toUpperCase()}_${snakeCase(
+    envVar
+  ).toUpperCase()}`;
+
 const buildProperties = ({
   resource,
   dependencies,
+  environmentVariables = [],
   filterLive = () => identity,
 }) =>
   pipe([
     tap(() => {
-      assert(true);
+      assert(environmentVariables);
     }),
     () => resource,
     get("live"),
@@ -125,6 +136,64 @@ const buildProperties = ({
     tap((params) => {
       assert(true);
     }),
+    (props) =>
+      pipe([
+        () => environmentVariables,
+        reduce((acc, envVar) => {
+          acc[envVar] = () => `process.env.${envVarName({ resource, envVar })}`;
+          return acc;
+        }, props),
+      ])(),
+  ])();
+
+const printPropertiesDo = (value) =>
+  pipe([
+    () => value,
+    switchCase([
+      isFunction,
+      (fun) =>
+        pipe([
+          () => fun(),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      isString,
+      (value) => `"${value}"`,
+      Array.isArray,
+      pipe([
+        map(printPropertiesDo),
+        callProp("join", ","),
+        (result) => `[${result}]`,
+      ]),
+      isObject,
+      pipe([
+        map.entries(([key, value]) => [
+          key,
+          `${key}: ${printPropertiesDo(value)},`,
+        ]),
+        values,
+        callProp("join", "\n"),
+        (result) => `{\n${result}}`,
+      ]),
+      identity,
+    ]),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+const printProperties = (value) =>
+  pipe([
+    tap((params) => {
+      //console.log("In:", JSON.stringify(value, null, 4));
+    }),
+    () => value,
+    printPropertiesDo,
+    tap((params) => {
+      assert(true);
+      //console.log("result", JSON.stringify(params, null, 4));
+    }),
   ])();
 
 const configBuildPropertiesDefault = ({
@@ -138,7 +207,7 @@ const configBuildPropertiesDefault = ({
     }),
     () =>
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
+        ? `\n,properties: ${printProperties(properties)}`
         : "",
   ])();
 
@@ -150,8 +219,14 @@ exports.hasDependency = ({ type }) =>
     not(isEmpty),
   ]);
 
+const envTpl = ({ resource, environmentVariables }) =>
+  pipe([
+    () => environmentVariables,
+    map((envVar) => `${envVarName({ resource, envVar })}=\n`),
+    callProp("join", ""),
+  ])();
+
 const configTpl = ({
-  options,
   resource,
   resourceVarName,
   resourceName,
@@ -252,8 +327,6 @@ const codeBuildPropertiesDefault = ({
 const buildPrefix = switchCase([
   get("isDefault"),
   () => "useDefault",
-  get("cannotBeDeleted"),
-  () => "use",
   get("managedByOther"),
   () => "use",
   () => "make",
@@ -339,6 +412,9 @@ const writeIac =
       pluck("resources"),
       flatten,
       filter(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
       fork({
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
@@ -396,6 +472,33 @@ const writeConfig =
       }),
       (content) => configTpl({ content, projectName: options.projectName }),
       writeToFile({ filename }),
+    ])();
+
+const writeEnv =
+  ({ filename, options }) =>
+  (resourceMap) =>
+    pipe([
+      () => resourceMap,
+      map(({ group, types }) =>
+        pipe([
+          () => types,
+          map(({ resources }) =>
+            pipe([
+              () => resources,
+              pluck("env"),
+              filter(not(isEmpty)),
+              unless(isEmpty, pipe([callProp("join", "\n")])),
+            ])()
+          ),
+          filter(not(isEmpty)),
+        ])()
+      ),
+      filter(not(isEmpty)),
+      callProp("join", "\n"),
+      tap((params) => {
+        console.log(`Env file written to ${filename}`);
+      }),
+      (formatted) => fs.writeFile(filename, formatted),
     ])();
 
 //TODO group
@@ -469,6 +572,7 @@ const writeResource =
     hasNoProperty,
     properties = always({}),
     dependencies = always({}),
+    environmentVariables = always([]),
     ignoreResource = () => () => false,
     options,
   }) =>
@@ -497,6 +601,7 @@ const writeResource =
                   resource,
                   filterLive,
                   dependencies: dependencies(),
+                  environmentVariables: environmentVariables(),
                 })
               ),
             ]),
@@ -506,6 +611,11 @@ const writeResource =
           }),
           ({ resourceVarName, resourceName, properties }) => ({
             resourceVarName,
+            env: envTpl({
+              options,
+              resource,
+              environmentVariables: environmentVariables(),
+            }),
             config: configTpl({
               options,
               type: typeTarget || type,
@@ -543,6 +653,7 @@ const writeResources =
     filterLive,
     properties,
     dependencies,
+    environmentVariables,
     ignoreResource,
     resourceVarName,
     resourceName,
@@ -566,6 +677,7 @@ const writeResources =
           }),
           (resource) =>
             writeResource({
+              environmentVariables,
               options,
               type,
               typeTarget,
@@ -636,6 +748,10 @@ exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
         filename: options.outputConfig,
         options,
         configTpl,
+      }),
+      env: writeEnv({
+        filename: options.outputEnv,
+        options,
       }),
     }),
   ])();

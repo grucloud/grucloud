@@ -101,6 +101,7 @@ exports.createProgram = () => {
               (cli) =>
                 cli[commandName]({
                   commandOptions,
+                  programOptions,
                 }),
             ]),
             handleError
@@ -245,6 +246,11 @@ exports.createProgram = () => {
       "-c, --outputConfig <file>",
       "config.js output",
       "artifacts/config.js"
+    )
+    .option(
+      "--outputEnv <file>",
+      "default.env environment variables",
+      "artifacts/default.env"
     )
     .option("-m, --mapping <file>", "mapping file", "mapping.json")
     .option(...optionFilteredByProvider)

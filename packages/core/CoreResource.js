@@ -131,7 +131,7 @@ const decorateLive =
           });
         },
         get managedByOther() {
-          return client.managedByOther({ live, lives });
+          return client.managedByOther({ resource, live, lives });
         },
       }),
       tap((resource) =>
