@@ -12,6 +12,7 @@ const {
   and,
   assign,
   map,
+  any,
 } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
 const AdmZip = require("adm-zip");
@@ -20,6 +21,7 @@ const path = require("path");
 const {
   generatorMain,
   hasDependency,
+  findLiveById,
 } = require("@grucloud/core/generatorUtils");
 
 const { configTpl } = require("./configTpl");
@@ -119,26 +121,31 @@ const writersSpec = [
       {
         type: "Volume",
         filterLive: () => pick(["Size", "VolumeType", "Device"]),
-        // ignoreResource:
-        //   ({ lives }) =>
-        //   (resource) =>
-        //     pipe([
-        //       () => resource,
-        //       or([
-        //         get("managedByOther"),
-        //         pipe([
-        //           get("live.Attachments"),
-        //           map(({ Device, InstanceId }) =>
-        //             pipe([
-        //               () => InstanceId,
-        //               findLiveById({ type: "Instance", lives }),
-        //               eq(get("live.RootDeviceName"), Device),
-        //             ])()
-        //           ),
-        //           any(identity),
-        //         ]),
-        //       ]),
-        //     ])(),
+        ignoreResource:
+          ({ lives }) =>
+          (resource) =>
+            pipe([
+              () => resource,
+              or([
+                get("managedByOther"),
+                pipe([
+                  get("live.Attachments"),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  any(({ Device, InstanceId }) =>
+                    pipe([
+                      () => InstanceId,
+                      findLiveById({ type: "Instance", lives }), //TODO group
+                      eq(get("live.RootDeviceName"), Device),
+                    ])()
+                  ),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+              ]),
+            ])(),
       },
       {
         type: "ElasticIpAddress",
@@ -228,14 +235,40 @@ const writersSpec = [
 
       {
         type: "Instance",
-        filterLive: () =>
-          pick(["InstanceType", "ImageId", "Placement.AvailabilityZone"]),
+        filterLive: () => pick(["InstanceType", "ImageId"]),
         dependencies: () => ({
-          subnet: { type: "Subnet", group: "ec2" },
+          subnet: {
+            type: "Subnet",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  tap(() => {
+                    assert(dependency);
+                  }),
+                  () => dependency,
+                  not(get("isDefault")),
+                ])(),
+          },
           keyPair: { type: "KeyPair", group: "ec2" },
           eip: { type: "ElasticIpAddress", group: "ec2" },
           iamInstanceProfile: { type: "InstanceProfile", group: "iam" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          securityGroups: {
+            type: "SecurityGroup",
+            group: "ec2",
+            //TODO excude default only if it is the only one
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  tap(() => {
+                    assert(dependency);
+                  }),
+                  () => dependency,
+                  not(get("isDefault")),
+                ])(),
+          },
           volumes: {
             type: "Volume",
             group: "ec2",

@@ -1473,11 +1473,11 @@ exports.Cli = ({
       throw Error("no infra provided in createStack");
     }),
     ({ infra, programOptions }) => ({
-      list: ({ commandOptions }) =>
+      list: ({ commandOptions, programOptions: programOptionsUser }) =>
         pipe([
           () => ({
             infra,
-            programOptions,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
             commandOptions: pipe([
               () => commandOptions,
               defaultsDeep({
@@ -1555,10 +1555,60 @@ exports.Cli = ({
               () => commandOptions,
               defaultsDeep({
                 projectName: await projectNameDefault({ programOptions }),
+                outputCode: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/iac.js"
+                ),
+                outputConfig: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/config.js"
+                ),
               }),
             ])(),
           }),
           genCode,
         ])(),
+    }),
+  ])();
+
+exports.testEnd2End = ({ cli, title }) =>
+  pipe([
+    () =>
+      cli.graphTree({
+        commandOptions: { title },
+      }),
+    () =>
+      cli.graphTarget({
+        commandOptions: { title },
+      }),
+    () =>
+      cli.planDestroy({
+        commandOptions: { force: true },
+      }),
+    () =>
+      cli.planApply({
+        commandOptions: { force: true },
+      }),
+    () =>
+      cli.list({
+        programOptions: {
+          json: "artifacts/inventory.json",
+        },
+        commandOptions: {
+          graph: true,
+        },
+      }),
+    () =>
+      cli.genCode({
+        commandOptions: {
+          input: "artifacts/inventory.json",
+        },
+      }),
+    () =>
+      cli.planDestroy({
+        commandOptions: { force: true },
+      }),
+    tap((params) => {
+      assert(true);
     }),
   ])();
