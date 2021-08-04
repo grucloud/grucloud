@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project s3-multiple
+skinparam monochrome true
++ Infra
+++ aws
++++ s3
+++++ Bucket (2)
+@endmindmap
