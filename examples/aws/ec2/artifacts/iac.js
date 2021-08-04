@@ -10,7 +10,6 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeKeyPair({
     name: config.ec2.KeyPair.kpEc2Example.name,
-    properties: () => config.ec2.KeyPair.kpEc2Example.properties,
   });
 
   provider.ec2.makeElasticIpAddress({

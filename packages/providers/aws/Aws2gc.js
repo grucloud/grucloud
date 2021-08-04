@@ -117,6 +117,7 @@ const writersSpec = [
       },
       {
         type: "KeyPair",
+        filterLive: () => pick([""]),
       },
       {
         type: "Volume",

@@ -304,7 +304,7 @@ exports.writeToFile = writeToFile;
 const readModel = (options) =>
   pipe([
     tap(() => {
-      console.log(`readModel`, options);
+      //console.log(`readModel`, options);
     }),
     () => fs.readFile(path.resolve(options.input), "utf-8"),
     JSON.parse,
