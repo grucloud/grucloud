@@ -1,8 +1,9 @@
 {
     "command": "list",
     "commandOptions": {
-        "dotFile": "artifacts/diagram-live.dot",
-        "title": "s3"
+        "graph": true,
+        "title": "s3",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/s3/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
@@ -26,7 +27,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-acceleration",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -73,7 +74,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-cors",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -96,7 +97,6 @@
                                             "Value": "grucloud-cors"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "CORSConfiguration": {
                                         "CORSRules": [
                                             {
@@ -113,7 +113,8 @@
                                                 "MaxAgeSeconds": 3000
                                             }
                                         ]
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-cors",
                                 "displayName": "grucloud-cors",
@@ -134,7 +135,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-encryption",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -188,7 +189,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-lifecycleconfiguration",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -253,7 +254,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-log-destination",
-                                    "CreationDate": "2021-08-05T17:32:49.000Z",
+                                    "CreationDate": "2021-08-05T19:42:13.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -297,7 +298,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-policy",
-                                    "CreationDate": "2021-08-05T18:12:21.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -320,10 +321,10 @@
                                             "Value": "grucloud-policy"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "PolicyStatus": {
                                         "IsPublic": false
                                     },
+                                    "LocationConstraint": "",
                                     "Policy": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -361,7 +362,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-request-payment",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -384,10 +385,10 @@
                                             "Value": "grucloud-request-payment"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "RequestPaymentConfiguration": {
                                         "Payer": "Requester"
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-request-payment",
                                 "displayName": "grucloud-request-payment",
@@ -408,7 +409,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-tag",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:13.000Z",
                                     "Tags": [
                                         {
                                             "Key": "Key2",
@@ -460,7 +461,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-test-basic",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -504,7 +505,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-versioning",
-                                    "CreationDate": "2021-08-05T17:29:59.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -527,11 +528,11 @@
                                             "Value": "grucloud-versioning"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "VersioningConfiguration": {
                                         "Status": "Enabled",
                                         "MFADelete": "Disabled"
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-versioning",
                                 "displayName": "grucloud-versioning",
@@ -552,7 +553,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-website",
-                                    "CreationDate": "2021-08-05T18:14:18.000Z",
+                                    "CreationDate": "2021-08-05T19:42:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -575,7 +576,17 @@
                                             "Value": "grucloud-website"
                                         }
                                     ],
-                                    "LocationConstraint": ""
+                                    "WebsiteConfiguration": {
+                                        "IndexDocument": {
+                                            "Suffix": "index.html"
+                                        },
+                                        "ErrorDocument": {
+                                            "Key": "error.html"
+                                        },
+                                        "RoutingRules": []
+                                    },
+                                    "LocationConstraint": "",
+                                    "ACL": "public-read"
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-website",
                                 "displayName": "grucloud-website",
@@ -606,14 +617,14 @@
                                     "Bucket": "grucloud-test-basic",
                                     "Key": "file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-05T17:30:15.000Z",
+                                    "LastModified": "2021-08-05T19:42:30.000Z",
                                     "ContentLength": 13,
                                     "ETag": "\"83b5d763dd5db9921639fda64a194408\"",
                                     "ContentType": "text/plain",
                                     "Metadata": {
                                         "md5hash": "g7XXY91duZIWOf2mShlECA=="
                                     },
-                                    "signedUrl": "https://grucloud-test-basic.s3.amazonaws.com/file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628188239&Signature=pkYIoLkdzgvh%2BOkoB0kbCVqlQYY%3D",
+                                    "signedUrl": "https://grucloud-test-basic.s3.amazonaws.com/file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628193472&Signature=UM8NByLHK4If%2B9mhxx6f19vZ%2BWM%3D",
                                     "Tags": [
                                         {
                                             "Key": "Key2",
@@ -653,6 +664,13 @@
                                                     "Type": "CanonicalUser"
                                                 },
                                                 "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
                                             }
                                         ],
                                         "Owner": {

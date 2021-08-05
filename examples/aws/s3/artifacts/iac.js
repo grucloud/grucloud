@@ -55,6 +55,7 @@ const createResources = ({ provider }) => {
 
   provider.s3.makeBucket({
     name: config.s3.Bucket.grucloudWebsite.name,
+    properties: () => config.s3.Bucket.grucloudWebsite.properties,
   });
 
   provider.s3.makeObject({

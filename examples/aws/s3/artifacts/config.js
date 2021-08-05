@@ -129,6 +129,17 @@ module.exports = ({ stage }) => ({
       },
       grucloudWebsite: {
         name: "grucloud-website",
+        properties: {
+          ACL: "public-read",
+          WebsiteConfiguration: {
+            IndexDocument: {
+              Suffix: "index.html",
+            },
+            ErrorDocument: {
+              Key: "error.html",
+            },
+          },
+        },
       },
     },
     Object: {

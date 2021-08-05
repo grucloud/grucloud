@@ -13,6 +13,7 @@ const {
   get,
   all,
   tryCatch,
+  any,
 } = require("rubico");
 const {
   size,
@@ -68,21 +69,36 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketAcl(params),
-        (acl) => {
-          logger.debug(`getBucketAcl ${name} ${tos(acl)}`);
-          const grant = acl.Grants[0];
-          const ownerId = acl.Owner.ID;
-          if (
-            ownerId === grant.Grantee.ID &&
-            grant.Permission === "FULL_CONTROL" &&
-            acl.Grants.length === 1
-          ) {
-            logger.debug(`getBucketAcl ${name} default`);
-            return;
-          } else {
-            return acl;
-          }
-        },
+        get("Grants"),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          any(
+            and([
+              eq(
+                get("Grantee.URI"),
+                "http://acs.amazonaws.com/groups/global/AllUsers"
+              ),
+              eq(get("Permission"), "READ"),
+            ])
+          ),
+          () => "public-read",
+          any(
+            and([
+              eq(
+                get("Grantee.URI"),
+                "http://acs.amazonaws.com/groups/global/AllUsers"
+              ),
+              eq(get("Permission"), "WRITE"),
+            ])
+          ),
+          () => "public-write",
+          () => undefined,
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
       (error) => {
         throw error;
@@ -131,7 +147,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         tap((x) => {
           logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
         }),
-        switchCase([isEmpty, () => undefined, (data) => data]),
+        when(isEmpty, () => undefined),
       ]),
       switchCase([
         eq(get("code"), "NoSuchLifecycleConfiguration"),

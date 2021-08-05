@@ -103,6 +103,7 @@ const writersSpec = ({ commandOptions, programOptions }) => [
               pipe([get("LocationConstraint"), isEmpty]),
               omit(["LocationConstraint"])
             ),
+            omit(["WebsiteConfiguration.RoutingRules"]),
             tap((params) => {
               assert(true);
             }),
