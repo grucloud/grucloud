@@ -62,6 +62,7 @@ exports.AwsDomain = ({ spec, config }) => {
       ({ id }) => route53domains().getDomainDetail({ DomainName: id }),
       switchCase([
         eq(get("code"), "NoSuchDomain"),
+        //TODO
         (error, { id }) => {
           logger.debug(`getById ${id} NoSuchDomain`);
         },
@@ -93,6 +94,7 @@ exports.AwsDomain = ({ spec, config }) => {
     getByName,
     getById,
     cannotBeDeleted: () => true,
+    managedByOther: () => true,
     findName,
     getList,
   };
