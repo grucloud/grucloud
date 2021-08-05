@@ -366,7 +366,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ),
       filter(pipe([get("error"), isEmpty])),
       tap((fullBuckets) => {
-        logger.info(`getList s3bucket #items ${fullBuckets.length}`);
         logger.debug(`getList full ${tos(fullBuckets)}`);
       }),
       (fullBuckets) => ({
@@ -376,13 +375,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
-  const getByName = async ({ name, deep = true, getTags = true }) =>
+  const getByName = ({ name, deep = true, getTags = true }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}, deep: ${deep}`);
       }),
       switchCase([
-        () => isUpById({ id: name }),
+        () => isUpById({ Bucket: name }),
         pipe([
           () => ({ Bucket: name }),
           (params) =>
@@ -441,13 +440,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }),
     ])();
 
-  const headBucket = async ({ id }) =>
+  const isUpById = ({ Bucket }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`headBucket: ${id}`);
+          logger.debug(`headBucket: ${Bucket}`);
         }),
-        () => s3().headBucket({ Bucket: id }),
+        () => s3().headBucket({ Bucket }),
         () => true,
       ]),
       switchCase([
@@ -457,24 +456,14 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         ]),
         () => false,
         (error) => {
-          logger.error(`headBucket ${id}`);
+          logger.error(`headBucket ${Bucket}`);
           logger.error(error);
           throw error;
         },
       ])
     )();
 
-  const isUpById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isUpById ${id} ${up ? "UP" : "DOWN"}`);
-    return up;
-  };
-
-  const isDownById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isDownById ${id} ${up ? "UP" : "DOWN"}`);
-    return !up;
-  };
+  const isDownById = not(isUpById);
 
   const putTags = ({ Bucket, paramsTag }) =>
     retryCall({
@@ -552,7 +541,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `s3 isUpById: ${Bucket}`,
-          fn: () => isUpById({ id: Bucket }),
+          fn: () => isUpById({ Bucket }),
           config: { repeatCount: 6, retryCount: 10, retryDelay: 1e3 },
         })
       ),
@@ -710,11 +699,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  const destroy = async ({ id: Bucket }) => {
-    assert(Bucket, `destroy invalid s3 id`);
-
-    await pipe([
+  const destroy = ({ id: Bucket }) =>
+    pipe([
       tap(() => {
+        assert(Bucket, `destroy invalid s3 id`);
         logger.info(`destroy bucket ${tos({ Bucket })}`);
       }),
       async () => {
@@ -810,7 +798,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         logger.info(`destroyed s3 bucket ${tos({ Bucket })}`);
       }),
     ])();
-  };
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({ Bucket: name })(properties);

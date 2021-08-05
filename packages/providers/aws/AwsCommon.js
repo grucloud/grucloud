@@ -56,11 +56,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
           pipe([
             () => ["Throttling", "UnknownEndpoint", "TooManyRequestsException"],
             includes(error.code),
-            tap((retry) => {
+            tap.if(identity, () => {
               logger.debug(
-                `shouldRetryOnException: ${name}:  retry: ${retry}, ${tos({
-                  error,
-                })}`
+                `shouldRetryOnException: ${name}: retrying, code: ${error.code}`
               );
             }),
           ])(),

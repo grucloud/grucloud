@@ -1,0 +1,169 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "s3-multiple",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/s3-multiple/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/s3-multiple"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "name": "grucloud-bucket-0",
+                                "id": "grucloud-bucket-0",
+                                "providerName": "aws",
+                                "type": "Bucket",
+                                "group": "s3",
+                                "live": {
+                                    "Name": "grucloud-bucket-0",
+                                    "CreationDate": "2021-08-05T20:26:14.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-s3-multiple"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "grucloud-bucket-0"
+                                        }
+                                    ],
+                                    "LocationConstraint": ""
+                                },
+                                "uri": "aws::s3::Bucket::grucloud-bucket-0",
+                                "displayName": "grucloud-bucket-0",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            },
+                            {
+                                "name": "grucloud-bucket-1",
+                                "id": "grucloud-bucket-1",
+                                "providerName": "aws",
+                                "type": "Bucket",
+                                "group": "s3",
+                                "live": {
+                                    "Name": "grucloud-bucket-1",
+                                    "CreationDate": "2021-08-05T20:26:14.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-s3-multiple"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "grucloud-bucket-1"
+                                        }
+                                    ],
+                                    "LocationConstraint": ""
+                                },
+                                "uri": "aws::s3::Bucket::grucloud-bucket-1",
+                                "displayName": "grucloud-bucket-1",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            },
+                            {
+                                "name": "grucloud-simple-bucket",
+                                "id": "grucloud-simple-bucket",
+                                "providerName": "aws",
+                                "type": "Bucket",
+                                "group": "s3",
+                                "live": {
+                                    "Name": "grucloud-simple-bucket",
+                                    "CreationDate": "2021-08-05T20:04:41.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-s3-simple"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "My namespace"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "grucloud-simple-bucket"
+                                        }
+                                    ],
+                                    "LocationConstraint": ""
+                                },
+                                "uri": "aws::s3::Bucket::grucloud-simple-bucket",
+                                "displayName": "grucloud-simple-bucket",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": false,
+                                "namespace": "My namespace",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "s3::Bucket",
+                        "type": "Bucket",
+                        "group": "s3",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

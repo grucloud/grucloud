@@ -42,9 +42,6 @@ const retryCall = async ({
       mergeMap(
         tryCatch(
           pipe([
-            tap(() => {
-              logger.debug(`retryCall ${name} invoking`);
-            }),
             () => fn(),
             switchCase([
               isExpectedResult,

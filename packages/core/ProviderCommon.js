@@ -173,7 +173,9 @@ const filterByType = ({ types = [], targetTypes }) =>
                 }),
                 includes(client.spec.type),
                 tap((keep) => {
-                  logger.debug(`${client.spec.type}: ${keep}`);
+                  logger.debug(
+                    `filterByType ${client.spec.groupType}, keep: ${keep}`
+                  );
                 }),
               ]),
             ]),
