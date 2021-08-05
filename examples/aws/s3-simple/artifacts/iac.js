@@ -7,14 +7,13 @@ const createResources = ({ provider }) => {
   provider.s3.makeBucket({
     name: config.s3.Bucket.grucloudSimpleBucket.name,
     namespace: "My namespace",
-    properties: () => config.s3.Bucket.grucloudSimpleBucket.properties,
   });
 
   provider.s3.makeObject({
     name: config.s3.Object.grucloudSimpleFileTest.name,
     namespace: "My namespace",
     dependencies: ({ resources }) => ({
-      iamGroups: [resources.s3.Bucket.grucloudSimpleBucket],
+      bucket: resources.s3.Bucket.grucloudSimpleBucket,
     }),
     properties: () => config.s3.Object.grucloudSimpleFileTest.properties,
   });

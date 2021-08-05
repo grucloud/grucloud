@@ -1600,7 +1600,6 @@ function CoreProvider({
               lives: getLives(),
             }),
           isExpectedResult: () => true,
-          //TODO isExpectedException: client.isExpectedExceptionDelete
           shouldRetryOnException: client.shouldRetryOnExceptionDelete,
           config: provider.config,
         })

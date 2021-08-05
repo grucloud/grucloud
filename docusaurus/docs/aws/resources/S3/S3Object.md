@@ -32,7 +32,7 @@ const s3Object = provider.s3.makeObject({
         Value: "Value2",
       },
     ],
-    source: path.join(process.cwd(), "examples/aws/s3/fixtures/testFile.txt"),
+    source: "examples/aws/s3/fixtures/testFile.txt",
   }),
 });
 ```

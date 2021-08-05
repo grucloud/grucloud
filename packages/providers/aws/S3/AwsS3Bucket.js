@@ -53,11 +53,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       pipe([
         () => params,
         s3().getBucketAccelerateConfiguration,
-        tap((params) => {
-          logger.debug(
-            `getBucketAccelerateConfiguration ${name} ${JSON.stringify(params)}`
-          );
-        }),
         when(isEmpty, () => undefined),
       ]),
       (error) => {
@@ -107,12 +102,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
   const getCORSConfiguration = ({ name, params }) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketCors(params),
-        tap((x) => {
-          logger.debug(`getBucketCors ${name} ${tos(x)}`);
-        }),
-      ]),
+      pipe([() => s3().getBucketCors(params)]),
       switchCase([
         eq(get("code"), "NoSuchCORSConfiguration"),
         () => undefined,
@@ -126,9 +116,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketEncryption(params),
-        tap((x) => {
-          logger.debug(`getBucketEncryption ${name} ${tos(x)}`);
-        }),
         get("ServerSideEncryptionConfiguration"),
       ]),
       switchCase([
@@ -144,9 +131,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketLifecycleConfiguration(params),
-        tap((x) => {
-          logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
-        }),
         when(isEmpty, () => undefined),
       ]),
       switchCase([
@@ -170,9 +154,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketLogging(params),
-        tap((x) => {
-          logger.debug(`getBucketLogging ${name} ${tos(x)}`);
-        }),
         when(isEmpty, () => undefined),
       ]),
       (error) => {
@@ -185,9 +166,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketNotificationConfiguration(params),
-        tap((x) => {
-          logger.debug(`getBucketNotificationConfiguration ${name} ${tos(x)}`);
-        }),
         when(
           (data) => all(isEmpty)(Object.values(data)),
           () => undefined
@@ -204,9 +182,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => s3().getBucketPolicy(params),
         get("Policy"),
         tryCatch(JSON.parse, () => undefined),
-        tap((x) => {
-          logger.debug(`getBucketPolicy ${name} ${tos(x)}`);
-        }),
       ]),
       switchCase([
         eq(get("code"), "NoSuchBucketPolicy"),
@@ -219,13 +194,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
   const getPolicyStatus = ({ name, params }) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketPolicyStatus(params),
-        tap((x) => {
-          logger.debug(`getBucketPolicyStatus ${name} ${tos(x)}`);
-        }),
-        get("PolicyStatus"),
-      ]),
+      pipe([() => s3().getBucketPolicyStatus(params), get("PolicyStatus")]),
       switchCase([
         eq(get("code"), "NoSuchBucketPolicy"),
         () => undefined,
@@ -239,9 +208,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketReplication(params),
-        tap((x) => {
-          logger.debug(`getBucketReplication ${name} ${tos(x)}`);
-        }),
         get("ReplicationConfiguration"),
       ]),
       switchCase([
@@ -269,9 +235,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       pipe([
         () => s3().getBucketVersioning(params),
         when(isEmpty, () => undefined),
-        tap((x) => {
-          logger.debug(`getBucketVersioning ${name} ${tos(x)}`);
-        }),
       ]),
       (err) => {
         throw err;
@@ -283,9 +246,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       pipe([
         () => s3().getBucketWebsite(params),
         when(isEmpty, () => undefined),
-        tap((x) => {
-          logger.debug(`getBucketWebsite ${name} ${tos(x)}`);
-        }),
       ]),
       switchCase([
         eq(get("code"), "NoSuchWebsiteConfiguration"),

@@ -54,7 +54,12 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
-            () => ["Throttling", "UnknownEndpoint", "TooManyRequestsException"],
+            () => [
+              "Throttling",
+              "UnknownEndpoint",
+              "TooManyRequestsException",
+              "OperationAborted",
+            ],
             includes(error.code),
             tap.if(identity, () => {
               logger.debug(
@@ -121,22 +126,22 @@ exports.shouldRetryOnException = ({ error, name }) =>
     }),
     () => error,
     //TODO find out error code we can retry on
-    or([
-      () => [503].includes(error.statusCode),
-      eq(get("code"), "OperationAborted"),
-    ]),
+    or([eq(get("statusCode"), 503)]),
     tap((retry) => {
-      logger.error(`aws shouldRetryOnException retry: ${retry}`);
+      logger.error(`aws shouldRetryOnException ${name}, retry: ${retry}`);
     }),
   ])();
 
-//TODO use pipe
-exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
-  logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
-  const retry = error.code === "DeleteConflict";
-  logger.debug(`shouldRetryOnException retry: ${retry}`);
-  return retry;
-};
+exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
+  pipe([
+    () => error,
+    eq(get("code"), "DeleteConflict"),
+    tap((retry) => {
+      logger.debug(
+        `aws shouldRetryOnExceptionDelete ${tos({ name, error, retry })}`
+      );
+    }),
+  ])();
 
 const hasKeyValueInTags =
   ({ key, value }) =>

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const path = require("path");
-const { tap, pipe, get } = require("rubico");
+const { tap, pipe, get, tryCatch } = require("rubico");
 
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
@@ -14,7 +14,7 @@ const { buildTagsS3Object } = require("../AwsS3Object");
 
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["Bucket", "Object"];
-
+const { AwsS3Object } = require("../AwsS3Object");
 const createStack = async ({ config }) => {
   const provider = AwsProvider({
     config: () => ({ projectName: "gru-test" }),
@@ -70,6 +70,27 @@ describe("AwsS3Object", async function () {
       this.skip();
     }
   });
+  it("destroy NoSuchBucket", async function () {
+    await pipe([
+      () => createStack({ config }),
+      get("config"),
+      (config) => AwsS3Object({ config }),
+      tryCatch(
+        (s3Object) =>
+          s3Object.destroy({
+            live: { Bucket: "grucloud-i-do-not-exist", Key: "bla" },
+          }),
+        (error) =>
+          pipe([
+            tap(() => {
+              assert(error);
+              assert(false, "shoud not be here");
+            }),
+          ])()
+      ),
+    ])();
+  });
+
   it("buildTagsS3Object default", async function () {
     await pipe([
       tap((params) => {
@@ -111,10 +132,27 @@ describe("AwsS3Object", async function () {
       }),
     ])();
   });
-  it("s3 object apply, update destroy", async function () {
+  it.only("s3 object apply, update destroy", async function () {
     const provider = await createStack({ config });
 
     await testPlanDeploy({ provider, types });
+
+    await pipe([
+      () => AwsS3Object({ config: provider.config }),
+      tryCatch(
+        (s3Object) =>
+          s3Object.destroy({
+            live: { Bucket: bucketName, Key: "bla" },
+          }),
+        (error) =>
+          pipe([
+            tap(() => {
+              assert(error);
+              assert(false, "shoud not be here");
+            }),
+          ])()
+      ),
+    ])();
 
     const providerNext = await createStackNext({ config });
     const cli = await Cli({

@@ -69,7 +69,6 @@ exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
-  assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
@@ -238,29 +237,19 @@ exports.AwsS3Object = ({ spec, config }) => {
   const isUpById = pipe([headObject, not(isEmpty)]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  const create = async ({
+  const create = ({
     name,
     namespace,
-    payload,
+    payload: { source, ...otherProperties },
     dependencies,
     programOptions,
-  }) => {
-    assert(name);
-    assert(payload);
-    assert(dependencies);
-
-    const { Tagging, Tags, source, ...otherProperties } = payload;
-
-    if (!source) {
-      throw {
-        code: 422,
-        message: `missing source attribute on S3Object '${name}'`,
-      };
-    }
-
-    logger.info(`create ${tos(name)}`);
-
-    return pipe([
+  }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create ${tos(name)}`);
+        assert(name);
+        assert(dependencies);
+      }),
       () => getBucket({ dependencies, name }),
       (bucket) =>
         pipe([
@@ -273,15 +262,10 @@ exports.AwsS3Object = ({ spec, config }) => {
             ContentMD5: md5FileBase64,
           }),
           pipe([
-            tap((x) => {
-              //logger.debug(`Body  ContentMD5 ${tos(x)}`);
-            }),
             ({ Body, ContentMD5 }) => ({
               ...otherProperties,
               Body,
-              Bucket: bucket.name,
               ContentMD5,
-              Tagging: buildTagsS3Object({ config, namespace, Tagging, Tags }),
               Metadata: {
                 md5hash: ContentMD5,
               },
@@ -300,17 +284,12 @@ exports.AwsS3Object = ({ spec, config }) => {
                 config: clientConfig,
               })
             ),
-            ({ ETag, ServerSideEncryption }) => ({
-              ETag,
-              ServerSideEncryption,
-            }),
             tap((result) => {
               logger.info(`created object: ${tos(result)}`);
             }),
           ]),
         ])(),
     ])();
-  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
   const destroy = ({ live }) =>
@@ -320,12 +299,39 @@ exports.AwsS3Object = ({ spec, config }) => {
       tap((params) => {
         logger.info(`destroy s3 object ${JSON.stringify(params)}`);
       }),
-      //TODO tryCatch
-      tap(s3().deleteObject),
+      tryCatch(
+        s3().deleteObject,
+        switchCase([
+          eq(get("code"), "NoSuchBucket"),
+          () => undefined,
+          (error) => {
+            throw error;
+          },
+        ])
+      ),
     ])();
 
-  const configDefault = ({ name, properties }) =>
-    defaultsDeep({ Key: name })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { bucket },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(bucket, `missing bucket dependency on S3Object '${name}'`);
+        assert(
+          otherProps.source,
+          `missing source attribute on S3Object '${name}'`
+        );
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Bucket: bucket.config.Bucket,
+        Key: name,
+        Tagging: buildTagsS3Object({ config, namespace, Tags }),
+      }),
+    ])();
 
   return {
     spec,

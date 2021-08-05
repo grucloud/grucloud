@@ -4,9 +4,6 @@ module.exports = ({ stage }) => ({
     Bucket: {
       grucloudSimpleBucket: {
         name: "grucloud-simple-bucket",
-        properties: {
-          LocationConstraint: "",
-        },
       },
     },
     Object: {
@@ -18,12 +15,12 @@ module.exports = ({ stage }) => ({
           source: "s3/grucloud-simple-bucket/grucloud-simple-file-test.txt",
           Tags: [
             {
-              Key: "key1",
-              Value: "value1",
+              Key: "Key2",
+              Value: "Value2",
             },
             {
-              Key: "key2",
-              Value: "value2",
+              Key: "Key1",
+              Value: "Value1",
             },
           ],
         },

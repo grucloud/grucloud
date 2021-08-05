@@ -1,9 +1,9 @@
 {
     "command": "list",
     "commandOptions": {
-        "dotFile": "artifacts/diagram-live.dot",
+        "graph": true,
         "title": "s3-simple",
-        "graph": true
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/s3-simple/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
@@ -27,7 +27,7 @@
                                 "group": "s3",
                                 "live": {
                                     "Name": "grucloud-simple-bucket",
-                                    "CreationDate": "2021-08-05T02:23:46.000Z",
+                                    "CreationDate": "2021-08-05T21:17:55.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -85,7 +85,7 @@
                                     "Bucket": "grucloud-simple-bucket",
                                     "Key": "grucloud-simple-file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-05T02:25:12.000Z",
+                                    "LastModified": "2021-08-05T21:18:11.000Z",
                                     "ContentLength": 523,
                                     "ETag": "\"00fcb3a8f460ca505ce0b495d3a9e38b\"",
                                     "ContentType": "text/plain",
@@ -93,15 +93,15 @@
                                     "Metadata": {
                                         "md5hash": "APyzqPRgylBc4LSV06njiw=="
                                     },
-                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628131247&Signature=TJ9kYNqxPbB5vXEzaQicQtR8uSg%3D",
+                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628199208&Signature=TXFfHXePWGnY%2FlNuBJlglGF1OwM%3D",
                                     "Tags": [
                                         {
-                                            "Key": "key1",
-                                            "Value": "value1"
+                                            "Key": "Key2",
+                                            "Value": "Value2"
                                         },
                                         {
-                                            "Key": "key2",
-                                            "Value": "value2"
+                                            "Key": "Key1",
+                                            "Value": "Value1"
                                         },
                                         {
                                             "Key": "gc-project-name",

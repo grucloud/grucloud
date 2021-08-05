@@ -46,7 +46,7 @@ const createResources = async ({ provider }) => {
               Value: "Value2",
             },
           ],
-          source: path.join(__dirname, "./fixtures/testFile.txt"),
+          source: "./fixtures/testFile.txt",
         }),
       }),
     },
