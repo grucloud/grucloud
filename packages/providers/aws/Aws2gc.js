@@ -13,19 +13,47 @@ const {
   assign,
   map,
   any,
+  fork,
+  filter,
 } = require("rubico");
-const { identity, pluck, includes } = require("rubico/x");
+const Axios = require("axios");
+const { flatten, identity, pluck, includes, when } = require("rubico/x");
 const AdmZip = require("adm-zip");
 const path = require("path");
+const mime = require("mime-types");
+const Fs = require("fs");
+const fs = require("fs").promises;
 
 const {
   generatorMain,
   hasDependency,
   findLiveById,
+  readModel,
+  readMapping,
 } = require("@grucloud/core/generatorUtils");
 
 const { configTpl } = require("./configTpl");
 const { iacTpl } = require("./iacTpl");
+
+const bucketFileNameFromLive = ({ live: { Name }, commandOptions }) =>
+  `s3/${Name}/`;
+
+const bucketFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
+  path.resolve(
+    programOptions.workingDirectory,
+    bucketFileNameFromLive({ live, commandOptions })
+  );
+
+const objectFileNameFromLive = ({
+  live: { Bucket, Key, ContentType },
+  commandOptions,
+}) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
+
+const objectFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
+  path.resolve(
+    programOptions.workingDirectory,
+    objectFileNameFromLive({ live, commandOptions })
+  );
 
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
@@ -47,7 +75,65 @@ const securityGroupRulePickProperties = pipe([
       ])(),
 ]);
 
-const writersSpec = [
+const writersSpec = ({ commandOptions, programOptions }) => [
+  {
+    group: "s3",
+    types: [
+      {
+        type: "Bucket",
+        filterLive: () =>
+          pipe([
+            pick([
+              "LocationConstraint",
+              "AccelerateConfiguration",
+              "ACL",
+              "CORSConfiguration",
+              "ServerSideEncryptionConfiguration",
+              "BucketLoggingStatus",
+              "NotificationConfiguration",
+              "Policy",
+              //"PolicyStatus",
+              "ReplicationConfiguration",
+              "RequestPaymentConfiguration",
+              "VersioningConfiguration",
+              "LifecycleConfiguration",
+              "WebsiteConfiguration",
+            ]),
+            when(
+              pipe([get("LocationConstraint"), isEmpty]),
+              omit(["LocationConstraint"])
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      },
+      {
+        type: "Object",
+        filterLive: ({ resource: { live } }) =>
+          pipe([
+            pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
+            tap((params) => {
+              assert(true);
+            }),
+            assign({
+              source: () =>
+                objectFileNameFromLive({
+                  live,
+                  commandOptions,
+                  programOptions,
+                }),
+            }),
+            tap((params) => {
+              assert(live);
+            }),
+          ]),
+        dependencies: () => ({
+          bucket: { type: "Bucket", group: "s3" },
+        }),
+      },
+    ],
+  },
   {
     group: "iam",
     types: [
@@ -735,5 +821,124 @@ const writersSpec = [
   },
 ];
 
-exports.generateCode = ({ options }) =>
-  generatorMain({ name: "aws2gc", writersSpec, options, iacTpl, configTpl });
+const downloadAsset = ({ url, assetPath }) =>
+  pipe([
+    () => path.resolve(assetPath),
+    tap((params) => {
+      assert(true);
+    }),
+    Fs.createWriteStream,
+    (writer) =>
+      pipe([
+        () =>
+          Axios({
+            url,
+            method: "GET",
+            responseType: "stream",
+          }),
+        (axios) => axios.data.pipe(writer),
+        () =>
+          new Promise((resolve, reject) => {
+            writer.on("finish", resolve);
+            writer.on("error", reject);
+          }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+  ])();
+
+const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
+  pipe([
+    () => lives,
+    filter(eq(get("groupType"), "s3::Object")),
+    pluck("resources"),
+    flatten,
+    pluck("live"),
+    tap((params) => {
+      assert(true);
+    }),
+    map((live) =>
+      pipe([
+        () =>
+          objectFileNameFullFromLive({ live, commandOptions, programOptions }),
+        tap((objectFileName) => {
+          console.log(`Downloading ${live.signedUrl} to ${objectFileName}`);
+        }),
+        tap((assetPath) =>
+          downloadAsset({
+            url: live.signedUrl,
+            assetPath,
+            commandOptions,
+            programOptions,
+          })
+        ),
+        tap((objectFileName) => {
+          console.log(`${objectFileName} Downloaded`);
+        }),
+      ])()
+    ),
+  ])();
+
+const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
+  pipe([
+    () => lives,
+    filter(eq(get("groupType"), "s3::Bucket")),
+    pluck("resources"),
+    flatten,
+    pluck("live"),
+    tap((params) => {
+      assert(true);
+    }),
+    map((live) =>
+      pipe([
+        tap(() => {
+          assert(true);
+        }),
+        () =>
+          bucketFileNameFullFromLive({ live, commandOptions, programOptions }),
+        tap((params) => {
+          assert(true);
+        }),
+        (bucketFileName) => fs.mkdir(bucketFileName, { recursive: true }),
+        tap((params) => {
+          assert(true);
+        }),
+        // (assetPath) =>
+        //   downloadAsset({ url: live.signedUrl, assetPath, options }),
+      ])()
+    ),
+  ])();
+
+const downloadAssets = ({ commandOptions, programOptions }) =>
+  pipe([
+    fork({
+      lives: readModel({ commandOptions, programOptions }),
+      mapping: readMapping({ commandOptions, programOptions }),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ lives }) =>
+      pipe([
+        () => createS3Buckets({ lives, commandOptions, programOptions }),
+        () => downloadS3Objects({ lives, commandOptions, programOptions }),
+      ])(),
+  ])();
+
+exports.generateCode = ({ commandOptions, programOptions }) =>
+  pipe([
+    () =>
+      generatorMain({
+        name: "aws2gc",
+        writersSpec: writersSpec({ commandOptions, programOptions }),
+        commandOptions,
+        programOptions,
+        iacTpl,
+        configTpl,
+      }),
+    tap((params) => {
+      assert(true);
+    }),
+    () => downloadAssets({ commandOptions, programOptions }),
+  ])();

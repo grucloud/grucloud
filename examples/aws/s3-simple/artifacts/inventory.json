@@ -1,0 +1,181 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "dotFile": "artifacts/diagram-live.dot",
+        "title": "s3-simple",
+        "graph": true
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/s3-simple"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "name": "grucloud-simple-bucket",
+                                "id": "grucloud-simple-bucket",
+                                "providerName": "aws",
+                                "type": "Bucket",
+                                "group": "s3",
+                                "live": {
+                                    "Name": "grucloud-simple-bucket",
+                                    "CreationDate": "2021-08-05T02:23:46.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-s3-simple"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "My namespace"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "grucloud-simple-bucket"
+                                        }
+                                    ],
+                                    "LocationConstraint": ""
+                                },
+                                "uri": "aws::s3::Bucket::grucloud-simple-bucket",
+                                "displayName": "grucloud-simple-bucket",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "My namespace",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "s3::Bucket",
+                        "type": "Bucket",
+                        "group": "s3",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "grucloud-simple-file-test",
+                                "id": "grucloud-simple-file-test",
+                                "providerName": "aws",
+                                "type": "Object",
+                                "group": "s3",
+                                "live": {
+                                    "Bucket": "grucloud-simple-bucket",
+                                    "Key": "grucloud-simple-file-test",
+                                    "AcceptRanges": "bytes",
+                                    "LastModified": "2021-08-05T02:25:12.000Z",
+                                    "ContentLength": 523,
+                                    "ETag": "\"00fcb3a8f460ca505ce0b495d3a9e38b\"",
+                                    "ContentType": "text/plain",
+                                    "ServerSideEncryption": "AES256",
+                                    "Metadata": {
+                                        "md5hash": "APyzqPRgylBc4LSV06njiw=="
+                                    },
+                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628131247&Signature=TJ9kYNqxPbB5vXEzaQicQtR8uSg%3D",
+                                    "Tags": [
+                                        {
+                                            "Key": "key1",
+                                            "Value": "value1"
+                                        },
+                                        {
+                                            "Key": "key2",
+                                            "Value": "value2"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-s3-simple"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "My namespace"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "ACL": {
+                                        "Grants": [
+                                            {
+                                                "Grantee": {
+                                                    "DisplayName": "frederic.heem",
+                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
+                                                    "Type": "CanonicalUser"
+                                                },
+                                                "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
+                                            }
+                                        ],
+                                        "Owner": {
+                                            "DisplayName": "frederic.heem",
+                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
+                                        }
+                                    }
+                                },
+                                "uri": "aws::s3::Object::grucloud-simple-file-test",
+                                "displayName": "grucloud-simple-file-test",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "My namespace",
+                                "dependencies": [
+                                    {
+                                        "type": "Bucket",
+                                        "group": "s3",
+                                        "ids": [
+                                            "grucloud-simple-bucket"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "s3::Object",
+                        "type": "Object",
+                        "group": "s3",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

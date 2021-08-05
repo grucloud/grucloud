@@ -443,7 +443,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpdate = async ({ resource, target, live }) =>
+  const planUpdate = ({ resource, target, live }) =>
     pipe([
       tap(() => {
         logger.debug(
@@ -460,6 +460,7 @@ exports.ResourceMaker = ({
           dependencies: resource.dependencies(), //TODO
           lives: provider.lives,
           config,
+          programOptions,
         }),
       tap((diff) => {
         logger.debug(`planUpdate diff ${tos(diff)}`);

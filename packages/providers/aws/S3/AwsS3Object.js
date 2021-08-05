@@ -1,6 +1,6 @@
 const assert = require("assert");
 const fs = require("fs").promises;
-
+const path = require("path");
 const {
   map,
   filter,
@@ -11,8 +11,19 @@ const {
   switchCase,
   fork,
   get,
+  any,
+  eq,
+  pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty, first, find } = require("rubico/x");
+const {
+  append,
+  defaultsDeep,
+  isEmpty,
+  callProp,
+  includes,
+  flatten,
+  unless,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { retryCall } = require("@grucloud/core/Retry");
 const {
@@ -28,7 +39,12 @@ const {
   md5FileBase64,
 } = require("@grucloud/core/Common");
 
-const buildTags = ({
+const tagsSerialize = pipe([
+  map(({ Key, Value }) => `${Key}=${Value}`),
+  callProp("join", "&"),
+]);
+
+const buildTagsS3Object = ({
   config: {
     managedByKey,
     managedByValue,
@@ -37,14 +53,19 @@ const buildTags = ({
     providerName,
     stage,
     projectName,
+    projectNameKey,
     namespaceKey,
   },
-  Tagging,
+  Tags = [],
   namespace = "",
 }) =>
-  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}&${namespaceKey}=${namespace}&projectName=${projectName}${
-    Tagging ? `&${Tagging}` : ""
-  }`;
+  pipe([
+    () =>
+      `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}&${namespaceKey}=${namespace}&${projectNameKey}=${projectName}`,
+    unless(() => isEmpty(Tags), append(`&${tagsSerialize(Tags)}`)),
+  ])();
+
+exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
@@ -63,14 +84,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     {
       type: "Bucket",
       group: "s3",
-      ids: pipe([
-        () => live,
-        get("Bucket"),
-        (bucket) => [bucket],
-        tap((xxx) => {
-          assert(true);
-        }),
-      ])(),
+      ids: pipe([() => live, get("Bucket"), (bucket) => [bucket]])(),
     },
   ];
 
@@ -88,21 +102,36 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = async ({ resources = [] } = {}) =>
+  const getList = ({ resources = [], lives } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList s3 #resources ${resources.length}`);
+        assert(lives);
       }),
-      map.pool(mapPoolSize, getByName),
+      () =>
+        lives.getByType({
+          type: "Bucket",
+          group: "s3",
+          providerName: config.providerName,
+        }),
+      map.pool(mapPoolSize, (bucket) =>
+        pipe([
+          () =>
+            s3().listObjectsV2({
+              Bucket: bucket.name,
+              MaxKeys: 1e3,
+            }),
+          get("Contents"),
+          map.pool(mapPoolSize, ({ Key }) =>
+            getByKey({ Key, Bucket: bucket.name })
+          ),
+        ])()
+      ),
+      flatten,
       filter(not(isEmpty)),
-      //TODO may not be needed
-      switchCase([
-        pipe([filter(get("error")), not(isEmpty)]),
-        (objects) => {
-          throw { code: 500, errors: objects };
-        },
-        (objects) => objects,
-      ]),
+      tap.if(any(get("error")), (objects) => {
+        throw { code: 500, errors: objects };
+      }),
       (items) => ({
         total: items.length,
         items,
@@ -110,9 +139,68 @@ exports.AwsS3Object = ({ spec, config }) => {
       tap((result) => {
         logger.info(`getList s3 total: ${tos(result.total)}`);
       }),
-    ])(resources);
+    ])();
 
-  const getByName = async ({ name, dependencies }) =>
+  const getByKey = ({ Key, Bucket }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getByName ${JSON.stringify({ Key, Bucket })}`);
+        assert(Key);
+        assert(Bucket);
+      }),
+      () => ({ Key, Bucket }),
+      tryCatch(
+        pipe([
+          fork({
+            ACL: pipe([s3().getObjectAcl, pick(["Grants", "Owner"])]),
+            signedUrl: pipe([
+              (params) => s3().getSignedUrl("getObject", params),
+            ]),
+            content: pipe([s3().headObject]),
+            Tags: pipe([
+              //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
+              s3().getObjectTagging,
+              get("TagSet"),
+            ]),
+          }),
+          ({ content, ...others }) => ({
+            Bucket,
+            Key,
+            ...content,
+            ...others,
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        (error) =>
+          pipe([
+            () => ["NoSuchBucket", "NoSuchKey", "NotFound"],
+            switchCase([
+              includes(error.code),
+              () => null,
+              () =>
+                pipe([
+                  tap(() => {
+                    logger.debug(
+                      `getByName error ${Bucket}/${Key}: ${tos(error)}`
+                    );
+                  }),
+                  () => ({
+                    Bucket,
+                    Key,
+                    error: convertError({ error }),
+                  }),
+                ])(),
+            ]),
+          ])()
+      ),
+      tap((result) => {
+        logger.debug(`getByName result: ${tos(result)}`);
+      }),
+    ])();
+
+  const getByName = ({ name, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
@@ -122,107 +210,46 @@ exports.AwsS3Object = ({ spec, config }) => {
         Bucket: bucket.name,
         Key: name,
       }),
-      (params) =>
-        tryCatch(
-          pipe([
-            fork({
-              list: pipe([
-                ({ Bucket }) =>
-                  s3().listObjectsV2({
-                    Bucket,
-                    Prefix: name,
-                    MaxKeys: 1,
-                  }),
-                get("Contents"),
-                first,
-              ]),
-              content: pipe([(params) => s3().headObject(params)]),
-              Tags: pipe([
-                //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
-                (params) => s3().getObjectTagging(params),
-                get("TagSet"),
-              ]),
-            }),
-            ({ list, content, Tags }) => ({
-              Bucket: params.Bucket,
-              ...list,
-              ...content,
-              Tags,
-            }),
-          ]),
-          switchCase([
-            (error) =>
-              ["NoSuchBucket", "NoSuchKey", "NotFound"].includes(error.code),
-            () => null,
-            (error, bucket) =>
-              pipe([
-                tap(() => {
-                  logger.debug(
-                    `getByName error ${bucket.name}/${name}: ${tos(error)}`
-                  );
-                }),
-                () => ({
-                  bucket,
-                  error: convertError({
-                    error,
-                    params: {
-                      Bucket: bucket.name,
-                      Key: name,
-                    },
-                  }),
-                }),
-              ])(),
-          ])
-        )(params),
-      tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
-      }),
+      getByKey,
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
-  const headObject = async ({ Bucket, Key }) => {
-    assert(Bucket, "headObject Bucket");
-    assert(Key, "headObject Key");
-    try {
-      await s3().headObject({ Bucket, Key });
-      return true;
-    } catch (error) {
-      if (error.statusCode === 404) {
-        return false;
-      }
-      logger.error(`headObject`);
-      logger.error(error);
+  const headObject = ({ Bucket, Key }) =>
+    pipe([
+      tap(() => {
+        assert(Bucket, "headObject Bucket");
+        assert(Key, "headObject Key");
+      }),
+      () => ({ Bucket, Key }),
+      tryCatch(
+        pipe([s3().headObject, () => true]),
+        switchCase([
+          eq(get("statusCode"), 404),
+          () => false,
+          () => {
+            logger.error(`headObject ${JSON.stringify({ Bucket, Key })}`);
+            logger.error(error);
+            throw error;
+          },
+        ])
+      ),
+    ])();
 
-      throw error;
-    }
-  };
-
-  const getById = ({ id }) => getByName({ name: id });
-
-  const isUpById = async ({ Bucket, Key }) => {
-    assert(Bucket, "isUpById Bucket");
-    assert(Key, "isUpById Key");
-    const up = await headObject({ Bucket, Key });
-    logger.info(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
-    return up;
-  };
-
-  const isDownById = async ({ id, resource }) => {
-    assert(id, "isDownById id");
-    assert(resource, `isDownById: no resource for id ${id}`);
-    const bucket = getBucket(resource);
-    const up = await headObject({ Bucket: bucket.name, Key: id });
-    logger.info(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
-    return !up;
-  };
+  const isUpById = pipe([headObject, not(isEmpty)]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  const create = async ({ name, namespace, payload, dependencies }) => {
+  const create = async ({
+    name,
+    namespace,
+    payload,
+    dependencies,
+    programOptions,
+  }) => {
     assert(name);
     assert(payload);
     assert(dependencies);
 
-    const { Tagging, source, ...otherProperties } = payload;
+    const { Tagging, Tags, source, ...otherProperties } = payload;
 
     if (!source) {
       throw {
@@ -237,9 +264,13 @@ exports.AwsS3Object = ({ spec, config }) => {
       () => getBucket({ dependencies, name }),
       (bucket) =>
         pipe([
+          () => path.resolve(programOptions.workingDirectory, source),
+          tap((fullPath) => {
+            logger.debug(`create s3 object from file: '${fullPath}'`);
+          }),
           fork({
-            Body: () => fs.readFile(source),
-            ContentMD5: () => md5FileBase64(source),
+            Body: fs.readFile,
+            ContentMD5: md5FileBase64,
           }),
           pipe([
             tap((x) => {
@@ -250,7 +281,7 @@ exports.AwsS3Object = ({ spec, config }) => {
               Body,
               Bucket: bucket.name,
               ContentMD5,
-              Tagging: buildTags({ config, namespace, Tagging }),
+              Tagging: buildTagsS3Object({ config, namespace, Tagging, Tags }),
               Metadata: {
                 md5hash: ContentMD5,
               },
@@ -282,23 +313,18 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
-  const destroy = async ({ id, resource }) =>
+  const destroy = ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy object ${id}`);
+      () => live,
+      pick(["Bucket", "Key"]),
+      tap((params) => {
+        logger.info(`destroy s3 object ${JSON.stringify(params)}`);
       }),
-      getBucket,
-      (bucket) => ({
-        Bucket: bucket.name,
-        Key: id,
-      }),
-      (params) => s3().deleteObject(params),
-      tap(() => {
-        logger.info(`destroyed object ${id}`);
-      }),
-    ])(resource);
+      //TODO tryCatch
+      tap(s3().deleteObject),
+    ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = ({ name, properties }) =>
     defaultsDeep({ Key: name })(properties);
 
   return {
@@ -318,22 +344,39 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 };
 
-exports.compareS3Object = async ({ target, live }) => {
-  logger.debug(`compare object`);
-  assert(live.Metadata);
-  const { md5hash } = live.Metadata;
-  assert(md5hash);
-  if (target.source) {
-    const md5 = await md5FileBase64(target.source);
-
-    if (md5hash !== md5) {
-      logger.debug(`object are different`);
-      return {
-        liveDiff: { updated: { md5: md5hash } },
-        targetDiff: { updated: { md5: md5 } },
-      };
-    }
-  }
-
-  return {};
-};
+exports.compareS3Object = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  fork({
+    liveHash: pipe([
+      get("live.Metadata.md5hash"),
+      tap((liveHash) => {
+        assert(liveHash);
+      }),
+    ]),
+    targetHash: ({ target, programOptions }) =>
+      pipe([
+        tap(() => {
+          assert(programOptions.workingDirectory);
+          assert(target.source, "missing source");
+        }),
+        () => path.resolve(programOptions.workingDirectory, target.source),
+        md5FileBase64,
+        tap((targetHash) => {
+          assert(targetHash);
+        }),
+      ])(),
+  }),
+  switchCase([
+    ({ liveHash, targetHash }) => liveHash != targetHash,
+    ({ liveHash, targetHash }) => ({
+      liveDiff: { updated: { md5: liveHash } },
+      targetDiff: { updated: { md5: targetHash } },
+    }),
+    () => ({}),
+  ]),
+  tap((params) => {
+    assert(true);
+  }),
+]);

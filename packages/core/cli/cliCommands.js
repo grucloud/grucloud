@@ -265,7 +265,8 @@ const displayError = ({ name, error }) => {
     error.results;
 
   if (!results) {
-    console.log(YAML.stringify(convertError({ error })));
+    const convertedError = convertError({ error });
+    console.log(YAML.stringify(convertedError));
   }
 };
 
@@ -1473,7 +1474,7 @@ exports.Cli = ({
       throw Error("no infra provided in createStack");
     }),
     ({ infra, programOptions }) => ({
-      list: ({ commandOptions, programOptions: programOptionsUser }) =>
+      list: ({ commandOptions, programOptions: programOptionsUser = {} }) =>
         pipe([
           () => ({
             infra,

@@ -39,7 +39,17 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
-        fn: () => endpoint[name](...args).promise(),
+        // s3.getSignedUrl does not have promise
+        fn: () =>
+          new Promise((resolve, reject) => {
+            endpoint[name](...args, (error, result) =>
+              switchCase([
+                () => error,
+                () => reject(error),
+                () => resolve(result),
+              ])()
+            );
+          }),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>

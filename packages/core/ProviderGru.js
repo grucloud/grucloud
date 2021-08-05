@@ -789,7 +789,7 @@ exports.ProviderGru = ({
       () => getProviders(),
       map(
         tryCatch(
-          callProp("generateCode", { options: commandOptions }),
+          callProp("generateCode", { commandOptions, programOptions }),
           (error) =>
             pipe([
               tap(() => {

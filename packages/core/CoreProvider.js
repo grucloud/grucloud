@@ -116,7 +116,7 @@ function CoreProvider({
   name: providerName,
   dependencies = {},
   type,
-  programOptions = { workingDirectory: process.cwd() },
+  programOptions = {},
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
   fnSpecs,
@@ -131,6 +131,11 @@ function CoreProvider({
   const setLives = (livesToSet) => {
     _lives = livesToSet;
   };
+  const getProgramOptions = () =>
+    pipe([
+      () => programOptions,
+      defaultsDeep({ workingDirectory: process.cwd() }),
+    ])();
 
   const getLives = pipe([
     () => _lives,
@@ -1746,7 +1751,7 @@ function CoreProvider({
         specs,
         prefix: "make",
         filterResource: not(get("listOnly")),
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
     defaultsDeep(
@@ -1754,7 +1759,7 @@ function CoreProvider({
         provider,
         specs,
         prefix: "use",
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
     defaultsDeep(
@@ -1762,7 +1767,7 @@ function CoreProvider({
         provider,
         specs,
         prefix: "useDefault",
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
   ])();

@@ -1,5 +1,7 @@
 const assert = require("assert");
 const path = require("path");
+const { tap, pipe, get } = require("rubico");
+
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const {
@@ -7,6 +9,8 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
+
+const { buildTagsS3Object } = require("../AwsS3Object");
 
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["Bucket", "Object"];
@@ -66,7 +70,47 @@ describe("AwsS3Object", async function () {
       this.skip();
     }
   });
-
+  it("buildTagsS3Object default", async function () {
+    await pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => createStack({ config }),
+      get("config"),
+      (config) => buildTagsS3Object({ config }),
+      tap((result) => {
+        assert.equal(
+          result,
+          "gc-managed-by=grucloud&gc-stage=dev&gc-created-by-provider=aws&gc-namespace=&gc-project-name=gru-test"
+        );
+      }),
+    ])();
+  });
+  it("buildTag buildTagsS3Object", async function () {
+    await pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => createStack({ config }),
+      get("config"),
+      (config) =>
+        buildTagsS3Object({
+          config,
+          Tags: [
+            {
+              Key: "Key1",
+              Value: "Value1",
+            },
+          ],
+        }),
+      tap((result) => {
+        assert.equal(
+          result,
+          "gc-managed-by=grucloud&gc-stage=dev&gc-created-by-provider=aws&gc-namespace=&gc-project-name=gru-test&Key1=Value1"
+        );
+      }),
+    ])();
+  });
   it("s3 object apply, update destroy", async function () {
     const provider = await createStack({ config });
 

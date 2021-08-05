@@ -22,7 +22,16 @@ const s3Object = provider.s3.makeObject({
     ACL: "public-read",
     ContentType: "text/plain",
     ServerSideEncryption: "AES256",
-    Tagging: "key1=value1&key2=value2",
+    Tags: [
+      {
+        Key: "Key1",
+        Value: "Value1",
+      },
+      {
+        Key: "Key2",
+        Value: "Value2",
+      },
+    ],
     source: path.join(process.cwd(), "examples/aws/s3/fixtures/testFile.txt"),
   }),
 });

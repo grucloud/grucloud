@@ -89,7 +89,6 @@
 
 - aws_route53_delegation_set
 
-- getBucketTagging should not log error when tad dos not exist.
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
 

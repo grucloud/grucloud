@@ -90,7 +90,7 @@ describe.skip("AwsS3Bucket Example", async function () {
 
     // Tag
     const tag = await buckets.tag.getLive();
-    assert.equal(tag.Tagging.TagSet[0].Key, "Key2");
+    assert.equal(tag.Tags[0].Key, "Key2");
 
     // Versioning
     const versioning = await buckets.versioning.getLive();

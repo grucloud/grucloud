@@ -170,7 +170,7 @@ const printPropertiesDo = (value) =>
       pipe([
         map.entries(([key, value]) => [
           key,
-          `${key}: ${printPropertiesDo(value)},`,
+          `"${key}": ${printPropertiesDo(value)},`,
         ]),
         values,
         callProp("join", "\n"),
@@ -186,13 +186,13 @@ const printPropertiesDo = (value) =>
 const printProperties = (value) =>
   pipe([
     tap((params) => {
-      //console.log("In:", JSON.stringify(value, null, 4));
+      console.log("In:", JSON.stringify(value, null, 4));
     }),
     () => value,
     printPropertiesDo,
     tap((params) => {
       assert(true);
-      //console.log("result", JSON.stringify(params, null, 4));
+      console.log("Out", JSON.stringify(params, null, 4));
     }),
   ])();
 
@@ -374,12 +374,12 @@ const writeToFile =
 
 exports.writeToFile = writeToFile;
 
-const readModel = (options) =>
+const readModel = ({ commandOptions }) =>
   pipe([
     tap(() => {
       //console.log(`readModel`, options);
     }),
-    () => fs.readFile(path.resolve(options.input), "utf-8"),
+    () => fs.readFile(path.resolve(commandOptions.input), "utf-8"),
     JSON.parse,
     get("result.results"),
     first,
@@ -388,11 +388,11 @@ const readModel = (options) =>
 
 exports.readModel = readModel;
 
-const readMapping = (options) =>
+const readMapping = ({ commandOptions }) =>
   tryCatch(
     pipe([
       tap(() => {
-        console.log("readMapping", options.mapping);
+        //console.log("readMapping", options.mapping);
       }),
       () => fs.readFile(path.resolve(options.mapping), "utf-8"),
       JSON.parse,
@@ -425,7 +425,7 @@ const writeIac =
     ])();
 
 const writeConfig =
-  ({ filename, configTpl, options }) =>
+  ({ filename, configTpl, commandOptions }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -470,12 +470,13 @@ const writeConfig =
       tap((params) => {
         assert(true);
       }),
-      (content) => configTpl({ content, projectName: options.projectName }),
+      (content) =>
+        configTpl({ content, projectName: commandOptions.projectName }),
       writeToFile({ filename }),
     ])();
 
 const writeEnv =
-  ({ filename, options }) =>
+  ({ filename, programOptions }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -700,12 +701,22 @@ const writeResources =
       ),
     ])();
 
-exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
+exports.generatorMain = ({
+  name,
+  commandOptions,
+  programOptions,
+  writersSpec,
+  iacTpl,
+  configTpl,
+}) =>
   pipe([
     tap((xxx) => {
-      console.log(name, options);
+      console.log(name, commandOptions, programOptions);
     }),
-    fork({ lives: readModel(options), mapping: readMapping(options) }),
+    fork({
+      lives: readModel({ commandOptions }),
+      mapping: readMapping({ commandOptions }),
+    }),
     ({ lives, mapping }) =>
       pipe([
         () => writersSpec,
@@ -726,7 +737,7 @@ exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
                 () => ({ lives, mapping }),
                 writeResources({
                   mapping,
-                  options,
+                  commandOptions,
                   group,
                   ...spec,
                 }),
@@ -738,20 +749,20 @@ exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
         tap((params) => {
           assert(true);
         }),
+        fork({
+          iac: writeIac({ filename: commandOptions.outputCode, iacTpl }),
+          config: writeConfig({
+            filename: commandOptions.outputConfig,
+            commandOptions,
+            configTpl,
+          }),
+          env: writeEnv({
+            filename: commandOptions.outputEnv,
+            programOptions,
+          }),
+        }),
+        tap(() => {
+          assert(true);
+        }),
       ])(),
-    tap((xxx) => {
-      assert(true);
-    }),
-    fork({
-      iac: writeIac({ filename: options.outputCode, iacTpl }),
-      config: writeConfig({
-        filename: options.outputConfig,
-        options,
-        configTpl,
-      }),
-      env: writeEnv({
-        filename: options.outputEnv,
-        options,
-      }),
-    }),
   ])();
