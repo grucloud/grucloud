@@ -44,6 +44,50 @@ module.exports = ({ stage }) => ({
       },
     },
   },
+  acm: {
+    Certificate: {
+      awsGrucloudCom: {
+        name: "aws.grucloud.com",
+        properties: {
+          DomainName: "aws.grucloud.com",
+        },
+      },
+      grucloudOrg: {
+        name: "grucloud.org",
+        properties: {
+          DomainName: "grucloud.org",
+        },
+      },
+      modAwsLoadBalancerGrucloudOrg: {
+        name: "mod-aws-load-balancer.grucloud.org",
+        properties: {
+          DomainName: "mod-aws-load-balancer.grucloud.org",
+        },
+      },
+    },
+  },
+  route53Domain: {
+    Domain: {
+      grucloudOrg: {
+        name: "grucloud.org",
+      },
+    },
+  },
+  route53: {
+    HostedZone: {
+      grucloudOrg: {
+        name: "grucloud.org.",
+      },
+    },
+    Record: {
+      apiGatewayAliasRecord: {
+        name: "api-gateway-alias-record",
+      },
+      certificateValidationGrucloudOrg: {
+        name: "certificate-validation-grucloud.org.",
+      },
+    },
+  },
   lambda: {
     Function: {
       myFunction: {

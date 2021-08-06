@@ -213,6 +213,7 @@ const configBuildPropertiesDefault = ({
         : "",
   ])();
 
+//TODO add group
 exports.hasDependency = ({ type }) =>
   pipe([
     get("dependencies"),
@@ -379,7 +380,6 @@ exports.writeToFile = writeToFile;
 const readModel = ({ commandOptions, programOptions }) =>
   pipe([
     tap(() => {
-      console.log(`readModel`, commandOptions, programOptions);
       assert(programOptions.workingDirectory);
     }),
     () =>

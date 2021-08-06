@@ -164,7 +164,6 @@ module.exports = ({ stage }) => ({
         name: "dev.cloudfront.aws.test.grucloud.org",
         properties: {
           DomainName: "dev.cloudfront.aws.test.grucloud.org",
-          SubjectAlternativeNames: ["dev.cloudfront.aws.test.grucloud.org"],
           Tags: [
             {
               Key: "ManagedBy",
@@ -189,7 +188,6 @@ module.exports = ({ stage }) => ({
         name: "grucloud.org",
         properties: {
           DomainName: "grucloud.org",
-          SubjectAlternativeNames: ["grucloud.org"],
         },
       },
     },
@@ -210,15 +208,6 @@ module.exports = ({ stage }) => ({
     Record: {
       distributionAliasDevCloudfrontAwsTestGrucloudOrg: {
         name: "distribution-alias-dev.cloudfront.aws.test.grucloud.org",
-        properties: {
-          Name: "dev.cloudfront.aws.test.grucloud.org.",
-          Type: "A",
-          AliasTarget: {
-            HostedZoneId: "Z2FDTNDATAQYW2",
-            DNSName: "d1krm3wg5t3ldc.cloudfront.net.",
-            EvaluateTargetHealth: false,
-          },
-        },
       },
       validationDevCloudfrontAwsTestGrucloudOrg: {
         name: "validation-dev.cloudfront.aws.test.grucloud.org.",

@@ -1,5 +1,12 @@
 module.exports = ({ stage }) => ({
   projectName: "rds-postgres-stateless",
+  iam: {
+    InstanceProfile: {
+      myProfile: {
+        name: "my-profile",
+      },
+    },
+  },
   ec2: {
     Vpc: {
       vpc: {
@@ -176,57 +183,9 @@ module.exports = ({ stage }) => ({
       },
       eksKey: {
         name: "eks-key",
-        properties: {
-          Tags: [
-            {
-              TagKey: "Name",
-              TagValue: "eks-key",
-            },
-            {
-              TagKey: "gc-created-by-provider",
-              TagValue: "aws",
-            },
-            {
-              TagKey: "gc-managed-by",
-              TagValue: "grucloud",
-            },
-            {
-              TagKey: "gc-provider-name",
-              TagValue: "starhackit",
-            },
-            {
-              TagKey: "gc-stage",
-              TagValue: "dev",
-            },
-          ],
-        },
       },
       secretKeyTest: {
         name: "secret-key-test",
-        properties: {
-          Tags: [
-            {
-              TagKey: "Name",
-              TagValue: "secret-key-test",
-            },
-            {
-              TagKey: "gc-created-by-provider",
-              TagValue: "aws",
-            },
-            {
-              TagKey: "gc-managed-by",
-              TagValue: "grucloud",
-            },
-            {
-              TagKey: "gc-project-name",
-              TagValue: "kms-symmetric",
-            },
-            {
-              TagKey: "gc-stage",
-              TagValue: "dev",
-            },
-          ],
-        },
       },
     },
   },
@@ -240,6 +199,8 @@ module.exports = ({ stage }) => ({
           EngineVersion: "10.14",
           EngineMode: "serverless",
           Port: 5432,
+          PreferredBackupWindow: "02:35-03:05",
+          PreferredMaintenanceWindow: "sun:04:43-sun:05:13",
           ScalingConfiguration: {
             MinCapacity: 2,
             MaxCapacity: 4,

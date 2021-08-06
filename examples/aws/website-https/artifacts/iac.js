@@ -90,9 +90,6 @@ const createResources = ({ provider }) => {
         resources.cloudFront.Distribution
           .distributionCloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: () =>
-      config.route53.Record.distributionAliasDevCloudfrontAwsTestGrucloudOrg
-        .properties,
   });
 
   provider.route53.makeRecord({

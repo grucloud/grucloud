@@ -671,6 +671,8 @@ const writersSpec = ({ commandOptions, programOptions }) => [
             or([
               hasDependency({ type: "LoadBalancer" }),
               hasDependency({ type: "Certificate" }),
+              hasDependency({ type: "Distribution" }),
+              hasDependency({ type: "DomainName" }),
             ]),
           ])(),
         dependencies: () => ({
@@ -679,6 +681,7 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
           distribution: { type: "Distribution", group: "cloudFront" },
+          apiGatewayDomainName: { type: "DomainName", group: "apigateway" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },

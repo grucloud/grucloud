@@ -17,6 +17,47 @@ const createResources = ({ provider }) => {
     properties: () => config.iam.Role.lambdaRole.properties,
   });
 
+  provider.acm.makeCertificate({
+    name: config.acm.Certificate.awsGrucloudCom.name,
+    properties: () => config.acm.Certificate.awsGrucloudCom.properties,
+  });
+
+  provider.acm.makeCertificate({
+    name: config.acm.Certificate.grucloudOrg.name,
+    properties: () => config.acm.Certificate.grucloudOrg.properties,
+  });
+
+  provider.acm.makeCertificate({
+    name: config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.name,
+    namespace: "Certificate",
+    properties: () =>
+      config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.properties,
+  });
+
+  provider.route53Domain.useDomain({
+    name: config.route53Domain.Domain.grucloudOrg.name,
+  });
+
+  provider.route53.makeHostedZone({
+    name: config.route53.HostedZone.grucloudOrg.name,
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record.apiGatewayAliasRecord.name,
+    dependencies: ({ resources }) => ({
+      hostedZone: resources.route53.HostedZone.grucloudOrg,
+      apiGatewayDomainName: resources.apigateway.DomainName.grucloudOrg,
+    }),
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record.certificateValidationGrucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      hostedZone: resources.route53.HostedZone.grucloudOrg,
+      certificate: resources.acm.Certificate.grucloudOrg,
+    }),
+  });
+
   provider.lambda.makeFunction({
     name: config.lambda.Function.myFunction.name,
     dependencies: ({ resources }) => ({
