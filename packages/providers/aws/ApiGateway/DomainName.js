@@ -1,21 +1,17 @@
 const assert = require("assert");
 const {
-  map,
   pipe,
   tap,
   get,
   eq,
-  not,
   assign,
-  filter,
   omit,
   tryCatch,
   switchCase,
-  pick,
-  flatMap,
 } = require("rubico");
-const { pluck, callProp, defaultsDeep, size } = require("rubico/x");
+const { pluck, defaultsDeep, size } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
+const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "DomainName",
@@ -101,8 +97,23 @@ exports.DomainName = ({ spec, config }) => {
         logger.info(`create domainName: ${name}`);
         logger.debug(tos(payload));
       }),
-      () => payload,
-      apiGateway().createDomainName,
+      () =>
+        retryCall({
+          name: `elb listener: ${name}`,
+          fn: () => apiGateway().createDomainName(payload),
+          config: { retryCount: 40 * 10, retryDelay: 10e3 },
+          shouldRetryOnException: ({ error }) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `create domainName isExpectedException ${tos(error)}`
+                );
+              }),
+              () => error,
+              eq(get("code"), "UnsupportedCertificate"),
+            ])(),
+        }),
+
       tap(() => {
         logger.info(`created domainName ${name}`);
       }),
