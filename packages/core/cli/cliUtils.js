@@ -251,7 +251,7 @@ exports.setupProviders =
           filter(not(isEmpty)),
           filter(filterProvider({ commandOptions })),
           tap.if(isEmpty, () => {
-            throw { code: 422, message: `no provider provided` };
+            throw Error("no provider provided");
           }),
         ]),
       }),

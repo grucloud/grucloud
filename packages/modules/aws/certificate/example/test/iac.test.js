@@ -6,7 +6,7 @@ const { createStack } = require("../iac");
 
 const title = "Certificate Module";
 
-describe("Certificate Module", async function () {
+describe(title, async function () {
   before(async function () {
     try {
       ConfigLoader({ path: "../../../../../examples/multi/" });
@@ -20,7 +20,7 @@ describe("Certificate Module", async function () {
 
     await testEnd2End({
       cli,
-      listOptions: {},
+      title,
     });
   }).timeout(35 * 60e3);
 });

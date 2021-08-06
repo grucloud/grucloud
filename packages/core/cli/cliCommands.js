@@ -64,7 +64,10 @@ const DisplayAndThrow =
   ({ name }) =>
   (error) => {
     displayError({ name, error });
-    throw { code: 422, error: { ...error, displayed: true } };
+    throw {
+      code: 422,
+      error: { message: error.message, ...error, displayed: true },
+    };
   };
 
 const throwIfError = tap.if(get("error"), (result) => {
