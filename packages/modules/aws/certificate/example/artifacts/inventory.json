@@ -1,0 +1,563 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "example",
+        "dotFile": "/Users/fredericheem/grucloud/packages/modules/aws/certificate/example/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "workingDirectory": "/Users/fredericheem/grucloud/packages/modules/aws/certificate/example"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "name": "example-module-aws-certificate.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/f975f55e-5854-45a2-b5e1-578e9d0cd95d",
+                                "providerName": "aws",
+                                "type": "Certificate",
+                                "group": "acm",
+                                "live": {
+                                    "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/f975f55e-5854-45a2-b5e1-578e9d0cd95d",
+                                    "DomainName": "example-module-aws-certificate.grucloud.org",
+                                    "SubjectAlternativeNames": [
+                                        "example-module-aws-certificate.grucloud.org"
+                                    ],
+                                    "DomainValidationOptions": [
+                                        {
+                                            "DomainName": "example-module-aws-certificate.grucloud.org",
+                                            "ValidationDomain": "example-module-aws-certificate.grucloud.org",
+                                            "ValidationStatus": "SUCCESS",
+                                            "ResourceRecord": {
+                                                "Name": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.",
+                                                "Type": "CNAME",
+                                                "Value": "_9288c8fbd8809b17a1af5dc1fdc7cd6d.zjfbrrwmzc.acm-validations.aws."
+                                            },
+                                            "ValidationMethod": "DNS"
+                                        }
+                                    ],
+                                    "Serial": "08:4d:1e:12:3e:5b:71:8e:50:24:84:99:75:19:c2:04",
+                                    "Subject": "CN=example-module-aws-certificate.grucloud.org",
+                                    "Issuer": "Amazon",
+                                    "CreatedAt": "2021-08-06T02:55:54.000Z",
+                                    "IssuedAt": "2021-08-06T03:01:21.000Z",
+                                    "Status": "ISSUED",
+                                    "NotBefore": "2021-08-06T00:00:00.000Z",
+                                    "NotAfter": "2022-09-04T23:59:59.000Z",
+                                    "KeyAlgorithm": "RSA-2048",
+                                    "SignatureAlgorithm": "SHA256WITHRSA",
+                                    "InUseBy": [],
+                                    "Type": "AMAZON_ISSUED",
+                                    "KeyUsages": [
+                                        {
+                                            "Name": "DIGITAL_SIGNATURE"
+                                        },
+                                        {
+                                            "Name": "KEY_ENCIPHERMENT"
+                                        }
+                                    ],
+                                    "ExtendedKeyUsages": [
+                                        {
+                                            "Name": "TLS_WEB_SERVER_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.1"
+                                        },
+                                        {
+                                            "Name": "TLS_WEB_CLIENT_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.2"
+                                        }
+                                    ],
+                                    "RenewalEligibility": "INELIGIBLE",
+                                    "Options": {
+                                        "CertificateTransparencyLoggingPreference": "ENABLED"
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-module-aws-certificate"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "Certificate"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "example-module-aws-certificate.grucloud.org"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::acm::Certificate::example-module-aws-certificate.grucloud.org",
+                                "displayName": "example-module-aws-certificate.grucloud.org",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "Certificate",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "acm::Certificate",
+                        "type": "Certificate",
+                        "group": "acm",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "apigateway::DomainName",
+                        "type": "DomainName",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "example-module-aws-certificate.grucloud.org.",
+                                "id": "/hostedzone/Z02189181BGW9UAB46SOM",
+                                "providerName": "aws",
+                                "type": "HostedZone",
+                                "group": "route53",
+                                "live": {
+                                    "Id": "/hostedzone/Z02189181BGW9UAB46SOM",
+                                    "Name": "example-module-aws-certificate.grucloud.org.",
+                                    "CallerReference": "grucloud-Fri Aug 06 2021 00:05:44 GMT-0300 (Brasilia Standard Time)",
+                                    "Config": {
+                                        "PrivateZone": false
+                                    },
+                                    "ResourceRecordSetCount": 3,
+                                    "RecordSet": [
+                                        {
+                                            "Name": "example-module-aws-certificate.grucloud.org.",
+                                            "Type": "NS",
+                                            "TTL": 172800,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1926.awsdns-48.co.uk."
+                                                },
+                                                {
+                                                    "Value": "ns-550.awsdns-04.net."
+                                                },
+                                                {
+                                                    "Value": "ns-500.awsdns-62.com."
+                                                },
+                                                {
+                                                    "Value": "ns-1429.awsdns-50.org."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "example-module-aws-certificate.grucloud.org.",
+                                            "Type": "SOA",
+                                            "TTL": 900,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1926.awsdns-48.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.",
+                                            "Type": "CNAME",
+                                            "TTL": 300,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "_9288c8fbd8809b17a1af5dc1fdc7cd6d.zjfbrrwmzc.acm-validations.aws."
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-module-aws-certificate"
+                                        },
+                                        {
+                                            "Key": "gc-record-certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                            "Value": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.::CNAME"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "example-module-aws-certificate.grucloud.org."
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::route53::HostedZone::example-module-aws-certificate.grucloud.org.",
+                                "displayName": "example-module-aws-certificate.grucloud.org.",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Domain",
+                                        "group": "route53Domain",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "route53::HostedZone",
+                        "type": "HostedZone",
+                        "group": "route53",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                "id": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.::CNAME",
+                                "providerName": "aws",
+                                "type": "Record",
+                                "group": "route53",
+                                "live": {
+                                    "Name": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.",
+                                    "Type": "CNAME",
+                                    "TTL": 300,
+                                    "ResourceRecords": [
+                                        {
+                                            "Value": "_9288c8fbd8809b17a1af5dc1fdc7cd6d.zjfbrrwmzc.acm-validations.aws."
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-module-aws-certificate"
+                                        },
+                                        {
+                                            "Key": "gc-record-certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                            "Value": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.::CNAME"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "example-module-aws-certificate.grucloud.org."
+                                        }
+                                    ],
+                                    "HostedZoneId": "/hostedzone/Z02189181BGW9UAB46SOM",
+                                    "namespace": "Certificate"
+                                },
+                                "uri": "aws::route53::Record::certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                "displayName": "certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "Certificate",
+                                "dependencies": [
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": [
+                                            "/hostedzone/Z02189181BGW9UAB46SOM"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "DomainName",
+                                        "group": "apigateway",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Distribution",
+                                        "group": "cloudFront",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": [
+                                            "arn:aws:acm:eu-west-2:840541460064:certificate/f975f55e-5854-45a2-b5e1-578e9d0cd95d"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            },
+                            {
+                                "name": "example-module-aws-certificate.grucloud.org.::NS",
+                                "id": "example-module-aws-certificate.grucloud.org.::NS",
+                                "providerName": "aws",
+                                "type": "Record",
+                                "group": "route53",
+                                "live": {
+                                    "Name": "example-module-aws-certificate.grucloud.org.",
+                                    "Type": "NS",
+                                    "TTL": 172800,
+                                    "ResourceRecords": [
+                                        {
+                                            "Value": "ns-1926.awsdns-48.co.uk."
+                                        },
+                                        {
+                                            "Value": "ns-550.awsdns-04.net."
+                                        },
+                                        {
+                                            "Value": "ns-500.awsdns-62.com."
+                                        },
+                                        {
+                                            "Value": "ns-1429.awsdns-50.org."
+                                        }
+                                    ],
+                                    "HostedZoneId": "/hostedzone/Z02189181BGW9UAB46SOM"
+                                },
+                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::NS",
+                                "displayName": "example-module-aws-certificate.grucloud.org.::NS",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": [
+                                            "/hostedzone/Z02189181BGW9UAB46SOM"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "DomainName",
+                                        "group": "apigateway",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Distribution",
+                                        "group": "cloudFront",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            },
+                            {
+                                "name": "example-module-aws-certificate.grucloud.org.::SOA",
+                                "id": "example-module-aws-certificate.grucloud.org.::SOA",
+                                "providerName": "aws",
+                                "type": "Record",
+                                "group": "route53",
+                                "live": {
+                                    "Name": "example-module-aws-certificate.grucloud.org.",
+                                    "Type": "SOA",
+                                    "TTL": 900,
+                                    "ResourceRecords": [
+                                        {
+                                            "Value": "ns-1926.awsdns-48.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                        }
+                                    ],
+                                    "HostedZoneId": "/hostedzone/Z02189181BGW9UAB46SOM"
+                                },
+                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::SOA",
+                                "displayName": "example-module-aws-certificate.grucloud.org.::SOA",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": [
+                                            "/hostedzone/Z02189181BGW9UAB46SOM"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "DomainName",
+                                        "group": "apigateway",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Distribution",
+                                        "group": "cloudFront",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "route53::Record",
+                        "type": "Record",
+                        "group": "route53",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "grucloud.org",
+                                "id": "grucloud.org",
+                                "providerName": "aws",
+                                "type": "Domain",
+                                "group": "route53Domain",
+                                "live": {
+                                    "DomainName": "grucloud.org",
+                                    "Nameservers": [
+                                        {
+                                            "Name": "ns-1711.awsdns-21.co.uk",
+                                            "GlueIps": []
+                                        },
+                                        {
+                                            "Name": "ns-171.awsdns-21.com",
+                                            "GlueIps": []
+                                        },
+                                        {
+                                            "Name": "ns-861.awsdns-43.net",
+                                            "GlueIps": []
+                                        },
+                                        {
+                                            "Name": "ns-1234.awsdns-26.org",
+                                            "GlueIps": []
+                                        }
+                                    ],
+                                    "AutoRenew": true,
+                                    "AdminContact": {
+                                        "FirstName": "Frederic",
+                                        "LastName": "heem",
+                                        "ContactType": "COMPANY",
+                                        "OrganizationName": "Aledger ltd",
+                                        "AddressLine1": "64 friern park flat 7",
+                                        "City": "london",
+                                        "CountryCode": "GB",
+                                        "ZipCode": "N12 9LA",
+                                        "PhoneNumber": "+44.7479336201",
+                                        "Email": "frederic.heem@gmail.com",
+                                        "ExtraParams": []
+                                    },
+                                    "RegistrantContact": {
+                                        "FirstName": "Frederic",
+                                        "LastName": "heem",
+                                        "ContactType": "COMPANY",
+                                        "OrganizationName": "Aledger ltd",
+                                        "AddressLine1": "64 friern park flat 7",
+                                        "City": "london",
+                                        "CountryCode": "GB",
+                                        "ZipCode": "N12 9LA",
+                                        "PhoneNumber": "+44.7479336201",
+                                        "Email": "frederic.heem@gmail.com",
+                                        "ExtraParams": []
+                                    },
+                                    "TechContact": {
+                                        "FirstName": "Frederic",
+                                        "LastName": "heem",
+                                        "ContactType": "COMPANY",
+                                        "OrganizationName": "Aledger ltd",
+                                        "AddressLine1": "64 friern park flat 7",
+                                        "City": "london",
+                                        "CountryCode": "GB",
+                                        "ZipCode": "N12 9LA",
+                                        "PhoneNumber": "+44.7479336201",
+                                        "Email": "frederic.heem@gmail.com",
+                                        "ExtraParams": []
+                                    },
+                                    "AdminPrivacy": true,
+                                    "RegistrantPrivacy": true,
+                                    "TechPrivacy": true,
+                                    "RegistrarName": "Amazon Registrar, Inc.",
+                                    "WhoIsServer": "whois.registrar.amazon.com",
+                                    "RegistrarUrl": "http://registrar.amazon.com",
+                                    "AbuseContactEmail": "abuse@registrar.amazon.com",
+                                    "AbuseContactPhone": "+1.2062661000",
+                                    "CreationDate": "2020-11-16T12:56:10.409Z",
+                                    "ExpirationDate": "2021-11-16T12:56:10.000Z",
+                                    "StatusList": [
+                                        "serverTransferProhibited",
+                                        "addPeriod"
+                                    ]
+                                },
+                                "uri": "aws::route53Domain::Domain::grucloud.org",
+                                "displayName": "grucloud.org",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": true,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "route53Domain::Domain",
+                        "type": "Domain",
+                        "group": "route53Domain",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

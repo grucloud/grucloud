@@ -6,21 +6,11 @@ const {
   tryCatch,
   get,
   switchCase,
-  and,
-  filter,
   assign,
   eq,
-  not,
+  pick,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  find,
-  pluck,
-  flatten,
-  size,
-} = require("rubico/x");
+const { first, defaultsDeep, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "CertificateManager",
@@ -50,7 +40,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList certificate ${tos(params)}`);
@@ -90,31 +80,31 @@ exports.AwsCertificate = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getCertificate-property
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.info(`getById ${id}`);
-    }),
-    tryCatch(
-      ({ id }) =>
+  const getById = ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getById ${id}`);
+      }),
+      tryCatch(
         pipe([
           () => acm().describeCertificate({ CertificateArn: id }),
           get("Certificate"),
-        ])(),
-      switchCase([
-        eq(get("code"), "ResourceNotFoundException"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} ResourceNotFoundException`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw Error(error.message);
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
-    }),
-  ]);
+        ]),
+        switchCase([
+          eq(get("code"), "ResourceNotFoundException"),
+          () => {
+            logger.debug(`getById ${id} ResourceNotFoundException`);
+          },
+          (error) => {
+            logger.debug(`getById error: ${id}, ${tos(error)}`);
+            throw Error(error.message);
+          },
+        ])
+      ),
+      tap((result) => {
+        logger.debug(`getById result: ${tos(result)}`);
+      }),
+    ])();
 
   const isInstanceUp = pipe([
     get("DomainValidationOptions"),
@@ -123,7 +113,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   ]);
 
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  const isDownById = isDownByIdCore({ getById });
+  //const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestCertificate-property
   const create = async ({ name, payload = {} }) =>
@@ -151,49 +141,38 @@ exports.AwsCertificate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  const destroy = ({ live, lives }) =>
+  const destroy = ({ live }) =>
     pipe([
-      () => ({ id: findId({ live, lives }), name: findName({ live, lives }) }),
-      ({ id, name }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy ${JSON.stringify({ name, id })}`);
-          }),
-          () =>
-            acm().deleteCertificate({
-              CertificateArn: id,
-            }),
-          tap(() =>
-            retryCall({
-              name: `certificate destroy isDownById: ${name} id: ${id}`,
-              fn: () => isDownById({ id, name }),
-              config,
-            })
-          ),
-          tap(() => {
-            logger.info(
-              `certificate destroyed ${JSON.stringify({ name, id })}`
-            );
-          }),
-        ])(),
+      () => live,
+      pick(["CertificateArn"]),
+      tryCatch(
+        acm().deleteCertificate,
+        switchCase([
+          eq(get("code"), "ResourceNotFoundException"),
+          () => null,
+          (error) => {
+            throw error;
+          },
+        ])
+      ),
     ])();
 
   const configDefault = async ({
     name,
     namespace,
-    payload,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies,
   }) =>
     defaultsDeep({
       DomainName: name,
       ValidationMethod: "DNS",
-      Tags: buildTags({ name, namespace, config, UserTags: payload?.Tags }),
-    })(properties);
+      Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+    })(otherProps);
 
   return {
     type: "Certificate",
     spec,
+    getById,
     findId,
     findDependencies,
     findNamespace: findNamespaceInTags(config),

@@ -132,7 +132,7 @@ describe("AwsS3Object", async function () {
       }),
     ])();
   });
-  it.only("s3 object apply, update destroy", async function () {
+  it("s3 object apply, update destroy", async function () {
     const provider = await createStack({ config });
 
     await testPlanDeploy({ provider, types });
