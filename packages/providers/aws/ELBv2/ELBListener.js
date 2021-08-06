@@ -192,7 +192,7 @@ exports.ELBListener = ({ spec, config }) => {
         retryCall({
           name: `elb listener: ${name}`,
           fn: () => elb().createListener(payload),
-          config: { retryCount: 20 * 10, retryDelay: 10e3 },
+          config: { retryCount: 40 * 10, retryDelay: 10e3 },
           shouldRetryOnException: ({ error }) =>
             pipe([
               tap(() => {
