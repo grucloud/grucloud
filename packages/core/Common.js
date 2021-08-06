@@ -171,29 +171,6 @@ exports.getByNameCore =
       }),
     ])();
 
-//TODO merge with getByNameCore
-
-const getByIdCore = ({ type, name, id, findId, getList }) =>
-  pipe([
-    tap(() => {
-      logger.info(`getById ${JSON.stringify({ type, name, id })}`);
-      assert(id, "getByIdCore id");
-      assert(findId, "getByIdCore findId");
-      assert(getList, "getByIdCore getList");
-    }),
-    getList,
-    tap((xxx) => {
-      assert(true);
-    }),
-    get("items"),
-    find((live) => findId({ live }) === id),
-    tap((live) => {
-      logger.debug(`getById ${id}: ${tos({ live })}`);
-    }),
-  ])();
-
-exports.getByIdCore = getByIdCore;
-
 exports.isUpByIdCore =
   ({ isInstanceUp, getById }) =>
   async ({ id, name, type, live }) => {
