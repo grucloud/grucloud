@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { Cli } = require("@grucloud/core/cli/cliCommands");
+const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 
 const title = "AWS Load Balancer Module";
@@ -18,34 +18,9 @@ describe(title, async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack });
 
-    await cli.graphTree({
-      commandOptions: { title },
+    await testEnd2End({
+      cli,
+      title,
     });
-
-    await cli.graphTarget({
-      commandOptions: { title },
-    });
-
-    await cli.planDestroy({
-      commandOptions: { force: true },
-    });
-
-    await cli.planApply({
-      commandOptions: { force: true },
-    });
-
-    await cli.list({
-      commandOptions: { our: true, title, graph: true },
-    });
-
-    await cli.planDestroy({
-      commandOptions: { force: true },
-    });
-
-    // TODO list should be empty
-    const result = await cli.list({
-      commandOptions: { our: true },
-    });
-    assert(result);
   }).timeout(35 * 60e3);
 });
