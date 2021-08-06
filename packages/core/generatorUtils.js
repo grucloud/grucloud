@@ -39,6 +39,7 @@ const {
   isObject,
   isFunction,
   unless,
+  when,
 } = require("rubico/x");
 
 const ResourceVarNameDefault = pipe([
@@ -92,6 +93,10 @@ const envVarName = ({ resource, envVar }) =>
     envVar
   ).toUpperCase()}`;
 
+const isNotOurTagKey = not(
+  or([callProp("startsWith", "gc-"), eq(identity, "Name")])
+);
+
 const buildProperties = ({
   resource,
   dependencies,
@@ -112,15 +117,12 @@ const buildProperties = ({
       Tags: pipe([
         () => resource,
         get("live.Tags", []),
-        tap((params) => {
-          assert(true);
-        }),
         switchCase([
           Array.isArray,
           filter(
-            pipe([
-              get("Key", ""),
-              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
+            and([
+              pipe([get("Key", ""), isNotOurTagKey]),
+              pipe([get("TagKey", ""), isNotOurTagKey]), //kms.Key
             ])
           ),
           pipe([
@@ -132,7 +134,7 @@ const buildProperties = ({
         ]),
       ]),
     }),
-    switchCase([pipe([get("Tags"), isEmpty]), omit(["Tags"]), identity]),
+    when(pipe([get("Tags"), isEmpty]), omit(["Tags"])),
     tap((params) => {
       assert(true);
     }),
