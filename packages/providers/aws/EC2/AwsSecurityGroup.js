@@ -156,7 +156,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const isDefault = cannotBeDeleted;
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
 
-  const create = async ({ payload, name }) =>
+  const create = ({ payload, name }) =>
     pipe([
       tap(() => {
         logger.info(`create sg ${tos({ name })}`);
@@ -221,7 +221,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = async ({ live, lives }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
       () => ({
         name: findName({ live, lives }),
@@ -239,7 +239,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             retryCall({
               name: `deleteSecurityGroup: ${name}`,
               fn: () => ec2().deleteSecurityGroup({ GroupId }),
-              config: { retryCount: 5, repeatDelay: 5e3 },
+              config: { retryCount: 20, repeatDelay: 5e3 },
               isExpectedException: pipe([
                 tap((ex) => {
                   logger.error(
