@@ -46,7 +46,7 @@ const findName = (item) =>
 exports.KmsKey = ({ spec, config }) => {
   const kms = KmsNew(config);
 
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList ${tos(params)}`);
@@ -106,7 +106,7 @@ exports.KmsKey = ({ spec, config }) => {
         logger.info(`getById ${id}`);
       }),
       () => ({ KeyId: id }),
-      (params) => kms().describeKey(params),
+      kms().describeKey,
       get("KeyMetadata"),
       tap((result) => {
         logger.debug(`getById result: ${tos(result)}`);
@@ -118,7 +118,7 @@ exports.KmsKey = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create: ${name}`);
@@ -134,13 +134,13 @@ exports.KmsKey = ({ spec, config }) => {
         })
       ),
       ({ KeyId }) => ({ AliasName: `alias/${name}`, TargetKeyId: KeyId }),
-      (params) => kms().createAlias(params),
+      kms().createAlias,
       tap(() => {
         logger.info(`created`);
       }),
     ])();
 
-  const update = async ({ name, payload, diff, live }) =>
+  const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
         logger.info(`key update: ${name}`);
@@ -169,27 +169,27 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
-      () => ({ id: findId({ live }), name: findName({ live }) }),
-      ({ id, name }) =>
+      () => ({ KeyId: findId({ live }), name: findName({ live }) }),
+      ({ KeyId, name }) =>
         pipe([
           tap(() => {
-            logger.info(`destroy ${JSON.stringify({ id, name })}`);
+            logger.info(`destroy key ${JSON.stringify({ KeyId, name })}`);
           }),
-          () => kms().disableKey({ KeyId: id }),
+          () => kms().disableKey({ KeyId }),
           () =>
             kms().scheduleKeyDeletion({
-              KeyId: id,
+              KeyId,
               PendingWindowInDays: 7,
             }),
           tap(() => {
-            logger.info(`destroyed ${JSON.stringify({ id, name })}`);
+            logger.info(`destroyed ${JSON.stringify({ KeyId, name })}`);
           }),
         ])(),
     ])();
 
-  const configDefault = async ({ name, namespace, properties }) =>
+  const configDefault = ({ name, namespace, properties }) =>
     pipe([
       () => properties,
       defaultsDeep({
