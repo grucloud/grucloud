@@ -18,6 +18,8 @@ const {
 } = require("rubico");
 const Axios = require("axios");
 const {
+  size,
+  first,
   flatten,
   identity,
   pluck,
@@ -431,7 +433,27 @@ const writersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Certificate",
-        filterLive: () => pick(["DomainName", "SubjectAlternativeNames"]),
+        filterLive: () =>
+          pipe([
+            pick(["DomainName", "SubjectAlternativeNames"]),
+            tap((params) => {
+              assert(true);
+            }),
+            when(
+              ({ DomainName, SubjectAlternativeNames }) =>
+                pipe([
+                  () => SubjectAlternativeNames,
+                  and([eq(size, 1), pipe([first, eq(identity, DomainName)])]),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ])(),
+              omit(["SubjectAlternativeNames"])
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       },
     ],
   },

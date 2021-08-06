@@ -65,19 +65,21 @@
 
 ## Aws2gc
 
-- generate default.env, .i.e MASTER_USERNAME and MASTER_USER_PASSWORD
+- kms key: remove grucloud tags :
+
+TagKey: "Name",
+TagValue: "eks-key",
+
 - EKS cluster tags
 
 ## Aws
 
 - RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com
-- dependency hosted zone => domain
 - ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
   4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
 - throw error => throw Error(error.message);
-- useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
 - list ec2 instance in stopped state

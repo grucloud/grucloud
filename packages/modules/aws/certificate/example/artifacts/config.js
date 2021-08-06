@@ -6,9 +6,6 @@ module.exports = ({ stage }) => ({
         name: "example-module-aws-certificate.grucloud.org",
         properties: {
           DomainName: "example-module-aws-certificate.grucloud.org",
-          SubjectAlternativeNames: [
-            "example-module-aws-certificate.grucloud.org",
-          ],
         },
       },
     },

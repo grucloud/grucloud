@@ -20,7 +20,7 @@
       "runtimeArgs": ["graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
+      "cwd": "${workspaceRoot}/example",
       "port": 9229
     },
     {
@@ -31,7 +31,7 @@
       "runtimeArgs": ["list", "-g", "--json", "artifacts/inventory.json"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
+      "cwd": "${workspaceRoot}/example",
       "port": 9229
     },
     {
@@ -42,7 +42,7 @@
       "runtimeArgs": ["gencode", "--input", "artifacts/inventory.json"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
+      "cwd": "${workspaceRoot}/example",
       "port": 9229
     },
     {
