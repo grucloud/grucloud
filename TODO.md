@@ -4,6 +4,7 @@
 - check stage for all providers
 - compare refactor
 - compare Tags
+- check if destroy is not calling getById, should se live instead
 
 ## Diagram
 
@@ -64,11 +65,6 @@
 - doc
 
 ## Aws2gc
-
-- kms key: remove grucloud tags :
-
-TagKey: "Name",
-TagValue: "eks-key",
 
 - EKS cluster tags
 

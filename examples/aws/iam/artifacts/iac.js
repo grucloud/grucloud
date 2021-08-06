@@ -54,6 +54,9 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeInstanceProfile({
     name: config.iam.InstanceProfile.myProfile.name,
+    dependencies: ({ resources }) => ({
+      roles: [resources.iam.Role.roleAllowAssumeRole],
+    }),
   });
 
   provider.ec2.useDefaultVpc({
