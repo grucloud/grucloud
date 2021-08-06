@@ -376,12 +376,17 @@ const writeToFile =
 
 exports.writeToFile = writeToFile;
 
-const readModel = ({ commandOptions }) =>
+const readModel = ({ commandOptions, programOptions }) =>
   pipe([
     tap(() => {
-      //console.log(`readModel`, options);
+      console.log(`readModel`, commandOptions, programOptions);
+      assert(programOptions.workingDirectory);
     }),
-    () => fs.readFile(path.resolve(commandOptions.input), "utf-8"),
+    () =>
+      fs.readFile(
+        path.resolve(programOptions.workingDirectory, commandOptions.input),
+        "utf-8"
+      ),
     JSON.parse,
     get("result.results"),
     first,
@@ -716,8 +721,8 @@ exports.generatorMain = ({
       console.log(name, commandOptions, programOptions);
     }),
     fork({
-      lives: readModel({ commandOptions }),
-      mapping: readMapping({ commandOptions }),
+      lives: readModel({ commandOptions, programOptions }),
+      mapping: readMapping({ commandOptions, programOptions }),
     }),
     ({ lives, mapping }) =>
       pipe([
