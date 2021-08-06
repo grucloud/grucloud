@@ -12,7 +12,6 @@ describe.skip("AwsCertificate", async function () {
   let certificate;
   const types = ["Certificate"];
   const domainName = "aws.grucloud.com";
-  const certificateName = `certificate::aws.grucloud.com`;
 
   before(async function () {
     try {
@@ -25,8 +24,7 @@ describe.skip("AwsCertificate", async function () {
     });
 
     certificate = provider.acm.makeCertificate({
-      name: certificateName,
-      properties: () => ({ DomainName: domainName }),
+      name: domainName,
     });
 
     await provider.start();

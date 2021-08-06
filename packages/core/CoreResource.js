@@ -788,6 +788,7 @@ exports.ResourceMaker = ({
               live,
               lives: provider.lives,
               id: client.findId({ live }),
+              programOptions,
             }),
           shouldRetryOnException: client.shouldRetryOnException,
           config: provider.config,

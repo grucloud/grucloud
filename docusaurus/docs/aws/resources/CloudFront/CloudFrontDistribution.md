@@ -11,10 +11,7 @@ Provides a Cloud Front distribution.
 const domainName = "your.domain.name.com";
 
 const certificate = providerUsEast.makeCertificate({
-  name: `certificate-${domainName}`,
-  properties: () => ({
-    DomainName: domainName,
-  }),
+  name: domainName,
 });
 
 const websiteBucket = provider.s3.makeBucket({

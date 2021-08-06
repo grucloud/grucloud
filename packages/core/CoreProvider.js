@@ -112,6 +112,15 @@ const createResourceMakers = ({
     }),
   ])();
 
+const buildProviderConfig = ({ config = {}, providerName }) =>
+  pipe([
+    () => config,
+    defaultsDeep({ providerName }),
+    defaultsDeep(configProviderDefault),
+  ])();
+
+exports.buildProviderConfig = buildProviderConfig;
+
 function CoreProvider({
   name: providerName,
   dependencies = {},
@@ -143,11 +152,7 @@ function CoreProvider({
     switchCase([isEmpty, pipe([() => createLives(), tap(setLives)]), identity]),
   ]);
 
-  const providerConfig = pipe([
-    () => config,
-    defaultsDeep({ providerName }),
-    defaultsDeep(configProviderDefault),
-  ])();
+  const providerConfig = buildProviderConfig({ config, providerName });
 
   logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
@@ -1509,7 +1514,7 @@ function CoreProvider({
                 decorateLive({
                   client: engine.client,
                   lives: getLives(),
-                  config: provider.config,
+                  config: providerConfig,
                 }),
                 tap((resource) => {
                   getLives().addResource({
@@ -1601,7 +1606,7 @@ function CoreProvider({
             }),
           isExpectedResult: () => true,
           shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-          config: provider.config,
+          config: providerConfig,
         })
       ),
       tap(() => {

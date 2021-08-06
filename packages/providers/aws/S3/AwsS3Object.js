@@ -249,6 +249,7 @@ exports.AwsS3Object = ({ spec, config }) => {
         logger.info(`create ${tos(name)}`);
         assert(name);
         assert(dependencies);
+        assert(programOptions);
       }),
       () => getBucket({ dependencies, name }),
       (bucket) =>

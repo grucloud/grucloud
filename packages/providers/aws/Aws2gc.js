@@ -17,7 +17,15 @@ const {
   filter,
 } = require("rubico");
 const Axios = require("axios");
-const { flatten, identity, pluck, includes, when } = require("rubico/x");
+const {
+  flatten,
+  identity,
+  pluck,
+  includes,
+  when,
+  callProp,
+  isEmpty,
+} = require("rubico/x");
 const AdmZip = require("adm-zip");
 const path = require("path");
 const mime = require("mime-types");
@@ -131,6 +139,29 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           ]),
         dependencies: () => ({
           bucket: { type: "Bucket", group: "s3" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "cloudFront",
+    types: [
+      {
+        type: "Distribution",
+        filterLive: () =>
+          pick([
+            "PriceClass",
+            "Aliases",
+            "DefaultRootObject",
+            "DefaultCacheBehavior",
+            "Origins",
+            "Restrictions",
+            "Comment",
+            "Logging",
+          ]),
+        dependencies: () => ({
+          bucket: { type: "Bucket", group: "s3" },
+          certificate: { type: "Certificate", group: "acm" },
         }),
       },
     ],
@@ -602,7 +633,16 @@ const writersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Record",
         filterLive: () =>
-          pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          pipe([
+            pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+            tap((params) => {
+              assert(true);
+            }),
+            when(
+              pipe([get("ResourceRecords"), isEmpty]),
+              omit(["ResourceRecords"])
+            ),
+          ]),
         hasNoProperty: ({ lives, resource }) =>
           pipe([
             () => resource,
@@ -616,6 +656,7 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           hostedZone: { type: "HostedZone", group: "route53" },
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
+          distribution: { type: "Distribution", group: "cloudFront" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },
@@ -828,6 +869,7 @@ const downloadAsset = ({ url, assetPath }) =>
     tap((params) => {
       assert(true);
     }),
+    tap(pipe([path.dirname, (dir) => fs.mkdir(dir, { recursive: true })])),
     Fs.createWriteStream,
     (writer) =>
       pipe([
@@ -837,7 +879,8 @@ const downloadAsset = ({ url, assetPath }) =>
             method: "GET",
             responseType: "stream",
           }),
-        (axios) => axios.data.pipe(writer),
+        get("data"),
+        callProp("pipe", writer),
         () =>
           new Promise((resolve, reject) => {
             writer.on("finish", resolve);

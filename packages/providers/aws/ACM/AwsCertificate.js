@@ -40,8 +40,7 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-const findName = findNameInTags;
-
+const findName = get("live.DomainName");
 const findId = get("live.CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
@@ -152,7 +151,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  const destroy = async ({ live, lives }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
       () => ({ id: findId({ live, lives }), name: findName({ live, lives }) }),
       ({ id, name }) =>
