@@ -10,16 +10,13 @@ const {
   not,
   tryCatch,
   assign,
+  pick,
 } = require("rubico");
 const { isEmpty, defaultsDeep, identity, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   getByIdCore,
@@ -92,16 +89,12 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const isInstanceUp = eq(get("State"), "available");
 
-  const isUpById = isUpByIdCore({
-    isInstanceUp,
-    getById,
-  });
-
-  const isDownById = isDownByIdCore({ getById });
+  const isUpById = pipe([getById, isInstanceUp]);
+  const isDownById = pipe([getById, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 
-  const create = async ({
+  const create = ({
     payload: { DnsHostnames, DnsSupport, ...vpcPayload },
     name,
   }) =>
@@ -190,7 +183,7 @@ exports.AwsVpc = ({ spec, config }) => {
       ),
     ])();
 
-  const destroySecurityGroup = async ({ VpcId }) =>
+  const destroySecurityGroup = ({ VpcId }) =>
     pipe([
       tap(() => {
         logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
@@ -241,7 +234,7 @@ exports.AwsVpc = ({ spec, config }) => {
       ),
     ])();
 
-  const destroyRouteTables = async ({ VpcId }) =>
+  const destroyRouteTables = ({ VpcId }) =>
     pipe([
       // Get the route tables belonging to this Vpc
       () =>
@@ -287,24 +280,26 @@ exports.AwsVpc = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ name, live }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy vpc ${JSON.stringify({ name, id })}`);
+        logger.info(`destroy vpc ${JSON.stringify({ name })}`);
       }),
-      () => destroySubnets({ VpcId: id }),
-      () => destroySecurityGroup({ VpcId: id }),
-      () => destroyRouteTables({ VpcId: id }),
-      () => ec2().deleteVpc({ VpcId: id }),
-      tap(() =>
+      () => live,
+      pick(["VpcId"]),
+      tap(destroySubnets),
+      tap(destroySecurityGroup),
+      tap(destroyRouteTables),
+      tap(ec2().deleteVpc),
+      tap(({ VpcId }) =>
         retryCall({
-          name: `destroy vpc isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
+          name: `destroy vpc isDownById: ${name} id: ${VpcId}`,
+          fn: () => isDownById({ id: VpcId }),
           config,
         })
       ),
       tap(() => {
-        logger.info(`destroyed vpc ${JSON.stringify({ name, id })}`);
+        logger.info(`destroyed vpc ${JSON.stringify({ name })}`);
       }),
     ])();
 
