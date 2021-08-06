@@ -167,8 +167,8 @@ exports.AwsNatGateway = ({ spec, config }) => {
               ]),
               (error, address) =>
                 pipe([
-                  tap((params) => {
-                    assert(true);
+                  tap(() => {
+                    logger.error(`error disassociateAddress  ${tos(error)}`);
                   }),
                   () => ({ error, address }),
                 ])()

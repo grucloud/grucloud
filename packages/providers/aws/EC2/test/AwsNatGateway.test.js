@@ -14,7 +14,7 @@ describe("AwsNatGateway", async function () {
     });
   });
 
-  it.only(
+  it(
     "NatGateway destroy not found",
     pipe([
       () => provider.config,
