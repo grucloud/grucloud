@@ -77,15 +77,6 @@ const createResources = ({ provider }) => {
     properties: () => config.iam.Role.roleNodeGroup.properties,
   });
 
-  provider.iam.useInstanceProfile({
-    name: config.iam.InstanceProfile.eks_44bd8e12_52faE691Ee05_801fe1a71bc8
-      .name,
-    namespace: "EKS",
-    dependencies: ({ resources }) => ({
-      roles: [resources.iam.Role.roleNodeGroup],
-    }),
-  });
-
   provider.iam.makeOpenIDConnectProvider({
     name: config.iam.OpenIDConnectProvider.oidcEks.name,
     namespace: "LoadBalancerControllerRole",
@@ -136,6 +127,11 @@ const createResources = ({ provider }) => {
     properties: () => config.ec2.Subnet.subnetPublicB.properties,
   });
 
+  provider.ec2.makeVolume({
+    name: config.ec2.Volume.volumeTestVolume.name,
+    properties: () => config.ec2.Volume.volumeTestVolume.properties,
+  });
+
   provider.ec2.makeElasticIpAddress({
     name: config.ec2.ElasticIpAddress.iep.name,
     namespace: "VPC",
@@ -182,8 +178,8 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [
-        resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
       ],
     }),
   });
@@ -290,28 +286,12 @@ const createResources = ({ provider }) => {
       config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
   });
 
-  provider.ec2.useInstance({
-    name: config.ec2.Instance.nodeGroupPrivateClusterI_0c4adbbdab4c63a96.name,
-    namespace: "EKS",
+  provider.ec2.makeInstance({
+    name: config.ec2.Instance.server_4TestVolume.name,
     dependencies: ({ resources }) => ({
-      subnet: resources.ec2.Subnet.subnetPrivateB,
-      iamInstanceProfile:
-        resources.iam.InstanceProfile.eks_44bd8e12_52faE691Ee05_801fe1a71bc8,
-      securityGroups: [
-        resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
-      ],
+      volumes: [resources.ec2.Volume.volumeTestVolume],
     }),
-    properties: () =>
-      config.ec2.Instance.nodeGroupPrivateClusterI_0c4adbbdab4c63a96.properties,
-  });
-
-  provider.autoscaling.useAutoScalingGroup({
-    name: config.autoscaling.AutoScalingGroup
-      .eks_44bd8e12_52faE691Ee05_801fe1a71bc8.name,
-    namespace: "EKS",
-    properties: () =>
-      config.autoscaling.AutoScalingGroup.eks_44bd8e12_52faE691Ee05_801fe1a71bc8
-        .properties,
+    properties: () => config.ec2.Instance.server_4TestVolume.properties,
   });
 
   provider.kms.makeKey({

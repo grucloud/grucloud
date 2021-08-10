@@ -31,6 +31,7 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const isDefault = get("live.IsDefault");
   const cannotBeDeleted = isDefault;
+  const managedByOther = isDefault;
 
   const findName = switchCase([
     get("live.IsDefault"),
@@ -320,11 +321,12 @@ exports.AwsVpc = ({ spec, config }) => {
   return {
     spec,
     isDefault,
+    managedByOther,
+    cannotBeDeleted,
     findId,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
-    cannotBeDeleted,
     getList,
     create,
     destroy,

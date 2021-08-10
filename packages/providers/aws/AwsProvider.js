@@ -1,7 +1,7 @@
 process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { omit, pipe, get, filter, not, reduce, tap } = require("rubico");
+const { omit, pipe, get, filter, assign, map, tap } = require("rubico");
 const { first, pluck, defaultsDeep, isFunction, isEmpty } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
@@ -11,6 +11,7 @@ const { Ec2New } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const { generateCode } = require("./Aws2gc");
+const { createSpec } = require("@grucloud/core/SpecDefault");
 
 const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
@@ -28,23 +29,52 @@ const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
-const fnSpecs = () => [
-  ...ApiGateway(),
-  ...AutoScaling(),
-  ...AwsCertificateManager(),
-  ...AwsCloudFront(),
-  ...CognitoIdentityServiceProvider(),
-  ...AwsEC2(),
-  ...AwsEKS(),
-  ...AwsELBv2(),
-  ...AwsIam(),
-  ...AwsKMS(),
-  ...AwsLambda(),
-  ...AwsRDS(),
-  ...AwsRoute53(),
-  ...AwsRoute53Domain(),
-  ...AwsS3(),
-];
+const fnSpecs = (config) =>
+  pipe([
+    tap(() => {
+      assert(config);
+    }),
+    () => [
+      ...ApiGateway(),
+      ...AutoScaling(),
+      ...AwsCertificateManager(),
+      ...AwsCloudFront(),
+      ...CognitoIdentityServiceProvider(),
+      ...AwsEC2(),
+      ...AwsEKS(),
+      ...AwsELBv2(),
+      ...AwsIam(),
+      ...AwsKMS(),
+      ...AwsLambda(),
+      ...AwsRDS(),
+      ...AwsRoute53(),
+      ...AwsRoute53Domain(),
+      ...AwsS3(),
+    ],
+    map(
+      assign({
+        Client: ({ Client, ...spec }) =>
+          pipe([
+            () =>
+              Client({
+                spec: createSpec({ config })(spec),
+                config,
+              }),
+            assign({
+              getList: ({ getList }) =>
+                pipe([
+                  getList,
+                  tap((params) => {
+                    //TODO order Tags
+                    assert(true);
+                  }),
+                ]),
+            }),
+            (client) => () => client,
+          ])(),
+      })
+    ),
+  ])();
 
 const getAvailabilityZonesName = ({ region }) =>
   pipe([

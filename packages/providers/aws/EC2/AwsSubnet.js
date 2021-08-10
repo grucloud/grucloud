@@ -42,6 +42,7 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const isDefault = get("live.DefaultForAz");
   const cannotBeDeleted = isDefault;
+  const managedByOther = isDefault;
 
   const findName = switchCase([
     get("live.DefaultForAz"),
@@ -223,12 +224,13 @@ exports.AwsSubnet = ({ spec, config }) => {
   return {
     spec,
     isDefault,
+    cannotBeDeleted,
+    managedByOther,
     findId,
     findName,
     findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
-    cannotBeDeleted,
     getList,
     create,
     destroy,

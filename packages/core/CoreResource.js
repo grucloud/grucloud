@@ -73,21 +73,16 @@ const decorateLive =
     pipe([
       tap((params) => {
         assert(lives);
-        if (!live) {
-          assert(live);
-        }
-
-        if (client.spec.listOnly) {
-          assert(true);
-        }
+        assert(live);
       }),
       () => ({
+        group: client.spec.group,
+        type: client.spec.type,
         name: client.findName({ live, lives }),
         meta: client.findMeta(live),
         id: client.findId({ live, lives }),
         providerName: client.spec.providerName,
-        type: client.spec.type,
-        group: client.spec.group,
+        groupType: client.spec.groupType,
         live,
       }),
       assign({
@@ -112,11 +107,15 @@ const decorateLive =
             lives,
           });
         },
+        //TODO isOurMinion or managedByUs
         get isOurMinion() {
           return client.isOurMinion({ uri: resource.uri, live, lives });
         },
         get managedByUs() {
           return client.isOurMinion({ uri: resource.uri, live, lives });
+        },
+        get managedByOther() {
+          return client.managedByOther({ resource, live, lives });
         },
         get isDefault() {
           return client.isDefault({ live, lives });
@@ -125,13 +124,21 @@ const decorateLive =
           return client.findNamespace({ live, lives });
         },
         get dependencies() {
-          return client.findDependencies({
-            live,
-            lives,
-          });
-        },
-        get managedByOther() {
-          return client.managedByOther({ resource, live, lives });
+          return pipe([
+            () =>
+              client.findDependencies({
+                live,
+                lives,
+              }),
+            map(
+              assign({
+                providerName: () => client.spec.providerName,
+                groupType: ({ group, type }) => `${group}::${type}`,
+                ids: pipe([get("ids"), filter(not(isEmpty))]),
+              })
+            ),
+            filter(pipe([get("ids"), not(isEmpty)])),
+          ])();
         },
       }),
       tap((resource) =>
@@ -177,6 +184,7 @@ const createClient = ({
   getResourceFromLive,
 }) =>
   pipe([
+    //TODO may not need the params
     () => spec.Client({ providerName, spec, config }),
     tap((client) => {
       assert(getResourcesByType);

@@ -270,11 +270,6 @@ module.exports = ({ stage }) => ({
         },
       },
     },
-    InstanceProfile: {
-      eks_44bd8e12_52faE691Ee05_801fe1a71bc8: {
-        name: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-      },
-    },
     OpenIDConnectProvider: {
       oidcEks: {
         name: "oidc-eks",
@@ -327,12 +322,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/internal-elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/internal-elb",
+              Value: "1",
             },
           ],
         },
@@ -373,6 +368,16 @@ module.exports = ({ stage }) => ({
               Value: "1",
             },
           ],
+        },
+      },
+    },
+    Volume: {
+      volumeTestVolume: {
+        name: "volume-test-volume",
+        properties: {
+          Size: 2,
+          VolumeType: "standard",
+          AvailabilityZone: "eu-west-2a",
         },
       },
     },
@@ -430,12 +435,12 @@ module.exports = ({ stage }) => ({
             "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
           Tags: [
             {
-              Key: "aws:eks:cluster-name",
-              Value: "cluster",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
+            },
+            {
+              Key: "aws:eks:cluster-name",
+              Value: "cluster",
             },
           ],
         },
@@ -534,95 +539,11 @@ module.exports = ({ stage }) => ({
       },
     },
     Instance: {
-      nodeGroupPrivateClusterI_0c4adbbdab4c63a96: {
-        name: "node-group-private-cluster::i-0c4adbbdab4c63a96",
+      server_4TestVolume: {
+        name: "server-4-test-volume",
         properties: {
-          InstanceType: "t2.medium",
-          ImageId: "ami-0ee353797c2e5f904",
-          Tags: [
-            {
-              Key: "aws:autoscaling:groupName",
-              Value: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-            },
-            {
-              Key: "eks:cluster-name",
-              Value: "cluster",
-            },
-            {
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-            },
-            {
-              Key: "aws:ec2launchtemplate:version",
-              Value: "1",
-            },
-            {
-              Key: "eks:nodegroup-name",
-              Value: "node-group-private-cluster",
-            },
-            {
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:ec2launchtemplate:id",
-              Value: "lt-01e3b3cd73a61fb43",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:ec2:fleet-id",
-              Value: "fleet-e77f4a3a-cb17-d975-ac9a-a122f0ee34b6",
-            },
-          ],
-        },
-      },
-    },
-  },
-  autoscaling: {
-    AutoScalingGroup: {
-      eks_44bd8e12_52faE691Ee05_801fe1a71bc8: {
-        name: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-        properties: {
-          Tags: [
-            {
-              ResourceId: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-              ResourceType: "auto-scaling-group",
-              Key: "eks:cluster-name",
-              Value: "cluster",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-              ResourceType: "auto-scaling-group",
-              Key: "eks:nodegroup-name",
-              Value: "node-group-private-cluster",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-              ResourceType: "auto-scaling-group",
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-              ResourceType: "auto-scaling-group",
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-44bd8e12-52fa-e691-ee05-801fe1a71bc8",
-              ResourceType: "auto-scaling-group",
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-              PropagateAtLaunch: true,
-            },
-          ],
+          InstanceType: "t2.micro",
+          ImageId: "ami-084a1f89b0bb0f729",
         },
       },
     },

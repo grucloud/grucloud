@@ -8,20 +8,9 @@ const createResources = ({ provider }) => {
     name: config.iam.InstanceProfile.myProfile.name,
   });
 
-  provider.ec2.useDefaultVpc({
-    name: config.ec2.Vpc.vpcDefault.name,
-  });
-
   provider.ec2.makeVolume({
     name: config.ec2.Volume.volumeTestVolume.name,
     properties: () => config.ec2.Volume.volumeTestVolume.properties,
-  });
-
-  provider.ec2.useDefaultSecurityGroup({
-    name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcDefault,
-    }),
   });
 
   provider.ec2.makeInstance({

@@ -49,15 +49,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "aws:eks:cluster-name",
-    }),
-    hasKeyInTags({
-      key: "elbv2.k8s.aws/cluster",
-    }),
-  ]);
-
   const findName = ({ live, lives }) =>
     pipe([
       tap(() => {
@@ -154,6 +145,17 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     ]),
   ]);
   const isDefault = cannotBeDeleted;
+
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "aws:eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "elbv2.k8s.aws/cluster",
+    }),
+    isDefault,
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
 
   const create = ({ payload, name }) =>
@@ -305,11 +307,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     findNamespace,
     isDefault,
     cannotBeDeleted,
+    managedByOther,
     getList,
     create,
     destroy,
     configDefault,
     shouldRetryOnException,
-    managedByOther,
   };
 };

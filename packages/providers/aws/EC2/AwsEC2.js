@@ -22,11 +22,10 @@ const {
   first,
   pluck,
   flatten,
-  forEach,
   size,
   find,
-  identity,
   includes,
+  when,
 } = require("rubico/x");
 
 const { detailedDiff } = require("deep-object-diff");
@@ -168,15 +167,15 @@ exports.AwsEC2 = ({ spec, config }) => {
     pipe([
       () => item,
       findNameInTags,
-      switchCase([isEmpty, () => findEksName(item.live), identity]),
+      when(isEmpty, () => findEksName(item.live)),
     ])();
 
   const findId = get("live.InstanceId");
 
   const getStateName = get("State.Name");
   const isInstanceUp = eq(getStateName, StateRunning);
-  const isInstanceDown = (instance) =>
-    includes(getStateName(instance))([StateTerminated, StateStopped]);
+  const isInstanceTerminated = (instance) =>
+    pipe([() => [StateTerminated], includes(getStateName(instance))])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
@@ -189,7 +188,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       get("Reservations"),
       pluck("Instances"),
       flatten,
-      filter(not(isInstanceDown)),
+      filter(not(isInstanceTerminated)),
       tap((items) => {
         logger.debug(`getList ec2 result: ${tos(items)}`);
       }),
@@ -211,7 +210,7 @@ exports.AwsEC2 = ({ spec, config }) => {
   });
 
   const isDownById = isDownByIdCore({
-    isInstanceDown,
+    isInstanceTerminated,
     getById,
   });
 

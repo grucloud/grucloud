@@ -74,7 +74,8 @@ const securityGroupRulePickProperties = pipe([
       pipe([
         () => live,
         switchCase([
-          () => hasDependency({ type: "SecurityGroup" })(resource),
+          () =>
+            hasDependency({ type: "SecurityGroup", group: "ec2" })(resource),
           omit(["IpPermission.UserIdGroupPairs"]),
           identity,
         ]),
@@ -85,7 +86,7 @@ const securityGroupRulePickProperties = pipe([
       ])(),
 ]);
 
-const writersSpec = ({ commandOptions, programOptions }) => [
+const WritersSpec = ({ commandOptions, programOptions }) => [
   {
     group: "s3",
     types: [
@@ -208,7 +209,9 @@ const writersSpec = ({ commandOptions, programOptions }) => [
         hasNoProperty: ({ lives, resource }) =>
           pipe([
             () => resource,
-            or([hasDependency({ type: "OpenIDConnectProvider" })]),
+            or([
+              hasDependency({ type: "OpenIDConnectProvider", group: "ec2" }),
+            ]),
           ])(),
       },
       {
@@ -224,7 +227,10 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           role: { type: "Role", group: "iam" },
         }),
         hasNoProperty: ({ lives, resource }) =>
-          pipe([() => resource, or([hasDependency({ type: "Cluster" })])])(),
+          pipe([
+            () => resource,
+            or([hasDependency({ type: "Cluster", group: "eks" })]),
+          ])(),
       },
     ],
   },
@@ -256,7 +262,8 @@ const writersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Volume",
-        filterLive: () => pick(["Size", "VolumeType", "Device"]),
+        filterLive: () =>
+          pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
         ignoreResource:
           ({ lives }) =>
           (resource) =>
@@ -272,7 +279,12 @@ const writersSpec = ({ commandOptions, programOptions }) => [
                   any(({ Device, InstanceId }) =>
                     pipe([
                       () => InstanceId,
-                      findLiveById({ type: "Instance", lives }), //TODO group
+                      findLiveById({
+                        type: "Instance",
+                        group: "ec2",
+                        lives,
+                        providerName: resource.providerName,
+                      }),
                       eq(get("live.RootDeviceName"), Device),
                     ])()
                   ),
@@ -376,16 +388,6 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           subnet: {
             type: "Subnet",
             group: "ec2",
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap(() => {
-                    assert(dependency);
-                  }),
-                  () => dependency,
-                  not(get("isDefault")),
-                ])(),
           },
           keyPair: { type: "KeyPair", group: "ec2" },
           eip: { type: "ElasticIpAddress", group: "ec2" },
@@ -393,17 +395,6 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           securityGroups: {
             type: "SecurityGroup",
             group: "ec2",
-            //TODO excude default only if it is the only one
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap(() => {
-                    assert(dependency);
-                  }),
-                  () => dependency,
-                  not(get("isDefault")),
-                ])(),
           },
           volumes: {
             type: "Volume",
@@ -518,7 +509,10 @@ const writersSpec = ({ commandOptions, programOptions }) => [
               pipe([
                 () => live,
                 switchCase([
-                  () => hasDependency({ type: "TargetGroup" })(resource),
+                  () =>
+                    hasDependency({ type: "TargetGroup", group: "elb" })(
+                      resource
+                    ),
                   omit(["DefaultActions"]),
                   identity,
                 ]),
@@ -542,7 +536,10 @@ const writersSpec = ({ commandOptions, programOptions }) => [
               pipe([
                 () => live,
                 switchCase([
-                  () => hasDependency({ type: "TargetGroup" })(resource),
+                  () =>
+                    hasDependency({ type: "TargetGroup", group: "elb" })(
+                      resource
+                    ),
                   omit(["Actions"]),
                   identity,
                 ]),
@@ -651,6 +648,10 @@ const writersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "HostedZone",
         filterLive: () => pick([]),
+        dependencies: () => ({
+          domain: { type: "Domain", group: "route53Domain" },
+          hostedZone: { type: "HostedZone", group: "route53" },
+        }),
       },
       {
         type: "Record",
@@ -669,14 +670,13 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           pipe([
             () => resource,
             or([
-              hasDependency({ type: "LoadBalancer" }),
-              hasDependency({ type: "Certificate" }),
-              hasDependency({ type: "Distribution" }),
-              hasDependency({ type: "DomainName" }),
+              hasDependency({ type: "LoadBalancer", group: "elb" }),
+              hasDependency({ type: "Certificate", group: "acm" }),
+              hasDependency({ type: "Distribution", group: "cloudFront" }),
+              hasDependency({ type: "DomainName", group: "apigateway" }),
             ]),
           ])(),
         dependencies: () => ({
-          domain: { type: "Domain", group: "route53" },
           hostedZone: { type: "HostedZone", group: "route53" },
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
@@ -842,19 +842,6 @@ const writersSpec = ({ commandOptions, programOptions }) => [
           key: {
             type: "Key",
             group: "kms",
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap(() => {
-                    assert(dependency);
-                  }),
-                  () => dependency,
-                  not(get("isDefault")),
-                  tap((result) => {
-                    assert(true);
-                  }),
-                ])(),
           },
         }),
       },
@@ -979,10 +966,10 @@ const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
     ),
   ])();
 
-const downloadAssets = ({ commandOptions, programOptions }) =>
+const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
   pipe([
     fork({
-      lives: readModel({ commandOptions, programOptions }),
+      lives: readModel({ writersSpec, commandOptions, programOptions }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),
     tap((params) => {
@@ -997,17 +984,24 @@ const downloadAssets = ({ commandOptions, programOptions }) =>
 
 exports.generateCode = ({ commandOptions, programOptions }) =>
   pipe([
-    () =>
-      generatorMain({
-        name: "aws2gc",
-        writersSpec: writersSpec({ commandOptions, programOptions }),
-        commandOptions,
-        programOptions,
-        iacTpl,
-        configTpl,
-      }),
-    tap((params) => {
-      assert(true);
-    }),
-    () => downloadAssets({ commandOptions, programOptions }),
+    () => WritersSpec({ commandOptions, programOptions }),
+    (writersSpec) =>
+      pipe([
+        () =>
+          generatorMain({
+            name: "aws2gc",
+            providerType: "aws",
+            writersSpec,
+            commandOptions,
+            programOptions,
+            iacTpl,
+            configTpl,
+          }),
+        () =>
+          downloadAssets({
+            writersSpec,
+            commandOptions,
+            programOptions,
+          }),
+      ])(),
   ])();

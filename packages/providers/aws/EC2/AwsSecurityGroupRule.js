@@ -306,6 +306,24 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
+  const managedByOther = ({ Egress }) =>
+    or([
+      isDefault({ Egress }),
+      ({ live, lives }) =>
+        pipe([
+          () => live,
+          get("GroupId"),
+          (id) =>
+            lives.getById({
+              type: "SecurityGroup",
+              group: "ec2",
+              providerName,
+              id,
+            }),
+          get("managedByOther"),
+        ])(),
+    ]);
+
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
       () => securityGroupFrom,
@@ -473,6 +491,7 @@ const SecurityGroupRuleBase = ({ config }) => {
     create,
     destroy,
     isDefault,
+    managedByOther,
     ec2,
   };
 };
@@ -516,7 +535,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    managedByOther: isDefault({ IsEgress: false }),
+    managedByOther: managedByOther({ IsEgress: false }),
     isDefault: isDefault({ IsEgress: false }),
   };
 };
@@ -530,6 +549,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     destroy,
     findNamespace,
     isDefault,
+    managedByOther,
     ec2,
   } = SecurityGroupRuleBase({
     config,
@@ -554,7 +574,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    managedByOther: isDefault({ IsEgress: true }),
+    managedByOther: managedByOther({ IsEgress: false }),
     isDefault: isDefault({ IsEgress: true }),
   };
 };

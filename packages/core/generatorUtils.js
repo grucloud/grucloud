@@ -21,9 +21,11 @@ const {
   always,
   and,
   reduce,
+  any,
 } = require("rubico");
 
 const {
+  size,
   first,
   isEmpty,
   find,
@@ -51,9 +53,10 @@ const ResourceVarNameDefault = pipe([
 
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
-//TODO group ?
 const findDependencyNames = ({
   type,
+  group,
+  providerName,
   resource,
   lives,
   filterDependency = () => () => true,
@@ -61,15 +64,18 @@ const findDependencyNames = ({
   pipe([
     tap(() => {
       assert(type);
+      assert(group);
       assert(lives);
+      assert(providerName);
+      assert(Array.isArray(resource.dependencies));
     }),
     () => resource.dependencies,
-    find(eq(get("type"), type)),
+    find(eq(get("groupType"), `${group}::${type}`)),
     get("ids"),
     tap((params) => {
       assert(true);
     }),
-    map(findLiveById({ type, lives })),
+    map(findLiveById({ type, group, lives, providerName })),
     tap((xxx) => {
       assert(true);
     }),
@@ -153,15 +159,10 @@ const printPropertiesDo = (value) =>
     () => value,
     switchCase([
       isFunction,
-      (fun) =>
-        pipe([
-          () => fun(),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+      (fun) => pipe([() => fun()])(),
       isString,
-      (value) => `"${value}"`,
+      //TODO check if string has single or double quote
+      (value) => `'${value}'`,
       Array.isArray,
       pipe([
         map(printPropertiesDo),
@@ -187,14 +188,14 @@ const printPropertiesDo = (value) =>
 
 const printProperties = (value) =>
   pipe([
-    tap((params) => {
-      console.log("In:", JSON.stringify(value, null, 4));
+    tap(() => {
+      //console.log("In:", JSON.stringify(value, null, 4));
     }),
     () => value,
     printPropertiesDo,
     tap((params) => {
       assert(true);
-      console.log("Out", JSON.stringify(params, null, 4));
+      //console.log("Out", JSON.stringify(params, null, 4));
     }),
   ])();
 
@@ -213,11 +214,14 @@ const configBuildPropertiesDefault = ({
         : "",
   ])();
 
-//TODO add group
-exports.hasDependency = ({ type }) =>
+exports.hasDependency = ({ type, group }) =>
   pipe([
+    tap(() => {
+      assert(type);
+      assert(group);
+    }),
     get("dependencies"),
-    find(eq(get("type"), type)),
+    find(and([eq(get("type"), type), eq(get("group"), group)])),
     get("ids"),
     not(isEmpty),
   ]);
@@ -257,7 +261,12 @@ const configTpl = ({
 const dependencyValue = ({ key, value }) =>
   switchCase([() => key.endsWith("s"), () => `[${value}]`, () => value])();
 
-const buildDependencies = ({ resource, lives, dependencies = {} }) =>
+const buildDependencies = ({
+  providerName,
+  resource,
+  lives,
+  dependencies = {},
+}) =>
   pipe([
     tap(() => {
       assert(resource);
@@ -268,11 +277,14 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
       key,
       pipe([
         () => dependency,
+        tap((params) => {
+          assert(true);
+        }),
         defaultsDeep({
           findDependencyNames,
         }),
         ({ findDependencyNames }) =>
-          findDependencyNames({ resource, lives, ...dependency }),
+          findDependencyNames({ providerName, resource, lives, ...dependency }),
       ])(),
     ]),
     tap((params) => {
@@ -336,6 +348,7 @@ const buildPrefix = switchCase([
 ]);
 
 const codeTpl = ({
+  providerName,
   group,
   type,
   resourceVarName,
@@ -349,7 +362,12 @@ const codeTpl = ({
   provider.${group}.${buildPrefix(resource)}${type}({
   ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
   resource
-)}${buildDependencies({ resource, lives, dependencies })}${codeBuildProperties({
+)}${buildDependencies({
+  providerName,
+  resource,
+  lives,
+  dependencies,
+})}${codeBuildProperties({
   group,
   type,
   resource,
@@ -377,9 +395,240 @@ const writeToFile =
 
 exports.writeToFile = writeToFile;
 
-const readModel = ({ commandOptions, programOptions }) =>
+const hasResourceInDependency = (resource) =>
+  pipe([
+    tap((resourceIn) => {
+      assert(resource);
+      assert(resource.id);
+      assert(resourceIn.id);
+    }),
+    get("dependencies"),
+    find(
+      and([
+        eq(get("type"), resource.type),
+        eq(get("group"), resource.group),
+        eq(get("providerName"), resource.providerName),
+      ])
+    ),
+    get("ids"),
+    includes(resource.id),
+  ]);
+
+const findResourceSpec =
+  ({ writersSpec }) =>
+  ({ group, type }) =>
+    pipe([
+      tap(() => {
+        assert(writersSpec);
+        assert(group);
+        assert(type);
+      }),
+      () => writersSpec,
+      find(eq(get("group"), group)),
+      get("types"),
+      find(eq(get("type"), type)),
+    ])();
+
+const findDependencySpec =
+  ({ writersSpec, resource }) =>
+  (dependency) =>
+    pipe([
+      tap(() => {
+        assert(writersSpec);
+        assert(resource.id);
+        assert(dependency.type);
+        assert(dependency.group);
+      }),
+      () => resource,
+      findResourceSpec({ writersSpec }),
+      switchCase([
+        get("dependencies"),
+        pipe([
+          callProp("dependencies"),
+          values,
+          find(
+            and([
+              eq(get("type"), dependency.type),
+              eq(get("group"), dependency.group),
+            ])
+          ),
+        ]),
+        () => undefined,
+      ]),
+    ])();
+
+const findUsedBy =
+  ({ lives, writersSpec }) =>
+  (resource) =>
+    pipe([
+      tap(() => {
+        assert(resource);
+        assert(resource.id);
+        assert(writersSpec);
+      }),
+      () => lives,
+      filter(hasResourceInDependency(resource)),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(
+        pipe([
+          tap(({ group, type }) => {
+            assert(group);
+            assert(type);
+          }),
+          findResourceSpec({ writersSpec }),
+          tap((result) => {
+            assert(true);
+          }),
+          switchCase([
+            get("dependencies"),
+            pipe([
+              callProp("dependencies"),
+              values,
+              any(
+                and([
+                  eq(get("type"), resource.type),
+                  eq(get("group"), resource.group),
+                ])
+              ),
+            ]),
+            () => false,
+          ]),
+        ])
+      ),
+    ])();
+
+const removeDefaultDependencies =
+  ({ writersSpec }) =>
+  (lives) =>
+    pipe([
+      tap(() => {
+        assert(writersSpec);
+      }),
+      () => lives,
+      map(
+        assign({
+          dependencies: pipe([
+            get("dependencies"),
+            map(
+              assign({
+                ids: ({ group, type, ids, providerName }) =>
+                  pipe([
+                    tap(() => {
+                      assert(group);
+                      assert(type);
+                      assert(providerName);
+                    }),
+                    () => ids,
+                    when(
+                      and([
+                        eq(size, 1),
+                        pipe([
+                          first,
+                          findLiveById({
+                            lives,
+                            type,
+                            group,
+                            providerName,
+                          }),
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          get("isDefault"),
+                        ]),
+                      ]),
+                      () => []
+                    ),
+                  ])(),
+              })
+            ),
+          ]),
+        })
+      ),
+      map(
+        assign({
+          dependencies: (resource) =>
+            pipe([
+              tap(() => {
+                assert(true);
+              }),
+              () => resource,
+              get("dependencies"),
+              map(
+                assign({
+                  ids: ({ group, type, ids, providerName }) =>
+                    pipe([
+                      tap(() => {
+                        assert(type);
+                        assert(group);
+                        assert(providerName);
+                      }),
+                      () => ids,
+                      filter(
+                        pipe([
+                          tap((id) => {
+                            assert(id);
+                          }),
+                          findLiveById({
+                            lives,
+                            type,
+                            group,
+                            providerName,
+                          }),
+                          (dependency) =>
+                            pipe([
+                              tap((params) => {
+                                assert(true);
+                              }),
+                              () => dependency,
+                              findDependencySpec({ writersSpec, resource }),
+                              tap((params) => {
+                                assert(true);
+                              }),
+                              get("filterDependency"),
+                              switchCase([
+                                isFunction,
+                                (filterDependency) =>
+                                  pipe([
+                                    () =>
+                                      filterDependency({ resource })(
+                                        dependency
+                                      ),
+                                  ])(),
+                                () => true,
+                              ]),
+                            ])(),
+                        ])
+                      ),
+                    ])(),
+                })
+              ),
+            ])(),
+        })
+      ),
+    ])();
+
+const addUsedBy =
+  ({ writersSpec }) =>
+  (lives) =>
+    pipe([
+      tap(() => {
+        assert(writersSpec);
+        assert(lives);
+      }),
+      () => lives,
+      map(
+        assign({
+          usedBy: findUsedBy({ lives, writersSpec }),
+        })
+      ),
+    ])();
+
+const readModel = ({ writersSpec, commandOptions, programOptions }) =>
   pipe([
     tap(() => {
+      assert(writersSpec);
       assert(programOptions.workingDirectory);
     }),
     () =>
@@ -388,20 +637,39 @@ const readModel = ({ commandOptions, programOptions }) =>
         "utf-8"
       ),
     JSON.parse,
-    get("result.results"),
-    first,
+    get("result"),
+    tap.if(get("error"), () => {
+      throw Error("input inventory has errors, aborting");
+    }),
     get("results"),
+    pluck("results"),
+    flatten,
+    pluck("resources"),
+    flatten,
+    tap((params) => {
+      assert(true);
+    }),
+    removeDefaultDependencies({ writersSpec }),
+    addUsedBy({ writersSpec }),
+    //TODO handle multi provider
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
 exports.readModel = readModel;
 
-const readMapping = ({ commandOptions }) =>
+const readMapping = ({ commandOptions, programOptions }) =>
   tryCatch(
     pipe([
       tap(() => {
         //console.log("readMapping", options.mapping);
       }),
-      () => fs.readFile(path.resolve(options.mapping), "utf-8"),
+      () =>
+        fs.readFile(
+          path.resolve(programOptions.workingDirectory, options.mapping),
+          "utf-8"
+        ),
       JSON.parse,
     ]),
     () => ({})
@@ -506,23 +774,31 @@ const writeEnv =
       tap((params) => {
         console.log(`Env file written to ${filename}`);
       }),
+      //TODO unless isEmpty
       (formatted) => fs.writeFile(filename, formatted),
     ])();
 
-//TODO group
+const isEqualById = ({ type, group, providerName, id }) =>
+  and([
+    eq(get("id"), id),
+    eq(get("type"), type),
+    eq(get("group"), group),
+    eq(get("providerName"), providerName),
+  ]);
+
 const findLiveById =
-  ({ lives, type }) =>
+  ({ lives, type, group, providerName }) =>
   (id) =>
     pipe([
       tap(() => {
+        assert(providerName);
+        assert(group);
         assert(lives);
         assert(type);
         assert(id, `no id for ${type}, id: ${id},`);
       }),
       () => lives,
-      find(eq(get("type"), type)),
-      get("resources"),
-      find(eq(get("id"), id)),
+      find(isEqualById({ type, group, providerName, id })),
       tap((live) => {
         if (!live) {
           assert(live, `no live for ${type}, id: ${id},`);
@@ -541,34 +817,18 @@ const ignoreDefault =
         assert(resource);
       }),
       () => resource,
-      switchCase([
+      or([
         get("isDefault"),
-        pipe([
-          () => lives,
-          pluck("resources"),
-          flatten,
-          filter(
-            pipe([
-              get("dependencies"),
-              find(
-                and([
-                  eq(get("type"), resource.type),
-                  eq(get("group"), resource.group),
-                ])
-              ),
-              get("ids"),
-              includes(resource.id),
-            ])
-          ),
-          filter(not(get("isDefault"))),
-          isEmpty,
+        and([
+          get("managedByOther"),
+          pipe([get("usedBy"), not(find(eq(get("managedByOther"), false)))]),
         ]),
-        () => false,
       ]),
     ])();
 
 const writeResource =
   ({
+    providerName,
     type,
     typeTarget,
     group,
@@ -586,8 +846,8 @@ const writeResource =
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
-      tap((params) => {
-        assert(true);
+      tap(() => {
+        assert(providerName);
       }),
       () => resource,
       switchCase([
@@ -626,6 +886,7 @@ const writeResource =
             }),
             config: configTpl({
               options,
+              providerName,
               type: typeTarget || type,
               resourceName,
               resourceVarName,
@@ -637,6 +898,7 @@ const writeResource =
               lives,
             }),
             code: codeTpl({
+              providerName,
               group,
               type: typeTarget || type,
               resource,
@@ -658,6 +920,7 @@ const writeResources =
     type,
     typeTarget,
     group,
+    providerName,
     filterLive,
     properties,
     dependencies,
@@ -672,12 +935,19 @@ const writeResources =
   ({ lives, mapping }) =>
     pipe([
       tap(() => {
+        assert(lives);
         assert(type);
         assert(group);
+        assert(providerName);
       }),
       () => lives,
-      find(and([eq(get("type"), type), eq(get("group"), group)])),
-      get("resources"),
+      filter(
+        and([
+          eq(get("providerName"), providerName),
+          eq(get("type"), type),
+          eq(get("group"), group),
+        ])
+      ),
       map(
         pipe([
           tap((params) => {
@@ -690,6 +960,7 @@ const writeResources =
               type,
               typeTarget,
               group,
+              providerName,
               properties,
               filterLive,
               dependencies,
@@ -713,6 +984,7 @@ exports.generatorMain = ({
   commandOptions,
   programOptions,
   writersSpec,
+  providerType,
   iacTpl,
   configTpl,
 }) =>
@@ -721,7 +993,7 @@ exports.generatorMain = ({
       console.log(name, commandOptions, programOptions);
     }),
     fork({
-      lives: readModel({ commandOptions, programOptions }),
+      lives: readModel({ commandOptions, programOptions, writersSpec }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),
     ({ lives, mapping }) =>
@@ -746,6 +1018,7 @@ exports.generatorMain = ({
                   mapping,
                   commandOptions,
                   group,
+                  providerName: providerType, //TODO
                   ...spec,
                 }),
                 filter(not(isEmpty)),
