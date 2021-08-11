@@ -14,69 +14,83 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { isEmpty, callProp, defaultsDeep, size } = require("rubico/x");
+const { pluck, defaultsDeep, size } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "Route",
+  prefix: "Deployment",
 });
 
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const {
+  createEndpoint,
+  shouldRetryOnException,
+  tagsExtractFromDescription,
+  tagsRemoveFromDescription,
+  findNameInTagsOrId,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
+const findId = get("live.DeploymentId");
+const findName = findNameInTagsOrId({ findId });
 
-const findId = get("live.RouteId");
-const findName = get("live.RouteKey");
-
-exports.Route = ({ spec, config }) => {
+exports.Deployment = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.ApiId],
     },
     {
-      type: "Integration",
-      group: "apigateway",
+      type: "Stage",
+      group: "apiGatewayV2",
       ids: pipe([
-        () => live,
-        get("Target", ""),
-        callProp("replace", "integrations/", ""),
-        (target) => [target],
-        filter(not(isEmpty)),
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Stage",
+            group: "apiGatewayV2",
+          }),
+        filter(eq(get("live.DeploymentId"), live.DeploymentId)),
+        pluck("id"),
       ])(),
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployments-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
         assert(lives);
-        logger.info(`getList route`);
+        logger.info(`getList deployment`);
       }),
       () =>
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apigateway",
+          group: "apiGatewayV2",
         }),
-      flatMap(({ id: ApiId, live }) =>
+      pluck("id"),
+      flatMap((ApiId) =>
         tryCatch(
           pipe([
-            () => apiGateway().getRoutes({ ApiId }),
+            () => apiGateway().getDeployments({ ApiId }),
             get("Items"),
             map(defaultsDeep({ ApiId })),
-            //TODO
-            map(assign({ Tags: () => live.Tags })),
+            map(
+              assign({
+                Tags: tagsExtractFromDescription,
+                Description: tagsRemoveFromDescription,
+              })
+            ),
           ]),
           (error) =>
             pipe([
-              tap(() => {
+              tap((params) => {
                 assert(true);
               }),
               () => ({
@@ -90,73 +104,81 @@ exports.Route = ({ spec, config }) => {
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList route #total: ${total}`);
+        logger.info(`getList deployment #total: ${total}`);
       }),
     ])();
 
   //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property
   const create = ({ name, payload }) =>
     pipe([
       tap(() => {
-        logger.info(`create route: ${name}`);
+        logger.info(`create deployment: ${name}`);
         logger.debug(tos(payload));
       }),
       () => payload,
-      apiGateway().createRoute,
+      buildPayloadDescriptionTags,
+      apiGateway().createDeployment,
       tap(() => {
-        logger.info(`created route ${name}`);
+        logger.info(`created deployment ${name}`);
       }),
     ])();
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`update route: ${name}`);
+        logger.info(`update deployment: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
       () => payload,
-      defaultsDeep({ RouteId: live.RouteId }),
-      apiGateway().updateRoute,
+      apiGateway().updateDeployment,
       tap(() => {
-        logger.info(`updated route ${name}`);
+        logger.info(`updated deployment ${name}`);
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteRoute-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDeployment-property
   const destroy = ({ live }) =>
     pipe([
       () => live,
-      pick(["ApiId", "RouteId"]),
+      pick(["ApiId", "DeploymentId"]),
       tap((params) => {
-        logger.info(`destroy route ${JSON.stringify(params)}`);
+        logger.info(`destroy deployment ${JSON.stringify(params)}`);
         assert(live.ApiId);
-        assert(live.RouteId);
+        assert(live.DeploymentId);
       }),
-      tap(apiGateway().deleteRoute),
+      tap(
+        tryCatch(apiGateway().deleteDeployment, (error) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => undefined,
+          ])()
+        )
+      ),
       tap((params) => {
-        logger.debug(`destroyed route ${JSON.stringify(params)}`);
+        logger.debug(`destroyed deployment ${JSON.stringify(params)}`);
       }),
     ])();
 
   const configDefault = ({
     name,
     namespace,
-    properties,
-    dependencies: { api, integration },
+    properties: { Tags, ...otherProps },
+    dependencies: { api, stage },
   }) =>
     pipe([
       tap(() => {
         assert(api, "missing 'api' dependency");
-        assert(integration, "missing 'integration' dependency");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
-        RouteKey: name,
         ApiId: getField(api, "ApiId"),
-        Target: `integrations/${getField(integration, "IntegrationId")}`,
+        StageName: getField(stage, "StageName"),
+        Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
       }),
     ])();
 
@@ -178,7 +200,7 @@ exports.Route = ({ spec, config }) => {
 const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
 const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
 
-exports.compareRoute = pipe([
+exports.compareDeployment = pipe([
   assign({
     target: filterTarget,
     live: filterLive,
@@ -200,6 +222,6 @@ exports.compareRoute = pipe([
     ])(),
   }),
   tap((diff) => {
-    logger.debug(`compareRoute ${tos(diff)}`);
+    logger.debug(`compareDeployment ${tos(diff)}`);
   }),
 ]);

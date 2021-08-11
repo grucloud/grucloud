@@ -13,7 +13,7 @@ const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const { generateCode } = require("./Aws2gc");
 const { createSpec } = require("@grucloud/core/SpecDefault");
 
-const ApiGateway = require("./ApiGateway");
+const ApiGatewayV2 = require("./ApiGatewayV2");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
@@ -35,7 +35,7 @@ const fnSpecs = (config) =>
       assert(config);
     }),
     () => [
-      ...ApiGateway(),
+      ...ApiGatewayV2(),
       ...AutoScaling(),
       ...AwsCertificateManager(),
       ...AwsCloudFront(),

@@ -676,7 +676,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               hasDependency({ type: "LoadBalancer", group: "elb" }),
               hasDependency({ type: "Certificate", group: "acm" }),
               hasDependency({ type: "Distribution", group: "cloudFront" }),
-              hasDependency({ type: "DomainName", group: "apigateway" }),
+              hasDependency({ type: "DomainName", group: "apiGatewayV2" }),
             ]),
           ])(),
         dependencies: () => ({
@@ -684,7 +684,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
           distribution: { type: "Distribution", group: "cloudFront" },
-          apiGatewayDomainName: { type: "DomainName", group: "apigateway" },
+          apiGatewayDomainName: { type: "DomainName", group: "apiGatewayV2" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },
@@ -771,7 +771,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "apigateway",
+    group: "apiGatewayV2",
     types: [
       {
         type: "Api",
@@ -811,7 +811,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "PayloadFormatVersion",
           ]),
         dependencies: () => ({
-          api: { type: "Api", group: "apigateway" },
+          api: { type: "Api", group: "apiGatewayV2" },
           lambdaFunction: { type: "Function", group: "lambda" },
         }),
       },
@@ -820,23 +820,23 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apigateway" },
-          integration: { type: "Integration", group: "apigateway" },
+          api: { type: "Api", group: "apiGatewayV2" },
+          integration: { type: "Integration", group: "apiGatewayV2" },
         }),
       },
       {
         type: "Stage",
         filterLive: () => pick(["StageName", "StageVariables"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apigateway" },
+          api: { type: "Api", group: "apiGatewayV2" },
         }),
       },
       {
         type: "Deployment",
         filterLive: () => pick(["Description"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apigateway" },
-          stage: { type: "Stage", group: "apigateway" },
+          api: { type: "Api", group: "apiGatewayV2" },
+          stage: { type: "Stage", group: "apiGatewayV2" },
         }),
       },
       {

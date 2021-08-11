@@ -9,7 +9,7 @@ const { DomainName, compareDomainName } = require("./DomainName");
 const { ApiMapping, compareApiMapping } = require("./ApiMapping");
 const { Authorizer, compareAuthorizer } = require("./Authorizer");
 
-const GROUP = "apigateway";
+const GROUP = "apiGatewayV2";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -31,7 +31,7 @@ module.exports = () =>
 
     {
       type: "Stage",
-      dependsOn: ["apigateway::Api"],
+      dependsOn: ["apiGatewayV2::Api"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -39,7 +39,7 @@ module.exports = () =>
     },
     {
       type: "Authorizer",
-      dependsOn: ["apigateway::Api"],
+      dependsOn: ["apiGatewayV2::Api"],
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -48,9 +48,9 @@ module.exports = () =>
     {
       type: "ApiMapping",
       dependsOn: [
-        "apigateway::Api",
-        "apigateway::Stage",
-        "apigateway::DomainName",
+        "apiGatewayV2::Api",
+        "apiGatewayV2::Stage",
+        "apiGatewayV2::DomainName",
       ],
       Client: ApiMapping,
       isOurMinion: ({ live, config }) =>
@@ -59,7 +59,7 @@ module.exports = () =>
     },
     {
       type: "Integration",
-      dependsOn: ["apigateway::Api", "lambda::Function"],
+      dependsOn: ["apiGatewayV2::Api", "lambda::Function"],
       Client: Integration,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -67,7 +67,7 @@ module.exports = () =>
     },
     {
       type: "Route",
-      dependsOn: ["apigateway::Api", "apigateway::Integration"],
+      dependsOn: ["apiGatewayV2::Api", "apiGatewayV2::Integration"],
       Client: Route,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -76,10 +76,10 @@ module.exports = () =>
     {
       type: "Deployment",
       dependsOn: [
-        "apigateway::Api",
-        "apigateway::Route",
-        "apigateway::Stage",
-        "apigateway::Integration",
+        "apiGatewayV2::Api",
+        "apiGatewayV2::Route",
+        "apiGatewayV2::Stage",
+        "apiGatewayV2::Integration",
       ],
       Client: Deployment,
       isOurMinion: ({ live, config }) =>

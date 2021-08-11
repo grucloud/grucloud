@@ -15,7 +15,7 @@ skinparam monochrome true
 ++++ Role (1)
 +++ lambda
 ++++ Function (1)
-+++ apigateway
++++ apiGatewayV2
 ++++ Api (1)
 ++++ DomainName (1)
 ++++ Integration (1)

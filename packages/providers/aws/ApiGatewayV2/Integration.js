@@ -42,7 +42,7 @@ exports.Integration = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.ApiId],
     },
     {
@@ -71,7 +71,7 @@ exports.Integration = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apigateway",
+          group: "apiGatewayV2",
         }),
       pluck("id"),
       flatMap((ApiId) =>

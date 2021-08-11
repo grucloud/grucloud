@@ -45,17 +45,17 @@ exports.ApiMapping = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.ApiId],
     },
     {
       type: "DomainName",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.DomainName],
     },
     {
       type: "Stage",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.Stage],
     },
   ];
@@ -71,7 +71,7 @@ exports.ApiMapping = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "DomainName",
-          group: "apigateway",
+          group: "apiGatewayV2",
         }),
       flatMap(({ live }) =>
         tryCatch(

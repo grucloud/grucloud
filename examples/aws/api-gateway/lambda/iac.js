@@ -46,12 +46,12 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  const api = provider.apigateway.makeApi({
+  const api = provider.apiGatewayV2.makeApi({
     name: "my-api",
     properties: () => ({}),
   });
 
-  const apiGatewayDomainName = provider.apigateway.makeDomainName({
+  const apiGatewayDomainName = provider.apiGatewayV2.makeDomainName({
     name: config.domainName,
     dependencies: { certificate },
     properties: () => ({}),
@@ -62,7 +62,7 @@ const createResources = ({ provider }) => {
     dependencies: { apiGatewayDomainName, hostedZone },
   });
 
-  const integration = provider.apigateway.makeIntegration({
+  const integration = provider.apiGatewayV2.makeIntegration({
     name: "integration-lambda",
     dependencies: { api, lambdaFunction: lambdaFunction },
     properties: () => ({
@@ -72,29 +72,29 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.apigateway.makeRoute({
-    name: config.apigateway.route.name,
+  provider.apiGatewayV2.makeRoute({
+    name: config.apiGatewayV2.route.name,
     dependencies: { api, integration },
     properties: () => ({}),
   });
 
-  const stage = provider.apigateway.makeStage({
+  const stage = provider.apiGatewayV2.makeStage({
     name: "my-api-stage-dev",
     dependencies: { api },
     properties: () => ({}),
   });
-  // const authorizer = provider.apigateway.makeAuthorizer({
+  // const authorizer = provider.apiGatewayV2.makeAuthorizer({
   //   name: "my-authorizer-stage-dev",
   //   dependencies: { api },
   //   properties: () => ({}),
   // });
-  provider.apigateway.makeApiMapping({
+  provider.apiGatewayV2.makeApiMapping({
     name: "api-mapping-dev",
     dependencies: { api, stage, domainName: apiGatewayDomainName },
     properties: () => ({ ApiMappingKey: "my-function" }),
   });
 
-  provider.apigateway.makeDeployment({
+  provider.apiGatewayV2.makeDeployment({
     name: "my-api-deployment",
     dependencies: { api, stage },
     properties: () => ({}),

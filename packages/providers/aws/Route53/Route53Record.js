@@ -125,7 +125,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "DomainName",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -135,7 +135,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "DomainName",
-                group: "apigateway",
+                group: "apiGatewayV2",
                 providerName,
               }),
             filter(

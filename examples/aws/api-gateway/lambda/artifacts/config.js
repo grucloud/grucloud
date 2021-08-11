@@ -92,7 +92,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  apigateway: {
+  apiGatewayV2: {
     Api: {
       myApi: {
         name: "my-api",

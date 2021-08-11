@@ -14,58 +14,69 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { pluck, defaultsDeep, size } = require("rubico/x");
+const { isEmpty, callProp, defaultsDeep, size } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
-const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "Stage",
+  prefix: "Route",
 });
 
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.StageName");
-const findName = get("live.StageName");
+const findId = get("live.RouteId");
+const findName = get("live.RouteKey");
 
-exports.Stage = ({ spec, config }) => {
+exports.Route = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: [live.ApiId],
+    },
+    {
+      type: "Integration",
+      group: "apiGatewayV2",
+      ids: pipe([
+        () => live,
+        get("Target", ""),
+        callProp("replace", "integrations/", ""),
+        (target) => [target],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStages-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
         assert(lives);
-        logger.info(`getList stage`);
+        logger.info(`getList route`);
       }),
       () =>
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apigateway",
+          group: "apiGatewayV2",
         }),
-      pluck("id"),
-      flatMap((ApiId) =>
+      flatMap(({ id: ApiId, live }) =>
         tryCatch(
           pipe([
-            () => apiGateway().getStages({ ApiId }),
+            () => apiGateway().getRoutes({ ApiId }),
             get("Items"),
             map(defaultsDeep({ ApiId })),
+            //TODO
+            map(assign({ Tags: () => live.Tags })),
           ]),
           (error) =>
             pipe([
-              tap((params) => {
+              tap(() => {
                 assert(true);
               }),
               () => ({
@@ -79,79 +90,54 @@ exports.Stage = ({ spec, config }) => {
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList stage #total: ${total}`);
+        logger.info(`getList route #total: ${total}`);
       }),
     ])();
 
   //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStage-property
-
-  const getByLive = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    pick(["ApiId", "StageName"]),
-    tryCatch(apiGateway().getStage, (error) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => undefined,
-      ])()
-    ),
-  ]);
-
-  const isDownByLive = pipe([getByLive, isEmpty]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createStage-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property
   const create = ({ name, payload }) =>
     pipe([
       tap(() => {
-        logger.info(`create stage: ${name}`);
+        logger.info(`create route: ${name}`);
         logger.debug(tos(payload));
       }),
       () => payload,
-      apiGateway().createStage,
+      apiGateway().createRoute,
       tap(() => {
-        logger.info(`created stage ${name}`);
+        logger.info(`created route ${name}`);
       }),
     ])();
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`update stage: ${name}`);
+        logger.info(`update route: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
       () => payload,
-      apiGateway().updateStage,
+      defaultsDeep({ RouteId: live.RouteId }),
+      apiGateway().updateRoute,
       tap(() => {
-        logger.info(`updated stage ${name}`);
+        logger.info(`updated route ${name}`);
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteStage-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteRoute-property
   const destroy = ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy stage ${JSON.stringify({ live })}`);
-        assert(live.ApiId);
-        assert(live.StageName);
-      }),
       () => live,
-      pick(["ApiId", "StageName"]),
-      apiGateway().deleteStage,
-      tap(() =>
-        retryCall({
-          name: `stage isDownByLive: ${live.StageName}`,
-          fn: () => isDownByLive(live),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.debug(`destroyed stage ${JSON.stringify({ live })}`);
+      pick(["ApiId", "RouteId"]),
+      tap((params) => {
+        logger.info(`destroy route ${JSON.stringify(params)}`);
+        assert(live.ApiId);
+        assert(live.RouteId);
+      }),
+      tap(apiGateway().deleteRoute),
+      tap((params) => {
+        logger.debug(`destroyed route ${JSON.stringify(params)}`);
       }),
     ])();
 
@@ -159,17 +145,18 @@ exports.Stage = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { api },
+    dependencies: { api, integration },
   }) =>
     pipe([
       tap(() => {
         assert(api, "missing 'api' dependency");
+        assert(integration, "missing 'integration' dependency");
       }),
       () => properties,
       defaultsDeep({
-        StageName: name,
+        RouteKey: name,
         ApiId: getField(api, "ApiId"),
-        Tags: buildTagsObject({ config, namespace, name }),
+        Target: `integrations/${getField(integration, "IntegrationId")}`,
       }),
     ])();
 
@@ -191,7 +178,7 @@ exports.Stage = ({ spec, config }) => {
 const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
 const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
 
-exports.compareStage = pipe([
+exports.compareRoute = pipe([
   assign({
     target: filterTarget,
     live: filterLive,
@@ -213,6 +200,6 @@ exports.compareStage = pipe([
     ])(),
   }),
   tap((diff) => {
-    logger.debug(`compareStage ${tos(diff)}`);
+    logger.debug(`compareRoute ${tos(diff)}`);
   }),
 ]);

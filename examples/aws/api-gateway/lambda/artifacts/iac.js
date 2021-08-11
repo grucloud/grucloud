@@ -37,7 +37,7 @@ const createResources = ({ provider }) => {
     name: config.route53.Record.apiGatewayAliasRecord.name,
     dependencies: ({ resources }) => ({
       hostedZone: resources.route53.HostedZone.grucloudOrg,
-      apiGatewayDomainName: resources.apigateway.DomainName.grucloudOrg,
+      apiGatewayDomainName: resources.apiGatewayV2.DomainName.grucloudOrg,
     }),
   });
 
@@ -57,53 +57,53 @@ const createResources = ({ provider }) => {
     properties: () => config.lambda.Function.myFunction.properties,
   });
 
-  provider.apigateway.makeApi({
-    name: config.apigateway.Api.myApi.name,
-    properties: () => config.apigateway.Api.myApi.properties,
+  provider.apiGatewayV2.makeApi({
+    name: config.apiGatewayV2.Api.myApi.name,
+    properties: () => config.apiGatewayV2.Api.myApi.properties,
   });
 
-  provider.apigateway.makeIntegration({
-    name: config.apigateway.Integration.integrationLambda.name,
+  provider.apiGatewayV2.makeIntegration({
+    name: config.apiGatewayV2.Integration.integrationLambda.name,
     dependencies: ({ resources }) => ({
-      api: resources.apigateway.Api.myApi,
+      api: resources.apiGatewayV2.Api.myApi,
       lambdaFunction: resources.lambda.Function.myFunction,
     }),
     properties: () =>
-      config.apigateway.Integration.integrationLambda.properties,
+      config.apiGatewayV2.Integration.integrationLambda.properties,
   });
 
-  provider.apigateway.makeRoute({
-    name: config.apigateway.Route.anyMyFunction.name,
+  provider.apiGatewayV2.makeRoute({
+    name: config.apiGatewayV2.Route.anyMyFunction.name,
     dependencies: ({ resources }) => ({
-      api: resources.apigateway.Api.myApi,
-      integration: resources.apigateway.Integration.integrationLambda,
+      api: resources.apiGatewayV2.Api.myApi,
+      integration: resources.apiGatewayV2.Integration.integrationLambda,
     }),
-    properties: () => config.apigateway.Route.anyMyFunction.properties,
+    properties: () => config.apiGatewayV2.Route.anyMyFunction.properties,
   });
 
-  provider.apigateway.makeStage({
-    name: config.apigateway.Stage.myApiStageDev.name,
+  provider.apiGatewayV2.makeStage({
+    name: config.apiGatewayV2.Stage.myApiStageDev.name,
     dependencies: ({ resources }) => ({
-      api: resources.apigateway.Api.myApi,
+      api: resources.apiGatewayV2.Api.myApi,
     }),
-    properties: () => config.apigateway.Stage.myApiStageDev.properties,
+    properties: () => config.apiGatewayV2.Stage.myApiStageDev.properties,
   });
 
-  provider.apigateway.makeDeployment({
-    name: config.apigateway.Deployment.myApiDeployment.name,
+  provider.apiGatewayV2.makeDeployment({
+    name: config.apiGatewayV2.Deployment.myApiDeployment.name,
     dependencies: ({ resources }) => ({
-      api: resources.apigateway.Api.myApi,
-      stage: resources.apigateway.Stage.myApiStageDev,
+      api: resources.apiGatewayV2.Api.myApi,
+      stage: resources.apiGatewayV2.Stage.myApiStageDev,
     }),
-    properties: () => config.apigateway.Deployment.myApiDeployment.properties,
+    properties: () => config.apiGatewayV2.Deployment.myApiDeployment.properties,
   });
 
-  provider.apigateway.makeDomainName({
-    name: config.apigateway.DomainName.grucloudOrg.name,
+  provider.apiGatewayV2.makeDomainName({
+    name: config.apiGatewayV2.DomainName.grucloudOrg.name,
     dependencies: ({ resources }) => ({
       certificate: resources.acm.Certificate.grucloudOrg,
     }),
-    properties: () => config.apigateway.DomainName.grucloudOrg.properties,
+    properties: () => config.apiGatewayV2.DomainName.grucloudOrg.properties,
   });
 };
 
