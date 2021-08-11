@@ -32,6 +32,7 @@ describe("AwsLoadBalancerV2", async function () {
     "Record",
     "Subnet",
     "Vpc",
+    "HostedZone",
   ];
 
   before(async function () {

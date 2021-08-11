@@ -41,7 +41,7 @@ const imageAmazon2 = {
 
 describe("AwsEC2", async function () {
   let config;
-  const types = ["Instance"];
+  const types = ["Instance", "KeyPair"];
   const keyPairName = "kp-test-ec2";
   const serverName = "web-server";
 
