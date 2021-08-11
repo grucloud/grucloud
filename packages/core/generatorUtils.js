@@ -67,23 +67,15 @@ const findDependencyNames = ({
       assert(group);
       assert(lives);
       assert(providerName);
+      assert(resource.uri);
       assert(Array.isArray(resource.dependencies));
     }),
     () => resource.dependencies,
     find(eq(get("groupType"), `${group}::${type}`)),
     get("ids"),
-    tap((params) => {
-      assert(true);
-    }),
     map(findLiveById({ type, group, lives, providerName })),
-    tap((xxx) => {
-      assert(true);
-    }),
     filter(not(isEmpty)),
     filter(filterDependency({ resource })),
-    tap((params) => {
-      assert(true);
-    }),
     //TODO openstack should set its group
     map(
       ({ group = "compute", type, name }) =>
@@ -446,7 +438,7 @@ const findDependencySpec =
         pipe([
           callProp("dependencies"),
           values,
-          find(
+          filter(
             and([
               eq(get("type"), dependency.type),
               eq(get("group"), dependency.group),
@@ -499,6 +491,7 @@ const findUsedBy =
       ),
     ])();
 
+// TODO split in 2
 const removeDefaultDependencies =
   ({ writersSpec }) =>
   (lives) =>
@@ -522,20 +515,26 @@ const removeDefaultDependencies =
                     }),
                     () => ids,
                     when(
-                      and([
-                        eq(size, 1),
+                      or([
+                        //group and type not in writersSpec, i.e NetworkInterface
                         pipe([
-                          first,
-                          findLiveById({
-                            lives,
-                            type,
-                            group,
-                            providerName,
-                          }),
-                          tap((params) => {
-                            assert(true);
-                          }),
-                          get("isDefault"),
+                          () => ({ group, type }),
+                          findResourceSpec({ writersSpec }),
+                          isEmpty,
+                        ]),
+                        // Remove ids if there is only one and it is a default.
+                        and([
+                          eq(size, 1),
+                          pipe([
+                            first,
+                            findLiveById({
+                              lives,
+                              type,
+                              group,
+                              providerName,
+                            }),
+                            get("isDefault"),
+                          ]),
                         ]),
                       ]),
                       () => []
@@ -551,7 +550,7 @@ const removeDefaultDependencies =
           dependencies: (resource) =>
             pipe([
               tap(() => {
-                assert(true);
+                assert(resource.uri);
               }),
               () => resource,
               get("dependencies"),
@@ -563,6 +562,7 @@ const removeDefaultDependencies =
                         assert(type);
                         assert(group);
                         assert(providerName);
+                        assert(ids);
                       }),
                       () => ids,
                       filter(
@@ -576,9 +576,9 @@ const removeDefaultDependencies =
                             group,
                             providerName,
                           }),
-                          (dependency) =>
+                          unless(isEmpty, (dependency) =>
                             pipe([
-                              tap((params) => {
+                              tap(() => {
                                 assert(true);
                               }),
                               () => dependency,
@@ -586,19 +586,24 @@ const removeDefaultDependencies =
                               tap((params) => {
                                 assert(true);
                               }),
-                              get("filterDependency"),
-                              switchCase([
-                                isFunction,
-                                (filterDependency) =>
-                                  pipe([
-                                    () =>
+                              any(
+                                pipe([
+                                  get("filterDependency"),
+                                  switchCase([
+                                    isFunction,
+                                    (filterDependency) =>
                                       filterDependency({ resource })(
                                         dependency
                                       ),
-                                  ])(),
-                                () => true,
-                              ]),
-                            ])(),
+                                    () => true,
+                                  ]),
+                                ])
+                              ),
+                              tap((params) => {
+                                assert(true);
+                              }),
+                            ])()
+                          ),
                         ])
                       ),
                     ])(),
@@ -771,11 +776,19 @@ const writeEnv =
       ),
       filter(not(isEmpty)),
       callProp("join", "\n"),
-      tap((params) => {
-        console.log(`Env file written to ${filename}`);
-      }),
-      //TODO unless isEmpty
-      (formatted) => fs.writeFile(filename, formatted),
+      unless(isEmpty, (formatted) =>
+        pipe([
+          tap(() => {
+            assert(programOptions.workingDirectory);
+            assert(filename);
+          }),
+          () => path.resolve(programOptions.workingDirectory, filename),
+          tap((filenameResolved) => {
+            console.log(`Env file written to ${filenameResolved}`);
+          }),
+          (filenameResolved) => fs.writeFile(filenameResolved, formatted),
+        ])()
+      ),
     ])();
 
 const isEqualById = ({ type, group, providerName, id }) =>
@@ -801,7 +814,8 @@ const findLiveById =
       find(isEqualById({ type, group, providerName, id })),
       tap((live) => {
         if (!live) {
-          assert(live, `no live for ${type}, id: ${id},`);
+          console.error(`no live for ${type}, id: ${id},`);
+          //assert(live, `no live for ${type}, id: ${id},`);
         }
       }),
     ])();

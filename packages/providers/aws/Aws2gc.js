@@ -363,6 +363,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                   () => resource,
                   tap(() => {
                     assert(dependency.live.GroupId);
+                    assert(resource.live.GroupId);
                   }),
                   get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
                   and([
@@ -806,6 +807,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           stage: { type: "Stage", group: "apigateway" },
         }),
       },
+      {
+        type: "DomainName",
+        filterLive: () => pick(["DomainName"]),
+        dependencies: () => ({
+          certificate: { type: "Certificate", group: "acm" },
+        }),
+      },
     ],
   },
   {
@@ -940,16 +948,10 @@ const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
   pipe([
     () => lives,
     filter(eq(get("groupType"), "s3::Bucket")),
-    pluck("resources"),
-    flatten,
-    pluck("live"),
-    tap((params) => {
-      assert(true);
-    }),
     map((live) =>
       pipe([
         tap(() => {
-          assert(true);
+          assert(live);
         }),
         () =>
           bucketFileNameFullFromLive({ live, commandOptions, programOptions }),
