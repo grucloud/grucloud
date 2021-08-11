@@ -716,7 +716,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               tap(
                 pipe([
                   () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
-                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                  (zip) =>
+                    zip.extractAllTo(
+                      path.resolve(
+                        programOptions.workingDirectory,
+                        resource.name
+                      ),
+                      true
+                    ),
                 ])
               ),
             ])(),
@@ -745,7 +752,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               tap(
                 pipe([
                   () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
-                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                  (zip) =>
+                    zip.extractAllTo(
+                      path.resolve(
+                        programOptions.workingDirectory,
+                        resource.name
+                      ),
+                      true
+                    ),
                 ])
               ),
             ])(),
