@@ -176,7 +176,11 @@ exports.AwsEC2 = ({ spec, config }) => {
   const isInstanceUp = eq(getStateName, StateRunning);
   const isInstanceTerminated = (instance) =>
     pipe([() => [StateTerminated], includes(getStateName(instance))])();
-
+  const isInstanceDown = (instance) =>
+    pipe([
+      () => [StateTerminated, StateStopped],
+      includes(getStateName(instance)),
+    ])();
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
   const getList = ({ params } = {}) =>
@@ -210,7 +214,7 @@ exports.AwsEC2 = ({ spec, config }) => {
   });
 
   const isDownById = isDownByIdCore({
-    isInstanceTerminated,
+    isInstanceDown,
     getById,
   });
 
