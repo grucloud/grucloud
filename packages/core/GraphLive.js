@@ -320,7 +320,16 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                       get("resources"),
                       find(eq(get("id"), idTo)),
                       tap((resource) => {
-                        assert(resource);
+                        assert(
+                          resource,
+                          `no resource for id: ${idTo}, type: ${
+                            dependency.type
+                          }, resources: ${JSON.stringify(
+                            resourcesPerType,
+                            null,
+                            4
+                          )}`
+                        );
                       }),
                       get("name"),
                       tap((name) => {
