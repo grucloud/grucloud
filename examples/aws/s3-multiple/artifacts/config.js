@@ -8,9 +8,6 @@ module.exports = ({ stage }) => ({
       grucloudBucket_1: {
         name: "grucloud-bucket-1",
       },
-      grucloudSimpleBucket: {
-        name: "grucloud-simple-bucket",
-      },
     },
   },
 });

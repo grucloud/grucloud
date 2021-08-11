@@ -20,14 +20,15 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-simple-bucket",
                                 "id": "grucloud-simple-bucket",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-simple-bucket",
-                                    "CreationDate": "2021-08-05T21:17:55.000Z",
+                                    "CreationDate": "2021-08-11T16:44:17.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -61,10 +62,10 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "My namespace",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -76,24 +77,48 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "grucloud-simple-file-test",
                                 "id": "grucloud-simple-file-test",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "grucloud-simple-bucket",
                                     "Key": "grucloud-simple-file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-05T21:18:11.000Z",
-                                    "ContentLength": 523,
-                                    "ETag": "\"00fcb3a8f460ca505ce0b495d3a9e38b\"",
+                                    "LastModified": "2021-08-11T16:44:29.000Z",
+                                    "ContentLength": 1534,
+                                    "ETag": "\"310dac76ad1d831ec5b45a0bd45c02b7\"",
                                     "ContentType": "text/plain",
                                     "ServerSideEncryption": "AES256",
                                     "Metadata": {
-                                        "md5hash": "APyzqPRgylBc4LSV06njiw=="
+                                        "md5hash": "MQ2sdq0dgx7FtFoL1FwCtw=="
                                     },
-                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628199208&Signature=TXFfHXePWGnY%2FlNuBJlglGF1OwM%3D",
+                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701180&Signature=k4PVSCxBV8CTrxyKYbrrFuhYy4Q%3D",
+                                    "ACL": {
+                                        "Grants": [
+                                            {
+                                                "Grantee": {
+                                                    "DisplayName": "frederic.heem",
+                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
+                                                    "Type": "CanonicalUser"
+                                                },
+                                                "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
+                                            }
+                                        ],
+                                        "Owner": {
+                                            "DisplayName": "frederic.heem",
+                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
+                                        }
+                                    },
                                     "Tags": [
                                         {
                                             "Key": "Key2",
@@ -123,36 +148,14 @@
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
                                         }
-                                    ],
-                                    "ACL": {
-                                        "Grants": [
-                                            {
-                                                "Grantee": {
-                                                    "DisplayName": "frederic.heem",
-                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
-                                                    "Type": "CanonicalUser"
-                                                },
-                                                "Permission": "FULL_CONTROL"
-                                            },
-                                            {
-                                                "Grantee": {
-                                                    "Type": "Group",
-                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
-                                                },
-                                                "Permission": "READ"
-                                            }
-                                        ],
-                                        "Owner": {
-                                            "DisplayName": "frederic.heem",
-                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
-                                        }
-                                    }
+                                    ]
                                 },
                                 "uri": "aws::s3::Object::grucloud-simple-file-test",
                                 "displayName": "grucloud-simple-file-test",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "My namespace",
                                 "dependencies": [
@@ -161,10 +164,11 @@
                                         "group": "s3",
                                         "ids": [
                                             "grucloud-simple-bucket"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],

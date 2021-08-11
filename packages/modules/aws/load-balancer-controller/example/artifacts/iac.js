@@ -127,11 +127,6 @@ const createResources = ({ provider }) => {
     properties: () => config.ec2.Subnet.subnetPublicB.properties,
   });
 
-  provider.ec2.makeVolume({
-    name: config.ec2.Volume.volumeTestVolume.name,
-    properties: () => config.ec2.Volume.volumeTestVolume.properties,
-  });
-
   provider.ec2.makeElasticIpAddress({
     name: config.ec2.ElasticIpAddress.iep.name,
     namespace: "VPC",
@@ -214,16 +209,6 @@ const createResources = ({ provider }) => {
     properties: () => config.ec2.Route.routePublic.properties,
   });
 
-  provider.ec2.useSecurityGroup({
-    name: config.ec2.SecurityGroup.eksClusterSgCluster_872092154.name,
-    namespace: "EKS",
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
-    }),
-    properties: () =>
-      config.ec2.SecurityGroup.eksClusterSgCluster_872092154.properties,
-  });
-
   provider.ec2.makeSecurityGroup({
     name: config.ec2.SecurityGroup.securityGroupCluster.name,
     namespace: "EKS",
@@ -240,17 +225,6 @@ const createResources = ({ provider }) => {
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.SecurityGroup.securityGroupNode.properties,
-  });
-
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: config.ec2.SecurityGroupRuleIngress
-      .eksClusterSgCluster_872092154RuleIngressAll.name,
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
-    }),
-    properties: () =>
-      config.ec2.SecurityGroupRuleIngress
-        .eksClusterSgCluster_872092154RuleIngressAll.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
@@ -284,22 +258,6 @@ const createResources = ({ provider }) => {
     }),
     properties: () =>
       config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
-  });
-
-  provider.ec2.makeInstance({
-    name: config.ec2.Instance.server_4TestVolume.name,
-    dependencies: ({ resources }) => ({
-      volumes: [resources.ec2.Volume.volumeTestVolume],
-    }),
-    properties: () => config.ec2.Instance.server_4TestVolume.properties,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.eksKey.name,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.secretKeyTest.name,
   });
 
   provider.eks.makeCluster({

@@ -54,6 +54,9 @@
 
 ## Aws
 
+- volume name for root device
+- order tags
+
 - gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
 - RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com
@@ -61,10 +64,10 @@
   4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
+- document apigateway
 - throw error => throw Error(error.message);
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
-- list ec2 instance in stopped state
 - ec2 update: handle UserData
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html

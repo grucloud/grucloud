@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Test",
+      "name": "E2E Test",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",

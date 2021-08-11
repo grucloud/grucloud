@@ -1,12 +1,5 @@
 module.exports = ({ stage }) => ({
   projectName: "rds-postgres-stateless",
-  iam: {
-    InstanceProfile: {
-      myProfile: {
-        name: "my-profile",
-      },
-    },
-  },
   ec2: {
     Vpc: {
       vpc: {
@@ -176,19 +169,6 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  kms: {
-    Key: {
-      aliasAwsRds: {
-        name: "alias/aws/rds",
-      },
-      eksKey: {
-        name: "eks-key",
-      },
-      secretKeyTest: {
-        name: "secret-key-test",
-      },
-    },
-  },
   rds: {
     DBCluster: {
       clusterPostgresStateless: {
@@ -199,8 +179,8 @@ module.exports = ({ stage }) => ({
           EngineVersion: "10.14",
           EngineMode: "serverless",
           Port: 5432,
-          PreferredBackupWindow: "02:35-03:05",
-          PreferredMaintenanceWindow: "sun:04:43-sun:05:13",
+          PreferredBackupWindow: "05:09-05:39",
+          PreferredMaintenanceWindow: "mon:22:53-mon:23:23",
           ScalingConfiguration: {
             MinCapacity: 2,
             MaxCapacity: 4,

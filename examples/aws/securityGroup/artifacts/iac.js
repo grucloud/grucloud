@@ -5,8 +5,114 @@ const createResources = ({ provider }) => {
   const { config } = provider;
 
   provider.ec2.makeVpc({
+    name: config.ec2.Vpc.vpc.name,
+    namespace: "VPC",
+    properties: () => config.ec2.Vpc.vpc.properties,
+  });
+
+  provider.ec2.makeVpc({
+    name: config.ec2.Vpc.vpcEc2Example.name,
+    properties: () => config.ec2.Vpc.vpcEc2Example.properties,
+  });
+
+  provider.ec2.makeVpc({
+    name: config.ec2.Vpc.vpcPostgres.name,
+    properties: () => config.ec2.Vpc.vpcPostgres.properties,
+  });
+
+  provider.ec2.makeVpc({
     name: config.ec2.Vpc.vpcTestSg.name,
     properties: () => config.ec2.Vpc.vpcTestSg.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnet.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcEc2Example,
+    }),
+    properties: () => config.ec2.Subnet.subnet.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnet_1.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcPostgres,
+    }),
+    properties: () => config.ec2.Subnet.subnet_1.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnet_2.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcPostgres,
+    }),
+    properties: () => config.ec2.Subnet.subnet_2.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPrivateA.name,
+    namespace: "VPC",
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPrivateA.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPrivateB.name,
+    namespace: "VPC",
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPrivateB.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPublicA.name,
+    namespace: "VPC",
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPublicA.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPublicB.name,
+    namespace: "VPC",
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPublicB.properties,
+  });
+
+  provider.ec2.makeInternetGateway({
+    name: config.ec2.InternetGateway.ig.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcEc2Example,
+    }),
+  });
+
+  provider.ec2.makeInternetGateway({
+    name: config.ec2.InternetGateway.igPostgres.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcPostgres,
+    }),
+  });
+
+  provider.ec2.makeInternetGateway({
+    name: config.ec2.InternetGateway.internetGateway.name,
+    namespace: "VPC",
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+  });
+
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.securityGroup.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcPostgres,
+    }),
+    properties: () => config.ec2.SecurityGroup.securityGroup.properties,
   });
 
   provider.ec2.makeSecurityGroup({
@@ -27,6 +133,22 @@ const createResources = ({ provider }) => {
       config.ec2.SecurityGroup.securityGroupNodeGroupTest.properties,
   });
 
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.securityGroupPostgres.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.SecurityGroup.securityGroupPostgres.properties,
+  });
+
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.securityGroupPublic.name,
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.SecurityGroup.securityGroupPublic.properties,
+  });
+
   provider.ec2.makeSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22.name,
     dependencies: ({ resources }) => ({
@@ -35,6 +157,43 @@ const createResources = ({ provider }) => {
     properties: () =>
       config.ec2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22
         .properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.name,
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.name,
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupPostgres,
+      securityGroupFrom: resources.ec2.SecurityGroup.securityGroupPublic,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.name,
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressSshBastion.name,
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupPublic,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressSshBastion.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({

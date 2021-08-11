@@ -110,16 +110,6 @@ module.exports = ({ stage }) => ({
     },
   },
   ec2: {
-    Vpc: {
-      vpcDefault: {
-        name: "vpc-default",
-      },
-    },
-    SecurityGroup: {
-      sgDefaultVpcDefault: {
-        name: "sg-default-vpc-default",
-      },
-    },
     Instance: {
       webIam: {
         name: "web-iam",

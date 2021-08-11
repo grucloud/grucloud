@@ -22,9 +22,9 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="25,-54 25,-137 159,-137 159,-54 25,-54"/>
 <text text-anchor="start" x="91.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- UserPool::::eu&#45;west&#45;2_vkKbP6iIu -->
+<!-- UserPool::::userpool&#45;test -->
 <g id="node1" class="node">
-<title>UserPool::::eu&#45;west&#45;2_vkKbP6iIu</title>
+<title>UserPool::::userpool&#45;test</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="151,-129 33,-129 33,-71 151,-71 151,-129"/>
 <text text-anchor="start" x="45" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">UserPool</text>
 <text text-anchor="start" x="45" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">userpool&#45;test</text>

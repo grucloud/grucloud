@@ -68,17 +68,15 @@ const createResources = ({ provider }) => {
       config.acm.Certificate.devCloudfrontAwsTestGrucloudOrg.properties,
   });
 
-  provider.acm.makeCertificate({
-    name: config.acm.Certificate.grucloudOrg.name,
-    properties: () => config.acm.Certificate.grucloudOrg.properties,
-  });
-
   provider.route53Domain.useDomain({
     name: config.route53Domain.Domain.grucloudOrg.name,
   });
 
   provider.route53.makeHostedZone({
     name: config.route53.HostedZone.devCloudfrontAwsTestGrucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      domain: resources.route53Domain.Domain.grucloudOrg,
+    }),
   });
 
   provider.route53.makeRecord({

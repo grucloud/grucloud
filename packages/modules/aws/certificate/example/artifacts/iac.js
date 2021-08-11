@@ -17,6 +17,9 @@ const createResources = ({ provider }) => {
 
   provider.route53.makeHostedZone({
     name: config.route53.HostedZone.exampleModuleAwsCertificateGrucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      domain: resources.route53Domain.Domain.grucloudOrg,
+    }),
   });
 
   provider.route53.makeRecord({

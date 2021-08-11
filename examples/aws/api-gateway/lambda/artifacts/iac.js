@@ -18,20 +18,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.acm.makeCertificate({
-    name: config.acm.Certificate.awsGrucloudCom.name,
-    properties: () => config.acm.Certificate.awsGrucloudCom.properties,
-  });
-
-  provider.acm.makeCertificate({
     name: config.acm.Certificate.grucloudOrg.name,
     properties: () => config.acm.Certificate.grucloudOrg.properties,
-  });
-
-  provider.acm.makeCertificate({
-    name: config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.name,
-    namespace: "Certificate",
-    properties: () =>
-      config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.properties,
   });
 
   provider.route53Domain.useDomain({
@@ -40,6 +28,9 @@ const createResources = ({ provider }) => {
 
   provider.route53.makeHostedZone({
     name: config.route53.HostedZone.grucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      domain: resources.route53Domain.Domain.grucloudOrg,
+    }),
   });
 
   provider.route53.makeRecord({
@@ -105,6 +96,14 @@ const createResources = ({ provider }) => {
       stage: resources.apigateway.Stage.myApiStageDev,
     }),
     properties: () => config.apigateway.Deployment.myApiDeployment.properties,
+  });
+
+  provider.apigateway.makeDomainName({
+    name: config.apigateway.DomainName.grucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      certificate: resources.acm.Certificate.grucloudOrg,
+    }),
+    properties: () => config.apigateway.DomainName.grucloudOrg.properties,
   });
 };
 

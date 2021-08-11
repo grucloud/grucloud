@@ -89,13 +89,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.acm.makeCertificate({
-    name: config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.name,
-    namespace: "Certificate",
-    properties: () =>
-      config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.properties,
-  });
-
-  provider.acm.makeCertificate({
     name: config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.name,
     namespace: "Certificate",
     properties: () =>
@@ -107,8 +100,8 @@ const createResources = ({ provider }) => {
     namespace: "LoadBalancer",
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
         resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPublicA,
       ],
       securityGroups: [resources.ec2.SecurityGroup.securityGroupLoadBalancer],
     }),
@@ -189,6 +182,9 @@ const createResources = ({ provider }) => {
 
   provider.route53.makeHostedZone({
     name: config.route53.HostedZone.modAwsLoadBalancerGrucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      domain: resources.route53Domain.Domain.grucloudOrg,
+    }),
   });
 
   provider.route53.makeRecord({

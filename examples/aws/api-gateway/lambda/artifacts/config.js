@@ -46,22 +46,10 @@ module.exports = ({ stage }) => ({
   },
   acm: {
     Certificate: {
-      awsGrucloudCom: {
-        name: "aws.grucloud.com",
-        properties: {
-          DomainName: "aws.grucloud.com",
-        },
-      },
       grucloudOrg: {
         name: "grucloud.org",
         properties: {
           DomainName: "grucloud.org",
-        },
-      },
-      modAwsLoadBalancerGrucloudOrg: {
-        name: "mod-aws-load-balancer.grucloud.org",
-        properties: {
-          DomainName: "mod-aws-load-balancer.grucloud.org",
         },
       },
     },
@@ -153,6 +141,14 @@ module.exports = ({ stage }) => ({
         name: "my-api-deployment",
         properties: {
           Description: "",
+        },
+      },
+    },
+    DomainName: {
+      grucloudOrg: {
+        name: "grucloud.org",
+        properties: {
+          DomainName: "grucloud.org",
         },
       },
     },

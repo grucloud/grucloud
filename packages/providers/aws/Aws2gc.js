@@ -206,11 +206,11 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             group: "iam",
           },
         }),
-        hasNoProperty: ({ lives, resource }) =>
+        hasNoProperty: ({ resource }) =>
           pipe([
             () => resource,
             or([
-              hasDependency({ type: "OpenIDConnectProvider", group: "ec2" }),
+              hasDependency({ type: "OpenIDConnectProvider", group: "iam" }),
             ]),
           ])(),
       },
@@ -425,6 +425,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Certificate",
+        ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
         filterLive: () =>
           pipe([
             pick(["DomainName", "SubjectAlternativeNames"]),
@@ -583,6 +584,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Key",
         filterLive: () => pick([]),
+        ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
       },
     ],
   },
@@ -769,6 +771,22 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           ]),
       },
       {
+        type: "Authorizer",
+        filterLive: () =>
+          pick([
+            "AuthorizerType",
+            "Name",
+            "IdentitySource",
+            "AuthorizerCredentialsArn",
+            "AuthorizerPayloadFormatVersion",
+            "AuthorizerResultTtlInSeconds",
+            "AuthorizerUri",
+            "EnableSimpleResponses",
+            "IdentityValidationExpression",
+            "JwtConfiguration",
+          ]),
+      },
+      {
         type: "Integration",
         filterLive: () =>
           pick([
@@ -916,8 +934,6 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
   pipe([
     () => lives,
     filter(eq(get("groupType"), "s3::Object")),
-    pluck("resources"),
-    flatten,
     pluck("live"),
     tap((params) => {
       assert(true);

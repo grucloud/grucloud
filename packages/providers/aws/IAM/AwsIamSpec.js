@@ -2,10 +2,7 @@ const { pipe, assign, map } = require("rubico");
 const { AwsIamUser } = require("./AwsIamUser");
 const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
 const { AwsIamRole } = require("./AwsIamRole");
-const {
-  AwsIamInstanceProfile,
-  isOurMinionInstanceProfile,
-} = require("./AwsIamInstanceProfile");
+const { AwsIamInstanceProfile } = require("./AwsIamInstanceProfile");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 
 const {
@@ -50,6 +47,6 @@ module.exports = () =>
       type: "InstanceProfile",
       dependsOn: ["iam::Role"],
       Client: AwsIamInstanceProfile,
-      isOurMinion: isOurMinionInstanceProfile,
+      isOurMinion,
     },
   ]);

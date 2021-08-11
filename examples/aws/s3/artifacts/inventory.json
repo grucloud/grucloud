@@ -20,14 +20,15 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-acceleration",
                                 "id": "grucloud-acceleration",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-acceleration",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:02.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -50,31 +51,32 @@
                                             "Value": "grucloud-acceleration"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "AccelerateConfiguration": {
                                         "Status": "Enabled"
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-acceleration",
                                 "displayName": "grucloud-acceleration",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-cors",
                                 "id": "grucloud-cors",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-cors",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:02.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -97,6 +99,7 @@
                                             "Value": "grucloud-cors"
                                         }
                                     ],
+                                    "LocationConstraint": "",
                                     "CORSConfiguration": {
                                         "CORSRules": [
                                             {
@@ -113,29 +116,29 @@
                                                 "MaxAgeSeconds": 3000
                                             }
                                         ]
-                                    },
-                                    "LocationConstraint": ""
+                                    }
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-cors",
                                 "displayName": "grucloud-cors",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-encryption",
                                 "id": "grucloud-encryption",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-encryption",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:03.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -158,7 +161,6 @@
                                             "Value": "grucloud-encryption"
                                         }
                                     ],
-                                    "LocationConstraint": "",
                                     "ServerSideEncryptionConfiguration": {
                                         "Rules": [
                                             {
@@ -168,28 +170,30 @@
                                                 "BucketKeyEnabled": false
                                             }
                                         ]
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-encryption",
                                 "displayName": "grucloud-encryption",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-lifecycleconfiguration",
                                 "id": "grucloud-lifecycleconfiguration",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-lifecycleconfiguration",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:03.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -212,6 +216,7 @@
                                             "Value": "grucloud-lifecycleconfiguration"
                                         }
                                     ],
+                                    "LocationConstraint": "",
                                     "LifecycleConfiguration": {
                                         "Rules": [
                                             {
@@ -232,29 +237,29 @@
                                                 "NoncurrentVersionTransitions": []
                                             }
                                         ]
-                                    },
-                                    "LocationConstraint": ""
+                                    }
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-lifecycleconfiguration",
                                 "displayName": "grucloud-lifecycleconfiguration",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-log-destination",
                                 "id": "grucloud-log-destination",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-log-destination",
-                                    "CreationDate": "2021-08-05T19:42:13.000Z",
+                                    "CreationDate": "2021-08-11T16:45:00.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -284,21 +289,22 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-policy",
                                 "id": "grucloud-policy",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-policy",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:04.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -324,7 +330,6 @@
                                     "PolicyStatus": {
                                         "IsPublic": false
                                     },
-                                    "LocationConstraint": "",
                                     "Policy": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -341,28 +346,30 @@
                                                 }
                                             }
                                         ]
-                                    }
+                                    },
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-policy",
                                 "displayName": "grucloud-policy",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-request-payment",
                                 "id": "grucloud-request-payment",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-request-payment",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:04.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -385,31 +392,32 @@
                                             "Value": "grucloud-request-payment"
                                         }
                                     ],
+                                    "LocationConstraint": "",
                                     "RequestPaymentConfiguration": {
                                         "Payer": "Requester"
-                                    },
-                                    "LocationConstraint": ""
+                                    }
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-request-payment",
                                 "displayName": "grucloud-request-payment",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-tag",
                                 "id": "grucloud-tag",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-tag",
-                                    "CreationDate": "2021-08-05T19:42:13.000Z",
+                                    "CreationDate": "2021-08-11T16:45:11.000Z",
                                     "Tags": [
                                         {
                                             "Key": "Key2",
@@ -447,21 +455,22 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-test-basic",
                                 "id": "grucloud-test-basic",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-test-basic",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:00.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -491,21 +500,22 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-versioning",
                                 "id": "grucloud-versioning",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-versioning",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:11.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -528,32 +538,33 @@
                                             "Value": "grucloud-versioning"
                                         }
                                     ],
+                                    "LocationConstraint": "",
                                     "VersioningConfiguration": {
                                         "Status": "Enabled",
                                         "MFADelete": "Disabled"
-                                    },
-                                    "LocationConstraint": ""
+                                    }
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-versioning",
                                 "displayName": "grucloud-versioning",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "grucloud-website",
                                 "id": "grucloud-website",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-website",
-                                    "CreationDate": "2021-08-05T19:42:12.000Z",
+                                    "CreationDate": "2021-08-11T16:45:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -585,18 +596,18 @@
                                         },
                                         "RoutingRules": []
                                     },
-                                    "LocationConstraint": "",
-                                    "ACL": "public-read"
+                                    "ACL": "public-read",
+                                    "LocationConstraint": ""
                                 },
                                 "uri": "aws::s3::Bucket::grucloud-website",
                                 "displayName": "grucloud-website",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -608,23 +619,47 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "file-test",
                                 "id": "file-test",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "grucloud-test-basic",
                                     "Key": "file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-05T19:42:30.000Z",
+                                    "LastModified": "2021-08-11T16:45:25.000Z",
                                     "ContentLength": 13,
                                     "ETag": "\"83b5d763dd5db9921639fda64a194408\"",
                                     "ContentType": "text/plain",
                                     "Metadata": {
                                         "md5hash": "g7XXY91duZIWOf2mShlECA=="
                                     },
-                                    "signedUrl": "https://grucloud-test-basic.s3.amazonaws.com/file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628193472&Signature=UM8NByLHK4If%2B9mhxx6f19vZ%2BWM%3D",
+                                    "signedUrl": "https://grucloud-test-basic.s3.amazonaws.com/file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701238&Signature=f7YAMHMJ%2B4OdAmRqfszlRDOWma8%3D",
+                                    "ACL": {
+                                        "Grants": [
+                                            {
+                                                "Grantee": {
+                                                    "DisplayName": "frederic.heem",
+                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
+                                                    "Type": "CanonicalUser"
+                                                },
+                                                "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
+                                            }
+                                        ],
+                                        "Owner": {
+                                            "DisplayName": "frederic.heem",
+                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
+                                        }
+                                    },
                                     "Tags": [
                                         {
                                             "Key": "Key2",
@@ -654,36 +689,14 @@
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
                                         }
-                                    ],
-                                    "ACL": {
-                                        "Grants": [
-                                            {
-                                                "Grantee": {
-                                                    "DisplayName": "frederic.heem",
-                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
-                                                    "Type": "CanonicalUser"
-                                                },
-                                                "Permission": "FULL_CONTROL"
-                                            },
-                                            {
-                                                "Grantee": {
-                                                    "Type": "Group",
-                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
-                                                },
-                                                "Permission": "READ"
-                                            }
-                                        ],
-                                        "Owner": {
-                                            "DisplayName": "frederic.heem",
-                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
-                                        }
-                                    }
+                                    ]
                                 },
                                 "uri": "aws::s3::Object::file-test",
                                 "displayName": "file-test",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -692,10 +705,11 @@
                                         "group": "s3",
                                         "ids": [
                                             "grucloud-test-basic"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],

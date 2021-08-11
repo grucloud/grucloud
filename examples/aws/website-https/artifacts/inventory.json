@@ -1,9 +1,9 @@
 {
     "command": "list",
     "commandOptions": {
-        "dotFile": "artifacts/diagram-live.dot",
+        "graph": true,
         "title": "website-https",
-        "graph": true
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/website-https/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
@@ -20,11 +20,12 @@
                     {
                         "resources": [
                             {
+                                "group": "acm",
+                                "type": "Certificate",
                                 "name": "dev.cloudfront.aws.test.grucloud.org",
                                 "id": "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eaf",
                                 "providerName": "aws",
-                                "type": "Certificate",
-                                "group": "acm",
+                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eaf",
                                     "DomainName": "dev.cloudfront.aws.test.grucloud.org",
@@ -55,7 +56,7 @@
                                     "KeyAlgorithm": "RSA-2048",
                                     "SignatureAlgorithm": "SHA256WITHRSA",
                                     "InUseBy": [
-                                        "arn:aws:cloudfront::840541460064:distribution/EZ3VKPT0X6XX0"
+                                        "arn:aws:cloudfront::840541460064:distribution/E3M47WOP60WEX"
                                     ],
                                     "Type": "AMAZON_ISSUED",
                                     "KeyUsages": [
@@ -108,18 +109,19 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "acm",
+                                "type": "Certificate",
                                 "name": "grucloud.org",
                                 "id": "arn:aws:acm:us-east-1:840541460064:certificate/e7d947d6-4709-46e7-b5ed-68b7d31bb0e2",
                                 "providerName": "aws",
-                                "type": "Certificate",
-                                "group": "acm",
+                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:us-east-1:840541460064:certificate/e7d947d6-4709-46e7-b5ed-68b7d31bb0e2",
                                     "DomainName": "grucloud.org",
@@ -201,10 +203,10 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -223,17 +225,18 @@
                     {
                         "resources": [
                             {
-                                "name": "distribution-cloudfront.aws.test.grucloud.org-dev",
-                                "id": "EZ3VKPT0X6XX0",
-                                "providerName": "aws",
-                                "type": "Distribution",
                                 "group": "cloudFront",
+                                "type": "Distribution",
+                                "name": "distribution-cloudfront.aws.test.grucloud.org-dev",
+                                "id": "E3M47WOP60WEX",
+                                "providerName": "aws",
+                                "groupType": "cloudFront::Distribution",
                                 "live": {
-                                    "Id": "EZ3VKPT0X6XX0",
-                                    "ARN": "arn:aws:cloudfront::840541460064:distribution/EZ3VKPT0X6XX0",
+                                    "Id": "E3M47WOP60WEX",
+                                    "ARN": "arn:aws:cloudfront::840541460064:distribution/E3M47WOP60WEX",
                                     "Status": "Deployed",
-                                    "LastModifiedTime": "2021-08-06T00:45:12.980Z",
-                                    "DomainName": "d1krm3wg5t3ldc.cloudfront.net",
+                                    "LastModifiedTime": "2021-08-11T16:49:36.279Z",
+                                    "DomainName": "d3b0n69fipsaup.cloudfront.net",
                                     "Aliases": {
                                         "Quantity": 1,
                                         "Items": [
@@ -356,7 +359,7 @@
                                             "ICPRecordalStatus": "APPROVED"
                                         }
                                     ],
-                                    "CallerReference": "grucloud-Thu Aug 05 2021 21:45:12 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Wed Aug 11 2021 13:49:35 GMT-0300 (Brasilia Standard Time)",
                                     "DefaultRootObject": "index.html",
                                     "Logging": {
                                         "Enabled": false,
@@ -392,6 +395,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -400,17 +404,20 @@
                                         "group": "acm",
                                         "ids": [
                                             "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eaf"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "acm::Certificate"
                                     },
                                     {
                                         "type": "Bucket",
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -422,70 +429,20 @@
                     {
                         "resources": [
                             {
-                                "name": "dev.cloudfront.aws.test.grucloud.org.",
-                                "id": "/hostedzone/Z00958862OIUDDASQWLZU",
-                                "providerName": "aws",
-                                "type": "HostedZone",
                                 "group": "route53",
+                                "type": "HostedZone",
+                                "name": "dev.cloudfront.aws.test.grucloud.org.",
+                                "id": "/hostedzone/Z05689733JVF4J3XOCMDF",
+                                "providerName": "aws",
+                                "groupType": "route53::HostedZone",
                                 "live": {
-                                    "Id": "/hostedzone/Z00958862OIUDDASQWLZU",
+                                    "Id": "/hostedzone/Z05689733JVF4J3XOCMDF",
                                     "Name": "dev.cloudfront.aws.test.grucloud.org.",
-                                    "CallerReference": "grucloud-Thu Aug 05 2021 21:44:59 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Wed Aug 11 2021 13:49:22 GMT-0300 (Brasilia Standard Time)",
                                     "Config": {
                                         "PrivateZone": false
                                     },
                                     "ResourceRecordSetCount": 4,
-                                    "RecordSet": [
-                                        {
-                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
-                                            "Type": "A",
-                                            "ResourceRecords": [],
-                                            "AliasTarget": {
-                                                "HostedZoneId": "Z2FDTNDATAQYW2",
-                                                "DNSName": "d1krm3wg5t3ldc.cloudfront.net.",
-                                                "EvaluateTargetHealth": false
-                                            }
-                                        },
-                                        {
-                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
-                                            "Type": "NS",
-                                            "TTL": 172800,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "ns-270.awsdns-33.com."
-                                                },
-                                                {
-                                                    "Value": "ns-542.awsdns-03.net."
-                                                },
-                                                {
-                                                    "Value": "ns-1060.awsdns-04.org."
-                                                },
-                                                {
-                                                    "Value": "ns-1827.awsdns-36.co.uk."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
-                                            "Type": "SOA",
-                                            "TTL": 900,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "ns-270.awsdns-33.com. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "Name": "_1c003a592ed0c0c949c1031f5deaef5e.dev.cloudfront.aws.test.grucloud.org.",
-                                            "Type": "CNAME",
-                                            "TTL": 300,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "_20c68e8d64be718e90d61c5bbb573b2b.bbfvkzsszw.acm-validations.aws."
-                                                }
-                                            ]
-                                        }
-                                    ],
                                     "Tags": [
                                         {
                                             "Key": "gc-project-name",
@@ -515,6 +472,57 @@
                                             "Key": "Name",
                                             "Value": "dev.cloudfront.aws.test.grucloud.org."
                                         }
+                                    ],
+                                    "RecordSet": [
+                                        {
+                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
+                                            "Type": "A",
+                                            "ResourceRecords": [],
+                                            "AliasTarget": {
+                                                "HostedZoneId": "Z2FDTNDATAQYW2",
+                                                "DNSName": "d3b0n69fipsaup.cloudfront.net.",
+                                                "EvaluateTargetHealth": false
+                                            }
+                                        },
+                                        {
+                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
+                                            "Type": "NS",
+                                            "TTL": 172800,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1354.awsdns-41.org."
+                                                },
+                                                {
+                                                    "Value": "ns-659.awsdns-18.net."
+                                                },
+                                                {
+                                                    "Value": "ns-2036.awsdns-62.co.uk."
+                                                },
+                                                {
+                                                    "Value": "ns-68.awsdns-08.com."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "dev.cloudfront.aws.test.grucloud.org.",
+                                            "Type": "SOA",
+                                            "TTL": 900,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1354.awsdns-41.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "_1c003a592ed0c0c949c1031f5deaef5e.dev.cloudfront.aws.test.grucloud.org.",
+                                            "Type": "CNAME",
+                                            "TTL": 300,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "_20c68e8d64be718e90d61c5bbb573b2b.bbfvkzsszw.acm-validations.aws."
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
                                 "uri": "aws::route53::HostedZone::dev.cloudfront.aws.test.grucloud.org.",
@@ -522,21 +530,20 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
                                     {
                                         "type": "Domain",
                                         "group": "route53Domain",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "HostedZone",
-                                        "group": "route53",
-                                        "ids": []
+                                        "ids": [
+                                            "grucloud.org"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53Domain::Domain"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -548,36 +555,38 @@
                     {
                         "resources": [
                             {
+                                "group": "route53",
+                                "type": "Record",
                                 "name": "dev.cloudfront.aws.test.grucloud.org.::NS",
                                 "id": "dev.cloudfront.aws.test.grucloud.org.::NS",
                                 "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
+                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "dev.cloudfront.aws.test.grucloud.org.",
                                     "Type": "NS",
                                     "TTL": 172800,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-270.awsdns-33.com."
+                                            "Value": "ns-1354.awsdns-41.org."
                                         },
                                         {
-                                            "Value": "ns-542.awsdns-03.net."
+                                            "Value": "ns-659.awsdns-18.net."
                                         },
                                         {
-                                            "Value": "ns-1060.awsdns-04.org."
+                                            "Value": "ns-2036.awsdns-62.co.uk."
                                         },
                                         {
-                                            "Value": "ns-1827.awsdns-36.co.uk."
+                                            "Value": "ns-68.awsdns-08.com."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z00958862OIUDDASQWLZU"
+                                    "HostedZoneId": "/hostedzone/Z05689733JVF4J3XOCMDF"
                                 },
                                 "uri": "aws::route53::Record::dev.cloudfront.aws.test.grucloud.org.::NS",
                                 "displayName": "dev.cloudfront.aws.test.grucloud.org.::NS",
                                 "cannotBeDeleted": true,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -585,55 +594,38 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z00958862OIUDDASQWLZU"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "DomainName",
-                                        "group": "apigateway",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Distribution",
-                                        "group": "cloudFront",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "group": "acm",
-                                        "ids": []
+                                            "/hostedzone/Z05689733JVF4J3XOCMDF"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "route53",
+                                "type": "Record",
                                 "name": "dev.cloudfront.aws.test.grucloud.org.::SOA",
                                 "id": "dev.cloudfront.aws.test.grucloud.org.::SOA",
                                 "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
+                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "dev.cloudfront.aws.test.grucloud.org.",
                                     "Type": "SOA",
                                     "TTL": 900,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-270.awsdns-33.com. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                            "Value": "ns-1354.awsdns-41.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z00958862OIUDDASQWLZU"
+                                    "HostedZoneId": "/hostedzone/Z05689733JVF4J3XOCMDF"
                                 },
                                 "uri": "aws::route53::Record::dev.cloudfront.aws.test.grucloud.org.::SOA",
                                 "displayName": "dev.cloudfront.aws.test.grucloud.org.::SOA",
                                 "cannotBeDeleted": true,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -641,46 +633,28 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z00958862OIUDDASQWLZU"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "DomainName",
-                                        "group": "apigateway",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Distribution",
-                                        "group": "cloudFront",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "group": "acm",
-                                        "ids": []
+                                            "/hostedzone/Z05689733JVF4J3XOCMDF"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "route53",
+                                "type": "Record",
                                 "name": "distribution-alias-dev.cloudfront.aws.test.grucloud.org",
                                 "id": "dev.cloudfront.aws.test.grucloud.org.::A",
                                 "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
+                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "dev.cloudfront.aws.test.grucloud.org.",
                                     "Type": "A",
                                     "ResourceRecords": [],
                                     "AliasTarget": {
                                         "HostedZoneId": "Z2FDTNDATAQYW2",
-                                        "DNSName": "d1krm3wg5t3ldc.cloudfront.net.",
+                                        "DNSName": "d3b0n69fipsaup.cloudfront.net.",
                                         "EvaluateTargetHealth": false
                                     },
                                     "Tags": [
@@ -713,7 +687,7 @@
                                             "Value": "dev.cloudfront.aws.test.grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z00958862OIUDDASQWLZU",
+                                    "HostedZoneId": "/hostedzone/Z05689733JVF4J3XOCMDF",
                                     "namespace": ""
                                 },
                                 "uri": "aws::route53::Record::distribution-alias-dev.cloudfront.aws.test.grucloud.org",
@@ -721,6 +695,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -728,41 +703,30 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z00958862OIUDDASQWLZU"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "DomainName",
-                                        "group": "apigateway",
-                                        "ids": []
+                                            "/hostedzone/Z05689733JVF4J3XOCMDF"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53::HostedZone"
                                     },
                                     {
                                         "type": "Distribution",
                                         "group": "cloudFront",
                                         "ids": [
-                                            "EZ3VKPT0X6XX0"
-                                        ]
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "group": "acm",
-                                        "ids": []
+                                            "E3M47WOP60WEX"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "cloudFront::Distribution"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "route53",
+                                "type": "Record",
                                 "name": "validation-dev.cloudfront.aws.test.grucloud.org.",
                                 "id": "_1c003a592ed0c0c949c1031f5deaef5e.dev.cloudfront.aws.test.grucloud.org.::CNAME",
                                 "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
+                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "_1c003a592ed0c0c949c1031f5deaef5e.dev.cloudfront.aws.test.grucloud.org.",
                                     "Type": "CNAME",
@@ -802,7 +766,7 @@
                                             "Value": "dev.cloudfront.aws.test.grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z00958862OIUDDASQWLZU",
+                                    "HostedZoneId": "/hostedzone/Z05689733JVF4J3XOCMDF",
                                     "namespace": ""
                                 },
                                 "uri": "aws::route53::Record::validation-dev.cloudfront.aws.test.grucloud.org.",
@@ -810,6 +774,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -817,33 +782,21 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z00958862OIUDDASQWLZU"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "DomainName",
-                                        "group": "apigateway",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Distribution",
-                                        "group": "cloudFront",
-                                        "ids": []
+                                            "/hostedzone/Z05689733JVF4J3XOCMDF"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53::HostedZone"
                                     },
                                     {
                                         "type": "Certificate",
                                         "group": "acm",
                                         "ids": [
                                             "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eaf"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "acm::Certificate"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -855,28 +808,29 @@
                     {
                         "resources": [
                             {
+                                "group": "route53Domain",
+                                "type": "Domain",
                                 "name": "grucloud.org",
                                 "id": "grucloud.org",
                                 "providerName": "aws",
-                                "type": "Domain",
-                                "group": "route53Domain",
+                                "groupType": "route53Domain::Domain",
                                 "live": {
                                     "DomainName": "grucloud.org",
                                     "Nameservers": [
                                         {
-                                            "Name": "ns-270.awsdns-33.com",
+                                            "Name": "ns-1354.awsdns-41.org",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-542.awsdns-03.net",
+                                            "Name": "ns-659.awsdns-18.net",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1060.awsdns-04.org",
+                                            "Name": "ns-2036.awsdns-62.co.uk",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1827.awsdns-36.co.uk",
+                                            "Name": "ns-68.awsdns-08.com",
                                             "GlueIps": []
                                         }
                                     ],
@@ -940,10 +894,10 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
+                                "managedByOther": true,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": true,
                                 "show": true
                             }
                         ],
@@ -955,14 +909,15 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Bucket",
                                 "name": "cloudfront.aws.test.grucloud.org-dev",
                                 "id": "cloudfront.aws.test.grucloud.org-dev",
                                 "providerName": "aws",
-                                "type": "Bucket",
-                                "group": "s3",
+                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "cloudfront.aws.test.grucloud.org-dev",
-                                    "CreationDate": "2021-08-06T00:45:01.000Z",
+                                    "CreationDate": "2021-08-11T16:49:23.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -985,8 +940,6 @@
                                             "Value": "cloudfront.aws.test.grucloud.org-dev"
                                         }
                                     ],
-                                    "LocationConstraint": "",
-                                    "ACL": "public-read",
                                     "WebsiteConfiguration": {
                                         "IndexDocument": {
                                             "Suffix": "index.html"
@@ -995,17 +948,19 @@
                                             "Key": "error.html"
                                         },
                                         "RoutingRules": []
-                                    }
+                                    },
+                                    "LocationConstraint": "",
+                                    "ACL": "public-read"
                                 },
                                 "uri": "aws::s3::Bucket::cloudfront.aws.test.grucloud.org-dev",
                                 "displayName": "cloudfront.aws.test.grucloud.org-dev",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -1017,23 +972,46 @@
                     {
                         "resources": [
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "build/bundle.css",
                                 "id": "build/bundle.css",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "cloudfront.aws.test.grucloud.org-dev",
                                     "Key": "build/bundle.css",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-06T00:45:13.000Z",
+                                    "LastModified": "2021-08-11T16:49:37.000Z",
                                     "ContentLength": 228,
                                     "ETag": "\"1707de71f21a3a1b445ddf580fa56aae\"",
                                     "ContentType": "text/css",
                                     "Metadata": {
                                         "md5hash": "FwfecfIaOhtEXd9YD6Vqrg=="
                                     },
-                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/build/bundle.css?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628212230&Signature=5hb%2FpMdb%2FUSFqVmLcKNameOlFyo%3D",
+                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/build/bundle.css?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701667&Signature=LiWwOpNdWqnka6D3KGZY%2F8S16Ho%3D",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-website-https"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": ""
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
                                     "ACL": {
                                         "Grants": [
                                             {
@@ -1056,35 +1034,14 @@
                                             "DisplayName": "frederic.heem",
                                             "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
                                         }
-                                    },
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "@grucloud/example-aws-website-https"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": ""
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        }
-                                    ]
+                                    }
                                 },
                                 "uri": "aws::s3::Object::build/bundle.css",
                                 "displayName": "build/bundle.css",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -1093,30 +1050,32 @@
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "build/bundle.js",
                                 "id": "build/bundle.js",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "cloudfront.aws.test.grucloud.org-dev",
                                     "Key": "build/bundle.js",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-06T00:45:14.000Z",
+                                    "LastModified": "2021-08-11T16:49:37.000Z",
                                     "ContentLength": 3280,
                                     "ETag": "\"8f294d866a674af0cb198144dd03e05c\"",
                                     "ContentType": "application/javascript",
                                     "Metadata": {
                                         "md5hash": "jylNhmpnSvDLGYFE3QPgXA=="
                                     },
-                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/build/bundle.js?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628212230&Signature=oWgxu6Em2Zb8NeNIUpoMRmNhlcA%3D",
+                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/build/bundle.js?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701667&Signature=2JAhA5fmdrg2ZH8inviXMR5SJvY%3D",
                                     "Tags": [
                                         {
                                             "Key": "gc-project-name",
@@ -1168,6 +1127,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -1176,30 +1136,32 @@
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "favicon.png",
                                 "id": "favicon.png",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "cloudfront.aws.test.grucloud.org-dev",
                                     "Key": "favicon.png",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-06T00:45:14.000Z",
+                                    "LastModified": "2021-08-11T16:49:37.000Z",
                                     "ContentLength": 3127,
                                     "ETag": "\"c64beab291de80970aa4887a5a1c9135\"",
                                     "ContentType": "image/png",
                                     "Metadata": {
                                         "md5hash": "xkvqspHegJcKpIh6WhyRNQ=="
                                     },
-                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/favicon.png?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628212230&Signature=jDbygH4Pv8AQ88VbVtAWI24rmcE%3D",
+                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/favicon.png?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701667&Signature=DaRc21Tx%2B2mJe84EyDL061oabP0%3D",
                                     "Tags": [
                                         {
                                             "Key": "gc-project-name",
@@ -1251,6 +1213,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -1259,30 +1222,54 @@
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "global.css",
                                 "id": "global.css",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "cloudfront.aws.test.grucloud.org-dev",
                                     "Key": "global.css",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-06T00:45:13.000Z",
+                                    "LastModified": "2021-08-11T16:49:37.000Z",
                                     "ContentLength": 890,
                                     "ETag": "\"aa29fced170313097f42cc3ad78a1479\"",
                                     "ContentType": "text/css",
                                     "Metadata": {
                                         "md5hash": "qin87RcDEwl/Qsw614oUeQ=="
                                     },
-                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/global.css?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628212230&Signature=nCIwV908O2f6Xr9kmP%2FKhDRjlKM%3D",
+                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/global.css?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701667&Signature=z%2FU6AaF%2BoQY31C5fuHJn0VTsTYc%3D",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-website-https"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": ""
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
                                     "ACL": {
                                         "Grants": [
                                             {
@@ -1305,35 +1292,14 @@
                                             "DisplayName": "frederic.heem",
                                             "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
                                         }
-                                    },
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "@grucloud/example-aws-website-https"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": ""
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        }
-                                    ]
+                                    }
                                 },
                                 "uri": "aws::s3::Object::global.css",
                                 "displayName": "global.css",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -1342,30 +1308,32 @@
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             },
                             {
+                                "group": "s3",
+                                "type": "Object",
                                 "name": "index.html",
                                 "id": "index.html",
                                 "providerName": "aws",
-                                "type": "Object",
-                                "group": "s3",
+                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "cloudfront.aws.test.grucloud.org-dev",
                                     "Key": "index.html",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-06T00:45:13.000Z",
+                                    "LastModified": "2021-08-11T16:49:37.000Z",
                                     "ContentLength": 393,
                                     "ETag": "\"6fb1dd987380b1cf9c40f2bae8c3e516\"",
                                     "ContentType": "text/html",
                                     "Metadata": {
                                         "md5hash": "b7HdmHOAsc+cQPK66MPlFg=="
                                     },
-                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/index.html?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628212230&Signature=Ej8V%2FFJzYIaZqSWaQx8W8mrk398%3D",
+                                    "signedUrl": "https://s3.amazonaws.com/cloudfront.aws.test.grucloud.org-dev/index.html?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1628701667&Signature=4ncxRy%2FJfzfP%2Fu5ugEgXyQ4tt5c%3D",
                                     "Tags": [
                                         {
                                             "Key": "gc-project-name",
@@ -1417,6 +1385,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -1425,10 +1394,11 @@
                                         "group": "s3",
                                         "ids": [
                                             "cloudfront.aws.test.grucloud.org-dev"
-                                        ]
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],

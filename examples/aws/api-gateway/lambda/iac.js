@@ -83,7 +83,11 @@ const createResources = ({ provider }) => {
     dependencies: { api },
     properties: () => ({}),
   });
-
+  // const authorizer = provider.apigateway.makeAuthorizer({
+  //   name: "my-authorizer-stage-dev",
+  //   dependencies: { api },
+  //   properties: () => ({}),
+  // });
   provider.apigateway.makeApiMapping({
     name: "api-mapping-dev",
     dependencies: { api, stage, domainName: apiGatewayDomainName },

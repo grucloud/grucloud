@@ -11,11 +11,6 @@ const createResources = ({ provider }) => {
   provider.s3.makeBucket({
     name: config.s3.Bucket.grucloudBucket_1.name,
   });
-
-  provider.s3.makeBucket({
-    name: config.s3.Bucket.grucloudSimpleBucket.name,
-    namespace: "My namespace",
-  });
 };
 
 exports.createResources = createResources;

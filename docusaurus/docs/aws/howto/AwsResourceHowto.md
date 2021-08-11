@@ -240,7 +240,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = ({ name, properties, dependencies }) =>
     defaultsDeep({})(properties);
 
   return {
@@ -634,7 +634,7 @@ The _configDefault_ function infers the parameters for the resource creation.
 The load balancer depends on an array of subnets and security groups. We'll retrieve these values with the help of the **getField** function.
 
 ```js
-const configDefault = async ({
+const configDefault = ({
   name,
   properties,
   dependencies: { subnets, securityGroups },

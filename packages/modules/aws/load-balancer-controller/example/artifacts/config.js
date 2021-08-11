@@ -303,12 +303,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/internal-elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -322,12 +322,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/internal-elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -341,12 +341,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/elb",
+              Value: "1",
             },
           ],
         },
@@ -368,16 +368,6 @@ module.exports = ({ stage }) => ({
               Value: "1",
             },
           ],
-        },
-      },
-    },
-    Volume: {
-      volumeTestVolume: {
-        name: "volume-test-volume",
-        properties: {
-          Size: 2,
-          VolumeType: "standard",
-          AvailabilityZone: "eu-west-2a",
         },
       },
     },
@@ -428,23 +418,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroup: {
-      eksClusterSgCluster_872092154: {
-        name: "eks-cluster-sg-cluster-872092154",
-        properties: {
-          Description:
-            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-          Tags: [
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:eks:cluster-name",
-              Value: "cluster",
-            },
-          ],
-        },
-      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -465,16 +438,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroupRuleIngress: {
-      eksClusterSgCluster_872092154RuleIngressAll: {
-        name: "eks-cluster-sg-cluster-872092154-rule-ingress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-          },
-        },
-      },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
         properties: {
@@ -536,25 +499,6 @@ module.exports = ({ stage }) => ({
             ],
           },
         },
-      },
-    },
-    Instance: {
-      server_4TestVolume: {
-        name: "server-4-test-volume",
-        properties: {
-          InstanceType: "t2.micro",
-          ImageId: "ami-084a1f89b0bb0f729",
-        },
-      },
-    },
-  },
-  kms: {
-    Key: {
-      eksKey: {
-        name: "eks-key",
-      },
-      secretKeyTest: {
-        name: "secret-key-test",
       },
     },
   },

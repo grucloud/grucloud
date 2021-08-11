@@ -59,17 +59,6 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.ec2.useDefaultVpc({
-    name: config.ec2.Vpc.vpcDefault.name,
-  });
-
-  provider.ec2.useDefaultSecurityGroup({
-    name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcDefault,
-    }),
-  });
-
   provider.ec2.makeInstance({
     name: config.ec2.Instance.webIam.name,
     dependencies: ({ resources }) => ({

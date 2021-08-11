@@ -1,11 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-ec2",
   ec2: {
-    Vpc: {
-      vpcDefault: {
-        name: "vpc-default",
-      },
-    },
     KeyPair: {
       kpEc2Example: {
         name: "kp-ec2-example",
@@ -14,11 +9,6 @@ module.exports = ({ stage }) => ({
     ElasticIpAddress: {
       eip: {
         name: "eip",
-      },
-    },
-    SecurityGroup: {
-      sgDefaultVpcDefault: {
-        name: "sg-default-vpc-default",
       },
     },
     Instance: {

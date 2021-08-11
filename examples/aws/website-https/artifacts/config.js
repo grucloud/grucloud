@@ -184,12 +184,6 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      grucloudOrg: {
-        name: "grucloud.org",
-        properties: {
-          DomainName: "grucloud.org",
-        },
-      },
     },
   },
   route53Domain: {

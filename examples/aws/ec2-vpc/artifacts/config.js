@@ -33,6 +33,7 @@ module.exports = ({ stage }) => ({
         properties: {
           Size: 5,
           VolumeType: "standard",
+          AvailabilityZone: "eu-west-2a",
         },
       },
     },

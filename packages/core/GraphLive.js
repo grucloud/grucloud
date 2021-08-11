@@ -50,33 +50,35 @@ const buildNode =
     },
   }) =>
   (resource) =>
-    `"${resource.type}::${namespace}::${resource.id}" [label=<
+    pipe([
+      tap(() => {
+        assert(resource.id);
+      }),
+      () =>
+        `"${resource.type}::${namespace}::${nodeNameFromResource(
+          resource
+        )}" [label=<
   <table color='${node.color}' border="0">
      <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
-      node.type.pointSize
-    }"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+          node.type.pointSize
+        }"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
-      node.name.pointSize
-    }">${formatNodeName({
-      name: nodeNameFromResource(resource),
-    })}</FONT><br align="left" /></td></tr>
-  </table>>];\n`;
+          node.name.pointSize
+        }">${formatNodeName({
+          name: nodeNameFromResource(resource),
+        })}</FONT><br align="left" /></td></tr>
+  </table>>];\n`,
+    ])();
 
 const buildSubGraph = ({ providerName, options, namespace, resources }) =>
   pipe([
-    tap((xxx) => {
+    tap(() => {
       assert(options);
     }),
     () => resources,
     map(buildNode({ namespace, options })),
     callProp("join", "\n"),
-    tap((xxx) => {
-      assert(true);
-    }),
     buildSubGraphClusterNamespace({ namespace, providerName, options }),
-    tap((xxx) => {
-      assert(true);
-    }),
   ])();
 //TODO
 const resourceNameFilterDefault = and([
@@ -171,15 +173,15 @@ const findNamespace = ({ type, id, resources }) =>
     }),
   ])();
 
-const buildNodeFrom = ({ type, namespaceFrom, idFrom }) =>
-  `${type}::${formatNamespace(namespaceFrom)}::${idFrom}`;
+const buildNodeFrom = ({ type, namespaceFrom, idFrom, nameFrom }) =>
+  `${type}::${formatNamespace(namespaceFrom)}::${nameFrom || idFrom}`;
 
-const buildNodeToId = ({ dependency, idTo, resources }) =>
+const buildNodeToId = ({ dependency, idTo, nameTo, resources }) =>
   `${dependency.type}::${findNamespace({
     type: dependency.type,
     id: idTo,
     resources,
-  })}::${idTo}`;
+  })}::${nameTo || idTo}`;
 
 const associationIdString = ({
   options: { edge },
@@ -187,23 +189,28 @@ const associationIdString = ({
   namespace: namespaceFrom,
   idFrom,
   idTo,
+  nameFrom,
+  nameTo,
   dependency,
   resources,
 }) =>
   pipe([
     tap(() => {
       assert(idTo);
+      assert(nameFrom);
+      assert(nameTo);
     }),
     () => resources,
     switchCase([
       pipe([find(eq(get("id"), idTo)), get("show")]),
       pipe([
         () => ({
-          nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom }),
+          nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom, nameFrom }),
           nodeTo: buildNodeToId({
             dependency,
             resources,
             idTo,
+            nameTo,
           }),
         }),
         ({ nodeFrom, nodeTo }) =>
@@ -266,14 +273,16 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
     flatten,
     filterResources(options),
     filter(pipe([get("dependencies"), not(isEmpty)])),
-    flatMap(({ providerName, type, namespace, id, dependencies }) =>
+    flatMap(({ providerName, type, namespace, id, name, dependencies }) =>
       pipe([
         tap(() => {
           logger.debug(
-            `${providerName}, type ${type}, id, ${id}, namespace: ${namespace}, #dependencies ${size(
+            `${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
               dependencies
             )}`
           );
+          assert(id);
+          assert(name);
         }),
         () => dependencies,
         map((dependency) =>
@@ -302,11 +311,27 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                     options,
                     type,
                     idFrom: id,
+                    nameFrom: name,
                     idTo,
+                    nameTo: pipe([
+                      () => resourcesPerType,
+                      //TODO group
+                      find(eq(get("type"), dependency.type)),
+                      get("resources"),
+                      find(eq(get("id"), idTo)),
+                      tap((resource) => {
+                        assert(resource);
+                      }),
+                      get("name"),
+                      tap((name) => {
+                        assert(name);
+                      }),
+                    ])(),
                     namespace,
                     dependency,
                     resources: pipe([
                       () => resourcesPerType,
+                      //TODO group
                       find(eq(get("type"), dependency.type)),
                       get("resources"),
                     ])(),

@@ -91,7 +91,7 @@ module.exports = ({ stage }) => ({
           AllocatedStorage: 20,
           MaxAllocatedStorage: 1000,
           PubliclyAccessible: true,
-          PreferredBackupWindow: "01:49-02:19",
+          PreferredBackupWindow: "23:57-00:27",
           BackupRetentionPeriod: 1,
           MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
           MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,

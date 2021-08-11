@@ -4,10 +4,6 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.iam.makeInstanceProfile({
-    name: config.iam.InstanceProfile.myProfile.name,
-  });
-
   provider.ec2.makeVpc({
     name: config.ec2.Vpc.vpc.name,
     namespace: "VPC",
@@ -104,8 +100,8 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
         resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPublicA,
       ],
     }),
   });
@@ -184,18 +180,6 @@ const createResources = ({ provider }) => {
       securityGroups: [resources.ec2.SecurityGroup.securityGroupPublic],
     }),
     properties: () => config.ec2.Instance.bastion.properties,
-  });
-
-  provider.kms.useDefaultKey({
-    name: config.kms.Key.aliasAwsRds.name,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.eksKey.name,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.secretKeyTest.name,
   });
 
   provider.rds.makeDBCluster({

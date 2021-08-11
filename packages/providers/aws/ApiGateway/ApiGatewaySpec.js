@@ -7,6 +7,7 @@ const { Route, compareRoute } = require("./Route");
 const { Integration, compareIntegration } = require("./Integration");
 const { DomainName, compareDomainName } = require("./DomainName");
 const { ApiMapping, compareApiMapping } = require("./ApiMapping");
+const { Authorizer, compareAuthorizer } = require("./Authorizer");
 
 const GROUP = "apigateway";
 
@@ -35,6 +36,14 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareStage,
+    },
+    {
+      type: "Authorizer",
+      dependsOn: ["apigateway::Api"],
+      Client: Authorizer,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compareAuthorizer,
     },
     {
       type: "ApiMapping",

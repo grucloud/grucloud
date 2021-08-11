@@ -4,8 +4,17 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.iam.makeInstanceProfile({
-    name: config.iam.InstanceProfile.myProfile.name,
+  provider.iam.makePolicy({
+    name: config.iam.Policy.lambdaPolicy.name,
+    properties: () => config.iam.Policy.lambdaPolicy.properties,
+  });
+
+  provider.iam.makeRole({
+    name: config.iam.Role.lambdaRole.name,
+    dependencies: ({ resources }) => ({
+      policies: [resources.iam.Policy.lambdaPolicy],
+    }),
+    properties: () => config.iam.Role.lambdaRole.properties,
   });
 
   provider.ec2.makeVolume({

@@ -85,17 +85,29 @@ exports.Api = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteApi-property
   const destroy = ({ live }) =>
     pipe([
-      () => ({ ApiId: findId({ live }) }),
-      tap((params) => {
-        logger.info(`destroy ${JSON.stringify(params)}`);
+      tap(() => {
+        assert(live.ApiId);
       }),
-      tap(apiGateway().deleteApi),
-      tap((params) => {
-        logger.info(`destroyed ${JSON.stringify(params)}`);
-      }),
+      () => live,
+      pick(["ApiId"]),
+      tryCatch(pipe([apiGateway().deleteApi]), (error, params) =>
+        pipe([
+          tap(() => {
+            logger.error(`error deleteApi ${tos({ params, error })}`);
+          }),
+          () => error,
+          switchCase([
+            eq(get("code"), "NotFoundException"),
+            () => undefined,
+            () => {
+              throw error;
+            },
+          ]),
+        ])()
+      ),
     ])();
 
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>

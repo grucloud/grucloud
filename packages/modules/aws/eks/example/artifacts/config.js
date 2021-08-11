@@ -73,11 +73,6 @@ module.exports = ({ stage }) => ({
         },
       },
     },
-    InstanceProfile: {
-      eks_54bd8e27_30d1_8860Edb8_968fda4c514e: {
-        name: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-      },
-    },
   },
   ec2: {
     Vpc: {
@@ -106,12 +101,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/internal-elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -125,12 +120,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/internal-elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/internal-elb",
+              Value: "1",
             },
           ],
         },
@@ -163,12 +158,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/elb",
+              Value: "1",
             },
           ],
         },
@@ -221,23 +216,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroup: {
-      eksClusterSgCluster_872092154: {
-        name: "eks-cluster-sg-cluster-872092154",
-        properties: {
-          Description:
-            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-          Tags: [
-            {
-              Key: "aws:eks:cluster-name",
-              Value: "cluster",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-          ],
-        },
-      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -258,16 +236,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroupRuleIngress: {
-      eksClusterSgCluster_872092154RuleIngressAll: {
-        name: "eks-cluster-sg-cluster-872092154-rule-ingress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-          },
-        },
-      },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
         properties: {
@@ -329,109 +297,6 @@ module.exports = ({ stage }) => ({
             ],
           },
         },
-      },
-    },
-    Instance: {
-      nodeGroupPrivateClusterI_00d80c41446af0ecd: {
-        name: "node-group-private-cluster::i-00d80c41446af0ecd",
-        properties: {
-          InstanceType: "t2.medium",
-          ImageId: "ami-0ee353797c2e5f904",
-          Tags: [
-            {
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-            },
-            {
-              Key: "eks:nodegroup-name",
-              Value: "node-group-private-cluster",
-            },
-            {
-              Key: "aws:ec2:fleet-id",
-              Value: "fleet-457dea32-c395-d37d-0490-8ba2e164e207",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:autoscaling:groupName",
-              Value: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-            },
-            {
-              Key: "aws:ec2launchtemplate:version",
-              Value: "1",
-            },
-            {
-              Key: "aws:ec2launchtemplate:id",
-              Value: "lt-0e65024cd4128ce96",
-            },
-            {
-              Key: "eks:cluster-name",
-              Value: "cluster",
-            },
-            {
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
-            },
-          ],
-        },
-      },
-    },
-  },
-  autoscaling: {
-    AutoScalingGroup: {
-      eks_54bd8e27_30d1_8860Edb8_968fda4c514e: {
-        name: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-        properties: {
-          Tags: [
-            {
-              ResourceId: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-              ResourceType: "auto-scaling-group",
-              Key: "eks:cluster-name",
-              Value: "cluster",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-              ResourceType: "auto-scaling-group",
-              Key: "eks:nodegroup-name",
-              Value: "node-group-private-cluster",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-              ResourceType: "auto-scaling-group",
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-              ResourceType: "auto-scaling-group",
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-              PropagateAtLaunch: true,
-            },
-            {
-              ResourceId: "eks-54bd8e27-30d1-8860-edb8-968fda4c514e",
-              ResourceType: "auto-scaling-group",
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-              PropagateAtLaunch: true,
-            },
-          ],
-        },
-      },
-    },
-  },
-  kms: {
-    Key: {
-      eksKey: {
-        name: "eks-key",
-      },
-      secretKeyTest: {
-        name: "secret-key-test",
       },
     },
   },

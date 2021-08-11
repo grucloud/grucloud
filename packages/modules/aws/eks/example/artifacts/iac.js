@@ -61,15 +61,6 @@ const createResources = ({ provider }) => {
     properties: () => config.iam.Role.roleNodeGroup.properties,
   });
 
-  provider.iam.useInstanceProfile({
-    name: config.iam.InstanceProfile.eks_54bd8e27_30d1_8860Edb8_968fda4c514e
-      .name,
-    namespace: "EKS",
-    dependencies: ({ resources }) => ({
-      roles: [resources.iam.Role.roleNodeGroup],
-    }),
-  });
-
   provider.ec2.makeVpc({
     name: config.ec2.Vpc.vpc.name,
     namespace: "VPC",
@@ -194,16 +185,6 @@ const createResources = ({ provider }) => {
     properties: () => config.ec2.Route.routePublic.properties,
   });
 
-  provider.ec2.useSecurityGroup({
-    name: config.ec2.SecurityGroup.eksClusterSgCluster_872092154.name,
-    namespace: "EKS",
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
-    }),
-    properties: () =>
-      config.ec2.SecurityGroup.eksClusterSgCluster_872092154.properties,
-  });
-
   provider.ec2.makeSecurityGroup({
     name: config.ec2.SecurityGroup.securityGroupCluster.name,
     namespace: "EKS",
@@ -220,17 +201,6 @@ const createResources = ({ provider }) => {
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.SecurityGroup.securityGroupNode.properties,
-  });
-
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: config.ec2.SecurityGroupRuleIngress
-      .eksClusterSgCluster_872092154RuleIngressAll.name,
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
-    }),
-    properties: () =>
-      config.ec2.SecurityGroupRuleIngress
-        .eksClusterSgCluster_872092154RuleIngressAll.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
@@ -264,38 +234,6 @@ const createResources = ({ provider }) => {
     }),
     properties: () =>
       config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
-  });
-
-  provider.ec2.useInstance({
-    name: config.ec2.Instance.nodeGroupPrivateClusterI_00d80c41446af0ecd.name,
-    namespace: "EKS",
-    dependencies: ({ resources }) => ({
-      subnet: resources.ec2.Subnet.subnetPrivateA,
-      iamInstanceProfile:
-        resources.iam.InstanceProfile.eks_54bd8e27_30d1_8860Edb8_968fda4c514e,
-      securityGroups: [
-        resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
-      ],
-    }),
-    properties: () =>
-      config.ec2.Instance.nodeGroupPrivateClusterI_00d80c41446af0ecd.properties,
-  });
-
-  provider.autoscaling.useAutoScalingGroup({
-    name: config.autoscaling.AutoScalingGroup
-      .eks_54bd8e27_30d1_8860Edb8_968fda4c514e.name,
-    namespace: "EKS",
-    properties: () =>
-      config.autoscaling.AutoScalingGroup
-        .eks_54bd8e27_30d1_8860Edb8_968fda4c514e.properties,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.eksKey.name,
-  });
-
-  provider.kms.makeKey({
-    name: config.kms.Key.secretKeyTest.name,
   });
 
   provider.eks.makeCluster({

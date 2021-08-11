@@ -143,7 +143,7 @@ exports.ApiMapping = ({ spec, config }) => {
             config,
             DomainName: domainName.live.DomainName,
           }),
-          Tags: { ...api.live.Tags, [`gc-api-mapping-${ApiMappingId}`]: name },
+          Tags: { ...api.live.Tags, [buildTagKey({ ApiMappingId })]: name },
         }),
         apiGateway().tagResource,
       ]),

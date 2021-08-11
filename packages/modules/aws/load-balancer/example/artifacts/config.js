@@ -102,12 +102,6 @@ module.exports = ({ stage }) => ({
   },
   acm: {
     Certificate: {
-      exampleModuleAwsCertificateGrucloudOrg: {
-        name: "example-module-aws-certificate.grucloud.org",
-        properties: {
-          DomainName: "example-module-aws-certificate.grucloud.org",
-        },
-      },
       modAwsLoadBalancerGrucloudOrg: {
         name: "mod-aws-load-balancer.grucloud.org",
         properties: {

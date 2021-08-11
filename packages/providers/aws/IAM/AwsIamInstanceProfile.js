@@ -8,7 +8,7 @@ const {
   switchCase,
   eq,
   not,
-  and,
+  pick,
   assign,
 } = require("rubico");
 const {
@@ -35,6 +35,7 @@ const {
 } = require("@grucloud/core/Common");
 const {
   IAMNew,
+  buildTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
   findNamespaceInTags,
@@ -86,38 +87,15 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       map.pool(
         mapPoolSize,
         assign({
-          Roles: pipe([
-            get("Roles"),
-            map(
-              tryCatch(
-                assign({
-                  Tags: pipe([
-                    ({ RoleName }) => iam().listRoleTags({ RoleName }),
-                    get("Tags"),
-                  ]),
-                }),
-                (error, instanceProfile) =>
-                  pipe([
-                    tap((instanceProfile) => {
-                      logger.error(
-                        `getList instance profile error: ${tos({
-                          error,
-                          instanceProfile,
-                        })}`
-                      );
-                    }),
-                    () => ({ error, instanceProfile }),
-                  ])()
-              )
-            ),
+          Tags: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["InstanceProfileName"]),
+            iam().listInstanceProfileTags,
+            get("Tags"),
           ]),
         })
-      ),
-      tap.if(
-        pipe([pluck(["Roles"]), flatten, find(get("error"))]),
-        (instanceProfiles) => {
-          throw instanceProfiles;
-        }
       ),
       tap((instanceProfiles) => {
         logger.debug(`getList instanceProfiles: ${tos(instanceProfiles)}`);
@@ -245,8 +223,24 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = ({ name, properties, dependencies }) =>
-    defaultsDeep({ InstanceProfileName: name })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        InstanceProfileName: name,
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+    ])();
 
   return {
     spec,
@@ -278,20 +272,3 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     managedByOther,
   };
 };
-exports.isOurMinionInstanceProfile = ({ live, config: { projectName } }) =>
-  pipe([
-    () => live,
-    get("Roles"),
-    first,
-    get("Tags"),
-    find(
-      and([
-        //TODO use common function
-        eq(get("Key"), "projectName"),
-        eq(get("Value"), projectName),
-      ])
-    ),
-    tap((minion) => {
-      logger.debug(`isOurMinion ${minion} ${tos({ projectName })}`);
-    }),
-  ])();

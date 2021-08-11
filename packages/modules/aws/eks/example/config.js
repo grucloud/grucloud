@@ -5,5 +5,10 @@ module.exports = ({}) => {
     projectName: "ex-eks-mod",
     //    formatName: (name, config) => `${name}-${config.projectName}`,
     formatName: (name, config) => name,
+    eks: {
+      cluster: {
+        name: "my-cluster",
+      },
+    },
   };
 };

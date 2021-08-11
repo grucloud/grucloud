@@ -4,23 +4,12 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.ec2.useDefaultVpc({
-    name: config.ec2.Vpc.vpcDefault.name,
-  });
-
   provider.ec2.makeKeyPair({
     name: config.ec2.KeyPair.kpEc2Example.name,
   });
 
   provider.ec2.makeElasticIpAddress({
     name: config.ec2.ElasticIpAddress.eip.name,
-  });
-
-  provider.ec2.useDefaultSecurityGroup({
-    name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcDefault,
-    }),
   });
 
   provider.ec2.makeInstance({

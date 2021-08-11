@@ -20,11 +20,12 @@
                     {
                         "resources": [
                             {
+                                "group": "iam",
+                                "type": "Policy",
                                 "name": "AmazonEKSWorkerNodePolicy",
                                 "id": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
                                 "providerName": "aws",
-                                "type": "Policy",
-                                "group": "iam",
+                                "groupType": "iam::Policy",
                                 "live": {
                                     "name": "AmazonEKSWorkerNodePolicy",
                                     "Arn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
@@ -53,21 +54,22 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": true,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": true,
                                 "show": true
                             },
                             {
+                                "group": "iam",
+                                "type": "Policy",
                                 "name": "policy-allow-ec2",
                                 "id": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
                                 "providerName": "aws",
-                                "type": "Policy",
-                                "group": "iam",
+                                "groupType": "iam::Policy",
                                 "live": {
                                     "PolicyName": "policy-allow-ec2",
-                                    "PolicyId": "ANPA4HNBM2ZQLUH5SKDFI",
+                                    "PolicyId": "ANPA4HNBM2ZQDEKWDXM4U",
                                     "Arn": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
@@ -75,8 +77,8 @@
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
                                     "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-04T16:18:54.000Z",
-                                    "UpdateDate": "2021-08-04T16:18:54.000Z",
+                                    "CreateDate": "2021-08-11T16:18:30.000Z",
+                                    "UpdateDate": "2021-08-11T16:18:30.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-managed-by",
@@ -105,7 +107,7 @@
                                         "PolicyRoles": [
                                             {
                                                 "RoleName": "role-4-policies",
-                                                "RoleId": "AROA4HNBM2ZQEZNG2MT6L"
+                                                "RoleId": "AROA4HNBM2ZQLQBU64ROI"
                                             }
                                         ]
                                     },
@@ -127,10 +129,10 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
@@ -142,17 +144,18 @@
                     {
                         "resources": [
                             {
+                                "group": "iam",
+                                "type": "Role",
                                 "name": "role-4-policies",
                                 "id": "arn:aws:iam::840541460064:role/role-4-policies",
                                 "providerName": "aws",
-                                "type": "Role",
-                                "group": "iam",
+                                "groupType": "iam::Role",
                                 "live": {
                                     "Path": "/",
                                     "RoleName": "role-4-policies",
-                                    "RoleId": "AROA4HNBM2ZQEZNG2MT6L",
+                                    "RoleId": "AROA4HNBM2ZQLQBU64ROI",
                                     "Arn": "arn:aws:iam::840541460064:role/role-4-policies",
-                                    "CreateDate": "2021-08-04T16:18:58.000Z",
+                                    "CreateDate": "2021-08-11T16:18:35.000Z",
                                     "AssumeRolePolicyDocument": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -189,8 +192,8 @@
                                             "Value": "@grucloud/example-aws-iam-policy"
                                         }
                                     ],
-                                    "Policies": [],
                                     "InstanceProfiles": [],
+                                    "Policies": [],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "policy-allow-ec2",
@@ -207,6 +210,7 @@
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
+                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -216,15 +220,11 @@
                                         "ids": [
                                             "arn:aws:iam::840541460064:policy/policy-allow-ec2",
                                             "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-                                        ]
-                                    },
-                                    {
-                                        "type": "OpenIDConnectProvider",
-                                        "group": "iam",
-                                        "ids": []
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "iam::Policy"
                                     }
                                 ],
-                                "managedByOther": false,
                                 "show": true
                             }
                         ],
