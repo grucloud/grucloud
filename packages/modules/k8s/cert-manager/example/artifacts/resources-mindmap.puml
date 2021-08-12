@@ -4,58 +4,14 @@ skinparam monochrome true
 + Infra
 ++ k8s
 +++ Namespace (2)
-++++ example
-++++ cert-manager
 +++ CustomResourceDefinition (6)
-++++ certificaterequests.cert-manager.io
-++++ certificates.cert-manager.io
-++++ challenges.acme.cert-manager.io
-++++ clusterissuers.cert-manager.io
-++++ issuers.cert-manager.io
-++++ orders.acme.cert-manager.io
 +++ ServiceAccount (3)
-++++ cert-manager-cainjector
-++++ cert-manager
-++++ cert-manager-webhook
 +++ ClusterRole (11)
-++++ cert-manager-cainjector
-++++ cert-manager-controller-issuers
-++++ cert-manager-controller-clusterissuers
-++++ cert-manager-controller-certificates
-++++ cert-manager-controller-orders
-++++ cert-manager-controller-challenges
-++++ cert-manager-controller-ingress-shim
-++++ cert-manager-view
-++++ cert-manager-edit
-++++ cert-manager-controller-approve:cert-manager-io
-++++ cert-manager-webhook:subjectaccessreviews
 +++ ClusterRoleBinding (9)
-++++ cert-manager-cainjector
-++++ cert-manager-controller-issuers
-++++ cert-manager-controller-clusterissuers
-++++ cert-manager-controller-certificates
-++++ cert-manager-controller-orders
-++++ cert-manager-controller-challenges
-++++ cert-manager-controller-ingress-shim
-++++ cert-manager-controller-approve:cert-manager-io
-++++ cert-manager-webhook:subjectaccessreviews
 +++ Role (3)
-++++ cert-manager-cainjector:leaderelection
-++++ cert-manager:leaderelection
-++++ cert-manager-webhook:dynamic-serving
 +++ RoleBinding (3)
-++++ cert-manager-cainjector:leaderelection
-++++ cert-manager:leaderelection
-++++ cert-manager-webhook:dynamic-serving
 +++ Service (2)
-++++ cert-manager
-++++ cert-manager-webhook
 +++ Deployment (3)
-++++ cert-manager-cainjector
-++++ cert-manager
-++++ cert-manager-webhook
 +++ MutatingWebhookConfiguration (1)
-++++ cert-manager-webhook
 +++ ValidatingWebhookConfiguration (1)
-++++ cert-manager-webhook
 @endmindmap
