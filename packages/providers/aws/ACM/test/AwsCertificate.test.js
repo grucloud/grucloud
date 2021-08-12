@@ -52,18 +52,13 @@ describe("AwsCertificate", async function () {
     pipe([
       () => provider.config,
       (config) => AwsCertificate({ config }),
-      tryCatch(
-        (certificate) =>
-          certificate.destroy({
-            live: {
-              CertificateArn:
-                "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff",
-            },
-          }),
-        (error) => {
-          assert(false, "shoud not be here");
-        }
-      ),
+      (certificate) =>
+        certificate.destroy({
+          live: {
+            CertificateArn:
+              "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff",
+          },
+        }),
     ])
   );
   it.skip("certificate apply plan", async function () {
