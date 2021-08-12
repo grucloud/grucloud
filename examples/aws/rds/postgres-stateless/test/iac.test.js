@@ -9,9 +9,6 @@ describe("RDS Postgres Stateless", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack });
 
-    await testEnd2End({
-      cli,
-      listOptions: {},
-    });
+    await testEnd2End({ cli });
   }).timeout(20 * 60e3);
 });

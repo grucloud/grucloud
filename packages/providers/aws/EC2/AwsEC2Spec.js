@@ -54,23 +54,19 @@ module.exports = () =>
     },
     {
       type: "InternetGateway",
-      dependsOn: ["ec2::Vpc", "ec2::NetworkInterface"],
+      dependsOn: ["ec2::Vpc"],
       Client: AwsInternetGateway,
       isOurMinion,
     },
     {
       type: "NatGateway",
-      dependsOn: [
-        "ec2::ElasticIpAddress",
-        "ec2::Subnet",
-        "ec2::NetworkInterface",
-      ],
+      dependsOn: ["ec2::ElasticIpAddress", "ec2::Subnet"],
       Client: AwsNatGateway,
       isOurMinion,
     },
     {
       type: "Subnet",
-      dependsOn: ["ec2::Vpc", "ec2::InternetGateway", "ec2::NetworkInterface"],
+      dependsOn: ["ec2::Vpc", "ec2::InternetGateway"],
       Client: AwsSubnet,
       isOurMinion,
     },
@@ -88,7 +84,7 @@ module.exports = () =>
     },
     {
       type: "SecurityGroup",
-      dependsOn: ["ec2::Vpc", "ec2::NetworkInterface", "ec2::Subnet"],
+      dependsOn: ["ec2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
     },
@@ -123,7 +119,6 @@ module.exports = () =>
         "ec2::Volume",
         "ec2::NetworkInterface",
         "ec2::InternetGateway",
-        "ec2::NetworkInterface",
       ],
       Client: AwsEC2,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
@@ -137,6 +132,7 @@ module.exports = () =>
     },
     {
       type: "NetworkInterface",
+      dependsOn: ["ec2::Subnet", "ec2::SecurityGroup"],
       Client: AwsNetworkInterface,
       isOurMinion,
     },

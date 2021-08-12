@@ -9,7 +9,7 @@ const {
   get,
   not,
   eq,
-  gte,
+  any,
   switchCase,
 } = require("rubico");
 const {
@@ -202,7 +202,7 @@ const associationIdString = ({
     }),
     () => resources,
     switchCase([
-      pipe([find(eq(get("id"), idTo)), get("show")]),
+      pipe([any(eq(get("id"), idTo)), get("show")]),
       pipe([
         () => ({
           nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom, nameFrom }),
@@ -307,38 +307,44 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
               switchCase([
                 isString,
                 (idTo) =>
-                  associationIdString({
-                    options,
-                    type,
-                    idFrom: id,
-                    nameFrom: name,
-                    idTo,
-                    nameTo: pipe([
-                      () => resourcesPerType,
-                      //TODO group
-                      find(eq(get("type"), dependency.type)),
-                      get("resources"),
-                      find(eq(get("id"), idTo)),
-                      tap((resource) => {
-                        assert(
-                          resource,
-                          `no resource for id: ${idTo}, type: ${dependency.type}, from ${name}, ${type}`
-                        );
-                      }),
-                      get("name"),
-                      tap((name) => {
-                        assert(name);
-                      }),
-                    ])(),
-                    namespace,
-                    dependency,
-                    resources: pipe([
-                      () => resourcesPerType,
-                      //TODO group
-                      find(eq(get("type"), dependency.type)),
-                      get("resources"),
-                    ])(),
-                  }),
+                  pipe([
+                    () => resourcesPerType,
+                    //TODO group
+                    find(eq(get("type"), dependency.type)),
+                    get("resources"),
+                    find(eq(get("id"), idTo)),
+                    tap.if(isEmpty, () => {
+                      console.error(
+                        `no resource for id: ${idTo}, type: ${dependency.type}, from ${name}, type: ${type}`
+                      );
+                    }),
+                    get("name"),
+                    tap((name) => {
+                      //assert(name);
+                    }),
+                    switchCase([
+                      isEmpty,
+                      () => "",
+                      (nameTo) =>
+                        associationIdString({
+                          options,
+                          type,
+                          idFrom: id,
+                          nameFrom: name,
+                          idTo,
+                          nameTo,
+                          namespace,
+                          dependency,
+                          resources: pipe([
+                            () => resourcesPerType,
+                            //TODO group
+                            find(eq(get("type"), dependency.type)),
+                            get("resources"),
+                          ])(),
+                        }),
+                    ]),
+                    ,
+                  ])(),
                 isObject,
                 (dependencyId) =>
                   associationIdObject({

@@ -3,7 +3,7 @@ const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("../iac");
 const path = require("path");
 
-describe("RestApiGateway Lambda", async function () {
+describe.skip("RestApiGateway Lambda", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };

@@ -1641,7 +1641,7 @@ exports.testEnd2End = ({ cli, title, listOptions }) =>
       cli.list({
         commandOptions: { our: true, canBeDeleted: true },
       }),
-    emptyResult,
+    //emptyResult,
     () =>
       cli.planApply({
         commandOptions: { force: true },
@@ -1671,5 +1671,9 @@ exports.testEnd2End = ({ cli, title, listOptions }) =>
       cli.list({
         commandOptions: { our: true, canBeDeleted: true },
       }),
-    emptyResult,
+    //emptyResult,
+    () =>
+      cli.list({
+        commandOptions: { all: true },
+      }),
   ])();

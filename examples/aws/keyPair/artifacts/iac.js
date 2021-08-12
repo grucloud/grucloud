@@ -4,17 +4,8 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.ec2.makeVolume({
-    name: config.ec2.Volume.volumeTestVolume.name,
-    properties: () => config.ec2.Volume.volumeTestVolume.properties,
-  });
-
-  provider.ec2.makeInstance({
-    name: config.ec2.Instance.server_4TestVolume.name,
-    dependencies: ({ resources }) => ({
-      volumes: [resources.ec2.Volume.volumeTestVolume],
-    }),
-    properties: () => config.ec2.Instance.server_4TestVolume.properties,
+  provider.ec2.makeKeyPair({
+    name: config.ec2.KeyPair.kp.name,
   });
 };
 

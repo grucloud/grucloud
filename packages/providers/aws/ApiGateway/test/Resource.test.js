@@ -4,7 +4,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
 const { Resource } = require("../Resource");
 
-describe.only("Api Gateway Resource", async function () {
+describe("Api Gateway Resource", async function () {
   let config;
   let provider;
   let resource;
