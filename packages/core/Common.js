@@ -20,9 +20,8 @@ const {
   first,
   pluck,
   isDeepEqual,
-  identity,
   isString,
-  unless,
+  when,
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
@@ -95,9 +94,9 @@ exports.axiosErrorToJSON = (error) => ({
   },
 });
 
-const safeJsonParse = tryCatch(
-  JSON.parse,
-  unless(isString, () => undefined)
+const safeJsonParse = when(
+  isString,
+  tryCatch(JSON.parse, (error, result) => result)
 );
 
 exports.convertError = ({ error, name, procedure, params }) => {
