@@ -110,7 +110,6 @@ exports.Authorizer = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizer-property
-
   const getByLive = pipe([
     tap((params) => {
       assert(true);

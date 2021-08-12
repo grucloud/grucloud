@@ -377,6 +377,7 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
+  //TODO add common describeSecurityGroupRules
   const getList =
     ({ kind, IsEgress = false }) =>
     ({ resources = [], lives } = {}) =>

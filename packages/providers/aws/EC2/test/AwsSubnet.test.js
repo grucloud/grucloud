@@ -52,7 +52,7 @@ describe.skip("AwsSubnet", async function () {
   it("subnet name", async function () {
     assert.equal(subnet.name, subnetName);
   });
-  it("subnet apply and destroy", async function () {
+  it.skip("subnet apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const subnetLive = await subnet.getLive();

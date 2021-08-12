@@ -66,7 +66,7 @@ describe("AwsCertificate", async function () {
       ),
     ])
   );
-  it("certificate apply plan", async function () {
+  it.skip("certificate apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

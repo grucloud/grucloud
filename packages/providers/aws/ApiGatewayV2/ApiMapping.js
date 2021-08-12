@@ -100,7 +100,9 @@ exports.ApiMapping = ({ spec, config }) => {
           (error) =>
             pipe([
               tap(() => {
-                assert(true);
+                logger.error(
+                  `error getList api mapping: ${tos({ live, error })}`
+                );
               }),
               () => ({
                 error,
@@ -130,7 +132,6 @@ exports.ApiMapping = ({ spec, config }) => {
       tap(() => {
         logger.info(`create apiMapping: ${name}`);
         logger.debug(tos(payload));
-        assert(api);
       }),
       () => payload,
       apiGateway().createApiMapping,
@@ -164,6 +165,8 @@ exports.ApiMapping = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApiMapping-property
+
+  //TODO untag resources
   const destroy = ({ live }) =>
     pipe([
       () => live,

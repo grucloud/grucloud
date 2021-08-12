@@ -15,11 +15,14 @@ const { createSpec } = require("@grucloud/core/SpecDefault");
 
 const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
+const AppSync = require("./AppSync");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const AwsEC2 = require("./EC2");
+const ECR = require("./ECR");
+
 const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
 const AwsIam = require("./IAM");
@@ -38,11 +41,13 @@ const fnSpecs = (config) =>
     () => [
       //...ApiGateway(),
       ...ApiGatewayV2(),
+      //...AppSync(),
       ...AutoScaling(),
       ...AwsCertificateManager(),
       ...AwsCloudFront(),
       ...CognitoIdentityServiceProvider(),
       ...AwsEC2(),
+      ...ECR(),
       ...AwsEKS(),
       ...AwsELBv2(),
       ...AwsIam(),
@@ -121,10 +126,15 @@ exports.AwsProvider = ({
     acm: "2015-12-08",
     apigateway: "2015-07-09",
     apigatewayv2: "2018-11-29",
+    appsync: "2017-07-25",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    cloudwatch: "2010-08-01",
     cognitoidentityserviceprovider: "2016-04-18",
+    dynamodb: "2012-08-10",
     ec2: "2016-11-15",
+    ecr: "2015-09-21",
+    ecs: "2014-11-13",
     eks: "2017-11-01",
     elb: "2012-06-01",
     elbv2: "2015-12-01",
@@ -136,6 +146,7 @@ exports.AwsProvider = ({
     route53: "2013-04-01",
     route53domains: "2014-05-15",
     s3: "2006-03-01",
+    ssm: "2014-11-06",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
