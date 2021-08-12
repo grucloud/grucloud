@@ -37,6 +37,7 @@ const {
   identity,
   isFunction,
   defaultsDeep,
+  unless,
 } = require("rubico/x");
 const { envLoader } = require("../EnvLoader");
 const fse = require("fs-extra");
@@ -281,7 +282,7 @@ const displayCommandHeader = ({ providers, verb }) =>
   )}: ${displayProviderList(providers)}`;
 
 // Plan Query
-const doPlanQuery = ({ commandOptions }) =>
+const doPlanQuery = ({ commandOptions } = {}) =>
   pipe([
     tap((input) => {
       logger.debug("doPlanQuery");
@@ -1069,6 +1070,13 @@ const filterShow = map(
             pipe([() => resources, filter(get("show"))])(),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(and([not(get("error")), pipe([get("resources"), not(isEmpty)])])),
+      tap((params) => {
+        assert(true);
+      }),
     ]),
   })
 );
@@ -1282,7 +1290,7 @@ const graphOutputFileName = ({ file, type }) =>
 const dotToSvg = ({
   result,
   commandOptions: { dotFile = "diagram.dot", type = "svg" },
-  programOptions: { workingDirectory = process.cwd() },
+  programOptions: { workingDirectory = process.cwd(), noOpen },
 }) =>
   pipe([
     tap(() => {
@@ -1310,11 +1318,17 @@ const dotToSvg = ({
       }
       //console.log(`output saved to: ${output}`);
     }),
-    tap(() => {
-      shell.exec(`open ${graphOutputFileName({ file: dotFile, type })}`, {
-        silent: true,
-      });
-    }),
+    unless(
+      () => noOpen,
+      pipe([
+        () => graphOutputFileName({ file: dotFile, type }),
+        (filename) => {
+          shell.exec(`open ${filename}`, {
+            silent: true,
+          });
+        },
+      ])
+    ),
   ])();
 
 const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
@@ -1337,7 +1351,7 @@ const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
 const pumlToSvg =
   ({
     commandOptions: { pumlFile, type, plantumlJar },
-    programOptions: { workingDirectory = process.cwd() },
+    programOptions: { workingDirectory = process.cwd(), noOpen },
   }) =>
   (result) =>
     pipe([
@@ -1371,10 +1385,17 @@ const pumlToSvg =
                 (stdout) => {
                   assert(true);
                 },
-                () => graphOutputFileName({ file: pumlFileFull, type }),
-                tap((outputPicture) => {
-                  shell.exec(`open ${outputPicture}`, { silent: true });
-                }),
+                unless(
+                  () => noOpen,
+                  pipe([
+                    () => graphOutputFileName({ file: pumlFileFull, type }),
+                    (filename) => {
+                      shell.exec(`open ${filename}`, {
+                        silent: true,
+                      });
+                    },
+                  ])
+                ),
               ]),
             ]),
             pipe([
@@ -1495,23 +1516,23 @@ exports.Cli = ({
           }),
           list,
         ])(),
-      planApply: ({ commandOptions }) =>
+      planApply: ({ commandOptions } = {}) =>
         planApply({ infra, programOptions, commandOptions }),
-      planQuery: ({ commandOptions }) =>
+      planQuery: ({ commandOptions } = {}) =>
         planQuery({ infra, programOptions, commandOptions }),
-      planDestroy: ({ commandOptions }) =>
+      planDestroy: ({ commandOptions } = {}) =>
         planDestroy({ infra, programOptions, commandOptions }),
-      planRunScript: ({ commandOptions }) =>
+      planRunScript: ({ commandOptions } = {}) =>
         planRunScript({ infra, programOptions, commandOptions }),
       info: ({ commandOptions } = {}) =>
         info({ infra, programOptions, commandOptions }),
-      init: ({ commandOptions }) =>
+      init: ({ commandOptions } = {}) =>
         init({ infra, programOptions, commandOptions }),
-      unInit: ({ commandOptions }) =>
+      unInit: ({ commandOptions } = {}) =>
         unInit({ infra, programOptions, commandOptions }),
-      output: ({ commandOptions }) =>
+      output: ({ commandOptions } = {}) =>
         output({ infra, programOptions, commandOptions }),
-      graphTree: ({ commandOptions }) =>
+      graphTree: ({ commandOptions } = {}) =>
         pipe([
           () => ({
             infra,
@@ -1532,7 +1553,7 @@ exports.Cli = ({
           }),
           graphTree,
         ])(),
-      graphTarget: ({ commandOptions }) =>
+      graphTarget: ({ commandOptions } = {}) =>
         pipe([
           () => ({
             infra,
@@ -1550,7 +1571,7 @@ exports.Cli = ({
           }),
           graphTarget,
         ])(),
-      genCode: ({ commandOptions }) =>
+      genCode: ({ commandOptions } = {}) =>
         pipe([
           async () => ({
             infra,
@@ -1579,20 +1600,39 @@ exports.Cli = ({
     }),
   ])();
 
+const emptyResult = (result) =>
+  pipe([
+    () => result,
+    get("results"),
+    first,
+    get("results"),
+    isEmpty,
+    tap((empty) => {
+      assert(empty, `not empty: ${tos(result, null, 4)}`);
+    }),
+  ])();
+
 exports.testEnd2End = ({ cli, title, listOptions }) =>
   pipe([
     () =>
       cli.graphTree({
         commandOptions: { title },
+        programOptions: { noOpen: true },
       }),
     () =>
       cli.graphTarget({
         commandOptions: { title },
+        programOptions: { noOpen: true },
       }),
     () =>
       cli.planDestroy({
         commandOptions: { force: true },
       }),
+    () =>
+      cli.list({
+        commandOptions: { our: true, canBeDeleted: true },
+      }),
+    emptyResult,
     () =>
       cli.planApply({
         commandOptions: { force: true },
@@ -1601,6 +1641,7 @@ exports.testEnd2End = ({ cli, title, listOptions }) =>
       cli.list({
         programOptions: {
           json: "artifacts/inventory.json",
+          noOpen: true,
         },
         commandOptions: {
           graph: true,
@@ -1617,7 +1658,9 @@ exports.testEnd2End = ({ cli, title, listOptions }) =>
       cli.planDestroy({
         commandOptions: { force: true },
       }),
-    tap((params) => {
-      assert(true);
-    }),
+    () =>
+      cli.list({
+        commandOptions: { our: true, canBeDeleted: true },
+      }),
+    emptyResult,
   ])();

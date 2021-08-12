@@ -9,9 +9,6 @@ describe("EC2 Volume", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
     const cli = await Cli({ programOptions, createStack });
 
-    await testEnd2End({
-      cli,
-      listOptions: {},
-    });
+    await testEnd2End({ cli });
   });
 });
