@@ -52,7 +52,9 @@ const buildNode =
   (resource) =>
     pipe([
       tap(() => {
-        assert(resource.id);
+        if (!resource.id) {
+          assert(resource.id, `no id`);
+        }
       }),
       () =>
         `"${resource.type}::${namespace}::${nodeNameFromResource(

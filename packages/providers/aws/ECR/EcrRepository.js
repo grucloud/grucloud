@@ -19,7 +19,7 @@ const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findName = get("live.repositoryName");
-const findId = get("live.repositoryId");
+const findId = get("live.repositoryArn");
 const pickParam = pick(["repositoryName", "registryId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
@@ -32,6 +32,7 @@ exports.EcrRepository = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
+    () => "",
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
