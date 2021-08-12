@@ -19,7 +19,7 @@ const { detailedDiff } = require("deep-object-diff");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "AuthorizerV2",
+  prefix: "Authorizer",
 });
 
 const { tos } = require("@grucloud/core/tos");
@@ -27,28 +27,28 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.AuthorizerId");
+const findId = get("live.id");
 const findName = get("live.Name");
-const pickParam = pick(["ApiId", "AuthorizerId"]);
+const pickParam = ({ restApiId, id }) => ({ restApiId, authorizerId: id });
 
-const buildTagKey = ({ AuthorizerId }) => `gc-autorizer-${AuthorizerId}`;
+const buildTagKey = ({ id }) => `gc-autorizer-${id}`;
 
-const apiArn = ({ config, ApiId }) =>
-  `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
+const restApiArn = ({ config, restApiId }) =>
+  `arn:aws:apigateway:${config.region}::/restapis/${restApiId}`;
 
 exports.Authorizer = ({ spec, config }) => {
   const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
+    createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
-      type: "Api",
-      group: "apiGatewayV2",
-      ids: [live.ApiId],
+      type: "RestApi",
+      group: "apiGateway",
+      ids: [live.restApiId],
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizers-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -58,37 +58,37 @@ exports.Authorizer = ({ spec, config }) => {
       () =>
         lives.getByType({
           providerName: config.providerName,
-          type: "Api",
-          group: "apiGatewayV2",
+          type: "RestApi",
+          group: "apiGateway",
         }),
       pluck("id"),
-      flatMap((ApiId) =>
+      flatMap((restApiId) =>
         tryCatch(
           pipe([
-            () => apiGateway().getAuthorizers({ ApiId }),
-            get("Items"),
-            map(defaultsDeep({ ApiId })),
+            () => apiGateway().getAuthorizers({ restApiId }),
+            get("items"),
+            map(defaultsDeep({ restApiId })),
             map(
               assign({
-                Tags: ({ AuthorizerId }) =>
+                tags: ({ id }) =>
                   pipe([
                     () =>
                       apiGateway().getTags({
-                        ResourceArn: apiArn({
+                        ResourceArn: restApiArn({
                           config,
-                          ApiId,
+                          restApiId,
                         }),
                       }),
-                    get("Tags"),
-                    assign({ Name: get(buildTagKey({ AuthorizerId })) }),
-                    omit([buildTagKey({ AuthorizerId })]),
+                    get("tags"),
+                    assign({ Name: get(buildTagKey({ id })) }),
+                    omit([buildTagKey({ id })]),
                   ])(),
               })
             ),
           ]),
           (error) =>
             pipe([
-              tap((params) => {
+              tap(() => {
                 logger.error(`error getList authorizer ${tos({ error })}`);
               }),
               () => ({
@@ -109,7 +109,7 @@ exports.Authorizer = ({ spec, config }) => {
   //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizer-property
 
   const getByLive = pipe([
     tap((params) => {
@@ -127,8 +127,8 @@ exports.Authorizer = ({ spec, config }) => {
 
   const isDownByLive = pipe([getByLive, isEmpty]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createAuthorizer-property
-  const create = ({ name, payload, resolvedDependencies: { api } }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createAuthorizer-property
+  const create = ({ name, payload, resolvedDependencies: { restApi } }) =>
     pipe([
       tap(() => {
         logger.info(`create authorizer: ${name}`);
@@ -137,12 +137,12 @@ exports.Authorizer = ({ spec, config }) => {
       () => payload,
       apiGateway().createAuthorizer,
       pipe([
-        ({ AuthorizerId }) => ({
-          ResourceArn: apiArn({
+        ({ id }) => ({
+          resourceArn: restApiArn({
             config,
-            ApiId: api.live.ApiId,
+            restApiId: restApi.live.id,
           }),
-          Tags: { ...api.live.Tags, [buildTagKey({ AuthorizerId })]: name },
+          tags: { ...api.live.tags, [buildTagKey({ id })]: name },
         }),
         apiGateway().tagResource,
       ]),
@@ -167,21 +167,21 @@ exports.Authorizer = ({ spec, config }) => {
   const untagResource = (live) =>
     pipe([
       () => ({
-        ResourceArn: apiArn({
+        resourceArn: restApiArn({
           config,
-          ApiId: live.ApiId,
+          restApiId: live.restApiId,
         }),
-        TagKeys: [buildTagKey({ AuthorizerId: live.AuthorizerId })],
+        tagKeys: [buildTagKey({ id: live.id })],
       }),
       apiGateway().untagResource,
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteAuthorizer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteAuthorizer-property
   const destroy = ({ live }) =>
     pipe([
       tap(() => {
-        assert(live.ApiId);
-        assert(live.AuthorizerId);
+        assert(live.restApiId);
+        assert(live.id);
       }),
       () => live,
       pickParam,
@@ -217,17 +217,16 @@ exports.Authorizer = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { api },
+    dependencies: { restApi },
   }) =>
     pipe([
       tap(() => {
-        assert(api, "missing 'api' dependency");
+        assert(restApi, "missing 'restApi' dependency");
       }),
       () => properties,
       defaultsDeep({
-        Name: name,
-        ApiId: getField(api, "ApiId"),
-        //Tags: buildTagsObject({ config, namespace, name }),
+        name,
+        restApiId: getField(restApi, "id"),
       }),
     ])();
 

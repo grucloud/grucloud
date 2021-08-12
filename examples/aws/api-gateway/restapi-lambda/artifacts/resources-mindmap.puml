@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project restapi-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ route53Domain
+++++ Domain (1)
++++ route53
+++++ HostedZone (1)
+++++ Record (2)
++++ acm
+++++ Certificate (1)
++++ iam
+++++ Policy (1)
+++++ Role (1)
++++ lambda
+++++ Function (1)
++++ apiGateway
+++++ DomainName (1)
+++++ RestApi (1)
+@endmindmap

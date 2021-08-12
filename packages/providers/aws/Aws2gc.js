@@ -684,7 +684,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
           distribution: { type: "Distribution", group: "cloudFront" },
-          apiGatewayDomainName: { type: "DomainName", group: "apiGatewayV2" },
+          apiGatewayV2DomainName: { type: "DomainName", group: "apiGatewayV2" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },

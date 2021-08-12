@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project lambda
+title Resources for project http-lambda
 skinparam monochrome true
 + Infra
 ++ aws

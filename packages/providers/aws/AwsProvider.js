@@ -14,6 +14,7 @@ const { generateCode } = require("./Aws2gc");
 const { createSpec } = require("@grucloud/core/SpecDefault");
 
 const ApiGatewayV2 = require("./ApiGatewayV2");
+const ApiGateway = require("./ApiGateway");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
@@ -35,6 +36,7 @@ const fnSpecs = (config) =>
       assert(config);
     }),
     () => [
+      //...ApiGateway(),
       ...ApiGatewayV2(),
       ...AutoScaling(),
       ...AwsCertificateManager(),
@@ -117,6 +119,7 @@ exports.AwsProvider = ({
 
   AWS.config.apiVersions = {
     acm: "2015-12-08",
+    apigateway: "2015-07-09",
     apigatewayv2: "2018-11-29",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",

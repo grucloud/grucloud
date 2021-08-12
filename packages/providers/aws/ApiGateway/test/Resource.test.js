@@ -2,12 +2,12 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
-const { Api } = require("../Api");
+const { Resource } = require("../Resource");
 
-describe("Api Gateway V2", async function () {
+describe.only("Api Gateway Resource", async function () {
   let config;
   let provider;
-  let api;
+  let resource;
 
   before(async function () {
     try {
@@ -16,7 +16,7 @@ describe("Api Gateway V2", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    api = Api({ config: provider.config });
+    resource = Resource({ config: provider.config });
     await provider.start();
   });
   after(async () => {});
@@ -24,17 +24,8 @@ describe("Api Gateway V2", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        api.destroy({
-          live: { ApiId: "12345" },
-        }),
-    ])
-  );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        api.getByName({
-          name: "124",
+        resource.destroy({
+          live: { restApiId: "12345", id: "12345" },
         }),
     ])
   );

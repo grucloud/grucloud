@@ -59,7 +59,7 @@ const createResources = ({ provider }) => {
 
   provider.route53.makeRecord({
     name: `api-gateway-alias-record`,
-    dependencies: { apiGatewayDomainName, hostedZone },
+    dependencies: { apiGatewayV2DomainName: apiGatewayDomainName, hostedZone },
   });
 
   const integration = provider.apiGatewayV2.makeIntegration({

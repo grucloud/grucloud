@@ -37,7 +37,7 @@ const createResources = ({ provider }) => {
     name: config.route53.Record.apiGatewayAliasRecord.name,
     dependencies: ({ resources }) => ({
       hostedZone: resources.route53.HostedZone.grucloudOrg,
-      apiGatewayDomainName: resources.apiGatewayV2.DomainName.grucloudOrg,
+      apiGatewayV2DomainName: resources.apiGatewayV2.DomainName.grucloudOrg,
     }),
   });
 

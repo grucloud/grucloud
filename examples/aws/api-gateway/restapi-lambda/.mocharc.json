@@ -1,10 +1,11 @@
 {
+  "files": ["test/**/*.test.js"],
   "watch-files": ["**/*.js"],
   "extension": ["js"],
   "exclude": "node_modules",
   "reporter": "spec",
-  "timeout": 1200e3,
+  "timeout": 300e3,
   "ui": "bdd",
-  "bail": true,
+  "bail": false,
   "recursive": true
 }
