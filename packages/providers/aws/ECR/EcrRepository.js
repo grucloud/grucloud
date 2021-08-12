@@ -78,8 +78,21 @@ exports.EcrRepository = ({ spec, config }) => {
 
   const getByName = pipe([
     ({ name }) => ({ repositoryNames: [name] }),
-    describeRepositories,
-    first,
+    tryCatch(pipe([describeRepositories, first]), (error, params) =>
+      pipe([
+        () => error,
+        switchCase([
+          eq(get("code"), "RepositoryNotFoundException"),
+          () => undefined,
+          () => {
+            logger.error(
+              `error describeRepositories ${tos({ params, error })}`
+            );
+            throw error;
+          },
+        ]),
+      ])()
+    ),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#setRepositoryPolicy-property
