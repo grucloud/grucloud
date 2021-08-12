@@ -43,12 +43,21 @@ exports.EcrRepository = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
-  const getLifecyclePolicy = pipe([
-    pickParam,
-    ecr().getLifecyclePolicy,
-    get("lifecyclePolicyText"),
-    JSON.parse,
-  ]);
+  const getLifecyclePolicy = tryCatch(
+    pipe([
+      pickParam,
+      ecr().getLifecyclePolicy,
+      get("lifecyclePolicyText"),
+      JSON.parse,
+    ]),
+    switchCase([
+      eq(get("code"), "LifecyclePolicyNotFoundException"),
+      () => undefined,
+      () => {
+        throw error;
+      },
+    ])
+  );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
   const describeRepositories = (params = {}) =>

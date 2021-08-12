@@ -190,6 +190,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteNodegroup-property
   const destroy = async ({ live }) =>
     pipe([
+      //TODO pluck
       () => ({
         nodegroupName: live.nodegroupName,
         clusterName: live.clusterName,

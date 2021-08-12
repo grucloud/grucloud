@@ -173,6 +173,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap(() => {
         assert(InternetGatewayId);
       }),
+      //TODO use live
       () => getById({ id: InternetGatewayId }),
       get("Attachments"),
       map(
