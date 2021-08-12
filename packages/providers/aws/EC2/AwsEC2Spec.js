@@ -115,6 +115,7 @@ module.exports = () =>
     {
       type: "Instance",
       dependsOn: [
+        "ec2::KeyPair",
         "ec2::SecurityGroup",
         "ec2::Subnet",
         "ec2::ElasticIpAddress",
