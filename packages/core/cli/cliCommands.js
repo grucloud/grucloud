@@ -1129,7 +1129,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         }),
         (lives) => lives.json,
         tap((lives) => {
-          doGraphLive({ providerGru, lives, commandOptions });
+          doGraphLive({ providerGru, lives, commandOptions, programOptions });
         }),
         filterShow,
         tap((lives) => {
@@ -1408,7 +1408,7 @@ const pumlToSvg =
         ])(),
     ])();
 
-const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
+const graphTree = ({ infra, commandOptions = {}, programOptions }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1532,11 +1532,14 @@ exports.Cli = ({
         unInit({ infra, programOptions, commandOptions }),
       output: ({ commandOptions } = {}) =>
         output({ infra, programOptions, commandOptions }),
-      graphTree: ({ commandOptions } = {}) =>
+      graphTree: ({
+        commandOptions,
+        programOptions: programOptionsUser = {},
+      } = {}) =>
         pipe([
           () => ({
             infra,
-            programOptions,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
             commandOptions: pipe([
               () => commandOptions,
               defaultsDeep({
@@ -1551,13 +1554,19 @@ exports.Cli = ({
               }),
             ])(),
           }),
+          tap((params) => {
+            assert(true);
+          }),
           graphTree,
         ])(),
-      graphTarget: ({ commandOptions } = {}) =>
+      graphTarget: ({
+        commandOptions,
+        programOptions: programOptionsUser = {},
+      } = {}) =>
         pipe([
           () => ({
             infra,
-            programOptions,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
             commandOptions: pipe([
               () => commandOptions,
               defaultsDeep({

@@ -64,7 +64,7 @@ exports.createProgram = () => {
   program.option("-c, --config <file>", "config file, default is config.js");
   program.option("-j, --json <file>", "write result to a file in json format");
   program.option("-d, --workingDirectory <file>", "The working directory.");
-  program.option("--noOpen <value>", "Do not open diagram");
+  program.option("--noOpen", "Do not open diagram");
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
