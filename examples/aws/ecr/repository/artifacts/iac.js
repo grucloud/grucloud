@@ -8,6 +8,11 @@ const createResources = ({ provider }) => {
     name: config.ecr.Repository.starhackitLb.name,
     properties: () => config.ecr.Repository.starhackitLb.properties,
   });
+
+  provider.ecr.makeRegistry({
+    name: config.ecr.Registry.default.name,
+    properties: () => config.ecr.Registry.default.properties,
+  });
 };
 
 exports.createResources = createResources;

@@ -1,6 +1,7 @@
 const { assign, map } = require("rubico");
 const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
+const { EcrRegistry, compareRegistry } = require("./EcrRegistry");
 
 const GROUP = "ecr";
 
@@ -12,5 +13,11 @@ module.exports = () =>
       type: "Repository",
       Client: EcrRepository,
       isOurMinion,
+    },
+    {
+      type: "Registry",
+      Client: EcrRegistry,
+      isOurMinion,
+      compare: compareRegistry,
     },
   ]);

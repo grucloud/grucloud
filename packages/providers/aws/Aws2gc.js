@@ -603,6 +603,11 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "lifecyclePolicyText",
           ]),
       },
+      {
+        type: "Registry",
+        filterLive: () =>
+          pipe([pick(["policyText", "replicationConfiguration"])]),
+      },
     ],
   },
   {

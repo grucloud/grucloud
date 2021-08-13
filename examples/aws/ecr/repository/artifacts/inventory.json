@@ -22,6 +22,47 @@
                         "resources": [
                             {
                                 "group": "ecr",
+                                "type": "Registry",
+                                "name": "default",
+                                "id": "840541460064",
+                                "providerName": "aws",
+                                "groupType": "ecr::Registry",
+                                "live": {
+                                    "registryId": "840541460064",
+                                    "replicationConfiguration": {
+                                        "rules": [
+                                            {
+                                                "destinations": [
+                                                    {
+                                                        "region": "us-east-2",
+                                                        "registryId": "840541460064"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::ecr::Registry::default",
+                                "displayName": "default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ecr::Registry",
+                        "type": "Registry",
+                        "group": "ecr",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ecr",
                                 "type": "Repository",
                                 "name": "starhackit/lb",
                                 "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
@@ -32,7 +73,7 @@
                                     "registryId": "840541460064",
                                     "repositoryName": "starhackit/lb",
                                     "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
-                                    "createdAt": "2021-08-13T02:59:02.000Z",
+                                    "createdAt": "2021-08-13T20:09:23.000Z",
                                     "imageTagMutability": "MUTABLE",
                                     "imageScanningConfiguration": {
                                         "scanOnPush": false
@@ -80,6 +121,23 @@
                                                     "ecr:UploadLayerPart",
                                                     "ecr:CompleteLayerUpload"
                                                 ]
+                                            }
+                                        ]
+                                    },
+                                    "lifecyclePolicyText": {
+                                        "rules": [
+                                            {
+                                                "rulePriority": 1,
+                                                "description": "Expire images older than 14 days",
+                                                "selection": {
+                                                    "tagStatus": "untagged",
+                                                    "countType": "sinceImagePushed",
+                                                    "countUnit": "days",
+                                                    "countNumber": 14
+                                                },
+                                                "action": {
+                                                    "type": "expire"
+                                                }
                                             }
                                         ]
                                     }

@@ -5,4 +5,5 @@ skinparam monochrome true
 ++ aws
 +++ ecr
 ++++ Repository (1)
+++++ Registry (1)
 @endmindmap

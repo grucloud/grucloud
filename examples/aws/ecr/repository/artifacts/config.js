@@ -34,6 +34,42 @@ module.exports = ({ stage }) => ({
               },
             ],
           },
+          lifecyclePolicyText: {
+            rules: [
+              {
+                rulePriority: 1,
+                description: "Expire images older than 14 days",
+                selection: {
+                  tagStatus: "untagged",
+                  countType: "sinceImagePushed",
+                  countUnit: "days",
+                  countNumber: 14,
+                },
+                action: {
+                  type: "expire",
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    Registry: {
+      default: {
+        name: "default",
+        properties: {
+          replicationConfiguration: {
+            rules: [
+              {
+                destinations: [
+                  {
+                    region: "us-east-2",
+                    registryId: "840541460064",
+                  },
+                ],
+              },
+            ],
+          },
         },
       },
     },

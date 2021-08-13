@@ -58,6 +58,20 @@ module.exports = ({ stage, accountId }) => ({
       default: {
         name: "default",
         properties: {
+          policyText: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Sid: "stis-1",
+                Effect: "Allow",
+                Principal: {
+                  AWS: "arn:aws:iam::840541460064:root",
+                },
+                Action: ["ecr:CreateRepository", "ecr:ReplicateImage"],
+                Resource: "arn:aws:ecr:eu-west-2:840541460064:repository/*",
+              },
+            ],
+          },
           replicationConfiguration: {
             rules: [
               {
@@ -70,20 +84,6 @@ module.exports = ({ stage, accountId }) => ({
               },
             ],
           },
-          // policyText: {
-          //   Version: "2012-10-17",
-          //   Statement: [
-          //     {
-          //       Sid: "stis-1",
-          //       Effect: "Allow",
-          //       Principal: {
-          //         AWS: "arn:aws:iam::1234567890:root",
-          //       },
-          //       Action: ["ecr:CreateRepository", "ecr:ReplicateImage"],
-          //       Resource: "arn:aws:ecr:eu-west-2:840541460064:repository/*",
-          //     },
-          //   ],
-          // },
         },
       },
     },
