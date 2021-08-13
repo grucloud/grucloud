@@ -113,7 +113,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
 
-  const create = async ({ payload, name, resolvedDependencies: { vpc } }) =>
+  const create = ({ payload, name, resolvedDependencies: { vpc } }) =>
     pipe([
       tap(() => {
         logger.info(`create ig ${tos({ name })}`);
@@ -173,6 +173,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap(() => {
         assert(InternetGatewayId);
       }),
+      //TODO use live
       () => getById({ id: InternetGatewayId }),
       get("Attachments"),
       map(
@@ -260,6 +261,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     getByName,
     isDefault: isDefault(config),
     cannotBeDeleted: isDefault(config),
+    managedByOther: isDefault(config),
     getList,
     create,
     destroy,

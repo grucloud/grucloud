@@ -39,6 +39,7 @@
     "lodash": "^4.17.20",
     "md5-file": "^5.0.0",
     "pluralize": "^8.0.0",
+    "prettier": "^2.3.2",
     "prompts": "^2.4.0",
     "remedial": "^1.0.8",
     "rubico": "^1.7.3",

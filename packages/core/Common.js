@@ -20,7 +20,8 @@ const {
   first,
   pluck,
   isDeepEqual,
-  identity,
+  isString,
+  when,
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
@@ -93,7 +94,10 @@ exports.axiosErrorToJSON = (error) => ({
   },
 });
 
-const safeJsonParse = tryCatch(JSON.parse, identity);
+const safeJsonParse = when(
+  isString,
+  tryCatch(JSON.parse, (error, result) => result)
+);
 
 exports.convertError = ({ error, name, procedure, params }) => {
   assert(error, "error");
@@ -107,7 +111,7 @@ exports.convertError = ({ error, name, procedure, params }) => {
       )(error)}`,
       Status: error.response?.status,
       Code: error.code,
-      Output: error.response?.data,
+      Output: safeJsonParse(error.response?.data),
       Input: {
         url: `${method} ${baseURL}${url}`,
         data: safeJsonParse(error.config?.data),
@@ -165,29 +169,6 @@ exports.getByNameCore =
         logger.debug(`getByName ${name}: ${tos({ instance })}`);
       }),
     ])();
-
-//TODO merge with getByNameCore
-
-const getByIdCore = ({ type, name, id, findId, getList }) =>
-  pipe([
-    tap(() => {
-      logger.info(`getById ${JSON.stringify({ type, name, id })}`);
-      assert(id, "getByIdCore id");
-      assert(findId, "getByIdCore findId");
-      assert(getList, "getByIdCore getList");
-    }),
-    getList,
-    tap((xxx) => {
-      assert(true);
-    }),
-    get("items"),
-    find((live) => findId({ live }) === id),
-    tap((live) => {
-      logger.debug(`getById ${id}: ${tos({ live })}`);
-    }),
-  ])();
-
-exports.getByIdCore = getByIdCore;
 
 exports.isUpByIdCore =
   ({ isInstanceUp, getById }) =>

@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project volume
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Volume (1)
+++++ Image (1)
+++++ Instance (1)
+@endmindmap

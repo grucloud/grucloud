@@ -30,37 +30,43 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
 
-const findId = get("live.IntegrationId");
+const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
+
+//TODO
+const pickParam = ({ restApiId, resourceId, httpMethod }) => ({
+  restApiId,
+  resourceId,
+  httpMethod,
+});
 
 exports.Integration = ({ spec, config }) => {
   const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
+    createEndpoint({ endpointName: "APIGateway" })(config);
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
   const findDependencies = ({ live, lives }) => [
     {
-      type: "Api",
-      group: "apigateway",
-      ids: [live.ApiId],
+      type: "RestApi",
+      group: "apiGateway",
+      ids: [live.restApiId],
     },
     {
       type: "Function",
       group: "lambda",
       ids: pipe([
         () => live,
+        //TODO
         when(
-          eq(get("IntegrationType"), "AWS_PROXY"),
-          () => live.IntegrationUri
+          eq(get("integrationType"), "AWS_PROXY"),
+          () => live.integrationUri
         ),
         (id) => [id],
-        filter(not(isEmpty)),
       ])(),
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegrations-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegrations-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -70,20 +76,20 @@ exports.Integration = ({ spec, config }) => {
       () =>
         lives.getByType({
           providerName: config.providerName,
-          type: "Api",
-          group: "apigateway",
+          type: "RestApi",
+          group: "apiGateway",
         }),
       pluck("id"),
-      flatMap((ApiId) =>
+      flatMap((restApiId) =>
         tryCatch(
           pipe([
-            () => apiGateway().getIntegrations({ ApiId }),
-            get("Items"),
-            map(defaultsDeep({ ApiId })),
+            () => apiGateway().getIntegrations({ restApiId }),
+            get("items"),
+            map(defaultsDeep({ restApiId })),
             map(
               assign({
-                Tags: tagsExtractFromDescription,
-                Description: tagsRemoveFromDescription,
+                tags: tagsExtractFromDescription,
+                description: tagsRemoveFromDescription,
               })
             ),
           ]),
@@ -113,11 +119,11 @@ exports.Integration = ({ spec, config }) => {
   //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property
   const create = ({
     name,
     payload,
-    resolvedDependencies: { api, lambdaFunction },
+    resolvedDependencies: { restApi, lambdaFunction },
   }) =>
     pipe([
       tap(() => {
@@ -125,20 +131,19 @@ exports.Integration = ({ spec, config }) => {
         logger.debug(tos(payload));
       }),
       () => payload,
-      buildPayloadDescriptionTags,
-      apiGateway().createIntegration,
+      apiGateway().putIntegration,
       tap.if(
         () => lambdaFunction,
-        ({ IntegrationId }) =>
+        ({ id }) =>
           pipe([
             () => ({
               Action: "lambda:InvokeFunction",
               FunctionName: lambdaFunction.resource.name,
               Principal: "apigateway.amazonaws.com",
-              StatementId: IntegrationId,
+              StatementId: id,
               SourceArn: `arn:aws:execute-api:${
                 config.region
-              }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+              }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
                 lambdaFunction.resource.name
               }`,
             }),
@@ -171,11 +176,11 @@ exports.Integration = ({ spec, config }) => {
       }),
       () => live,
       tap.if(
-        eq(get("IntegrationType"), "AWS_PROXY"),
+        eq(get("integrationType"), "AWS_PROXY"),
         pipe([
           () => ({
-            FunctionName: live.IntegrationUri,
-            StatementId: live.IntegrationId,
+            FunctionName: live.integrationUri,
+            StatementId: live.id,
           }),
           tryCatch(lambda().removePermission, (error) =>
             pipe([
@@ -191,7 +196,7 @@ exports.Integration = ({ spec, config }) => {
       ),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteIntegration-property
   const destroy = ({ live }) =>
     pipe([
       tap(() => {
@@ -199,13 +204,30 @@ exports.Integration = ({ spec, config }) => {
       }),
       () => lambdaRemovePermission({ live }),
       () => live,
-      pick(["ApiId", "IntegrationId"]),
+      pickParam,
       tap((params) => {
         logger.info(`destroy integration ${JSON.stringify({ params })}`);
-        assert(live.ApiId);
-        assert(live.IntegrationId);
+        assert(params.restApiId);
+        assert(params.resourceId);
+        assert(params.httpMethod);
       }),
-      tap(apiGateway().deleteIntegration),
+      tryCatch(apiGateway().deleteIntegration, (error, params) =>
+        pipe([
+          tap(() => {
+            logger.error(
+              `deleteIntegration ${JSON.stringify({ params, error })}`
+            );
+          }),
+          () => error,
+          switchCase([
+            eq(get("code"), "NotFoundException"),
+            () => undefined,
+            () => {
+              throw error;
+            },
+          ]),
+        ])()
+      ),
       tap((params) => {
         logger.debug(`destroyed integration ${JSON.stringify({ params })}`);
       }),
@@ -215,19 +237,21 @@ exports.Integration = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { api, lambdaFunction },
+    dependencies: { restApi, resource, lambdaFunction },
   }) =>
     pipe([
       tap(() => {
-        assert(api, "missing 'api' dependency");
+        assert(restApi, "missing 'restApi' dependency");
+        assert(resource, "missing 'resource' dependency");
       }),
       () => otherProps,
       defaultsDeep({
-        ApiId: getField(api, "ApiId"),
+        restApiId: getField(restApi, "id"),
+        resource: getField(resource, "id"),
         ...(lambdaFunction && {
-          IntegrationUri: getField(lambdaFunction, "FunctionArn"),
+          integrationUri: getField(lambdaFunction, "FunctionArn"),
         }),
-        Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
+        tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
       }),
     ])();
 

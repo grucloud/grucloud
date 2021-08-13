@@ -177,7 +177,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create: lbv2 ${name}`);
@@ -200,7 +200,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
@@ -225,7 +225,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,

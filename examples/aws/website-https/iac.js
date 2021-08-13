@@ -50,7 +50,7 @@ const createResources = async ({ provider }) => {
   });
 
   const certificate = provider.acm.makeCertificate({
-    name: `certificate-${DomainName}-${stage}`,
+    name: domainName,
     properties: () => ({
       DomainName: domainName,
     }),
@@ -68,29 +68,29 @@ const createResources = async ({ provider }) => {
   const recordValidation = provider.route53.makeRecord({
     name: `validation-${domainName}.`,
     dependencies: { hostedZone, certificate },
-    properties: ({ dependencies: { certificate } }) => {
-      const domainValidationOption =
-        certificate?.live?.DomainValidationOptions[0];
-      const record = domainValidationOption?.ResourceRecord;
-      if (domainValidationOption) {
-        assert(
-          record,
-          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-            certificate.live
-          )}`
-        );
-      }
-      return {
-        Name: record?.Name,
-        ResourceRecords: [
-          {
-            Value: record?.Value,
-          },
-        ],
-        TTL: 300,
-        Type: "CNAME",
-      };
-    },
+    // properties: ({ dependencies: { certificate } }) => {
+    //   const domainValidationOption =
+    //     certificate?.live?.DomainValidationOptions[0];
+    //   const record = domainValidationOption?.ResourceRecord;
+    //   if (domainValidationOption) {
+    //     assert(
+    //       record,
+    //       `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+    //         certificate.live
+    //       )}`
+    //     );
+    //   }
+    //   return {
+    //     Name: record?.Name,
+    //     ResourceRecords: [
+    //       {
+    //         Value: record?.Value,
+    //       },
+    //     ],
+    //     TTL: 300,
+    //     Type: "CNAME",
+    //   };
+    // },
   });
 
   const distribution = provider.cloudFront.makeDistribution({

@@ -158,7 +158,7 @@ const findId = () => {
 exports.AwsLoadBalancer = ({ spec, config }) => {
   const elb = ELBNew(config);
 
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList ${tos(params)}`);
@@ -196,7 +196,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const create = async ({ name, payload = {} }) =>
+  const create = ({ name, payload = {} }) =>
     pipe([
       tap(() => {
         logger.debug(`create: ${name}, ${tos(payload)}`);
@@ -240,11 +240,10 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = ({ name, properties, dependencies }) =>
     defaultsDeep({})(properties);
 
   return {
-    type: "LoadBalancer",
     spec,
     isInstanceUp,
     isUpById,
@@ -635,7 +634,7 @@ The _configDefault_ function infers the parameters for the resource creation.
 The load balancer depends on an array of subnets and security groups. We'll retrieve these values with the help of the **getField** function.
 
 ```js
-const configDefault = async ({
+const configDefault = ({
   name,
   properties,
   dependencies: { subnets, securityGroups },

@@ -1,0 +1,3404 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "postgres-stateless",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/rds/postgres-stateless/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/rds/postgres-stateless"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [],
+                        "groupType": "apigateway::Api",
+                        "type": "Api",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "apigateway::Integration",
+                        "type": "Integration",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "apigateway::Route",
+                        "type": "Route",
+                        "group": "apigateway",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "ElasticIpAddress",
+                                "name": "eip-bastion",
+                                "id": "eipalloc-01f24e9318e27fe19",
+                                "providerName": "aws",
+                                "groupType": "ec2::ElasticIpAddress",
+                                "live": {
+                                    "InstanceId": "i-04be9649a3571475c",
+                                    "PublicIp": "18.170.189.67",
+                                    "AllocationId": "eipalloc-01f24e9318e27fe19",
+                                    "AssociationId": "eipassoc-09369869bb4725924",
+                                    "Domain": "vpc",
+                                    "NetworkInterfaceId": "eni-068d66e080e7d04e4",
+                                    "NetworkInterfaceOwnerId": "840541460064",
+                                    "PrivateIpAddress": "192.168.22.170",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "eip-bastion"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "PublicIpv4Pool": "amazon",
+                                    "NetworkBorderGroup": "eu-west-2"
+                                },
+                                "uri": "aws::ec2::ElasticIpAddress::eip-bastion",
+                                "displayName": "eip-bastion",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "NetworkInterface",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eni-068d66e080e7d04e4"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NetworkInterface"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "ElasticIpAddress",
+                                "name": "iep",
+                                "id": "eipalloc-091c6be798d2ca0dd",
+                                "providerName": "aws",
+                                "groupType": "ec2::ElasticIpAddress",
+                                "live": {
+                                    "PublicIp": "18.169.203.103",
+                                    "AllocationId": "eipalloc-091c6be798d2ca0dd",
+                                    "AssociationId": "eipassoc-0cd2a446094346a48",
+                                    "Domain": "vpc",
+                                    "NetworkInterfaceId": "eni-000b72edd994d5741",
+                                    "NetworkInterfaceOwnerId": "840541460064",
+                                    "PrivateIpAddress": "192.168.31.28",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "iep"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        }
+                                    ],
+                                    "PublicIpv4Pool": "amazon",
+                                    "NetworkBorderGroup": "eu-west-2"
+                                },
+                                "uri": "aws::ec2::ElasticIpAddress::iep",
+                                "displayName": "iep",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "NetworkInterface",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eni-000b72edd994d5741"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NetworkInterface"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::ElasticIpAddress",
+                        "type": "ElasticIpAddress",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Image",
+                                "name": "Amazon Linux 2",
+                                "id": "ami-084a1f89b0bb0f729",
+                                "providerName": "aws",
+                                "groupType": "ec2::Image",
+                                "live": {
+                                    "Architecture": "x86_64",
+                                    "CreationDate": "2021-07-27T06:30:25.000Z",
+                                    "ImageId": "ami-084a1f89b0bb0f729",
+                                    "ImageLocation": "amazon/amzn2-ami-minimal-hvm-2.0.20210721.2-x86_64-ebs",
+                                    "ImageType": "machine",
+                                    "Public": true,
+                                    "OwnerId": "137112412989",
+                                    "PlatformDetails": "Linux/UNIX",
+                                    "UsageOperation": "RunInstances",
+                                    "ProductCodes": [],
+                                    "State": "available",
+                                    "BlockDeviceMappings": [
+                                        {
+                                            "DeviceName": "/dev/xvda",
+                                            "Ebs": {
+                                                "DeleteOnTermination": true,
+                                                "SnapshotId": "snap-02c00d4090f949407",
+                                                "VolumeSize": 2,
+                                                "VolumeType": "standard",
+                                                "Encrypted": false
+                                            }
+                                        }
+                                    ],
+                                    "Description": "Amazon Linux 2 AMI 2.0.20210721.2 x86_64 Minimal HVM ebs",
+                                    "EnaSupport": true,
+                                    "Hypervisor": "xen",
+                                    "ImageOwnerAlias": "amazon",
+                                    "Name": "amzn2-ami-minimal-hvm-2.0.20210721.2-x86_64-ebs",
+                                    "RootDeviceName": "/dev/xvda",
+                                    "RootDeviceType": "ebs",
+                                    "SriovNetSupport": "simple",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "Amazon Linux 2"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        }
+                                    ],
+                                    "VirtualizationType": "hvm"
+                                },
+                                "uri": "aws::ec2::Image::Amazon Linux 2",
+                                "displayName": "Amazon Linux 2",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Image",
+                        "type": "Image",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Instance",
+                                "name": "bastion",
+                                "id": "i-04be9649a3571475c",
+                                "providerName": "aws",
+                                "groupType": "ec2::Instance",
+                                "live": {
+                                    "AmiLaunchIndex": 0,
+                                    "ImageId": "ami-084a1f89b0bb0f729",
+                                    "InstanceId": "i-04be9649a3571475c",
+                                    "InstanceType": "t2.micro",
+                                    "KeyName": "kp-postgres-stateless",
+                                    "LaunchTime": "2021-08-11T16:24:26.000Z",
+                                    "Monitoring": {
+                                        "State": "disabled"
+                                    },
+                                    "Placement": {
+                                        "AvailabilityZone": "eu-west-2a",
+                                        "GroupName": "",
+                                        "Tenancy": "default"
+                                    },
+                                    "PrivateDnsName": "ip-192-168-22-170.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.22.170",
+                                    "ProductCodes": [],
+                                    "PublicDnsName": "ec2-18-170-189-67.eu-west-2.compute.amazonaws.com",
+                                    "PublicIpAddress": "18.170.189.67",
+                                    "State": {
+                                        "Code": 16,
+                                        "Name": "running"
+                                    },
+                                    "StateTransitionReason": "",
+                                    "SubnetId": "subnet-09edf141fbd5dc19e",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "Architecture": "x86_64",
+                                    "BlockDeviceMappings": [
+                                        {
+                                            "DeviceName": "/dev/xvda",
+                                            "Ebs": {
+                                                "AttachTime": "2021-08-11T16:24:27.000Z",
+                                                "DeleteOnTermination": true,
+                                                "Status": "attached",
+                                                "VolumeId": "vol-03e2e95ec5888c80e"
+                                            }
+                                        }
+                                    ],
+                                    "ClientToken": "504a5ce1-6640-48bf-8f9e-07eece1246f8",
+                                    "EbsOptimized": false,
+                                    "EnaSupport": true,
+                                    "Hypervisor": "xen",
+                                    "ElasticGpuAssociations": [],
+                                    "ElasticInferenceAcceleratorAssociations": [],
+                                    "NetworkInterfaces": [
+                                        {
+                                            "Association": {
+                                                "IpOwnerId": "840541460064",
+                                                "PublicDnsName": "ec2-18-170-189-67.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "18.170.189.67"
+                                            },
+                                            "Attachment": {
+                                                "AttachTime": "2021-08-11T16:24:26.000Z",
+                                                "AttachmentId": "eni-attach-07c44266e5742522a",
+                                                "DeleteOnTermination": true,
+                                                "DeviceIndex": 0,
+                                                "Status": "attached",
+                                                "NetworkCardIndex": 0
+                                            },
+                                            "Description": "",
+                                            "Groups": [
+                                                {
+                                                    "GroupName": "security-group-public",
+                                                    "GroupId": "sg-0c35da1989c1d58a9"
+                                                }
+                                            ],
+                                            "Ipv6Addresses": [],
+                                            "MacAddress": "06:b6:50:f5:63:e2",
+                                            "NetworkInterfaceId": "eni-068d66e080e7d04e4",
+                                            "OwnerId": "840541460064",
+                                            "PrivateDnsName": "ip-192-168-22-170.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.22.170",
+                                            "PrivateIpAddresses": [
+                                                {
+                                                    "Association": {
+                                                        "IpOwnerId": "840541460064",
+                                                        "PublicDnsName": "ec2-18-170-189-67.eu-west-2.compute.amazonaws.com",
+                                                        "PublicIp": "18.170.189.67"
+                                                    },
+                                                    "Primary": true,
+                                                    "PrivateDnsName": "ip-192-168-22-170.eu-west-2.compute.internal",
+                                                    "PrivateIpAddress": "192.168.22.170"
+                                                }
+                                            ],
+                                            "SourceDestCheck": true,
+                                            "Status": "in-use",
+                                            "SubnetId": "subnet-09edf141fbd5dc19e",
+                                            "VpcId": "vpc-07023bfd9f91d9e9f",
+                                            "InterfaceType": "interface",
+                                            "Ipv4Prefixes": [],
+                                            "Ipv6Prefixes": []
+                                        }
+                                    ],
+                                    "RootDeviceName": "/dev/xvda",
+                                    "RootDeviceType": "ebs",
+                                    "SecurityGroups": [
+                                        {
+                                            "GroupName": "security-group-public",
+                                            "GroupId": "sg-0c35da1989c1d58a9"
+                                        }
+                                    ],
+                                    "SourceDestCheck": true,
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "bastion"
+                                        }
+                                    ],
+                                    "VirtualizationType": "hvm",
+                                    "CpuOptions": {
+                                        "CoreCount": 1,
+                                        "ThreadsPerCore": 1
+                                    },
+                                    "CapacityReservationSpecification": {
+                                        "CapacityReservationPreference": "open"
+                                    },
+                                    "HibernationOptions": {
+                                        "Configured": false
+                                    },
+                                    "Licenses": [],
+                                    "MetadataOptions": {
+                                        "State": "applied",
+                                        "HttpTokens": "optional",
+                                        "HttpPutResponseHopLimit": 1,
+                                        "HttpEndpoint": "enabled"
+                                    },
+                                    "EnclaveOptions": {
+                                        "Enabled": false
+                                    }
+                                },
+                                "uri": "aws::ec2::Instance::bastion",
+                                "displayName": "bastion",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Image",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "ami-084a1f89b0bb0f729"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Image"
+                                    },
+                                    {
+                                        "type": "KeyPair",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "kp-postgres-stateless"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::KeyPair"
+                                    },
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-09edf141fbd5dc19e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    },
+                                    {
+                                        "type": "Volume",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vol-03e2e95ec5888c80e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Volume"
+                                    },
+                                    {
+                                        "type": "NetworkInterface",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eni-068d66e080e7d04e4"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NetworkInterface"
+                                    },
+                                    {
+                                        "type": "ElasticIpAddress",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eipalloc-01f24e9318e27fe19"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::ElasticIpAddress"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Instance",
+                        "type": "Instance",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "InternetGateway",
+                                "name": "default",
+                                "id": "igw-0a14b9d3f6cf1b265",
+                                "providerName": "aws",
+                                "groupType": "ec2::InternetGateway",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "State": "available",
+                                            "VpcId": "vpc-bbbafcd3"
+                                        }
+                                    ],
+                                    "InternetGatewayId": "igw-0a14b9d3f6cf1b265",
+                                    "OwnerId": "840541460064",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "default"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::InternetGateway::default",
+                                "displayName": "default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "InternetGateway",
+                                "name": "internet-gateway",
+                                "id": "igw-0f1be99857fa7bf44",
+                                "providerName": "aws",
+                                "groupType": "ec2::InternetGateway",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "State": "available",
+                                            "VpcId": "vpc-07023bfd9f91d9e9f"
+                                        }
+                                    ],
+                                    "InternetGatewayId": "igw-0f1be99857fa7bf44",
+                                    "OwnerId": "840541460064",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "internet-gateway"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::InternetGateway::internet-gateway",
+                                "displayName": "internet-gateway",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::InternetGateway",
+                        "type": "InternetGateway",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "KeyPair",
+                                "name": "kp-postgres-stateless",
+                                "id": "kp-postgres-stateless",
+                                "providerName": "aws",
+                                "groupType": "ec2::KeyPair",
+                                "live": {
+                                    "KeyPairId": "key-08acd22fe1c23f17a",
+                                    "KeyFingerprint": "56:95:db:3f:d0:db:f4:c7:80:b1:54:ea:96:e9:fd:76:a1:0f:a6:c0",
+                                    "KeyName": "kp-postgres-stateless",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "kp-postgres-stateless"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::KeyPair::kp-postgres-stateless",
+                                "displayName": "kp-postgres-stateless",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::KeyPair",
+                        "type": "KeyPair",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "NatGateway",
+                                "name": "nat-gateway",
+                                "id": "nat-0f4aa11975978a08e",
+                                "providerName": "aws",
+                                "groupType": "ec2::NatGateway",
+                                "live": {
+                                    "CreateTime": "2021-08-11T16:24:23.000Z",
+                                    "NatGatewayAddresses": [
+                                        {
+                                            "AllocationId": "eipalloc-091c6be798d2ca0dd",
+                                            "NetworkInterfaceId": "eni-000b72edd994d5741",
+                                            "PrivateIp": "192.168.31.28",
+                                            "PublicIp": "18.169.203.103"
+                                        }
+                                    ],
+                                    "NatGatewayId": "nat-0f4aa11975978a08e",
+                                    "State": "available",
+                                    "SubnetId": "subnet-09edf141fbd5dc19e",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "nat-gateway"
+                                        }
+                                    ],
+                                    "ConnectivityType": "public"
+                                },
+                                "uri": "aws::ec2::NatGateway::nat-gateway",
+                                "displayName": "nat-gateway",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-09edf141fbd5dc19e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    },
+                                    {
+                                        "type": "NetworkInterface",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eni-000b72edd994d5741"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NetworkInterface"
+                                    },
+                                    {
+                                        "type": "ElasticIpAddress",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "eipalloc-091c6be798d2ca0dd"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::ElasticIpAddress"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::NatGateway",
+                        "type": "NatGateway",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "NetworkInterface",
+                                "name": "eni-000b72edd994d5741",
+                                "id": "eni-000b72edd994d5741",
+                                "providerName": "aws",
+                                "groupType": "ec2::NetworkInterface",
+                                "live": {
+                                    "Association": {
+                                        "AllocationId": "eipalloc-091c6be798d2ca0dd",
+                                        "AssociationId": "eipassoc-0cd2a446094346a48",
+                                        "IpOwnerId": "840541460064",
+                                        "PublicDnsName": "ec2-18-169-203-103.eu-west-2.compute.amazonaws.com",
+                                        "PublicIp": "18.169.203.103"
+                                    },
+                                    "Attachment": {
+                                        "AttachmentId": "ela-attach-0de7520e6544a3fdc",
+                                        "DeleteOnTermination": false,
+                                        "DeviceIndex": 1,
+                                        "InstanceOwnerId": "amazon-aws",
+                                        "Status": "attached"
+                                    },
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "Description": "Interface for NAT Gateway nat-0f4aa11975978a08e",
+                                    "Groups": [],
+                                    "InterfaceType": "nat_gateway",
+                                    "Ipv6Addresses": [],
+                                    "MacAddress": "06:53:a4:86:be:40",
+                                    "NetworkInterfaceId": "eni-000b72edd994d5741",
+                                    "OwnerId": "840541460064",
+                                    "PrivateDnsName": "ip-192-168-31-28.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.31.28",
+                                    "PrivateIpAddresses": [
+                                        {
+                                            "Association": {
+                                                "AllocationId": "eipalloc-091c6be798d2ca0dd",
+                                                "AssociationId": "eipassoc-0cd2a446094346a48",
+                                                "IpOwnerId": "840541460064",
+                                                "PublicDnsName": "ec2-18-169-203-103.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "18.169.203.103"
+                                            },
+                                            "Primary": true,
+                                            "PrivateDnsName": "ip-192-168-31-28.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.31.28"
+                                        }
+                                    ],
+                                    "Ipv4Prefixes": [],
+                                    "Ipv6Prefixes": [],
+                                    "RequesterId": "413720730277",
+                                    "RequesterManaged": true,
+                                    "SourceDestCheck": false,
+                                    "Status": "in-use",
+                                    "SubnetId": "subnet-09edf141fbd5dc19e",
+                                    "TagSet": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::NetworkInterface::eni-000b72edd994d5741",
+                                "displayName": "eni-000b72edd994d5741",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-09edf141fbd5dc19e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "NetworkInterface",
+                                "name": "eni-03a1db33bba3f6aef",
+                                "id": "eni-03a1db33bba3f6aef",
+                                "providerName": "aws",
+                                "groupType": "ec2::NetworkInterface",
+                                "live": {
+                                    "Attachment": {
+                                        "AttachmentId": "ela-attach-0082e74c3c1213057",
+                                        "DeleteOnTermination": false,
+                                        "DeviceIndex": 1,
+                                        "InstanceOwnerId": "amazon-aws",
+                                        "Status": "attached"
+                                    },
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "Description": "VPC Endpoint Interface vpce-087f914cbdbe35522",
+                                    "Groups": [
+                                        {
+                                            "GroupName": "security-group-postgres",
+                                            "GroupId": "sg-0e4a85bc1099f81cf"
+                                        }
+                                    ],
+                                    "InterfaceType": "vpc_endpoint",
+                                    "Ipv6Addresses": [],
+                                    "MacAddress": "06:50:b7:47:95:c0",
+                                    "NetworkInterfaceId": "eni-03a1db33bba3f6aef",
+                                    "OwnerId": "840541460064",
+                                    "PrivateDnsName": "ip-192-168-121-200.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.121.200",
+                                    "PrivateIpAddresses": [
+                                        {
+                                            "Primary": true,
+                                            "PrivateDnsName": "ip-192-168-121-200.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.121.200"
+                                        }
+                                    ],
+                                    "Ipv4Prefixes": [],
+                                    "Ipv6Prefixes": [],
+                                    "RequesterId": "727180483921",
+                                    "RequesterManaged": true,
+                                    "SourceDestCheck": true,
+                                    "Status": "in-use",
+                                    "SubnetId": "subnet-0b2abd0750c08b601",
+                                    "TagSet": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::NetworkInterface::eni-03a1db33bba3f6aef",
+                                "displayName": "eni-03a1db33bba3f6aef",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0e4a85bc1099f81cf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    },
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-0b2abd0750c08b601"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "NetworkInterface",
+                                "name": "eni-065dc1eb65757dab3",
+                                "id": "eni-065dc1eb65757dab3",
+                                "providerName": "aws",
+                                "groupType": "ec2::NetworkInterface",
+                                "live": {
+                                    "Attachment": {
+                                        "AttachmentId": "ela-attach-04eeb14427c5da577",
+                                        "DeleteOnTermination": false,
+                                        "DeviceIndex": 1,
+                                        "InstanceOwnerId": "amazon-aws",
+                                        "Status": "attached"
+                                    },
+                                    "AvailabilityZone": "eu-west-2b",
+                                    "Description": "VPC Endpoint Interface vpce-087f914cbdbe35522",
+                                    "Groups": [
+                                        {
+                                            "GroupName": "security-group-postgres",
+                                            "GroupId": "sg-0e4a85bc1099f81cf"
+                                        }
+                                    ],
+                                    "InterfaceType": "vpc_endpoint",
+                                    "Ipv6Addresses": [],
+                                    "MacAddress": "0a:97:a4:7e:20:52",
+                                    "NetworkInterfaceId": "eni-065dc1eb65757dab3",
+                                    "OwnerId": "840541460064",
+                                    "PrivateDnsName": "ip-192-168-141-115.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.141.115",
+                                    "PrivateIpAddresses": [
+                                        {
+                                            "Primary": true,
+                                            "PrivateDnsName": "ip-192-168-141-115.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.141.115"
+                                        }
+                                    ],
+                                    "Ipv4Prefixes": [],
+                                    "Ipv6Prefixes": [],
+                                    "RequesterId": "727180483921",
+                                    "RequesterManaged": true,
+                                    "SourceDestCheck": true,
+                                    "Status": "in-use",
+                                    "SubnetId": "subnet-02c4450b2a374f1e7",
+                                    "TagSet": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::NetworkInterface::eni-065dc1eb65757dab3",
+                                "displayName": "eni-065dc1eb65757dab3",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0e4a85bc1099f81cf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    },
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-02c4450b2a374f1e7"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "NetworkInterface",
+                                "name": "eni-068d66e080e7d04e4",
+                                "id": "eni-068d66e080e7d04e4",
+                                "providerName": "aws",
+                                "groupType": "ec2::NetworkInterface",
+                                "live": {
+                                    "Association": {
+                                        "AllocationId": "eipalloc-01f24e9318e27fe19",
+                                        "AssociationId": "eipassoc-09369869bb4725924",
+                                        "IpOwnerId": "840541460064",
+                                        "PublicDnsName": "ec2-18-170-189-67.eu-west-2.compute.amazonaws.com",
+                                        "PublicIp": "18.170.189.67"
+                                    },
+                                    "Attachment": {
+                                        "AttachTime": "2021-08-11T16:24:26.000Z",
+                                        "AttachmentId": "eni-attach-07c44266e5742522a",
+                                        "DeleteOnTermination": true,
+                                        "DeviceIndex": 0,
+                                        "NetworkCardIndex": 0,
+                                        "InstanceId": "i-04be9649a3571475c",
+                                        "InstanceOwnerId": "840541460064",
+                                        "Status": "attached"
+                                    },
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "Description": "",
+                                    "Groups": [
+                                        {
+                                            "GroupName": "security-group-public",
+                                            "GroupId": "sg-0c35da1989c1d58a9"
+                                        }
+                                    ],
+                                    "InterfaceType": "interface",
+                                    "Ipv6Addresses": [],
+                                    "MacAddress": "06:b6:50:f5:63:e2",
+                                    "NetworkInterfaceId": "eni-068d66e080e7d04e4",
+                                    "OwnerId": "840541460064",
+                                    "PrivateDnsName": "ip-192-168-22-170.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.22.170",
+                                    "PrivateIpAddresses": [
+                                        {
+                                            "Association": {
+                                                "AllocationId": "eipalloc-01f24e9318e27fe19",
+                                                "AssociationId": "eipassoc-09369869bb4725924",
+                                                "IpOwnerId": "840541460064",
+                                                "PublicDnsName": "ec2-18-170-189-67.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "18.170.189.67"
+                                            },
+                                            "Primary": true,
+                                            "PrivateDnsName": "ip-192-168-22-170.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.22.170"
+                                        }
+                                    ],
+                                    "Ipv4Prefixes": [],
+                                    "Ipv6Prefixes": [],
+                                    "RequesterManaged": false,
+                                    "SourceDestCheck": true,
+                                    "Status": "in-use",
+                                    "SubnetId": "subnet-09edf141fbd5dc19e",
+                                    "TagSet": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::NetworkInterface::eni-068d66e080e7d04e4",
+                                "displayName": "eni-068d66e080e7d04e4",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    },
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-09edf141fbd5dc19e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::NetworkInterface",
+                        "type": "NetworkInterface",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Route",
+                                "name": "route-private-a",
+                                "id": "route-private-a",
+                                "providerName": "aws",
+                                "groupType": "ec2::Route",
+                                "live": {
+                                    "DestinationCidrBlock": "0.0.0.0/0",
+                                    "NatGatewayId": "nat-0f4aa11975978a08e",
+                                    "Origin": "CreateRoute",
+                                    "State": "active",
+                                    "name": "route-private-a",
+                                    "RouteTableId": "rtb-018fa075e647a1be4",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-private-a"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::Route::route-private-a",
+                                "displayName": "route-private-a",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-018fa075e647a1be4"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "NatGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "nat-0f4aa11975978a08e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NatGateway"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Route",
+                                "name": "route-private-b",
+                                "id": "route-private-b",
+                                "providerName": "aws",
+                                "groupType": "ec2::Route",
+                                "live": {
+                                    "DestinationCidrBlock": "0.0.0.0/0",
+                                    "NatGatewayId": "nat-0f4aa11975978a08e",
+                                    "Origin": "CreateRoute",
+                                    "State": "active",
+                                    "name": "route-private-b",
+                                    "RouteTableId": "rtb-05d554f9a3d141acf",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-private-b"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::Route::route-private-b",
+                                "displayName": "route-private-b",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-05d554f9a3d141acf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "NatGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "nat-0f4aa11975978a08e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::NatGateway"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Route",
+                                "name": "route-public",
+                                "id": "route-public",
+                                "providerName": "aws",
+                                "groupType": "ec2::Route",
+                                "live": {
+                                    "DestinationCidrBlock": "0.0.0.0/0",
+                                    "GatewayId": "igw-0f1be99857fa7bf44",
+                                    "Origin": "CreateRoute",
+                                    "State": "active",
+                                    "name": "route-public",
+                                    "RouteTableId": "rtb-05d59779d8848badf",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-public"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::Route::route-public",
+                                "displayName": "route-public",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-05d59779d8848badf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "igw-0f1be99857fa7bf44"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Route",
+                        "type": "Route",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "RouteTable",
+                                "name": "route-table-private-a",
+                                "id": "rtb-018fa075e647a1be4",
+                                "providerName": "aws",
+                                "groupType": "ec2::RouteTable",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": false,
+                                            "RouteTableAssociationId": "rtbassoc-036bf95a2e9def48c",
+                                            "RouteTableId": "rtb-018fa075e647a1be4",
+                                            "SubnetId": "subnet-0b2abd0750c08b601",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-018fa075e647a1be4",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "192.168.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        },
+                                        {
+                                            "DestinationCidrBlock": "0.0.0.0/0",
+                                            "NatGatewayId": "nat-0f4aa11975978a08e",
+                                            "Origin": "CreateRoute",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-private-a"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::route-table-private-a",
+                                "displayName": "route-table-private-a",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-0b2abd0750c08b601"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "RouteTable",
+                                "name": "route-table-private-b",
+                                "id": "rtb-05d554f9a3d141acf",
+                                "providerName": "aws",
+                                "groupType": "ec2::RouteTable",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": false,
+                                            "RouteTableAssociationId": "rtbassoc-00ff7f8c291779998",
+                                            "RouteTableId": "rtb-05d554f9a3d141acf",
+                                            "SubnetId": "subnet-02c4450b2a374f1e7",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-05d554f9a3d141acf",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "192.168.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        },
+                                        {
+                                            "DestinationCidrBlock": "0.0.0.0/0",
+                                            "NatGatewayId": "nat-0f4aa11975978a08e",
+                                            "Origin": "CreateRoute",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-private-b"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::route-table-private-b",
+                                "displayName": "route-table-private-b",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-02c4450b2a374f1e7"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "RouteTable",
+                                "name": "route-table-public",
+                                "id": "rtb-05d59779d8848badf",
+                                "providerName": "aws",
+                                "groupType": "ec2::RouteTable",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": false,
+                                            "RouteTableAssociationId": "rtbassoc-02c0fec6019d3e883",
+                                            "RouteTableId": "rtb-05d59779d8848badf",
+                                            "SubnetId": "subnet-023a416877a488710",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        },
+                                        {
+                                            "Main": false,
+                                            "RouteTableAssociationId": "rtbassoc-039fe23983d79ca5e",
+                                            "RouteTableId": "rtb-05d59779d8848badf",
+                                            "SubnetId": "subnet-09edf141fbd5dc19e",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-05d59779d8848badf",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "192.168.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        },
+                                        {
+                                            "DestinationCidrBlock": "0.0.0.0/0",
+                                            "GatewayId": "igw-0f1be99857fa7bf44",
+                                            "Origin": "CreateRoute",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-public"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::route-table-public",
+                                "displayName": "route-table-public",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-023a416877a488710",
+                                            "subnet-09edf141fbd5dc19e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "RouteTable",
+                                "name": "rt-default-vpc",
+                                "id": "rtb-0b183ea19c1eb9237",
+                                "providerName": "aws",
+                                "groupType": "ec2::RouteTable",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": true,
+                                            "RouteTableAssociationId": "rtbassoc-05abe8a41cf39f940",
+                                            "RouteTableId": "rtb-0b183ea19c1eb9237",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-0b183ea19c1eb9237",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "192.168.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::rt-default-vpc",
+                                "displayName": "rt-default-vpc",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "RouteTable",
+                                "name": "rt-default-vpc-default",
+                                "id": "rtb-668fbc0e",
+                                "providerName": "aws",
+                                "groupType": "ec2::RouteTable",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": true,
+                                            "RouteTableAssociationId": "rtbassoc-90bf06fb",
+                                            "RouteTableId": "rtb-668fbc0e",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-668fbc0e",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "172.31.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064"
+                                },
+                                "uri": "aws::ec2::RouteTable::rt-default-vpc-default",
+                                "displayName": "rt-default-vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::RouteTable",
+                        "type": "RouteTable",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "security-group-postgres",
+                                "id": "sg-0e4a85bc1099f81cf",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "Security Group Postgres",
+                                    "GroupName": "security-group-postgres",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 5432,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 5432,
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-0c35da1989c1d58a9",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-0e4a85bc1099f81cf",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "security-group-postgres"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::security-group-postgres",
+                                "displayName": "security-group-postgres",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "security-group-public",
+                                "id": "sg-0c35da1989c1d58a9",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "Security Group Description",
+                                    "GroupName": "security-group-public",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 22,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 22,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-0c35da1989c1d58a9",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "security-group-public"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::security-group-public",
+                                "displayName": "security-group-public",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "sg-default-vpc",
+                                "id": "sg-01508094cf607091d",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-01508094cf607091d",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-01508094cf607091d",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-07023bfd9f91d9e9f"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc",
+                                "displayName": "sg-default-vpc",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-01508094cf607091d"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "sg-default-vpc-default",
+                                "id": "sg-f4139a96",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-f4139a96",
+                                    "IpPermissionsEgress": [],
+                                    "Tags": [],
+                                    "VpcId": "vpc-bbbafcd3"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default",
+                                "displayName": "sg-default-vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::SecurityGroup",
+                        "type": "SecurityGroup",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleEgress",
+                                "name": "security-group-postgres-rule-egress-all-v4",
+                                "id": "sgr-047a70bff073427a2",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleEgress",
+                                "live": {
+                                    "GroupId": "sg-0e4a85bc1099f81cf",
+                                    "SecurityGroupRuleId": "sgr-047a70bff073427a2",
+                                    "IpPermission": {
+                                        "IpProtocol": "-1",
+                                        "FromPort": -1,
+                                        "ToPort": -1,
+                                        "IpRanges": [
+                                            {
+                                                "CidrIp": "0.0.0.0/0"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": []
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-postgres-rule-egress-all-v4",
+                                "displayName": "security-group-postgres-rule-egress-all-v4",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0e4a85bc1099f81cf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleEgress",
+                                "name": "security-group-public-rule-egress-all-v4",
+                                "id": "sgr-0c80e6eade2051dc6",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleEgress",
+                                "live": {
+                                    "GroupId": "sg-0c35da1989c1d58a9",
+                                    "SecurityGroupRuleId": "sgr-0c80e6eade2051dc6",
+                                    "IpPermission": {
+                                        "IpProtocol": "-1",
+                                        "FromPort": -1,
+                                        "ToPort": -1,
+                                        "IpRanges": [
+                                            {
+                                                "CidrIp": "0.0.0.0/0"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": []
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-public-rule-egress-all-v4",
+                                "displayName": "security-group-public-rule-egress-all-v4",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleEgress",
+                                "name": "sg-default-vpc-rule-egress-all-v4",
+                                "id": "sgr-0742c7a13a19adc87",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleEgress",
+                                "live": {
+                                    "GroupId": "sg-01508094cf607091d",
+                                    "SecurityGroupRuleId": "sgr-0742c7a13a19adc87",
+                                    "IpPermission": {
+                                        "IpProtocol": "-1",
+                                        "FromPort": -1,
+                                        "ToPort": -1,
+                                        "IpRanges": [
+                                            {
+                                                "CidrIp": "0.0.0.0/0"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": []
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-default-vpc-rule-egress-all-v4",
+                                "displayName": "sg-default-vpc-rule-egress-all-v4",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-01508094cf607091d"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::SecurityGroupRuleEgress",
+                        "type": "SecurityGroupRuleEgress",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleIngress",
+                                "name": "sg-default-vpc-rule-ingress-all",
+                                "id": "sgr-0c532283d82662fc1",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleIngress",
+                                "live": {
+                                    "GroupId": "sg-01508094cf607091d",
+                                    "SecurityGroupRuleId": "sgr-0c532283d82662fc1",
+                                    "IpPermission": {
+                                        "IpProtocol": "-1",
+                                        "FromPort": -1,
+                                        "ToPort": -1,
+                                        "UserIdGroupPairs": [
+                                            {
+                                                "GroupId": "sg-01508094cf607091d"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": []
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-default-vpc-rule-ingress-all",
+                                "displayName": "sg-default-vpc-rule-ingress-all",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-01508094cf607091d"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleIngress",
+                                "name": "sg-rule-ingress-postgres",
+                                "id": "sgr-0f15027dea70106af",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleIngress",
+                                "live": {
+                                    "GroupId": "sg-0e4a85bc1099f81cf",
+                                    "SecurityGroupRuleId": "sgr-0f15027dea70106af",
+                                    "IpPermission": {
+                                        "IpProtocol": "tcp",
+                                        "FromPort": 5432,
+                                        "ToPort": 5432,
+                                        "IpRanges": [
+                                            {
+                                                "CidrIp": "0.0.0.0/0"
+                                            }
+                                        ],
+                                        "Ipv6Ranges": [
+                                            {
+                                                "CidrIpv6": "::/0"
+                                            }
+                                        ],
+                                        "UserIdGroupPairs": [
+                                            {
+                                                "GroupId": "sg-0c35da1989c1d58a9"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "sg-rule-ingress-postgres"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-ingress-postgres",
+                                "displayName": "sg-rule-ingress-postgres",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0e4a85bc1099f81cf",
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroupRuleIngress",
+                                "name": "sg-rule-ingress-ssh-bastion",
+                                "id": "sgr-0501d478fc882dd39",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroupRuleIngress",
+                                "live": {
+                                    "GroupId": "sg-0c35da1989c1d58a9",
+                                    "SecurityGroupRuleId": "sgr-0501d478fc882dd39",
+                                    "IpPermission": {
+                                        "IpProtocol": "tcp",
+                                        "FromPort": 22,
+                                        "ToPort": 22,
+                                        "IpRanges": [
+                                            {
+                                                "CidrIp": "0.0.0.0/0"
+                                            }
+                                        ],
+                                        "Ipv6Ranges": [
+                                            {
+                                                "CidrIpv6": "::/0"
+                                            }
+                                        ]
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "sg-rule-ingress-ssh-bastion"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-ingress-ssh-bastion",
+                                "displayName": "sg-rule-ingress-ssh-bastion",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0c35da1989c1d58a9"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::SecurityGroupRuleIngress",
+                        "type": "SecurityGroupRuleIngress",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Subnet",
+                                "name": "subnet-default",
+                                "id": "subnet-0f6f085fc384bf8ce",
+                                "providerName": "aws",
+                                "groupType": "ec2::Subnet",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 4091,
+                                    "CidrBlock": "172.31.0.0/20",
+                                    "DefaultForAz": true,
+                                    "MapPublicIpOnLaunch": true,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-0f6f085fc384bf8ce",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0f6f085fc384bf8ce"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-default",
+                                "displayName": "subnet-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Subnet",
+                                "name": "subnet-private-a",
+                                "id": "subnet-0b2abd0750c08b601",
+                                "providerName": "aws",
+                                "groupType": "ec2::Subnet",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 8186,
+                                    "CidrBlock": "192.168.96.0/19",
+                                    "DefaultForAz": false,
+                                    "MapPublicIpOnLaunch": false,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-0b2abd0750c08b601",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-private-a"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        }
+                                    ],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0b2abd0750c08b601"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-private-a",
+                                "displayName": "subnet-private-a",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Subnet",
+                                "name": "subnet-private-b",
+                                "id": "subnet-02c4450b2a374f1e7",
+                                "providerName": "aws",
+                                "groupType": "ec2::Subnet",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2b",
+                                    "AvailabilityZoneId": "euw2-az3",
+                                    "AvailableIpAddressCount": 8186,
+                                    "CidrBlock": "192.168.128.0/19",
+                                    "DefaultForAz": false,
+                                    "MapPublicIpOnLaunch": false,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-02c4450b2a374f1e7",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-private-b"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-02c4450b2a374f1e7"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-private-b",
+                                "displayName": "subnet-private-b",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Subnet",
+                                "name": "subnet-public-a",
+                                "id": "subnet-09edf141fbd5dc19e",
+                                "providerName": "aws",
+                                "groupType": "ec2::Subnet",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 8185,
+                                    "CidrBlock": "192.168.0.0/19",
+                                    "DefaultForAz": false,
+                                    "MapPublicIpOnLaunch": false,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-09edf141fbd5dc19e",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-public-a"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-09edf141fbd5dc19e"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-public-a",
+                                "displayName": "subnet-public-a",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Subnet",
+                                "name": "subnet-public-b",
+                                "id": "subnet-023a416877a488710",
+                                "providerName": "aws",
+                                "groupType": "ec2::Subnet",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2b",
+                                    "AvailabilityZoneId": "euw2-az3",
+                                    "AvailableIpAddressCount": 8187,
+                                    "CidrBlock": "192.168.32.0/19",
+                                    "DefaultForAz": false,
+                                    "MapPublicIpOnLaunch": false,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-023a416877a488710",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-public-b"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        }
+                                    ],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-023a416877a488710"
+                                },
+                                "uri": "aws::ec2::Subnet::subnet-public-b",
+                                "displayName": "subnet-public-b",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-07023bfd9f91d9e9f"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Subnet",
+                        "type": "Subnet",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Volume",
+                                "name": "vol-03e2e95ec5888c80e",
+                                "id": "vol-03e2e95ec5888c80e",
+                                "providerName": "aws",
+                                "groupType": "ec2::Volume",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "AttachTime": "2021-08-11T16:24:27.000Z",
+                                            "Device": "/dev/xvda",
+                                            "InstanceId": "i-04be9649a3571475c",
+                                            "State": "attached",
+                                            "VolumeId": "vol-03e2e95ec5888c80e",
+                                            "DeleteOnTermination": true
+                                        }
+                                    ],
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "CreateTime": "2021-08-11T16:24:27.581Z",
+                                    "Encrypted": false,
+                                    "Size": 2,
+                                    "SnapshotId": "snap-02c00d4090f949407",
+                                    "State": "in-use",
+                                    "VolumeId": "vol-03e2e95ec5888c80e",
+                                    "Tags": [],
+                                    "VolumeType": "standard",
+                                    "MultiAttachEnabled": false
+                                },
+                                "uri": "aws::ec2::Volume::vol-03e2e95ec5888c80e",
+                                "displayName": "vol-03e2e95ec5888c80e",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Volume",
+                        "type": "Volume",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "Vpc",
+                                "name": "vpc",
+                                "id": "vpc-07023bfd9f91d9e9f",
+                                "providerName": "aws",
+                                "groupType": "ec2::Vpc",
+                                "live": {
+                                    "CidrBlock": "192.168.0.0/16",
+                                    "DhcpOptionsId": "dopt-bb663fd3",
+                                    "State": "available",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "OwnerId": "840541460064",
+                                    "InstanceTenancy": "default",
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "CidrBlockAssociationSet": [
+                                        {
+                                            "AssociationId": "vpc-cidr-assoc-0ae7fb3a8a8d9d8d5",
+                                            "CidrBlock": "192.168.0.0/16",
+                                            "CidrBlockState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "IsDefault": false,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "vpc"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
+                                },
+                                "uri": "aws::ec2::Vpc::vpc",
+                                "displayName": "vpc",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "Vpc",
+                                "name": "vpc-default",
+                                "id": "vpc-bbbafcd3",
+                                "providerName": "aws",
+                                "groupType": "ec2::Vpc",
+                                "live": {
+                                    "CidrBlock": "172.31.0.0/16",
+                                    "DhcpOptionsId": "dopt-bb663fd3",
+                                    "State": "available",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "InstanceTenancy": "default",
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "CidrBlockAssociationSet": [
+                                        {
+                                            "AssociationId": "vpc-cidr-assoc-1c035a74",
+                                            "CidrBlock": "172.31.0.0/16",
+                                            "CidrBlockState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "IsDefault": true,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "Default"
+                                        }
+                                    ],
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
+                                },
+                                "uri": "aws::ec2::Vpc::vpc-default",
+                                "displayName": "vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::Vpc",
+                        "type": "Vpc",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::Group",
+                        "type": "Group",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::InstanceProfile",
+                        "type": "InstanceProfile",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::Policy",
+                        "type": "Policy",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::Role",
+                        "type": "Role",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "iam::User",
+                        "type": "User",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/acm",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                    "CreationDate": "2020-11-13T18:44:25.220Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my ACM private keys when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Alias": "alias/aws/acm"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/acm",
+                                "displayName": "alias/aws/acm",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/ebs",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                    "CreationDate": "2021-04-21T06:34:45.106Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my EBS volumes when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/ebs"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/ebs",
+                                "displayName": "alias/aws/ebs",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/rds",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                    "CreationDate": "2021-06-10T08:46:21.740Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my RDS database volumes when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/rds"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/rds",
+                                "displayName": "alias/aws/rds",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "eks-key",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                    "CreationDate": "2021-07-09T20:59:18.231Z",
+                                    "Enabled": false,
+                                    "Description": "",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "PendingDeletion",
+                                    "DeletionDate": "2021-08-18T13:04:14.043Z",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "CUSTOMER",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "eks-key"
+                                        },
+                                        {
+                                            "TagKey": "gc-created-by-provider",
+                                            "TagValue": "aws"
+                                        },
+                                        {
+                                            "TagKey": "gc-managed-by",
+                                            "TagValue": "grucloud"
+                                        },
+                                        {
+                                            "TagKey": "gc-provider-name",
+                                            "TagValue": "starhackit"
+                                        },
+                                        {
+                                            "TagKey": "gc-stage",
+                                            "TagValue": "dev"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::kms::Key::eks-key",
+                                "displayName": "eks-key",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "secret-key-test",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                    "CreationDate": "2021-08-02T22:46:22.059Z",
+                                    "Enabled": false,
+                                    "Description": "",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "PendingDeletion",
+                                    "DeletionDate": "2021-08-18T16:22:28.222Z",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "CUSTOMER",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "secret-key-test"
+                                        },
+                                        {
+                                            "TagKey": "gc-created-by-provider",
+                                            "TagValue": "aws"
+                                        },
+                                        {
+                                            "TagKey": "gc-managed-by",
+                                            "TagValue": "grucloud"
+                                        },
+                                        {
+                                            "TagKey": "gc-project-name",
+                                            "TagValue": "kms-symmetric"
+                                        },
+                                        {
+                                            "TagKey": "gc-stage",
+                                            "TagValue": "dev"
+                                        }
+                                    ],
+                                    "Alias": "alias/secret-key-test"
+                                },
+                                "uri": "aws::kms::Key::secret-key-test",
+                                "displayName": "secret-key-test",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "kms::Key",
+                        "type": "Key",
+                        "group": "kms",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "lambda::Function",
+                        "type": "Function",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [],
+                        "groupType": "lambda::Layer",
+                        "type": "Layer",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "rds",
+                                "type": "DBCluster",
+                                "name": "cluster-postgres-stateless",
+                                "id": "cluster-postgres-stateless",
+                                "providerName": "aws",
+                                "groupType": "rds::DBCluster",
+                                "live": {
+                                    "AllocatedStorage": 1,
+                                    "AvailabilityZones": [
+                                        "eu-west-2c",
+                                        "eu-west-2a",
+                                        "eu-west-2b"
+                                    ],
+                                    "BackupRetentionPeriod": 1,
+                                    "DatabaseName": "dev",
+                                    "DBClusterIdentifier": "cluster-postgres-stateless",
+                                    "DBClusterParameterGroup": "default.aurora-postgresql10",
+                                    "DBSubnetGroup": "subnet-group-postgres-stateless",
+                                    "Status": "available",
+                                    "EarliestRestorableTime": "2021-08-11T16:25:12.445Z",
+                                    "Endpoint": "cluster-postgres-stateless.cluster-cwzy9iilw73e.eu-west-2.rds.amazonaws.com",
+                                    "CustomEndpoints": [],
+                                    "MultiAZ": false,
+                                    "Engine": "aurora-postgresql",
+                                    "EngineVersion": "10.14",
+                                    "LatestRestorableTime": "2021-08-11T16:25:12.445Z",
+                                    "Port": 5432,
+                                    "MasterUsername": "postgres",
+                                    "DBClusterOptionGroupMemberships": [],
+                                    "PreferredBackupWindow": "05:09-05:39",
+                                    "PreferredMaintenanceWindow": "mon:22:53-mon:23:23",
+                                    "ReadReplicaIdentifiers": [],
+                                    "DBClusterMembers": [],
+                                    "VpcSecurityGroups": [
+                                        {
+                                            "VpcSecurityGroupId": "sg-0e4a85bc1099f81cf",
+                                            "Status": "active"
+                                        }
+                                    ],
+                                    "HostedZoneId": "Z1TTGA775OQIYO",
+                                    "StorageEncrypted": true,
+                                    "KmsKeyId": "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                    "DbClusterResourceId": "cluster-NO7ABGX6XALNKFDQASSHMJDRHE",
+                                    "DBClusterArn": "arn:aws:rds:eu-west-2:840541460064:cluster:cluster-postgres-stateless",
+                                    "AssociatedRoles": [],
+                                    "IAMDatabaseAuthenticationEnabled": false,
+                                    "ClusterCreateTime": "2021-08-11T16:24:26.711Z",
+                                    "EnabledCloudwatchLogsExports": [],
+                                    "Capacity": 4,
+                                    "EngineMode": "serverless",
+                                    "ScalingConfigurationInfo": {
+                                        "MinCapacity": 2,
+                                        "MaxCapacity": 4,
+                                        "AutoPause": true,
+                                        "SecondsUntilAutoPause": 300,
+                                        "TimeoutAction": "RollbackCapacityChange"
+                                    },
+                                    "DeletionProtection": false,
+                                    "HttpEndpointEnabled": false,
+                                    "ActivityStreamStatus": "stopped",
+                                    "CopyTagsToSnapshot": false,
+                                    "CrossAccountClone": false,
+                                    "DomainMemberships": [],
+                                    "TagList": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "cluster-postgres-stateless"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::rds::DBCluster::cluster-postgres-stateless",
+                                "displayName": "cluster-postgres-stateless",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "DBSubnetGroup",
+                                        "group": "rds",
+                                        "ids": [
+                                            "subnet-group-postgres-stateless"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "rds::DBSubnetGroup"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-0e4a85bc1099f81cf"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    },
+                                    {
+                                        "type": "Key",
+                                        "group": "kms",
+                                        "ids": [
+                                            "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "kms::Key"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "rds::DBCluster",
+                        "type": "DBCluster",
+                        "group": "rds",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "rds",
+                                "type": "DBSubnetGroup",
+                                "name": "subnet-group-postgres-stateless",
+                                "id": "subnet-group-postgres-stateless",
+                                "providerName": "aws",
+                                "groupType": "rds::DBSubnetGroup",
+                                "live": {
+                                    "DBSubnetGroupName": "subnet-group-postgres-stateless",
+                                    "DBSubnetGroupDescription": "db subnet group",
+                                    "VpcId": "vpc-07023bfd9f91d9e9f",
+                                    "SubnetGroupStatus": "Complete",
+                                    "Subnets": [
+                                        {
+                                            "SubnetIdentifier": "subnet-02c4450b2a374f1e7",
+                                            "SubnetAvailabilityZone": {
+                                                "Name": "eu-west-2b"
+                                            },
+                                            "SubnetOutpost": {},
+                                            "SubnetStatus": "Active"
+                                        },
+                                        {
+                                            "SubnetIdentifier": "subnet-0b2abd0750c08b601",
+                                            "SubnetAvailabilityZone": {
+                                                "Name": "eu-west-2a"
+                                            },
+                                            "SubnetOutpost": {},
+                                            "SubnetStatus": "Active"
+                                        }
+                                    ],
+                                    "DBSubnetGroupArn": "arn:aws:rds:eu-west-2:840541460064:subgrp:subnet-group-postgres-stateless",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "rds-postgres-stateless"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-group-postgres-stateless"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::rds::DBSubnetGroup::subnet-group-postgres-stateless",
+                                "displayName": "subnet-group-postgres-stateless",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Subnet",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "subnet-02c4450b2a374f1e7",
+                                            "subnet-0b2abd0750c08b601"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Subnet"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "rds::DBSubnetGroup",
+                        "type": "DBSubnetGroup",
+                        "group": "rds",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

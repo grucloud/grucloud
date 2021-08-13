@@ -1,18 +1,19 @@
 const assert = require("assert");
+const { tryCatch, pipe, tap } = require("rubico");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
+const { AwsCertificate } = require("../AwsCertificate");
 
-describe.skip("AwsCertificate", async function () {
+describe("AwsCertificate", async function () {
   let config;
   let provider;
   let certificate;
   const types = ["Certificate"];
   const domainName = "aws.grucloud.com";
-  const certificateName = `certificate::aws.grucloud.com`;
 
   before(async function () {
     try {
@@ -25,14 +26,42 @@ describe.skip("AwsCertificate", async function () {
     });
 
     certificate = provider.acm.makeCertificate({
-      name: certificateName,
-      properties: () => ({ DomainName: domainName }),
+      name: domainName,
     });
 
     await provider.start();
   });
-  after(async () => {});
-  it("certificate apply plan", async function () {
+  it(
+    "certificate getById not found",
+    pipe([
+      () => provider.config,
+      (config) => AwsCertificate({ config }),
+      tryCatch(
+        (certificate) =>
+          certificate.getById({
+            id: "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff",
+          }),
+        (error) => {
+          assert(false, "shoud not be here");
+        }
+      ),
+    ])
+  );
+  it(
+    "certificate destroy not found",
+    pipe([
+      () => provider.config,
+      (config) => AwsCertificate({ config }),
+      (certificate) =>
+        certificate.destroy({
+          live: {
+            CertificateArn:
+              "arn:aws:acm:us-east-1:840541460064:certificate/1ef2da5d-bcf6-4dcd-94c1-1532a8d64eff",
+          },
+        }),
+    ])
+  );
+  it.skip("certificate apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

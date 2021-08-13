@@ -9,6 +9,7 @@ const {
   switchCase,
   tryCatch,
   not,
+  or,
   map,
   fork,
   assign,
@@ -263,44 +264,65 @@ const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
   const { providerName } = config;
 
-  const isDefault = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(live.GroupId);
-        assert(lives.getById);
-      }),
-      and([
+  const isDefault =
+    ({ IsEgress }) =>
+    ({ live, lives }) =>
+      pipe([
+        tap(() => {
+          assert(live.GroupId);
+          assert(lives.getById);
+        }),
+        and([
+          or([
+            () => IsEgress,
+            pipe([
+              () =>
+                lives.getById({
+                  type: "SecurityGroup",
+                  group: "ec2",
+                  providerName,
+                  id: live.GroupId,
+                }),
+              tap((params) => {
+                assert(true);
+              }),
+              get("isDefault"),
+            ]),
+          ]),
+          pipe([
+            () => live,
+            get("IpPermission"),
+            pick(["IpProtocol", "FromPort", "ToPort"]),
+            (IpPermission) =>
+              isDeepEqual(IpPermission, {
+                IpProtocol: "-1",
+                FromPort: -1,
+                ToPort: -1,
+              }),
+          ]),
+        ]),
+        tap((result) => {
+          logger.debug(`securityGroup ${live.GroupId} isDefault ${result}`);
+        }),
+      ])();
+
+  const managedByOther = ({ Egress }) =>
+    or([
+      isDefault({ Egress }),
+      ({ live, lives }) =>
         pipe([
-          () =>
+          () => live,
+          get("GroupId"),
+          (id) =>
             lives.getById({
               type: "SecurityGroup",
               group: "ec2",
               providerName,
-              id: live.GroupId,
+              id,
             }),
-          tap((params) => {
-            assert(true);
-          }),
-          get("isDefault"),
-        ]),
-        pipe([
-          () => live,
-          get("IpPermission"),
-          pick(["IpProtocol", "FromPort", "ToPort"]),
-          (IpPermission) =>
-            isDeepEqual(IpPermission, {
-              IpProtocol: "-1",
-              FromPort: -1,
-              ToPort: -1,
-            }),
-        ]),
-      ]),
-      tap((result) => {
-        logger.debug(`securityGroup ${live.GroupId} isDefault ${result}`);
-      }),
-    ])();
-
-  const managedByOther = isDefault;
+          get("managedByOther"),
+        ])(),
+    ]);
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -355,6 +377,7 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
+  //TODO add common describeSecurityGroupRules
   const getList =
     ({ kind, IsEgress = false }) =>
     ({ resources = [], lives } = {}) =>
@@ -468,8 +491,8 @@ const SecurityGroupRuleBase = ({ config }) => {
     getByName,
     create,
     destroy,
-    managedByOther,
     isDefault,
+    managedByOther,
     ec2,
   };
 };
@@ -513,8 +536,8 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    managedByOther,
-    isDefault,
+    managedByOther: managedByOther({ IsEgress: false }),
+    isDefault: isDefault({ IsEgress: false }),
   };
 };
 
@@ -526,8 +549,8 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     create,
     destroy,
     findNamespace,
-    managedByOther,
     isDefault,
+    managedByOther,
     ec2,
   } = SecurityGroupRuleBase({
     config,
@@ -552,8 +575,8 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    managedByOther,
-    isDefault,
+    managedByOther: managedByOther({ IsEgress: false }),
+    isDefault: isDefault({ IsEgress: true }),
   };
 };
 

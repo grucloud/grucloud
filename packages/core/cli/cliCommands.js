@@ -2,7 +2,7 @@ const assert = require("assert");
 const plu = require("pluralize");
 const prompts = require("prompts");
 const colors = require("colors/safe");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 const shell = require("shelljs");
 
@@ -37,6 +37,7 @@ const {
   identity,
   isFunction,
   defaultsDeep,
+  unless,
 } = require("rubico/x");
 const { envLoader } = require("../EnvLoader");
 const fse = require("fs-extra");
@@ -47,6 +48,8 @@ const {
   runAsyncCommand,
   displayProviderList,
   setupProviders,
+  saveToJson,
+  defaultTitle,
 } = require("./cliUtils");
 const { createProviderMaker } = require("./infra");
 const {
@@ -58,14 +61,14 @@ const {
 const { convertError, HookType } = require("../Common");
 const { tos } = require("../tos");
 
-const defaultTitle = (programOptions) =>
-  last(programOptions.workingDirectory.split(path.sep));
-
 const DisplayAndThrow =
   ({ name }) =>
   (error) => {
     displayError({ name, error });
-    throw { code: 422, error: { ...error, displayed: true } };
+    throw {
+      code: 422,
+      error: { message: error.message, ...error, displayed: true },
+    };
   };
 
 const throwIfError = tap.if(get("error"), (result) => {
@@ -119,32 +122,16 @@ const hasPlans = pipe([
   }),
   get("results"),
   //filter(not(get("error"))),
-  find(
+  any(
     or([
       pipe([get("resultCreate"), not(isEmpty)]),
       pipe([get("resultDestroy"), not(isEmpty)]),
     ])
   ),
-  not(isEmpty),
   tap((hasPlan) => {
     logger.debug(`hasPlans ${hasPlan}`);
   }),
 ]);
-
-const saveToJson = ({
-  command,
-  commandOptions,
-  programOptions = {},
-  result,
-}) => {
-  if (!programOptions.json) {
-    return;
-  }
-  fs.writeFileSync(
-    programOptions.json,
-    JSON.stringify({ command, commandOptions, programOptions, result }, null, 4)
-  );
-};
 
 const displayLiveError = (result) =>
   pipe([
@@ -282,7 +269,8 @@ const displayError = ({ name, error }) => {
     error.results;
 
   if (!results) {
-    console.log(YAML.stringify(convertError({ error })));
+    const convertedError = convertError({ error });
+    console.log(YAML.stringify(convertedError));
   }
 };
 
@@ -294,7 +282,7 @@ const displayCommandHeader = ({ providers, verb }) =>
   )}: ${displayProviderList(providers)}`;
 
 // Plan Query
-const doPlanQuery = ({ commandOptions }) =>
+const doPlanQuery = ({ commandOptions } = {}) =>
   pipe([
     tap((input) => {
       logger.debug("doPlanQuery");
@@ -1082,6 +1070,13 @@ const filterShow = map(
             pipe([() => resources, filter(get("show"))])(),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(and([not(get("error")), pipe([get("resources"), not(isEmpty)])])),
+      tap((params) => {
+        assert(true);
+      }),
     ]),
   })
 );
@@ -1134,7 +1129,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         }),
         (lives) => lives.json,
         tap((lives) => {
-          doGraphLive({ providerGru, lives, commandOptions });
+          doGraphLive({ providerGru, lives, commandOptions, programOptions });
         }),
         filterShow,
         tap((lives) => {
@@ -1295,7 +1290,7 @@ const graphOutputFileName = ({ file, type }) =>
 const dotToSvg = ({
   result,
   commandOptions: { dotFile = "diagram.dot", type = "svg" },
-  programOptions: { workingDirectory = process.cwd() },
+  programOptions: { workingDirectory = process.cwd(), noOpen },
 }) =>
   pipe([
     tap(() => {
@@ -1323,11 +1318,17 @@ const dotToSvg = ({
       }
       //console.log(`output saved to: ${output}`);
     }),
-    tap(() => {
-      shell.exec(`open ${graphOutputFileName({ file: dotFile, type })}`, {
-        silent: true,
-      });
-    }),
+    unless(
+      () => noOpen,
+      pipe([
+        () => graphOutputFileName({ file: dotFile, type }),
+        (filename) => {
+          shell.exec(`open ${filename}`, {
+            silent: true,
+          });
+        },
+      ])
+    ),
   ])();
 
 const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
@@ -1350,7 +1351,7 @@ const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
 const pumlToSvg =
   ({
     commandOptions: { pumlFile, type, plantumlJar },
-    programOptions: { workingDirectory = process.cwd() },
+    programOptions: { workingDirectory = process.cwd(), noOpen },
   }) =>
   (result) =>
     pipe([
@@ -1362,45 +1363,52 @@ const pumlToSvg =
         logger.debug(`pumlToSvg`);
       }),
       () => path.resolve(workingDirectory, pumlFile),
-      tap((pumlFileFull) => fse.outputFile(pumlFileFull, result)),
-      tap((pumlFileFull) => {
-        console.log(`Resource tree file written to: ${pumlFileFull}`);
-      }),
-      (pumlFileFull) => `java -jar ${plantumlJar} -t${type} ${pumlFileFull}`,
-      tap((command) => {
-        console.log(`Executing: '${command}'`);
-      }),
-      (command) =>
-        shell.exec(command, {
-          silent: true,
-        }),
-      tap((result) => {
-        assert(true);
-      }),
-      switchCase([
-        eq(get("code"), 0),
+      (pumlFileFull) =>
         pipe([
-          get("stdout"),
-          pipe([
-            (stdout) => {
-              assert(true);
-            },
-            () => graphOutputFileName({ file: pumlFile, type }),
-            tap((outputPicture) => {
-              shell.exec(`open ${outputPicture}`, { silent: true });
+          tap(() => fse.outputFile(pumlFileFull, result)),
+          tap(() => {
+            console.log(`Resource tree file written to: ${pumlFileFull}`);
+          }),
+          () => `java -jar ${plantumlJar} -t${type} ${pumlFileFull}`,
+          tap((command) => {
+            console.log(`Executing: '${command}'`);
+          }),
+          (command) =>
+            shell.exec(command, {
+              silent: true,
             }),
+          switchCase([
+            eq(get("code"), 0),
+            pipe([
+              get("stdout"),
+              pipe([
+                (stdout) => {
+                  assert(true);
+                },
+                unless(
+                  () => noOpen,
+                  pipe([
+                    () => graphOutputFileName({ file: pumlFileFull, type }),
+                    (filename) => {
+                      shell.exec(`open ${filename}`, {
+                        silent: true,
+                      });
+                    },
+                  ])
+                ),
+              ]),
+            ]),
+            pipe([
+              get("stderr"),
+              (stderr) => {
+                throw Error(stderr);
+              },
+            ]),
           ]),
-        ]),
-        pipe([
-          get("stderr"),
-          (stderr) => {
-            throw Error(stderr);
-          },
-        ]),
-      ]),
+        ])(),
     ])();
 
-const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
+const graphTree = ({ infra, commandOptions = {}, programOptions }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1421,6 +1429,39 @@ const graphTree = ({ infra, config, commandOptions = {}, programOptions }) =>
     DisplayAndThrow({ name: "tree" })
   )();
 
+const genCode = ({ infra, commandOptions = {}, programOptions }) =>
+  tryCatch(
+    pipe([
+      tap(() => {
+        logger.debug(
+          `genCode ${JSON.stringify({ commandOptions, programOptions })}`
+        );
+      }),
+      () => infra,
+      setupProviders({ commandOptions }),
+      ({ providerGru }) =>
+        providerGru.generateCode({ commandOptions, programOptions }),
+    ]),
+    DisplayAndThrow({ name: "genCode" })
+  )();
+
+const projectNameDefault = ({ programOptions }) =>
+  tryCatch(
+    pipe([
+      () => path.resolve(programOptions.workingDirectory, "package.json"),
+      (filename) => fs.readFile(filename, "utf-8"),
+      JSON.parse,
+      get("name"),
+    ]),
+    (error) =>
+      pipe([
+        tap((params) => {
+          assert(error);
+        }),
+        () => "GruCloud Project",
+      ])()
+  )();
+
 exports.Cli = ({
   programOptions = {},
   createStack,
@@ -1433,109 +1474,206 @@ exports.Cli = ({
       assert(isFunction(createStack), "createStack must be a function");
       assert(isFunction(config), "config must be a function");
     }),
-    tap(() => {
+    () => ({
+      programOptions: pipe([
+        () => programOptions,
+        defaultsDeep({ workingDirectory: process.cwd() }),
+      ])(),
+    }),
+    tap(({ programOptions }) => {
       envLoader({ configDir: programOptions.workingDirectory });
     }),
+    assign({
+      infra: ({ programOptions }) =>
+        createStack({
+          config,
+          createProvider: createProviderMaker({
+            programOptions,
+            config,
+            stage,
+          }),
+        }),
+    }),
+    tap.if(not(get("infra")), () => {
+      throw Error("no infra provided in createStack");
+    }),
+    ({ infra, programOptions }) => ({
+      list: ({ commandOptions, programOptions: programOptionsUser = {} }) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                title: defaultTitle(programOptions),
+                dotFile: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/diagram-live.dot"
+                ),
+              }),
+            ])(),
+          }),
+          list,
+        ])(),
+      planApply: ({ commandOptions } = {}) =>
+        planApply({ infra, programOptions, commandOptions }),
+      planQuery: ({ commandOptions } = {}) =>
+        planQuery({ infra, programOptions, commandOptions }),
+      planDestroy: ({ commandOptions } = {}) =>
+        planDestroy({ infra, programOptions, commandOptions }),
+      planRunScript: ({ commandOptions } = {}) =>
+        planRunScript({ infra, programOptions, commandOptions }),
+      info: ({ commandOptions } = {}) =>
+        info({ infra, programOptions, commandOptions }),
+      init: ({ commandOptions } = {}) =>
+        init({ infra, programOptions, commandOptions }),
+      unInit: ({ commandOptions } = {}) =>
+        unInit({ infra, programOptions, commandOptions }),
+      output: ({ commandOptions } = {}) =>
+        output({ infra, programOptions, commandOptions }),
+      graphTree: ({
+        commandOptions,
+        programOptions: programOptionsUser = {},
+      } = {}) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                pumlFile: "artifacts/resources-mindmap.puml",
+                type: "svg",
+                title: defaultTitle(programOptions),
+                plantumlJar: path.resolve(
+                  os.homedir(),
+                  "Downloads",
+                  "plantuml.jar"
+                ),
+              }),
+            ])(),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          graphTree,
+        ])(),
+      graphTarget: ({
+        commandOptions,
+        programOptions: programOptionsUser = {},
+      } = {}) =>
+        pipe([
+          () => ({
+            infra,
+            programOptions: defaultsDeep(programOptions)(programOptionsUser),
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                title: defaultTitle(programOptions),
+                dotFile: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/diagram-target.dot"
+                ),
+              }),
+            ])(),
+          }),
+          graphTarget,
+        ])(),
+      genCode: ({ commandOptions } = {}) =>
+        pipe([
+          async () => ({
+            infra,
+            programOptions,
+            commandOptions: pipe([
+              () => commandOptions,
+              defaultsDeep({
+                projectName: await projectNameDefault({ programOptions }),
+                outputCode: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/iac.js"
+                ),
+                outputConfig: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/config.js"
+                ),
+                outputEnv: path.resolve(
+                  programOptions.workingDirectory,
+                  "artifacts/default.env"
+                ),
+              }),
+            ])(),
+          }),
+          genCode,
+        ])(),
+    }),
+  ])();
+
+const emptyResult = (result) =>
+  pipe([
+    () => result,
+    get("results"),
+    first,
+    get("results"),
+    isEmpty,
+    tap((empty) => {
+      assert(empty, `not empty: ${tos(result, null, 4)}`);
+    }),
+  ])();
+
+exports.testEnd2End = ({ cli, title, listOptions }) =>
+  pipe([
     () =>
-      createStack({
-        config,
-        createProvider: createProviderMaker({ programOptions, config, stage }),
+      cli.graphTree({
+        commandOptions: { title },
+        programOptions: { noOpen: true },
       }),
-    (infra) =>
-      pipe([
-        () => infra,
-        tap.if(isEmpty, () => {
-          throw Error("no infra provided in createStack");
-        }),
-        () => ({
-          list: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    title: defaultTitle(programOptions),
-                    dotFile: path.resolve(
-                      programOptions.workingDirectory,
-                      "artifacts/diagram-live.dot"
-                    ),
-                  }),
-                ])(),
-            }),
-            list,
-          ]),
-          planApply: ({ commandOptions }) =>
-            planApply({ infra, programOptions, commandOptions }),
-          planQuery: ({ commandOptions }) =>
-            planQuery({ infra, programOptions, commandOptions }),
-          planDestroy: ({ commandOptions }) =>
-            planDestroy({ infra, programOptions, commandOptions }),
-          planRunScript: ({ commandOptions }) =>
-            planRunScript({ infra, programOptions, commandOptions }),
-          info: ({ commandOptions } = {}) =>
-            info({ infra, programOptions, commandOptions }),
-          init: ({ commandOptions }) =>
-            init({ infra, programOptions, commandOptions }),
-          unInit: ({ commandOptions }) =>
-            unInit({ infra, programOptions, commandOptions }),
-          output: ({ commandOptions }) =>
-            output({ infra, programOptions, commandOptions }),
-          graphTree: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    pumlFile: "artifacts/resources-mindmap.puml",
-                    type: "svg",
-                    title: defaultTitle(programOptions),
-                    plantumlJar: path.resolve(
-                      os.homedir(),
-                      "Downloads",
-                      "plantuml.jar"
-                    ),
-                  }),
-                ])(),
-            }),
-            graphTree,
-          ]),
-          graphTarget: pipe([
-            assign({
-              infra: () => infra,
-              programOptions: pipe([
-                () => programOptions,
-                defaultsDeep({ workingDirectory: process.cwd() }),
-              ]),
-            }),
-            assign({
-              commandOptions: ({ commandOptions = {}, programOptions }) =>
-                pipe([
-                  () => commandOptions,
-                  defaultsDeep({
-                    title: defaultTitle(programOptions),
-                    dotFile: path.resolve(
-                      programOptions.workingDirectory,
-                      "artifacts/diagram-target.dot"
-                    ),
-                  }),
-                ])(),
-            }),
-            graphTarget,
-          ]),
-        }),
-      ])(),
+    () =>
+      cli.graphTarget({
+        commandOptions: { title },
+        programOptions: { noOpen: true },
+      }),
+    () =>
+      cli.planDestroy({
+        commandOptions: { force: true },
+      }),
+    () =>
+      cli.list({
+        commandOptions: { our: true, canBeDeleted: true },
+      }),
+    //emptyResult,
+    () =>
+      cli.planApply({
+        commandOptions: { force: true },
+      }),
+    () =>
+      cli.list({
+        programOptions: {
+          json: "artifacts/inventory.json",
+          noOpen: true,
+        },
+        commandOptions: {
+          graph: true,
+          ...listOptions,
+        },
+      }),
+    () =>
+      cli.genCode({
+        commandOptions: {
+          input: "artifacts/inventory.json",
+        },
+      }),
+    () =>
+      cli.planDestroy({
+        commandOptions: { force: true },
+      }),
+    () =>
+      cli.list({
+        commandOptions: { our: true, canBeDeleted: true },
+      }),
+    //emptyResult,
+    () =>
+      cli.list({
+        commandOptions: { all: true },
+      }),
   ])();

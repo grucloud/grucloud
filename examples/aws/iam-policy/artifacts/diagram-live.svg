@@ -22,36 +22,36 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-213 443,-213 443,-54 16,-54"/>
 <text text-anchor="start" x="229.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- Policy::::arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy -->
+<!-- Policy::::AmazonEKSWorkerNodePolicy -->
 <g id="node1" class="node">
-<title>Policy::::arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy</title>
+<title>Policy::::AmazonEKSWorkerNodePolicy</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="435,-129 186,-129 186,-71 435,-71 435,-129"/>
 <text text-anchor="start" x="198.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
 <text text-anchor="start" x="198.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AmazonEKSWorkerNodePolicy</text>
 </g>
-<!-- Policy::::arn:aws:iam::840541460064:policy/policy&#45;allow&#45;ec2 -->
+<!-- Policy::::policy&#45;allow&#45;ec2 -->
 <g id="node2" class="node">
-<title>Policy::::arn:aws:iam::840541460064:policy/policy&#45;allow&#45;ec2</title>
+<title>Policy::::policy&#45;allow&#45;ec2</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="380.5,-205 240.5,-205 240.5,-147 380.5,-147 380.5,-205"/>
 <text text-anchor="start" x="252.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
 <text text-anchor="start" x="252.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">policy&#45;allow&#45;ec2</text>
 </g>
-<!-- Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies -->
+<!-- Role::::role&#45;4&#45;policies -->
 <g id="node3" class="node">
-<title>Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies</title>
+<title>Role::::role&#45;4&#45;policies</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="150,-167 24,-167 24,-109 150,-109 150,-167"/>
 <text text-anchor="start" x="36" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
 <text text-anchor="start" x="36" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;4&#45;policies</text>
 </g>
-<!-- Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies&#45;&gt;Policy::::arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy -->
+<!-- Role::::role&#45;4&#45;policies&#45;&gt;Policy::::AmazonEKSWorkerNodePolicy -->
 <g id="edge2" class="edge">
-<title>Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies&#45;&gt;Policy::::arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy</title>
+<title>Role::::role&#45;4&#45;policies&#45;&gt;Policy::::AmazonEKSWorkerNodePolicy</title>
 <path fill="none" stroke="#707070" d="M150.29,-127.31C158.47,-125.91 167.09,-124.43 175.91,-122.92"/>
 <polygon fill="#707070" stroke="#707070" points="176.68,-126.34 185.95,-121.2 175.5,-119.44 176.68,-126.34"/>
 </g>
-<!-- Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies&#45;&gt;Policy::::arn:aws:iam::840541460064:policy/policy&#45;allow&#45;ec2 -->
+<!-- Role::::role&#45;4&#45;policies&#45;&gt;Policy::::policy&#45;allow&#45;ec2 -->
 <g id="edge1" class="edge">
-<title>Role::::arn:aws:iam::840541460064:role/role&#45;4&#45;policies&#45;&gt;Policy::::arn:aws:iam::840541460064:policy/policy&#45;allow&#45;ec2</title>
+<title>Role::::role&#45;4&#45;policies&#45;&gt;Policy::::policy&#45;allow&#45;ec2</title>
 <path fill="none" stroke="#707070" d="M150.29,-148.69C175.14,-152.95 204.04,-157.91 230.35,-162.42"/>
 <polygon fill="#707070" stroke="#707070" points="229.84,-165.88 240.29,-164.13 231.02,-158.99 229.84,-165.88"/>
 </g>

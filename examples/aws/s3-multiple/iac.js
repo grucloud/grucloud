@@ -5,21 +5,19 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = async ({ provider }) => {
   const maxBuckets = 2;
   const resources = await pipe([
+    () => maxBuckets,
     (maxBuckets) =>
       Array(maxBuckets)
         .fill("")
-        .reduce(
-          (acc, value, index) => [...acc, `grucloud-bucket-${index}`],
-          []
-        ),
-    (buckets) =>
-      map((bucket) =>
-        provider.s3.makeBucket({
-          name: bucket,
-          properties: () => ({}),
-        })
-      )(buckets),
-  ])(maxBuckets);
+        .map((value, index) => `grucloud-bucket-${index}`),
+
+    map((bucket) =>
+      provider.s3.makeBucket({
+        name: bucket,
+        properties: () => ({}),
+      })
+    ),
+  ])();
 
   return resources;
 };

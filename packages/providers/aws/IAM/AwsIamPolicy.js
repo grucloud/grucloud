@@ -319,6 +319,19 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       Tags: buildTags({ name, namespace, config }),
     })(properties);
 
+  const cannotBeDeleted = ({ live, resource }) =>
+    pipe([
+      tap(() => {
+        assert(resource);
+      }),
+      () => resource,
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      callProp("startsWith", "Amazon"),
+    ])();
+
   return {
     spec,
     findId,
@@ -331,18 +344,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
-    cannotBeDeleted: ({ live, resource }) =>
-      pipe([
-        tap(() => {
-          assert(resource);
-        }),
-        () => resource,
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        callProp("startsWith", "Amazon"),
-      ])(),
+    managedByOther: cannotBeDeleted,
+    cannotBeDeleted: cannotBeDeleted,
   };
 };
 

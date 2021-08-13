@@ -17,7 +17,7 @@ module.exports = () =>
     },
     {
       type: "DBCluster",
-      dependsOn: ["rds::DBSubnetGroup", "ec2::SecurityGroup"],
+      dependsOn: ["rds::DBSubnetGroup", "ec2::SecurityGroup", "kms::Key"],
       Client: DBCluster,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       //TODO compare

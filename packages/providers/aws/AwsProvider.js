@@ -1,7 +1,7 @@
 process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { omit, pipe, get, filter, not, reduce, tap } = require("rubico");
+const { omit, pipe, get, filter, assign, map, tap } = require("rubico");
 const { first, pluck, defaultsDeep, isFunction, isEmpty } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
@@ -10,12 +10,19 @@ const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
+const { generateCode } = require("./Aws2gc");
+const { createSpec } = require("@grucloud/core/SpecDefault");
+
+const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
+const AppSync = require("./AppSync");
 const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const AwsEC2 = require("./EC2");
+const ECR = require("./ECR");
+
 const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
 const AwsIam = require("./IAM");
@@ -26,23 +33,55 @@ const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
-const fnSpecs = () => [
-  ...ApiGateway(),
-  ...AutoScaling(),
-  ...AwsCertificateManager(),
-  ...AwsCloudFront(),
-  ...CognitoIdentityServiceProvider(),
-  ...AwsEC2(),
-  ...AwsEKS(),
-  ...AwsELBv2(),
-  ...AwsIam(),
-  ...AwsKMS(),
-  ...AwsLambda(),
-  ...AwsRDS(),
-  ...AwsRoute53(),
-  ...AwsRoute53Domain(),
-  ...AwsS3(),
-];
+const fnSpecs = (config) =>
+  pipe([
+    tap(() => {
+      assert(config);
+    }),
+    () => [
+      //...ApiGateway(),
+      ...ApiGatewayV2(),
+      //...AppSync(),
+      ...AutoScaling(),
+      ...AwsCertificateManager(),
+      ...AwsCloudFront(),
+      ...CognitoIdentityServiceProvider(),
+      ...AwsEC2(),
+      ...ECR(),
+      ...AwsEKS(),
+      ...AwsELBv2(),
+      ...AwsIam(),
+      ...AwsKMS(),
+      ...AwsLambda(),
+      ...AwsRDS(),
+      ...AwsRoute53(),
+      ...AwsRoute53Domain(),
+      ...AwsS3(),
+    ],
+    map(
+      assign({
+        Client: ({ Client, ...spec }) =>
+          pipe([
+            () =>
+              Client({
+                spec: createSpec({ config })(spec),
+                config,
+              }),
+            assign({
+              getList: ({ getList }) =>
+                pipe([
+                  getList,
+                  tap((params) => {
+                    //TODO order Tags
+                    assert(true);
+                  }),
+                ]),
+            }),
+            (client) => () => client,
+          ])(),
+      })
+    ),
+  ])();
 
 const getAvailabilityZonesName = ({ region }) =>
   pipe([
@@ -85,11 +124,17 @@ exports.AwsProvider = ({
 
   AWS.config.apiVersions = {
     acm: "2015-12-08",
+    apigateway: "2015-07-09",
     apigatewayv2: "2018-11-29",
+    appsync: "2017-07-25",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    cloudwatch: "2010-08-01",
     cognitoidentityserviceprovider: "2016-04-18",
+    dynamodb: "2012-08-10",
     ec2: "2016-11-15",
+    ecr: "2015-09-21",
+    ecs: "2014-11-13",
     eks: "2017-11-01",
     elb: "2012-06-01",
     elbv2: "2015-12-01",
@@ -101,6 +146,7 @@ exports.AwsProvider = ({
     route53: "2013-04-01",
     route53domains: "2014-05-15",
     s3: "2006-03-01",
+    ssm: "2014-11-06",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
@@ -165,5 +211,6 @@ exports.AwsProvider = ({
     fnSpecs,
     start,
     info,
+    generateCode,
   });
 };

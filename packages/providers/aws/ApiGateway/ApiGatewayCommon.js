@@ -7,11 +7,11 @@ exports.buildPayloadDescriptionTags = pipe([
     assert(true);
   }),
   assign({
-    Description: pipe([
+    description: pipe([
       ({ Description = "", Tags }) =>
         `${Description} tags:${JSON.stringify(Tags)}`,
       callProp("trim"),
     ]),
   }),
-  omit(["Tags"]),
+  omit(["tags"]),
 ]);

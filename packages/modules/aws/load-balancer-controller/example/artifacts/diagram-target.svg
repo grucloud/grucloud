@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1409)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-1409 1525,-1409 1525,4 -4,4"/>
-<text text-anchor="start" x="676.5" y="-1380.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project example</text>
-<text text-anchor="start" x="756.5" y="-1364.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="676.5" y="-1343.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="562.5" y="-1380.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project AWS Load Balancer Controller</text>
+<text text-anchor="start" x="757" y="-1364.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="562.5" y="-1343.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-1321 1513,-1321 1513,-8 8,-8"/>

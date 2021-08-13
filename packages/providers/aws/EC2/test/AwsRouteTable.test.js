@@ -63,7 +63,7 @@ describe.skip("AwsRouteTable", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("rt apply and destroy", async function () {
+  it.skip("rt apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider });
       await testPlanDestroy({ provider });

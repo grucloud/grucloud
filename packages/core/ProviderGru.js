@@ -779,6 +779,28 @@ exports.ProviderGru = ({
       }),
     ])();
 
+  const generateCode = ({ commandOptions, programOptions }) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `generateCode ${JSON.stringify({ commandOptions, programOptions })}`
+        );
+      }),
+      () => getProviders(),
+      map(
+        tryCatch(
+          callProp("generateCode", { commandOptions, programOptions }),
+          (error) =>
+            pipe([
+              tap(() => {
+                logger.error(error);
+                throw error;
+              }),
+            ])()
+        )
+      ),
+    ])();
+
   return {
     listLives,
     planQuery,
@@ -809,5 +831,6 @@ exports.ProviderGru = ({
         providers: getProviders(),
         options,
       }),
+    generateCode,
   };
 };

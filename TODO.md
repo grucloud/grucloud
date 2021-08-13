@@ -4,6 +4,7 @@
 - check stage for all providers
 - compare refactor
 - compare Tags
+- check if destroy is not calling getById, should se live instead
 
 ## Diagram
 
@@ -13,13 +14,11 @@
   privacy policy
   resource table styling
 
-- DBInstance : findDependencies KmsKeyId
 - SecurityGroup self
 
 ## Common:
 
 - TODO add client.toString()
-- gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 -
 - add projectName and use it as the title of the graph
@@ -30,22 +29,6 @@
 - iam deal with deleted user
 
 ## Web site
-
-- https://www.youtube.com/c/AdrianGoins/videos
-- https://www.youtube.com/c/LondonAppDeveloper/about
-- https://www.youtube.com/c/MarcelDempers/about
-- https://www.youtube.com/c/WillBrock/about
-- https://www.youtube.com/c/CloudYeti/about
-- https://www.youtube.com/c/TechWorldwithNana/about
-- https://www.youtube.com/c/TheCloudCoach/about
-- https://www.youtube.com/c/Techtter/about
-- https://www.youtube.com/c/NTFAQGuy/about
-- https://www.youtube.com/user/binarythistle
-- https://www.youtube.com/c/HoussemDellai/about
-- https://www.youtube.com/channel/UCs6i6bHcsnu-lXwNL1th35A/about
-- https://www.youtube.com/channel/UC33pBiUW51-InqrLd0BmhMQ/about
-
-- https://alternativeto.net/Manage/AddItem.aspx
 
 ## Cli
 
@@ -66,21 +49,25 @@
 
 ## Aws2gc
 
+- ec2 image
 - EKS cluster tags
 
 ## Aws
 
+- volume name for root device
+- order tags
+
+- gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
+
 - RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com
-- dependency hosted zone => domain
 - ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
   4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
+- document apigateway
 - throw error => throw Error(error.message);
-- useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
-- list ec2 instance in stopped state
 - ec2 update: handle UserData
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
@@ -89,7 +76,6 @@
 
 - aws_route53_delegation_set
 
-- getBucketTagging should not log error when tad dos not exist.
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
 

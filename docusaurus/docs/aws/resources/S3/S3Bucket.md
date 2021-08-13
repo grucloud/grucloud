@@ -217,7 +217,7 @@ const bucketName = "yourgloballyuniquebucketnamehere";
 const s3pPolicy = provider.s3.makeBucket({
   name: bucketName,
   properties: () => ({
-    Policy: JSON.stringify({
+    Policy: {
       Version: "2012-10-17",
       Statement: [
         {
@@ -231,7 +231,7 @@ const s3pPolicy = provider.s3.makeBucket({
           },
         },
       ],
-    }),
+    },
   }),
 });
 ```
@@ -291,18 +291,16 @@ Set bucket tags.
 const s3Bucket = provider.s3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
   properties: () => ({
-    Tagging: {
-      TagSet: [
-        {
-          Key: "Key1",
-          Value: "Value1",
-        },
-        {
-          Key: "Key2",
-          Value: "Value2",
-        },
-      ],
-    },
+    Tags: [
+      {
+        Key: "Key1",
+        Value: "Value1",
+      },
+      {
+        Key: "Key2",
+        Value: "Value2",
+      },
+    ],
   }),
 });
 ```

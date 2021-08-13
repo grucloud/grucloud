@@ -106,7 +106,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList autoscaling group ${tos(params)}`);
@@ -141,11 +141,10 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const isDownByName = ({ name }) =>
-    pipe([() => getByName({ name }), isEmpty])();
+  const isDownByName = pipe([getByName, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
-  const destroy = async ({ live, lives }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
       () => ({ name: findName({ live, lives }) }),
       ({ name }) =>
@@ -159,7 +158,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
             pipe([
               //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
               () => ({ AutoScalingGroupName: name, ForceDelete: true }),
-              (params) => autoScaling().deleteAutoScalingGroup(params),
+              autoScaling().deleteAutoScalingGroup,
               tap(() =>
                 retryCall({
                   name: `isDownByName: ${name}`,

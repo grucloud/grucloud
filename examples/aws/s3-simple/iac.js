@@ -22,7 +22,17 @@ const createResources = async ({ provider }) => {
       ACL: "public-read",
       ContentType: "text/plain",
       ServerSideEncryption: "AES256",
-      Tagging: "key1=value1&key2=value2",
+      Tags: [
+        {
+          Key: "Key1",
+          Value: "Value1",
+        },
+        {
+          Key: "Key2",
+          Value: "Value2",
+        },
+      ],
+      // should not use process.cwd()
       source: path.join(process.cwd(), "package.json"),
     }),
   });

@@ -12,14 +12,7 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  pluck,
-  find,
-  identity,
-} = require("rubico/x");
+const { first, defaultsDeep, isEmpty, pluck, find, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
@@ -65,9 +58,6 @@ exports.ELBListener = ({ spec, config }) => {
           providerName,
           id: live.LoadBalancerArn,
         }),
-      tap((xxx) => {
-        logger.debug(``);
-      }),
       get("namespace"),
     ])();
 
@@ -131,7 +121,7 @@ exports.ELBListener = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getList = async () =>
+  const getList = () =>
     pipe([
       tap(() => {
         logger.info(`getList listener`);
@@ -192,13 +182,31 @@ exports.ELBListener = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create listener : ${name}`);
         logger.debug(`${tos(payload)}`);
       }),
-      () => elb().createListener(payload),
+      () =>
+        retryCall({
+          name: `elb listener: ${name}`,
+          fn: () => elb().createListener(payload),
+          config: { retryCount: 40 * 10, retryDelay: 10e3 },
+          shouldRetryOnException: ({ error }) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `listener create isExpectedException ${tos(error)}`
+                );
+              }),
+              () => error,
+              eq(get("code"), "UnsupportedCertificate"),
+            ])(),
+        }),
+      tap((params) => {
+        assert(true);
+      }),
       get("Listeners"),
       first,
       tap(({ ListenerArn }) =>
@@ -225,7 +233,7 @@ exports.ELBListener = ({ spec, config }) => {
           () => ({
             ListenerArn: id,
           }),
-          (params) => elb().deleteListener(params),
+          elb().deleteListener,
           tap(() =>
             retryCall({
               name: `listener isDownById: ${id}`,
@@ -240,7 +248,7 @@ exports.ELBListener = ({ spec, config }) => {
     ])();
 
   const certificateProperties = ({ certificate }) =>
-    switchCase([
+    when(
       () => certificate,
       () => ({
         Certificates: [
@@ -248,12 +256,11 @@ exports.ELBListener = ({ spec, config }) => {
             CertificateArn: getField(certificate, "CertificateArn"),
           },
         ],
-      }),
-      identity,
-    ])();
+      })
+    )();
 
   const targetGroupProperties = ({ targetGroup }) =>
-    switchCase([
+    when(
       () => targetGroup,
       () => ({
         DefaultActions: [
@@ -273,12 +280,11 @@ exports.ELBListener = ({ spec, config }) => {
             },
           },
         ],
-      }),
-      identity,
-    ])();
+      })
+    )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,

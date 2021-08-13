@@ -16,6 +16,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   const findName = get("live.KeyName");
   const findId = findName;
 
+  //TODO add describeKeyPairs
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {

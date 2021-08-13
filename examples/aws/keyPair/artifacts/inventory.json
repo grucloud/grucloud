@@ -1,0 +1,79 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "keyPair",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/keyPair/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/keyPair"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
+                                "type": "KeyPair",
+                                "name": "kp",
+                                "id": "kp",
+                                "providerName": "aws",
+                                "groupType": "ec2::KeyPair",
+                                "live": {
+                                    "KeyPairId": "key-0772a58927ec9a6ef",
+                                    "KeyFingerprint": "64:f3:94:4b:91:a2:0d:db:0c:26:1e:e4:16:fb:b6:ad:ad:0a:1c:d9",
+                                    "KeyName": "kp",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "@grucloud/example-aws-ec2-keypair"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "kp"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::ec2::KeyPair::kp",
+                                "displayName": "kp",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::KeyPair",
+                        "type": "KeyPair",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

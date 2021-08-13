@@ -64,6 +64,7 @@ exports.createProgram = () => {
   program.option("-c, --config <file>", "config file, default is config.js");
   program.option("-j, --json <file>", "write result to a file in json format");
   program.option("-d, --workingDirectory <file>", "The working directory.");
+  program.option("--noOpen", "Do not open diagram");
 
   const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
@@ -101,6 +102,7 @@ exports.createProgram = () => {
               (cli) =>
                 cli[commandName]({
                   commandOptions,
+                  programOptions,
                 }),
             ]),
             handleError
@@ -233,6 +235,27 @@ exports.createProgram = () => {
     )
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "graphTree", program }));
+
+  program
+    .command("gencode")
+    .description("Generate infrastruture code from deployed resources")
+    .alias("c")
+    .option("--projectName <value>", "The project name")
+    .option("--input <file>", "lives resources", "artifacts/inventory.json")
+    .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
+    .option(
+      "-c, --outputConfig <file>",
+      "config.js output",
+      "artifacts/config.js"
+    )
+    .option(
+      "--outputEnv <file>",
+      "default.env environment variables",
+      "artifacts/default.env"
+    )
+    .option("-m, --mapping <file>", "mapping file", "mapping.json")
+    .option(...optionFilteredByProvider)
+    .action(runCommand({ commandName: "genCode", program }));
 
   return program;
 };

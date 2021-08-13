@@ -125,7 +125,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "DomainName",
-      group: "apigateway",
+      group: "apiGatewayV2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -135,7 +135,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "DomainName",
-                group: "apigateway",
+                group: "apiGatewayV2",
                 providerName,
               }),
             filter(
@@ -564,6 +564,7 @@ exports.Route53Record = ({ spec, config }) => {
       })),
     ])();
 
+  //TODO Regional
   const apiGatewayRecord = ({ apiGatewayDomainName, hostedZone }) =>
     pipe([
       () => apiGatewayDomainName,
@@ -571,12 +572,26 @@ exports.Route53Record = ({ spec, config }) => {
         Name: hostedZone.config.Name,
         Type: "A",
         AliasTarget: {
+          HostedZoneId: getField(apiGatewayDomainName, "regionalHostedZoneId"),
+          DNSName: `${getField(apiGatewayDomainName, "regionalDomainName")}.`,
+          EvaluateTargetHealth: false,
+        },
+      })),
+    ])();
+
+  const apiGatewayV2Record = ({ apiGatewayV2DomainName, hostedZone }) =>
+    pipe([
+      () => apiGatewayV2DomainName,
+      unless(isEmpty, () => ({
+        Name: hostedZone.config.Name,
+        Type: "A",
+        AliasTarget: {
           HostedZoneId: getField(
-            apiGatewayDomainName,
+            apiGatewayV2DomainName,
             "DomainNameConfigurations[0].HostedZoneId"
           ),
           DNSName: `${getField(
-            apiGatewayDomainName,
+            apiGatewayV2DomainName,
             "DomainNameConfigurations[0].ApiGatewayDomainName"
           )}.`,
           EvaluateTargetHealth: false,
@@ -606,6 +621,7 @@ exports.Route53Record = ({ spec, config }) => {
       loadBalancer,
       hostedZone,
       apiGatewayDomainName,
+      apiGatewayV2DomainName,
       distribution,
     },
   }) =>
@@ -617,6 +633,7 @@ exports.Route53Record = ({ spec, config }) => {
       defaultsDeep(certificateRecord({ certificate })),
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
       defaultsDeep(apiGatewayRecord({ apiGatewayDomainName, hostedZone })),
+      defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),
       defaultsDeep(distributionRecord({ distribution, hostedZone })),
       defaultsDeep({ Name: name }),
     ])();

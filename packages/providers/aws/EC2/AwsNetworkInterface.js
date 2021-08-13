@@ -122,6 +122,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
 
   return {
     spec,
+    managedByOther: () => true,
     findDependencies,
     findNamespace,
     findId,

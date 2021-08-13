@@ -1,0 +1,20 @@
+{
+  "name": "aws-appsync-graphql",
+  "version": "1.34.0",
+  "description": "AWS AppSync Graphql example",
+  "private": true,
+  "main": "iac.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.34.0",
+    "@grucloud/provider-aws": "^1.34.0",
+    "rubico": "^1.6.26"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
+  }
+}

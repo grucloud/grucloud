@@ -29,9 +29,9 @@
 <text text-anchor="start" x="36" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
 <text text-anchor="start" x="36" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/firebasenotifications.view...</text>
 </g>
-<!-- ServiceAccount::::107021879937756164230 -->
+<!-- ServiceAccount::::sa&#45;dev -->
 <g id="node2" class="node">
-<title>ServiceAccount::::107021879937756164230</title>
+<title>ServiceAccount::::sa&#45;dev</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="225.5,-129 80.5,-129 80.5,-71 225.5,-71 225.5,-129"/>
 <text text-anchor="start" x="93" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
 <text text-anchor="start" x="93" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>

@@ -1,0 +1,158 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "simple",
+        "dotFile": "/Users/fredericheem/grucloud/examples/google/storage/simple/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/google/storage/simple"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "google",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "storage",
+                                "type": "Bucket",
+                                "name": "grucloud-test",
+                                "id": "grucloud-test",
+                                "providerName": "google",
+                                "groupType": "storage::Bucket",
+                                "live": {
+                                    "kind": "storage#bucket",
+                                    "selfLink": "https://www.googleapis.com/storage/v1/b/grucloud-test",
+                                    "id": "grucloud-test",
+                                    "name": "grucloud-test",
+                                    "projectNumber": "91170824493",
+                                    "metageneration": "1",
+                                    "location": "EUROPE-WEST4",
+                                    "storageClass": "STANDARD",
+                                    "etag": "CAE=",
+                                    "timeCreated": "2021-08-12T22:41:34.200Z",
+                                    "updated": "2021-08-12T22:41:34.200Z",
+                                    "labels": {
+                                        "managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "iamConfiguration": {
+                                        "bucketPolicyOnly": {
+                                            "enabled": false
+                                        },
+                                        "uniformBucketLevelAccess": {
+                                            "enabled": false
+                                        },
+                                        "publicAccessPrevention": "unspecified"
+                                    },
+                                    "locationType": "region",
+                                    "iam": {
+                                        "kind": "storage#policy",
+                                        "resourceId": "projects/_/buckets/grucloud-test",
+                                        "version": 1,
+                                        "etag": "CAE=",
+                                        "bindings": [
+                                            {
+                                                "role": "roles/storage.legacyBucketOwner",
+                                                "members": [
+                                                    "projectEditor:grucloud-test",
+                                                    "projectOwner:grucloud-test"
+                                                ]
+                                            },
+                                            {
+                                                "role": "roles/storage.legacyBucketReader",
+                                                "members": [
+                                                    "projectViewer:grucloud-test"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "google::storage::Bucket::grucloud-test",
+                                "displayName": "grucloud-test",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "storage::Bucket",
+                        "type": "Bucket",
+                        "group": "storage",
+                        "providerName": "google"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "storage",
+                                "type": "Object",
+                                "name": "myfile",
+                                "id": "grucloud-test/myfile/1628808098451076",
+                                "providerName": "google",
+                                "groupType": "storage::Object",
+                                "live": {
+                                    "kind": "storage#object",
+                                    "id": "grucloud-test/myfile/1628808098451076",
+                                    "selfLink": "https://www.googleapis.com/storage/v1/b/grucloud-test/o/myfile",
+                                    "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/grucloud-test/o/myfile?generation=1628808098451076&alt=media",
+                                    "name": "myfile",
+                                    "bucket": "grucloud-test",
+                                    "generation": "1628808098451076",
+                                    "metageneration": "1",
+                                    "contentType": "text/json",
+                                    "storageClass": "STANDARD",
+                                    "size": "1283",
+                                    "md5Hash": "iB6LLy4xJKsv4AWVWLWpCg==",
+                                    "crc32c": "3wizxQ==",
+                                    "etag": "CISd9oDHrPICEAE=",
+                                    "timeCreated": "2021-08-12T22:41:38.452Z",
+                                    "updated": "2021-08-12T22:41:38.452Z",
+                                    "timeStorageClassUpdated": "2021-08-12T22:41:38.452Z",
+                                    "metadata": {
+                                        "managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    }
+                                },
+                                "uri": "google::storage::Object::myfile",
+                                "displayName": "myfile",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Bucket",
+                                        "ids": [
+                                            "grucloud-test"
+                                        ],
+                                        "providerName": "google",
+                                        "groupType": "undefined::Bucket"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "storage::Object",
+                        "type": "Object",
+                        "group": "storage",
+                        "providerName": "google"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

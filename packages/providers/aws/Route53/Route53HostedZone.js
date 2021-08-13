@@ -95,10 +95,14 @@ exports.Route53HostedZone = ({ spec, config }) => {
             group: "route53Domain",
             providerName,
           }),
-        tap((params) => {
-          assert(true);
-        }),
-        filter(eq(get("live.DomainName"), live.Name.slice(0, -1))),
+        filter(
+          pipe([
+            get("live.DomainName"),
+            (DomainName) =>
+              pipe([() => live.Name.slice(0, -1), includes(DomainName)])(),
+          ])
+        ),
+        pluck("id"),
       ])(),
     },
     {

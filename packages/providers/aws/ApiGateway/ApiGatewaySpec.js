@@ -1,14 +1,14 @@
 const { pipe, assign, map } = require("rubico");
 const { isOurMinionObject } = require("../AwsCommon");
-const { Api, compareApi } = require("./Api");
+const { RestApi, compareRestApi } = require("./RestApi");
 const { Stage, compareStage } = require("./Stage");
 const { Deployment, compareDeployment } = require("./Deployment");
-const { Route, compareRoute } = require("./Route");
 const { Integration, compareIntegration } = require("./Integration");
 const { DomainName, compareDomainName } = require("./DomainName");
-const { ApiMapping, compareApiMapping } = require("./ApiMapping");
+const { Authorizer, compareAuthorizer } = require("./Authorizer");
+const { Resource, compareResource } = require("./Resource");
 
-const GROUP = "apigateway";
+const GROUP = "apiGateway";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -17,64 +17,65 @@ module.exports = () =>
       dependsOn: ["acm::Certificate"],
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
+        isOurMinionObject({ tags: live.tags, config }),
       compare: compareDomainName,
     },
     {
-      type: "Api",
-      Client: Api,
+      type: "RestApi",
+      Client: RestApi,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
-      compare: compareApi,
+        isOurMinionObject({ tags: live.tags, config }),
+      compare: compareRestApi,
     },
 
     {
       type: "Stage",
-      dependsOn: ["apigateway::Api"],
+      dependsOn: ["apiGateway::RestApi"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
+        isOurMinionObject({ tags: live.tags, config }),
       compare: compareStage,
     },
     {
-      type: "ApiMapping",
-      dependsOn: [
-        "apigateway::Api",
-        "apigateway::Stage",
-        "apigateway::DomainName",
-      ],
-      Client: ApiMapping,
+      type: "Resource",
+      dependsOn: ["apiGateway::RestApi"],
+      Client: Resource,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
-      compare: compareApiMapping,
+        isOurMinionObject({ tags: live.tags, config }),
+      compare: compareResource,
     },
+    {
+      type: "Authorizer",
+      dependsOn: ["apiGateway::RestApi"],
+      Client: Authorizer,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.tags, config }),
+      compare: compareAuthorizer,
+    },
+
     {
       type: "Integration",
-      dependsOn: ["apigateway::Api", "lambda::Function"],
+      dependsOn: [
+        "apiGateway::RestApi",
+        "apiGateway::Resource",
+        "lambda::Function",
+      ],
       Client: Integration,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
+        isOurMinionObject({ tags: live.tags, config }),
       compare: compareIntegration,
-    },
-    {
-      type: "Route",
-      dependsOn: ["apigateway::Api", "apigateway::Integration"],
-      Client: Route,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
-      compare: compareRoute,
     },
     {
       type: "Deployment",
       dependsOn: [
-        "apigateway::Api",
-        "apigateway::Route",
-        "apigateway::Stage",
-        "apigateway::Integration",
+        "apiGateway::RestApi",
+        "apiGateway::Stage",
+        "apiGateway::Resource",
+        "apiGateway::Integration",
       ],
       Client: Deployment,
       isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
+        isOurMinionObject({ tags: live.tags, config }),
       compare: compareDeployment,
     },
   ]);

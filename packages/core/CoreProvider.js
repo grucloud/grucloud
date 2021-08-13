@@ -112,11 +112,20 @@ const createResourceMakers = ({
     }),
   ])();
 
+const buildProviderConfig = ({ config = {}, providerName }) =>
+  pipe([
+    () => config,
+    defaultsDeep({ providerName }),
+    defaultsDeep(configProviderDefault),
+  ])();
+
+exports.buildProviderConfig = buildProviderConfig;
+
 function CoreProvider({
   name: providerName,
   dependencies = {},
   type,
-  programOptions = { workingDirectory: process.cwd() },
+  programOptions = {},
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
   fnSpecs,
@@ -125,11 +134,17 @@ function CoreProvider({
   init = () => {},
   unInit = () => {},
   start = () => {},
+  generateCode = () => {},
 }) {
   let _lives;
   const setLives = (livesToSet) => {
     _lives = livesToSet;
   };
+  const getProgramOptions = () =>
+    pipe([
+      () => programOptions,
+      defaultsDeep({ workingDirectory: process.cwd() }),
+    ])();
 
   const getLives = pipe([
     () => _lives,
@@ -137,17 +152,9 @@ function CoreProvider({
     switchCase([isEmpty, pipe([() => createLives(), tap(setLives)]), identity]),
   ]);
 
-  const providerConfig = pipe([
-    () => config,
-    defaultsDeep({ providerName }),
-    defaultsDeep(configProviderDefault),
-  ])();
+  const providerConfig = buildProviderConfig({ config, providerName });
 
-  logger.debug(
-    `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
-      providerConfig
-    )}`
-  );
+  logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
   const hookMap = new Map();
 
@@ -203,6 +210,7 @@ function CoreProvider({
     tap((params) => {
       assert(true);
     }),
+    //TODO add group
     map(pipe([JSON.parse, get("type")])),
     tap((params) => {
       assert(true);
@@ -1507,7 +1515,7 @@ function CoreProvider({
                 decorateLive({
                   client: engine.client,
                   lives: getLives(),
-                  config: provider.config,
+                  config: providerConfig,
                 }),
                 tap((resource) => {
                   getLives().addResource({
@@ -1598,9 +1606,8 @@ function CoreProvider({
               lives: getLives(),
             }),
           isExpectedResult: () => true,
-          //TODO isExpectedException: client.isExpectedExceptionDelete
           shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-          config: provider.config,
+          config: providerConfig,
         })
       ),
       tap(() => {
@@ -1738,6 +1745,7 @@ function CoreProvider({
     start: startBase,
     specs,
     mapNameToResource,
+    generateCode,
   };
 
   return pipe([
@@ -1748,7 +1756,7 @@ function CoreProvider({
         specs,
         prefix: "make",
         filterResource: not(get("listOnly")),
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
     defaultsDeep(
@@ -1756,7 +1764,7 @@ function CoreProvider({
         provider,
         specs,
         prefix: "use",
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
     defaultsDeep(
@@ -1764,7 +1772,7 @@ function CoreProvider({
         provider,
         specs,
         prefix: "useDefault",
-        programOptions,
+        programOptions: getProgramOptions(),
       })
     ),
   ])();

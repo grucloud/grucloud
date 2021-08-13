@@ -32,36 +32,38 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
-const findId = get("live.DeploymentId");
+
+const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
+const pickParam = ({ restApiId, id }) => ({ restApiId, deploymentId: id });
 
 exports.Deployment = ({ spec, config }) => {
   const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
+    createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
-      type: "Api",
-      group: "apigateway",
+      type: "RestApi",
+      group: "apiGateway",
       ids: [live.ApiId],
     },
     {
       type: "Stage",
-      group: "apigateway",
+      group: "apiGateway",
       ids: pipe([
         () =>
           lives.getByType({
             providerName: config.providerName,
             type: "Stage",
-            group: "apigateway",
+            group: "apiGateway",
           }),
-        filter(eq(get("live.DeploymentId"), live.DeploymentId)),
+        filter(eq(get("live.id"), live.deploymentId)),
         pluck("id"),
       ])(),
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployments-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getDeployments-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -71,20 +73,20 @@ exports.Deployment = ({ spec, config }) => {
       () =>
         lives.getByType({
           providerName: config.providerName,
-          type: "Api",
-          group: "apigateway",
+          type: "RestApi",
+          group: "apiGateway",
         }),
       pluck("id"),
-      flatMap((ApiId) =>
+      flatMap((restApiId) =>
         tryCatch(
           pipe([
-            () => apiGateway().getDeployments({ ApiId }),
-            get("Items"),
-            map(defaultsDeep({ ApiId })),
+            () => apiGateway().getDeployments({ restApiId }),
+            get("items"),
+            map(defaultsDeep({ restApiId })),
             map(
               assign({
-                Tags: tagsExtractFromDescription,
-                Description: tagsRemoveFromDescription,
+                tags: tagsExtractFromDescription,
+                description: tagsRemoveFromDescription,
               })
             ),
           ]),
@@ -111,7 +113,7 @@ exports.Deployment = ({ spec, config }) => {
   //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createDeployment-property
   const create = ({ name, payload }) =>
     pipe([
       tap(() => {
@@ -139,46 +141,50 @@ exports.Deployment = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDeployment-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteDeployment-property
   const destroy = ({ live }) =>
     pipe([
       () => live,
-      pick(["ApiId", "DeploymentId"]),
+      pickParam,
       tap((params) => {
         logger.info(`destroy deployment ${JSON.stringify(params)}`);
-        assert(live.ApiId);
-        assert(live.DeploymentId);
+        assert(params.restApiId);
+        assert(params.deploymentId);
       }),
       tap(
         tryCatch(apiGateway().deleteDeployment, (error) =>
           pipe([
-            tap((params) => {
-              assert(true);
+            tap(() => {
+              logger.error(`deleteDeployment ${JSON.stringify(error)}`);
             }),
-            () => undefined,
+            () => error,
+            switchCase([
+              eq(get("code"), "NotFoundException"),
+              () => undefined,
+              () => {
+                throw error;
+              },
+            ]),
           ])()
         )
       ),
-      tap((params) => {
-        logger.debug(`destroyed deployment ${JSON.stringify(params)}`);
-      }),
     ])();
 
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: { api, stage },
+    properties: { tags, ...otherProps },
+    dependencies: { restApi, stage },
   }) =>
     pipe([
       tap(() => {
-        assert(api, "missing 'api' dependency");
+        assert(restApi, "missing 'restApi' dependency");
       }),
       () => otherProps,
       defaultsDeep({
-        ApiId: getField(api, "ApiId"),
-        StageName: getField(stage, "StageName"),
-        Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
+        restApiId: getField(restApi, "id"),
+        stageName: getField(stage, "name"),
+        tags: buildTagsObject({ name, namespace, config, userTags: tags }),
       }),
     ])();
 

@@ -48,6 +48,11 @@ exports.DBInstance = ({ spec, config }) => {
       group: "ec2",
       ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
     },
+    {
+      type: "Key",
+      group: "kms",
+      ids: [live.KmsKeyId],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
@@ -176,7 +181,7 @@ exports.DBInstance = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { dbSubnetGroup, securityGroups },
+    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
   }) =>
     pipe([
       tap(() => {
@@ -192,6 +197,7 @@ exports.DBInstance = ({ spec, config }) => {
         VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
           securityGroups
         ),
+        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
         Tags: buildTags({ config, namespace, name }),
       }),
     ])();

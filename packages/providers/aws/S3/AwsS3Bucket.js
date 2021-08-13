@@ -13,6 +13,7 @@ const {
   get,
   all,
   tryCatch,
+  any,
 } = require("rubico");
 const {
   size,
@@ -20,6 +21,7 @@ const {
   isDeepEqual,
   defaultsDeep,
   unionWith,
+  when,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
@@ -49,11 +51,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketAccelerateConfiguration(params),
-        tap((x) => {
-          logger.debug(`getBucketAccelerateConfiguration ${name} ${tos(x)}`);
-        }),
-        switchCase([isEmpty, () => undefined, (data) => data]),
+        () => params,
+        s3().getBucketAccelerateConfiguration,
+        when(isEmpty, () => undefined),
       ]),
       (error) => {
         throw error;
@@ -64,21 +64,36 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketAcl(params),
-        (acl) => {
-          logger.debug(`getBucketAcl ${name} ${tos(acl)}`);
-          const grant = acl.Grants[0];
-          const ownerId = acl.Owner.ID;
-          if (
-            ownerId === grant.Grantee.ID &&
-            grant.Permission === "FULL_CONTROL" &&
-            acl.Grants.length === 1
-          ) {
-            logger.debug(`getBucketAcl ${name} default`);
-            return;
-          } else {
-            return acl;
-          }
-        },
+        get("Grants"),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          any(
+            and([
+              eq(
+                get("Grantee.URI"),
+                "http://acs.amazonaws.com/groups/global/AllUsers"
+              ),
+              eq(get("Permission"), "READ"),
+            ])
+          ),
+          () => "public-read",
+          any(
+            and([
+              eq(
+                get("Grantee.URI"),
+                "http://acs.amazonaws.com/groups/global/AllUsers"
+              ),
+              eq(get("Permission"), "WRITE"),
+            ])
+          ),
+          () => "public-write",
+          () => undefined,
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
       (error) => {
         throw error;
@@ -87,14 +102,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
   const getCORSConfiguration = ({ name, params }) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketCors(params),
-        tap((x) => {
-          logger.debug(`getBucketCors ${name} ${tos(x)}`);
-        }),
-      ]),
+      pipe([() => s3().getBucketCors(params)]),
       switchCase([
-        (error) => error.code === "NoSuchCORSConfiguration",
+        eq(get("code"), "NoSuchCORSConfiguration"),
         () => undefined,
         (error) => {
           throw error;
@@ -106,12 +116,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketEncryption(params),
-        tap((x) => {
-          logger.debug(`getBucketEncryption ${name} ${tos(x)}`);
-        }),
+        get("ServerSideEncryptionConfiguration"),
       ]),
       switchCase([
-        (err) => err.code === "ServerSideEncryptionConfigurationNotFoundError",
+        eq(get("code"), "ServerSideEncryptionConfigurationNotFoundError"),
         () => undefined,
         (err) => {
           throw err;
@@ -123,13 +131,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketLifecycleConfiguration(params),
-        tap((x) => {
-          logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
-        }),
-        switchCase([isEmpty, () => undefined, (data) => data]),
+        when(isEmpty, () => undefined),
       ]),
       switchCase([
-        (err) => err.code === "NoSuchLifecycleConfiguration",
+        eq(get("code"), "NoSuchLifecycleConfiguration"),
         () => undefined,
         (err) => {
           throw err;
@@ -149,10 +154,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketLogging(params),
-        tap((x) => {
-          logger.debug(`getBucketLogging ${name} ${tos(x)}`);
-        }),
-        switchCase([isEmpty, () => undefined, (data) => data]),
+        when(isEmpty, () => undefined),
       ]),
       (error) => {
         throw error;
@@ -164,14 +166,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketNotificationConfiguration(params),
-        tap((x) => {
-          logger.debug(`getBucketNotificationConfiguration ${name} ${tos(x)}`);
-        }),
-        switchCase([
+        when(
           (data) => all(isEmpty)(Object.values(data)),
-          () => undefined,
-          (data) => data,
-        ]),
+          () => undefined
+        ),
       ]),
       (error) => {
         throw error;
@@ -182,12 +180,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketPolicy(params),
-        tap((x) => {
-          logger.debug(`getBucketPolicy ${name} ${tos(x)}`);
-        }),
+        get("Policy"),
+        tryCatch(JSON.parse, () => undefined),
       ]),
       switchCase([
-        (err) => err.code === "NoSuchBucketPolicy",
+        eq(get("code"), "NoSuchBucketPolicy"),
         () => undefined,
         (err) => {
           throw err;
@@ -197,15 +194,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
   const getPolicyStatus = ({ name, params }) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketPolicyStatus(params),
-        tap((x) => {
-          logger.debug(`getBucketPolicyStatus ${name} ${tos(x)}`);
-        }),
-        get("PolicyStatus"),
-      ]),
+      pipe([() => s3().getBucketPolicyStatus(params), get("PolicyStatus")]),
       switchCase([
-        (err) => err.code === "NoSuchBucketPolicy",
+        eq(get("code"), "NoSuchBucketPolicy"),
         () => undefined,
         (err) => {
           throw err;
@@ -217,13 +208,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketReplication(params),
-        tap((x) => {
-          logger.debug(`getBucketReplication ${name} ${tos(x)}`);
-        }),
         get("ReplicationConfiguration"),
       ]),
       switchCase([
-        (err) => err.code === "ReplicationConfigurationNotFoundError",
+        eq(get("code"), "ReplicationConfigurationNotFoundError"),
         () => undefined,
         (err) => {
           throw err;
@@ -235,11 +223,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketRequestPayment(params),
-        switchCase([
-          (data) => data.Payer === "BucketOwner",
-          () => undefined,
-          (data) => data,
-        ]),
+        when(eq(get("Payer"), "BucketOwner"), () => undefined),
       ]),
       (err) => {
         throw err;
@@ -250,10 +234,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketVersioning(params),
-        switchCase([isEmpty, () => undefined, (data) => data]),
-        tap((x) => {
-          logger.debug(`getBucketVersioning ${name} ${tos(x)}`);
-        }),
+        when(isEmpty, () => undefined),
       ]),
       (err) => {
         throw err;
@@ -264,13 +245,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([
         () => s3().getBucketWebsite(params),
-        switchCase([isEmpty, () => undefined, (data) => data]),
-        tap((x) => {
-          logger.debug(`getBucketWebsite ${name} ${tos(x)}`);
-        }),
+        when(isEmpty, () => undefined),
       ]),
       switchCase([
-        (err) => err.code === "NoSuchWebsiteConfiguration",
+        eq(get("code"), "NoSuchWebsiteConfiguration"),
         () => undefined,
         (err) => {
           throw err;
@@ -297,28 +275,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 );
               }),
             ]),
+            isExpectedException: eq(get("code"), "NoSuchTagset"),
             shouldRetryOnException: ({ error, name }) =>
               pipe([
-                tap(() => {
-                  logger.error(
-                    `getBucketTagging shouldRetryOnException ${tos({
-                      name,
-                      error,
-                    })}`
-                  );
-                  error.stack && logger.error(error.stack);
-                }),
+                () => error,
                 or([
                   () => [503].includes(error.statusCode),
                   // TODO check that
                   eq(get("code"), "NoSuchBucket"),
                 ]),
-                tap((retry) => {
-                  logger.error(
-                    `getBucketTagging shouldRetryOnException retry: ${retry}`
-                  );
-                }),
-              ])(error),
+              ])(),
             config: { retryCount: 5, retryDelay: 1e3 },
           }),
       ]),
@@ -360,7 +326,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ),
       filter(pipe([get("error"), isEmpty])),
       tap((fullBuckets) => {
-        logger.info(`getList s3bucket #items ${fullBuckets.length}`);
         logger.debug(`getList full ${tos(fullBuckets)}`);
       }),
       (fullBuckets) => ({
@@ -370,13 +335,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
-  const getByName = async ({ name, deep = true, getTags = true }) =>
+  const getByName = ({ name, deep = true, getTags = true }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}, deep: ${deep}`);
       }),
       switchCase([
-        () => isUpById({ id: name }),
+        () => isUpById({ Bucket: name }),
         pipe([
           () => ({ Bucket: name }),
           (params) =>
@@ -435,15 +400,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }),
     ])();
 
-  const getById = async ({ id }) => await getByName({ name: id });
-
-  const headBucket = async ({ id }) =>
+  const isUpById = ({ Bucket }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`headBucket: ${id}`);
+          logger.debug(`headBucket: ${Bucket}`);
         }),
-        () => s3().headBucket({ Bucket: id }),
+        () => s3().headBucket({ Bucket }),
         () => true,
       ]),
       switchCase([
@@ -453,24 +416,14 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         ]),
         () => false,
         (error) => {
-          logger.error(`headBucket ${id}`);
+          logger.error(`headBucket ${Bucket}`);
           logger.error(error);
           throw error;
         },
       ])
     )();
 
-  const isUpById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isUpById ${id} ${up ? "UP" : "DOWN"}`);
-    return up;
-  };
-
-  const isDownById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isDownById ${id} ${up ? "UP" : "DOWN"}`);
-    return !up;
-  };
+  const isDownById = not(isUpById);
 
   const putTags = ({ Bucket, paramsTag }) =>
     retryCall({
@@ -517,7 +470,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       Policy,
       ReplicationConfiguration,
       RequestPaymentConfiguration,
-      Tagging,
+      Tags = [],
       VersioningConfiguration,
       WebsiteConfiguration,
       ...otherProperties
@@ -530,7 +483,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     const paramsTag = {
       Bucket,
       Tagging: {
-        TagSet: unionWith(isDeepEqual)([Tagging?.TagSet || [], managementTags]),
+        TagSet: unionWith(isDeepEqual)([Tags, managementTags]),
       },
     };
 
@@ -548,7 +501,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `s3 isUpById: ${Bucket}`,
-          fn: () => isUpById({ id: Bucket }),
+          fn: () => isUpById({ Bucket }),
           config: { repeatCount: 6, retryCount: 10, retryDelay: 1e3 },
         })
       ),
@@ -661,7 +614,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           if (Policy) {
             await s3().putBucketPolicy({
               Bucket,
-              Policy,
+              Policy: JSON.stringify(Policy),
             });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
@@ -706,18 +659,17 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  const destroy = async ({ id: Bucket }) => {
-    assert(Bucket, `destroy invalid s3 id`);
-
-    await pipe([
+  const destroy = ({ id: Bucket }) =>
+    pipe([
       tap(() => {
+        assert(Bucket, `destroy invalid s3 id`);
         logger.info(`destroy bucket ${tos({ Bucket })}`);
       }),
       async () => {
         do {
           var isTruncated = await pipe([
             () => s3().listObjectsV2({ Bucket }),
-            ({ Contents }) => Contents,
+            get("Contents"),
             tap((Contents) => {
               logger.debug(`listObjects Contents: ${tos({ Contents })}`);
             }),
@@ -730,11 +682,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                   });
                 } catch (error) {
                   logger.error(`listObjects error: ${tos({ error })}`);
-                  //
+                  //TODO
                 }
               })
             ),
-            ({ IsTruncated }) => IsTruncated,
+            get("IsTruncated"),
             tap((IsTruncated) => {
               logger.debug(`listObjects IsTruncated: ${IsTruncated}`);
             }),
@@ -784,7 +736,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 },
               ])
             ),
-            ({ IsTruncated }) => IsTruncated,
+            get("IsTruncated"),
             tap((IsTruncated) => {
               logger.debug(`listObjectVersions IsTruncated: ${IsTruncated}`);
             }),
@@ -806,7 +758,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         logger.info(`destroyed s3 bucket ${tos({ Bucket })}`);
       }),
     ])();
-  };
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({ Bucket: name })(properties);

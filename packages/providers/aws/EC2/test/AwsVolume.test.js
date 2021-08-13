@@ -65,7 +65,7 @@ describe.skip("AwsVolume", async function () {
   });
 
   after(async () => {});
-  it("volume apply and destroy", async function () {
+  it.skip("volume apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });
 

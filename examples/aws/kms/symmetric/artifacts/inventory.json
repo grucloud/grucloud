@@ -1,0 +1,269 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "types": [
+            "Key"
+        ],
+        "title": "symmetric",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/kms/symmetric/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/kms/symmetric"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [],
+                        "groupType": "ec2::KeyPair",
+                        "type": "KeyPair",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/acm",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/8896c7af-3b9e-45b9-849c-07f8c75dcb12",
+                                    "CreationDate": "2020-11-13T18:44:25.220Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my ACM private keys when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Alias": "alias/aws/acm"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/acm",
+                                "displayName": "alias/aws/acm",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/ebs",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/cb29f70c-2c8f-4f55-9220-5ca9d5f09129",
+                                    "CreationDate": "2021-04-21T06:34:45.106Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my EBS volumes when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/ebs"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/ebs",
+                                "displayName": "alias/aws/ebs",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/rds",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/53a82424-5abc-48b8-a20f-9d1904aa4d99",
+                                    "CreationDate": "2021-06-10T08:46:21.740Z",
+                                    "Enabled": true,
+                                    "Description": "Default master key that protects my RDS database volumes when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/rds"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/rds",
+                                "displayName": "alias/aws/rds",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "eks-key",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
+                                    "CreationDate": "2021-07-09T20:59:18.231Z",
+                                    "Enabled": false,
+                                    "Description": "",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "PendingDeletion",
+                                    "DeletionDate": "2021-08-18T13:04:14.043Z",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "CUSTOMER",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "eks-key"
+                                        },
+                                        {
+                                            "TagKey": "gc-created-by-provider",
+                                            "TagValue": "aws"
+                                        },
+                                        {
+                                            "TagKey": "gc-managed-by",
+                                            "TagValue": "grucloud"
+                                        },
+                                        {
+                                            "TagKey": "gc-provider-name",
+                                            "TagValue": "starhackit"
+                                        },
+                                        {
+                                            "TagKey": "gc-stage",
+                                            "TagValue": "dev"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::kms::Key::eks-key",
+                                "displayName": "eks-key",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "secret-key-test",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/29eeaca7-c4ef-4d4f-88bf-d309d2b69131",
+                                    "CreationDate": "2021-08-02T22:46:22.059Z",
+                                    "Enabled": true,
+                                    "Description": "",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "CUSTOMER",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "secret-key-test"
+                                        },
+                                        {
+                                            "TagKey": "gc-created-by-provider",
+                                            "TagValue": "aws"
+                                        },
+                                        {
+                                            "TagKey": "gc-managed-by",
+                                            "TagValue": "grucloud"
+                                        },
+                                        {
+                                            "TagKey": "gc-project-name",
+                                            "TagValue": "kms-symmetric"
+                                        },
+                                        {
+                                            "TagKey": "gc-stage",
+                                            "TagValue": "dev"
+                                        }
+                                    ],
+                                    "Alias": "alias/secret-key-test"
+                                },
+                                "uri": "aws::kms::Key::secret-key-test",
+                                "displayName": "secret-key-test",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "kms::Key",
+                        "type": "Key",
+                        "group": "kms",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

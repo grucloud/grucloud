@@ -1,5 +1,16 @@
-const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck, find } = require("rubico/x");
+const {
+  get,
+  pipe,
+  filter,
+  map,
+  tap,
+  eq,
+  switchCase,
+  not,
+  pick,
+  tryCatch,
+} = require("rubico");
+const { defaultsDeep, isEmpty, pluck, find, size } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
@@ -123,54 +134,80 @@ exports.AwsNatGateway = ({ spec, config }) => {
       ({ NatGatewayId }) => ({ id: NatGatewayId }),
     ])();
 
-  const disassociateAddress = ({ NatGatewayId }) =>
+  const disassociateAddress = (live) =>
     pipe([
-      () => getById({ id: NatGatewayId }),
+      () => live,
       get("NatGatewayAddresses"),
+      tap((NatGatewayAddresses) => {
+        logger.info(
+          `destroy nat #NatGatewayAddresses ${size(NatGatewayAddresses)}`
+        );
+      }),
       map(
         pipe([
           ({ AllocationId }) => {
-            () =>
-              ec2().describeAddresses({
-                Filters: [
-                  {
-                    Name: "allocation-id",
-                    Values: [AllocationId],
-                  },
-                ],
-              });
+            ec2().describeAddresses({
+              Filters: [
+                {
+                  Name: "allocation-id",
+                  Values: [AllocationId],
+                },
+              ],
+            });
           },
           get("Addresses"),
-          first,
-          tap((Address) => {
-            logger.debug(`disassociateAddress ${tos({ Address })}`);
-          }),
-          tap.if(not(isEmpty), ({ AssociationId }) =>
-            ec2().disassociateAddress({
-              AssociationId,
-            })
+          map(
+            tryCatch(
+              pipe([
+                pick(["AssociationId"]),
+                tap((params) => {
+                  assert(true);
+                }),
+                ec2().disassociateAddress,
+              ]),
+              (error, address) =>
+                pipe([
+                  tap(() => {
+                    logger.error(`error disassociateAddress  ${tos(error)}`);
+                  }),
+                  () => ({ error, address }),
+                ])()
+            )
           ),
         ])
       ),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteNatGateway-property
-  const destroy = ({ id, name }) =>
+  const destroy = ({ name, live }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy nat ${JSON.stringify({ name, id })}`);
+        logger.info(`destroy nat ${live.NatGatewayId}`);
       }),
-      () => disassociateAddress({ NatGatewayId: id }),
-      () => ec2().deleteNatGateway({ NatGatewayId: id }),
-      tap(() =>
+      () => live,
+      tap(disassociateAddress),
+      pick(["NatGatewayId"]),
+      tap(
+        tryCatch(
+          ec2().deleteNatGateway,
+          switchCase([
+            eq(get("code"), "NatGatewayNotFound"),
+            () => null,
+            (error) => {
+              throw error;
+            },
+          ])
+        )
+      ),
+      tap(({ NatGatewayId }) =>
         retryCall({
-          name: `destroy nat gateway isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id, name }),
+          name: `destroy nat gateway isDownById: ${NatGatewayId}`,
+          fn: () => isDownById({ id: NatGatewayId, name }),
           config,
         })
       ),
       tap(() => {
-        logger.debug(`destroyed nat ${JSON.stringify({ name, id })}`);
+        logger.debug(`destroyed nat ${JSON.stringify({ name })}`);
       }),
     ])();
 

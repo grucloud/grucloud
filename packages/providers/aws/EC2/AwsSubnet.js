@@ -11,19 +11,15 @@ const {
   omit,
   pick,
   filter,
+  not,
 } = require("rubico");
-const { defaultsDeep, forEach, size } = require("rubico/x");
+const { defaultsDeep, first, size, isEmpty } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  getByIdCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   findNameInTags,
@@ -46,6 +42,7 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const isDefault = get("live.DefaultForAz");
   const cannotBeDeleted = isDefault;
+  const managedByOther = isDefault;
 
   const findName = switchCase([
     get("live.DefaultForAz"),
@@ -63,13 +60,21 @@ exports.AwsSubnet = ({ spec, config }) => {
     },
   ];
 
-  const getList = ({ params } = {}) =>
+  const describeSubnets = (params = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList subnet ${JSON.stringify(params)}`);
+        logger.info(`describeSubnets ${JSON.stringify(params)}`);
       }),
       () => ec2().describeSubnets(params),
       get("Subnets"),
+      tap((items) => {
+        logger.debug(`describeSubnets result: ${tos(items)}`);
+      }),
+    ])();
+
+  const getList = () =>
+    pipe([
+      describeSubnets,
       tap((items) => {
         logger.debug(`getList subnet result: ${tos(items)}`);
       }),
@@ -77,16 +82,29 @@ exports.AwsSubnet = ({ spec, config }) => {
         total: size(items),
         items,
       }),
-      tap(({ total }) => {
-        logger.info(`getList #subnet ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = ({ id }) =>
+    pipe([
+      () => ({
+        Filters: [
+          {
+            Name: "subnet-id",
+            Values: [id],
+          },
+        ],
+      }),
+      describeSubnets,
+      tap((params) => {
+        assert(true);
+      }),
+      first,
+    ])();
+
+  const isUpById = pipe([getById, not(isEmpty)]);
+  const isDownById = pipe([getById, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
 
@@ -98,7 +116,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       }),
       () => payload,
       omit(SubnetAttributes),
-      (params) => ec2().createSubnet(params),
+      ec2().createSubnet,
       get("Subnet.SubnetId"),
       tap((SubnetId) =>
         retryCall({
@@ -112,9 +130,6 @@ exports.AwsSubnet = ({ spec, config }) => {
         pipe([
           () => payload,
           pick(SubnetAttributes),
-          tap((xxx) => {
-            logger.debug(``);
-          }),
           filter(identity),
           map.entries(
             tryCatch(
@@ -126,7 +141,7 @@ exports.AwsSubnet = ({ spec, config }) => {
                       `modifySubnetAttribute ${JSON.stringify(params)}`
                     );
                   }),
-                  (params) => ec2().modifySubnetAttribute(params),
+                  ec2().modifySubnetAttribute,
                   () => [key, Value],
                 ])(),
               (error, [key]) =>
@@ -157,7 +172,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       (id) => ({ id }),
     ])();
 
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
@@ -209,12 +224,13 @@ exports.AwsSubnet = ({ spec, config }) => {
   return {
     spec,
     isDefault,
+    cannotBeDeleted,
+    managedByOther,
     findId,
     findName,
     findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
-    cannotBeDeleted,
     getList,
     create,
     destroy,

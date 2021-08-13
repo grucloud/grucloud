@@ -35,6 +35,7 @@ const {
   identity,
   uniq,
   callProp,
+  when,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "ProviderCommon" });
@@ -152,7 +153,7 @@ const filterByType = ({ types = [], targetTypes }) =>
       filter((client) =>
         pipe([
           () => types,
-          switchCase([isEmpty, () => targetTypes, identity]),
+          when(isEmpty, () => targetTypes),
           tap(() => {
             assert(client);
             assert(client.spec);
@@ -160,7 +161,7 @@ const filterByType = ({ types = [], targetTypes }) =>
           }),
           switchCase([
             or([
-              isEmpty, //TOD never empty
+              isEmpty, //TODO never empty
               pipe([
                 tap((params) => {
                   assert(true);
@@ -173,7 +174,9 @@ const filterByType = ({ types = [], targetTypes }) =>
                 }),
                 includes(client.spec.type),
                 tap((keep) => {
-                  logger.debug(`${client.spec.type}: ${keep}`);
+                  logger.debug(
+                    `filterByType ${client.spec.groupType}, keep: ${keep}`
+                  );
                 }),
               ]),
             ]),

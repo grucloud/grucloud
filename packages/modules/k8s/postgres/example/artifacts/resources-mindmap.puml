@@ -4,13 +4,8 @@ skinparam monochrome true
 + Infra
 ++ k8s
 +++ Namespace (1)
-++++ test-postgres
 +++ PersistentVolume (1)
-++++ pv-db
 +++ ConfigMap (1)
-++++ postgres
 +++ StatefulSet (1)
-++++ postgres
 +++ Service (1)
-++++ postgres
 @endmindmap

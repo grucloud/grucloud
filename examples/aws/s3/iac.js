@@ -36,8 +36,17 @@ const createResources = async ({ provider }) => {
         properties: () => ({
           ACL: "public-read",
           ContentType: "text/plain",
-          Tagging: "key1=value1&key2=value2",
-          source: path.join(__dirname, "./fixtures/testFile.txt"),
+          Tags: [
+            {
+              Key: "Key1",
+              Value: "Value1",
+            },
+            {
+              Key: "Key2",
+              Value: "Value2",
+            },
+          ],
+          source: "./fixtures/testFile.txt",
         }),
       }),
     },
@@ -160,7 +169,7 @@ const createResources = async ({ provider }) => {
       policy: provider.s3.makeBucket({
         name: `${bucketPrefix}-policy`,
         properties: () => ({
-          Policy: JSON.stringify({
+          Policy: {
             Version: "2012-10-17",
             Statement: [
               {
@@ -174,7 +183,7 @@ const createResources = async ({ provider }) => {
                 },
               },
             ],
-          }),
+          },
         }),
       }),
       //TODO policy Status
@@ -206,18 +215,16 @@ const createResources = async ({ provider }) => {
       tag: provider.s3.makeBucket({
         name: `${bucketPrefix}-tag`,
         properties: () => ({
-          Tagging: {
-            TagSet: [
-              {
-                Key: "Key1",
-                Value: "Value1",
-              },
-              {
-                Key: "Key2",
-                Value: "Value2",
-              },
-            ],
-          },
+          Tags: [
+            {
+              Key: "Key1",
+              Value: "Value1",
+            },
+            {
+              Key: "Key2",
+              Value: "Value2",
+            },
+          ],
         }),
       }),
       // Versioning

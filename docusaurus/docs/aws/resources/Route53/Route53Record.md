@@ -63,29 +63,32 @@ const hostedZone = provider.route53.makeHostedZone({
 const recordValidation = provider.route53.makeRecord({
   name: `validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
-  properties: ({ dependencies: { certificate } }) => {
-    const domainValidationOption =
-      certificate?.live?.DomainValidationOptions[0];
-    const record = domainValidationOption?.ResourceRecord;
-    if (domainValidationOption) {
-      assert(
-        record,
-        `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-          certificate.live
-        )}`
-      );
-    }
-    return {
-      Name: record?.Name,
-      ResourceRecords: [
-        {
-          Value: record?.Value,
-        },
-      ],
-      TTL: 300,
-      Type: "CNAME",
-    };
+});
+```
+
+### Alias for CloudFront Distribution
+
+Add an alias entry to the the CloudFront distribution domain name
+
+```js
+const domainName = "your.domain.name.com";
+
+const distribution = provider.cloudFront.makeDistribution({
+  name: `distribution-${bucketName}`,
+  dependencies: { websiteBucket, certificate },
+  properties: ({}) => {
+    // More stuff here
   },
+});
+
+const hostedZone = provider.route53.makeHostedZone({
+  name: `${domainName}.`,
+  dependencies: { domain },
+});
+
+const recordCloudFront = provider.route53.makeRecord({
+  name: `distribution-alias-${domainName}`,
+  dependencies: { hostedZone, distribution },
 });
 ```
 

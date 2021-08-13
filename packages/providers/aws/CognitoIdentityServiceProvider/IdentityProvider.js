@@ -47,7 +47,7 @@ exports.IdentityProvider = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "UserPool",
-          group: "apigateway",
+          group: "apiGatewayV2",
         }),
       flatMap(({ live }) =>
         tryCatch(

@@ -1,6 +1,7 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
-
+const fse = require("fs-extra");
+const path = require("path");
 const {
   map,
   pipe,
@@ -14,7 +15,7 @@ const {
   get,
   assign,
 } = require("rubico");
-const { pluck, isEmpty, when } = require("rubico/x");
+const { pluck, isEmpty, when, callProp, last } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
@@ -250,7 +251,7 @@ exports.setupProviders =
           filter(not(isEmpty)),
           filter(filterProvider({ commandOptions })),
           tap.if(isEmpty, () => {
-            throw { code: 422, message: `no provider provided` };
+            throw Error("no provider provided");
           }),
         ]),
       }),
@@ -265,3 +266,43 @@ exports.setupProviders =
         //logger.debug("setupProviders");
       }),
     ])();
+
+exports.saveToJson = ({
+  command,
+  commandOptions,
+  programOptions = {},
+  result,
+}) =>
+  pipe([
+    tap(() => {
+      assert(programOptions.workingDirectory);
+    }),
+    () => programOptions.json,
+    when(
+      not(isEmpty),
+      pipe([
+        () =>
+          path.resolve(programOptions.workingDirectory, programOptions.json),
+        tap((fullPath) => {
+          logger.debug(`saveToJson: ${fullPath}`);
+        }),
+        (fullPath) =>
+          fse.outputFile(
+            fullPath,
+            JSON.stringify(
+              { command, commandOptions, programOptions, result },
+              null,
+              4
+            )
+          ),
+      ])
+    ),
+  ])();
+
+exports.defaultTitle = (programOptions) =>
+  pipe([
+    () => programOptions,
+    get("workingDirectory", process.cwd()),
+    callProp("split", path.sep),
+    last,
+  ])();

@@ -1,0 +1,675 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "vm",
+        "dotFile": "/Users/fredericheem/grucloud/examples/azure/vm/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/azure/vm"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "azure",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "compute",
+                                "type": "VirtualMachine",
+                                "name": "vm-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/RESOURCE-GROUP-DEV/providers/Microsoft.Compute/virtualMachines/vm-dev",
+                                "providerName": "azure",
+                                "groupType": "compute::VirtualMachine",
+                                "live": {
+                                    "name": "vm-dev",
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/RESOURCE-GROUP-DEV/providers/Microsoft.Compute/virtualMachines/vm-dev",
+                                    "type": "Microsoft.Compute/virtualMachines",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "vmId": "26ff3ffa-7f16-453c-9971-3da1446ea00b",
+                                        "hardwareProfile": {
+                                            "vmSize": "Standard_A1_v2"
+                                        },
+                                        "storageProfile": {
+                                            "imageReference": {
+                                                "publisher": "Canonical",
+                                                "offer": "UbuntuServer",
+                                                "sku": "18.04-LTS",
+                                                "version": "latest",
+                                                "exactVersion": "18.04.202107200"
+                                            },
+                                            "osDisk": {
+                                                "osType": "Linux",
+                                                "name": "vm-dev_OsDisk_1_d8ba3ca38d8a48b2bf8aa890347b0c37",
+                                                "createOption": "FromImage",
+                                                "caching": "ReadWrite",
+                                                "managedDisk": {
+                                                    "storageAccountType": "Standard_LRS",
+                                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Compute/disks/vm-dev_OsDisk_1_d8ba3ca38d8a48b2bf8aa890347b0c37"
+                                                },
+                                                "diskSizeGB": 30
+                                            },
+                                            "dataDisks": []
+                                        },
+                                        "osProfile": {
+                                            "computerName": "myVM",
+                                            "adminUsername": "ops",
+                                            "linuxConfiguration": {
+                                                "disablePasswordAuthentication": false,
+                                                "provisionVMAgent": true
+                                            },
+                                            "secrets": [],
+                                            "allowExtensionOperations": true,
+                                            "requireGuestProvisionSignal": true
+                                        },
+                                        "networkProfile": {
+                                            "networkInterfaces": [
+                                                {
+                                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev"
+                                                }
+                                            ]
+                                        },
+                                        "provisioningState": "Succeeded"
+                                    }
+                                },
+                                "uri": "azure::compute::VirtualMachine::vm-dev",
+                                "displayName": "vm-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "ResourceGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::ResourceGroup"
+                                    },
+                                    {
+                                        "type": "NetworkInterface",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::NetworkInterface"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "compute::VirtualMachine",
+                        "type": "VirtualMachine",
+                        "group": "compute",
+                        "providerName": "azure"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "resourceManagement",
+                                "type": "ResourceGroup",
+                                "name": "NetworkWatcherRG",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/NetworkWatcherRG",
+                                "providerName": "azure",
+                                "groupType": "resourceManagement::ResourceGroup",
+                                "live": {
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/NetworkWatcherRG",
+                                    "name": "NetworkWatcherRG",
+                                    "type": "Microsoft.Resources/resourceGroups",
+                                    "location": "uksouth",
+                                    "properties": {
+                                        "provisioningState": "Succeeded"
+                                    }
+                                },
+                                "uri": "azure::resourceManagement::ResourceGroup::NetworkWatcherRG",
+                                "displayName": "NetworkWatcherRG",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "resourceManagement",
+                                "type": "ResourceGroup",
+                                "name": "resource-group-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev",
+                                "providerName": "azure",
+                                "groupType": "resourceManagement::ResourceGroup",
+                                "live": {
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev",
+                                    "name": "resource-group-dev",
+                                    "type": "Microsoft.Resources/resourceGroups",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "provisioningState": "Succeeded"
+                                    }
+                                },
+                                "uri": "azure::resourceManagement::ResourceGroup::resource-group-dev",
+                                "displayName": "resource-group-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "resourceManagement::ResourceGroup",
+                        "type": "ResourceGroup",
+                        "group": "resourceManagement",
+                        "providerName": "azure"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "virtualNetworks",
+                                "type": "NetworkInterface",
+                                "name": "network-interface-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev",
+                                "providerName": "azure",
+                                "groupType": "virtualNetworks::NetworkInterface",
+                                "live": {
+                                    "name": "network-interface-dev",
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev",
+                                    "etag": "W/\"38fbc004-2acd-40bd-8bd8-87a20bb862cf\"",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "provisioningState": "Succeeded",
+                                        "resourceGuid": "29d96ea6-00f2-450a-9a36-cfef6390e266",
+                                        "ipConfigurations": [
+                                            {
+                                                "name": "ipconfig",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev/ipConfigurations/ipconfig",
+                                                "etag": "W/\"38fbc004-2acd-40bd-8bd8-87a20bb862cf\"",
+                                                "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "privateIPAddress": "10.0.0.4",
+                                                    "privateIPAllocationMethod": "Dynamic",
+                                                    "publicIPAddress": {
+                                                        "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/publicIPAddresses/ip-dev"
+                                                    },
+                                                    "subnet": {
+                                                        "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/virtualNetworks/virtual-network-dev/subnets/subnet-dev"
+                                                    },
+                                                    "primary": true,
+                                                    "privateIPAddressVersion": "IPv4"
+                                                }
+                                            }
+                                        ],
+                                        "dnsSettings": {
+                                            "dnsServers": [],
+                                            "appliedDnsServers": [],
+                                            "internalDomainNameSuffix": "qex2jicoqfcebaci5ny55c4iae.zx.internal.cloudapp.net"
+                                        },
+                                        "macAddress": "00-22-48-40-61-BC",
+                                        "enableAcceleratedNetworking": false,
+                                        "enableIPForwarding": false,
+                                        "networkSecurityGroup": {
+                                            "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev"
+                                        },
+                                        "primary": true,
+                                        "virtualMachine": {
+                                            "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Compute/virtualMachines/vm-dev"
+                                        },
+                                        "hostedWorkloads": [],
+                                        "tapConfigurations": [],
+                                        "nicType": "Standard"
+                                    },
+                                    "type": "Microsoft.Network/networkInterfaces"
+                                },
+                                "uri": "azure::virtualNetworks::NetworkInterface::network-interface-dev",
+                                "displayName": "network-interface-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "ResourceGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::ResourceGroup"
+                                    },
+                                    {
+                                        "type": "VirtualNetwork",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/virtualNetworks/virtual-network-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::VirtualNetwork"
+                                    },
+                                    {
+                                        "type": "PublicIpAddress",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/publicIPAddresses/ip-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::PublicIpAddress"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "virtualNetworks::NetworkInterface",
+                        "type": "NetworkInterface",
+                        "group": "virtualNetworks",
+                        "providerName": "azure"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "virtualNetworks",
+                                "type": "PublicIpAddress",
+                                "name": "ip-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/publicIPAddresses/ip-dev",
+                                "providerName": "azure",
+                                "groupType": "virtualNetworks::PublicIpAddress",
+                                "live": {
+                                    "name": "ip-dev",
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/publicIPAddresses/ip-dev",
+                                    "etag": "W/\"7984085a-d51a-4bef-a44d-ea925604eb23\"",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "provisioningState": "Succeeded",
+                                        "resourceGuid": "4ef06eaf-36ab-40f9-92c3-f49eb6adb8ad",
+                                        "ipAddress": "20.108.2.3",
+                                        "publicIPAddressVersion": "IPv4",
+                                        "publicIPAllocationMethod": "Dynamic",
+                                        "idleTimeoutInMinutes": 4,
+                                        "ipTags": [],
+                                        "ipConfiguration": {
+                                            "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev/ipConfigurations/ipconfig"
+                                        }
+                                    },
+                                    "type": "Microsoft.Network/publicIPAddresses",
+                                    "sku": {
+                                        "name": "Basic"
+                                    }
+                                },
+                                "uri": "azure::virtualNetworks::PublicIpAddress::ip-dev",
+                                "displayName": "ip-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "ResourceGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::ResourceGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "virtualNetworks::PublicIpAddress",
+                        "type": "PublicIpAddress",
+                        "group": "virtualNetworks",
+                        "providerName": "azure"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "virtualNetworks",
+                                "type": "SecurityGroup",
+                                "name": "security-group-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev",
+                                "providerName": "azure",
+                                "groupType": "virtualNetworks::SecurityGroup",
+                                "live": {
+                                    "name": "security-group-dev",
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev",
+                                    "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                    "type": "Microsoft.Network/networkSecurityGroups",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "provisioningState": "Succeeded",
+                                        "resourceGuid": "db640e4f-4759-4947-b4fd-3ae87af8345e",
+                                        "securityRules": [
+                                            {
+                                                "name": "SSH",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/securityRules/SSH",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "protocol": "Tcp",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "22",
+                                                    "sourceAddressPrefix": "*",
+                                                    "destinationAddressPrefix": "*",
+                                                    "access": "Allow",
+                                                    "priority": 1000,
+                                                    "direction": "Inbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "ICMP",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/securityRules/ICMP",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "protocol": "Icmp",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "*",
+                                                    "destinationAddressPrefix": "*",
+                                                    "access": "Allow",
+                                                    "priority": 1001,
+                                                    "direction": "Inbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            }
+                                        ],
+                                        "defaultSecurityRules": [
+                                            {
+                                                "name": "AllowVnetInBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/AllowVnetInBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Allow inbound traffic from all VMs in VNET",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "VirtualNetwork",
+                                                    "destinationAddressPrefix": "VirtualNetwork",
+                                                    "access": "Allow",
+                                                    "priority": 65000,
+                                                    "direction": "Inbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "AllowAzureLoadBalancerInBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/AllowAzureLoadBalancerInBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Allow inbound traffic from azure load balancer",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "AzureLoadBalancer",
+                                                    "destinationAddressPrefix": "*",
+                                                    "access": "Allow",
+                                                    "priority": 65001,
+                                                    "direction": "Inbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "DenyAllInBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/DenyAllInBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Deny all inbound traffic",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "*",
+                                                    "destinationAddressPrefix": "*",
+                                                    "access": "Deny",
+                                                    "priority": 65500,
+                                                    "direction": "Inbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "AllowVnetOutBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/AllowVnetOutBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "VirtualNetwork",
+                                                    "destinationAddressPrefix": "VirtualNetwork",
+                                                    "access": "Allow",
+                                                    "priority": 65000,
+                                                    "direction": "Outbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "AllowInternetOutBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/AllowInternetOutBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Allow outbound traffic from all VMs to Internet",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "*",
+                                                    "destinationAddressPrefix": "Internet",
+                                                    "access": "Allow",
+                                                    "priority": 65001,
+                                                    "direction": "Outbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            },
+                                            {
+                                                "name": "DenyAllOutBound",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/defaultSecurityRules/DenyAllOutBound",
+                                                "etag": "W/\"4766a69a-961f-4de1-bcc9-0faf8ca8edc7\"",
+                                                "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "description": "Deny all outbound traffic",
+                                                    "protocol": "*",
+                                                    "sourcePortRange": "*",
+                                                    "destinationPortRange": "*",
+                                                    "sourceAddressPrefix": "*",
+                                                    "destinationAddressPrefix": "*",
+                                                    "access": "Deny",
+                                                    "priority": 65500,
+                                                    "direction": "Outbound",
+                                                    "sourcePortRanges": [],
+                                                    "destinationPortRanges": [],
+                                                    "sourceAddressPrefixes": [],
+                                                    "destinationAddressPrefixes": []
+                                                }
+                                            }
+                                        ],
+                                        "networkInterfaces": [
+                                            {
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "azure::virtualNetworks::SecurityGroup::security-group-dev",
+                                "displayName": "security-group-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "ResourceGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::ResourceGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "virtualNetworks::SecurityGroup",
+                        "type": "SecurityGroup",
+                        "group": "virtualNetworks",
+                        "providerName": "azure"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "virtualNetworks",
+                                "type": "VirtualNetwork",
+                                "name": "virtual-network-dev",
+                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/virtualNetworks/virtual-network-dev",
+                                "providerName": "azure",
+                                "groupType": "virtualNetworks::VirtualNetwork",
+                                "live": {
+                                    "name": "virtual-network-dev",
+                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/virtualNetworks/virtual-network-dev",
+                                    "etag": "W/\"4f0f9a10-929f-42e2-a352-b373befa1620\"",
+                                    "type": "Microsoft.Network/virtualNetworks",
+                                    "location": "uksouth",
+                                    "tags": {
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev"
+                                    },
+                                    "properties": {
+                                        "provisioningState": "Succeeded",
+                                        "resourceGuid": "a0c42f81-814e-4044-8048-fb71ff8bc804",
+                                        "addressSpace": {
+                                            "addressPrefixes": [
+                                                "10.0.0.0/16"
+                                            ]
+                                        },
+                                        "subnets": [
+                                            {
+                                                "name": "subnet-dev",
+                                                "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/virtualNetworks/virtual-network-dev/subnets/subnet-dev",
+                                                "etag": "W/\"4f0f9a10-929f-42e2-a352-b373befa1620\"",
+                                                "properties": {
+                                                    "provisioningState": "Succeeded",
+                                                    "addressPrefix": "10.0.0.0/24",
+                                                    "ipConfigurations": [
+                                                        {
+                                                            "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkInterfaces/network-interface-dev/ipConfigurations/ipconfig"
+                                                        }
+                                                    ],
+                                                    "delegations": [],
+                                                    "privateEndpointNetworkPolicies": "Enabled",
+                                                    "privateLinkServiceNetworkPolicies": "Enabled"
+                                                },
+                                                "type": "Microsoft.Network/virtualNetworks/subnets"
+                                            }
+                                        ],
+                                        "virtualNetworkPeerings": [],
+                                        "enableDdosProtection": false
+                                    }
+                                },
+                                "uri": "azure::virtualNetworks::VirtualNetwork::virtual-network-dev",
+                                "displayName": "virtual-network-dev",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "ResourceGroup",
+                                        "ids": [
+                                            "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev"
+                                        ],
+                                        "providerName": "azure",
+                                        "groupType": "undefined::ResourceGroup"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "virtualNetworks::VirtualNetwork",
+                        "type": "VirtualNetwork",
+                        "group": "virtualNetworks",
+                        "providerName": "azure"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}
