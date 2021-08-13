@@ -285,12 +285,10 @@ exports.OpenStackProvider = ({ name = "openstack", config, ...other }) => {
     type: "openstack",
     name,
     mandatoryConfigKeys: [""],
-    get config() {
-      return pipe([
-        () => config(configProviderDefault),
-        defaultsDeep(configProviderDefault),
-      ])();
-    },
+    makeConfig: pipe([
+      () => config(configProviderDefault),
+      defaultsDeep(configProviderDefault),
+    ]),
     fnSpecs,
     start,
     info,

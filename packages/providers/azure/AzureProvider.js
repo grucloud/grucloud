@@ -402,14 +402,14 @@ exports.AzureProvider = ({
     retryDelay: 10e3,
   };
 
-  const mergeConfigAzure = () =>
+  const makeConfig = () =>
     mergeConfig({ configDefault: configProviderDefault, config, configs });
 
   const info = () => ({
     subscriptionId: process.env.SUBSCRIPTION_ID,
     tenantId: process.env.TENANT_ID,
     appId: process.env.APP_ID,
-    config: mergeConfigAzure(),
+    config: makeConfig(),
   });
 
   const core = CoreProvider({
@@ -417,9 +417,7 @@ exports.AzureProvider = ({
     type: "azure",
     name,
     mandatoryConfigKeys: ["location"],
-    get config() {
-      return mergeConfigAzure();
-    },
+    makeConfig,
     fnSpecs,
     start,
     info,

@@ -90,6 +90,7 @@ exports.findClient = (clients) =>
     ({ type, group }) =>
       pipe([
         () => clients,
+        //TODO groupType
         find(and([eq(get("spec.type"), type), eq(get("spec.group"), group)])),
       ])(),
   ]);
@@ -337,7 +338,7 @@ exports.contextFromClient = ({ client, title }) => {
 
       if (completed === state.total) {
         spinnies.succeed(uri);
-        spinnerMap.delete(uri);
+        //spinnerMap.delete(uri);
       }
     },
   };

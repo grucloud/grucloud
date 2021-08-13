@@ -39,6 +39,7 @@ const {
   identity,
   size,
   uniq,
+  prepend,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -129,13 +130,14 @@ function CoreProvider({
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
   fnSpecs,
-  config,
+  makeConfig,
   info = () => ({}),
   init = () => {},
   unInit = () => {},
   start = () => {},
   generateCode = () => {},
 }) {
+  assert(makeConfig);
   let _lives;
   const setLives = (livesToSet) => {
     _lives = livesToSet;
@@ -152,7 +154,8 @@ function CoreProvider({
     switchCase([isEmpty, pipe([() => createLives(), tap(setLives)]), identity]),
   ]);
 
-  const providerConfig = buildProviderConfig({ config, providerName });
+  const getProviderConfig = () =>
+    buildProviderConfig({ config: makeConfig(), providerName });
 
   logger.debug(`CoreProvider name: ${providerName}, type ${type}`);
 
@@ -263,14 +266,12 @@ function CoreProvider({
 
   const getSpecs = () =>
     pipe([
-      () => fnSpecs(providerConfig),
-      map(createSpec({ config: providerConfig })),
+      () => fnSpecs(getProviderConfig()),
+      map(createSpec({ config: getProviderConfig() })),
       tap((params) => {
         assert(true);
       }),
     ])();
-
-  const specs = getSpecs();
 
   const getResourcesByType = ({ type, group }) =>
     pipe([
@@ -284,19 +285,30 @@ function CoreProvider({
       }),
     ])();
 
-  const clients = specs.map((spec) =>
-    createClient({
-      getResourcesByType,
-      getResourceFromLive,
-      spec,
-      config: providerConfig,
-      providerName,
-    })
-  );
-
-  const getClients = () => clients;
-
-  const clientByType = findClient(clients);
+  const getClients = pipe([
+    getProviderConfig,
+    (providerConfig) =>
+      pipe([
+        getSpecs,
+        map((spec) =>
+          createClient({
+            getResourcesByType,
+            getResourceFromLive,
+            spec,
+            config: providerConfig,
+            providerName,
+          })
+        ),
+      ])(),
+  ]);
+  //TODO refactor no curry
+  const clientByType = pipe([
+    getClients,
+    findClient,
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
   const listTargets = () =>
     pipe([
@@ -356,6 +368,7 @@ function CoreProvider({
                       nextState: "RUNNING",
                     });
                   }),
+                  //TODO tap.if
                   tap(async (action) => {
                     if (action.command) {
                       await action.command(payload);
@@ -628,16 +641,14 @@ function CoreProvider({
             indent: 2,
           })
         ),
-        () =>
-          pipe([
-            map((client) =>
-              onStateChange({
-                context: contextFromClient({ client, title }),
-                nextState: "WAITING",
-                indent: 4,
-              })
-            ),
-          ])(clients),
+        () => clients,
+        map((client) =>
+          onStateChange({
+            context: contextFromClient({ client, title }),
+            nextState: "WAITING",
+            indent: 4,
+          })
+        ),
       ])
     );
   const spinnersStopClient = ({ onStateChange, title, clients, error }) =>
@@ -714,7 +725,7 @@ function CoreProvider({
         onStateChange,
         title: TitleListing,
         clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-          clients
+          getClients()
         ),
       }),
       (resourcesPerType) =>
@@ -737,7 +748,7 @@ function CoreProvider({
           planQueryDestroy,
           title: TitleListing,
           clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-            clients
+            getClients()
           ),
         }),
       ])
@@ -753,7 +764,7 @@ function CoreProvider({
           onStateChange,
           title: TitleListing,
           clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-            clients
+            getClients()
           ),
           error,
         }),
@@ -819,7 +830,7 @@ function CoreProvider({
   const spinnersStartDestroyQuery = ({ onStateChange, options }) =>
     pipe([
       tap(() => {
-        logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
+        logger.debug(`spinnersStartDestroyQuery`);
       }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
@@ -828,7 +839,7 @@ function CoreProvider({
         clients: filterReadWriteClient({
           options,
           targetTypes: getTargetTypes(),
-        })(clients),
+        })(getClients()),
       }),
     ])();
 
@@ -887,7 +898,7 @@ function CoreProvider({
           () =>
             hook({
               resources,
-              config: providerConfig,
+              config: getProviderConfig(),
               provider,
             }),
           tap((hookInstance) => {
@@ -995,9 +1006,10 @@ function CoreProvider({
         assert(groupType);
       }),
       () => clients,
-      find(
-        eq((client) => `${client.spec.group}::${client.spec.type}`, groupType)
-      ),
+      find(eq(get("spec.groupType"), groupType)),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const findClientDependencies = (client) =>
@@ -1006,7 +1018,7 @@ function CoreProvider({
       get("spec.dependsOn", []),
       map(findClientByGroupType(getClients())),
       flatMap(findClientDependencies),
-      (clients) => [client, ...clients],
+      prepend(client),
     ])();
 
   const addDependentClients = pipe([
@@ -1023,7 +1035,7 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() => {}),
-      () => getClients(),
+      getClients,
       tap((clients) => {
         logger.info(
           `listLives #clients: ${clients.length}, ${JSON.stringify({
@@ -1084,9 +1096,11 @@ function CoreProvider({
             if (error) {
               getLives().addResources({ ...meta, error });
             }
+            const client = clientByType()(meta);
+            assert(client.spec);
             onStateChange({
               context: contextFromClient({
-                client: clientByType(meta),
+                client,
                 title,
               }),
               error,
@@ -1096,6 +1110,9 @@ function CoreProvider({
         }),
       tap((result) => {
         assert(result);
+      }),
+      tap.if(get("error"), (result) => {
+        throw result;
       }),
       //TODO handle error
       assign({
@@ -1206,7 +1223,7 @@ function CoreProvider({
             assert(type);
             assert(Array.isArray(resources), `no resources for type ${type}`);
           }),
-          () => clientByType({ type, group }),
+          () => clientByType()({ type, group }),
           (client) =>
             pipe([
               () => resources,
@@ -1515,7 +1532,7 @@ function CoreProvider({
                 decorateLive({
                   client: engine.client,
                   lives: getLives(),
-                  config: providerConfig,
+                  config: getProviderConfig(),
                 }),
                 tap((resource) => {
                   getLives().addResource({
@@ -1607,7 +1624,7 @@ function CoreProvider({
             }),
           isExpectedResult: () => true,
           shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-          config: providerConfig,
+          config: getProviderConfig(),
         })
       ),
       tap(() => {
@@ -1627,7 +1644,7 @@ function CoreProvider({
         assert(resource);
         logger.debug(`destroyById: ${tos(resource.toString())}`);
       }),
-      () => clientByType(resource),
+      () => clientByType()(resource),
       tap((client) => {
         assert(client, `Cannot find endpoint ${resource.toString()}}`);
         assert(client.spec);
@@ -1693,8 +1710,9 @@ function CoreProvider({
   const provider = {
     toString,
     get config() {
-      return providerConfig;
+      return getProviderConfig();
     },
+    getConfig: getProviderConfig,
     setLives,
     get lives() {
       return getLives();
@@ -1733,7 +1751,7 @@ function CoreProvider({
     info: pipe([
       () => ({
         provider: toString(),
-        stage: providerConfig.stage,
+        stage: getProviderConfig().stage,
         ...info(),
       }),
       tap((info) => {
@@ -1743,7 +1761,7 @@ function CoreProvider({
     init,
     unInit,
     start: startBase,
-    specs,
+    specs: getSpecs(),
     mapNameToResource,
     generateCode,
   };
@@ -1753,7 +1771,7 @@ function CoreProvider({
     defaultsDeep(
       createResourceMakers({
         provider,
-        specs,
+        specs: getSpecs(),
         prefix: "make",
         filterResource: not(get("listOnly")),
         programOptions: getProgramOptions(),
@@ -1762,7 +1780,7 @@ function CoreProvider({
     defaultsDeep(
       createResourceMakers({
         provider,
-        specs,
+        specs: getSpecs(),
         prefix: "use",
         programOptions: getProgramOptions(),
       })
@@ -1770,7 +1788,7 @@ function CoreProvider({
     defaultsDeep(
       createResourceMakers({
         provider,
-        specs,
+        specs: getSpecs(),
         prefix: "useDefault",
         programOptions: getProgramOptions(),
       })

@@ -174,14 +174,14 @@ exports.AwsProvider = ({
     region: getRegionDefault(),
   };
 
-  const mergeConfigAws = () => mergeConfig({ configDefault, config, configs });
+  const makeConfig = () => mergeConfig({ configDefault, config, configs });
 
   const getRegion = (config) => config.region || getRegionDefault();
   const getZone = ({ zones, config }) => config.zone() || first(zones);
 
   const start = async () => {
     accountId = await fetchAccountId();
-    const merged = mergeConfigAws();
+    const merged = makeConfig();
     region = getRegion(merged);
     zones = await getAvailabilityZonesName({ region });
     assert(zones, `no zones for region ${region}`);
@@ -197,7 +197,7 @@ exports.AwsProvider = ({
   const info = () => ({
     accountId,
     zone,
-    config: omit(["accountId", "zone"])(mergeConfigAws()),
+    config: omit(["accountId", "zone"])(makeConfig()),
   });
 
   return CoreProvider({
@@ -205,9 +205,7 @@ exports.AwsProvider = ({
     type: "aws",
     name,
     programOptions,
-    get config() {
-      return mergeConfigAws();
-    },
+    makeConfig,
     fnSpecs,
     start,
     info,

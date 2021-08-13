@@ -348,6 +348,7 @@ exports.ResourceMaker = ({
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
+  // provider client as a parameter
   const client = createClient({
     providerName: provider.name,
     getResourcesByType: provider.getResourcesByType,
@@ -420,7 +421,7 @@ exports.ResourceMaker = ({
                 pipe([
                   () =>
                     provider
-                      .clientByType({ type, group })
+                      .clientByType()({ type, group })
                       .findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
@@ -718,7 +719,11 @@ exports.ResourceMaker = ({
             }),
           ]),
           pipe([
-            () => properties({ dependencies: resolvedDependencies }),
+            () =>
+              properties({
+                config: provider.getConfig(),
+                dependencies: resolvedDependencies,
+              }),
             (properties) =>
               client.configDefault({
                 name: resourceName,
@@ -729,6 +734,7 @@ exports.ResourceMaker = ({
                 live,
                 lives: provider.lives,
                 programOptions,
+                config,
               }),
             tap((result) => {
               // logger.debug(

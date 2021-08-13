@@ -714,6 +714,7 @@ exports.K8sProvider = ({
 }) => {
   config && assert(isFunction(config), "config must be a function");
 
+  //TODO use common mergedConfig
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -812,9 +813,7 @@ exports.K8sProvider = ({
     ...other,
     type: providerType,
     name,
-    get config() {
-      return mergedConfig;
-    },
+    makeConfig: () => mergedConfig,
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,
     info,
