@@ -166,7 +166,7 @@ exports.AwsEC2 = ({ spec, config }) => {
   const findName = (item) =>
     pipe([
       () => item,
-      findNameInTags,
+      findNameInTags(),
       when(isEmpty, () => findEksName(item.live)),
     ])();
 

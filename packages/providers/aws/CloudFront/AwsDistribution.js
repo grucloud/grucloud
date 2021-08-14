@@ -16,14 +16,7 @@ const {
   omit,
   and,
 } = require("rubico");
-const {
-  find,
-  defaultsDeep,
-  isEmpty,
-  forEach,
-  pluck,
-  flatten,
-} = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsDistribution" });
@@ -37,7 +30,7 @@ const {
 const {
   CloudFrontNew,
   buildTags,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
@@ -45,8 +38,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
-const findName = findNameInTags;
 const findId = get("live.Id");
+const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.AwsDistribution = ({ spec, config }) => {
@@ -88,7 +81,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList distributions`);
@@ -156,7 +149,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property
-  const create = async ({ name, payload = {} }) =>
+  const create = ({ name, payload = {} }) =>
     pipe([
       tap(() => {
         assert(name);
@@ -246,7 +239,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteDistribution-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy distribution ${JSON.stringify({ name, id })}`);
@@ -326,7 +319,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     properties,
     namespace,

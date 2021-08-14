@@ -32,6 +32,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
+    () => "",
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listGraphqlApis-property

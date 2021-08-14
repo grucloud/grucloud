@@ -1550,7 +1550,7 @@ function CoreProvider({
                   }),
 
                 tap((live) => {
-                  //assert(live);
+                  assert(live);
                 }),
                 decorateLive({
                   client: engine.client,

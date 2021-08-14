@@ -3,6 +3,7 @@ const { isOurMinionObject } = require("../AwsCommon");
 
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncApiKey } = require("./AppSyncApiKey");
+const { AppSyncDataSource } = require("./AppSyncDataSource");
 
 const GROUP = "appSync";
 
@@ -20,6 +21,12 @@ module.exports = () =>
       type: "ApiKey",
       dependsOn: ["appSync::GraphqlApi"],
       Client: AppSyncApiKey,
+      isOurMinion,
+    },
+    {
+      type: "DataSource",
+      dependsOn: ["appSync::GraphqlApi"],
+      Client: AppSyncDataSource,
       isOurMinion,
     },
   ]);

@@ -13,31 +13,33 @@ const {
   assign,
   omit,
 } = require("rubico");
-const { find, defaultsDeep, pluck } = require("rubico/x");
+const { defaultsDeep, pluck, isEmpty, prepend } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "ApiKey" });
+const logger = require("@grucloud/core/logger")({ prefix: "DataSource" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const findId = get("live.id");
-const findName = findNameInTagsOrId({ findId, tags: "tags" });
+const findId = get("live.dataSourceArn");
+const findName = get("live.name");
 
-const pickParam = pick(["id", "apiId"]);
+const pickParam = pick(["apiId", "name"]);
 
 const graphqlApiArn = ({ config, apiId }) =>
   `arn:aws:appsync:${config.region}:${config.accountId()}:apis/${apiId}`;
 
-const buildTagKey = ({ id }) => `gc-api-key-${id}`;
+const buildTagKey = pipe([
+  get("name"),
+  tap((name) => {
+    assert(name);
+  }),
+  prepend("gc-data-source-"),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
-exports.AppSyncApiKey = ({ spec, config }) => {
+exports.AppSyncDataSource = ({ spec, config }) => {
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
   const findDependencies = ({ live }) => [
@@ -45,6 +47,30 @@ exports.AppSyncApiKey = ({ spec, config }) => {
       type: "GraphqlApi",
       group: "appSync",
       ids: [live.apiId],
+    },
+    {
+      type: "Role",
+      group: "appSync",
+      ids: [live.serviceRoleArn],
+    },
+    {
+      type: "Function",
+      group: "lambda",
+      ids: [get("lambdaConfig.lambdaFunctionArn")(live)],
+    },
+    {
+      type: "DBCluster",
+      group: "rds",
+      ids: [
+        get(
+          "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier"
+        )(live),
+      ],
+    },
+    {
+      type: "Table",
+      group: "dynamodb",
+      ids: [get("dynamodbConfig.tableName")(live)],
     },
   ];
 
@@ -55,12 +81,9 @@ exports.AppSyncApiKey = ({ spec, config }) => {
     () => "",
   ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listApiKeys-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
   const getList = ({ lives }) =>
     pipe([
-      tap(() => {
-        assert(lives);
-      }),
       () =>
         lives.getByType({
           providerName: config.providerName,
@@ -71,12 +94,12 @@ exports.AppSyncApiKey = ({ spec, config }) => {
       flatMap((apiId) =>
         tryCatch(
           pipe([
-            () => appSync().listApiKeys({ apiId }),
-            get("apiKeys"),
+            () => appSync().listDataSources({ apiId }),
+            get("dataSources"),
             map(defaultsDeep({ apiId })),
             map(
               assign({
-                tags: ({ id }) =>
+                tags: ({ name }) =>
                   pipe([
                     () => ({
                       resourceArn: graphqlApiArn({
@@ -84,13 +107,10 @@ exports.AppSyncApiKey = ({ spec, config }) => {
                         apiId,
                       }),
                     }),
-                    tap((params) => {
-                      assert(true);
-                    }),
                     appSync().listTagsForResource,
                     get("tags"),
-                    assign({ Name: get(buildTagKey({ id })) }),
-                    omit([buildTagKey({ id })]),
+                    assign({ name: get(buildTagKey({ name })) }),
+                    omit([buildTagKey({ name })]),
                   ])(),
               })
             ),
@@ -98,7 +118,9 @@ exports.AppSyncApiKey = ({ spec, config }) => {
           (error) =>
             pipe([
               tap(() => {
-                logger.error(`error getList api key: ${tos({ apiId, error })}`);
+                logger.error(
+                  `error getList data source: ${tos({ apiId, error })}`
+                );
               }),
               () => ({
                 error,
@@ -106,8 +128,8 @@ exports.AppSyncApiKey = ({ spec, config }) => {
             ])()
         )()
       ),
-      tap((apiKeys) => {
-        logger.debug(`getList api key ${tos({ apiKeys })}`);
+      tap((dataSources) => {
+        logger.debug(`getList data source ${tos({ dataSources })}`);
       }),
       (items = []) => ({
         total: items.length,
@@ -117,60 +139,65 @@ exports.AppSyncApiKey = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listApiKeys-property
-  const getById = ({ apiId, id }) =>
-    pipe([
-      tap(() => {
-        assert(id);
-        assert(apiId);
-      }),
-      () => ({ apiId }),
-      appSync().listApiKeys,
-      get("apiKeys"),
-      find(eq(get("id"), id)),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getDataSource-property
+  const getById = pipe([
+    tap(({ name, apiId }) => {
+      assert(name);
+      assert(apiId);
+    }),
+    appSync().getDataSource,
+    get("dataSource"),
+  ]);
 
   const isUpById = pipe([getById, not(isEmpty)]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createApiKey-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createDataSource-property
   const create = ({ payload, name, resolvedDependencies: { graphqlApi } }) =>
     pipe([
       tap(() => {
         assert(payload.apiId);
-        //assert(graphqlApi.live.tags);
+        assert(graphqlApi.live.tags);
+        logger.debug(
+          `create dataSource, graphqlApi tags ${tos(graphqlApi.live.tags)}`
+        );
       }),
       () => payload,
-      appSync().createApiKey,
-      get("apiKey"),
-      tap(({ id }) =>
+      appSync().createDataSource,
+      get("dataSource"),
+      tap(() =>
         retryCall({
-          name: `apiKey isUpByName: ${name}`,
-          fn: () => isUpById({ id, apiId: payload.apiId }),
+          name: `dataSource isUpById: ${name}`,
+          fn: () => isUpById({ name, apiId: payload.apiId }),
         })
       ),
-      ({ id }) => ({
-        resourceArn: graphqlApiArn({
-          config,
-          apiId: payload.apiId,
-        }),
-        tags: { ...graphqlApi.live.tags, [buildTagKey({ id })]: name },
+      tap((params) => {
+        assert(true);
       }),
-      appSync().tagResource,
+      pipe([
+        ({ name }) => ({
+          resourceArn: graphqlApiArn({
+            config,
+            apiId: payload.apiId,
+          }),
+          tags: { ...graphqlApi.live.tags, [buildTagKey({ name })]: name },
+        }),
+        appSync().tagResource,
+      ]),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteApiKey-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteDataSource-property
   const destroy = ({ live }) =>
     pipe([
       tap(() => {
-        assert(live.id);
+        assert(live.name);
         assert(live.apiId);
       }),
       () => live,
       pickParam,
-      tryCatch(appSync().deleteApiKey, (error, params) =>
+      tryCatch(appSync().deleteDataSource, (error, params) =>
         pipe([
           tap(() => {
-            logger.error(`error deleteApiKey ${tos({ params, error })}`);
+            logger.error(`error deleteDataSource ${tos({ params, error })}`);
           }),
           () => error,
           switchCase([
@@ -196,6 +223,7 @@ exports.AppSyncApiKey = ({ spec, config }) => {
       }),
       () => properties,
       defaultsDeep({
+        name,
         apiId: getField(graphqlApi, "apiId"),
       }),
     ])();

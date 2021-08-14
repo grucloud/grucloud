@@ -41,7 +41,7 @@ const fnSpecs = (config) =>
     () => [
       //...ApiGateway(),
       ...ApiGatewayV2(),
-      //...AppSync(),
+      ...AppSync(),
       ...AutoScaling(),
       ...AwsCertificateManager(),
       ...AwsCloudFront(),
@@ -58,6 +58,7 @@ const fnSpecs = (config) =>
       ...AwsRoute53Domain(),
       ...AwsS3(),
     ],
+    //TODO move later
     map(
       assign({
         Client: ({ Client, ...spec }) =>

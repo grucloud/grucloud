@@ -1,31 +1,33 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { AwsIamRole } = require("../AwsIamRole");
+const { tryCatch, pipe, tap } = require("rubico");
+const { AppSyncDataSource } = require("../AppSyncDataSource");
 
-describe("AwsIamRole", async function () {
+describe("AppSyncDataSource", async function () {
   let config;
   let provider;
-  let iamRole;
+  let dataSource;
+
   before(async function () {
     try {
       config = ConfigLoader({ path: "../../../examples/multi" });
     } catch (error) {
       this.skip();
     }
-    provider = AwsProvider({
-      name: "aws",
-      config: () => ({ projectName: "gru-test" }),
-    });
+    provider = AwsProvider({ config });
+    dataSource = AppSyncDataSource({ config: provider.config });
     await provider.start();
-    iamRole = AwsIamRole({ config: provider.config });
   });
   it(
     "delete with invalid id",
     pipe([
       () =>
-        iamRole.destroy({
-          live: { Arn: "1234", apiId: "12345" },
+        dataSource.destroy({
+          live: {
+            name: "datasource-no-exist",
+            apiId: "12345",
+          },
         }),
     ])
   );

@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project graphql
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Policy (1)
+++++ Role (1)
++++ appSync
+++++ GraphqlApi (1)
+++++ ApiKey (1)
+++++ DataSource (1)
+@endmindmap

@@ -20,7 +20,6 @@ const {
   pluck,
   find,
   includes,
-  identity,
 } = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
@@ -30,7 +29,6 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInTags,
   findNamespaceInTags,
   shouldRetryOnExceptionDelete,
   shouldRetryOnException,
@@ -93,7 +91,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList role ${params}`);
@@ -120,9 +118,6 @@ exports.AwsIamRole = ({ spec, config }) => {
                   RoleName,
                   MaxItems: 1e3,
                 }),
-              tap((policies) => {
-                logger.debug(`getList listRolePolicies: ${tos(policies)}`);
-              }),
               get("PolicyNames"),
             ]),
             AttachedPolicies: listAttachedRolePolicies,
@@ -133,13 +128,6 @@ exports.AwsIamRole = ({ spec, config }) => {
                   MaxItems: 1e3,
                 }),
               get("InstanceProfiles"),
-              tap((instanceProfiles) => {
-                logger.debug(
-                  `getList listInstanceProfilesForRole: ${tos(
-                    instanceProfiles
-                  )}`
-                );
-              }),
               map(
                 pick([
                   "InstanceProfileName",
@@ -149,10 +137,7 @@ exports.AwsIamRole = ({ spec, config }) => {
                 ])
               ),
             ]),
-            Tags: pipe([
-              ({ RoleName }) => iam().listRoleTags({ RoleName }),
-              get("Tags"),
-            ]),
+            Tags: pipe([pick(["RoleName"]), iam().listRoleTags, get("Tags")]),
           }),
           (error, role) =>
             pipe([
@@ -185,11 +170,13 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
+  //const isDownByName = pipe([getByName, isEmpty])();
   const isDownByName = ({ name }) =>
     pipe([() => getByName({ name }), isEmpty])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
 
-  const create = async ({
+  const create = ({
     name,
     namespace,
     payload = {},
@@ -199,32 +186,25 @@ exports.AwsIamRole = ({ spec, config }) => {
       tap(() => {
         logger.info(`create role ${tos({ name, payload })}`);
       }),
-      () => ({
-        ...payload,
-        AssumeRolePolicyDocument: JSON.stringify(
-          payload.AssumeRolePolicyDocument
-        ),
+      () => payload,
+      assign({
+        AssumeRolePolicyDocument: pipe([
+          get("AssumeRolePolicyDocument"),
+          JSON.stringify,
+        ]),
       }),
-      (createParam) => iam().createRole(createParam),
+      iam().createRole,
       get("Role"),
-      tap(
-        pipe([
-          () =>
-            iam().tagRole({
-              RoleName: name,
-              Tags: buildTags({
-                name,
-                config,
-                namespace,
-                UserTags: payload.Tags,
-              }),
-            }),
-          () => iam().listRoleTags({ RoleName: name }),
-          get("Tags"),
-          (Tags) => {
-            assert(findNameInTags({ live: { Tags } }), "no tags");
-          },
-        ])
+      tap(() =>
+        iam().tagRole({
+          RoleName: name,
+          Tags: buildTags({
+            name,
+            config,
+            namespace,
+            UserTags: payload.Tags,
+          }),
+        })
       ),
       //TODO check error
       tap.if(
@@ -257,51 +237,60 @@ exports.AwsIamRole = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
-  const destroy = async ({ name: RoleName }) =>
+  const destroy = ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy iam role ${JSON.stringify({ RoleName })}`);
-      }),
-      () => iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
-      get("InstanceProfiles"),
-      forEach(
-        tryCatch(({ InstanceProfileName }) =>
-          removeRoleFromInstanceProfile({ iam })({
-            RoleName,
-            InstanceProfileName,
-          })
-        )
-      ),
-      () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
-      get("AttachedPolicies"),
-      forEach(({ PolicyArn }) => {
-        iam().detachRolePolicy({
-          PolicyArn,
-          RoleName,
-        });
-      }),
-      () => iam().listRolePolicies({ RoleName, MaxItems: 1e3 }),
-      get("PolicyNames"),
-      forEach((PolicyName) => {
-        iam().deleteRolePolicy({
-          PolicyName,
-          RoleName,
-        });
-      }),
-      () =>
-        iam().deleteRole({
-          RoleName,
-        }),
-      tap(() =>
-        retryCall({
-          name: `isDownById iam role: ${RoleName}`,
-          fn: () => isDownByName({ name: RoleName }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroy iam role done, ${RoleName}`);
-      }),
+      () => live,
+      pick(["RoleName"]),
+      ({ RoleName }) =>
+        pipe([
+          () => iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
+          get("InstanceProfiles"),
+          forEach(
+            tryCatch(
+              ({ InstanceProfileName }) =>
+                removeRoleFromInstanceProfile({ iam })({
+                  RoleName,
+                  InstanceProfileName,
+                }),
+              (error, { InstanceProfileName }) =>
+                pipe([
+                  tap(() => {
+                    logger.error(
+                      `error removeRoleFromInstanceProfile ${RoleName}, ${error}`
+                    );
+                  }),
+                  () => ({ error, RoleName, InstanceProfileName }),
+                ])()
+            )
+          ),
+          () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
+          get("AttachedPolicies"),
+          forEach(({ PolicyArn }) => {
+            iam().detachRolePolicy({
+              PolicyArn,
+              RoleName,
+            });
+          }),
+          () => iam().listRolePolicies({ RoleName, MaxItems: 1e3 }),
+          get("PolicyNames"),
+          forEach((PolicyName) => {
+            iam().deleteRolePolicy({
+              PolicyName,
+              RoleName,
+            });
+          }),
+          () =>
+            iam().deleteRole({
+              RoleName,
+            }),
+          tap(() =>
+            retryCall({
+              name: `isDownById iam role: ${RoleName}`,
+              fn: () => isDownByName({ name: RoleName }),
+              config,
+            })
+          ),
+        ])(),
     ])();
 
   const openIdConnectProviderProperties = ({ openIdConnectProvider }) =>

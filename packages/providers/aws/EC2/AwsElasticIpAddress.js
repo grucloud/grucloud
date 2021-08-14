@@ -13,7 +13,7 @@ const {
 } = require("@grucloud/core/Common");
 const {
   Ec2New,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
@@ -21,8 +21,9 @@ const {
 exports.AwsElasticIpAddress = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findName = findNameInTags;
   const findId = get("live.AllocationId");
+  const findName = findNameInTagsOrId({ findId });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
 
   const findDependencies = ({ live }) => [
@@ -63,7 +64,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
 
-  const create = async ({ payload, name }) =>
+  const create = ({ payload, name }) =>
     pipe([
       tap(() => {
         logger.info(`create elastic ip address ${JSON.stringify({ name })}`);
@@ -85,7 +86,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#releaseAddress-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(
@@ -107,7 +108,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties }) =>
+  const configDefault = ({ name, namespace, properties }) =>
     defaultsDeep({
       Domain: "Vpc",
       TagSpecifications: [

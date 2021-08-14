@@ -438,29 +438,35 @@ const findNamespaceInTagsObject =
 
 exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
-const findNameInTags = ({ live }) =>
-  pipe([
-    tap(() => {
-      if (!live) {
-        assert(live);
-      }
-    }),
-    () => live,
-    get("Tags", []),
-    tap((params) => {
-      assert(true);
-    }),
-    switchCase([
-      Array.isArray,
-      pipe([find(eq(get("Key"), configProviderDefault.nameKey)), get("Value")]),
-      pipe([get(configProviderDefault.nameKey)]),
-    ]),
-  ])();
+//TODO params for key and value
+const findNameInTags =
+  ({ tags = "Tags" } = {}) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        if (!live) {
+          assert(live);
+        }
+      }),
+      () => live,
+      get(tags, []),
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        Array.isArray,
+        pipe([
+          find(eq(get("Key"), configProviderDefault.nameKey)),
+          get("Value"),
+        ]),
+        pipe([get(configProviderDefault.nameKey)]),
+      ]),
+    ])();
 
 exports.findNameInTags = findNameInTags;
 
 exports.findNameInTagsOrId =
-  ({ findId }) =>
+  ({ findId, tags }) =>
   ({ live }) =>
     pipe([
       tap(() => {
@@ -471,7 +477,7 @@ exports.findNameInTagsOrId =
         }
       }),
       () => ({ live }),
-      findNameInTags,
+      findNameInTags({ tags }),
       when(isEmpty, pipe([() => findId({ live })])),
       tap((name) => {
         if (!name) {

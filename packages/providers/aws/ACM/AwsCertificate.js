@@ -17,15 +17,10 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
 const {
   ACMNew,
   buildTags,
-  findNameInTags,
   findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");

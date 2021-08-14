@@ -42,7 +42,7 @@ const {
   shouldRetryOnException,
   buildTags,
   findNamespaceInTags,
-  findNameInTags,
+  findNameInTagsOrId,
 } = require("../AwsCommon");
 
 const findProperty = (property) =>
@@ -216,15 +216,7 @@ const ruleDefaultToName = ({
     config,
   })}`;
 
-const findSgrNameInTags = ({ live }) =>
-  pipe([
-    () => ({ live }),
-    findNameInTags,
-    //switchCase([isEmpty, identity, (name) => `${name}${ipVersion(live)}`]),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
+const findSgrNameInTags = findNameInTagsOrId({ findId });
 
 const findName =
   ({ kind, config }) =>

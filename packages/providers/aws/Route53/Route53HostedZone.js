@@ -389,8 +389,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
     findNamespace: findNamespaceInTags(config),
   };
 };
-
-exports.compareHostedZone = async ({ target, live, dependencies, lives }) =>
+//TODO
+exports.compareHostedZone = ({ target, live, dependencies, lives }) =>
   pipe([
     tap(() => {
       //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
@@ -411,7 +411,7 @@ exports.compareHostedZone = async ({ target, live, dependencies, lives }) =>
               return { error };
             }
           )
-        )([...usedBySet.values()]),
+        )([]),
     }),
     //TODO throw if error
     tap((xxx) => {
