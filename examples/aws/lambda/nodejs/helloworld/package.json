@@ -1,6 +1,6 @@
 {
   "name": "lambda-nodejs-helloworld",
-  "version": "1.35.0",
+  "version": "1.36.0",
   "description": "",
   "private": true,
   "main": "iac.js",
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.35.0",
-    "@grucloud/provider-aws": "^1.35.0",
+    "@grucloud/core": "^1.36.0",
+    "@grucloud/provider-aws": "^1.36.0",
     "adm-zip": "^0.5.5",
     "rubico": "^1.6.26"
   },
