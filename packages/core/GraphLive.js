@@ -85,7 +85,7 @@ const buildSubGraph = ({ providerName, options, namespace, resources }) =>
 
 //TODO
 const resourceNameFilterDefault = pipe([
-  get("resource.name"),
+  get("name"),
   tap((name) => {
     assert(name);
   }),

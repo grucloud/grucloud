@@ -504,6 +504,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
     }
   );
 
+//move to EC2 Common
 exports.revokeSecurityGroupIngress =
   ({ ec2 }) =>
   (params) =>

@@ -18,11 +18,11 @@ const {
   callProp,
   defaultsDeep,
   size,
-  identity,
   isEmpty,
   last,
   first,
   keys,
+  when,
 } = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
@@ -51,17 +51,24 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");
-  const findName = get("live.PolicyName");
+
+  const findName = ({ live }) =>
+    pipe([
+      () => live,
+      get("name"),
+      when(isEmpty, () => live.PolicyName),
+      tap((name) => {
+        if (!name) {
+          assert(name, `no name in ${JSON.stringify(live)}`);
+        }
+      }),
+    ])();
 
   const findNamespace = ({ live }) =>
     pipe([
       () => live,
       get("namespace"),
-      switchCase([
-        isEmpty,
-        () => findNamespaceInTags(config)({ live }),
-        identity,
-      ]),
+      when(isEmpty, () => findNamespaceInTags(config)({ live })),
       tap((namespace) => {
         logger.debug(`findNamespace ${namespace}`);
       }),
@@ -114,7 +121,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           VersionId,
         }),
       get("PolicyVersion.Document"),
-      (encoded) => querystring.decode(encoded),
+      querystring.decode,
       keys,
       first,
       tryCatch(JSON.parse, (error, document) => {
@@ -123,7 +130,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
-  const getList = async ({ params, resources } = {}) =>
+  const getList = ({ params, resources } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam policy`);
@@ -305,7 +312,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       Tags: buildTags({ name, namespace, config }),
     })(properties);
 
-  const cannotBeDeleted = ({ live, resource }) =>
+  const cannotBeDeleted = ({ resource }) =>
     pipe([
       tap(() => {
         assert(resource);
