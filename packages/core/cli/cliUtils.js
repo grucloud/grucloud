@@ -142,6 +142,10 @@ exports.runAsyncCommand = async ({ text, command }) => {
           logger.error(
             `event DONE but ${uri} was not created or is already deleted`
           );
+          // assert(
+          //   false,
+          //   `event DONE but ${uri} was not created or is already deleted`
+          // );
           return;
         }
         onDone({ state: spinner.state, spinnerMap, spinnies });

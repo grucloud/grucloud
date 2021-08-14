@@ -1012,20 +1012,27 @@ function CoreProvider({
       }),
     ])();
 
-  const findClientDependencies = (client) =>
+  const findClientDependencies = (clients) => (client) =>
     pipe([
+      tap(() => {
+        assert(clients);
+        assert(client);
+      }),
       () => client,
       get("spec.dependsOn", []),
-      map(findClientByGroupType(getClients())),
-      flatMap(findClientDependencies),
+      map(findClientByGroupType(clients)),
+      filter(not(isEmpty)),
+      flatMap(findClientDependencies(clients)),
       prepend(client),
     ])();
 
-  const addDependentClients = pipe([
-    flatMap(findClientDependencies),
-    filter(not(isEmpty)),
-    uniq,
-  ]);
+  const addDependentClients = (clients) =>
+    pipe([
+      () => clients,
+      flatMap(findClientDependencies(clients)),
+      filter(not(isEmpty)),
+      uniq,
+    ])();
 
   const listLives = ({
     onStateChange = identity,
