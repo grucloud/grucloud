@@ -42,6 +42,7 @@ module.exports = CoreClient = ({
   ]),
   findId = get("live.id"),
   findTargetId = get("id"),
+  //TODO curry
   onResponseGet = get("data"),
   onResponseList = identity,
   onResponseCreate = identity,
@@ -55,7 +56,7 @@ module.exports = CoreClient = ({
   assert(type);
   assert(config, "config");
 
-  const getById = async ({ name, id }) =>
+  const getById = ({ name, id }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -82,7 +83,8 @@ module.exports = CoreClient = ({
         }),
       ]),
       switchCase([
-        (error) => error.response?.status !== 404,
+        eq(get("response.status"), 404),
+        () => {},
         (error) => {
           logError("getById", error);
           throw axiosErrorToJSON(error);
@@ -96,7 +98,7 @@ module.exports = CoreClient = ({
       tap((params) => {
         logger.debug(`getList ${spec.type}`);
       }),
-      () => pathList(),
+      pathList,
       (path) =>
         retryCallOnError({
           name: `getList type: ${spec.type}, path ${path}`,
@@ -125,7 +127,7 @@ module.exports = CoreClient = ({
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdFactory({ getById, getList, findId });
 
-  const create = async ({ name, payload, dependencies = () => ({}) }) =>
+  const create = ({ name, payload, dependencies = () => ({}) }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -135,7 +137,8 @@ module.exports = CoreClient = ({
           assert(!spec.singleton);
           assert(!spec.listOnly);
         }),
-        () => pathCreate({ dependencies: dependencies(), name }),
+        () => ({ dependencies: dependencies(), name }),
+        pathCreate,
         tap((path) => {
           logger.info(`create ${spec.type}/${name}, path: ${path}`);
         }),
@@ -168,8 +171,8 @@ module.exports = CoreClient = ({
             tap((result) => {
               assert(result.data, "result.data");
             }),
-
-            (result) => onResponseCreate(result.data),
+            get("data"),
+            onResponseCreate,
             (data) =>
               pipe([
                 () => findTargetId(data),
@@ -196,7 +199,7 @@ module.exports = CoreClient = ({
       }
     )();
 
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -205,16 +208,15 @@ module.exports = CoreClient = ({
           assert(!spec.listOnly);
           assert(!isEmpty(id), `destroy ${type}: invalid id`);
         }),
-        () => pathDelete({ id }),
+        () => ({ id }),
+        pathDelete,
         (path) =>
           retryCallOnError({
             name: `destroy type ${spec.type}, path: ${path}`,
             fn: () => axios.delete(path),
             isExpectedResult: () => true,
             config: { ...config, repeatCount: 0 },
-            isExpectedException: (error) => {
-              return [404].includes(error.response?.status);
-            },
+            isExpectedException: eq(get("response.status"), 404),
           }),
         get("data"),
         onResponseDelete,

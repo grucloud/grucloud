@@ -33,6 +33,7 @@ const {
   size,
   identity,
   includes,
+  unless,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -343,11 +344,7 @@ exports.ResourceMaker = ({
 
   const getDependencies = pipe([
     () => dependencies,
-    switchCase([
-      isFunction,
-      identity,
-      (dependencies) => () => ({ ...dependencies }),
-    ]),
+    unless(isFunction, (dependencies) => () => ({ ...dependencies })),
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
@@ -380,9 +377,8 @@ exports.ResourceMaker = ({
           properties,
           lives: provider.lives,
         }),
-      // TODO rubico unless
-      switchCase([
-        and([not(isEmpty), () => !isEmpty(provider.lives)]),
+      unless(
+        or([isEmpty, () => isEmpty(provider.lives)]),
         tap(
           pipe([
             decorateLive({ client, lives: provider.lives, config, options }),
@@ -395,9 +391,8 @@ exports.ResourceMaker = ({
               });
             }),
           ])
-        ),
-        identity,
-      ]),
+        )
+      ),
       tap((live) => {
         logger.info(`getLive ${toString()} hasLive: ${!!live}`);
         logger.debug(`getLive ${toString()} live: ${tos(live)}`);
@@ -468,7 +463,7 @@ exports.ResourceMaker = ({
         spec.compare({
           target,
           live,
-          dependencies: resource.dependencies(), //TODO
+          dependencies: resource.dependencies(),
           lives: provider.lives,
           config,
           programOptions,
@@ -587,15 +582,7 @@ exports.ResourceMaker = ({
                 switchCase([
                   () => dependency.filterLives,
                   () => dependency.resolveConfig({}),
-                  pipe([
-                    () => dependency.findLive({}),
-                    //TODO
-                    // switchCase([
-                    //   isEmpty,
-                    //   () => dependency.getLive({ deep: true }),
-                    //   identity,
-                    // ]),
-                  ]),
+                  pipe([() => dependency.findLive({})]),
                 ]),
                 tap.if(
                   switchCase([
@@ -645,8 +632,7 @@ exports.ResourceMaker = ({
             () => results,
             pluck("error"),
             reduce((acc, value) => [...acc, value.message], []),
-            //TODO callProp
-            (messages) => messages.join("\n"),
+            callProp("join", "\n"),
             tap((message) => {
               logger.debug(
                 `resolveDependencies ${toString()}, error message: ${message}`
@@ -670,7 +656,7 @@ exports.ResourceMaker = ({
         logger.debug(
           `resolveConfig ${toString()}, ${JSON.stringify({
             deep,
-            hasLive: !!live, //TODO
+            hasLive: !!live,
           })}`
         );
         if (!live) {
