@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, pipe, assign, eq, get } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { defaultsDeep, find, when, isEmpty } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
 
@@ -108,14 +108,14 @@ const SpecDefault = ({ providerName }) => ({
 });
 
 exports.createSpec =
-  ({ config, defaultOptions = {} }) =>
+  ({ config, defaultOptions = { group: "" } }) =>
   (spec) =>
     pipe([
-      () => defaultOptions,
+      () => spec,
+      defaultsDeep(defaultOptions),
       assign({
-        groupType: () => `${spec.group ? `${spec.group}::` : ""}${spec.type}`,
+        groupType: ({ group, type }) => `${group}::${type}`,
       }),
-      defaultsDeep(spec),
       defaultsDeep(SpecDefault(config)),
       tap((params) => {
         assert(true);

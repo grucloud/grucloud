@@ -483,6 +483,7 @@ const displayPlanItemCreate =
         tableItem.push([
           {
             colSpan: 2,
+            //TODO limit size
             content: colors.green(YAML.stringify(resource.target)),
           },
         ]),
@@ -508,6 +509,7 @@ const displayPlanItemDestroy =
         tableItem.push([
           {
             colSpan: 2,
+            //TODO limit size
             content: colors.red(YAML.stringify(resource.live)),
           },
         ]),

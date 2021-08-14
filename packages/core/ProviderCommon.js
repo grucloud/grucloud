@@ -8,7 +8,6 @@ const {
   tryCatch,
   switchCase,
   get,
-  assign,
   any,
   reduce,
   fork,
@@ -16,26 +15,20 @@ const {
   not,
   and,
   or,
-  transform,
-  omit,
 } = require("rubico");
 
 const {
-  first,
   isEmpty,
-  isString,
-  flatten,
   size,
   pluck,
-  forEach,
   find,
   defaultsDeep,
-  isDeepEqual,
   includes,
   identity,
   uniq,
   callProp,
   when,
+  prepend,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "ProviderCommon" });
@@ -108,32 +101,31 @@ const isTypeMatch = ({ type, typeToMatch }) =>
 
 exports.isTypeMatch = isTypeMatch;
 
-const findDependentType = ({ type, specs }) =>
+const findDependentType = ({ groupType, specs }) =>
   pipe([
     tap(() => {
-      assert(type);
+      assert(groupType);
     }),
     () => specs,
-    find(eq(get("type"), type)),
+    find(eq(get("groupType"), groupType)),
     get("dependsOn", []),
-    flatMap((type) => findDependentType({ type, specs })),
-    //TODO prepend
-    (results) => [type, ...results],
+    flatMap((groupType) => findDependentType({ groupType, specs })),
+    prepend(groupType),
     tap((results) => {
       //logger.debug(`findDependentTypes ${type}, result: ${results}`);
     }),
   ])();
 
-const findDependentTypes = ({ types, clients }) =>
+const findDependentTypes = ({ groupTypes, clients }) =>
   pipe([
     tap(() => {
       // logger.debug(
       //   `findDependentTypes #clients ${size(clients)}, types: ${size(types)}`
       // );
     }),
-    () => types,
-    flatMap((type) =>
-      findDependentType({ type, specs: pluck("spec")(clients) })
+    () => groupTypes,
+    flatMap((groupType) =>
+      findDependentType({ groupType, specs: pluck("spec")(clients) })
     ),
     uniq,
     tap((results) => {
@@ -141,6 +133,7 @@ const findDependentTypes = ({ types, clients }) =>
     }),
   ])();
 
+//TODO targetTypes => targetGroupTypes
 const filterByType = ({ types = [], targetTypes }) =>
   pipe([
     tap((clients) => {
@@ -158,6 +151,7 @@ const filterByType = ({ types = [], targetTypes }) =>
           tap(() => {
             assert(client);
             assert(client.spec);
+            assert(client.spec.groupType);
             assert(client.spec.type);
           }),
           switchCase([
@@ -167,13 +161,11 @@ const filterByType = ({ types = [], targetTypes }) =>
                 tap((params) => {
                   assert(true);
                 }),
-                (types) => findDependentTypes({ types, clients }),
+                (groupTypes) => findDependentTypes({ groupTypes, clients }),
                 tap((dependentTypes) => {
-                  assert(client);
-                  assert(client.spec);
-                  assert(client.spec.type);
+                  assert(dependentTypes);
                 }),
-                includes(client.spec.type),
+                includes(client.spec.groupType),
                 tap((keep) => {
                   logger.debug(
                     `filterByType ${client.spec.groupType}, keep: ${keep}`
@@ -255,6 +247,23 @@ exports.filterReadWriteClient = ({
     }),
   ]);
 
+const setCompleted = ({ state, uri, spinnies, spinnerMap, displayText }) => {
+  const completed = state.completed + 1;
+  const newState = { ...state, completed };
+  spinnies.update(uri, {
+    text: displayText(newState),
+    color: "greenBright",
+    status: "spinning",
+  });
+
+  spinnerMap.set(uri, { state: newState });
+
+  if (completed === state.total) {
+    spinnies.succeed(uri);
+    spinnerMap.delete(uri);
+  }
+};
+
 exports.contextFromResource = ({ operation, resource }) => {
   assert(operation);
   assert(resource);
@@ -281,20 +290,8 @@ exports.contextFromResource = ({ operation, resource }) => {
       if (!state) {
         assert(state, `no state for ${uri}`);
       }
-      const completed = state.completed + 1;
-      const newState = { ...state, completed };
-      spinnies.update(uri, {
-        text: displayText(newState),
-        color: "greenBright",
-        status: "spinning",
-      });
 
-      spinnerMap.set(uri, { state: newState });
-
-      if (completed === state.total) {
-        spinnies.succeed(uri);
-        spinnerMap.delete(uri);
-      }
+      setCompleted({ state, uri, spinnies, spinnerMap, displayText });
     },
   };
 };
@@ -326,20 +323,8 @@ exports.contextFromClient = ({ client, title }) => {
       }
       const { state } = context;
       assert(state);
-      const completed = state.completed + 1;
-      const newState = { ...state, completed };
-      spinnies.update(uri, {
-        text: displayText(newState),
-        color: "greenBright",
-        status: "spinning",
-      });
 
-      spinnerMap.set(uri, { state: newState });
-
-      if (completed === state.total) {
-        spinnies.succeed(uri);
-        //spinnerMap.delete(uri);
-      }
+      setCompleted({ state, uri, spinnies, spinnerMap, displayText });
     },
   };
 };

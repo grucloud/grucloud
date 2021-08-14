@@ -390,18 +390,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
   };
 };
 
-exports.compareHostedZone = async ({
-  usedBySet, //TODO remove
-  target,
-  live,
-  dependencies,
-  lives,
-}) =>
+exports.compareHostedZone = async ({ target, live, dependencies, lives }) =>
   pipe([
     tap(() => {
       //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
       assert(live.RecordSet, "live.recordSet");
-      assert(usedBySet, "usedBySet");
       assert(lives);
     }),
     fork({

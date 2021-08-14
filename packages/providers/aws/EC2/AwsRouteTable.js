@@ -63,8 +63,8 @@ exports.AwsRouteTable = ({ spec, config }) => {
           providerName,
           id: live.VpcId,
         }),
-      tap((params) => {
-        assert(true);
+      tap((vpc) => {
+        assert(vpc);
       }),
       get("name"),
       tap((name) => {

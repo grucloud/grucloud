@@ -184,6 +184,9 @@ const createClient = ({
   getResourceFromLive,
 }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     //TODO may not need the params
     () => spec.Client({ providerName, spec, config }),
     tap((client) => {
@@ -356,7 +359,7 @@ exports.ResourceMaker = ({
     spec,
     config,
   });
-  const usedBySet = new Set();
+  // const client = provider.clientByType()(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
@@ -463,7 +466,6 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
-          usedBySet,
           target,
           live,
           dependencies: resource.dependencies(), //TODO
@@ -875,10 +877,6 @@ exports.ResourceMaker = ({
       assert(json);
     }),
   ]);
-  //TODO remove
-  const addUsedBy = (usedBy) => {
-    usedBySet.add(usedBy);
-  };
 
   return {
     type,
@@ -889,9 +887,6 @@ exports.ResourceMaker = ({
     meta,
     readOnly,
     dependencies: getDependencies(),
-    addUsedBy,
-    //TODO remove
-    usedBy: () => usedBySet,
     spec,
     client,
     toJSON,

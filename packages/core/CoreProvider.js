@@ -209,13 +209,20 @@ function CoreProvider({
 
   const mapTypeToResources = new Map();
   let resourcesObj = {};
-  const getTargetTypes = pipe([
+  const getTargetGroupTypes = pipe([
     () => [...mapTypeToResources.keys()],
     tap((params) => {
       assert(true);
     }),
-    //TODO add group
-    map(pipe([JSON.parse, get("type")])),
+    map(
+      pipe([
+        JSON.parse,
+        ({ group, type }) => `${group}::${type}`,
+        tap((params) => {
+          assert(true);
+        }),
+      ])
+    ),
     tap((params) => {
       assert(true);
     }),
@@ -303,6 +310,7 @@ function CoreProvider({
       ])(),
   ]);
   //TODO refactor no curry
+
   const clientByType = pipe([
     getClients,
     findClient,
@@ -725,9 +733,10 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleListing,
-        clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-          getClients()
-        ),
+        clients: filterReadClient({
+          options,
+          targetTypes: getTargetGroupTypes(),
+        })(getClients()),
       }),
       (resourcesPerType) =>
         spinnersStartResources({
@@ -748,9 +757,10 @@ function CoreProvider({
           onStateChange,
           planQueryDestroy,
           title: TitleListing,
-          clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-            getClients()
-          ),
+          clients: filterReadClient({
+            options,
+            targetTypes: getTargetGroupTypes(),
+          })(getClients()),
         }),
       ])
     )();
@@ -764,9 +774,10 @@ function CoreProvider({
         spinnersStopClient({
           onStateChange,
           title: TitleListing,
-          clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
-            getClients()
-          ),
+          clients: filterReadClient({
+            options,
+            targetTypes: getTargetGroupTypes(),
+          })(getClients()),
           error,
         }),
         //TODO
@@ -839,7 +850,7 @@ function CoreProvider({
         title: TitleListing,
         clients: filterReadWriteClient({
           options,
-          targetTypes: getTargetTypes(),
+          targetTypes: getTargetGroupTypes(),
         })(getClients()),
       }),
     ])();
@@ -1056,8 +1067,8 @@ function CoreProvider({
       }),
       switchCase([
         () => readWrite,
-        filterReadWriteClient({ options, targetTypes: getTargetTypes() }),
-        filterReadClient({ options, targetTypes: getTargetTypes() }),
+        filterReadWriteClient({ options, targetTypes: getTargetGroupTypes() }),
+        filterReadClient({ options, targetTypes: getTargetGroupTypes() }),
       ]),
       addDependentClients,
       tap((clients) => {
@@ -1203,8 +1214,13 @@ function CoreProvider({
         },
         // Delete by type
         () => !isEmpty(types),
-        () =>
-          any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
+        pipe([
+          () => types,
+          any((type) => isTypeMatch({ type, typeToMatch: spec.type })),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
         // PlanDirection
         () => direction == PlanDirection.UP,
         () => false,
