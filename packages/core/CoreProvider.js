@@ -84,7 +84,7 @@ const {
   findClient,
 } = require("./ProviderCommon");
 
-const { createClient, decorateLive } = require("./CoreResource");
+const { createClient, decorateLive } = require("./Client");
 const { createLives } = require("./Lives");
 
 const createResourceMakers = ({

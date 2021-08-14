@@ -16,8 +16,6 @@ const {
   and,
   or,
   transform,
-  pick,
-  fork,
 } = require("rubico");
 
 const {
@@ -32,7 +30,6 @@ const {
   isDeepEqual,
   size,
   identity,
-  includes,
   unless,
 } = require("rubico/x");
 
@@ -40,281 +37,7 @@ const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
-const { displayType } = require("./ProviderCommon");
-
-const showLive =
-  ({ options = {} } = {}) =>
-  (resource) =>
-    pipe([
-      () => resource,
-      and([
-        (resource) =>
-          switchCase([not(isEmpty), includes(resource.type), () => true])(
-            options.types
-          ),
-        (resource) => !includes(resource.type)(options.typesExclude),
-        (resource) => (options.defaultExclude ? !resource.isDefault : true),
-        (resource) => (options.our ? resource.managedByUs : true),
-        (resource) => (options.name ? resource.name === options.name : true),
-        (resource) => (options.id ? resource.id === options.id : true),
-        (resource) =>
-          options.providerName && !isEmpty(options.providerNames)
-            ? includes(resource.providerName)(options.providerNames)
-            : true,
-        (resource) => (options.canBeDeleted ? !resource.cannotBeDeleted : true),
-      ]),
-      tap((show) => {
-        logger.debug(`showLive ${resource.name} show: ${show}`);
-      }),
-    ])();
-
-const decorateLive =
-  ({ client, options, lives }) =>
-  (live) =>
-    pipe([
-      tap((params) => {
-        assert(lives);
-        assert(live);
-      }),
-      () => ({
-        group: client.spec.group,
-        type: client.spec.type,
-        name: client.findName({ live, lives }),
-        meta: client.findMeta(live),
-        id: client.findId({ live, lives }),
-        providerName: client.spec.providerName,
-        groupType: client.spec.groupType,
-        live,
-      }),
-      assign({
-        uri: ({ name, id, meta }) =>
-          client.resourceKey({
-            live,
-            providerName: client.spec.providerName,
-            type: client.spec.type,
-            group: client.spec.group,
-            name,
-            meta,
-            id,
-          }),
-        displayName: ({ name, meta }) => client.displayName({ name, meta }),
-      }),
-      (resource) => ({
-        ...resource,
-        get cannotBeDeleted() {
-          return client.cannotBeDeleted({
-            resource,
-            live,
-            lives,
-          });
-        },
-        //TODO isOurMinion or managedByUs
-        get isOurMinion() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
-        },
-        get managedByUs() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
-        },
-        get managedByOther() {
-          return client.managedByOther({ resource, live, lives });
-        },
-        get isDefault() {
-          return client.isDefault({ live, lives });
-        },
-        get namespace() {
-          return client.findNamespace({ live, lives });
-        },
-        get dependencies() {
-          return pipe([
-            () =>
-              client.findDependencies({
-                live,
-                lives,
-              }),
-            map(
-              assign({
-                providerName: () => client.spec.providerName,
-                groupType: ({ group, type }) => `${group}::${type}`,
-                ids: pipe([get("ids"), filter(not(isEmpty))]),
-              })
-            ),
-            filter(pipe([get("ids"), not(isEmpty)])),
-          ])();
-        },
-      }),
-      tap((resource) =>
-        Object.defineProperty(resource, "show", {
-          enumerable: true,
-          get: () => showLive({ options: options })(resource),
-        })
-      ),
-    ])();
-
-exports.decorateLive = decorateLive;
-
-const decorateLives = ({ client, config, options, readOnly, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("items", []), // remove
-    filter(not(get("error"))),
-    map(decorateLive({ client, config, options, readOnly, lives })),
-    tap((results) => {
-      assert(Array.isArray(results));
-    }),
-    callProp("sort", (a, b) =>
-      pipe([
-        tap(() => {
-          assert(a);
-          assert(a.name.localeCompare);
-          assert(a.name);
-          assert(b);
-          assert(b.name);
-        }),
-        () => a.name.localeCompare(b.name),
-      ])()
-    ),
-  ]);
-
-const createClient = ({
-  spec,
-  providerName,
-  config,
-  getResourcesByType,
-  getResourceFromLive,
-}) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    //TODO may not need the params
-    () => spec.Client({ providerName, spec, config }),
-    tap((client) => {
-      assert(getResourcesByType);
-      assert(getResourceFromLive);
-      assert(providerName);
-      assert(client.spec);
-      assert(client.findName);
-      assert(client.getList);
-    }),
-
-    defaultsDeep({
-      resourceKey: pipe([
-        tap((resource) => {
-          assert(resource.providerName);
-          assert(resource.type);
-          assert(
-            resource.name || resource.id,
-            `no name or id in resource ${tos(resource)}`
-          );
-        }),
-        ({ providerName, type, group, name, id }) =>
-          `${providerName}::${displayType({ group, type })}::${
-            name || (isString(id) ? id : JSON.stringify(id))
-          }`,
-      ]),
-      displayName: pipe([
-        tap((xxx) => {
-          assert(true);
-        }),
-        get("name"),
-      ]),
-      displayNameResource: pipe([
-        tap((xxx) => {
-          assert(true);
-        }),
-        get("name"),
-      ]),
-      findMeta: () => undefined,
-      findDependencies: () => [],
-      findNamespace: () => "",
-      findNamespaceFromTarget: get("namespace"),
-      cannotBeDeleted: () => false,
-      isDefault: () => false,
-      managedByOther: () => false,
-      isOurMinion: ({ uri, live, lives }) =>
-        pipe([
-          fork({
-            resource: () =>
-              getResourceFromLive({
-                uri,
-                live,
-                lives,
-              }),
-            resources: () => getResourcesByType(spec),
-          }),
-          ({ resource, resources }) =>
-            spec.isOurMinion({
-              resource,
-              resources,
-              live,
-              lives,
-              config,
-            }),
-        ])(),
-
-      configDefault: () => ({}),
-      isInstanceUp: not(isEmpty),
-      providerName,
-    }),
-    assign({
-      cannotBeDeleted:
-        ({ cannotBeDeleted }) =>
-        ({ live, resource, lives }) =>
-          cannotBeDeleted({
-            live,
-            lives,
-            resources: getResourcesByType(spec),
-            resource,
-            config,
-          }),
-    }),
-    assign({
-      getLives: (client) =>
-        pipe([
-          tryCatch(
-            ({ lives, options }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () =>
-                  client.getList({
-                    lives,
-                    deep: true,
-                    resources: getResourcesByType(client.spec),
-                  }),
-                decorateLives({
-                  client,
-                  config,
-                  options,
-                  lives,
-                }),
-                tap((resources) => {
-                  logger.debug(
-                    `getLives ${client.spec.type} #resources ${size(resources)}`
-                  );
-                }),
-                (resources) => ({ resources }),
-              ])(),
-            pipe([
-              pick(["message", "code", "stack", "config", "response"]),
-              tap((error) => {
-                logger.error(`list error ${error.stack} `);
-              }),
-              (error) => ({ error }),
-            ])
-          ),
-        ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
-exports.createClient = createClient;
-
+const { decorateLive } = require("./Client");
 exports.ResourceMaker = ({
   name: resourceName,
   namespace = "",
@@ -348,15 +71,7 @@ exports.ResourceMaker = ({
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
-  // provider client as a parameter
-  const client = createClient({
-    providerName: provider.name,
-    getResourcesByType: provider.getResourcesByType,
-    getResourceFromLive: provider.getResourceFromLive,
-    spec,
-    config,
-  });
-  // const client = provider.clientByType()(spec);
+  const client = provider.clientByType()(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
@@ -417,10 +132,8 @@ exports.ResourceMaker = ({
               () => resources,
               find(({ live }) =>
                 pipe([
-                  () =>
-                    provider
-                      .clientByType()({ type, group })
-                      .findName({ live, lives: provider.lives }),
+                  () => provider.clientByType()({ type, group }),
+                  (client) => client.findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${group}::${type} resourceName: ${resourceName} liveName: ${liveName}`
