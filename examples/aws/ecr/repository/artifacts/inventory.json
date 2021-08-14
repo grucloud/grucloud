@@ -1,0 +1,167 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "repository",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/ecr/repository/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/ecr/repository"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "ecr",
+                                "type": "Registry",
+                                "name": "default",
+                                "id": "840541460064",
+                                "providerName": "aws",
+                                "groupType": "ecr::Registry",
+                                "live": {
+                                    "registryId": "840541460064",
+                                    "replicationConfiguration": {
+                                        "rules": [
+                                            {
+                                                "destinations": [
+                                                    {
+                                                        "region": "us-east-2",
+                                                        "registryId": "840541460064"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::ecr::Registry::default",
+                                "displayName": "default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ecr::Registry",
+                        "type": "Registry",
+                        "group": "ecr",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ecr",
+                                "type": "Repository",
+                                "name": "starhackit/lb",
+                                "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
+                                "providerName": "aws",
+                                "groupType": "ecr::Repository",
+                                "live": {
+                                    "repositoryArn": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
+                                    "registryId": "840541460064",
+                                    "repositoryName": "starhackit/lb",
+                                    "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
+                                    "createdAt": "2021-08-13T20:09:23.000Z",
+                                    "imageTagMutability": "MUTABLE",
+                                    "imageScanningConfiguration": {
+                                        "scanOnPush": false
+                                    },
+                                    "encryptionConfiguration": {
+                                        "encryptionType": "AES256"
+                                    },
+                                    "tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "aws-ecr-repository"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit/lb"
+                                        }
+                                    ],
+                                    "policyText": {
+                                        "Version": "2008-10-17",
+                                        "Statement": [
+                                            {
+                                                "Sid": "AllowPushPull",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "AWS": "arn:aws:iam::840541460064:root"
+                                                },
+                                                "Action": [
+                                                    "ecr:GetDownloadUrlForLayer",
+                                                    "ecr:BatchGetImage",
+                                                    "ecr:BatchCheckLayerAvailability",
+                                                    "ecr:PutImage",
+                                                    "ecr:InitiateLayerUpload",
+                                                    "ecr:UploadLayerPart",
+                                                    "ecr:CompleteLayerUpload"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "lifecyclePolicyText": {
+                                        "rules": [
+                                            {
+                                                "rulePriority": 1,
+                                                "description": "Expire images older than 14 days",
+                                                "selection": {
+                                                    "tagStatus": "untagged",
+                                                    "countType": "sinceImagePushed",
+                                                    "countUnit": "days",
+                                                    "countNumber": 14
+                                                },
+                                                "action": {
+                                                    "type": "expire"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::ecr::Repository::starhackit/lb",
+                                "displayName": "starhackit/lb",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ecr::Repository",
+                        "type": "Repository",
+                        "group": "ecr",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

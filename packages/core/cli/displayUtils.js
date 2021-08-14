@@ -393,25 +393,73 @@ const displayPlanItemUpdate =
           ])
       ),
       () => diff.targetDiff.updated,
-      map.entries(([key, value]) => {
-        tableItem.push([
-          {
-            colSpan: 2,
-            content: colors.yellow(`Key: ${key}`),
-          },
-        ]);
-        tableItem.push([
-          {
-            content: colors.red(`- ${YAML.stringify(value)}`),
-          },
-          {
-            content: colors.green(
-              `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
-            ),
-          },
-        ]);
-        return [key, value];
-      }),
+      tap.if(
+        not(isEmpty),
+        map.entries(([key, value]) => {
+          tableItem.push([
+            {
+              colSpan: 2,
+              content: colors.yellow(`Key: ${key}`),
+            },
+          ]);
+          tableItem.push([
+            {
+              content: colors.red(`- ${YAML.stringify(value)}`),
+            },
+            {
+              content: colors.green(
+                `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
+              ),
+            },
+          ]);
+          return [key, value];
+        })
+      ),
+      () => diff.liveDiff.deleted,
+      tap.if(
+        not(isEmpty),
+        map.entries(([key, value]) => {
+          tableItem.push([
+            {
+              colSpan: 2,
+              content: colors.yellow(`Key: ${key}`),
+            },
+          ]);
+          tableItem.push([
+            {
+              content: colors.red(
+                `- ${YAML.stringify(diff.targetDiff.added[key])}`
+              ),
+            },
+            {
+              content: colors.green(`+ ${YAML.stringify(value)}`),
+            },
+          ]);
+          return [key, value];
+        })
+      ),
+      tap.if(
+        () => diff.liveDiff.added,
+        map.entries(([key, value]) => {
+          tableItem.push([
+            {
+              colSpan: 2,
+              content: colors.yellow(`Key: ${key}`),
+            },
+          ]);
+          tableItem.push([
+            {
+              content: colors.red(
+                `- ${YAML.stringify(diff.targetDiff.deleted[key])}`
+              ),
+            },
+            {
+              content: colors.green(`+ ${YAML.stringify(value)}`),
+            },
+          ]);
+          return [key, value];
+        })
+      ),
     ])();
 
 const displayPlanItemCreate =
@@ -435,6 +483,7 @@ const displayPlanItemCreate =
         tableItem.push([
           {
             colSpan: 2,
+            //TODO limit size
             content: colors.green(YAML.stringify(resource.target)),
           },
         ]),
@@ -460,6 +509,7 @@ const displayPlanItemDestroy =
         tableItem.push([
           {
             colSpan: 2,
+            //TODO limit size
             content: colors.red(YAML.stringify(resource.live)),
           },
         ]),

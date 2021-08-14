@@ -1462,17 +1462,12 @@ const projectNameDefault = ({ programOptions }) =>
       ])()
   )();
 
-exports.Cli = ({
-  programOptions = {},
-  createStack,
-  config = () => ({}),
-  stage,
-} = {}) =>
+exports.Cli = ({ programOptions = {}, createStack, config, stage } = {}) =>
   pipe([
     tap(() => {
       logger.debug(`Cli ${JSON.stringify({ programOptions, stage })}`);
       assert(isFunction(createStack), "createStack must be a function");
-      assert(isFunction(config), "config must be a function");
+      assert(config ? isFunction(config) : true, "config must be a function");
     }),
     () => ({
       programOptions: pipe([

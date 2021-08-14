@@ -269,15 +269,10 @@ exports.isOurMinionObject = ({ tags, config }) => {
       assert(projectName);
       assert(providerName);
     }),
-    //TODO remove switch
-    switchCase([
-      and([
-        eq(get(projectNameKey), projectName),
-        eq(get(stageTagKey), stage),
-        eq(get(createdByProviderKey), providerName),
-      ]),
-      () => true,
-      () => false,
+    and([
+      eq(get(projectNameKey), projectName),
+      eq(get(stageTagKey), stage),
+      eq(get(createdByProviderKey), providerName),
     ]),
     tap((minion) => {
       // logger.debug(

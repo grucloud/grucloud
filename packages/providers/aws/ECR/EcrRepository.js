@@ -9,13 +9,17 @@ const {
   eq,
   pick,
   assign,
+  omit,
 } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRepository" });
 const { tos } = require("@grucloud/core/tos");
-const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const {
+  buildTags,
+  createEndpoint,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findName = get("live.repositoryName");
@@ -60,6 +64,13 @@ exports.EcrRepository = ({ spec, config }) => {
     ])
   );
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property
+  const getTags = pipe([
+    ({ repositoryArn }) => ({ resourceArn: repositoryArn }),
+    ecr().listTagsForResource,
+    get("tags"),
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
   const describeRepositories = (params = {}) =>
     pipe([
@@ -70,6 +81,7 @@ exports.EcrRepository = ({ spec, config }) => {
         assign({
           policyText: getRepositoryPolicy,
           lifecyclePolicyText: getLifecyclePolicy,
+          tags: getTags,
         })
       ),
       tap((repositories) => {
@@ -133,6 +145,7 @@ exports.EcrRepository = ({ spec, config }) => {
   const create = ({ payload, name }) =>
     pipe([
       () => payload,
+      omit(["policyText", "lifecyclePolicyText"]),
       ecr().createRepository,
       get("repository"),
       setRepositoryPolicy({ payload }),
@@ -176,7 +189,7 @@ exports.EcrRepository = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         repositoryName: name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTags({ config, namespace, name }),
         ...(kmsKey &
           {
             encryptionConfiguration: {

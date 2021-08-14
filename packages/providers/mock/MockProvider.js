@@ -153,9 +153,7 @@ exports.MockProvider = ({
   return CoreProvider({
     type: providerType,
     name,
-    get config() {
-      return mergeConfigMock();
-    },
+    makeConfig: () => mergeConfigMock(),
     fnSpecs,
     start,
     info,

@@ -1117,9 +1117,7 @@ exports.GoogleProvider = ({
     ...other,
     type: "google",
     name,
-    get config() {
-      return mergedConfig;
-    },
+    makeConfig: () => mergedConfig,
     fnSpecs,
     start,
     info: ({ options } = {}) =>

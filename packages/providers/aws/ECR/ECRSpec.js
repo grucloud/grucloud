@@ -1,12 +1,11 @@
 const { assign, map } = require("rubico");
-const { isOurMinionObject } = require("../AwsCommon");
+const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
-//const { EcrRepositoryPolicy } = require("./EcrRepositoryPolicy");
+const { EcrRegistry, compareRegistry } = require("./EcrRegistry");
 
 const GROUP = "ecr";
 
-const isOurMinion = ({ live, config }) =>
-  isOurMinionObject({ tags: live.tags, config });
+const isOurMinion = isOurMinionFactory({ tags: "tags" });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -15,10 +14,10 @@ module.exports = () =>
       Client: EcrRepository,
       isOurMinion,
     },
-    // {
-    //   type: "RepositoryPolicy",
-    //   dependsOn: ["ecr::Repository"],
-    //   Client: EcrRepositoryPolicy,
-    //   isOurMinion,
-    // },
+    {
+      type: "Registry",
+      Client: EcrRegistry,
+      isOurMinion,
+      compare: compareRegistry,
+    },
   ]);

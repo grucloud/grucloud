@@ -15,7 +15,7 @@ const createProviderMaker =
       }),
       () =>
         provider({
-          configs: [configUser, ...configs, config],
+          configs: [config || configUser, ...configs],
           programOptions,
           stage,
           ...otherProps,

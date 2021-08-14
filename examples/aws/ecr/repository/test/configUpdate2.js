@@ -17,7 +17,7 @@ module.exports = ({ stage, accountId }) => ({
             Version: "2008-10-17",
             Statement: [
               {
-                Sid: "AllowPushPull",
+                Sid: "AllowPushPull-2",
                 Effect: "Allow",
                 Principal: {
                   AWS: "arn:aws:iam::840541460064:root",
@@ -38,12 +38,12 @@ module.exports = ({ stage, accountId }) => ({
             rules: [
               {
                 rulePriority: 1,
-                description: "Expire images older than 14 days",
+                description: "Expire images older than 15 days",
                 selection: {
                   tagStatus: "untagged",
                   countType: "sinceImagePushed",
                   countUnit: "days",
-                  countNumber: 14,
+                  countNumber: 15,
                 },
                 action: {
                   type: "expire",
@@ -58,32 +58,32 @@ module.exports = ({ stage, accountId }) => ({
       default: {
         name: "default",
         properties: {
+          policyText: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Sid: "stis-2",
+                Effect: "Allow",
+                Principal: {
+                  AWS: "arn:aws:iam::840541460064:root",
+                },
+                Action: ["ecr:CreateRepository", "ecr:ReplicateImage"],
+                Resource: "arn:aws:ecr:eu-west-2:840541460064:repository/*",
+              },
+            ],
+          },
           replicationConfiguration: {
             rules: [
               {
                 destinations: [
                   {
-                    region: "us-east-2",
+                    region: "us-west-1",
                     registryId: accountId(),
                   },
                 ],
               },
             ],
           },
-          // policyText: {
-          //   Version: "2012-10-17",
-          //   Statement: [
-          //     {
-          //       Sid: "stis-1",
-          //       Effect: "Allow",
-          //       Principal: {
-          //         AWS: "arn:aws:iam::1234567890:root",
-          //       },
-          //       Action: ["ecr:CreateRepository", "ecr:ReplicateImage"],
-          //       Resource: "arn:aws:ecr:eu-west-2:840541460064:repository/*",
-          //     },
-          //   ],
-          // },
         },
       },
     },

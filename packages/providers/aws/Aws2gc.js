@@ -589,6 +589,28 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "ecr",
+    types: [
+      {
+        type: "Repository",
+        filterLive: () =>
+          pick([
+            "repositoryName",
+            "imageTagMutability",
+            "imageScanningConfiguration",
+            "encryptionConfiguration",
+            "policyText",
+            "lifecyclePolicyText",
+          ]),
+      },
+      {
+        type: "Registry",
+        filterLive: () =>
+          pipe([pick(["policyText", "replicationConfiguration"])]),
+      },
+    ],
+  },
+  {
     group: "eks",
     types: [
       {

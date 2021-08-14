@@ -184,6 +184,9 @@ const createClient = ({
   getResourceFromLive,
 }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     //TODO may not need the params
     () => spec.Client({ providerName, spec, config }),
     tap((client) => {
@@ -348,6 +351,7 @@ exports.ResourceMaker = ({
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
+  // provider client as a parameter
   const client = createClient({
     providerName: provider.name,
     getResourcesByType: provider.getResourcesByType,
@@ -355,7 +359,7 @@ exports.ResourceMaker = ({
     spec,
     config,
   });
-  const usedBySet = new Set();
+  // const client = provider.clientByType()(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
@@ -420,7 +424,7 @@ exports.ResourceMaker = ({
                 pipe([
                   () =>
                     provider
-                      .clientByType({ type, group })
+                      .clientByType()({ type, group })
                       .findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
@@ -462,7 +466,6 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
-          usedBySet,
           target,
           live,
           dependencies: resource.dependencies(), //TODO
@@ -718,7 +721,11 @@ exports.ResourceMaker = ({
             }),
           ]),
           pipe([
-            () => properties({ dependencies: resolvedDependencies }),
+            () =>
+              properties({
+                config: provider.getConfig(),
+                dependencies: resolvedDependencies,
+              }),
             (properties) =>
               client.configDefault({
                 name: resourceName,
@@ -729,6 +736,7 @@ exports.ResourceMaker = ({
                 live,
                 lives: provider.lives,
                 programOptions,
+                config,
               }),
             tap((result) => {
               // logger.debug(
@@ -869,10 +877,6 @@ exports.ResourceMaker = ({
       assert(json);
     }),
   ]);
-  //TODO remove
-  const addUsedBy = (usedBy) => {
-    usedBySet.add(usedBy);
-  };
 
   return {
     type,
@@ -883,9 +887,6 @@ exports.ResourceMaker = ({
     meta,
     readOnly,
     dependencies: getDependencies(),
-    addUsedBy,
-    //TODO remove
-    usedBy: () => usedBySet,
     spec,
     client,
     toJSON,
