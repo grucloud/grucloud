@@ -40,6 +40,7 @@ const {
   size,
   uniq,
   prepend,
+  unless,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -1118,14 +1119,13 @@ function CoreProvider({
       tap((result) => {
         assert(result);
       }),
-      tap.if(get("error"), (result) => {
-        throw result;
-      }),
-      //TODO handle error
       assign({
         results: pipe([
           get("results"),
-          callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
+          unless(
+            isEmpty,
+            callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType))
+          ),
         ]),
       }),
       tap((result) => {
