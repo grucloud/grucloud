@@ -335,10 +335,7 @@ exports.Planner = ({
 
   plans.map((item) => {
     const key = itemToKey(item);
-    assert(
-      !statusMap.has(key),
-      `Planner: duplicated key: ${key}, plans: ${tos(plans)}`
-    );
+    assert(!statusMap.has(key), `Planner: duplicated key: ${key}`);
 
     statusMap.set(key, {
       item,

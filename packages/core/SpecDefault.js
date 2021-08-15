@@ -1,8 +1,64 @@
 const assert = require("assert");
 const { tap, pipe, assign, eq, get } = require("rubico");
-const { defaultsDeep, find, when, isEmpty } = require("rubico/x");
+const {
+  defaultsDeep,
+  find,
+  when,
+  isEmpty,
+  unless,
+  prepend,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
+
+const findNamespaceFromProps = (properties) =>
+  pipe([
+    () => properties({ dependencies: {} }),
+    get("metadata.namespace", ""),
+  ])();
+
+const findNamespaceFromLive = get("metadata.namespace", "");
+
+const findNamespaceFromDeps = get("namespace.name", "");
+
+const buildNamespaceKey = ({
+  properties = () => undefined,
+  dependencies = () => undefined,
+  live,
+}) =>
+  pipe([
+    () => findNamespaceFromProps(properties),
+    when(isEmpty, () => findNamespaceFromLive(live)),
+    when(isEmpty, () => findNamespaceFromDeps(dependencies())),
+    unless(isEmpty, prepend("::")),
+  ])();
+
+const buildGroupKey = unless(isEmpty, prepend("::"));
+
+const resourceKeyDefault = pipe([
+  tap((resource) => {
+    assert(resource.providerName);
+    assert(resource.type);
+    assert(resource.name);
+  }),
+  ({
+    providerName,
+    type,
+    group = "",
+    properties,
+    name,
+    dependencies,
+    id,
+    live,
+  }) =>
+    `${providerName}${buildGroupKey(group)}::${type}${buildNamespaceKey({
+      properties,
+      dependencies,
+      live,
+      name,
+      type,
+    })}::${name || id}`,
+]);
 
 const defaultConfig = ({ config = {}, provider }) =>
   pipe([() => config, defaultsDeep(provider.getConfig())])();
@@ -23,6 +79,7 @@ const SpecDefault = ({ providerName }) => ({
   listOnly: false,
   isOurMinion: () => false,
   propertiesDefault: {},
+  resourceKey: resourceKeyDefault,
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>

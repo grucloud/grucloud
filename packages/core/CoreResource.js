@@ -71,7 +71,7 @@ exports.ResourceMaker = ({
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
-  const client = provider.clientByType()(spec);
+  const getClient = () => provider.clientByType(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
@@ -79,7 +79,7 @@ exports.ResourceMaker = ({
         logger.info(`getLive ${toString()}, deep: ${deep}`);
       }),
       () =>
-        client.getByName({
+        getClient().getByName({
           provider,
           name: resourceName,
           namespace,
@@ -96,7 +96,12 @@ exports.ResourceMaker = ({
         or([isEmpty, () => isEmpty(provider.lives)]),
         tap(
           pipe([
-            decorateLive({ client, lives: provider.lives, config, options }),
+            decorateLive({
+              client: getClient(),
+              lives: provider.lives,
+              config,
+              options,
+            }),
             tap((resource) => {
               provider.lives.addResource({
                 providerName: config.providerName,
@@ -132,8 +137,7 @@ exports.ResourceMaker = ({
               () => resources,
               find(({ live }) =>
                 pipe([
-                  () => provider.clientByType()({ type, group }),
-                  (client) => client.findName({ live, lives: provider.lives }),
+                  () => getClient().findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${group}::${type} resourceName: ${resourceName} liveName: ${liveName}`
@@ -203,7 +207,7 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target,
                     live,
-                    id: client.findId({ live }),
+                    id: getClient().findId({ live }),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
@@ -375,7 +379,7 @@ exports.ResourceMaker = ({
         if (!live) {
           assert(true);
         }
-        assert(client.configDefault);
+        assert(getClient().configDefault);
         assert(spec.propertiesDefault);
       }),
       switchCase([
@@ -426,7 +430,7 @@ exports.ResourceMaker = ({
                 dependencies: resolvedDependencies,
               }),
             (properties) =>
-              client.configDefault({
+              getClient().configDefault({
                 name: resourceName,
                 meta,
                 namespace,
@@ -462,7 +466,7 @@ exports.ResourceMaker = ({
         }
       ),*/
       () =>
-        client.create({
+        getClient().create({
           meta,
           name: resourceName,
           payload,
@@ -490,7 +494,8 @@ exports.ResourceMaker = ({
       tap.if(isEmpty, () => {
         throw Error(`Resource ${toString()} does not exist`);
       }),
-      () =>
+      getClient,
+      (client) =>
         retryCall({
           name: `update ${toString()}`,
           fn: () =>
@@ -545,7 +550,7 @@ exports.ResourceMaker = ({
     ])({});
 
   const toString = () =>
-    client.resourceKey({
+    spec.resourceKey({
       providerName: provider.name,
       type,
       group,
@@ -560,11 +565,11 @@ exports.ResourceMaker = ({
       providerName: provider.name,
       type,
       group,
-      namespace: client.findNamespaceFromTarget({ namespace, properties }),
+      namespace: getClient().findNamespaceFromTarget({ namespace, properties }),
       name: resourceName,
       meta,
       readOnly,
-      displayName: client.displayNameResource({
+      displayName: getClient().displayNameResource({
         name: resourceName,
         meta,
         properties,
@@ -587,7 +592,7 @@ exports.ResourceMaker = ({
     readOnly,
     dependencies: getDependencies(),
     spec,
-    client,
+    getClient,
     toJSON,
     toString,
     attributes,
@@ -609,9 +614,9 @@ exports.ResourceMaker = ({
     isUp: ({ live }) =>
       pipe([
         tap(() => {
-          assert(client.isInstanceUp);
+          assert(getClient().isInstanceUp);
         }),
-        () => client.isInstanceUp(live),
+        () => getClient().isInstanceUp(live),
         tap((isUp) => {
           logger.debug(
             `isUp ${type}/${resourceName}: ${!!isUp}, hasLive: ${!!live}`

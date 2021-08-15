@@ -13,14 +13,7 @@ const {
   not,
   omit,
 } = require("rubico");
-const {
-  find,
-  first,
-  isEmpty,
-  isFunction,
-  identity,
-  when,
-} = require("rubico/x");
+const { find, first, isEmpty, isFunction, when } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -84,28 +77,6 @@ exports.compare = pipe([
   tap((diff) => {
     logger.debug(`compare k8s ${tos(diff)}`);
   }),
-]);
-
-exports.resourceKeyDefault = pipe([
-  tap((resource) => {
-    assert(resource.providerName);
-    assert(resource.type);
-    assert(resource.name);
-  }),
-  ({ providerName, type, name }) => `${providerName}::${type}::${name}`,
-]);
-
-exports.resourceKeyNamespace = pipe([
-  tap((resource) => {
-    assert(resource.providerName);
-    assert(resource.type);
-    assert(resource.name);
-    //assert(resource.properties);
-  }),
-  ({ providerName, type, properties, name, live }) =>
-    `${providerName}::${type}::${get("metadata.namespace")(
-      properties ? properties({ dependencies: {} }) : live
-    )}::${name}`,
 ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;

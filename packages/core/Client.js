@@ -59,6 +59,8 @@ const decorateLive =
   (live) =>
     pipe([
       tap((params) => {
+        assert(client);
+        assert(client.spec);
         assert(lives);
         assert(live);
       }),
@@ -74,7 +76,7 @@ const decorateLive =
       }),
       assign({
         uri: ({ name, id, meta }) =>
-          client.resourceKey({
+          client.spec.resourceKey({
             live,
             providerName: client.spec.providerName,
             type: client.spec.type,
@@ -141,7 +143,7 @@ exports.decorateLive = decorateLive;
 const decorateLives = ({ client, config, options, readOnly, lives }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(client);
     }),
     get("items", []), // remove
     filter(not(get("error"))),
@@ -184,22 +186,7 @@ const createClient = ({
       assert(client.findName);
       assert(client.getList);
     }),
-
     defaultsDeep({
-      resourceKey: pipe([
-        tap((resource) => {
-          assert(resource.providerName);
-          assert(resource.type);
-          assert(
-            resource.name || resource.id,
-            `no name or id in resource ${tos(resource)}`
-          );
-        }),
-        ({ providerName, type, group, name, id }) =>
-          `${providerName}::${displayType({ group, type })}::${
-            name || (isString(id) ? id : JSON.stringify(id))
-          }`,
-      ]),
       displayName: pipe([
         tap((xxx) => {
           assert(true);
@@ -262,9 +249,6 @@ const createClient = ({
           tryCatch(
             ({ lives, options }) =>
               pipe([
-                tap((params) => {
-                  assert(true);
-                }),
                 () =>
                   client.getList({
                     lives,
@@ -279,7 +263,9 @@ const createClient = ({
                 }),
                 tap((resources) => {
                   logger.debug(
-                    `getLives ${client.spec.type} #resources ${size(resources)}`
+                    `getLives ${client.spec.groupType} #resources ${size(
+                      resources
+                    )}`
                   );
                 }),
                 (resources) => ({ resources }),

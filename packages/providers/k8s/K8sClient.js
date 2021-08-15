@@ -45,7 +45,6 @@ const {
   getNamespace,
   displayNameResourceNamespace,
   displayNameNamespace,
-  resourceKeyNamespace,
 } = require("./K8sCommon");
 
 module.exports = K8sClient = ({
@@ -58,7 +57,6 @@ module.exports = K8sClient = ({
   pathCreate,
   pathDelete,
   pathUpdate,
-  resourceKey = resourceKeyNamespace,
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
   isInstanceUp,
@@ -366,7 +364,6 @@ module.exports = K8sClient = ({
     spec,
     displayName,
     displayNameResource,
-    resourceKey,
     findName,
     findMeta,
     getByName,
