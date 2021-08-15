@@ -10,6 +10,7 @@
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
+        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/kms/symmetric"
     },
     "result": {
@@ -20,13 +21,6 @@
                 "kind": "livesPerType",
                 "error": false,
                 "results": [
-                    {
-                        "resources": [],
-                        "groupType": "ec2::KeyPair",
-                        "type": "KeyPair",
-                        "group": "ec2",
-                        "providerName": "aws"
-                    },
                     {
                         "resources": [
                             {
@@ -56,6 +50,43 @@
                                 },
                                 "uri": "aws::kms::Key::alias/aws/acm",
                                 "displayName": "alias/aws/acm",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
+                                "name": "alias/aws/dynamodb",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/15dbf533-379b-4817-bdf4-259c6e5d9d67",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "15dbf533-379b-4817-bdf4-259c6e5d9d67",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/15dbf533-379b-4817-bdf4-259c6e5d9d67",
+                                    "CreationDate": "2021-08-13T23:04:01.667Z",
+                                    "Enabled": true,
+                                    "Description": "Default key that protects my DynamoDB data when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/dynamodb"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/dynamodb",
+                                "displayName": "alias/aws/dynamodb",
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
@@ -151,11 +182,10 @@
                                     "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "CreationDate": "2021-07-09T20:59:18.231Z",
-                                    "Enabled": false,
+                                    "Enabled": true,
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
-                                    "KeyState": "PendingDeletion",
-                                    "DeletionDate": "2021-08-18T13:04:14.043Z",
+                                    "KeyState": "Enabled",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -164,10 +194,6 @@
                                     ],
                                     "MultiRegion": false,
                                     "Tags": [
-                                        {
-                                            "TagKey": "Name",
-                                            "TagValue": "eks-key"
-                                        },
                                         {
                                             "TagKey": "gc-created-by-provider",
                                             "TagValue": "aws"
@@ -183,12 +209,16 @@
                                         {
                                             "TagKey": "gc-stage",
                                             "TagValue": "dev"
+                                        },
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "eks-key"
                                         }
                                     ]
                                 },
                                 "uri": "aws::kms::Key::eks-key",
                                 "displayName": "eks-key",
-                                "cannotBeDeleted": true,
+                                "cannotBeDeleted": false,
                                 "isOurMinion": false,
                                 "managedByUs": false,
                                 "managedByOther": false,
@@ -222,10 +252,6 @@
                                     "MultiRegion": false,
                                     "Tags": [
                                         {
-                                            "TagKey": "Name",
-                                            "TagValue": "secret-key-test"
-                                        },
-                                        {
                                             "TagKey": "gc-created-by-provider",
                                             "TagValue": "aws"
                                         },
@@ -240,6 +266,10 @@
                                         {
                                             "TagKey": "gc-stage",
                                             "TagValue": "dev"
+                                        },
+                                        {
+                                            "TagKey": "Name",
+                                            "TagValue": "secret-key-test"
                                         }
                                     ],
                                     "Alias": "alias/secret-key-test"

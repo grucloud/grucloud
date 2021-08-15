@@ -147,8 +147,8 @@ const iamGroup = provider.iam.makeGroup({
 
 ### Examples
 
-- [Policies attached to a role](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam-policy/iac.js)
-- [Policies attached to roles, users and groups](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
+- [Policies attached to a role](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam-policy/iac.js)
+- [Policies attached to roles, users and groups](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
 
 ### Properties
 

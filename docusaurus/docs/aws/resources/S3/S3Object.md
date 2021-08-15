@@ -39,7 +39,7 @@ const s3Object = provider.s3.makeObject({
 
 ## Example Code
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/s3/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/s3/s3/iac.js)
 
 ## Properties
 

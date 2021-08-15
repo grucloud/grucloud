@@ -63,7 +63,7 @@ const server = provider.ec2.makeInstance({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
 
 ### Properties
 

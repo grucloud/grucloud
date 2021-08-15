@@ -33,7 +33,7 @@ const natGateway = provider.ec2.makeNatGateway({
 
 ### Examples
 
-- [EKS](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+- [VPC Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/vpc/iac.js)
 
 ### Dependencies
 

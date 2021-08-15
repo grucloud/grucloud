@@ -83,7 +83,7 @@ const subnetPrivate = provider.ec2.makeSubnet({
 
 ## Code Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js)
 - [module-aws-vpc](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/vpc/iac.js)
 
 ## Dependencies

@@ -21,7 +21,7 @@ const ig = provider.ec2.makeInternetGateway({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js)
 
 ### Dependencies
 

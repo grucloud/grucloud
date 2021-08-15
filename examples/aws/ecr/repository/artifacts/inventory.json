@@ -73,7 +73,7 @@
                                     "registryId": "840541460064",
                                     "repositoryName": "starhackit/lb",
                                     "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
-                                    "createdAt": "2021-08-13T20:09:23.000Z",
+                                    "createdAt": "2021-08-15T17:34:42.000Z",
                                     "imageTagMutability": "MUTABLE",
                                     "imageScanningConfiguration": {
                                         "scanOnPush": false
@@ -81,28 +81,23 @@
                                     "encryptionConfiguration": {
                                         "encryptionType": "AES256"
                                     },
-                                    "tags": [
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "aws-ecr-repository"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "starhackit/lb"
-                                        }
-                                    ],
+                                    "lifecyclePolicyText": {
+                                        "rules": [
+                                            {
+                                                "rulePriority": 1,
+                                                "description": "Expire images older than 14 days",
+                                                "selection": {
+                                                    "tagStatus": "untagged",
+                                                    "countType": "sinceImagePushed",
+                                                    "countUnit": "days",
+                                                    "countNumber": 14
+                                                },
+                                                "action": {
+                                                    "type": "expire"
+                                                }
+                                            }
+                                        ]
+                                    },
                                     "policyText": {
                                         "Version": "2008-10-17",
                                         "Statement": [
@@ -124,23 +119,28 @@
                                             }
                                         ]
                                     },
-                                    "lifecyclePolicyText": {
-                                        "rules": [
-                                            {
-                                                "rulePriority": 1,
-                                                "description": "Expire images older than 14 days",
-                                                "selection": {
-                                                    "tagStatus": "untagged",
-                                                    "countType": "sinceImagePushed",
-                                                    "countUnit": "days",
-                                                    "countNumber": 14
-                                                },
-                                                "action": {
-                                                    "type": "expire"
-                                                }
-                                            }
-                                        ]
-                                    }
+                                    "tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "aws-ecr-repository"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit/lb"
+                                        }
+                                    ]
                                 },
                                 "uri": "aws::ecr::Repository::starhackit/lb",
                                 "displayName": "starhackit/lb",
