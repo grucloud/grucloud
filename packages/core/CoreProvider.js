@@ -284,7 +284,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         assert(type);
-        assert(group);
+        //assert(group);
       }),
       () => mapTypeToResources.get(JSON.stringify({ type, group })) || [],
       // () => ({ type, group }),
@@ -1252,7 +1252,7 @@ function CoreProvider({
         pipe([
           tap(() => {
             assert(type);
-            assert(group);
+            //assert(group); k8s
             assert(groupType);
             assert(
               Array.isArray(resources),

@@ -171,12 +171,12 @@ const createClient = ({
   config,
   getResourcesByType,
   getResourceFromLive,
+  getListHof,
 }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(getListHof);
     }),
-    //TODO may not need the params
     () => spec.Client({ providerName, spec, config }),
     tap((client) => {
       assert(getResourcesByType);
@@ -232,6 +232,7 @@ const createClient = ({
       providerName,
     }),
     assign({
+      getList: getListHof,
       cannotBeDeleted:
         ({ cannotBeDeleted }) =>
         ({ live, resource, lives }) =>
