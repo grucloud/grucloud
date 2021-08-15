@@ -46,7 +46,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
         assert(live);
       }),
       () => live.bindings,
-      filter((binding) => prevervedRolesName.includes(binding.role)),
+      filter(({ role }) => prevervedRolesName.includes(role)),
       tap((bindings) => {
         logger.debug(`configDefault ${tos(bindings)}`);
       }),
@@ -70,7 +70,8 @@ exports.GcpIamPolicy = ({ spec, config }) => {
           fn: () => axios.post(":getIamPolicy"),
           config,
         }),
-      get("data.bindings"),
+      get("data"),
+      (policy) => [policy],
     ]),
     (error) => {
       logError(`getList`, error);
@@ -84,9 +85,6 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     }),
     getList,
     first,
-    tap((xxx) => {
-      logger.debug(`getByName`);
-    }),
   ]);
   const update = pipe([
     tap((xx) => {
