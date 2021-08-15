@@ -1,6 +1,6 @@
 {
   "name": "example-grucloud-infra-google",
-  "version": "1.36.0",
+  "version": "1.37.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.36.0",
-    "@grucloud/provider-google": "^1.36.0",
+    "@grucloud/core": "^1.37.0",
+    "@grucloud/provider-google": "^1.37.0",
     "rubico": "^1.6.29"
   }
 }
