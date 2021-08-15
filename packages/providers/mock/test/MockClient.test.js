@@ -29,8 +29,8 @@ describe("MockClient", function () {
     });
   });
   it("list", async function () {
-    const { total } = await mockClient.getList();
-    assert.equal(total, 1);
+    const items = await mockClient.getList();
+    assert(items);
   });
   it("get by id", async function () {
     const result = await mockClient.getById({ id: "asdfg" });
@@ -43,8 +43,7 @@ describe("MockClient", function () {
     });
 
     {
-      const { total, items } = await mockClient.getList();
-      assert.equal(total, 2);
+      const items = await mockClient.getList();
       assert.equal(items.length, 2);
     }
     {
