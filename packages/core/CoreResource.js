@@ -65,6 +65,7 @@ exports.ResourceMaker = ({
       programOptions,
     })}`
   );
+  const getResourceName = () => resourceName;
 
   const getDependencies = pipe([
     () => dependencies,
@@ -82,7 +83,7 @@ exports.ResourceMaker = ({
       () =>
         getClient().getByName({
           provider,
-          name: resourceName,
+          name: getResourceName(),
           namespace,
           meta,
           dependencies: getDependencies(),
@@ -142,10 +143,10 @@ exports.ResourceMaker = ({
                   () => getClient().findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
-                      `findLive ${group}::${type} resourceName: ${resourceName} liveName: ${liveName}`
+                      `findLive ${group}::${type} resourceName: ${getResourceName()} liveName: ${liveName}`
                     );
                   }),
-                  (liveName) => isDeepEqual(resourceName, liveName),
+                  (liveName) => isDeepEqual(getResourceName(), liveName),
                 ])()
               ),
               // tap.if(isEmpty, () => {
@@ -164,7 +165,11 @@ exports.ResourceMaker = ({
       get("live"),
       tap((live) => {
         logger.debug(
-          `findLive ${JSON.stringify({ type, resourceName, hasLive: !!live })}`
+          `findLive ${JSON.stringify({
+            type,
+            resourceName: getResourceName(),
+            hasLive: !!live,
+          })}`
         );
       }),
     ])();
@@ -391,7 +396,7 @@ exports.ResourceMaker = ({
         () => resolvedDependencies,
         () =>
           resolveDependencies({
-            resourceName,
+            resourceName: getResourceName(),
             dependencies: getDependencies(),
           }),
       ]),
@@ -421,7 +426,7 @@ exports.ResourceMaker = ({
             get("live"),
             tap((live) => {
               logger.debug(
-                `resolveConfig filterLives ${resourceName}: ${tos(live)}`
+                `resolveConfig filterLives ${getResourceName()}: ${tos(live)}`
               );
             }),
           ]),
@@ -433,7 +438,7 @@ exports.ResourceMaker = ({
               }),
             (properties) =>
               getClient().configDefault({
-                name: resourceName,
+                name: getResourceName(),
                 meta,
                 namespace,
                 properties: defaultsDeep(spec.propertiesDefault)(properties),
@@ -455,7 +460,7 @@ exports.ResourceMaker = ({
   const create = ({ payload, resolvedDependencies }) =>
     pipe([
       tap(() => {
-        logger.info(`create ${tos({ resourceName, type })}`);
+        logger.info(`create ${tos({ resourceName: getResourceName(), type })}`);
         logger.debug(`create ${tos({ payload })}`);
         assert(payload);
         assert(resolvedDependencies);
@@ -470,7 +475,7 @@ exports.ResourceMaker = ({
       () =>
         getClient().create({
           meta,
-          name: resourceName,
+          name: getResourceName(),
           payload,
           namespace,
           dependencies: getDependencies(),
@@ -483,7 +488,7 @@ exports.ResourceMaker = ({
       tap((live) => {
         //assert(live);
         if (!live) {
-          assert(true, `no live after create ${resourceName}`);
+          assert(true, `no live after create ${getResourceName()}`);
         }
         logger.info(`created: ${toString()}`);
         logger.debug(`created: live: ${tos(live)}`);
@@ -502,7 +507,7 @@ exports.ResourceMaker = ({
           name: `update ${toString()}`,
           fn: () =>
             client.update({
-              name: resourceName,
+              name: getResourceName(),
               payload,
               dependencies: getDependencies(),
               resolvedDependencies,
@@ -556,7 +561,7 @@ exports.ResourceMaker = ({
       providerName: provider.name,
       type,
       group,
-      name: resourceName,
+      name: getResourceName(),
       meta,
       dependencies: getDependencies(),
       properties,
@@ -568,11 +573,11 @@ exports.ResourceMaker = ({
       type,
       group,
       namespace: getClient().findNamespaceFromTarget({ namespace, properties }),
-      name: resourceName,
+      name: getResourceName(),
       meta,
       readOnly,
       displayName: getClient().displayNameResource({
-        name: resourceName,
+        name: getResourceName(),
         meta,
         properties,
         dependencies: getDependencies(),
@@ -588,7 +593,9 @@ exports.ResourceMaker = ({
     type,
     group,
     provider,
-    name: resourceName,
+    get name() {
+      return getResourceName();
+    },
     namespace,
     meta,
     readOnly,

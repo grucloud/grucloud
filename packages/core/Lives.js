@@ -104,7 +104,9 @@ exports.createLives = (livesRaw = []) => {
     addResource: ({ providerName, type, group, groupType, resource }) => {
       assert(providerName);
       assert(type);
-      assert(groupType);
+      if (!groupType) {
+        assert(groupType);
+      }
 
       //TODO
       if (isEmpty(resource.live)) {
