@@ -2,25 +2,31 @@ module.exports = ({ stage }) => ({
   projectName: "example-grucloud-dynamodb-table",
   dynamoDB: {
     Table: {
-      myModelTypeDemoTable: {
-        name: "MyModelTypeDemoTable",
+      myTable: {
+        name: "myTable",
         properties: {
           AttributeDefinitions: [
             {
-              AttributeName: "id",
+              AttributeName: "Id",
               AttributeType: "S",
             },
           ],
           KeySchema: [
             {
-              AttributeName: "id",
+              AttributeName: "Id",
               KeyType: "HASH",
             },
           ],
           ProvisionedThroughput: {
-            ReadCapacityUnits: 1,
-            WriteCapacityUnits: 1,
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
           },
+          Tags: [
+            {
+              Key: "TOTOKEY",
+              Value: "TOTO",
+            },
+          ],
         },
       },
     },

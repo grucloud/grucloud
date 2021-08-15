@@ -594,7 +594,27 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Table",
         filterLive: () =>
-          pick(["AttributeDefinitions", "KeySchema", "ProvisionedThroughput"]),
+          pipe([
+            pick([
+              "AttributeDefinitions",
+              "KeySchema",
+              "ProvisionedThroughput",
+              "BillingModeSummary",
+              "GlobalSecondaryIndexes",
+              "LocalSecondaryIndexes",
+            ]),
+            omit([
+              "ProvisionedThroughput.NumberOfDecreasesToday",
+              "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+            ]),
+            when(
+              eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
+              pipe([
+                assign({ BillingMode: () => "PAY_PER_REQUEST" }),
+                omit(["ProvisionedThroughput", "BillingModeSummary"]),
+              ])
+            ),
+          ]),
         dependencies: () => ({
           kmsKey: { type: "Key", group: "kms" },
         }),

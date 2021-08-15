@@ -23,7 +23,7 @@ describe("AwsKeyPair", async function () {
     });
   });
   after(async () => {});
-  it("keyPair create", async function () {
+  it.skip("keyPair create", async function () {
     const keyPair = provider.ec2.makeKeyPair({
       name: "kp-test",
     });

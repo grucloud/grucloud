@@ -5,8 +5,8 @@ const createResources = ({ provider }) => {
   const { config } = provider;
 
   provider.dynamoDB.makeTable({
-    name: config.dynamoDB.Table.myModelTypeDemoTable.name,
-    properties: () => config.dynamoDB.Table.myModelTypeDemoTable.properties,
+    name: config.dynamoDB.Table.myTable.name,
+    properties: () => config.dynamoDB.Table.myTable.properties,
   });
 };
 
