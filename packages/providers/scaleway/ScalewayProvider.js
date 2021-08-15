@@ -27,7 +27,7 @@ const fnSpecs = (config) => {
           onResponseList: (data) => {
             logger.debug(`onResponse ${tos(data)}`);
             if (data && data.ips) {
-              return { total: data.ips.length, items: data.ips };
+              return data.ips;
             } else {
               throw Error(`Cannot find ips`);
             }
@@ -51,10 +51,7 @@ const fnSpecs = (config) => {
           spec,
           url: `/bootscripts`,
           config,
-          onResponseList: ({ bootscripts }) => ({
-            total: bootscripts.length,
-            items: bootscripts,
-          }),
+          onResponseList: ({ bootscripts }) => bootscripts,
         }),
       type: "Bootscript",
       listOnly: true,
@@ -66,10 +63,7 @@ const fnSpecs = (config) => {
         ScalewayClient({
           spec,
           url: `/images`,
-          onResponseList: ({ images }) => ({
-            total: images.length,
-            items: images,
-          }),
+          onResponseList: ({ images }) => images,
           config,
         }),
       type: "Image",
@@ -86,10 +80,7 @@ const fnSpecs = (config) => {
           onResponseList: (result) => {
             logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
             const { volumes = [] } = result;
-            return {
-              total: volumes.length,
-              items: volumes,
-            };
+            return volumes;
           },
           configDefault: async ({ name, properties }) =>
             defaultsDeep({
@@ -107,9 +98,7 @@ const fnSpecs = (config) => {
           spec,
           url: `/servers`,
           config,
-          onResponseList: ({ servers }) => {
-            return { total: servers.length, items: servers };
-          },
+          onResponseList: ({ servers }) => servers,
           findTargetId: (item) => {
             return item.server?.id;
           },

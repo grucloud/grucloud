@@ -10,7 +10,7 @@ const {
   switchCase,
   assign,
 } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep, identity, when } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");
 const { GCP_STORAGE_BASE_URL } = require("./GcpStorageCommon");
@@ -130,18 +130,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         logger.info(`getList bucket, deep: ${deep}`);
       }),
       () => client.getList({ deep }),
-      tap((result) => {
-        logger.debug(`getList #items ${result.items.length}`);
-      }),
-      switchCase([
-        () => deep,
-        pipe([
-          get("items"),
-          map.pool(mapPoolSize, assignIam),
-          (items) => ({ items, total: items.length }),
-        ]),
-        identity,
-      ]),
+      when(() => deep, map.pool(mapPoolSize, assignIam)),
       tap((result) => {
         logger.debug(`getList bucket result: ${tos(result)}`);
       }),

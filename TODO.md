@@ -4,7 +4,6 @@
 - check stage for all providers
 - compare refactor
 - compare Tags
-- check if destroy is not calling getById, should se live instead
 
 ## Diagram
 
@@ -55,7 +54,6 @@
 ## Aws
 
 - volume name for root device
-- order tags
 
 - gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
@@ -69,9 +67,6 @@
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
 - ec2 update: handle UserData
-
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
-
 - Resource pages
 
 - aws_route53_delegation_set
@@ -149,5 +144,3 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 }
 
 ## Nice to have
-
-- code coverage with monorepo

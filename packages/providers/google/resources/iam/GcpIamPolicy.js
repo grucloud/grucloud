@@ -67,14 +67,10 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       () =>
         retryCallOnError({
           name: `getList getIamPolicy`,
-          fn: () =>
-            axios.request(":getIamPolicy", {
-              method: "POST",
-            }),
+          fn: () => axios.post(":getIamPolicy"),
           config,
         }),
       get("data"),
-      (data) => ({ total: 1, items: [data] }),
     ]),
     (error) => {
       logError(`getList`, error);
@@ -87,7 +83,6 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       logger.debug(`getByName`);
     }),
     getList,
-    get("items"),
     first,
     tap((xxx) => {
       logger.debug(`getByName`);

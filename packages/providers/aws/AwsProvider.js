@@ -1,8 +1,26 @@
 process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { omit, pipe, get, tap, tryCatch } = require("rubico");
-const { first, pluck, isFunction, size } = require("rubico/x");
+const {
+  omit,
+  pipe,
+  get,
+  tap,
+  tryCatch,
+  assign,
+  switchCase,
+  map,
+} = require("rubico");
+const {
+  first,
+  pluck,
+  isFunction,
+  size,
+  identity,
+  callProp,
+  isEmpty,
+  when,
+} = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -176,25 +194,43 @@ exports.AwsProvider = ({
     config: omit(["accountId", "zone"])(makeConfig()),
   });
 
+  const localeCompare = ({ key, a, b }) => a[key].localeCompare(b[key]);
+
+  const sortTags = () =>
+    callProp("sort", (a, b) =>
+      pipe([
+        switchCase([
+          () => a.Key,
+          () => localeCompare({ a, b, key: "Key" }),
+          () => a.TagKey,
+          () => localeCompare({ a, b, key: "TagKey" }),
+          () => true,
+        ]),
+      ])()
+    );
+
+  const assignTags = switchCase([
+    pipe([get("Tags"), Array.isArray]),
+    assign({ Tags: pipe([get("Tags"), sortTags()]) }),
+    pipe([get("tags"), Array.isArray]),
+    assign({ tags: pipe([get("tags"), sortTags()]) }),
+    identity,
+  ]);
+
   const getListHof = ({ getList, spec }) =>
     tryCatch(
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        tap(({ total }) => {
+        tap(() => {
           logger.debug(`getList ${spec.groupType}`);
         }),
         getList,
-        //TODO order Tags
         tap((items) => {
-          if (!Array.isArray(items)) {
-            assert(Array.isArray(items), JSON.stringify(spec));
-          }
+          Array.isArray(items);
         }),
+        map(assignTags),
         (items) => ({ items, total: size(items) }),
-        tap(({ total }) => {
-          logger.debug(`getList ${spec.groupType} ${total}`);
+        tap(({ total, items }) => {
+          logger.debug(`getList ${spec.groupType} total: ${total}`);
         }),
       ]),
       (error) =>
