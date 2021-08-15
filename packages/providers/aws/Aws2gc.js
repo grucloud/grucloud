@@ -589,6 +589,46 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "appSync",
+    types: [
+      {
+        type: "GraphqlApi",
+        filterLive: () =>
+          pick(["authenticationType", "xrayEnabled", "wafWebAclArn"]),
+      },
+      {
+        type: "ApiKey",
+        filterLive: () =>
+          pick(["description", "expires", "xrayEnabled", "wafWebAclArn"]),
+        dependencies: () => ({
+          graphqlApi: { type: "GraphqlApi", group: "appSync" },
+        }),
+      },
+      {
+        type: "DataSource",
+        filterLive: () =>
+          pick([
+            "description",
+            "type",
+            "dynamodbConfig",
+            "elasticsearchConfig",
+            "httpConfig",
+            "lambdaConfig",
+            "relationalDatabaseConfig",
+          ]),
+        dependencies: () => ({
+          serviceRole: { type: "Role", group: "iam" },
+          graphqlApi: { type: "GraphqlApi", group: "appSync" },
+          dbCluster: { type: "DBCluster", group: "rds" },
+          function: { type: "Function", group: "lambda" },
+          //TODO
+          //elasticsearch
+          //dynamodbTable: { type: "Table", group: "dynamodb" },
+        }),
+      },
+    ],
+  },
+  {
     group: "ecr",
     types: [
       {

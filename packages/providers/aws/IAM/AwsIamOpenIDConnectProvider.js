@@ -23,7 +23,7 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
@@ -96,8 +96,8 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const { providerName } = config;
   const iam = IAMNew(config);
 
-  const findName = findNameInTags;
   const findId = get("live.Arn");
+  const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live, lives }) => [
     {

@@ -163,7 +163,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
   });
   after(async () => {});
-  it("load balancer v2 apply plan", async function () {
+  it.skip("load balancer v2 apply plan", async function () {
     const { config } = provider;
     assert(config.nameKey);
     const loadBalancerReadOnly = provider.elb.useLoadBalancer({

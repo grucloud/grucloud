@@ -22,7 +22,7 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
   shouldRetryOnException,
   buildTags,
@@ -44,13 +44,13 @@ exports.AwsSubnet = ({ spec, config }) => {
   const cannotBeDeleted = isDefault;
   const managedByOther = isDefault;
 
+  const findId = get("live.SubnetId");
+
   const findName = switchCase([
     get("live.DefaultForAz"),
     () => "subnet-default",
-    findNameInTags,
+    findNameInTagsOrId({ findId }),
   ]);
-
-  const findId = get("live.SubnetId");
 
   const findDependencies = ({ live }) => [
     {

@@ -1,8 +1,80 @@
 const assert = require("assert");
-const { tap, pipe, assign, eq, get } = require("rubico");
-const { defaultsDeep, find, when, isEmpty } = require("rubico/x");
+const { tap, pipe, assign, eq, get, tryCatch } = require("rubico");
+const {
+  defaultsDeep,
+  find,
+  when,
+  isEmpty,
+  unless,
+  prepend,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
+
+const findNamespaceFromProps = (properties) =>
+  tryCatch(
+    pipe([
+      () => properties({ dependencies: {} }),
+      get("metadata.namespace", ""),
+    ]),
+    () => ""
+  )();
+
+const findNamespaceFromLive = get("metadata.namespace", "");
+
+const findNamespaceFromDeps = get("namespace.name", "");
+
+const buildNamespaceKey = ({
+  properties = () => undefined,
+  dependencies = () => undefined,
+  live,
+}) =>
+  pipe([
+    () => findNamespaceFromProps(properties),
+    when(isEmpty, () => findNamespaceFromLive(live)),
+    when(isEmpty, () => findNamespaceFromDeps(dependencies())),
+    unless(isEmpty, prepend("::")),
+  ])();
+
+const buildGroupKey = unless(isEmpty, prepend("::"));
+
+const resourceKeyDefault = pipe([
+  tap((resource) => {
+    assert(resource.providerName);
+    assert(resource.type);
+    assert(resource.name);
+  }),
+  ({
+    providerName,
+    type,
+    group = "",
+    properties,
+    name,
+    dependencies,
+    id,
+    live,
+  }) =>
+    `${providerName}${buildGroupKey(group)}::${type}${buildNamespaceKey({
+      properties,
+      dependencies,
+      live,
+      name,
+      type,
+    })}::${name || id}`,
+]);
+
+const defaultConfig = ({ config = {}, provider }) =>
+  pipe([() => config, defaultsDeep(provider.getConfig())])();
+
+const useParams = ({ params, provider, programOptions, spec }) => ({
+  ...params,
+  spec,
+  readOnly: true,
+  spec: assign({ listOnly: () => true })(spec),
+  provider,
+  config: defaultConfig({ provider, config: params.config }),
+  programOptions,
+});
 
 const SpecDefault = ({ providerName }) => ({
   compare: detailedDiff,
@@ -10,83 +82,40 @@ const SpecDefault = ({ providerName }) => ({
   listOnly: false,
   isOurMinion: () => false,
   propertiesDefault: {},
+  resourceKey: resourceKeyDefault,
   makeResource:
     ({ provider, spec, programOptions }) =>
-    ({
-      name,
-      meta,
-      namespace,
-      config: configUser = {},
-      dependencies,
-      properties,
-      attributes,
-      filterLives,
-    }) =>
+    (params) =>
       pipe([
-        () =>
-          ResourceMaker({
-            name,
-            meta,
-            namespace,
-            filterLives,
-            properties,
-            attributes,
-            dependencies,
-            spec,
-            provider,
-            config: defaultsDeep(provider.config)(configUser),
-            programOptions,
-          }),
-        tap((resource) => provider.targetResourcesAdd(resource)),
+        () => ({
+          ...params,
+          spec,
+          provider,
+          config: defaultConfig({ provider, config: params.config }),
+          programOptions,
+        }),
+        ResourceMaker,
+        tap(provider.targetResourcesAdd),
       ])(),
   useResource:
     ({ provider, spec, programOptions }) =>
-    ({
-      name,
-      meta,
-      namespace,
-      config: configUser = {},
-      dependencies,
-      properties,
-      attributes,
-      filterLives,
-    }) =>
+    (params) =>
       pipe([
-        () =>
-          ResourceMaker({
-            name,
-            meta,
-            namespace,
-            filterLives,
-            properties,
-            attributes,
-            dependencies,
-            readOnly: true,
-            spec: assign({ listOnly: () => true })(spec),
-            provider,
-            config: defaultsDeep(provider.config)(configUser),
-            programOptions,
-          }),
-        tap((resource) => provider.targetResourcesAdd(resource)),
+        () => ({ params, provider, programOptions, spec }),
+        useParams,
+        ResourceMaker,
+        tap(provider.targetResourcesAdd),
       ])(),
   useDefaultResource:
     ({ provider, spec, programOptions }) =>
-    ({
-      name,
-      meta,
-      namespace,
-      config: configUser = {},
-      dependencies,
-      properties,
-      attributes,
-    }) =>
+    (params) =>
       pipe([
-        () =>
-          ResourceMaker({
-            name,
-            meta,
-            namespace,
-            filterLives: ({ resources }) =>
+        () => ({ params, provider, programOptions, spec }),
+        useParams,
+        assign({
+          filterLives:
+            () =>
+            ({ resources }) =>
               pipe([
                 () => resources,
                 find(eq(get("isDefault"), true)),
@@ -94,16 +123,9 @@ const SpecDefault = ({ providerName }) => ({
                   assert(live, `Cannot find default resource ${spec.type}`);
                 }),
               ])(),
-            properties,
-            attributes,
-            dependencies,
-            readOnly: true,
-            spec: assign({ listOnly: () => true })(spec),
-            provider,
-            config: defaultsDeep(provider.config)(configUser),
-            programOptions,
-          }),
-        tap((resource) => provider.targetResourcesAdd(resource)),
+        }),
+        ResourceMaker,
+        tap(provider.targetResourcesAdd),
       ])(),
 });
 

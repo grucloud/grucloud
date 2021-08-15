@@ -16,8 +16,6 @@ const {
   and,
   or,
   transform,
-  pick,
-  fork,
 } = require("rubico");
 
 const {
@@ -32,288 +30,14 @@ const {
   isDeepEqual,
   size,
   identity,
-  includes,
+  unless,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
-const { displayType } = require("./ProviderCommon");
-
-const showLive =
-  ({ options = {} } = {}) =>
-  (resource) =>
-    pipe([
-      () => resource,
-      and([
-        (resource) =>
-          switchCase([not(isEmpty), includes(resource.type), () => true])(
-            options.types
-          ),
-        (resource) => !includes(resource.type)(options.typesExclude),
-        (resource) => (options.defaultExclude ? !resource.isDefault : true),
-        (resource) => (options.our ? resource.managedByUs : true),
-        (resource) => (options.name ? resource.name === options.name : true),
-        (resource) => (options.id ? resource.id === options.id : true),
-        (resource) =>
-          options.providerName && !isEmpty(options.providerNames)
-            ? includes(resource.providerName)(options.providerNames)
-            : true,
-        (resource) => (options.canBeDeleted ? !resource.cannotBeDeleted : true),
-      ]),
-      tap((show) => {
-        logger.debug(`showLive ${resource.name} show: ${show}`);
-      }),
-    ])();
-
-const decorateLive =
-  ({ client, options, lives }) =>
-  (live) =>
-    pipe([
-      tap((params) => {
-        assert(lives);
-        assert(live);
-      }),
-      () => ({
-        group: client.spec.group,
-        type: client.spec.type,
-        name: client.findName({ live, lives }),
-        meta: client.findMeta(live),
-        id: client.findId({ live, lives }),
-        providerName: client.spec.providerName,
-        groupType: client.spec.groupType,
-        live,
-      }),
-      assign({
-        uri: ({ name, id, meta }) =>
-          client.resourceKey({
-            live,
-            providerName: client.spec.providerName,
-            type: client.spec.type,
-            group: client.spec.group,
-            name,
-            meta,
-            id,
-          }),
-        displayName: ({ name, meta }) => client.displayName({ name, meta }),
-      }),
-      (resource) => ({
-        ...resource,
-        get cannotBeDeleted() {
-          return client.cannotBeDeleted({
-            resource,
-            live,
-            lives,
-          });
-        },
-        //TODO isOurMinion or managedByUs
-        get isOurMinion() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
-        },
-        get managedByUs() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
-        },
-        get managedByOther() {
-          return client.managedByOther({ resource, live, lives });
-        },
-        get isDefault() {
-          return client.isDefault({ live, lives });
-        },
-        get namespace() {
-          return client.findNamespace({ live, lives });
-        },
-        get dependencies() {
-          return pipe([
-            () =>
-              client.findDependencies({
-                live,
-                lives,
-              }),
-            map(
-              assign({
-                providerName: () => client.spec.providerName,
-                groupType: ({ group, type }) => `${group}::${type}`,
-                ids: pipe([get("ids"), filter(not(isEmpty))]),
-              })
-            ),
-            filter(pipe([get("ids"), not(isEmpty)])),
-          ])();
-        },
-      }),
-      tap((resource) =>
-        Object.defineProperty(resource, "show", {
-          enumerable: true,
-          get: () => showLive({ options: options })(resource),
-        })
-      ),
-    ])();
-
-exports.decorateLive = decorateLive;
-
-const decorateLives = ({ client, config, options, readOnly, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("items", []), // remove
-    filter(not(get("error"))),
-    map(decorateLive({ client, config, options, readOnly, lives })),
-    tap((results) => {
-      assert(Array.isArray(results));
-    }),
-    callProp("sort", (a, b) =>
-      pipe([
-        tap(() => {
-          assert(a);
-          assert(a.name.localeCompare);
-          assert(a.name);
-          assert(b);
-          assert(b.name);
-        }),
-        () => a.name.localeCompare(b.name),
-      ])()
-    ),
-  ]);
-
-const createClient = ({
-  spec,
-  providerName,
-  config,
-  getResourcesByType,
-  getResourceFromLive,
-}) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    //TODO may not need the params
-    () => spec.Client({ providerName, spec, config }),
-    tap((client) => {
-      assert(getResourcesByType);
-      assert(getResourceFromLive);
-      assert(providerName);
-      assert(client.spec);
-      assert(client.findName);
-      assert(client.getList);
-    }),
-
-    defaultsDeep({
-      resourceKey: pipe([
-        tap((resource) => {
-          assert(resource.providerName);
-          assert(resource.type);
-          assert(
-            resource.name || resource.id,
-            `no name or id in resource ${tos(resource)}`
-          );
-        }),
-        ({ providerName, type, group, name, id }) =>
-          `${providerName}::${displayType({ group, type })}::${
-            name || (isString(id) ? id : JSON.stringify(id))
-          }`,
-      ]),
-      displayName: pipe([
-        tap((xxx) => {
-          assert(true);
-        }),
-        get("name"),
-      ]),
-      displayNameResource: pipe([
-        tap((xxx) => {
-          assert(true);
-        }),
-        get("name"),
-      ]),
-      findMeta: () => undefined,
-      findDependencies: () => [],
-      findNamespace: () => "",
-      findNamespaceFromTarget: get("namespace"),
-      cannotBeDeleted: () => false,
-      isDefault: () => false,
-      managedByOther: () => false,
-      isOurMinion: ({ uri, live, lives }) =>
-        pipe([
-          fork({
-            resource: () =>
-              getResourceFromLive({
-                uri,
-                live,
-                lives,
-              }),
-            resources: () => getResourcesByType(spec),
-          }),
-          ({ resource, resources }) =>
-            spec.isOurMinion({
-              resource,
-              resources,
-              live,
-              lives,
-              config,
-            }),
-        ])(),
-
-      configDefault: () => ({}),
-      isInstanceUp: not(isEmpty),
-      providerName,
-    }),
-    assign({
-      cannotBeDeleted:
-        ({ cannotBeDeleted }) =>
-        ({ live, resource, lives }) =>
-          cannotBeDeleted({
-            live,
-            lives,
-            resources: getResourcesByType(spec),
-            resource,
-            config,
-          }),
-    }),
-    assign({
-      getLives: (client) =>
-        pipe([
-          tryCatch(
-            ({ lives, options }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () =>
-                  client.getList({
-                    lives,
-                    deep: true,
-                    resources: getResourcesByType(client.spec),
-                  }),
-                decorateLives({
-                  client,
-                  config,
-                  options,
-                  lives,
-                }),
-                tap((resources) => {
-                  logger.debug(
-                    `getLives ${client.spec.type} #resources ${size(resources)}`
-                  );
-                }),
-                (resources) => ({ resources }),
-              ])(),
-            pipe([
-              pick(["message", "code", "stack", "config", "response"]),
-              tap((error) => {
-                logger.error(`list error ${error.stack} `);
-              }),
-              (error) => ({ error }),
-            ])
-          ),
-        ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
-exports.createClient = createClient;
-
+const { decorateLive } = require("./Client");
 exports.ResourceMaker = ({
   name: resourceName,
   namespace = "",
@@ -328,7 +52,8 @@ exports.ResourceMaker = ({
   config,
   programOptions,
 }) => {
-  const { type, group } = spec;
+  const { type, group, groupType } = spec;
+  assert(groupType);
   assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(
     `ResourceMaker: ${JSON.stringify({
@@ -340,26 +65,15 @@ exports.ResourceMaker = ({
       programOptions,
     })}`
   );
+  const getResourceName = () => resourceName;
 
   const getDependencies = pipe([
     () => dependencies,
-    switchCase([
-      isFunction,
-      identity,
-      (dependencies) => () => ({ ...dependencies }),
-    ]),
+    unless(isFunction, (dependencies) => () => ({ ...dependencies })),
     (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
-  // provider client as a parameter
-  const client = createClient({
-    providerName: provider.name,
-    getResourcesByType: provider.getResourcesByType,
-    getResourceFromLive: provider.getResourceFromLive,
-    spec,
-    config,
-  });
-  // const client = provider.clientByType()(spec);
+  const getClient = () => provider.clientByType(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
@@ -367,9 +81,9 @@ exports.ResourceMaker = ({
         logger.info(`getLive ${toString()}, deep: ${deep}`);
       }),
       () =>
-        client.getByName({
+        getClient().getByName({
           provider,
-          name: resourceName,
+          name: getResourceName(),
           namespace,
           meta,
           dependencies: getDependencies(),
@@ -380,24 +94,28 @@ exports.ResourceMaker = ({
           properties,
           lives: provider.lives,
         }),
-      // TODO rubico unless
-      switchCase([
-        and([not(isEmpty), () => !isEmpty(provider.lives)]),
+      unless(
+        or([isEmpty, () => isEmpty(provider.lives)]),
         tap(
           pipe([
-            decorateLive({ client, lives: provider.lives, config, options }),
+            decorateLive({
+              client: getClient(),
+              lives: provider.lives,
+              config,
+              options,
+            }),
             tap((resource) => {
               provider.lives.addResource({
                 providerName: config.providerName,
                 type,
                 group,
+                groupType,
                 resource,
               });
             }),
           ])
-        ),
-        identity,
-      ]),
+        )
+      ),
       tap((live) => {
         logger.info(`getLive ${toString()} hasLive: ${!!live}`);
         logger.debug(`getLive ${toString()} live: ${tos(live)}`);
@@ -422,16 +140,13 @@ exports.ResourceMaker = ({
               () => resources,
               find(({ live }) =>
                 pipe([
-                  () =>
-                    provider
-                      .clientByType()({ type, group })
-                      .findName({ live, lives: provider.lives }),
+                  () => getClient().findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
-                      `findLive ${group}::${type} resourceName: ${resourceName} liveName: ${liveName}`
+                      `findLive ${group}::${type} resourceName: ${getResourceName()} liveName: ${liveName}`
                     );
                   }),
-                  (liveName) => isDeepEqual(resourceName, liveName),
+                  (liveName) => isDeepEqual(getResourceName(), liveName),
                 ])()
               ),
               // tap.if(isEmpty, () => {
@@ -450,7 +165,11 @@ exports.ResourceMaker = ({
       get("live"),
       tap((live) => {
         logger.debug(
-          `findLive ${JSON.stringify({ type, resourceName, hasLive: !!live })}`
+          `findLive ${JSON.stringify({
+            type,
+            resourceName: getResourceName(),
+            hasLive: !!live,
+          })}`
         );
       }),
     ])();
@@ -468,7 +187,7 @@ exports.ResourceMaker = ({
         spec.compare({
           target,
           live,
-          dependencies: resource.dependencies(), //TODO
+          dependencies: resource.dependencies(),
           lives: provider.lives,
           config,
           programOptions,
@@ -495,7 +214,7 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target,
                     live,
-                    id: client.findId({ live }),
+                    id: getClient().findId({ live }),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
@@ -587,15 +306,7 @@ exports.ResourceMaker = ({
                 switchCase([
                   () => dependency.filterLives,
                   () => dependency.resolveConfig({}),
-                  pipe([
-                    () => dependency.findLive({}),
-                    //TODO
-                    // switchCase([
-                    //   isEmpty,
-                    //   () => dependency.getLive({ deep: true }),
-                    //   identity,
-                    // ]),
-                  ]),
+                  pipe([() => dependency.findLive({})]),
                 ]),
                 tap.if(
                   switchCase([
@@ -645,8 +356,7 @@ exports.ResourceMaker = ({
             () => results,
             pluck("error"),
             reduce((acc, value) => [...acc, value.message], []),
-            //TODO callProp
-            (messages) => messages.join("\n"),
+            callProp("join", "\n"),
             tap((message) => {
               logger.debug(
                 `resolveDependencies ${toString()}, error message: ${message}`
@@ -670,13 +380,13 @@ exports.ResourceMaker = ({
         logger.debug(
           `resolveConfig ${toString()}, ${JSON.stringify({
             deep,
-            hasLive: !!live, //TODO
+            hasLive: !!live,
           })}`
         );
         if (!live) {
           assert(true);
         }
-        assert(client.configDefault);
+        assert(getClient().configDefault);
         assert(spec.propertiesDefault);
       }),
       switchCase([
@@ -686,7 +396,7 @@ exports.ResourceMaker = ({
         () => resolvedDependencies,
         () =>
           resolveDependencies({
-            resourceName,
+            resourceName: getResourceName(),
             dependencies: getDependencies(),
           }),
       ]),
@@ -716,7 +426,7 @@ exports.ResourceMaker = ({
             get("live"),
             tap((live) => {
               logger.debug(
-                `resolveConfig filterLives ${resourceName}: ${tos(live)}`
+                `resolveConfig filterLives ${getResourceName()}: ${tos(live)}`
               );
             }),
           ]),
@@ -727,8 +437,8 @@ exports.ResourceMaker = ({
                 dependencies: resolvedDependencies,
               }),
             (properties) =>
-              client.configDefault({
-                name: resourceName,
+              getClient().configDefault({
+                name: getResourceName(),
                 meta,
                 namespace,
                 properties: defaultsDeep(spec.propertiesDefault)(properties),
@@ -750,7 +460,7 @@ exports.ResourceMaker = ({
   const create = ({ payload, resolvedDependencies }) =>
     pipe([
       tap(() => {
-        logger.info(`create ${tos({ resourceName, type })}`);
+        logger.info(`create ${tos({ resourceName: getResourceName(), type })}`);
         logger.debug(`create ${tos({ payload })}`);
         assert(payload);
         assert(resolvedDependencies);
@@ -763,9 +473,9 @@ exports.ResourceMaker = ({
         }
       ),*/
       () =>
-        client.create({
+        getClient().create({
           meta,
-          name: resourceName,
+          name: getResourceName(),
           payload,
           namespace,
           dependencies: getDependencies(),
@@ -778,7 +488,7 @@ exports.ResourceMaker = ({
       tap((live) => {
         //assert(live);
         if (!live) {
-          assert(true, `no live after create ${resourceName}`);
+          assert(true, `no live after create ${getResourceName()}`);
         }
         logger.info(`created: ${toString()}`);
         logger.debug(`created: live: ${tos(live)}`);
@@ -791,12 +501,13 @@ exports.ResourceMaker = ({
       tap.if(isEmpty, () => {
         throw Error(`Resource ${toString()} does not exist`);
       }),
-      () =>
+      getClient,
+      (client) =>
         retryCall({
           name: `update ${toString()}`,
           fn: () =>
             client.update({
-              name: resourceName,
+              name: getResourceName(),
               payload,
               dependencies: getDependencies(),
               resolvedDependencies,
@@ -846,11 +557,11 @@ exports.ResourceMaker = ({
     ])({});
 
   const toString = () =>
-    client.resourceKey({
+    spec.resourceKey({
       providerName: provider.name,
       type,
       group,
-      name: resourceName,
+      name: getResourceName(),
       meta,
       dependencies: getDependencies(),
       properties,
@@ -861,12 +572,12 @@ exports.ResourceMaker = ({
       providerName: provider.name,
       type,
       group,
-      namespace: client.findNamespaceFromTarget({ namespace, properties }),
-      name: resourceName,
+      namespace: getClient().findNamespaceFromTarget({ namespace, properties }),
+      name: getResourceName(),
       meta,
       readOnly,
-      displayName: client.displayNameResource({
-        name: resourceName,
+      displayName: getClient().displayNameResource({
+        name: getResourceName(),
         meta,
         properties,
         dependencies: getDependencies(),
@@ -882,13 +593,15 @@ exports.ResourceMaker = ({
     type,
     group,
     provider,
-    name: resourceName,
+    get name() {
+      return getResourceName();
+    },
     namespace,
     meta,
     readOnly,
     dependencies: getDependencies(),
     spec,
-    client,
+    getClient,
     toJSON,
     toString,
     attributes,
@@ -910,9 +623,9 @@ exports.ResourceMaker = ({
     isUp: ({ live }) =>
       pipe([
         tap(() => {
-          assert(client.isInstanceUp);
+          assert(getClient().isInstanceUp);
         }),
-        () => client.isInstanceUp(live),
+        () => getClient().isInstanceUp(live),
         tap((isUp) => {
           logger.debug(
             `isUp ${type}/${resourceName}: ${!!isUp}, hasLive: ${!!live}`

@@ -21,8 +21,8 @@ const {
   Ec2New,
   getByIdCore,
   buildTags,
-  findNameInTags,
   findNamespaceInTags,
+  findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
@@ -33,13 +33,12 @@ exports.AwsVpc = ({ spec, config }) => {
   const cannotBeDeleted = isDefault;
   const managedByOther = isDefault;
 
+  const findId = get("live.VpcId");
   const findName = switchCase([
     get("live.IsDefault"),
     () => "vpc-default",
-    findNameInTags,
+    findNameInTagsOrId({ findId }),
   ]);
-
-  const findId = get("live.VpcId");
 
   const getList = ({ params, deep } = {}) =>
     pipe([

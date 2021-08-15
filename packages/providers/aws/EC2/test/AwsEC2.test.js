@@ -76,7 +76,7 @@ describe("AwsEC2", async function () {
   });
   after(async () => {});
 
-  it("ec2 apply plan", async function () {
+  it.skip("ec2 apply plan", async function () {
     // Step 1
     {
       const {

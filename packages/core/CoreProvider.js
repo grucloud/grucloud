@@ -24,17 +24,14 @@ const {
 } = require("rubico");
 
 const {
-  first,
   isEmpty,
-  isString,
+  when,
   callProp,
   flatten,
   pluck,
   forEach,
   find,
   defaultsDeep,
-  isDeepEqual,
-  includes,
   isFunction,
   identity,
   size,
@@ -84,7 +81,7 @@ const {
   findClient,
 } = require("./ProviderCommon");
 
-const { createClient, decorateLive } = require("./CoreResource");
+const { createClient, decorateLive } = require("./Client");
 const { createLives } = require("./Lives");
 
 const createResourceMakers = ({
@@ -137,6 +134,7 @@ function CoreProvider({
   unInit = () => {},
   start = () => {},
   generateCode = () => {},
+  getListHof = ({ getList }) => getList,
 }) {
   assert(makeConfig);
   let _lives;
@@ -151,8 +149,7 @@ function CoreProvider({
 
   const getLives = pipe([
     () => _lives,
-    //TODO rubico when
-    switchCase([isEmpty, pipe([() => createLives(), tap(setLives)]), identity]),
+    when(isEmpty, pipe([createLives, tap(setLives)])),
   ]);
 
   const getProviderConfig = () =>
@@ -233,6 +230,7 @@ function CoreProvider({
     const { type, group, name, spec } = resource;
     assert(name);
     assert(type);
+    assert(spec.groupType);
     const resourceKey = resource.toString();
     logger.debug(`targetResourcesAdd ${resourceKey}`);
     if (mapNameToResource.has(resourceKey) && !spec.listOnly) {
@@ -274,7 +272,8 @@ function CoreProvider({
 
   const getSpecs = () =>
     pipe([
-      () => fnSpecs(getProviderConfig()),
+      getProviderConfig,
+      fnSpecs,
       map(createSpec({ config: getProviderConfig() })),
       tap((params) => {
         assert(true);
@@ -288,40 +287,48 @@ function CoreProvider({
         //assert(group);
       }),
       () => mapTypeToResources.get(JSON.stringify({ type, group })) || [],
+      // () => ({ type, group }),
+      // JSON.stringify,
+      // tap((params) => {
+      //   assert(true);
+      // }),
+      // mapTypeToResources.get,
+      // when(isEmpty, () => []),
       tap((params) => {
         assert(true);
       }),
     ])();
 
-  const getClients = pipe([
-    getProviderConfig,
-    (providerConfig) =>
-      pipe([
-        getSpecs,
-        map((spec) =>
-          createClient({
-            getResourcesByType,
-            getResourceFromLive,
-            spec,
-            config: providerConfig,
-            providerName,
-          })
-        ),
-      ])(),
-  ]);
-  //TODO refactor no curry
+  const createClientFromSpec = (spec) =>
+    createClient({
+      getResourcesByType,
+      getResourceFromLive,
+      spec,
+      config: getProviderConfig(),
+      providerName,
+      getListHof,
+    });
 
-  const clientByType = pipe([
-    getClients,
-    findClient,
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const getClients = pipe([getSpecs, map(createClientFromSpec)]);
+  const clientByType = ({ groupType }) =>
+    pipe([
+      tap(() => {
+        assert(groupType);
+      }),
+      getSpecs,
+      find(eq(get("groupType"), groupType)),
+      tap((spec) => {
+        assert(spec);
+      }),
+      createClientFromSpec,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const listTargets = () =>
     pipe([
-      () => getTargetResources(),
+      getTargetResources,
       map(async (resource) => ({
         ...resource.toJSON(),
         data: await resource.getLive(),
@@ -334,7 +341,7 @@ function CoreProvider({
 
   const listConfig = () =>
     pipe([
-      () => getTargetResources(),
+      getTargetResources,
       map((resource) => ({
         resource: resource.toJSON(),
       })),
@@ -377,14 +384,10 @@ function CoreProvider({
                       nextState: "RUNNING",
                     });
                   }),
-                  //TODO tap.if
-                  tap(async (action) => {
-                    if (action.command) {
-                      await action.command(payload);
-                    } else {
-                      throw `${action} does not have a command function`;
-                    }
+                  tap((action) => {
+                    assert(action.command);
                   }),
+                  tap(callProp("command", payload)),
                   tap((action) => {
                     onStateChange({
                       context: contextFromHookAction({
@@ -946,10 +949,10 @@ function CoreProvider({
     }),
     map(
       tryCatch(
-        ({ name, client }) =>
+        ({ name, getClient }) =>
           tap.if(
-            () => client.validate,
-            () => client.validate({ name })
+            () => getClient().validate,
+            () => getClient().validate({ name })
           )(),
         (error, resource) =>
           pipe([
@@ -984,8 +987,8 @@ function CoreProvider({
             nextState: "RUNNING",
           })
         ),
-        validate,
         start,
+        validate,
         tap(() =>
           onStateChange({
             context: contextFromProviderInit({ providerName }),
@@ -1075,7 +1078,7 @@ function CoreProvider({
         logger.info(`listLives #clients ${size(clients)}`);
       }),
       map((client) => ({
-        meta: pick(["type", "group", "providerName"])(client.spec),
+        meta: pick(["type", "group", "groupType", "providerName"])(client.spec),
         key: `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`,
         dependsOn: map(
           (dependOn) => `${client.spec.providerName}::${dependOn}`
@@ -1098,6 +1101,10 @@ function CoreProvider({
               group: client.spec.group,
               providerName: client.providerName,
             }),
+            tap(({ groupType, type }) => {
+              assert(type);
+              assert(groupType);
+            }),
             tap((result) => {
               getLives().addResources(result);
             }),
@@ -1109,13 +1116,14 @@ function CoreProvider({
           onStateChange: ({ key, meta, result, error, ...other }) => {
             assert(key);
             assert(meta.type);
-            //assert(meta.group);
+            assert(meta.groupType);
 
             assert(meta.providerName);
+            //TODO do we need this ?
             if (error) {
               getLives().addResources({ ...meta, error });
             }
-            const client = clientByType()(meta);
+            const client = clientByType(meta);
             assert(client.spec);
             onStateChange({
               context: contextFromClient({
@@ -1240,13 +1248,18 @@ function CoreProvider({
         assert(livesPerProvider);
       }),
       filter(not(get("error"))),
-      flatMap(({ type, group, resources }) =>
+      flatMap(({ groupType, type, group, resources }) =>
         pipe([
           tap(() => {
             assert(type);
-            assert(Array.isArray(resources), `no resources for type ${type}`);
+            //assert(group); k8s
+            assert(groupType);
+            assert(
+              Array.isArray(resources),
+              `no resources for type ${groupType}`
+            );
           }),
-          () => clientByType()({ type, group }),
+          () => clientByType({ groupType }),
           (client) =>
             pipe([
               () => resources,
@@ -1266,12 +1279,9 @@ function CoreProvider({
             ])(),
         ])()
       ),
-      tap((results) => {
-        assert(results);
-      }),
       filter(not(isEmpty)),
       tap((results) => {
-        logger.debug(`planFindDestroy`);
+        logger.debug(`planFindDestroy done`);
       }),
     ])();
 
@@ -1310,7 +1320,7 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      () => getTargetResources(),
+      getTargetResources,
       filter(not(get("spec.listOnly"))),
       tap(
         map((resource) =>
@@ -1550,18 +1560,19 @@ function CoreProvider({
                   }),
 
                 tap((live) => {
-                  //assert(live);
+                  assert(live);
                 }),
                 decorateLive({
-                  client: engine.client,
+                  client: engine.getClient(),
                   lives: getLives(),
                   config: getProviderConfig(),
                 }),
                 tap((resource) => {
                   getLives().addResource({
                     providerName,
-                    type: engine.type,
-                    group: engine.group,
+                    type: engine.spec.type,
+                    group: engine.spec.group,
+                    groupType: engine.spec.groupType,
                     resource,
                   });
                 }),
@@ -1667,7 +1678,7 @@ function CoreProvider({
         assert(resource);
         logger.debug(`destroyById: ${tos(resource.toString())}`);
       }),
-      () => clientByType()(resource),
+      () => clientByType(resource),
       tap((client) => {
         assert(client, `Cannot find endpoint ${resource.toString()}}`);
         assert(client.spec);
@@ -1784,7 +1795,7 @@ function CoreProvider({
     init,
     unInit,
     start: startBase,
-    specs: getSpecs(),
+    getSpecs,
     mapNameToResource,
     generateCode,
   };

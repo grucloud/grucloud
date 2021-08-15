@@ -16,15 +16,13 @@ const {
 } = require("rubico");
 const {
   callProp,
-
   defaultsDeep,
-  find,
   size,
-  identity,
   isEmpty,
   last,
   first,
   keys,
+  when,
 } = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
@@ -33,7 +31,6 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInTagsOrId,
   findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
@@ -54,17 +51,16 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");
-  const findName = (item) =>
+
+  const findName = ({ live }) =>
     pipe([
-      () => item,
-      get("live.name"),
-      switchCase([
-        isEmpty,
-        () => findNameInTagsOrId({ findId })(item),
-        identity,
-      ]),
+      () => live,
+      get("name"),
+      when(isEmpty, () => live.PolicyName),
       tap((name) => {
-        logger.debug(`IamPolicy name: ${name}`);
+        if (!name) {
+          assert(name, `no name in ${JSON.stringify(live)}`);
+        }
       }),
     ])();
 
@@ -72,11 +68,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     pipe([
       () => live,
       get("namespace"),
-      switchCase([
-        isEmpty,
-        () => findNamespaceInTags(config)({ live }),
-        identity,
-      ]),
+      when(isEmpty, () => findNamespaceInTags(config)({ live })),
       tap((namespace) => {
         logger.debug(`findNamespace ${namespace}`);
       }),
@@ -129,7 +121,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           VersionId,
         }),
       get("PolicyVersion.Document"),
-      (encoded) => querystring.decode(encoded),
+      querystring.decode,
       keys,
       first,
       tryCatch(JSON.parse, (error, document) => {
@@ -138,7 +130,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
-  const getList = async ({ params, resources } = {}) =>
+  const getList = ({ params, resources } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam policy`);
@@ -229,17 +221,18 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property
-  const create = async ({ name, payload = {} }) =>
+  const create = ({ name, payload = {} }) =>
     pipe([
       tap(() => {
         logger.info(`create policy ${name}`);
         logger.debug(`payload: ${tos(payload)}`);
       }),
+      //TODO assign
       () => ({
         ...payload,
         PolicyDocument: JSON.stringify(payload.PolicyDocument),
       }),
-      (createParams) => iam().createPolicy(createParams),
+      iam().createPolicy,
       get("Policy"),
       tap((Policy) => {
         logger.debug(`created iam policy result ${tos({ name, Policy })}`);
@@ -248,7 +241,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy iam policy ${JSON.stringify({ name, id })}`);
@@ -319,7 +312,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       Tags: buildTags({ name, namespace, config }),
     })(properties);
 
-  const cannotBeDeleted = ({ live, resource }) =>
+  const cannotBeDeleted = ({ resource }) =>
     pipe([
       tap(() => {
         assert(resource);

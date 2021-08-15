@@ -82,11 +82,18 @@ const buildSubGraph = ({ providerName, options, namespace, resources }) =>
     callProp("join", "\n"),
     buildSubGraphClusterNamespace({ namespace, providerName, options }),
   ])();
+
 //TODO
-const resourceNameFilterDefault = and([
-  //({ name }) => !name.startsWith("kube"),
-  ({ name }) => !name.startsWith("system"),
-  //({ name }) => !name.startsWith("default"),
+const resourceNameFilterDefault = pipe([
+  get("name"),
+  tap((name) => {
+    assert(name);
+  }),
+  and([
+    //({ name }) => !name.startsWith("kube"),
+    (name) => !name.startsWith("system"),
+    //({ name }) => !name.startsWith("default"),
+  ]),
 ]);
 
 const filterResources =
