@@ -38,6 +38,8 @@ const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const AwsEC2 = require("./EC2");
+const DynamoDB = require("./DynamoDB");
+
 const ECR = require("./ECR");
 
 const AwsEKS = require("./EKS");
@@ -63,6 +65,7 @@ const fnSpecs = (config) =>
       ...AwsCertificateManager(),
       ...AwsCloudFront(),
       ...CognitoIdentityServiceProvider(),
+      ...DynamoDB(),
       ...AwsEC2(),
       ...ECR(),
       ...AwsEKS(),

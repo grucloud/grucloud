@@ -583,8 +583,21 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Key",
-        filterLive: () => pick([]),
+        filterLive: () => pick([""]),
         ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+      },
+    ],
+  },
+  {
+    group: "dynamoDB",
+    types: [
+      {
+        type: "Table",
+        filterLive: () =>
+          pick(["AttributeDefinitions", "KeySchema", "ProvisionedThroughput"]),
+        dependencies: () => ({
+          kmsKey: { type: "Key", group: "kms" },
+        }),
       },
     ],
   },
