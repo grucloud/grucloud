@@ -70,7 +70,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
           fn: () => axios.post(":getIamPolicy"),
           config,
         }),
-      get("data"),
+      get("data.bindings"),
     ]),
     (error) => {
       logError(`getList`, error);
