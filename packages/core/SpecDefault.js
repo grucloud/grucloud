@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, assign, eq, get } = require("rubico");
+const { tap, pipe, assign, eq, get, tryCatch } = require("rubico");
 const {
   defaultsDeep,
   find,
@@ -12,10 +12,13 @@ const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
 
 const findNamespaceFromProps = (properties) =>
-  pipe([
-    () => properties({ dependencies: {} }),
-    get("metadata.namespace", ""),
-  ])();
+  tryCatch(
+    pipe([
+      () => properties({ dependencies: {} }),
+      get("metadata.namespace", ""),
+    ]),
+    () => ""
+  )();
 
 const findNamespaceFromLive = get("metadata.namespace", "");
 
