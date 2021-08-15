@@ -120,6 +120,40 @@ const buildProviderConfig = ({ config = {}, providerName }) =>
 
 exports.buildProviderConfig = buildProviderConfig;
 
+const getListHofDefault = ({ getList, spec }) =>
+  tryCatch(
+    pipe([
+      tap(() => {
+        logger.debug(`getList ${spec.groupType}`);
+        assert(getList);
+      }),
+      getList,
+      tap((items) => {
+        if (!Array.isArray(items)) {
+          assert(Array.isArray(items), JSON.stringify(spec));
+        }
+      }),
+      (items) => ({ items, total: size(items) }),
+      tap(({ total }) => {
+        logger.debug(`getList ${spec.groupType} ${total}`);
+      }),
+    ]),
+    (error, params) =>
+      pipe([
+        tap(() => {
+          logger.error(
+            `getList ${spec.groupType}, error: ${JSON.stringify({
+              params,
+              error,
+            })}`
+          );
+        }),
+        () => {
+          throw error;
+        },
+      ])()
+  );
+
 function CoreProvider({
   name: providerName,
   dependencies = {},
@@ -134,7 +168,7 @@ function CoreProvider({
   unInit = () => {},
   start = () => {},
   generateCode = () => {},
-  getListHof = ({ getList }) => getList,
+  getListHof = getListHofDefault,
 }) {
   assert(makeConfig);
   let _lives;

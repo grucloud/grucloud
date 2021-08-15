@@ -89,16 +89,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
       () => ec2().describeNatGateways(params),
       get("NatGateways"),
       filter(not(isInstanceDown)),
-      tap((items) => {
-        logger.debug(`getList nat result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #nat ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

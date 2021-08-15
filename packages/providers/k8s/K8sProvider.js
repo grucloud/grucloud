@@ -704,6 +704,15 @@ const getAuthToken = ({ kubeConfig }) =>
 
 const providerType = "k8s";
 
+const getListHof = ({ getList, spec }) =>
+  tryCatch(getList, (error, params) =>
+    pipe([
+      () => {
+        throw error;
+      },
+    ])()
+  );
+
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
@@ -817,5 +826,6 @@ exports.K8sProvider = ({
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,
     info,
+    getListHof,
   });
 };

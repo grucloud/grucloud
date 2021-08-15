@@ -67,7 +67,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam user`);
@@ -129,16 +129,6 @@ exports.AwsIamUser = ({ spec, config }) => {
       ),
       tap.if(find(get("error")), (users) => {
         throw users;
-      }),
-      tap((users) => {
-        logger.debug(`getList iam user results: ${tos(users)}`);
-      }),
-      (users) => ({
-        total: users.length,
-        items: users,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #iamuser: ${total}`);
       }),
     ])();
 

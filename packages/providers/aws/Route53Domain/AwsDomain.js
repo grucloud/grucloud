@@ -33,7 +33,7 @@ exports.AwsDomain = ({ spec, config }) => {
   const route53domains = Route53DomainsNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listDomains-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList domain`);
@@ -41,16 +41,6 @@ exports.AwsDomain = ({ spec, config }) => {
       () => route53domains().listDomains(params),
       get("Domains"),
       map(({ DomainName }) => route53domains().getDomainDetail({ DomainName })),
-      tap((Domains) => {
-        //logger.debug(`getList Domain result: ${tos(Domains)}`);
-      }),
-      (Domains) => ({
-        total: Domains.length,
-        items: Domains,
-      }),
-      tap((result) => {
-        logger.info(`getList #domains  ${tos(result.total)}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getDomain-property

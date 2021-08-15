@@ -68,7 +68,7 @@ The list of properties can be found in [describeImages](https://docs.aws.amazon.
 
 ## Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2/iac.js)
 
 ## Used By
 

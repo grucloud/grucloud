@@ -86,16 +86,6 @@ exports.KmsKey = ({ spec, config }) => {
           (error, item) => item
         )
       ),
-      tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

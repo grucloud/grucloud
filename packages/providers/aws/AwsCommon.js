@@ -493,7 +493,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
         logger.debug(`getById ${fieldIds} ${id}`);
       }),
       ({ id }) => getList({ params: { [fieldIds]: [id] } }),
-      get("items"),
+      //get("items"),
       first,
       tap((item) => {
         logger.debug(`getById  ${fieldIds} result: ${tos(item)}`);

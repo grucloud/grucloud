@@ -181,16 +181,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         logger.debug(`getList policy managed: ${tos(policies)}`);
       }),
       (policies) => addTargets({ policies, resources }),
-      tap((policies) => {
-        logger.debug(`getList policy all: ${tos(policies)}`);
-      }),
-      (policies) => ({
-        total: policies.length,
-        items: policies,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #policies: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

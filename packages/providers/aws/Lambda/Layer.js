@@ -115,13 +115,6 @@ exports.Layer = ({ spec, config }) => {
         logger.info(`getList layer`);
       }),
       listLayers,
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
-      }),
     ])();
 
   const getByName = ({ name }) =>

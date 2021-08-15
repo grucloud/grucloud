@@ -325,13 +325,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         )
       ),
       filter(pipe([get("error"), isEmpty])),
-      tap((fullBuckets) => {
-        logger.debug(`getList full ${tos(fullBuckets)}`);
-      }),
-      (fullBuckets) => ({
-        total: fullBuckets.length,
-        items: fullBuckets,
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property

@@ -102,9 +102,8 @@ module.exports = MockCloud = (initStates = []) => {
     const resource = resourceMap.get(type);
     if (resource) {
       const items = [...resource.values()];
-      const result = { total: items.length, items };
-      logger.debug(`onList type: ${type}, result: ${tos(result)}`);
-      return result;
+      logger.debug(`onList type: ${type}, result: ${tos(items)}`);
+      return items;
     } else {
       throw Error(`onList cannot find ${tos({ type })}`);
     }

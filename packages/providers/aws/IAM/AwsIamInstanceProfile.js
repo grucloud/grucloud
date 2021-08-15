@@ -97,16 +97,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           ]),
         })
       ),
-      tap((instanceProfiles) => {
-        logger.debug(`getList instanceProfiles: ${tos(instanceProfiles)}`);
-      }),
-      (instanceProfiles) => ({
-        total: instanceProfiles.length,
-        items: instanceProfiles,
-      }),
-      tap(({ total }) => {
-        logger.debug(`getList #instanceProfile: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

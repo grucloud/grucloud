@@ -193,16 +193,6 @@ exports.AwsEC2 = ({ spec, config }) => {
       pluck("Instances"),
       flatten,
       filter(not(isInstanceTerminated)),
-      tap((items) => {
-        logger.debug(`getList ec2 result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #ec2 ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

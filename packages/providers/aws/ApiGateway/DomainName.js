@@ -46,13 +46,6 @@ exports.DomainName = ({ spec, config }) => {
       }),
       () => apiGateway().getDomainNames(),
       get("items"),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList domainName #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getDomainName-property

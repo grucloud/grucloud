@@ -1,15 +1,13 @@
 const assert = require("assert");
 const path = require("path");
+const { get } = require("rubico");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 const logger = require("@grucloud/core/logger")({ prefix: "AzClient" });
 //const {tos} = require("@grucloud/core")
 const BASE_URL = "https://management.azure.com";
 
-const onResponseList = ({ value = [] }) => ({
-  total: value.length,
-  items: value,
-});
+const onResponseList = get("value", []);
 
 module.exports = AzClient = ({
   spec,

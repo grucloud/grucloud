@@ -14,7 +14,7 @@ const keyPair = provider.ec2.useKeyPair({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iac.js#L10)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/keyPair/iac.js#L10)
 
 ### Used By
 

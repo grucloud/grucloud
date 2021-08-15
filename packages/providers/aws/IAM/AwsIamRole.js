@@ -156,16 +156,6 @@ exports.AwsIamRole = ({ spec, config }) => {
       tap.if(find(get("error")), (roles) => {
         throw roles;
       }),
-      tap((roles) => {
-        logger.debug(`getList iam role results: ${tos(roles)}`);
-      }),
-      (roles) => ({
-        total: roles.length,
-        items: roles,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #roles: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

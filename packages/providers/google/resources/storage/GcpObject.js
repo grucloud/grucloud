@@ -13,7 +13,7 @@ const {
   switchCase,
   not,
 } = require("rubico");
-const { defaultsDeep, find, isEmpty } = require("rubico/x");
+const { defaultsDeep, find, isEmpty, when } = require("rubico/x");
 const {
   logError,
   axiosErrorToJSON,
@@ -22,7 +22,6 @@ const {
   md5FileBase64,
 } = require("@grucloud/core/Common");
 const { retryCallOnError } = require("@grucloud/core/Retry");
-const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
@@ -111,10 +110,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       (path) =>
         retryCallOnError({
           name: `getObject ${path}`,
-          fn: () =>
-            axios.request(path, {
-              method: "GET",
-            }),
+          fn: () => axios.get(path),
           config: configProvider,
           isExpectedException: (error) => error.response?.status === 404,
         }),
@@ -129,48 +125,40 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     }
   );
 
-  const getList = async ({ resources = [] } = {}) =>
-    await pipe([
+  const getList = ({ resources = [] } = {}) =>
+    pipe([
+      () => resources,
       tap(() => {
         logger.debug(`getList #resources ${resources.length}`);
       }),
-      async (resources) =>
-        await map.pool(
-          mapPoolSize,
-          async (resource) =>
-            await pipe([
-              () => getBucket(resource),
-              tryCatch(
-                pipe([(bucket) => getObject({ bucket, name: resource.name })]),
-                (error, params) => ({
-                  error: convertError({
-                    error,
-                    procedure: "getObjects",
-                    params,
-                  }),
-                })
-              ),
-            ])(resource)
-        )(resources),
+      map.pool(mapPoolSize, (resource) =>
+        pipe([
+          () => resource,
+          getBucket,
+          tryCatch(
+            pipe([(bucket) => getObject({ bucket, name: resource.name })]),
+            (error, params) => ({
+              error: convertError({
+                error,
+                procedure: "getObjects",
+                params,
+              }),
+            })
+          ),
+        ])()
+      ),
       tap((result) => {
         logger.debug(`getList #items ${result.length}`);
       }),
       filter((result) => result),
-      switchCase([
-        pipe([filter((result) => result.error), not(isEmpty)]),
-        (objects) => {
-          throw { code: 500, errors: objects };
-        },
-        (objects) => objects,
-      ]),
-      (objects) => ({
-        total: objects.length,
-        items: objects,
+      when(pipe([filter(get("error")), not(isEmpty)]), (objects) => {
+        //TODO throw exception
+        throw { code: 500, errors: objects };
       }),
       tap((result) => {
         logger.debug(`getList result: ${tos(result)}`);
       }),
-    ])(resources);
+    ])();
 
   const getByName = ({ name, dependencies }) =>
     pipe([
@@ -198,21 +186,25 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       () =>
         retryCallOnError({
           name: `upload ${name} sessionId`,
-          fn: async () =>
-            await axios.request(
-              `/b/${
-                dependencies().bucket.name
-              }/o?uploadType=resumable&name=${querystring.escape(name)}`,
-              {
-                baseURL: GCP_STORAGE_UPLOAD_URL,
-                method: "POST",
-                data: {
-                  ...payload,
-                  metadata: buildLabel(configProvider),
-                  md5Hash: await md5FileBase64(payload.source),
-                },
-              }
-            ),
+          fn: pipe([
+            () => payload.source,
+            md5FileBase64,
+            (md5Hash) =>
+              axios.request(
+                `/b/${
+                  dependencies().bucket.name
+                }/o?uploadType=resumable&name=${querystring.escape(name)}`,
+                {
+                  baseURL: GCP_STORAGE_UPLOAD_URL,
+                  method: "POST",
+                  data: {
+                    ...payload,
+                    metadata: buildLabel(configProvider),
+                    md5Hash,
+                  },
+                }
+              ),
+          ]),
           config: configProvider,
         }),
       get("headers.location"),
@@ -234,7 +226,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const update = create;
 
-  const destroy = async ({ resource }) =>
+  const destroy = ({ resource }) =>
     tryCatch(
       pipe([
         tap(() => {

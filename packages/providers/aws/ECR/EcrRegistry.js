@@ -70,15 +70,7 @@ exports.EcrRegistry = ({ spec, config }) => {
       }),
     ])();
 
-  const getList = () =>
-    pipe([
-      describeRegistry,
-      (registry) => [registry],
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-    ])();
+  const getList = () => pipe([describeRegistry, (registry) => [registry]])();
 
   const getByName = pipe([describeRegistry]);
 

@@ -57,23 +57,13 @@ exports.DBCluster = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList ${tos(params)}`);
       }),
       () => rds().describeDBClusters(params),
       get("DBClusters"),
-      tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

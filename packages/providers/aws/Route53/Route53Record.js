@@ -337,16 +337,6 @@ exports.Route53Record = ({ spec, config }) => {
             ])()
           ),
         ])(),
-      tap((records) => {
-        logger.debug(`getList route53 records result: ${tos(records)}`);
-      }),
-      (records) => ({
-        total: size(records),
-        items: records,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #route53records: ${total}`);
-      }),
     ])();
 
   const getByName = ({ name, namespace, dependencies, lives }) =>

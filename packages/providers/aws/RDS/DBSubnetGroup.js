@@ -58,16 +58,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
           ]),
         })
       ),
-      tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
-      }),
     ])();
 
   const getById = ({ id }) =>

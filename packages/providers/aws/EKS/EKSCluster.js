@@ -74,16 +74,6 @@ exports.EKSCluster = ({ spec, config }) => {
           get("cluster"),
         ])
       ),
-      tap((clusters) => {
-        logger.debug(`getList clusters result: ${tos(clusters)}`);
-      }),
-      (items) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #clusters : ${total}`);
-      }),
     ])();
 
   const getByName = ({ name }) =>

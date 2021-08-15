@@ -80,10 +80,7 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://network.compute.uk1.cloud.ovh.net`,
           pathSuffixList: () => `/v2.0/networks`,
-          onResponseList: ({ data: { networks } }) => ({
-            total: size(networks),
-            items: networks,
-          }),
+          onResponseList: get("data.networks"),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -105,10 +102,7 @@ const fnSpecs = (config) => {
           pathBase: `https://network.compute.uk1.cloud.ovh.net`,
           pathSuffixList: () => `/v2.0/subnets`,
           findName: (subnet) => `${subnet.name}::${subnet.cidr}`,
-          onResponseList: ({ data: { subnets } }) => ({
-            total: size(subnets),
-            items: subnets,
-          }),
+          onResponseList: get("data.subnets"),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -154,10 +148,6 @@ const fnSpecs = (config) => {
               () => data,
               get("volumes"),
               map(getHref({ field: "volume", axios, type: "self" })),
-              (volumes) => ({
-                total: size(volumes),
-                items: volumes,
-              }),
             ])(),
           isUpByIdFactory,
           isInstanceUp,
@@ -198,10 +188,6 @@ const fnSpecs = (config) => {
                   }),
                 ])
               ),
-              (servers) => ({
-                total: size(servers),
-                items: servers,
-              }),
             ])(),
           isUpByIdFactory,
           isInstanceUp,

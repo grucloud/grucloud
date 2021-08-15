@@ -77,10 +77,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       () =>
         retryCallOnError({
           name: `getIamPolicy`,
-          fn: () =>
-            axios.request(":getIamPolicy", {
-              method: "POST",
-            }),
+          fn: () => axios.post(":getIamPolicy"),
           config,
         }),
       get("data"),
@@ -94,16 +91,10 @@ exports.GcpIamBinding = ({ spec, config }) => {
     }
   );
 
-  const getList = tryCatch(
-    pipe([
-      getIamPolicy,
-      ({ bindings }) => ({ total: bindings.length, items: bindings }),
-    ]),
-    (error) => {
-      logError(`getList`, error);
-      throw axiosErrorToJSON(error);
-    }
-  );
+  const getList = tryCatch(pipe([getIamPolicy, get("bindings")]), (error) => {
+    logError(`getList`, error);
+    throw axiosErrorToJSON(error);
+  });
 
   const getByName = ({ name }) =>
     pipe([
@@ -111,7 +102,6 @@ exports.GcpIamBinding = ({ spec, config }) => {
         logger.debug(`getByName ${name}`);
       }),
       getList,
-      get("items"),
       find(eq(get("role"), name)),
       tap((binding) => {
         logger.debug(`getByName result: ${tos(binding)}`);
@@ -189,7 +179,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = async ({ id }) =>
+  const destroy = ({ id }) =>
     pipe([
       tap(() => {
         logger.debug(`destroy iam binding ${id}`);

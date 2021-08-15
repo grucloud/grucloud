@@ -70,17 +70,17 @@ describe("cli", function () {
   });
   it("graph target ", async function () {
     if (!process.env.CONTINUOUS_INTEGRATION) {
-      await runProgram({ cmds: ["graph"] });
+      await runProgram({ cmds: ["graph", "--noOpen"] });
     }
   });
   it("resources type mind map", async function () {
     if (!process.env.CONTINUOUS_INTEGRATION) {
-      await runProgram({ cmds: ["tree"] });
+      await runProgram({ cmds: ["tree", "--noOpen"] });
     }
   });
   it("resources name mind map", async function () {
     if (!process.env.CONTINUOUS_INTEGRATION) {
-      await runProgram({ cmds: ["tree", "--full"] });
+      await runProgram({ cmds: ["tree", "--full", "--noOpen"] });
     }
   });
   it("query plan", async function () {

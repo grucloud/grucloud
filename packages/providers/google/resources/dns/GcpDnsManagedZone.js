@@ -107,7 +107,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     config,
   });
 
-  const getList = async () =>
+  const getList = () =>
     tryCatch(
       pipe([
         () =>
@@ -116,26 +116,16 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
             fn: () => axios.get("/"),
             config,
           }),
-        tap((xxx) => {
-          logger.debug(`getList`);
-        }),
         get("data.managedZones"),
-        tap((xxx) => {
-          logger.debug(`getList`);
-        }),
         map(
           assign({
             recordSet: pipe([
-              (managedZone) => {
-                return retryCallOnError({
+              (managedZone) =>
+                retryCallOnError({
                   name: `getList`,
-                  fn: async () =>
-                    await axios.request(`/${managedZone.name}/rrsets`, {
-                      method: "GET",
-                    }),
+                  fn: () => axios.get(`/${managedZone.name}/rrsets`),
                   config,
-                });
-              },
+                }),
               get("data.rrsets"),
             ]),
           })
@@ -143,7 +133,6 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
         tap((xxx) => {
           logger.debug(`getList`);
         }),
-        (items) => ({ length: items.length, items }),
       ]),
       (error) => {
         logError(`list`, error);
@@ -266,8 +255,8 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
             () =>
               retryCallOnError({
                 name: `update dns managed zone ${name}`,
-                fn: async () =>
-                  await axios.request(`/${name}`, {
+                fn: () =>
+                  axios.request(`/${name}`, {
                     method: "PATCH",
                     data: omit(["recordSet"])(payload),
                   }),
@@ -289,8 +278,8 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
             () =>
               retryCallOnError({
                 name: `update dns changes ${name}`,
-                fn: async () =>
-                  await axios.request(`/${name}/changes`, {
+                fn: () =>
+                  axios.request(`/${name}/changes`, {
                     method: "POST",
                     data: {
                       additions: diff.additions,

@@ -58,10 +58,7 @@ exports.MockServer = (config) => {
     return new Router()
       .get(`${path}`, (context) => {
         const mapResources = mapRoutes.get(path);
-        context.body = {
-          total: mapResources.size,
-          items: [...mapResources.values()],
-        };
+        context.body = [...mapResources.values()];
         logger.debug(`get ${path}, result: ${JSON.stringify(context.body)}`);
         context.status = 200;
         //  context.status = 500;

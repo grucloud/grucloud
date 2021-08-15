@@ -11,6 +11,7 @@
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
+        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/route53/dns-validation-record-txt"
     },
     "result": {
@@ -22,25 +23,18 @@
                 "error": false,
                 "results": [
                     {
-                        "resources": [],
-                        "groupType": "acm::Certificate",
-                        "type": "Certificate",
-                        "group": "acm",
-                        "providerName": "aws"
-                    },
-                    {
                         "resources": [
                             {
                                 "group": "route53",
                                 "type": "HostedZone",
                                 "name": "grucloud.org.",
-                                "id": "/hostedzone/Z06184022464OTH5I4SU7",
+                                "id": "/hostedzone/Z06480632AGTNI5JGTOSR",
                                 "providerName": "aws",
                                 "groupType": "route53::HostedZone",
                                 "live": {
-                                    "Id": "/hostedzone/Z06184022464OTH5I4SU7",
+                                    "Id": "/hostedzone/Z06480632AGTNI5JGTOSR",
                                     "Name": "grucloud.org.",
-                                    "CallerReference": "grucloud-Wed Aug 11 2021 13:43:05 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Sun Aug 15 2021 15:05:12 GMT-0300 (Brasilia Standard Time)",
                                     "Config": {
                                         "PrivateZone": false
                                     },
@@ -52,16 +46,16 @@
                                             "TTL": 172800,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-493.awsdns-61.com."
+                                                    "Value": "ns-1383.awsdns-44.org."
                                                 },
                                                 {
-                                                    "Value": "ns-1301.awsdns-34.org."
+                                                    "Value": "ns-292.awsdns-36.com."
                                                 },
                                                 {
-                                                    "Value": "ns-1723.awsdns-23.co.uk."
+                                                    "Value": "ns-1711.awsdns-21.co.uk."
                                                 },
                                                 {
-                                                    "Value": "ns-992.awsdns-60.net."
+                                                    "Value": "ns-591.awsdns-09.net."
                                                 }
                                             ]
                                         },
@@ -71,7 +65,7 @@
                                             "TTL": 900,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-493.awsdns-61.com. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                    "Value": "ns-1383.awsdns-44.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                                 }
                                             ]
                                         },
@@ -88,6 +82,10 @@
                                     ],
                                     "Tags": [
                                         {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
@@ -96,16 +94,12 @@
                                             "Value": "@grucloud/example-aws-route53-dns-validation-record-txt"
                                         },
                                         {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
                                             "Key": "gc-record-txt.grucloud.org.",
                                             "Value": "grucloud.org.::TXT"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
                                         },
                                         {
                                             "Key": "Name",
@@ -121,17 +115,7 @@
                                 "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "Domain",
-                                        "group": "route53Domain",
-                                        "ids": [
-                                            "grucloud.org"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "route53Domain::Domain"
-                                    }
-                                ],
+                                "dependencies": [],
                                 "show": true
                             }
                         ],
@@ -155,19 +139,19 @@
                                     "TTL": 172800,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-493.awsdns-61.com."
+                                            "Value": "ns-1383.awsdns-44.org."
                                         },
                                         {
-                                            "Value": "ns-1301.awsdns-34.org."
+                                            "Value": "ns-292.awsdns-36.com."
                                         },
                                         {
-                                            "Value": "ns-1723.awsdns-23.co.uk."
+                                            "Value": "ns-1711.awsdns-21.co.uk."
                                         },
                                         {
-                                            "Value": "ns-992.awsdns-60.net."
+                                            "Value": "ns-591.awsdns-09.net."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06184022464OTH5I4SU7"
+                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR"
                                 },
                                 "uri": "aws::route53::Record::grucloud.org.::NS",
                                 "displayName": "grucloud.org.::NS",
@@ -182,7 +166,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06184022464OTH5I4SU7"
+                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -203,10 +187,10 @@
                                     "TTL": 900,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-493.awsdns-61.com. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                            "Value": "ns-1383.awsdns-44.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06184022464OTH5I4SU7"
+                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR"
                                 },
                                 "uri": "aws::route53::Record::grucloud.org.::SOA",
                                 "displayName": "grucloud.org.::SOA",
@@ -221,7 +205,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06184022464OTH5I4SU7"
+                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -247,6 +231,10 @@
                                     ],
                                     "Tags": [
                                         {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
@@ -255,23 +243,19 @@
                                             "Value": "@grucloud/example-aws-route53-dns-validation-record-txt"
                                         },
                                         {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
                                             "Key": "gc-record-txt.grucloud.org.",
                                             "Value": "grucloud.org.::TXT"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
                                         },
                                         {
                                             "Key": "Name",
                                             "Value": "grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06184022464OTH5I4SU7",
+                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR",
                                     "namespace": ""
                                 },
                                 "uri": "aws::route53::Record::txt.grucloud.org.",
@@ -287,7 +271,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06184022464OTH5I4SU7"
+                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -299,13 +283,6 @@
                         "groupType": "route53::Record",
                         "type": "Record",
                         "group": "route53",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "route53Domain::Domain",
-                        "type": "Domain",
-                        "group": "route53Domain",
                         "providerName": "aws"
                     }
                 ]

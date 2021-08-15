@@ -72,24 +72,14 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
-  const getList = async () =>
+  const getList = () =>
     pipe([
       tap(() => {
         logger.info(`getList target group`);
       }),
-      () => elb().describeTargetGroups({}),
+      elb().describeTargetGroups,
       get("TargetGroups"),
       map(assignTags),
-      tap((results) => {
-        logger.debug(`getList target group result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: target group #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property

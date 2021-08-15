@@ -162,7 +162,6 @@ exports.ELBRule = ({ spec, config }) => {
 
   const describeAllRules = pipe([
     () => elbListener.getList({}),
-    get("items"),
     pluck("ListenerArn"),
     flatMap((ListenerArn) =>
       pipe([
@@ -185,22 +184,12 @@ exports.ELBRule = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeRules-property
-  const getList = async () =>
+  const getList = () =>
     pipe([
       tap(() => {
         logger.info(`getList rule`);
       }),
       describeAllRules,
-      tap((results) => {
-        logger.debug(`getList rule result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: rule #total: ${total}`);
-      }),
     ])();
 
   const getByName = ({ name, lives }) =>

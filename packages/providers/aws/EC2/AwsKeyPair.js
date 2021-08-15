@@ -24,16 +24,6 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
       }),
       () => ec2().describeKeyPairs(params),
       get("KeyPairs"),
-      tap((KeyPairs) => {
-        logger.debug(`getList keypair: ${tos(KeyPairs)}`);
-      }),
-      (KeyPairs) => ({
-        total: KeyPairs.length,
-        items: KeyPairs,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #keypair: ${total}`);
-      }),
     ])();
 
   const getByName = async ({ name } = {}) =>

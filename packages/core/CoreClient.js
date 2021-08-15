@@ -113,8 +113,8 @@ module.exports = CoreClient = ({
         logger.debug(`getList ${spec.type}, ${tos(data)}`);
       }),
       onResponseList,
-      tap(({ total }) => {
-        logger.info(`getList ${spec.type}, #items: ${total}`);
+      tap((params) => {
+        assert(true);
       }),
     ]),
     (error) => {

@@ -58,16 +58,8 @@ exports.AwsImage = ({ spec, config }) => {
             ])
         )
       ),
-
       tap((items) => {
-        logger.debug(`getList image result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #image ${total}`);
+        logger.info(`getList #image ${size(resources)}`);
       }),
     ])();
 

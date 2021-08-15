@@ -232,7 +232,7 @@ const createClient = ({
       providerName,
     }),
     assign({
-      getList: getListHof,
+      getList: ({ getList }) => getListHof({ getList, spec }),
       cannotBeDeleted:
         ({ cannotBeDeleted }) =>
         ({ live, resource, lives }) =>

@@ -128,7 +128,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listOpenIDConnectProviders-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam oidc`);
@@ -170,16 +170,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       ),
       tap.if(find(get("error")), (oidcs) => {
         throw oidcs;
-      }),
-      tap((oidcs) => {
-        logger.debug(`getList iam oidc results: ${tos(oidcs)}`);
-      }),
-      (oidcs) => ({
-        total: oidcs.length,
-        items: oidcs,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #iamoidc: ${total}`);
       }),
     ])();
 

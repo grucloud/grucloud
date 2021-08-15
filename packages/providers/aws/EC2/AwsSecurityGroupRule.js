@@ -384,16 +384,6 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.debug(`getList raw sg rules ${kind}: ${tos(rules)}`);
         }),
         mergeSecurityGroupRules,
-        tap((rules) => {
-          logger.debug(`getList merged sg rules ${kind}: ${tos(rules)}`);
-        }),
-        (items) => ({
-          total: size(items),
-          items,
-        }),
-        tap(({ total }) => {
-          logger.info(`getList #secGroupRule ${kind}: ${total}`);
-        }),
       ])();
 
   const getByName = async ({ name }) =>

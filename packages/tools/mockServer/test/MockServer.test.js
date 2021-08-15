@@ -55,9 +55,8 @@ describe("MockServer", function () {
             (result) => {
               assert.equal(result.status, 200);
               const { data } = result;
-              assert.equal(data.total, 1);
-              assert(data.items);
-              return data.items[0].id;
+              assert(data);
+              return data[0].id;
             },
             // Delete
             (id) => axios.delete(`${route}/${id}`),

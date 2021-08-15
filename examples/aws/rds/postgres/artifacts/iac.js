@@ -36,7 +36,7 @@ const createResources = ({ provider }) => {
     name: config.ec2.RouteTable.routeTablePublic.name,
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcPostgres,
-      subnets: [resources.ec2.Subnet.subnet_2, resources.ec2.Subnet.subnet_1],
+      subnets: [resources.ec2.Subnet.subnet_1, resources.ec2.Subnet.subnet_2],
     }),
   });
 
@@ -78,7 +78,7 @@ const createResources = ({ provider }) => {
   provider.rds.makeDBSubnetGroup({
     name: config.rds.DBSubnetGroup.subnetGroupPostgres.name,
     dependencies: ({ resources }) => ({
-      subnets: [resources.ec2.Subnet.subnet_1, resources.ec2.Subnet.subnet_2],
+      subnets: [resources.ec2.Subnet.subnet_2, resources.ec2.Subnet.subnet_1],
     }),
     properties: () => config.rds.DBSubnetGroup.subnetGroupPostgres.properties,
   });

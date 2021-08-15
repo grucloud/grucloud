@@ -5,9 +5,8 @@ const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
 
 const { tos } = require("@grucloud/core/tos");
-const onResponseListDefault = ({ items = [] }) => {
-  return { total: items.length, items };
-};
+const onResponseListDefault = get("items", []);
+
 const onResponseDelete = pipe([
   tap((result) => {
     logger.debug(`onResponseDelete ${tos(result)}`);

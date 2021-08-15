@@ -24,11 +24,11 @@ const server = provider.ec2.makeInstance({
 
 ### Examples
 
-- [one ec2](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js)
-- [ec2 with elastic ip address, key pair](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
-- [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/volume/iac.js)
-- [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
-- [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
+- [one ec2](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/iac.js)
+- [ec2 with elastic ip address, key pair](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2/iac.js)
+- [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/volume/iac.js)
+- [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
+- [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js)
 
 ### Properties
 

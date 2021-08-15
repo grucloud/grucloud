@@ -153,13 +153,6 @@ exports.Function = ({ spec, config }) => {
         logger.info(`getList function`);
       }),
       listFunctions,
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList function #total: ${total}`);
-      }),
     ])();
 
   const getByName = ({ name }) =>

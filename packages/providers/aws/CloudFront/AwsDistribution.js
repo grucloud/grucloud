@@ -102,14 +102,6 @@ exports.AwsDistribution = ({ spec, config }) => {
           get("Tags.Items"),
         ])(distribution),
       })),
-      (distributions) => ({
-        total: distributions.length,
-        items: distributions,
-      }),
-      tap((distributions) => {
-        logger.info(`getList #distributions ${distributions.total}`);
-        logger.debug(`getList distributions result: ${tos(distributions)}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

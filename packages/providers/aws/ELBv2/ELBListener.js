@@ -127,16 +127,6 @@ exports.ELBListener = ({ spec, config }) => {
         logger.info(`getList listener`);
       }),
       describeAllListeners,
-      tap((results) => {
-        logger.debug(`getList listener result: ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: listener #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property

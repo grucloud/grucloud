@@ -1,19 +1,6 @@
 const assert = require("assert");
-const {
-  tap,
-  map,
-  pipe,
-  get,
-  flatten,
-  tryCatch,
-  assign,
-  omit,
-  filter,
-  fork,
-  or,
-  switchCase,
-} = require("rubico");
-const { defaultsDeep, isDeepEqual, isEmpty, find } = require("rubico/x");
+const { tap, map, pipe, get, flatten, tryCatch } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { GCP_DOMAIN_BASE_URL } = require("./GcpDnsCommon");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
@@ -60,7 +47,7 @@ exports.GcpDomain = ({ spec, config }) => {
     config,
   });
 
-  const getList = async () =>
+  const getList = () =>
     tryCatch(
       pipe([
         () =>
@@ -69,14 +56,10 @@ exports.GcpDomain = ({ spec, config }) => {
             fn: () => axios.get("/locations/global/registrations"),
             config,
           }),
-        tap((xxx) => {
-          logger.debug(`getList`);
-        }),
         get("data.registrations"),
         tap((xxx) => {
           logger.debug(`getList`);
         }),
-        (items = []) => ({ length: items.length, items }),
       ]),
       (error) => {
         logError(`list`, error);
@@ -84,7 +67,7 @@ exports.GcpDomain = ({ spec, config }) => {
       }
     )();
 
-  const getById = async ({ id }) =>
+  const getById = ({ id }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -93,10 +76,7 @@ exports.GcpDomain = ({ spec, config }) => {
         () =>
           retryCallOnError({
             name: `getById ${id}`,
-            fn: async () =>
-              await axios.request(`/locations/global/registrations/${id}`, {
-                method: "GET",
-              }),
+            fn: () => axios.get(`/locations/global/registrations/${id}`),
             config,
           }),
         get("data"),

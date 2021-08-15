@@ -35,13 +35,6 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
       tap((items) => {
         logger.debug(`getList nacl result: ${tos(items)}`);
       }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #nacl ${total}`);
-      }),
     ])();
 
   return {

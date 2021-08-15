@@ -3,6 +3,29 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
   const { config } = provider;
+
+  provider.iam.makePolicy({
+    name: config.iam.Policy.lambdaPolicy.name,
+    properties: () => config.iam.Policy.lambdaPolicy.properties,
+  });
+
+  provider.iam.makeRole({
+    name: config.iam.Role.lambdaRole.name,
+    dependencies: ({ resources }) => ({
+      policies: [resources.iam.Policy.lambdaPolicy],
+    }),
+    properties: () => config.iam.Role.lambdaRole.properties,
+  });
+
+  provider.ecr.makeRegistry({
+    name: config.ecr.Registry.default.name,
+    properties: () => config.ecr.Registry.default.properties,
+  });
+
+  provider.lambda.makeLayer({
+    name: config.lambda.Layer.lambdaLayer.name,
+    properties: () => config.lambda.Layer.lambdaLayer.properties,
+  });
 };
 
 exports.createResources = createResources;
