@@ -1,8 +1,8 @@
 process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { omit, pipe, get, filter, assign, map, tap } = require("rubico");
-const { first, pluck, defaultsDeep, isFunction, isEmpty } = require("rubico/x");
+const { omit, pipe, get, tap } = require("rubico");
+const { first, pluck, isFunction } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -11,7 +11,6 @@ const { Ec2New } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const { generateCode } = require("./Aws2gc");
-const { createSpec } = require("@grucloud/core/SpecDefault");
 
 const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
@@ -58,30 +57,6 @@ const fnSpecs = (config) =>
       ...AwsRoute53Domain(),
       ...AwsS3(),
     ],
-    //TODO move later
-    map(
-      assign({
-        Client: ({ Client, ...spec }) =>
-          pipe([
-            () =>
-              Client({
-                spec: createSpec({ config })(spec),
-                config,
-              }),
-            assign({
-              getList: ({ getList }) =>
-                pipe([
-                  getList,
-                  tap((params) => {
-                    //TODO order Tags
-                    assert(true);
-                  }),
-                ]),
-            }),
-            (client) => () => client,
-          ])(),
-      })
-    ),
   ])();
 
 const getAvailabilityZonesName = ({ region }) =>
@@ -201,6 +176,18 @@ exports.AwsProvider = ({
     config: omit(["accountId", "zone"])(makeConfig()),
   });
 
+  const getListHof = ({ getList }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      getList,
+      //TODO order Tags
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
+
   return CoreProvider({
     ...other,
     type: "aws",
@@ -211,5 +198,6 @@ exports.AwsProvider = ({
     start,
     info,
     generateCode,
+    getListHof,
   });
 };
