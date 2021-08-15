@@ -45,16 +45,6 @@ exports.UserPool = ({ spec, config }) => {
       cognitoIdentityServiceProvider().listUserPools,
       get("UserPools"),
       map(getById),
-      tap((params) => {
-        assert(true);
-      }),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList UserPool #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPool-property

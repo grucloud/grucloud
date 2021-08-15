@@ -48,13 +48,6 @@ exports.Api = ({ spec, config }) => {
       }),
       apiGateway().getApis,
       get("Items"),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList apis #total: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

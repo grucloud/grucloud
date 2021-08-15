@@ -45,20 +45,14 @@ exports.DomainName = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainNames-property
-  const getList = ({ lives }) =>
+  const getList = ({ params }) =>
     pipe([
       tap(() => {
         logger.info(`getList domainName`);
       }),
-      () => apiGateway().getDomainNames(),
+      () => params,
+      apiGateway().getDomainNames,
       get("Items"),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList domainName #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainName-property

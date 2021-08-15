@@ -46,16 +46,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
       }),
       () => ec2().describeAddresses(params),
       get("Addresses"),
-      tap((items) => {
-        logger.debug(`getList iep result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #eip ${total}`);
-      }),
     ])();
   const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "AllocationIds", getList });

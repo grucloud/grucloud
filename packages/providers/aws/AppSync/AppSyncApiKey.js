@@ -106,13 +106,6 @@ exports.AppSyncApiKey = ({ spec, config }) => {
             ])()
         )()
       ),
-      tap((apiKeys) => {
-        logger.debug(`getList api key ${tos({ apiKeys })}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

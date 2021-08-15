@@ -57,6 +57,17 @@
       "port": 9229
     },
     {
+      "name": "List all",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["list", "--all"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Plan",
       "type": "node",
       "request": "launch",

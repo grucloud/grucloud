@@ -30,7 +30,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
   const findId = get("live.Arn");
   const findNamespace = get("live.namespace", "");
 
-  const getList = async ({ resources = [] } = {}) =>
+  const getList = ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList policy readonly #resources ${resources.length}`);
@@ -41,13 +41,6 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
         namespace: resource.namespace,
         ...resource.properties(),
       })),
-      tap((items) => {
-        logger.info(`getList policy readonly ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

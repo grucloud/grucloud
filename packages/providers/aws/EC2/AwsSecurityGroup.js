@@ -119,16 +119,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       }),
       () => ec2().describeSecurityGroups(params),
       get("SecurityGroups"),
-      tap((securityGroups) => {
-        logger.debug(`list sg result: ${tos(securityGroups)}`);
-      }),
-      (securityGroups) => ({
-        total: securityGroups.length,
-        items: securityGroups,
-      }),
-      tap(({ total }) => {
-        logger.info(`list #sg ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

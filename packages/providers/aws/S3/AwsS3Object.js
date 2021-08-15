@@ -131,13 +131,6 @@ exports.AwsS3Object = ({ spec, config }) => {
       tap.if(any(get("error")), (objects) => {
         throw { code: 500, errors: objects };
       }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap((result) => {
-        logger.info(`getList s3 total: ${tos(result.total)}`);
-      }),
     ])();
 
   const getByKey = ({ Key, Bucket }) =>

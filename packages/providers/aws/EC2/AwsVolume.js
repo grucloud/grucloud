@@ -70,16 +70,6 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
       () => ec2().describeVolumes(params),
       get("Volumes"),
-      tap((items) => {
-        logger.debug(`getList volume result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #volume ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

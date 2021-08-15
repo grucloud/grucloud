@@ -79,16 +79,6 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         ])()
       ),
       filter(not(isEmpty)),
-      tap((nodeGroups) => {
-        logger.debug(`getList nodeGroups result: ${tos(nodeGroups)}`);
-      }),
-      (nodeGroups) => ({
-        total: nodeGroups.length,
-        items: nodeGroups,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList # nodeGroups : ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

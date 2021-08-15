@@ -77,18 +77,9 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList ig ${JSON.stringify(params)}`);
       }),
-      () => ec2().describeInternetGateways(params),
+      () => params,
+      ec2().describeInternetGateways,
       get("InternetGateways"),
-      tap((items) => {
-        logger.debug(`getList ig result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #ig ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

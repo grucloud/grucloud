@@ -134,14 +134,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList load balancer`);
       }),
-      () => describeLoadBalancers(),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: load balancer #total: ${total}`);
-      }),
+      describeLoadBalancers,
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property

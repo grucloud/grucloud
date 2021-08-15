@@ -128,13 +128,6 @@ exports.AppSyncDataSource = ({ spec, config }) => {
             ])()
         )()
       ),
-      tap((dataSources) => {
-        logger.debug(`getList data source ${tos({ dataSources })}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

@@ -84,13 +84,6 @@ exports.IdentityProvider = ({ spec, config }) => {
             ])()
         )()
       ),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList IdentityProvider #total: ${total}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeIdentityProvider-property

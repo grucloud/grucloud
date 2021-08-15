@@ -60,16 +60,6 @@ exports.AwsCertificate = ({ spec, config }) => {
           }),
         ])()
       ),
-      tap((certificates) => {
-        logger.debug(`getList certificates result: ${tos(certificates)}`);
-      }),
-      (certificates) => ({
-        total: certificates.length,
-        items: certificates,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #certificates : ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

@@ -71,16 +71,6 @@ exports.AwsVpc = ({ spec, config }) => {
         ),
         identity,
       ]),
-      tap((items) => {
-        logger.debug(`getList vpc result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #vpc ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

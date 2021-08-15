@@ -85,13 +85,6 @@ exports.Resource = ({ spec, config }) => {
             ])()
         )()
       ),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList resource #total: ${total}`);
-      }),
     ])();
 
   //const isUpByName = pipe([getByName, not(isEmpty)]);

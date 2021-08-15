@@ -72,17 +72,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       }),
     ])();
 
-  const getList = () =>
-    pipe([
-      describeSubnets,
-      tap((items) => {
-        logger.debug(`getList subnet result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: size(items),
-        items,
-      }),
-    ])();
+  const getList = () => pipe([describeSubnets])();
 
   const getByName = getByNameCore({ getList, findName });
 

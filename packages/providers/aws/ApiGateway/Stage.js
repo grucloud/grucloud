@@ -76,13 +76,6 @@ exports.Stage = ({ spec, config }) => {
             ])()
         )()
       ),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList stage #total: ${total}`);
-      }),
     ])();
 
   //const isUpByName = pipe([getByName, not(isEmpty)]);

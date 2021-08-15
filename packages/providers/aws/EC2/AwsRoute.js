@@ -119,16 +119,6 @@ exports.AwsRoute = ({ spec, config }) => {
         ])()
       ),
       filter(not(isEmpty)),
-      tap((items) => {
-        logger.debug(`getList route result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #route ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

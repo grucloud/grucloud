@@ -98,16 +98,6 @@ exports.Integration = ({ spec, config }) => {
             ])()
         )()
       ),
-      tap((results) => {
-        logger.info(`getList integration  ${tos(results)}`);
-      }),
-      (items = []) => ({
-        total: size(items),
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList integration #total: ${total}`);
-      }),
     ])();
 
   //const isUpByName = pipe([getByName, not(isEmpty)]);

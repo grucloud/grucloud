@@ -219,16 +219,6 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
       () => ec2().describeRouteTables(params),
       get("RouteTables"),
-      tap((items) => {
-        logger.debug(`getList rt result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #rt ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

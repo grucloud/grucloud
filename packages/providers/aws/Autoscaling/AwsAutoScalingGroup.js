@@ -111,17 +111,11 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList autoscaling group ${tos(params)}`);
       }),
-      () => autoScaling().describeAutoScalingGroups({}),
+      () => params,
+      autoScaling().describeAutoScalingGroups,
       get("AutoScalingGroups"),
-      tap((AutoScalingGroups) => {
-        logger.info(`getList autoscaling group ${tos(AutoScalingGroups)}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList autoscaling group ${total}`);
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

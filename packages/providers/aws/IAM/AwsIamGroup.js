@@ -85,16 +85,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
             ])()
         )
       ),
-      tap((groups) => {
-        logger.debug(`getList groups: ${tos(groups)}`);
-      }),
-      (groups) => ({
-        total: groups.length,
-        items: groups,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #groups: ${tos(total)}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

@@ -77,16 +77,6 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       }),
       () => ec2().describeNetworkInterfaces(params),
       get("NetworkInterfaces"),
-      tap((items) => {
-        logger.debug(`getList network interfaces result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #network interfaces ${total}`);
-      }),
     ])();
 
   const destroy = ({ live }) =>

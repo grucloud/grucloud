@@ -166,13 +166,6 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       () => {
         throw Error("TODO getList");
       },
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });
@@ -509,7 +502,7 @@ The _describeLoadBalancers_ _json_ output is:
 From the shape of the result we can now write the _getList_ function:
 
 ```js
-const getList = async ({ params } = {}) =>
+const getList = ({ params } = {}) =>
   pipe([
     tap(() => {
       logger.info(`getList ${tos(params)}`);
@@ -518,13 +511,6 @@ const getList = async ({ params } = {}) =>
     get("LoadBalancerDescriptions"),
     tap((results) => {
       logger.debug(`getList: result: ${tos(results)}`);
-    }),
-    (items = []) => ({
-      total: items.length,
-      items,
-    }),
-    tap(({ total }) => {
-      logger.info(`getList: #total: ${total}`);
     }),
   ])();
 ```

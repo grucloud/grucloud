@@ -1,8 +1,8 @@
 process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { omit, pipe, get, tap } = require("rubico");
-const { first, pluck, isFunction } = require("rubico/x");
+const { omit, pipe, get, tap, tryCatch } = require("rubico");
+const { first, pluck, isFunction, size } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -176,17 +176,37 @@ exports.AwsProvider = ({
     config: omit(["accountId", "zone"])(makeConfig()),
   });
 
-  const getListHof = ({ getList }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      getList,
-      //TODO order Tags
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
+  const getListHof = ({ getList, spec }) =>
+    tryCatch(
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        tap(({ total }) => {
+          logger.debug(`getList ${spec.groupType}`);
+        }),
+        getList,
+        //TODO order Tags
+        tap((items) => {
+          if (!Array.isArray(items)) {
+            assert(Array.isArray(items), JSON.stringify(spec));
+          }
+        }),
+        (items) => ({ items, total: size(items) }),
+        tap(({ total }) => {
+          logger.debug(`getList ${spec.groupType} ${total}`);
+        }),
+      ]),
+      (error) =>
+        pipe([
+          tap((params) => {
+            logger.error(`getList #${spec.groupType}, ${error}`);
+          }),
+          () => {
+            throw error;
+          },
+        ])()
+    );
 
   return CoreProvider({
     ...other,

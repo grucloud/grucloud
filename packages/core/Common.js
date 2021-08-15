@@ -159,9 +159,8 @@ exports.getByNameCore =
         }
       }),
       () => getList({ deep, lives, resources }),
-      get("items"),
       tap((items) => {
-        assert(items);
+        assert(Array.isArray(items));
       }),
       find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
       tap((instance) => {

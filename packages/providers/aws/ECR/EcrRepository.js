@@ -89,14 +89,7 @@ exports.EcrRepository = ({ spec, config }) => {
       }),
     ])();
 
-  const getList = () =>
-    pipe([
-      describeRepositories,
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-    ])();
+  const getList = () => pipe([describeRepositories])();
 
   const getByName = pipe([
     ({ name }) => ({ repositoryNames: [name] }),

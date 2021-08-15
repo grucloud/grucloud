@@ -37,18 +37,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listGraphqlApis-property
   const getList = () =>
-    pipe([
-      () => ({}),
-      appSync().listGraphqlApis,
-      get("graphqlApis"),
-      tap((graphqlApis) => {
-        logger.debug(`listGraphqlApis ${tos(graphqlApis)}`);
-      }),
-      (items = []) => ({
-        total: items.length,
-        items,
-      }),
-    ])();
+    pipe([() => ({}), appSync().listGraphqlApis, get("graphqlApis")])();
 
   const getByName = getByNameCore({ getList, findName });
 

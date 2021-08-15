@@ -132,7 +132,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = async () =>
+  const getList = () =>
     pipe([
       tap(() => {
         logger.debug(`getList hostedZone`);
@@ -158,16 +158,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
           ]),
         })
       ),
-      tap((hostedZones) => {
-        logger.debug(`getList hostedZone result: ${tos(hostedZones)}`);
-      }),
-      (hostedZones) => ({
-        total: hostedZones.length,
-        items: hostedZones,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #hostedZone: ${total}`);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

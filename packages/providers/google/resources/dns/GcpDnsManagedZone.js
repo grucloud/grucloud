@@ -107,7 +107,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     config,
   });
 
-  const getList = async () =>
+  const getList = () =>
     tryCatch(
       pipe([
         () =>
