@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
-const { size, isEmpty, find } = require("rubico/x");
+const { size, isEmpty, find, append } = require("rubico/x");
 const { tos } = require("./tos");
 //const initSqlJs = require("sql.js");
 
@@ -101,10 +101,10 @@ exports.createLives = (livesRaw = []) => {
     get error() {
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, type, group, resource }) => {
+    addResource: ({ providerName, type, group, groupType, resource }) => {
       assert(providerName);
       assert(type);
-      //assert(group);
+      assert(groupType);
 
       //TODO
       if (isEmpty(resource.live)) {
@@ -120,6 +120,7 @@ exports.createLives = (livesRaw = []) => {
           providerName,
           type,
           group,
+          groupType,
           mapPerTypeSize: mapPerType.size,
         })}`
       );
@@ -130,6 +131,7 @@ exports.createLives = (livesRaw = []) => {
           mapPerType.get(JSON.stringify({ type, group })) || {
             type,
             group,
+            groupType,
             resources: [],
           },
         get("resources"),
@@ -137,11 +139,12 @@ exports.createLives = (livesRaw = []) => {
           assert(Array.isArray(resources));
         }),
         filter(not(eq(get("id", ""), resource.id))),
-        (resources) => [...resources, resource],
+        append(resource),
         tap((resources) => {
           mapPerType.set(JSON.stringify({ type, group }), {
             type,
             group,
+            groupType,
             providerName,
             resources,
           });
@@ -155,18 +158,20 @@ exports.createLives = (livesRaw = []) => {
       providerName,
       type,
       group,
+      groupType,
       resources = [],
       error: latestError,
     }) => {
       assert(providerName);
       assert(type);
-      //assert(group);
+      assert(groupType);
       assert(Array.isArray(resources) || latestError);
       logger.debug(
         `live addResources ${JSON.stringify({
           providerName,
           group,
           type,
+          groupType,
           resourceCount: resources.length,
         })}`
       );
@@ -175,6 +180,7 @@ exports.createLives = (livesRaw = []) => {
       mapPerType.set(JSON.stringify({ type, group }), {
         type,
         group,
+        groupType,
         resources,
         error: latestError,
       });

@@ -52,7 +52,8 @@ exports.ResourceMaker = ({
   config,
   programOptions,
 }) => {
-  const { type, group } = spec;
+  const { type, group, groupType } = spec;
+  assert(groupType);
   assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(
     `ResourceMaker: ${JSON.stringify({
@@ -107,6 +108,7 @@ exports.ResourceMaker = ({
                 providerName: config.providerName,
                 type,
                 group,
+                groupType,
                 resource,
               });
             }),

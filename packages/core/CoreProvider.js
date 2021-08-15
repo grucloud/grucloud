@@ -309,7 +309,6 @@ function CoreProvider({
         ),
       ])(),
   ]);
-  //TODO refactor no curry
 
   const clientByType = ({ groupType }) =>
     pipe([
@@ -1113,6 +1112,10 @@ function CoreProvider({
               group: client.spec.group,
               providerName: client.providerName,
             }),
+            tap(({ groupType, type }) => {
+              assert(type);
+              assert(groupType);
+            }),
             tap((result) => {
               getLives().addResources(result);
             }),
@@ -1124,7 +1127,7 @@ function CoreProvider({
           onStateChange: ({ key, meta, result, error, ...other }) => {
             assert(key);
             assert(meta.type);
-            //assert(meta.group);
+            assert(meta.groupType);
 
             assert(meta.providerName);
             if (error) {
@@ -1255,9 +1258,11 @@ function CoreProvider({
         assert(livesPerProvider);
       }),
       filter(not(get("error"))),
-      flatMap(({ groupType, resources }) =>
+      flatMap(({ groupType, type, group, resources }) =>
         pipe([
           tap(() => {
+            assert(type);
+            assert(group);
             assert(groupType);
             assert(
               Array.isArray(resources),
@@ -1580,6 +1585,7 @@ function CoreProvider({
                     providerName,
                     type: engine.type,
                     group: engine.group,
+                    groupType: engine.groupType,
                     resource,
                   });
                 }),
