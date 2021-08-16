@@ -1,13 +1,11 @@
 {
     "command": "list",
     "commandOptions": {
-        "graph": true,
-        "title": "ecs-simple",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/ecs/ecs-simple/artifacts/diagram-live.dot"
+        "dotFile": "artifacts/diagram-live.dot",
+        "title": "ecs-simple"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
-        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/ecs/ecs-simple"
     },
     "result": {
@@ -1002,6 +1000,107 @@
                     {
                         "resources": [
                             {
+                                "group": "ecs",
+                                "type": "CapacityProvider",
+                                "name": "cp",
+                                "id": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/cp",
+                                "providerName": "aws",
+                                "groupType": "ecs::CapacityProvider",
+                                "live": {
+                                    "capacityProviderArn": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/cp",
+                                    "name": "cp",
+                                    "status": "ACTIVE",
+                                    "autoScalingGroupProvider": {
+                                        "autoScalingGroupArn": "arn:aws:autoscaling:eu-west-2:840541460064:autoScalingGroup:2a9b054d-8d92-4799-b1d7-c27a364265a9:autoScalingGroupName/EC2ContainerService-cluster-demo-EcsInstanceAsg-1OUD5CZDIDVPJ",
+                                        "managedScaling": {
+                                            "status": "ENABLED",
+                                            "targetCapacity": 50,
+                                            "minimumScalingStepSize": 1,
+                                            "maximumScalingStepSize": 10000,
+                                            "instanceWarmupPeriod": 300
+                                        },
+                                        "managedTerminationProtection": "DISABLED"
+                                    },
+                                    "tags": []
+                                },
+                                "uri": "aws::ecs::CapacityProvider::cp",
+                                "displayName": "cp",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "AutoScalingGroup",
+                                        "group": "autoscaling",
+                                        "ids": [
+                                            "arn:aws:autoscaling:eu-west-2:840541460064:autoScalingGroup:2a9b054d-8d92-4799-b1d7-c27a364265a9:autoScalingGroupName/EC2ContainerService-cluster-demo-EcsInstanceAsg-1OUD5CZDIDVPJ"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "autoscaling::AutoScalingGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ecs",
+                                "type": "CapacityProvider",
+                                "name": "FARGATE",
+                                "id": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/FARGATE",
+                                "providerName": "aws",
+                                "groupType": "ecs::CapacityProvider",
+                                "live": {
+                                    "capacityProviderArn": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/FARGATE",
+                                    "name": "FARGATE",
+                                    "status": "ACTIVE",
+                                    "tags": []
+                                },
+                                "uri": "aws::ecs::CapacityProvider::FARGATE",
+                                "displayName": "FARGATE",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "ecs",
+                                "type": "CapacityProvider",
+                                "name": "FARGATE_SPOT",
+                                "id": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/FARGATE_SPOT",
+                                "providerName": "aws",
+                                "groupType": "ecs::CapacityProvider",
+                                "live": {
+                                    "capacityProviderArn": "arn:aws:ecs:eu-west-2:840541460064:capacity-provider/FARGATE_SPOT",
+                                    "name": "FARGATE_SPOT",
+                                    "status": "ACTIVE",
+                                    "tags": []
+                                },
+                                "uri": "aws::ecs::CapacityProvider::FARGATE_SPOT",
+                                "displayName": "FARGATE_SPOT",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ecs::CapacityProvider",
+                        "type": "CapacityProvider",
+                        "group": "ecs",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
                                 "group": "kms",
                                 "type": "Key",
                                 "name": "alias/aws/acm",
@@ -1197,11 +1296,10 @@
                                     "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "CreationDate": "2021-07-09T20:59:18.231Z",
-                                    "Enabled": false,
+                                    "Enabled": true,
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
-                                    "KeyState": "PendingDeletion",
-                                    "DeletionDate": "2021-08-22T21:21:21.712Z",
+                                    "KeyState": "Enabled",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -1234,7 +1332,7 @@
                                 },
                                 "uri": "aws::kms::Key::eks-key",
                                 "displayName": "eks-key",
-                                "cannotBeDeleted": true,
+                                "cannotBeDeleted": false,
                                 "isOurMinion": false,
                                 "managedByUs": false,
                                 "managedByOther": false,
@@ -1259,7 +1357,7 @@
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
                                     "KeyState": "PendingDeletion",
-                                    "DeletionDate": "2021-08-23T03:14:38.070Z",
+                                    "DeletionDate": "2021-08-23T05:23:17.389Z",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -1321,19 +1419,19 @@
                                     "DomainName": "grucloud.org",
                                     "Nameservers": [
                                         {
-                                            "Name": "ns-550.awsdns-04.net",
+                                            "Name": "ns-669.awsdns-19.net",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1675.awsdns-17.co.uk",
+                                            "Name": "ns-1292.awsdns-33.org",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-453.awsdns-56.com",
+                                            "Name": "ns-1807.awsdns-33.co.uk",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1227.awsdns-25.org",
+                                            "Name": "ns-399.awsdns-49.com",
                                             "GlueIps": []
                                         }
                                     ],

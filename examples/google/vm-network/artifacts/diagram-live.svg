@@ -85,19 +85,19 @@
 <text text-anchor="start" x="59" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
 <text text-anchor="start" x="59" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud</text>
 </g>
-<!-- ServiceAccount::::sa&#45;dev -->
+<!-- ServiceAccount::::sa&#45;grucloud -->
 <g id="node10" class="node">
-<title>ServiceAccount::::sa&#45;dev</title>
+<title>ServiceAccount::::sa&#45;grucloud</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="191.5,-205 46.5,-205 46.5,-147 191.5,-147 191.5,-205"/>
 <text text-anchor="start" x="59" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="59" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>
+<text text-anchor="start" x="59" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
 </g>
-<!-- ServiceAccount::::sa&#45;grucloud -->
+<!-- ServiceAccount::::sa&#45;test&#45;vm -->
 <g id="node11" class="node">
-<title>ServiceAccount::::sa&#45;grucloud</title>
+<title>ServiceAccount::::sa&#45;test&#45;vm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="191.5,-129 46.5,-129 46.5,-71 191.5,-71 191.5,-129"/>
 <text text-anchor="start" x="59" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="59" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
+<text text-anchor="start" x="59" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;test&#45;vm</text>
 </g>
 </g>
 </svg>

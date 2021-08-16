@@ -496,10 +496,10 @@
                                 "meta": {
                                     "name": "nginx-deployment",
                                     "namespace": "myapp",
-                                    "uid": "cf211fa4-c266-423c-b19f-40146ad1f02d",
-                                    "resourceVersion": "106617",
+                                    "uid": "41af5659-355f-404b-903b-df536fcf8d30",
+                                    "resourceVersion": "139693",
                                     "generation": 1,
-                                    "creationTimestamp": "2021-08-16T03:17:37Z",
+                                    "creationTimestamp": "2021-08-16T13:45:01Z",
                                     "labels": {
                                         "app": "nginx-label"
                                     },
@@ -519,10 +519,10 @@
                                     "metadata": {
                                         "name": "nginx-deployment",
                                         "namespace": "myapp",
-                                        "uid": "cf211fa4-c266-423c-b19f-40146ad1f02d",
-                                        "resourceVersion": "106617",
+                                        "uid": "41af5659-355f-404b-903b-df536fcf8d30",
+                                        "resourceVersion": "139693",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-16T03:17:37Z",
+                                        "creationTimestamp": "2021-08-16T13:45:01Z",
                                         "labels": {
                                             "app": "nginx-label"
                                         },
@@ -593,16 +593,16 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-16T03:17:38Z",
-                                                "lastTransitionTime": "2021-08-16T03:17:38Z",
+                                                "lastUpdateTime": "2021-08-16T13:45:03Z",
+                                                "lastTransitionTime": "2021-08-16T13:45:03Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-16T03:17:38Z",
-                                                "lastTransitionTime": "2021-08-16T03:17:37Z",
+                                                "lastUpdateTime": "2021-08-16T13:45:03Z",
+                                                "lastTransitionTime": "2021-08-16T13:45:02Z",
                                                 "reason": "NewReplicaSetAvailable",
                                                 "message": "ReplicaSet \"nginx-deployment-66cdc8d56b\" has successfully progressed."
                                             }
@@ -794,9 +794,9 @@
                                 "name": "myapp",
                                 "meta": {
                                     "name": "myapp",
-                                    "uid": "34085863-d8ee-456a-b664-6daf0e24c219",
-                                    "resourceVersion": "106585",
-                                    "creationTimestamp": "2021-08-16T03:17:37Z",
+                                    "uid": "25ba602f-f77d-4620-9a44-3c2efc1e5d82",
+                                    "resourceVersion": "139659",
+                                    "creationTimestamp": "2021-08-16T13:45:01Z",
                                     "annotations": {
                                         "Name": "myapp",
                                         "gc-created-by-provider": "k8s",
@@ -811,9 +811,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "myapp",
-                                        "uid": "34085863-d8ee-456a-b664-6daf0e24c219",
-                                        "resourceVersion": "106585",
-                                        "creationTimestamp": "2021-08-16T03:17:37Z",
+                                        "uid": "25ba602f-f77d-4620-9a44-3c2efc1e5d82",
+                                        "resourceVersion": "139659",
+                                        "creationTimestamp": "2021-08-16T13:45:01Z",
                                         "annotations": {
                                             "Name": "myapp",
                                             "gc-created-by-provider": "k8s",
@@ -1155,9 +1155,9 @@
                                 "meta": {
                                     "name": "nginx-service",
                                     "namespace": "myapp",
-                                    "uid": "c9d04acd-aed1-4608-9373-91013f984f92",
-                                    "resourceVersion": "106594",
-                                    "creationTimestamp": "2021-08-16T03:17:37Z",
+                                    "uid": "ddcc9e51-59c6-479e-8ced-d7c0845f4644",
+                                    "resourceVersion": "139667",
+                                    "creationTimestamp": "2021-08-16T13:45:01Z",
                                     "annotations": {
                                         "Name": "nginx-service",
                                         "gc-created-by-provider": "k8s",
@@ -1173,9 +1173,9 @@
                                     "metadata": {
                                         "name": "nginx-service",
                                         "namespace": "myapp",
-                                        "uid": "c9d04acd-aed1-4608-9373-91013f984f92",
-                                        "resourceVersion": "106594",
-                                        "creationTimestamp": "2021-08-16T03:17:37Z",
+                                        "uid": "ddcc9e51-59c6-479e-8ced-d7c0845f4644",
+                                        "resourceVersion": "139667",
+                                        "creationTimestamp": "2021-08-16T13:45:01Z",
                                         "annotations": {
                                             "Name": "nginx-service",
                                             "gc-created-by-provider": "k8s",
@@ -1196,9 +1196,9 @@
                                         "selector": {
                                             "app": "nginx-label"
                                         },
-                                        "clusterIP": "10.111.162.14",
+                                        "clusterIP": "10.105.23.133",
                                         "clusterIPs": [
-                                            "10.111.162.14"
+                                            "10.105.23.133"
                                         ],
                                         "type": "NodePort",
                                         "sessionAffinity": "None",

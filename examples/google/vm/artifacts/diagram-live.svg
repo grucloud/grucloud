@@ -22,40 +22,40 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-973 222,-973 222,-54 16,-54"/>
 <text text-anchor="start" x="118.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- Address::::ip&#45;webserver&#45;dev -->
+<!-- Address::::ip&#45;webserver -->
 <g id="node1" class="node">
-<title>Address::::ip&#45;webserver&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="193,-965 45,-965 45,-907 193,-907 193,-965"/>
-<text text-anchor="start" x="57" y="-945.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Address</text>
-<text text-anchor="start" x="57" y="-920.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ip&#45;webserver&#45;dev</text>
+<title>Address::::ip&#45;webserver</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="177.5,-965 60.5,-965 60.5,-907 177.5,-907 177.5,-965"/>
+<text text-anchor="start" x="73" y="-945.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Address</text>
+<text text-anchor="start" x="73" y="-920.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ip&#45;webserver</text>
 </g>
-<!-- Disk::::disk&#45;dev -->
+<!-- Disk::::disk -->
 <g id="node2" class="node">
-<title>Disk::::disk&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="161.5,-889 76.5,-889 76.5,-831 161.5,-831 161.5,-889"/>
-<text text-anchor="start" x="89" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
-<text text-anchor="start" x="89" y="-844.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">disk&#45;dev</text>
+<title>Disk::::disk</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="148,-889 90,-889 90,-831 148,-831 148,-889"/>
+<text text-anchor="start" x="102" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
+<text text-anchor="start" x="102" y="-844.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">disk</text>
 </g>
-<!-- Disk::::webserver&#45;dev -->
+<!-- Disk::::webserver -->
 <g id="node3" class="node">
-<title>Disk::::webserver&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="184,-813 54,-813 54,-755 184,-755 184,-813"/>
-<text text-anchor="start" x="66" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
-<text text-anchor="start" x="66" y="-768.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">webserver&#45;dev</text>
+<title>Disk::::webserver</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="168.5,-813 69.5,-813 69.5,-755 168.5,-755 168.5,-813"/>
+<text text-anchor="start" x="82" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
+<text text-anchor="start" x="82" y="-768.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">webserver</text>
 </g>
-<!-- Firewall::::firewall&#45;22&#45;80&#45;433&#45;dev -->
+<!-- Firewall::::firewall&#45;22&#45;80&#45;433 -->
 <g id="node4" class="node">
-<title>Firewall::::firewall&#45;22&#45;80&#45;433&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="211.5,-737 26.5,-737 26.5,-679 211.5,-679 211.5,-737"/>
-<text text-anchor="start" x="39" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Firewall</text>
-<text text-anchor="start" x="39" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">firewall&#45;22&#45;80&#45;433&#45;dev</text>
+<title>Firewall::::firewall&#45;22&#45;80&#45;433</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="196,-737 42,-737 42,-679 196,-679 196,-737"/>
+<text text-anchor="start" x="54" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Firewall</text>
+<text text-anchor="start" x="54" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">firewall&#45;22&#45;80&#45;433</text>
 </g>
-<!-- Firewall::::firewall&#45;icmp&#45;dev -->
+<!-- Firewall::::firewall&#45;icmp -->
 <g id="node5" class="node">
-<title>Firewall::::firewall&#45;icmp&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="192,-661 46,-661 46,-603 192,-603 192,-661"/>
-<text text-anchor="start" x="58" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Firewall</text>
-<text text-anchor="start" x="58" y="-616.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">firewall&#45;icmp&#45;dev</text>
+<title>Firewall::::firewall&#45;icmp</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="176.5,-661 61.5,-661 61.5,-603 176.5,-603 176.5,-661"/>
+<text text-anchor="start" x="74" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Firewall</text>
+<text text-anchor="start" x="74" y="-616.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">firewall&#45;icmp</text>
 </g>
 <!-- Network::::default -->
 <g id="node6" class="node">
@@ -71,12 +71,12 @@
 <text text-anchor="start" x="72" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SubNetwork</text>
 <text text-anchor="start" x="72" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
 </g>
-<!-- VmInstance::::webserver&#45;dev -->
+<!-- VmInstance::::webserver -->
 <g id="node8" class="node">
-<title>VmInstance::::webserver&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="184,-433 54,-433 54,-375 184,-375 184,-433"/>
-<text text-anchor="start" x="66" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VmInstance</text>
-<text text-anchor="start" x="66" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">webserver&#45;dev</text>
+<title>VmInstance::::webserver</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="176.5,-433 61.5,-433 61.5,-375 176.5,-375 176.5,-433"/>
+<text text-anchor="start" x="74" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VmInstance</text>
+<text text-anchor="start" x="74" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">webserver</text>
 </g>
 <!-- ServiceAccount::::91170824493&#45;compute -->
 <g id="node9" class="node">
@@ -92,19 +92,19 @@
 <text text-anchor="start" x="59" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
 <text text-anchor="start" x="59" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud</text>
 </g>
-<!-- ServiceAccount::::sa&#45;dev -->
+<!-- ServiceAccount::::sa&#45;grucloud -->
 <g id="node11" class="node">
-<title>ServiceAccount::::sa&#45;dev</title>
+<title>ServiceAccount::::sa&#45;grucloud</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="191.5,-205 46.5,-205 46.5,-147 191.5,-147 191.5,-205"/>
 <text text-anchor="start" x="59" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="59" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>
+<text text-anchor="start" x="59" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
 </g>
-<!-- ServiceAccount::::sa&#45;grucloud -->
+<!-- ServiceAccount::::sa&#45;test&#45;vm -->
 <g id="node12" class="node">
-<title>ServiceAccount::::sa&#45;grucloud</title>
+<title>ServiceAccount::::sa&#45;test&#45;vm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="191.5,-129 46.5,-129 46.5,-71 191.5,-71 191.5,-129"/>
 <text text-anchor="start" x="59" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="59" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
+<text text-anchor="start" x="59" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;test&#45;vm</text>
 </g>
 </g>
 </svg>

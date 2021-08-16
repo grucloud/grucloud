@@ -43,12 +43,12 @@
 <text text-anchor="start" x="59" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
 <text text-anchor="start" x="59" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud</text>
 </g>
-<!-- ServiceAccount::::sa&#45;dev -->
+<!-- ServiceAccount::::sa&#45;example&#45;policy -->
 <g id="node4" class="node">
-<title>ServiceAccount::::sa&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="191.5,-205 46.5,-205 46.5,-147 191.5,-147 191.5,-205"/>
-<text text-anchor="start" x="59" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="59" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>
+<title>ServiceAccount::::sa&#45;example&#45;policy</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="197,-205 41,-205 41,-147 197,-147 197,-205"/>
+<text text-anchor="start" x="53" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
+<text text-anchor="start" x="53" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;example&#45;policy</text>
 </g>
 <!-- ServiceAccount::::sa&#45;grucloud -->
 <g id="node5" class="node">

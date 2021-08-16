@@ -186,9 +186,9 @@
                                 "name": "test-redis",
                                 "meta": {
                                     "name": "test-redis",
-                                    "uid": "4b186605-c4a7-475f-a0ef-a4d005294cc2",
-                                    "resourceVersion": "106523",
-                                    "creationTimestamp": "2021-08-16T03:17:18Z",
+                                    "uid": "508f6edf-46bf-4d60-9d68-6c0872d90980",
+                                    "resourceVersion": "139580",
+                                    "creationTimestamp": "2021-08-16T13:44:23Z",
                                     "annotations": {
                                         "Name": "test-redis",
                                         "gc-created-by-provider": "k8s",
@@ -202,9 +202,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "test-redis",
-                                        "uid": "4b186605-c4a7-475f-a0ef-a4d005294cc2",
-                                        "resourceVersion": "106523",
-                                        "creationTimestamp": "2021-08-16T03:17:18Z",
+                                        "uid": "508f6edf-46bf-4d60-9d68-6c0872d90980",
+                                        "resourceVersion": "139580",
+                                        "creationTimestamp": "2021-08-16T13:44:23Z",
                                         "annotations": {
                                             "Name": "test-redis",
                                             "gc-created-by-provider": "k8s",
@@ -545,9 +545,9 @@
                                 "meta": {
                                     "name": "redis",
                                     "namespace": "test-redis",
-                                    "uid": "474d7501-232c-47bd-aae9-9279520e9b30",
-                                    "resourceVersion": "106547",
-                                    "creationTimestamp": "2021-08-16T03:17:23Z",
+                                    "uid": "a13253cd-6084-4abf-b16a-3807ef3aac12",
+                                    "resourceVersion": "139604",
+                                    "creationTimestamp": "2021-08-16T13:44:28Z",
                                     "annotations": {
                                         "Name": "redis",
                                         "gc-created-by-provider": "k8s",
@@ -562,9 +562,9 @@
                                     "metadata": {
                                         "name": "redis",
                                         "namespace": "test-redis",
-                                        "uid": "474d7501-232c-47bd-aae9-9279520e9b30",
-                                        "resourceVersion": "106547",
-                                        "creationTimestamp": "2021-08-16T03:17:23Z",
+                                        "uid": "a13253cd-6084-4abf-b16a-3807ef3aac12",
+                                        "resourceVersion": "139604",
+                                        "creationTimestamp": "2021-08-16T13:44:28Z",
                                         "annotations": {
                                             "Name": "redis",
                                             "gc-created-by-provider": "k8s",
@@ -620,10 +620,10 @@
                                 "meta": {
                                     "name": "redis",
                                     "namespace": "test-redis",
-                                    "uid": "dcbfa306-aa54-4fab-a038-12e645123859",
-                                    "resourceVersion": "106532",
+                                    "uid": "03f1df84-c9ac-4cbf-bbff-31de673f5213",
+                                    "resourceVersion": "139589",
                                     "generation": 1,
-                                    "creationTimestamp": "2021-08-16T03:17:18Z",
+                                    "creationTimestamp": "2021-08-16T13:44:23Z",
                                     "labels": {
                                         "app": "redis"
                                     },
@@ -641,10 +641,10 @@
                                     "metadata": {
                                         "name": "redis",
                                         "namespace": "test-redis",
-                                        "uid": "dcbfa306-aa54-4fab-a038-12e645123859",
-                                        "resourceVersion": "106532",
+                                        "uid": "03f1df84-c9ac-4cbf-bbff-31de673f5213",
+                                        "resourceVersion": "139589",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-16T03:17:18Z",
+                                        "creationTimestamp": "2021-08-16T13:44:23Z",
                                         "labels": {
                                             "app": "redis"
                                         },

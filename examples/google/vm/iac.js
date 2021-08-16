@@ -78,7 +78,7 @@ exports.createStack = async ({ createProvider }) => {
   });
 
   const serviceAccount = provider.iam.makeServiceAccount({
-    name: `sa`,
+    name: `sa-test-vm`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",

@@ -22,12 +22,12 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-137 471,-137 471,-54 16,-54"/>
 <text text-anchor="start" x="243.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- ServiceAccount::sa&#45;dev -->
+<!-- ServiceAccount::sa&#45;test&#45;example -->
 <g id="node1" class="node">
-<title>ServiceAccount::sa&#45;dev</title>
+<title>ServiceAccount::sa&#45;test&#45;example</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="463,-129 318,-129 318,-71 463,-71 463,-129"/>
 <text text-anchor="start" x="330.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="330.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>
+<text text-anchor="start" x="330.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;test&#45;example</text>
 </g>
 <!-- Binding::roles/firebasenotifications.viewer -->
 <g id="node2" class="node">
@@ -36,9 +36,9 @@
 <text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
 <text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/firebasenotifications.view...</text>
 </g>
-<!-- Binding::roles/firebasenotifications.viewer&#45;&gt;ServiceAccount::sa&#45;dev -->
+<!-- Binding::roles/firebasenotifications.viewer&#45;&gt;ServiceAccount::sa&#45;test&#45;example -->
 <g id="edge1" class="edge">
-<title>Binding::roles/firebasenotifications.viewer&#45;&gt;ServiceAccount::sa&#45;dev</title>
+<title>Binding::roles/firebasenotifications.viewer&#45;&gt;ServiceAccount::sa&#45;test&#45;example</title>
 <path fill="none" stroke="#707070" d="M282.09,-100C290.83,-100 299.5,-100 307.89,-100"/>
 <polygon fill="#707070" stroke="#707070" points="307.99,-103.5 317.99,-100 307.99,-96.5 307.99,-103.5"/>
 </g>
