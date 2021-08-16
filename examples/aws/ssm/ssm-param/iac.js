@@ -1,11 +1,10 @@
+const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  const { config } = provider;
-
   provider.ssm.makeParameter({
-    name: config.ssm.Parameter.textParam.name,
-    properties: () => config.ssm.Parameter.textParam.properties,
+    name: get("config.ssm.Parameter.textParam.name"),
+    properties: get("config.ssm.Parameter.textParam.properties"),
   });
 };
 

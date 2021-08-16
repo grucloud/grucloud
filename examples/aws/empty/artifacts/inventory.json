@@ -687,12 +687,12 @@
                                 "group": "ec2",
                                 "type": "SecurityGroupRuleEgress",
                                 "name": "sg-rule-egress-test",
-                                "id": "sgr-0f6f53e017caffb1d",
+                                "id": "sgr-0e1e063f1a0c5fb74",
                                 "providerName": "aws",
                                 "groupType": "ec2::SecurityGroupRuleEgress",
                                 "live": {
                                     "GroupId": "sg-f4139a96",
-                                    "SecurityGroupRuleId": "sgr-0f6f53e017caffb1d",
+                                    "SecurityGroupRuleId": "sgr-0e1e063f1a0c5fb74",
                                     "IpPermission": {
                                         "IpProtocol": "tcp",
                                         "FromPort": 1024,
@@ -764,12 +764,12 @@
                                 "group": "ec2",
                                 "type": "SecurityGroupRuleIngress",
                                 "name": "sg-rule-ingress-test",
-                                "id": "sgr-01977723c52e588f5",
+                                "id": "sgr-0bbe5022ae92edfd4",
                                 "providerName": "aws",
                                 "groupType": "ec2::SecurityGroupRuleIngress",
                                 "live": {
                                     "GroupId": "sg-f4139a96",
-                                    "SecurityGroupRuleId": "sgr-01977723c52e588f5",
+                                    "SecurityGroupRuleId": "sgr-0bbe5022ae92edfd4",
                                     "IpPermission": {
                                         "IpProtocol": "tcp",
                                         "FromPort": 22,
@@ -921,8 +921,8 @@
                                             "Value": "Default"
                                         }
                                     ],
-                                    "DnsHostnames": true,
-                                    "DnsSupport": true
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
                                 },
                                 "uri": "aws::ec2::Vpc::vpc-default",
                                 "displayName": "vpc-default",
@@ -997,176 +997,6 @@
                         "groupType": "ecr::Registry",
                         "type": "Registry",
                         "group": "ecr",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "lambda-policy",
-                                "id": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                "providerName": "aws",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "PolicyName": "lambda-policy",
-                                    "PolicyId": "ANPA4HNBM2ZQIZNWGIHJG",
-                                    "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                    "Path": "/",
-                                    "DefaultVersionId": "v1",
-                                    "AttachmentCount": 1,
-                                    "PermissionsBoundaryUsageCount": 0,
-                                    "IsAttachable": true,
-                                    "Description": "Allow logs",
-                                    "CreateDate": "2021-08-15T17:15:44.000Z",
-                                    "UpdateDate": "2021-08-15T17:15:44.000Z",
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-policy"
-                                        }
-                                    ],
-                                    "EntitiesForPolicy": {
-                                        "PolicyGroups": [],
-                                        "PolicyUsers": [],
-                                        "PolicyRoles": [
-                                            {
-                                                "RoleName": "lambda-role",
-                                                "RoleId": "AROA4HNBM2ZQOFYMADF3N"
-                                            }
-                                        ]
-                                    },
-                                    "PolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Action": [
-                                                    "logs:*"
-                                                ],
-                                                "Effect": "Allow",
-                                                "Resource": "*"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "uri": "aws::iam::Policy::lambda-policy",
-                                "displayName": "lambda-policy",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            }
-                        ],
-                        "groupType": "iam::Policy",
-                        "type": "Policy",
-                        "group": "iam",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [
-                            {
-                                "group": "iam",
-                                "type": "Role",
-                                "name": "lambda-role",
-                                "id": "arn:aws:iam::840541460064:role/lambda-role",
-                                "providerName": "aws",
-                                "groupType": "iam::Role",
-                                "live": {
-                                    "Path": "/",
-                                    "RoleName": "lambda-role",
-                                    "RoleId": "AROA4HNBM2ZQOFYMADF3N",
-                                    "Arn": "arn:aws:iam::840541460064:role/lambda-role",
-                                    "CreateDate": "2021-08-15T17:15:47.000Z",
-                                    "AssumeRolePolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Sid": "",
-                                                "Effect": "Allow",
-                                                "Principal": {
-                                                    "Service": "lambda.amazonaws.com"
-                                                },
-                                                "Action": "sts:AssumeRole"
-                                            }
-                                        ]
-                                    },
-                                    "MaxSessionDuration": 3600,
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-role"
-                                        }
-                                    ],
-                                    "InstanceProfiles": [],
-                                    "Policies": [],
-                                    "AttachedPolicies": [
-                                        {
-                                            "PolicyName": "lambda-policy",
-                                            "PolicyArn": "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        }
-                                    ]
-                                },
-                                "uri": "aws::iam::Role::lambda-role",
-                                "displayName": "lambda-role",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "Policy",
-                                        "group": "iam",
-                                        "ids": [
-                                            "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "iam::Policy"
-                                    }
-                                ],
-                                "show": true
-                            }
-                        ],
-                        "groupType": "iam::Role",
-                        "type": "Role",
-                        "group": "iam",
                         "providerName": "aws"
                     },
                     {
@@ -1321,6 +1151,43 @@
                             {
                                 "group": "kms",
                                 "type": "Key",
+                                "name": "alias/aws/ssm",
+                                "id": "arn:aws:kms:eu-west-2:840541460064:key/8f748161-1263-458d-b75f-fa4825a00816",
+                                "providerName": "aws",
+                                "groupType": "kms::Key",
+                                "live": {
+                                    "AWSAccountId": "840541460064",
+                                    "KeyId": "8f748161-1263-458d-b75f-fa4825a00816",
+                                    "Arn": "arn:aws:kms:eu-west-2:840541460064:key/8f748161-1263-458d-b75f-fa4825a00816",
+                                    "CreationDate": "2021-08-16T01:06:45.692Z",
+                                    "Enabled": true,
+                                    "Description": "Default key that protects my SSM parameters when no other key is defined",
+                                    "KeyUsage": "ENCRYPT_DECRYPT",
+                                    "KeyState": "Enabled",
+                                    "Origin": "AWS_KMS",
+                                    "KeyManager": "AWS",
+                                    "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
+                                    "EncryptionAlgorithms": [
+                                        "SYMMETRIC_DEFAULT"
+                                    ],
+                                    "MultiRegion": false,
+                                    "Tags": [],
+                                    "Alias": "alias/aws/ssm"
+                                },
+                                "uri": "aws::kms::Key::alias/aws/ssm",
+                                "displayName": "alias/aws/ssm",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "kms",
+                                "type": "Key",
                                 "name": "eks-key",
                                 "id": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                 "providerName": "aws",
@@ -1330,10 +1197,11 @@
                                     "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "CreationDate": "2021-07-09T20:59:18.231Z",
-                                    "Enabled": true,
+                                    "Enabled": false,
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
-                                    "KeyState": "Enabled",
+                                    "KeyState": "PendingDeletion",
+                                    "DeletionDate": "2021-08-22T21:21:21.712Z",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -1366,7 +1234,7 @@
                                 },
                                 "uri": "aws::kms::Key::eks-key",
                                 "displayName": "eks-key",
-                                "cannotBeDeleted": false,
+                                "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
                                 "managedByOther": false,
@@ -1391,7 +1259,7 @@
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
                                     "KeyState": "PendingDeletion",
-                                    "DeletionDate": "2021-08-22T17:15:05.265Z",
+                                    "DeletionDate": "2021-08-23T03:14:38.070Z",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -1443,59 +1311,6 @@
                     {
                         "resources": [
                             {
-                                "group": "lambda",
-                                "type": "Layer",
-                                "name": "lambda-layer",
-                                "id": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer",
-                                "providerName": "aws",
-                                "groupType": "lambda::Layer",
-                                "live": {
-                                    "LayerVersionArn": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer:45",
-                                    "Version": 45,
-                                    "Description": "My Layer",
-                                    "CreatedDate": "2021-08-15T17:15:52.698+0000",
-                                    "CompatibleRuntimes": [
-                                        "nodejs"
-                                    ],
-                                    "LicenseInfo": null,
-                                    "LayerName": "lambda-layer",
-                                    "LayerArn": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer",
-                                    "Tags": {
-                                        "Name": "lambda-layer",
-                                        "gc-managed-by": "grucloud",
-                                        "gc-created-by-provider": "aws",
-                                        "gc-stage": "dev",
-                                        "gc-project-name": "lambda-nodejs-helloworld"
-                                    },
-                                    "Content": {
-                                        "Location": "https://awslambda-eu-west-2-layers.s3.eu-west-2.amazonaws.com/snapshots/840541460064/lambda-layer-526fda70-ef69-4a8c-a8b5-6f2b10b0ed6b?versionId=Asl2TJIEuegYWD9vmS1jxKqWXwaiJDAI&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECEaCWV1LXdlc3QtMiJHMEUCIQCYZIXvKdagkM5AO4aJz9YMSQG%2FCj2IVqjJ0%2F4%2FGArtQwIgbQC9LoQgjYsJO7WE7jxutZz54hAz0u40iT4meG%2Fu2Aoq%2BgMISRACGgw0NzIwMzg4NjQxODgiDHil4bxFMq7ANIejISrXA9rqse1d2EbYk0UCyHVdx1c7yG%2Ftg5pLYuBmC3OX%2FSh21vYi00Gk%2Fp%2FYP9b1yRsBHLKw0CcdZ4ihUtPkvVF%2FwVBAmDv6JFNW6PrrOK%2FHxHqy21f7LfWDclEVBK%2FeYorttUVoyl4icDZ3YTlMaFfBWgner4zmKoVPhsXXak6CMniFnQfudr2clF03a0xE0%2BLbJfVcC6XyXd83wovchBGWile7LZVAXSQZJkYtcC4h0P148wbukqbZLMixvH0sNL4GeMu2XFT9n0JlpE2UEDZ8t%2FwJX%2B7zuqUOTs4V%2BBiOt3iW0gvWeIz3TSrftoyu8ASgbEOm1WjwIcM6tf0tI6zxnEi9GkOITmEpZn1ksP9l5Qju5dE6TTXz%2BCx1OqXJMd7I6UK4m4u7rcAwRjaqSqfMtlk%2FZRp5LiPqWPgHhB2RcTUl8ATPgpAPfpgSkCP1rw1t4mDFk1yH2R7r9GhpV46QQr6aw7wU%2F%2FHx%2ByAjaKSuujzlBKbWjBBXVNby5ta5c0z%2Bt0RS0tr5T04O0EJ3ZY2qAdd3EMjA4LW2sB9GQxp5iOovwcnsW8kaSauH6AvWQ3Jc6enQ3caNLMmjnbr5CjvgAwi2iMYW%2Bpq0HlsQHaPfNWGRDxVWF0EMjDDF%2FOSIBjqlAdWwfFmZCAlLK6bJiXlCXiRVGMzjkQyixqbKbxl0yfFo4MqZ%2FTXsgkRTe0n%2FhxE2ijOD4GiSJBqBlL6dwiqv31%2FjkRFUj5oKz955TCn9kJRUNNY9dTtGoCZDeAiCYi2%2BO1a8GrRrfOBY08kDVPopGIaq5TAAeAkTqMgScW7UzVI9qQJ2LGqzAveBIf6vxmXFpgJg4LLq8IcEN1HsBtWsW4jIduf5dA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210815T173605Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAW3Z5VOU6E62ZDWU4%2F20210815%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=8c23610e09f1bdc3f2b7ea3d7d72e9a8bd1ea8d558c369abdffeeb743a215682",
-                                        "CodeSha256": "xPBdAsIXoKdpUX58Gif/F/XkRJwyGAITXz2YeKMd5xc=",
-                                        "CodeSize": 145,
-                                        "SigningProfileVersionArn": null,
-                                        "SigningJobArn": null,
-                                        "Data": "UEsDBBQAAAAIABN6A1MjDxReHwAAAB0AAAAIAAAAbGF5ZXIuanNLzs8rLlFITElRsFXQqNBRqNRUsLVTqFDQVqi05gIAUEsBAhQDFAAAAAgAE3oDUyMPFF4fAAAAHQAAAAgAAAAAAAAAAAAAAKSBAAAAAGxheWVyLmpzUEsFBgAAAAABAAEANgAAAEUAAAAAAA=="
-                                    }
-                                },
-                                "uri": "aws::lambda::Layer::lambda-layer",
-                                "displayName": "lambda-layer",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            }
-                        ],
-                        "groupType": "lambda::Layer",
-                        "type": "Layer",
-                        "group": "lambda",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [
-                            {
                                 "group": "route53Domain",
                                 "type": "Domain",
                                 "name": "grucloud.org",
@@ -1506,19 +1321,19 @@
                                     "DomainName": "grucloud.org",
                                     "Nameservers": [
                                         {
-                                            "Name": "ns-1043.awsdns-02.org",
+                                            "Name": "ns-550.awsdns-04.net",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-787.awsdns-34.net",
+                                            "Name": "ns-1675.awsdns-17.co.uk",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-2028.awsdns-61.co.uk",
+                                            "Name": "ns-453.awsdns-56.com",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-243.awsdns-30.com",
+                                            "Name": "ns-1227.awsdns-25.org",
                                             "GlueIps": []
                                         }
                                     ],

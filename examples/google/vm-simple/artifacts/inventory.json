@@ -24,12 +24,12 @@
                                 "group": "compute",
                                 "type": "Disk",
                                 "name": "web-server",
-                                "id": "5218779060522981901",
+                                "id": "7065561860467339183",
                                 "providerName": "google",
                                 "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "5218779060522981901",
-                                    "creationTimestamp": "2021-08-12T15:46:58.521-07:00",
+                                    "id": "7065561860467339183",
+                                    "creationTimestamp": "2021-08-15T15:12:16.625-07:00",
                                     "name": "web-server",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a",
@@ -55,7 +55,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-12T15:46:58.522-07:00",
+                                    "lastAttachTimestamp": "2021-08-15T15:12:16.626-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/instances/web-server"
                                     ],
@@ -433,12 +433,12 @@
                                 "group": "compute",
                                 "type": "VmInstance",
                                 "name": "web-server",
-                                "id": "3402041051462507021",
+                                "id": "4341204202705661871",
                                 "providerName": "google",
                                 "groupType": "compute::VmInstance",
                                 "live": {
-                                    "id": "3402041051462507021",
-                                    "creationTimestamp": "2021-08-12T15:46:58.511-07:00",
+                                    "id": "4341204202705661871",
+                                    "creationTimestamp": "2021-08-15T15:12:16.610-07:00",
                                     "name": "web-server",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -451,18 +451,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.0.17",
+                                            "networkIP": "10.164.0.31",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "34.147.102.118",
+                                                    "natIP": "34.90.105.118",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "TNbdA1WwdDM=",
+                                            "fingerprint": "1Vcs1Hcsoxo=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -547,8 +547,8 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "-C33-2CC2yw=",
-                                    "lastStartTimestamp": "2021-08-12T15:47:08.307-07:00",
+                                    "fingerprint": "L-pI6jZN6PE=",
+                                    "lastStartTimestamp": "2021-08-15T15:12:25.884-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "uri": "google::compute::VmInstance::web-server",

@@ -211,7 +211,7 @@ const associationIdString = ({
     }),
     () => resources,
     switchCase([
-      pipe([any(eq(get("id"), idTo)), get("show")]),
+      pipe([find(eq(get("id"), idTo)), get("show")]),
       pipe([
         () => ({
           nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom, nameFrom }),
@@ -270,6 +270,12 @@ const associationIdObject = ({
       logger.debug(``);
     }),
   ]);
+const getResourceByType = ({ resourcesPerType, groupType }) =>
+  pipe([
+    () => resourcesPerType,
+    find(eq(get("groupType"), groupType)),
+    get("resources"),
+  ])();
 
 const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
   pipe([
@@ -298,6 +304,8 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
           pipe([
             tap(() => {
               assert(dependency.type);
+              assert(dependency.groupType);
+
               assert(
                 Array.isArray(dependency.ids),
                 `no ids array in ${JSON.stringify({
@@ -318,18 +326,17 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                 (idTo) =>
                   pipe([
                     () => resourcesPerType,
-                    //TODO group
-                    find(eq(get("type"), dependency.type)),
+                    find(eq(get("groupType"), dependency.groupType)),
                     get("resources"),
                     find(eq(get("id"), idTo)),
                     tap.if(isEmpty, () => {
                       console.error(
-                        `no resource for id: ${idTo}, type: ${dependency.type}, from ${name}, type: ${type}`
+                        `no resource for id: ${idTo}, type: ${dependency.groupType}, from ${name}, type: ${type}`
                       );
                     }),
                     get("name"),
                     tap((name) => {
-                      //assert(name);
+                      assert(true);
                     }),
                     switchCase([
                       isEmpty,
@@ -344,15 +351,12 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                           nameTo,
                           namespace,
                           dependency,
-                          resources: pipe([
-                            () => resourcesPerType,
-                            //TODO group
-                            find(eq(get("type"), dependency.type)),
-                            get("resources"),
-                          ])(),
+                          resources: getResourceByType({
+                            resourcesPerType,
+                            groupType: dependency.groupType,
+                          }),
                         }),
                     ]),
-                    ,
                   ])(),
                 isObject,
                 (dependencyId) =>
@@ -363,11 +367,10 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                     namespaceFrom: namespace,
                     dependency,
                     dependencyId,
-                    resources: pipe([
-                      () => resourcesPerType,
-                      find(eq(get("type"), dependency.type)),
-                      get("resources"),
-                    ])(),
+                    resources: getResourceByType({
+                      resourcesPerType,
+                      groupType: dependency.groupType,
+                    }),
                   })(),
                 (dependencyId) => {
                   assert(

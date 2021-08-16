@@ -116,12 +116,10 @@ const createGoogle = async ({ createProvider }) => {
   const provider = createProvider(GoogleProvider, {
     config: require("./configGcp"),
   });
-  const { stage } = provider.config;
-  assert(stage, "missing stage");
 
   // Service Account
   const serviceAccount = provider.iam.makeServiceAccount({
-    name: `sa-${stage}`,
+    name: `sa`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",

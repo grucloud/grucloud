@@ -8,24 +8,6 @@ module.exports = ({ stage }) => ({
           Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
         },
       },
-      lambdaPolicy: {
-        name: "lambda-policy",
-        properties: {
-          PolicyName: "lambda-policy",
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: ["logs:*"],
-                Effect: "Allow",
-                Resource: "*",
-              },
-            ],
-          },
-          Path: "/",
-          Description: "Allow logs",
-        },
-      },
       myPolicyToGroup: {
         name: "myPolicy-to-group",
         properties: {
@@ -100,26 +82,6 @@ module.exports = ({ stage }) => ({
       },
     },
     Role: {
-      lambdaRole: {
-        name: "lambda-role",
-        properties: {
-          RoleName: "lambda-role",
-          Path: "/",
-          AssumeRolePolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Sid: "",
-                Effect: "Allow",
-                Principal: {
-                  Service: "lambda.amazonaws.com",
-                },
-                Action: "sts:AssumeRole",
-              },
-            ],
-          },
-        },
-      },
       roleAllowAssumeRole: {
         name: "role-allow-assume-role",
         properties: {

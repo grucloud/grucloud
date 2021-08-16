@@ -31,6 +31,7 @@ const {
   size,
   identity,
   unless,
+  when,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -65,7 +66,14 @@ exports.ResourceMaker = ({
       programOptions,
     })}`
   );
-  const getResourceName = () => resourceName;
+
+  const getResourceName = pipe([
+    () => resourceName,
+    when(isFunction, () => resourceName({ config: provider.getConfig() })),
+    tap((name) => {
+      assert(name, `resource name is empty for ${groupType}`);
+    }),
+  ]);
 
   const getDependencies = pipe([
     () => dependencies,

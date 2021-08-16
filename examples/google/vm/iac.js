@@ -3,14 +3,13 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const hook = require("./hook");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const { stage } = provider.config;
   // Allocate public Ip address
   const ip = provider.compute.makeAddress({
-    name: `ip-webserver-${stage}`,
+    name: `ip-webserver`,
   });
 
   const firewall22_80_433 = provider.compute.makeFirewall({
-    name: `firewall-22-80-433-${stage}`,
+    name: `firewall-22-80-433`,
     properties: () => ({
       allowed: [
         {
@@ -22,7 +21,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     }),
   });
   const firewallIcmp = provider.compute.makeFirewall({
-    name: `firewall-icmp-${stage}`,
+    name: `firewall-icmp`,
     properties: () => ({
       allowed: [
         {
@@ -34,7 +33,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   });
 
   const disk = provider.compute.makeDisk({
-    name: `disk-${stage}`,
+    name: `disk`,
     properties: () => ({
       sizeGb: "20",
     }),
@@ -42,7 +41,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 
   // Allocate a server
   const server = provider.compute.makeVmInstance({
-    name: `webserver-${stage}`,
+    name: `webserver`,
     dependencies: {
       //TODO broken with serviceAccount
       ip /*serviceAccount */,
@@ -77,11 +76,9 @@ exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(GoogleProvider, {
     config: require("./config"),
   });
-  const { stage } = provider.config;
-  assert(stage, "missing stage");
 
   const serviceAccount = provider.iam.makeServiceAccount({
-    name: `sa-${stage}`,
+    name: `sa`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",

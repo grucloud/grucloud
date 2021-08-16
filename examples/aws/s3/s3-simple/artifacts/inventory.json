@@ -3,12 +3,12 @@
     "commandOptions": {
         "graph": true,
         "title": "s3-simple",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/s3-simple/artifacts/diagram-live.dot"
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/s3/s3-simple/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
         "noOpen": true,
-        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/s3-simple"
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/s3/s3-simple"
     },
     "result": {
         "error": false,
@@ -29,7 +29,7 @@
                                 "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-simple-bucket",
-                                    "CreationDate": "2021-08-15T18:06:50.000Z",
+                                    "CreationDate": "2021-08-16T05:43:12.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -88,7 +88,7 @@
                                     "Bucket": "grucloud-simple-bucket",
                                     "Key": "grucloud-simple-file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-15T18:07:01.000Z",
+                                    "LastModified": "2021-08-16T05:43:23.000Z",
                                     "ContentLength": 1534,
                                     "ETag": "\"1968b6e7481dca64f74359aeea2935d2\"",
                                     "ContentType": "text/plain",
@@ -96,7 +96,30 @@
                                     "Metadata": {
                                         "md5hash": "GWi250gdymT3Q1mu6ik10g=="
                                     },
-                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1629051734&Signature=ewPg%2FR2GWNr7b8smklNySJ4OCvM%3D",
+                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1629093514&Signature=reoLHxDYNTfy4jz4%2BRXly6VgDsY%3D",
+                                    "ACL": {
+                                        "Grants": [
+                                            {
+                                                "Grantee": {
+                                                    "DisplayName": "frederic.heem",
+                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
+                                                    "Type": "CanonicalUser"
+                                                },
+                                                "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
+                                            }
+                                        ],
+                                        "Owner": {
+                                            "DisplayName": "frederic.heem",
+                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
+                                        }
+                                    },
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -126,30 +149,7 @@
                                             "Key": "Key2",
                                             "Value": "Value2"
                                         }
-                                    ],
-                                    "ACL": {
-                                        "Grants": [
-                                            {
-                                                "Grantee": {
-                                                    "DisplayName": "frederic.heem",
-                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
-                                                    "Type": "CanonicalUser"
-                                                },
-                                                "Permission": "FULL_CONTROL"
-                                            },
-                                            {
-                                                "Grantee": {
-                                                    "Type": "Group",
-                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
-                                                },
-                                                "Permission": "READ"
-                                            }
-                                        ],
-                                        "Owner": {
-                                            "DisplayName": "frederic.heem",
-                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
-                                        }
-                                    }
+                                    ]
                                 },
                                 "uri": "aws::s3::Object::grucloud-simple-file-test",
                                 "displayName": "grucloud-simple-file-test",

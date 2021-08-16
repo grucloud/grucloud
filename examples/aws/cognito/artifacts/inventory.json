@@ -7,6 +7,7 @@
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
+        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/cognito"
     },
     "result": {
@@ -23,11 +24,11 @@
                                 "group": "cognitoIdentityServiceProvider",
                                 "type": "UserPool",
                                 "name": "userpool-test",
-                                "id": "eu-west-2_TVUQYWOBw",
+                                "id": "eu-west-2_tcR7wBftR",
                                 "providerName": "aws",
                                 "groupType": "cognitoIdentityServiceProvider::UserPool",
                                 "live": {
-                                    "Id": "eu-west-2_TVUQYWOBw",
+                                    "Id": "eu-west-2_tcR7wBftR",
                                     "Name": "userpool-test",
                                     "Policies": {
                                         "PasswordPolicy": {
@@ -40,8 +41,8 @@
                                         }
                                     },
                                     "LambdaConfig": {},
-                                    "LastModifiedDate": "2021-08-11T16:12:02.751Z",
-                                    "CreationDate": "2021-08-11T16:12:02.751Z",
+                                    "LastModifiedDate": "2021-08-16T04:56:19.520Z",
+                                    "CreationDate": "2021-08-16T04:56:19.520Z",
                                     "SchemaAttributes": [
                                         {
                                             "Name": "sub",
@@ -274,7 +275,7 @@
                                         "AllowAdminCreateUserOnly": false,
                                         "UnusedAccountValidityDays": 7
                                     },
-                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_TVUQYWOBw"
+                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_tcR7wBftR"
                                 },
                                 "uri": "aws::cognitoIdentityServiceProvider::UserPool::userpool-test",
                                 "displayName": "userpool-test",

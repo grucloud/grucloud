@@ -28,13 +28,13 @@
                                 "group": "route53",
                                 "type": "HostedZone",
                                 "name": "grucloud.org.",
-                                "id": "/hostedzone/Z06480632AGTNI5JGTOSR",
+                                "id": "/hostedzone/Z033732631G192IZLH1ZD",
                                 "providerName": "aws",
                                 "groupType": "route53::HostedZone",
                                 "live": {
-                                    "Id": "/hostedzone/Z06480632AGTNI5JGTOSR",
+                                    "Id": "/hostedzone/Z033732631G192IZLH1ZD",
                                     "Name": "grucloud.org.",
-                                    "CallerReference": "grucloud-Sun Aug 15 2021 15:05:12 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Mon Aug 16 2021 02:41:43 GMT-0300 (Brasilia Standard Time)",
                                     "Config": {
                                         "PrivateZone": false
                                     },
@@ -46,16 +46,16 @@
                                             "TTL": 172800,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-1383.awsdns-44.org."
+                                                    "Value": "ns-774.awsdns-32.net."
                                                 },
                                                 {
-                                                    "Value": "ns-292.awsdns-36.com."
+                                                    "Value": "ns-1920.awsdns-48.co.uk."
                                                 },
                                                 {
-                                                    "Value": "ns-1711.awsdns-21.co.uk."
+                                                    "Value": "ns-13.awsdns-01.com."
                                                 },
                                                 {
-                                                    "Value": "ns-591.awsdns-09.net."
+                                                    "Value": "ns-1178.awsdns-19.org."
                                                 }
                                             ]
                                         },
@@ -65,7 +65,7 @@
                                             "TTL": 900,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-1383.awsdns-44.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                    "Value": "ns-774.awsdns-32.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                                 }
                                             ]
                                         },
@@ -139,19 +139,19 @@
                                     "TTL": 172800,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-1383.awsdns-44.org."
+                                            "Value": "ns-774.awsdns-32.net."
                                         },
                                         {
-                                            "Value": "ns-292.awsdns-36.com."
+                                            "Value": "ns-1920.awsdns-48.co.uk."
                                         },
                                         {
-                                            "Value": "ns-1711.awsdns-21.co.uk."
+                                            "Value": "ns-13.awsdns-01.com."
                                         },
                                         {
-                                            "Value": "ns-591.awsdns-09.net."
+                                            "Value": "ns-1178.awsdns-19.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR"
+                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD"
                                 },
                                 "uri": "aws::route53::Record::grucloud.org.::NS",
                                 "displayName": "grucloud.org.::NS",
@@ -166,7 +166,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
+                                            "/hostedzone/Z033732631G192IZLH1ZD"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -187,10 +187,10 @@
                                     "TTL": 900,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-1383.awsdns-44.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                            "Value": "ns-774.awsdns-32.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR"
+                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD"
                                 },
                                 "uri": "aws::route53::Record::grucloud.org.::SOA",
                                 "displayName": "grucloud.org.::SOA",
@@ -205,7 +205,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
+                                            "/hostedzone/Z033732631G192IZLH1ZD"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -255,7 +255,7 @@
                                             "Value": "grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z06480632AGTNI5JGTOSR",
+                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD",
                                     "namespace": ""
                                 },
                                 "uri": "aws::route53::Record::txt.grucloud.org.",
@@ -271,7 +271,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z06480632AGTNI5JGTOSR"
+                                            "/hostedzone/Z033732631G192IZLH1ZD"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"

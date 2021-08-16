@@ -73,7 +73,7 @@
                                     "registryId": "840541460064",
                                     "repositoryName": "starhackit/lb",
                                     "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
-                                    "createdAt": "2021-08-15T17:34:42.000Z",
+                                    "createdAt": "2021-08-16T05:15:31.000Z",
                                     "imageTagMutability": "MUTABLE",
                                     "imageScanningConfiguration": {
                                         "scanOnPush": false
@@ -98,27 +98,6 @@
                                             }
                                         ]
                                     },
-                                    "policyText": {
-                                        "Version": "2008-10-17",
-                                        "Statement": [
-                                            {
-                                                "Sid": "AllowPushPull",
-                                                "Effect": "Allow",
-                                                "Principal": {
-                                                    "AWS": "arn:aws:iam::840541460064:root"
-                                                },
-                                                "Action": [
-                                                    "ecr:GetDownloadUrlForLayer",
-                                                    "ecr:BatchGetImage",
-                                                    "ecr:BatchCheckLayerAvailability",
-                                                    "ecr:PutImage",
-                                                    "ecr:InitiateLayerUpload",
-                                                    "ecr:UploadLayerPart",
-                                                    "ecr:CompleteLayerUpload"
-                                                ]
-                                            }
-                                        ]
-                                    },
                                     "tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -140,7 +119,28 @@
                                             "Key": "Name",
                                             "Value": "starhackit/lb"
                                         }
-                                    ]
+                                    ],
+                                    "policyText": {
+                                        "Version": "2008-10-17",
+                                        "Statement": [
+                                            {
+                                                "Sid": "AllowPushPull",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "AWS": "arn:aws:iam::840541460064:root"
+                                                },
+                                                "Action": [
+                                                    "ecr:GetDownloadUrlForLayer",
+                                                    "ecr:BatchGetImage",
+                                                    "ecr:BatchCheckLayerAvailability",
+                                                    "ecr:PutImage",
+                                                    "ecr:InitiateLayerUpload",
+                                                    "ecr:UploadLayerPart",
+                                                    "ecr:CompleteLayerUpload"
+                                                ]
+                                            }
+                                        ]
+                                    }
                                 },
                                 "uri": "aws::ecr::Repository::starhackit/lb",
                                 "displayName": "starhackit/lb",

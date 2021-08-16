@@ -1,0 +1,353 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "graphql",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/appSync/graphql/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/appSync/graphql"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "appSync",
+                                "type": "ApiKey",
+                                "name": "da2-wbuvlxl5cfapbifytstbzthsxy",
+                                "id": "da2-eluddi44gbfqzlwt5roevsd65q",
+                                "providerName": "aws",
+                                "groupType": "appSync::ApiKey",
+                                "live": {
+                                    "id": "da2-eluddi44gbfqzlwt5roevsd65q",
+                                    "description": null,
+                                    "expires": 1629554400,
+                                    "deletes": 1634738400,
+                                    "apiId": "52koq54wabfttluatolj4wa654",
+                                    "tags": {
+                                        "gc-project-name": "aws-appsync-graphql",
+                                        "gc-data-source-datasource": "datasource",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "da2-wbuvlxl5cfapbifytstbzthsxy"
+                                    }
+                                },
+                                "uri": "aws::appSync::ApiKey::da2-wbuvlxl5cfapbifytstbzthsxy",
+                                "displayName": "da2-wbuvlxl5cfapbifytstbzthsxy",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "GraphqlApi",
+                                        "group": "appSync",
+                                        "ids": [
+                                            "52koq54wabfttluatolj4wa654"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "appSync::GraphqlApi"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "appSync::ApiKey",
+                        "type": "ApiKey",
+                        "group": "appSync",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "appSync",
+                                "type": "DataSource",
+                                "name": "datasource",
+                                "id": "arn:aws:appsync:eu-west-2:840541460064:apis/52koq54wabfttluatolj4wa654/datasources/datasource",
+                                "providerName": "aws",
+                                "groupType": "appSync::DataSource",
+                                "live": {
+                                    "dataSourceArn": "arn:aws:appsync:eu-west-2:840541460064:apis/52koq54wabfttluatolj4wa654/datasources/datasource",
+                                    "name": "datasource",
+                                    "description": "Data source created by the console.",
+                                    "type": "NONE",
+                                    "serviceRoleArn": null,
+                                    "apiId": "52koq54wabfttluatolj4wa654",
+                                    "tags": {
+                                        "gc-api-key-da2-eluddi44gbfqzlwt5roevsd65q": "da2-wbuvlxl5cfapbifytstbzthsxy",
+                                        "gc-project-name": "aws-appsync-graphql",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "My AppSync App",
+                                        "name": "datasource"
+                                    }
+                                },
+                                "uri": "aws::appSync::DataSource::datasource",
+                                "displayName": "datasource",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "GraphqlApi",
+                                        "group": "appSync",
+                                        "ids": [
+                                            "52koq54wabfttluatolj4wa654"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "appSync::GraphqlApi"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "appSync::DataSource",
+                        "type": "DataSource",
+                        "group": "appSync",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "appSync",
+                                "type": "GraphqlApi",
+                                "name": "My AppSync App",
+                                "id": "52koq54wabfttluatolj4wa654",
+                                "providerName": "aws",
+                                "groupType": "appSync::GraphqlApi",
+                                "live": {
+                                    "name": "My AppSync App",
+                                    "apiId": "52koq54wabfttluatolj4wa654",
+                                    "authenticationType": "API_KEY",
+                                    "arn": "arn:aws:appsync:eu-west-2:840541460064:apis/52koq54wabfttluatolj4wa654",
+                                    "uris": {
+                                        "REALTIME": "wss://kegh6iwjnrddhjnziwdopw7mlu.appsync-realtime-api.eu-west-2.amazonaws.com/graphql",
+                                        "GRAPHQL": "https://kegh6iwjnrddhjnziwdopw7mlu.appsync-api.eu-west-2.amazonaws.com/graphql"
+                                    },
+                                    "tags": {
+                                        "gc-api-key-da2-eluddi44gbfqzlwt5roevsd65q": "da2-wbuvlxl5cfapbifytstbzthsxy",
+                                        "gc-project-name": "aws-appsync-graphql",
+                                        "gc-data-source-datasource": "datasource",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-stage": "dev",
+                                        "gc-created-by-provider": "aws",
+                                        "Name": "My AppSync App"
+                                    },
+                                    "xrayEnabled": false,
+                                    "wafWebAclArn": null
+                                },
+                                "uri": "aws::appSync::GraphqlApi::My AppSync App",
+                                "displayName": "My AppSync App",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "appSync::GraphqlApi",
+                        "type": "GraphqlApi",
+                        "group": "appSync",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "iam",
+                                "type": "Policy",
+                                "name": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "id": "arn:aws:iam::840541460064:policy/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "providerName": "aws",
+                                "groupType": "iam::Policy",
+                                "live": {
+                                    "PolicyName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                    "PolicyId": "ANPA4HNBM2ZQHEHQ2OAYP",
+                                    "Arn": "arn:aws:iam::840541460064:policy/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                    "Path": "/service-role/",
+                                    "DefaultVersionId": "v1",
+                                    "AttachmentCount": 1,
+                                    "PermissionsBoundaryUsageCount": 0,
+                                    "IsAttachable": true,
+                                    "CreateDate": "2021-08-16T04:55:37.000Z",
+                                    "UpdateDate": "2021-08-16T04:55:37.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "aws-appsync-graphql"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable"
+                                        }
+                                    ],
+                                    "EntitiesForPolicy": {
+                                        "PolicyGroups": [],
+                                        "PolicyUsers": [],
+                                        "PolicyRoles": [
+                                            {
+                                                "RoleName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                                "RoleId": "AROA4HNBM2ZQPHF4W237X"
+                                            }
+                                        ]
+                                    },
+                                    "PolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Effect": "Allow",
+                                                "Action": [
+                                                    "dynamodb:DeleteItem",
+                                                    "dynamodb:GetItem",
+                                                    "dynamodb:PutItem",
+                                                    "dynamodb:Query",
+                                                    "dynamodb:Scan",
+                                                    "dynamodb:UpdateItem"
+                                                ],
+                                                "Resource": [
+                                                    "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable",
+                                                    "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable/*"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::iam::Policy::appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "displayName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Policy",
+                        "type": "Policy",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "iam",
+                                "type": "Role",
+                                "name": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "id": "arn:aws:iam::840541460064:role/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "providerName": "aws",
+                                "groupType": "iam::Role",
+                                "live": {
+                                    "Path": "/service-role/",
+                                    "RoleName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                    "RoleId": "AROA4HNBM2ZQPHF4W237X",
+                                    "Arn": "arn:aws:iam::840541460064:role/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                    "CreateDate": "2021-08-16T04:55:39.000Z",
+                                    "AssumeRolePolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "Service": "appsync.amazonaws.com"
+                                                },
+                                                "Action": "sts:AssumeRole"
+                                            }
+                                        ]
+                                    },
+                                    "MaxSessionDuration": 3600,
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "aws-appsync-graphql"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable"
+                                        }
+                                    ],
+                                    "AttachedPolicies": [
+                                        {
+                                            "PolicyName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                            "PolicyArn": "arn:aws:iam::840541460064:policy/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable"
+                                        }
+                                    ],
+                                    "Policies": [],
+                                    "InstanceProfiles": []
+                                },
+                                "uri": "aws::iam::Role::appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "displayName": "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Policy",
+                                        "group": "iam",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:policy/service-role/appsync-ds-ddb-kq4yge-MyModelTypeDemoTable"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "iam::Policy"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Role",
+                        "type": "Role",
+                        "group": "iam",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

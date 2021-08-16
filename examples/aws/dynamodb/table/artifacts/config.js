@@ -17,7 +17,16 @@ module.exports = ({ stage }) => ({
               KeyType: "HASH",
             },
           ],
-          BillingMode: "PAY_PER_REQUEST",
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5,
+          },
+          Tags: [
+            {
+              Key: "TOTOKEY",
+              Value: "TOTO",
+            },
+          ],
         },
       },
     },

@@ -24,15 +24,15 @@
                                 "group": "compute",
                                 "type": "Address",
                                 "name": "ip-webserver-ssh-keys",
-                                "id": "2757762151374920539",
+                                "id": "8128262285621996797",
                                 "providerName": "google",
                                 "groupType": "compute::Address",
                                 "live": {
-                                    "id": "2757762151374920539",
-                                    "creationTimestamp": "2021-08-12T15:50:28.150-07:00",
+                                    "id": "8128262285621996797",
+                                    "creationTimestamp": "2021-08-15T15:15:46.176-07:00",
                                     "name": "ip-webserver-ssh-keys",
                                     "description": "Managed By GruCloud",
-                                    "address": "35.204.137.126",
+                                    "address": "34.147.109.20",
                                     "status": "IN_USE",
                                     "region": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/addresses/ip-webserver-ssh-keys",
@@ -66,12 +66,12 @@
                                 "group": "compute",
                                 "type": "Disk",
                                 "name": "webserver-ssh-keys",
-                                "id": "2718265206919142191",
+                                "id": "6629901242912222458",
                                 "providerName": "google",
                                 "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "2718265206919142191",
-                                    "creationTimestamp": "2021-08-12T15:50:41.282-07:00",
+                                    "id": "6629901242912222458",
+                                    "creationTimestamp": "2021-08-15T15:15:49.756-07:00",
                                     "name": "webserver-ssh-keys",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a",
@@ -97,7 +97,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-12T15:50:41.282-07:00",
+                                    "lastAttachTimestamp": "2021-08-15T15:15:49.757-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-ssh-keys"
                                     ],
@@ -131,12 +131,12 @@
                                 "group": "compute",
                                 "type": "Firewall",
                                 "name": "firewall-22",
-                                "id": "9183359532036266843",
+                                "id": "2232344396734672125",
                                 "providerName": "google",
                                 "groupType": "compute::Firewall",
                                 "live": {
-                                    "id": "9183359532036266843",
-                                    "creationTimestamp": "2021-08-12T15:50:28.400-07:00",
+                                    "id": "2232344396734672125",
+                                    "creationTimestamp": "2021-08-15T15:15:46.208-07:00",
                                     "name": "firewall-22",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
@@ -184,12 +184,12 @@
                                 "group": "compute",
                                 "type": "Firewall",
                                 "name": "firewall-icmp",
-                                "id": "7427845409901910875",
+                                "id": "2847299630947118333",
                                 "providerName": "google",
                                 "groupType": "compute::Firewall",
                                 "live": {
-                                    "id": "7427845409901910875",
-                                    "creationTimestamp": "2021-08-12T15:50:28.080-07:00",
+                                    "id": "2847299630947118333",
+                                    "creationTimestamp": "2021-08-15T15:15:46.193-07:00",
                                     "name": "firewall-icmp",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
@@ -361,12 +361,12 @@
                                 "group": "compute",
                                 "type": "VmInstance",
                                 "name": "webserver-ssh-keys",
-                                "id": "3577508568791259951",
+                                "id": "2438833234481786106",
                                 "providerName": "google",
                                 "groupType": "compute::VmInstance",
                                 "live": {
-                                    "id": "3577508568791259951",
-                                    "creationTimestamp": "2021-08-12T15:50:41.275-07:00",
+                                    "id": "2438833234481786106",
+                                    "creationTimestamp": "2021-08-15T15:15:49.742-07:00",
                                     "name": "webserver-ssh-keys",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -379,18 +379,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.15.206",
+                                            "networkIP": "10.164.0.21",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "35.204.137.126",
+                                                    "natIP": "34.147.109.20",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "FyvxgeQqo5U=",
+                                            "fingerprint": "hAJRAZkroZU=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -475,8 +475,8 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "UmSnpaT6rRQ=",
-                                    "lastStartTimestamp": "2021-08-12T15:50:51.965-07:00",
+                                    "fingerprint": "rqMdZXnw-v4=",
+                                    "lastStartTimestamp": "2021-08-15T15:15:57.951-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "uri": "google::compute::VmInstance::webserver-ssh-keys",

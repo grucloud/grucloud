@@ -3,12 +3,12 @@
     "commandOptions": {
         "graph": true,
         "title": "iam",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/iam/artifacts/diagram-live.dot"
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/iam/iam/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
         "noOpen": true,
-        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/iam"
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/iam/iam"
     },
     "result": {
         "error": false,
@@ -106,15 +106,15 @@
                                 "group": "ec2",
                                 "type": "Instance",
                                 "name": "web-iam",
-                                "id": "i-09261131393fbd59a",
+                                "id": "i-03f4f3e9be9306069",
                                 "providerName": "aws",
                                 "groupType": "ec2::Instance",
                                 "live": {
                                     "AmiLaunchIndex": 0,
                                     "ImageId": "ami-084a1f89b0bb0f729",
-                                    "InstanceId": "i-09261131393fbd59a",
+                                    "InstanceId": "i-03f4f3e9be9306069",
                                     "InstanceType": "t2.micro",
-                                    "LaunchTime": "2021-08-15T17:39:06.000Z",
+                                    "LaunchTime": "2021-08-16T05:20:12.000Z",
                                     "Monitoring": {
                                         "State": "disabled"
                                     },
@@ -123,11 +123,11 @@
                                         "GroupName": "",
                                         "Tenancy": "default"
                                     },
-                                    "PrivateDnsName": "ip-172-31-9-118.eu-west-2.compute.internal",
-                                    "PrivateIpAddress": "172.31.9.118",
+                                    "PrivateDnsName": "ip-172-31-14-56.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "172.31.14.56",
                                     "ProductCodes": [],
-                                    "PublicDnsName": "ec2-18-170-225-30.eu-west-2.compute.amazonaws.com",
-                                    "PublicIpAddress": "18.170.225.30",
+                                    "PublicDnsName": "ec2-35-177-133-240.eu-west-2.compute.amazonaws.com",
+                                    "PublicIpAddress": "35.177.133.240",
                                     "State": {
                                         "Code": 16,
                                         "Name": "running"
@@ -140,20 +140,20 @@
                                         {
                                             "DeviceName": "/dev/xvda",
                                             "Ebs": {
-                                                "AttachTime": "2021-08-15T17:39:07.000Z",
+                                                "AttachTime": "2021-08-16T05:20:13.000Z",
                                                 "DeleteOnTermination": true,
                                                 "Status": "attached",
-                                                "VolumeId": "vol-008abd8182ad21a83"
+                                                "VolumeId": "vol-098df1f50d486e880"
                                             }
                                         }
                                     ],
-                                    "ClientToken": "0ef99dae-ca9c-4a55-935f-1593c614c13b",
+                                    "ClientToken": "fa49acc3-6699-42e0-9526-96e60708165c",
                                     "EbsOptimized": false,
                                     "EnaSupport": true,
                                     "Hypervisor": "xen",
                                     "IamInstanceProfile": {
                                         "Arn": "arn:aws:iam::840541460064:instance-profile/my-profile",
-                                        "Id": "AIPA4HNBM2ZQMEJ47TMQ5"
+                                        "Id": "AIPA4HNBM2ZQLUCHS7CGH"
                                     },
                                     "ElasticGpuAssociations": [],
                                     "ElasticInferenceAcceleratorAssociations": [],
@@ -161,12 +161,12 @@
                                         {
                                             "Association": {
                                                 "IpOwnerId": "amazon",
-                                                "PublicDnsName": "ec2-18-170-225-30.eu-west-2.compute.amazonaws.com",
-                                                "PublicIp": "18.170.225.30"
+                                                "PublicDnsName": "ec2-35-177-133-240.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "35.177.133.240"
                                             },
                                             "Attachment": {
-                                                "AttachTime": "2021-08-15T17:39:06.000Z",
-                                                "AttachmentId": "eni-attach-0310f513e48bc88b2",
+                                                "AttachTime": "2021-08-16T05:20:12.000Z",
+                                                "AttachmentId": "eni-attach-0dcc04212440d82cb",
                                                 "DeleteOnTermination": true,
                                                 "DeviceIndex": 0,
                                                 "Status": "attached",
@@ -180,21 +180,21 @@
                                                 }
                                             ],
                                             "Ipv6Addresses": [],
-                                            "MacAddress": "06:5d:04:32:b8:3e",
-                                            "NetworkInterfaceId": "eni-004f9d912f1fef6dd",
+                                            "MacAddress": "06:aa:3b:e8:13:a2",
+                                            "NetworkInterfaceId": "eni-0db06d2c4c8658ff2",
                                             "OwnerId": "840541460064",
-                                            "PrivateDnsName": "ip-172-31-9-118.eu-west-2.compute.internal",
-                                            "PrivateIpAddress": "172.31.9.118",
+                                            "PrivateDnsName": "ip-172-31-14-56.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "172.31.14.56",
                                             "PrivateIpAddresses": [
                                                 {
                                                     "Association": {
                                                         "IpOwnerId": "amazon",
-                                                        "PublicDnsName": "ec2-18-170-225-30.eu-west-2.compute.amazonaws.com",
-                                                        "PublicIp": "18.170.225.30"
+                                                        "PublicDnsName": "ec2-35-177-133-240.eu-west-2.compute.amazonaws.com",
+                                                        "PublicIp": "35.177.133.240"
                                                     },
                                                     "Primary": true,
-                                                    "PrivateDnsName": "ip-172-31-9-118.eu-west-2.compute.internal",
-                                                    "PrivateIpAddress": "172.31.9.118"
+                                                    "PrivateDnsName": "ip-172-31-14-56.eu-west-2.compute.internal",
+                                                    "PrivateIpAddress": "172.31.14.56"
                                                 }
                                             ],
                                             "SourceDestCheck": true,
@@ -299,7 +299,7 @@
                                         "type": "Volume",
                                         "group": "ec2",
                                         "ids": [
-                                            "vol-008abd8182ad21a83"
+                                            "vol-098df1f50d486e880"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Volume"
@@ -308,7 +308,7 @@
                                         "type": "NetworkInterface",
                                         "group": "ec2",
                                         "ids": [
-                                            "eni-004f9d912f1fef6dd"
+                                            "eni-0db06d2c4c8658ff2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NetworkInterface"
@@ -397,23 +397,23 @@
                             {
                                 "group": "ec2",
                                 "type": "NetworkInterface",
-                                "name": "eni-004f9d912f1fef6dd",
-                                "id": "eni-004f9d912f1fef6dd",
+                                "name": "eni-0db06d2c4c8658ff2",
+                                "id": "eni-0db06d2c4c8658ff2",
                                 "providerName": "aws",
                                 "groupType": "ec2::NetworkInterface",
                                 "live": {
                                     "Association": {
                                         "IpOwnerId": "amazon",
-                                        "PublicDnsName": "ec2-18-170-225-30.eu-west-2.compute.amazonaws.com",
-                                        "PublicIp": "18.170.225.30"
+                                        "PublicDnsName": "ec2-35-177-133-240.eu-west-2.compute.amazonaws.com",
+                                        "PublicIp": "35.177.133.240"
                                     },
                                     "Attachment": {
-                                        "AttachTime": "2021-08-15T17:39:06.000Z",
-                                        "AttachmentId": "eni-attach-0310f513e48bc88b2",
+                                        "AttachTime": "2021-08-16T05:20:12.000Z",
+                                        "AttachmentId": "eni-attach-0dcc04212440d82cb",
                                         "DeleteOnTermination": true,
                                         "DeviceIndex": 0,
                                         "NetworkCardIndex": 0,
-                                        "InstanceId": "i-09261131393fbd59a",
+                                        "InstanceId": "i-03f4f3e9be9306069",
                                         "InstanceOwnerId": "840541460064",
                                         "Status": "attached"
                                     },
@@ -427,21 +427,21 @@
                                     ],
                                     "InterfaceType": "interface",
                                     "Ipv6Addresses": [],
-                                    "MacAddress": "06:5d:04:32:b8:3e",
-                                    "NetworkInterfaceId": "eni-004f9d912f1fef6dd",
+                                    "MacAddress": "06:aa:3b:e8:13:a2",
+                                    "NetworkInterfaceId": "eni-0db06d2c4c8658ff2",
                                     "OwnerId": "840541460064",
-                                    "PrivateDnsName": "ip-172-31-9-118.eu-west-2.compute.internal",
-                                    "PrivateIpAddress": "172.31.9.118",
+                                    "PrivateDnsName": "ip-172-31-14-56.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "172.31.14.56",
                                     "PrivateIpAddresses": [
                                         {
                                             "Association": {
                                                 "IpOwnerId": "amazon",
-                                                "PublicDnsName": "ec2-18-170-225-30.eu-west-2.compute.amazonaws.com",
-                                                "PublicIp": "18.170.225.30"
+                                                "PublicDnsName": "ec2-35-177-133-240.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "35.177.133.240"
                                             },
                                             "Primary": true,
-                                            "PrivateDnsName": "ip-172-31-9-118.eu-west-2.compute.internal",
-                                            "PrivateIpAddress": "172.31.9.118"
+                                            "PrivateDnsName": "ip-172-31-14-56.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "172.31.14.56"
                                         }
                                     ],
                                     "Ipv4Prefixes": [],
@@ -453,8 +453,8 @@
                                     "TagSet": [],
                                     "VpcId": "vpc-bbbafcd3"
                                 },
-                                "uri": "aws::ec2::NetworkInterface::eni-004f9d912f1fef6dd",
-                                "displayName": "eni-004f9d912f1fef6dd",
+                                "uri": "aws::ec2::NetworkInterface::eni-0db06d2c4c8658ff2",
+                                "displayName": "eni-0db06d2c4c8658ff2",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": false,
                                 "managedByUs": false,
@@ -636,34 +636,34 @@
                             {
                                 "group": "ec2",
                                 "type": "Volume",
-                                "name": "vol-008abd8182ad21a83",
-                                "id": "vol-008abd8182ad21a83",
+                                "name": "vol-098df1f50d486e880",
+                                "id": "vol-098df1f50d486e880",
                                 "providerName": "aws",
                                 "groupType": "ec2::Volume",
                                 "live": {
                                     "Attachments": [
                                         {
-                                            "AttachTime": "2021-08-15T17:39:07.000Z",
+                                            "AttachTime": "2021-08-16T05:20:13.000Z",
                                             "Device": "/dev/xvda",
-                                            "InstanceId": "i-09261131393fbd59a",
+                                            "InstanceId": "i-03f4f3e9be9306069",
                                             "State": "attached",
-                                            "VolumeId": "vol-008abd8182ad21a83",
+                                            "VolumeId": "vol-098df1f50d486e880",
                                             "DeleteOnTermination": true
                                         }
                                     ],
                                     "AvailabilityZone": "eu-west-2a",
-                                    "CreateTime": "2021-08-15T17:39:07.231Z",
+                                    "CreateTime": "2021-08-16T05:20:13.265Z",
                                     "Encrypted": false,
                                     "Size": 2,
                                     "SnapshotId": "snap-02c00d4090f949407",
                                     "State": "in-use",
-                                    "VolumeId": "vol-008abd8182ad21a83",
+                                    "VolumeId": "vol-098df1f50d486e880",
                                     "Tags": [],
                                     "VolumeType": "standard",
                                     "MultiAttachEnabled": false
                                 },
-                                "uri": "aws::ec2::Volume::vol-008abd8182ad21a83",
-                                "displayName": "vol-008abd8182ad21a83",
+                                "uri": "aws::ec2::Volume::vol-098df1f50d486e880",
+                                "displayName": "vol-098df1f50d486e880",
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
@@ -712,8 +712,8 @@
                                             "Value": "Default"
                                         }
                                     ],
-                                    "DnsSupport": true,
-                                    "DnsHostnames": true
+                                    "DnsHostnames": true,
+                                    "DnsSupport": true
                                 },
                                 "uri": "aws::ec2::Vpc::vpc-default",
                                 "displayName": "vpc-default",
@@ -744,9 +744,9 @@
                                 "live": {
                                     "Path": "/",
                                     "GroupName": "Admin",
-                                    "GroupId": "AGPA4HNBM2ZQHTTYMYBRE",
+                                    "GroupId": "AGPA4HNBM2ZQMM3MRFBAB",
                                     "Arn": "arn:aws:iam::840541460064:group/Admin",
-                                    "CreateDate": "2021-08-15T17:38:49.000Z",
+                                    "CreateDate": "2021-08-16T05:19:55.000Z",
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "myPolicy-to-group",
@@ -793,16 +793,16 @@
                                 "live": {
                                     "Path": "/",
                                     "InstanceProfileName": "my-profile",
-                                    "InstanceProfileId": "AIPA4HNBM2ZQMEJ47TMQ5",
+                                    "InstanceProfileId": "AIPA4HNBM2ZQLUCHS7CGH",
                                     "Arn": "arn:aws:iam::840541460064:instance-profile/my-profile",
-                                    "CreateDate": "2021-08-15T17:38:51.000Z",
+                                    "CreateDate": "2021-08-16T05:19:57.000Z",
                                     "Roles": [
                                         {
                                             "Path": "/",
                                             "RoleName": "role-allow-assume-role",
-                                            "RoleId": "AROA4HNBM2ZQPMW5GON7C",
+                                            "RoleId": "AROA4HNBM2ZQCSCTZYVEN",
                                             "Arn": "arn:aws:iam::840541460064:role/role-allow-assume-role",
-                                            "CreateDate": "2021-08-15T17:38:49.000Z",
+                                            "CreateDate": "2021-08-16T05:19:55.000Z",
                                             "AssumeRolePolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Sid%22%3A%22%22%2C%22Effect%22%3A%22Allow%22%2C%22Principal%22%3A%7B%22Service%22%3A%22ec2.amazonaws.com%22%7D%2C%22Action%22%3A%22sts%3AAssumeRole%22%7D%5D%7D",
                                             "Tags": []
                                         }
@@ -903,88 +903,13 @@
                             {
                                 "group": "iam",
                                 "type": "Policy",
-                                "name": "lambda-policy",
-                                "id": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                "providerName": "aws",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "PolicyName": "lambda-policy",
-                                    "PolicyId": "ANPA4HNBM2ZQIZNWGIHJG",
-                                    "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                    "Path": "/",
-                                    "DefaultVersionId": "v1",
-                                    "AttachmentCount": 1,
-                                    "PermissionsBoundaryUsageCount": 0,
-                                    "IsAttachable": true,
-                                    "Description": "Allow logs",
-                                    "CreateDate": "2021-08-15T17:15:44.000Z",
-                                    "UpdateDate": "2021-08-15T17:15:44.000Z",
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-policy"
-                                        }
-                                    ],
-                                    "EntitiesForPolicy": {
-                                        "PolicyGroups": [],
-                                        "PolicyUsers": [],
-                                        "PolicyRoles": [
-                                            {
-                                                "RoleName": "lambda-role",
-                                                "RoleId": "AROA4HNBM2ZQOFYMADF3N"
-                                            }
-                                        ]
-                                    },
-                                    "PolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Action": [
-                                                    "logs:*"
-                                                ],
-                                                "Effect": "Allow",
-                                                "Resource": "*"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "uri": "aws::iam::Policy::lambda-policy",
-                                "displayName": "lambda-policy",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
                                 "name": "myPolicy-to-group",
                                 "id": "arn:aws:iam::840541460064:policy/myPolicy-to-group",
                                 "providerName": "aws",
                                 "groupType": "iam::Policy",
                                 "live": {
                                     "PolicyName": "myPolicy-to-group",
-                                    "PolicyId": "ANPA4HNBM2ZQPNZMKXEII",
+                                    "PolicyId": "ANPA4HNBM2ZQPZQTOEJ42",
                                     "Arn": "arn:aws:iam::840541460064:policy/myPolicy-to-group",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
@@ -992,8 +917,8 @@
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
                                     "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-15T17:38:45.000Z",
-                                    "UpdateDate": "2021-08-15T17:38:45.000Z",
+                                    "CreateDate": "2021-08-16T05:19:51.000Z",
+                                    "UpdateDate": "2021-08-16T05:19:51.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -1020,7 +945,7 @@
                                         "PolicyGroups": [
                                             {
                                                 "GroupName": "Admin",
-                                                "GroupId": "AGPA4HNBM2ZQHTTYMYBRE"
+                                                "GroupId": "AGPA4HNBM2ZQMM3MRFBAB"
                                             }
                                         ],
                                         "PolicyUsers": [],
@@ -1059,7 +984,7 @@
                                 "groupType": "iam::Policy",
                                 "live": {
                                     "PolicyName": "myPolicy-to-role",
-                                    "PolicyId": "ANPA4HNBM2ZQDPK44VM4L",
+                                    "PolicyId": "ANPA4HNBM2ZQJH3535ZAS",
                                     "Arn": "arn:aws:iam::840541460064:policy/myPolicy-to-role",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
@@ -1067,8 +992,8 @@
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
                                     "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-15T17:38:45.000Z",
-                                    "UpdateDate": "2021-08-15T17:38:45.000Z",
+                                    "CreateDate": "2021-08-16T05:19:51.000Z",
+                                    "UpdateDate": "2021-08-16T05:19:51.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -1097,7 +1022,7 @@
                                         "PolicyRoles": [
                                             {
                                                 "RoleName": "role-allow-assume-role",
-                                                "RoleId": "AROA4HNBM2ZQPMW5GON7C"
+                                                "RoleId": "AROA4HNBM2ZQCSCTZYVEN"
                                             }
                                         ]
                                     },
@@ -1134,7 +1059,7 @@
                                 "groupType": "iam::Policy",
                                 "live": {
                                     "PolicyName": "myPolicy-to-user",
-                                    "PolicyId": "ANPA4HNBM2ZQAXGGMC5BG",
+                                    "PolicyId": "ANPA4HNBM2ZQNITZJKXB2",
                                     "Arn": "arn:aws:iam::840541460064:policy/myPolicy-to-user",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
@@ -1142,8 +1067,8 @@
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
                                     "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-15T17:38:45.000Z",
-                                    "UpdateDate": "2021-08-15T17:38:45.000Z",
+                                    "CreateDate": "2021-08-16T05:19:51.000Z",
+                                    "UpdateDate": "2021-08-16T05:19:51.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -1171,7 +1096,7 @@
                                         "PolicyUsers": [
                                             {
                                                 "UserName": "Alice",
-                                                "UserId": "AIDA4HNBM2ZQGGKUJUV6M"
+                                                "UserId": "AIDA4HNBM2ZQFBO2YJBBT"
                                             }
                                         ],
                                         "PolicyRoles": []
@@ -1211,85 +1136,6 @@
                             {
                                 "group": "iam",
                                 "type": "Role",
-                                "name": "lambda-role",
-                                "id": "arn:aws:iam::840541460064:role/lambda-role",
-                                "providerName": "aws",
-                                "groupType": "iam::Role",
-                                "live": {
-                                    "Path": "/",
-                                    "RoleName": "lambda-role",
-                                    "RoleId": "AROA4HNBM2ZQOFYMADF3N",
-                                    "Arn": "arn:aws:iam::840541460064:role/lambda-role",
-                                    "CreateDate": "2021-08-15T17:15:47.000Z",
-                                    "AssumeRolePolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Sid": "",
-                                                "Effect": "Allow",
-                                                "Principal": {
-                                                    "Service": "lambda.amazonaws.com"
-                                                },
-                                                "Action": "sts:AssumeRole"
-                                            }
-                                        ]
-                                    },
-                                    "MaxSessionDuration": 3600,
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-role"
-                                        }
-                                    ],
-                                    "Policies": [],
-                                    "AttachedPolicies": [
-                                        {
-                                            "PolicyName": "lambda-policy",
-                                            "PolicyArn": "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        }
-                                    ],
-                                    "InstanceProfiles": []
-                                },
-                                "uri": "aws::iam::Role::lambda-role",
-                                "displayName": "lambda-role",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "Policy",
-                                        "group": "iam",
-                                        "ids": [
-                                            "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "iam::Policy"
-                                    }
-                                ],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Role",
                                 "name": "role-allow-assume-role",
                                 "id": "arn:aws:iam::840541460064:role/role-allow-assume-role",
                                 "providerName": "aws",
@@ -1297,9 +1143,9 @@
                                 "live": {
                                     "Path": "/",
                                     "RoleName": "role-allow-assume-role",
-                                    "RoleId": "AROA4HNBM2ZQPMW5GON7C",
+                                    "RoleId": "AROA4HNBM2ZQCSCTZYVEN",
                                     "Arn": "arn:aws:iam::840541460064:role/role-allow-assume-role",
-                                    "CreateDate": "2021-08-15T17:38:49.000Z",
+                                    "CreateDate": "2021-08-16T05:19:55.000Z",
                                     "AssumeRolePolicyDocument": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -1336,15 +1182,6 @@
                                             "Value": "role-allow-assume-role"
                                         }
                                     ],
-                                    "InstanceProfiles": [
-                                        {
-                                            "InstanceProfileName": "my-profile",
-                                            "InstanceProfileId": "AIPA4HNBM2ZQMEJ47TMQ5",
-                                            "Arn": "arn:aws:iam::840541460064:instance-profile/my-profile",
-                                            "Path": "/"
-                                        }
-                                    ],
-                                    "Policies": [],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "myPolicy-to-role",
@@ -1353,6 +1190,15 @@
                                         {
                                             "PolicyName": "AmazonEKSWorkerNodePolicy",
                                             "PolicyArn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                                        }
+                                    ],
+                                    "Policies": [],
+                                    "InstanceProfiles": [
+                                        {
+                                            "InstanceProfileName": "my-profile",
+                                            "InstanceProfileId": "AIPA4HNBM2ZQLUCHS7CGH",
+                                            "Arn": "arn:aws:iam::840541460064:instance-profile/my-profile",
+                                            "Path": "/"
                                         }
                                     ]
                                 },
@@ -1396,9 +1242,9 @@
                                 "live": {
                                     "Path": "/",
                                     "UserName": "Alice",
-                                    "UserId": "AIDA4HNBM2ZQGGKUJUV6M",
+                                    "UserId": "AIDA4HNBM2ZQFBO2YJBBT",
                                     "Arn": "arn:aws:iam::840541460064:user/Alice",
-                                    "CreateDate": "2021-08-15T17:38:50.000Z",
+                                    "CreateDate": "2021-08-16T05:19:56.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -1421,22 +1267,22 @@
                                             "Value": "Alice"
                                         }
                                     ],
-                                    "AccessKeys": [],
-                                    "Groups": [
-                                        {
-                                            "Path": "/",
-                                            "GroupName": "Admin",
-                                            "GroupId": "AGPA4HNBM2ZQHTTYMYBRE",
-                                            "Arn": "arn:aws:iam::840541460064:group/Admin",
-                                            "CreateDate": "2021-08-15T17:38:49.000Z"
-                                        }
-                                    ],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "myPolicy-to-user",
                                             "PolicyArn": "arn:aws:iam::840541460064:policy/myPolicy-to-user"
                                         }
-                                    ]
+                                    ],
+                                    "Groups": [
+                                        {
+                                            "Path": "/",
+                                            "GroupName": "Admin",
+                                            "GroupId": "AGPA4HNBM2ZQMM3MRFBAB",
+                                            "Arn": "arn:aws:iam::840541460064:group/Admin",
+                                            "CreateDate": "2021-08-16T05:19:55.000Z"
+                                        }
+                                    ],
+                                    "AccessKeys": []
                                 },
                                 "uri": "aws::iam::User::Alice",
                                 "displayName": "Alice",
