@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="115px" preserveAspectRatio="none" style="width:451px;height:115px;background:#FFFFFF;" version="1.1" viewBox="0 0 451 115" width="451px" zoomAndPan="magnify"><defs><filter height="300%" id="f2v0pbm04ub2h" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="none" height="26.4883" style="stroke:none;stroke-width:1.0;" width="205" x="93" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="195" x="98" y="33.5352">Resources for project table</text><rect fill="#F8F8F8" filter="url(#f2v0pbm04ub2h)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="52" x="10" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="81.0234">Infra</text><rect fill="#F8F8F8" filter="url(#f2v0pbm04ub2h)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="46" x="112" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="81.0234">aws</text><rect fill="#F8F8F8" filter="url(#f2v0pbm04ub2h)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="93" x="208" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="218" y="81.0234">dynamoDB</text><rect fill="#F8F8F8" filter="url(#f2v0pbm04ub2h)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="81" x="351" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61" x="361" y="81.0234">Table (1)</text><path d="M301,75.7324 L311,75.7324 C326,75.7324 326,75.7324 341,75.7324 L351,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M158,75.7324 L168,75.7324 C183,75.7324 183,75.7324 198,75.7324 L208,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M62,75.7324 L72,75.7324 C87,75.7324 87,75.7324 102,75.7324 L112,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[f770496b4a008b476f640b4e7896181f]
+@startmindmap
+title Resources for project table
+skinparam monochrome true
++ Infra
+++ aws
++++ dynamoDB
+++++ Table (1)
+@endmindmap
+
+PlantUML version 1.2021.8(Sat Jun 26 05:20:59 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

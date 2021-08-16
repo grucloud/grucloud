@@ -1,0 +1,100 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "graph": true,
+        "title": "table",
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/dynamodb/table/artifacts/diagram-live.dot"
+    },
+    "programOptions": {
+        "json": "artifacts/inventory.json",
+        "noOpen": true,
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/dynamodb/table"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "group": "dynamoDB",
+                                "type": "Table",
+                                "name": "MyModelTypeDemoTable",
+                                "id": "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable",
+                                "providerName": "aws",
+                                "groupType": "dynamoDB::Table",
+                                "live": {
+                                    "AttributeDefinitions": [
+                                        {
+                                            "AttributeName": "id",
+                                            "AttributeType": "S"
+                                        }
+                                    ],
+                                    "TableName": "MyModelTypeDemoTable",
+                                    "KeySchema": [
+                                        {
+                                            "AttributeName": "id",
+                                            "KeyType": "HASH"
+                                        }
+                                    ],
+                                    "TableStatus": "ACTIVE",
+                                    "CreationDateTime": "2021-08-15T21:38:44.243Z",
+                                    "ProvisionedThroughput": {
+                                        "NumberOfDecreasesToday": 0,
+                                        "ReadCapacityUnits": 1,
+                                        "WriteCapacityUnits": 1
+                                    },
+                                    "TableSizeBytes": 0,
+                                    "ItemCount": 0,
+                                    "TableArn": "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable",
+                                    "TableId": "40865371-9a1b-4642-b2f2-c6062ef7a42e",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "example-grucloud-dynamodb-table"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "MyModelTypeDemoTable"
+                                        }
+                                    ]
+                                },
+                                "uri": "aws::dynamoDB::Table::MyModelTypeDemoTable",
+                                "displayName": "MyModelTypeDemoTable",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "dynamoDB::Table",
+                        "type": "Table",
+                        "group": "dynamoDB",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

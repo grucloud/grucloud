@@ -583,8 +583,41 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Key",
-        filterLive: () => pick([]),
+        filterLive: () => pick([""]),
         ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+      },
+    ],
+  },
+  {
+    group: "dynamoDB",
+    types: [
+      {
+        type: "Table",
+        filterLive: () =>
+          pipe([
+            pick([
+              "AttributeDefinitions",
+              "KeySchema",
+              "ProvisionedThroughput",
+              "BillingModeSummary",
+              "GlobalSecondaryIndexes",
+              "LocalSecondaryIndexes",
+            ]),
+            omit([
+              "ProvisionedThroughput.NumberOfDecreasesToday",
+              "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+            ]),
+            when(
+              eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
+              pipe([
+                assign({ BillingMode: () => "PAY_PER_REQUEST" }),
+                omit(["ProvisionedThroughput", "BillingModeSummary"]),
+              ])
+            ),
+          ]),
+        dependencies: () => ({
+          kmsKey: { type: "Key", group: "kms" },
+        }),
       },
     ],
   },

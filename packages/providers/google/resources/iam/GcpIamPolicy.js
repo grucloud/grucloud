@@ -45,7 +45,11 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       tap(() => {
         assert(live);
       }),
-      () => live.bindings,
+      () => live,
+      get("bindings"),
+      tap((bindings) => {
+        assert(bindings);
+      }),
       filter(({ role }) => prevervedRolesName.includes(role)),
       tap((bindings) => {
         logger.debug(`configDefault ${tos(bindings)}`);
