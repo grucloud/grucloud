@@ -107,14 +107,6 @@ exports.DynamoDBTable = ({ spec, config }) => {
           fn: () => isUpByName({ name }),
         })
       ),
-      () => ({
-        ResourceArn: tableArn({ TableName: name, config }),
-        Tags: buildTags({ name, config, namespace }),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-      dynamoDB().tagResource,
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#deleteTable-property
