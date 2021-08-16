@@ -18,8 +18,6 @@ const {
   size,
   identity,
   callProp,
-  isEmpty,
-  when,
 } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
@@ -51,6 +49,7 @@ const AwsRDS = require("./RDS");
 const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
+const SSM = require("./SSM");
 
 const fnSpecs = (config) =>
   pipe([
@@ -77,6 +76,7 @@ const fnSpecs = (config) =>
       ...AwsRoute53(),
       ...AwsRoute53Domain(),
       ...AwsS3(),
+      ...SSM(),
     ],
   ])();
 

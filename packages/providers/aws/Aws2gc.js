@@ -589,6 +589,23 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "ssm",
+    types: [
+      {
+        type: "Parameter",
+        filterLive: () =>
+          pick([
+            "Type",
+            "Value",
+            "Description",
+            "Tier",
+            //"Policies",
+            "DataType",
+          ]),
+      },
+    ],
+  },
+  {
     group: "dynamoDB",
     types: [
       {
