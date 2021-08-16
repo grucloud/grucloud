@@ -23,28 +23,28 @@
                             {
                                 "group": "compute",
                                 "type": "Address",
-                                "name": "ip-webserver-dev",
-                                "id": "551258694880860327",
+                                "name": "ip-webserver",
+                                "id": "3794598468156596933",
                                 "providerName": "google",
                                 "groupType": "compute::Address",
                                 "live": {
-                                    "id": "551258694880860327",
-                                    "creationTimestamp": "2021-08-12T15:52:56.293-07:00",
-                                    "name": "ip-webserver-dev",
+                                    "id": "3794598468156596933",
+                                    "creationTimestamp": "2021-08-16T10:11:06.707-07:00",
+                                    "name": "ip-webserver",
                                     "description": "Managed By GruCloud",
-                                    "address": "34.147.56.223",
+                                    "address": "34.141.198.103",
                                     "status": "IN_USE",
                                     "region": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4",
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/addresses/ip-webserver-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/addresses/ip-webserver",
                                     "users": [
-                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-dev"
+                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver"
                                     ],
                                     "networkTier": "PREMIUM",
                                     "addressType": "EXTERNAL",
                                     "kind": "compute#address"
                                 },
-                                "uri": "google::compute::Address::ip-webserver-dev",
-                                "displayName": "ip-webserver-dev",
+                                "uri": "google::compute::Address::ip-webserver",
+                                "displayName": "ip-webserver",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -65,22 +65,22 @@
                             {
                                 "group": "compute",
                                 "type": "Disk",
-                                "name": "disk-dev",
-                                "id": "2977067772828719271",
+                                "name": "disk",
+                                "id": "6505940068613956293",
                                 "providerName": "google",
                                 "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "2977067772828719271",
-                                    "creationTimestamp": "2021-08-12T15:52:56.238-07:00",
-                                    "name": "disk-dev",
+                                    "id": "6505940068613956293",
+                                    "creationTimestamp": "2021-08-16T10:11:06.731-07:00",
+                                    "name": "disk",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a",
                                     "status": "READY",
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/disk-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/disk",
                                     "type": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/diskTypes/pd-standard",
-                                    "lastAttachTimestamp": "2021-08-12T15:53:40.461-07:00",
+                                    "lastAttachTimestamp": "2021-08-16T10:11:55.760-07:00",
                                     "users": [
-                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-dev"
+                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver"
                                     ],
                                     "labels": {
                                         "managed-by": "grucloud",
@@ -90,8 +90,8 @@
                                     "physicalBlockSizeBytes": "4096",
                                     "kind": "compute#disk"
                                 },
-                                "uri": "google::compute::Disk::disk-dev",
-                                "displayName": "disk-dev",
+                                "uri": "google::compute::Disk::disk",
+                                "displayName": "disk",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -104,18 +104,18 @@
                             {
                                 "group": "compute",
                                 "type": "Disk",
-                                "name": "webserver-dev",
-                                "id": "1289890673477556361",
+                                "name": "webserver",
+                                "id": "7073619880539792039",
                                 "providerName": "google",
                                 "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "1289890673477556361",
-                                    "creationTimestamp": "2021-08-12T15:53:27.136-07:00",
-                                    "name": "webserver-dev",
+                                    "id": "7073619880539792039",
+                                    "creationTimestamp": "2021-08-16T10:11:37.163-07:00",
+                                    "name": "webserver",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a",
                                     "status": "READY",
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/webserver-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/webserver",
                                     "sourceImage": "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720",
                                     "sourceImageId": "5084371847132934865",
                                     "type": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/diskTypes/pd-standard",
@@ -136,9 +136,9 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-12T15:53:27.136-07:00",
+                                    "lastAttachTimestamp": "2021-08-16T10:11:37.164-07:00",
                                     "users": [
-                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-dev"
+                                        "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver"
                                     ],
                                     "labelFingerprint": "42WmSpB8rSM=",
                                     "licenseCodes": [
@@ -147,8 +147,8 @@
                                     "physicalBlockSizeBytes": "4096",
                                     "kind": "compute#disk"
                                 },
-                                "uri": "google::compute::Disk::webserver-dev",
-                                "displayName": "webserver-dev",
+                                "uri": "google::compute::Disk::webserver",
+                                "displayName": "webserver",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": false,
                                 "managedByUs": false,
@@ -169,14 +169,14 @@
                             {
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "firewall-22-80-433-dev",
-                                "id": "1666079505950185639",
+                                "name": "firewall-22-80-433",
+                                "id": "1414173192934073029",
                                 "providerName": "google",
                                 "groupType": "compute::Firewall",
                                 "live": {
-                                    "id": "1666079505950185639",
-                                    "creationTimestamp": "2021-08-12T15:52:56.266-07:00",
-                                    "name": "firewall-22-80-433-dev",
+                                    "id": "1414173192934073029",
+                                    "creationTimestamp": "2021-08-16T10:11:06.852-07:00",
+                                    "name": "firewall-22-80-433",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
                                     "priority": 1000,
@@ -198,11 +198,11 @@
                                         "enable": false
                                     },
                                     "disabled": false,
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/firewalls/firewall-22-80-433-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/firewalls/firewall-22-80-433",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::firewall-22-80-433-dev",
-                                "displayName": "firewall-22-80-433-dev",
+                                "uri": "google::compute::Firewall::firewall-22-80-433",
+                                "displayName": "firewall-22-80-433",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -224,14 +224,14 @@
                             {
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "firewall-icmp-dev",
-                                "id": "8662088697169582247",
+                                "name": "firewall-icmp",
+                                "id": "3461002615905002181",
                                 "providerName": "google",
                                 "groupType": "compute::Firewall",
                                 "live": {
-                                    "id": "8662088697169582247",
-                                    "creationTimestamp": "2021-08-12T15:52:56.291-07:00",
-                                    "name": "firewall-icmp-dev",
+                                    "id": "3461002615905002181",
+                                    "creationTimestamp": "2021-08-16T10:11:06.566-07:00",
+                                    "name": "firewall-icmp",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
                                     "priority": 1000,
@@ -248,11 +248,11 @@
                                         "enable": false
                                     },
                                     "disabled": false,
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/firewalls/firewall-icmp-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/firewalls/firewall-icmp",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::firewall-icmp-dev",
-                                "displayName": "firewall-icmp-dev",
+                                "uri": "google::compute::Firewall::firewall-icmp",
+                                "displayName": "firewall-icmp",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -401,14 +401,14 @@
                             {
                                 "group": "compute",
                                 "type": "VmInstance",
-                                "name": "webserver-dev",
-                                "id": "6091048293699688585",
+                                "name": "webserver",
+                                "id": "1573479242249216679",
                                 "providerName": "google",
                                 "groupType": "compute::VmInstance",
                                 "live": {
-                                    "id": "6091048293699688585",
-                                    "creationTimestamp": "2021-08-12T15:53:27.129-07:00",
-                                    "name": "webserver-dev",
+                                    "id": "1573479242249216679",
+                                    "creationTimestamp": "2021-08-16T10:11:37.147-07:00",
+                                    "name": "webserver",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
                                     },
@@ -420,18 +420,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.15.207",
+                                            "networkIP": "10.164.0.30",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "34.147.56.223",
+                                                    "natIP": "34.141.198.103",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "zhGb58NW1pI=",
+                                            "fingerprint": "ldjjJYGHgJ0=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -440,8 +440,8 @@
                                         {
                                             "type": "PERSISTENT",
                                             "mode": "READ_WRITE",
-                                            "source": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/webserver-dev",
-                                            "deviceName": "webserver-dev-managed-by-gru",
+                                            "source": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/webserver",
+                                            "deviceName": "webserver-managed-by-gru",
                                             "index": 0,
                                             "boot": true,
                                             "autoDelete": true,
@@ -477,7 +477,7 @@
                                         {
                                             "type": "PERSISTENT",
                                             "mode": "READ_WRITE",
-                                            "source": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/disk-dev",
+                                            "source": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/disks/disk",
                                             "deviceName": "persistent-disk-1",
                                             "index": 1,
                                             "boot": false,
@@ -497,7 +497,7 @@
                                         ],
                                         "kind": "compute#metadata"
                                     },
-                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-dev",
+                                    "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver",
                                     "scheduling": {
                                         "onHostMaintenance": "MIGRATE",
                                         "automaticRestart": true,
@@ -528,12 +528,12 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "ZdzU3rVYdms=",
-                                    "lastStartTimestamp": "2021-08-12T15:53:36.845-07:00",
+                                    "fingerprint": "j5lw8t27kTY=",
+                                    "lastStartTimestamp": "2021-08-16T10:11:45.890-07:00",
                                     "kind": "compute#instance"
                                 },
-                                "uri": "google::compute::VmInstance::webserver-dev",
-                                "displayName": "webserver-dev",
+                                "uri": "google::compute::VmInstance::webserver",
+                                "displayName": "webserver",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,
@@ -631,37 +631,6 @@
                             {
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "sa-dev",
-                                "id": "107248037657404024039",
-                                "providerName": "google",
-                                "groupType": "iam::ServiceAccount",
-                                "live": {
-                                    "name": "projects/grucloud-test/serviceAccounts/sa-dev@grucloud-test.iam.gserviceaccount.com",
-                                    "projectId": "grucloud-test",
-                                    "uniqueId": "107248037657404024039",
-                                    "email": "sa-dev@grucloud-test.iam.gserviceaccount.com",
-                                    "displayName": "SA dev",
-                                    "etag": "MDEwMjE5MjA=",
-                                    "description": "Managed By GruCloud",
-                                    "oauth2ClientId": "107248037657404024039",
-                                    "iamPolicy": {
-                                        "etag": "ACAB"
-                                    }
-                                },
-                                "uri": "google::iam::ServiceAccount::sa-dev",
-                                "displayName": "sa-dev",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "ServiceAccount",
                                 "name": "sa-grucloud",
                                 "id": "105908581481869541232",
                                 "providerName": "google",
@@ -683,6 +652,37 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "iam",
+                                "type": "ServiceAccount",
+                                "name": "sa-test-vm",
+                                "id": "105070410922601417888",
+                                "providerName": "google",
+                                "groupType": "iam::ServiceAccount",
+                                "live": {
+                                    "name": "projects/grucloud-test/serviceAccounts/sa-test-vm@grucloud-test.iam.gserviceaccount.com",
+                                    "projectId": "grucloud-test",
+                                    "uniqueId": "105070410922601417888",
+                                    "email": "sa-test-vm@grucloud-test.iam.gserviceaccount.com",
+                                    "displayName": "SA dev",
+                                    "etag": "MDEwMjE5MjA=",
+                                    "description": "Managed By GruCloud",
+                                    "oauth2ClientId": "105070410922601417888",
+                                    "iamPolicy": {
+                                        "etag": "ACAB"
+                                    }
+                                },
+                                "uri": "google::iam::ServiceAccount::sa-test-vm",
+                                "displayName": "sa-test-vm",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
                                 "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",

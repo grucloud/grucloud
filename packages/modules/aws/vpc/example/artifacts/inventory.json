@@ -7,6 +7,7 @@
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
+        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/packages/modules/aws/vpc/example"
     },
     "result": {
@@ -18,44 +19,31 @@
                 "error": false,
                 "results": [
                     {
-                        "resources": [],
-                        "groupType": "apigateway::Api",
-                        "type": "Api",
-                        "group": "apigateway",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "apigateway::Integration",
-                        "type": "Integration",
-                        "group": "apigateway",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "apigateway::Route",
-                        "type": "Route",
-                        "group": "apigateway",
-                        "providerName": "aws"
-                    },
-                    {
                         "resources": [
                             {
                                 "group": "ec2",
                                 "type": "ElasticIpAddress",
                                 "name": "iep",
-                                "id": "eipalloc-042290d8675df5b86",
+                                "id": "eipalloc-03895a0228d47fcd6",
                                 "providerName": "aws",
                                 "groupType": "ec2::ElasticIpAddress",
                                 "live": {
-                                    "PublicIp": "52.56.204.144",
-                                    "AllocationId": "eipalloc-042290d8675df5b86",
-                                    "AssociationId": "eipassoc-080abb39f6fa685e5",
+                                    "PublicIp": "35.177.12.142",
+                                    "AllocationId": "eipalloc-03895a0228d47fcd6",
+                                    "AssociationId": "eipassoc-0b7286400848fc2fb",
                                     "Domain": "vpc",
-                                    "NetworkInterfaceId": "eni-032ebdb98eb7dae30",
+                                    "NetworkInterfaceId": "eni-0e79df6f5e943717c",
                                     "NetworkInterfaceOwnerId": "840541460064",
-                                    "PrivateIpAddress": "192.168.9.15",
+                                    "PrivateIpAddress": "192.168.31.227",
                                     "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
                                         {
                                             "Key": "gc-namespace",
                                             "Value": "VPC"
@@ -65,20 +53,12 @@
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "iep"
-                                        },
-                                        {
                                             "Key": "gc-stage",
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
+                                            "Key": "Name",
+                                            "Value": "iep"
                                         }
                                     ],
                                     "PublicIpv4Pool": "amazon",
@@ -97,7 +77,7 @@
                                         "type": "NetworkInterface",
                                         "group": "ec2",
                                         "ids": [
-                                            "eni-032ebdb98eb7dae30"
+                                            "eni-0e79df6f5e943717c"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NetworkInterface"
@@ -161,42 +141,42 @@
                                 "group": "ec2",
                                 "type": "InternetGateway",
                                 "name": "internet-gateway",
-                                "id": "igw-0ec8645a2139b8cf8",
+                                "id": "igw-051050768e4865ac3",
                                 "providerName": "aws",
                                 "groupType": "ec2::InternetGateway",
                                 "live": {
                                     "Attachments": [
                                         {
                                             "State": "available",
-                                            "VpcId": "vpc-0b6ad2217d4933b1e"
+                                            "VpcId": "vpc-05a8c7cbf00d031b2"
                                         }
                                     ],
-                                    "InternetGatewayId": "igw-0ec8645a2139b8cf8",
+                                    "InternetGatewayId": "igw-051050768e4865ac3",
                                     "OwnerId": "840541460064",
                                     "Tags": [
-                                        {
-                                            "Key": "Name",
-                                            "Value": "internet-gateway"
-                                        },
                                         {
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
                                         },
                                         {
-                                            "Key": "gc-project-name",
-                                            "Value": "ex-vpc-mod"
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
                                         },
                                         {
                                             "Key": "gc-namespace",
                                             "Value": "VPC"
                                         },
                                         {
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
+                                        },
+                                        {
                                             "Key": "gc-stage",
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
+                                            "Key": "Name",
+                                            "Value": "internet-gateway"
                                         }
                                     ]
                                 },
@@ -213,7 +193,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -233,27 +213,35 @@
                                 "group": "ec2",
                                 "type": "NatGateway",
                                 "name": "nat-gateway",
-                                "id": "nat-0c8957d78e189f46a",
+                                "id": "nat-01b9f3afa119b2d14",
                                 "providerName": "aws",
                                 "groupType": "ec2::NatGateway",
                                 "live": {
-                                    "CreateTime": "2021-08-11T18:17:22.000Z",
+                                    "CreateTime": "2021-08-16T06:42:23.000Z",
                                     "NatGatewayAddresses": [
                                         {
-                                            "AllocationId": "eipalloc-042290d8675df5b86",
-                                            "NetworkInterfaceId": "eni-032ebdb98eb7dae30",
-                                            "PrivateIp": "192.168.9.15",
-                                            "PublicIp": "52.56.204.144"
+                                            "AllocationId": "eipalloc-03895a0228d47fcd6",
+                                            "NetworkInterfaceId": "eni-0e79df6f5e943717c",
+                                            "PrivateIp": "192.168.31.227",
+                                            "PublicIp": "35.177.12.142"
                                         }
                                     ],
-                                    "NatGatewayId": "nat-0c8957d78e189f46a",
+                                    "NatGatewayId": "nat-01b9f3afa119b2d14",
                                     "State": "available",
-                                    "SubnetId": "subnet-06ad5c0ff6e047189",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "SubnetId": "subnet-00b68a43274fbc454",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
@@ -262,14 +250,6 @@
                                         {
                                             "Key": "gc-stage",
                                             "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
                                         },
                                         {
                                             "Key": "Name",
@@ -291,7 +271,7 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-06ad5c0ff6e047189"
+                                            "subnet-00b68a43274fbc454"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -300,7 +280,7 @@
                                         "type": "NetworkInterface",
                                         "group": "ec2",
                                         "ids": [
-                                            "eni-032ebdb98eb7dae30"
+                                            "eni-0e79df6f5e943717c"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NetworkInterface"
@@ -309,7 +289,7 @@
                                         "type": "ElasticIpAddress",
                                         "group": "ec2",
                                         "ids": [
-                                            "eipalloc-042290d8675df5b86"
+                                            "eipalloc-03895a0228d47fcd6"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::ElasticIpAddress"
@@ -328,47 +308,47 @@
                             {
                                 "group": "ec2",
                                 "type": "NetworkInterface",
-                                "name": "eni-032ebdb98eb7dae30",
-                                "id": "eni-032ebdb98eb7dae30",
+                                "name": "eni-0e79df6f5e943717c",
+                                "id": "eni-0e79df6f5e943717c",
                                 "providerName": "aws",
                                 "groupType": "ec2::NetworkInterface",
                                 "live": {
                                     "Association": {
-                                        "AllocationId": "eipalloc-042290d8675df5b86",
-                                        "AssociationId": "eipassoc-080abb39f6fa685e5",
+                                        "AllocationId": "eipalloc-03895a0228d47fcd6",
+                                        "AssociationId": "eipassoc-0b7286400848fc2fb",
                                         "IpOwnerId": "840541460064",
-                                        "PublicDnsName": "ec2-52-56-204-144.eu-west-2.compute.amazonaws.com",
-                                        "PublicIp": "52.56.204.144"
+                                        "PublicDnsName": "ec2-35-177-12-142.eu-west-2.compute.amazonaws.com",
+                                        "PublicIp": "35.177.12.142"
                                     },
                                     "Attachment": {
-                                        "AttachmentId": "ela-attach-0db244a809acd1b87",
+                                        "AttachmentId": "ela-attach-0a58453ec4cf3a489",
                                         "DeleteOnTermination": false,
                                         "DeviceIndex": 1,
                                         "InstanceOwnerId": "amazon-aws",
                                         "Status": "attached"
                                     },
                                     "AvailabilityZone": "eu-west-2a",
-                                    "Description": "Interface for NAT Gateway nat-0c8957d78e189f46a",
+                                    "Description": "Interface for NAT Gateway nat-01b9f3afa119b2d14",
                                     "Groups": [],
                                     "InterfaceType": "nat_gateway",
                                     "Ipv6Addresses": [],
-                                    "MacAddress": "06:3a:42:e2:92:3a",
-                                    "NetworkInterfaceId": "eni-032ebdb98eb7dae30",
+                                    "MacAddress": "06:c7:3f:7a:39:ba",
+                                    "NetworkInterfaceId": "eni-0e79df6f5e943717c",
                                     "OwnerId": "840541460064",
-                                    "PrivateDnsName": "ip-192-168-9-15.eu-west-2.compute.internal",
-                                    "PrivateIpAddress": "192.168.9.15",
+                                    "PrivateDnsName": "ip-192-168-31-227.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.31.227",
                                     "PrivateIpAddresses": [
                                         {
                                             "Association": {
-                                                "AllocationId": "eipalloc-042290d8675df5b86",
-                                                "AssociationId": "eipassoc-080abb39f6fa685e5",
+                                                "AllocationId": "eipalloc-03895a0228d47fcd6",
+                                                "AssociationId": "eipassoc-0b7286400848fc2fb",
                                                 "IpOwnerId": "840541460064",
-                                                "PublicDnsName": "ec2-52-56-204-144.eu-west-2.compute.amazonaws.com",
-                                                "PublicIp": "52.56.204.144"
+                                                "PublicDnsName": "ec2-35-177-12-142.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "35.177.12.142"
                                             },
                                             "Primary": true,
-                                            "PrivateDnsName": "ip-192-168-9-15.eu-west-2.compute.internal",
-                                            "PrivateIpAddress": "192.168.9.15"
+                                            "PrivateDnsName": "ip-192-168-31-227.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.31.227"
                                         }
                                     ],
                                     "Ipv4Prefixes": [],
@@ -377,12 +357,12 @@
                                     "RequesterManaged": true,
                                     "SourceDestCheck": false,
                                     "Status": "in-use",
-                                    "SubnetId": "subnet-06ad5c0ff6e047189",
+                                    "SubnetId": "subnet-00b68a43274fbc454",
                                     "TagSet": [],
-                                    "VpcId": "vpc-0b6ad2217d4933b1e"
+                                    "VpcId": "vpc-05a8c7cbf00d031b2"
                                 },
-                                "uri": "aws::ec2::NetworkInterface::eni-032ebdb98eb7dae30",
-                                "displayName": "eni-032ebdb98eb7dae30",
+                                "uri": "aws::ec2::NetworkInterface::eni-0e79df6f5e943717c",
+                                "displayName": "eni-0e79df6f5e943717c",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": false,
                                 "managedByUs": false,
@@ -393,7 +373,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -402,7 +382,7 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-06ad5c0ff6e047189"
+                                            "subnet-00b68a43274fbc454"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -427,35 +407,35 @@
                                 "groupType": "ec2::Route",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "NatGatewayId": "nat-0c8957d78e189f46a",
+                                    "NatGatewayId": "nat-01b9f3afa119b2d14",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-private-a",
-                                    "RouteTableId": "rtb-034bb5ca775e6463f",
+                                    "RouteTableId": "rtb-0c6eba4425c1af9ab",
                                     "Tags": [
                                         {
-                                            "Key": "Name",
-                                            "Value": "route-private-a"
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
                                         },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-private-a"
                                         }
                                     ]
                                 },
@@ -472,7 +452,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-034bb5ca775e6463f"
+                                            "rtb-0c6eba4425c1af9ab"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -481,7 +461,7 @@
                                         "type": "NatGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "nat-0c8957d78e189f46a"
+                                            "nat-01b9f3afa119b2d14"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NatGateway"
@@ -498,35 +478,35 @@
                                 "groupType": "ec2::Route",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "NatGatewayId": "nat-0c8957d78e189f46a",
+                                    "NatGatewayId": "nat-01b9f3afa119b2d14",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-private-b",
-                                    "RouteTableId": "rtb-0da3cecbf33e5a245",
+                                    "RouteTableId": "rtb-0fb6f9f8a71dcee1c",
                                     "Tags": [
                                         {
-                                            "Key": "Name",
-                                            "Value": "route-private-b"
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
                                         },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-private-b"
                                         }
                                     ]
                                 },
@@ -543,7 +523,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-0da3cecbf33e5a245"
+                                            "rtb-0fb6f9f8a71dcee1c"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -552,7 +532,7 @@
                                         "type": "NatGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "nat-0c8957d78e189f46a"
+                                            "nat-01b9f3afa119b2d14"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NatGateway"
@@ -569,35 +549,35 @@
                                 "groupType": "ec2::Route",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "GatewayId": "igw-0ec8645a2139b8cf8",
+                                    "GatewayId": "igw-051050768e4865ac3",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-public",
-                                    "RouteTableId": "rtb-0ec141e7aa84ff102",
+                                    "RouteTableId": "rtb-0cdad9b86d45d557b",
                                     "Tags": [
                                         {
-                                            "Key": "Name",
-                                            "Value": "route-public"
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
                                         },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-public"
                                         }
                                     ]
                                 },
@@ -614,7 +594,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-0ec141e7aa84ff102"
+                                            "rtb-0cdad9b86d45d557b"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -623,7 +603,7 @@
                                         "type": "InternetGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "igw-0ec8645a2139b8cf8"
+                                            "igw-051050768e4865ac3"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::InternetGateway"
@@ -643,23 +623,23 @@
                                 "group": "ec2",
                                 "type": "RouteTable",
                                 "name": "route-table-private-a",
-                                "id": "rtb-034bb5ca775e6463f",
+                                "id": "rtb-0c6eba4425c1af9ab",
                                 "providerName": "aws",
                                 "groupType": "ec2::RouteTable",
                                 "live": {
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-0192273b6e794a0c8",
-                                            "RouteTableId": "rtb-034bb5ca775e6463f",
-                                            "SubnetId": "subnet-0ccab3bff777347fe",
+                                            "RouteTableAssociationId": "rtbassoc-0cc67e77cbd790271",
+                                            "RouteTableId": "rtb-0c6eba4425c1af9ab",
+                                            "SubnetId": "subnet-04225547233a86f56",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-034bb5ca775e6463f",
+                                    "RouteTableId": "rtb-0c6eba4425c1af9ab",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -669,16 +649,12 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "NatGatewayId": "nat-0c8957d78e189f46a",
+                                            "NatGatewayId": "nat-01b9f3afa119b2d14",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
                                     ],
                                     "Tags": [
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
                                         {
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
@@ -692,15 +668,19 @@
                                             "Value": "VPC"
                                         },
                                         {
-                                            "Key": "Name",
-                                            "Value": "route-table-private-a"
-                                        },
-                                        {
                                             "Key": "gc-project-name",
                                             "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-private-a"
                                         }
                                     ],
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064"
                                 },
                                 "uri": "aws::ec2::RouteTable::route-table-private-a",
@@ -716,7 +696,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -725,7 +705,7 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-0ccab3bff777347fe"
+                                            "subnet-04225547233a86f56"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -737,23 +717,23 @@
                                 "group": "ec2",
                                 "type": "RouteTable",
                                 "name": "route-table-private-b",
-                                "id": "rtb-0da3cecbf33e5a245",
+                                "id": "rtb-0fb6f9f8a71dcee1c",
                                 "providerName": "aws",
                                 "groupType": "ec2::RouteTable",
                                 "live": {
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-0991723a763cdefa3",
-                                            "RouteTableId": "rtb-0da3cecbf33e5a245",
-                                            "SubnetId": "subnet-08be58f743c895b02",
+                                            "RouteTableAssociationId": "rtbassoc-00c38e7107ba493f0",
+                                            "RouteTableId": "rtb-0fb6f9f8a71dcee1c",
+                                            "SubnetId": "subnet-08fbfc95b3c3bdde8",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-0da3cecbf33e5a245",
+                                    "RouteTableId": "rtb-0fb6f9f8a71dcee1c",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -763,12 +743,20 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "NatGatewayId": "nat-0c8957d78e189f46a",
+                                            "NatGatewayId": "nat-01b9f3afa119b2d14",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
                                     ],
                                     "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
                                         {
                                             "Key": "gc-namespace",
                                             "Value": "VPC"
@@ -778,23 +766,15 @@
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "Name",
-                                            "Value": "route-table-private-b"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
                                             "Key": "gc-stage",
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
+                                            "Key": "Name",
+                                            "Value": "route-table-private-b"
                                         }
                                     ],
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064"
                                 },
                                 "uri": "aws::ec2::RouteTable::route-table-private-b",
@@ -810,7 +790,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -819,7 +799,7 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-08be58f743c895b02"
+                                            "subnet-08fbfc95b3c3bdde8"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -831,32 +811,32 @@
                                 "group": "ec2",
                                 "type": "RouteTable",
                                 "name": "route-table-public",
-                                "id": "rtb-0ec141e7aa84ff102",
+                                "id": "rtb-0cdad9b86d45d557b",
                                 "providerName": "aws",
                                 "groupType": "ec2::RouteTable",
                                 "live": {
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-06c5bd7199c146b51",
-                                            "RouteTableId": "rtb-0ec141e7aa84ff102",
-                                            "SubnetId": "subnet-0f01dc1a3c159bec3",
+                                            "RouteTableAssociationId": "rtbassoc-037b8195d431d36c6",
+                                            "RouteTableId": "rtb-0cdad9b86d45d557b",
+                                            "SubnetId": "subnet-00b68a43274fbc454",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         },
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-03d8ff72cf838ac1d",
-                                            "RouteTableId": "rtb-0ec141e7aa84ff102",
-                                            "SubnetId": "subnet-06ad5c0ff6e047189",
+                                            "RouteTableAssociationId": "rtbassoc-0e216c2f9c841ae67",
+                                            "RouteTableId": "rtb-0cdad9b86d45d557b",
+                                            "SubnetId": "subnet-049363f3a9c9a247d",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-0ec141e7aa84ff102",
+                                    "RouteTableId": "rtb-0cdad9b86d45d557b",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -866,38 +846,38 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "GatewayId": "igw-0ec8645a2139b8cf8",
+                                            "GatewayId": "igw-051050768e4865ac3",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
                                     ],
                                     "Tags": [
                                         {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "route-table-public"
-                                        },
-                                        {
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
                                         },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
                                         {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
                                             "Key": "gc-project-name",
                                             "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-public"
                                         }
                                     ],
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064"
                                 },
                                 "uri": "aws::ec2::RouteTable::route-table-public",
@@ -913,7 +893,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -922,8 +902,8 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-0f01dc1a3c159bec3",
-                                            "subnet-06ad5c0ff6e047189"
+                                            "subnet-00b68a43274fbc454",
+                                            "subnet-049363f3a9c9a247d"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -935,22 +915,22 @@
                                 "group": "ec2",
                                 "type": "RouteTable",
                                 "name": "rt-default-vpc",
-                                "id": "rtb-0caccd979d9e298ce",
+                                "id": "rtb-093c07c4394fcc87d",
                                 "providerName": "aws",
                                 "groupType": "ec2::RouteTable",
                                 "live": {
                                     "Associations": [
                                         {
                                             "Main": true,
-                                            "RouteTableAssociationId": "rtbassoc-0e354a0ca9e411a3b",
-                                            "RouteTableId": "rtb-0caccd979d9e298ce",
+                                            "RouteTableAssociationId": "rtbassoc-01a93188e5bda9f79",
+                                            "RouteTableId": "rtb-093c07c4394fcc87d",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-0caccd979d9e298ce",
+                                    "RouteTableId": "rtb-093c07c4394fcc87d",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -960,7 +940,7 @@
                                         }
                                     ],
                                     "Tags": [],
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064"
                                 },
                                 "uri": "aws::ec2::RouteTable::rt-default-vpc",
@@ -976,7 +956,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1047,6 +1027,158 @@
                         "resources": [
                             {
                                 "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "sg-default-vpc",
+                                "id": "sg-01d7dd25da13a1d29",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-01d7dd25da13a1d29",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-01d7dd25da13a1d29",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-05a8c7cbf00d031b2"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc",
+                                "displayName": "sg-default-vpc",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-05a8c7cbf00d031b2"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "sg-01d7dd25da13a1d29"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::SecurityGroup"
+                                    }
+                                ],
+                                "show": true
+                            },
+                            {
+                                "group": "ec2",
+                                "type": "SecurityGroup",
+                                "name": "sg-default-vpc-default",
+                                "id": "sg-f4139a96",
+                                "providerName": "aws",
+                                "groupType": "ec2::SecurityGroup",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 22,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 22,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-f4139a96",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "FromPort": 1024,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 65535,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-bbbafcd3"
+                                },
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default",
+                                "displayName": "sg-default-vpc-default",
+                                "cannotBeDeleted": true,
+                                "isOurMinion": false,
+                                "managedByUs": false,
+                                "managedByOther": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::Vpc"
+                                    }
+                                ],
+                                "show": true
+                            }
+                        ],
+                        "groupType": "ec2::SecurityGroup",
+                        "type": "SecurityGroup",
+                        "group": "ec2",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "group": "ec2",
                                 "type": "Subnet",
                                 "name": "subnet-default",
                                 "id": "subnet-0f6f085fc384bf8ce",
@@ -1094,7 +1226,7 @@
                                 "group": "ec2",
                                 "type": "Subnet",
                                 "name": "subnet-private-a",
-                                "id": "subnet-0ccab3bff777347fe",
+                                "id": "subnet-04225547233a86f56",
                                 "providerName": "aws",
                                 "groupType": "ec2::Subnet",
                                 "live": {
@@ -1106,15 +1238,23 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-0ccab3bff777347fe",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "SubnetId": "subnet-04225547233a86f56",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "Tags": [
                                         {
-                                            "Key": "Name",
-                                            "Value": "subnet-private-a"
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
@@ -1125,19 +1265,11 @@
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "Name",
+                                            "Value": "subnet-private-a"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0ccab3bff777347fe"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-04225547233a86f56"
                                 },
                                 "uri": "aws::ec2::Subnet::subnet-private-a",
                                 "displayName": "subnet-private-a",
@@ -1152,7 +1284,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1164,7 +1296,7 @@
                                 "group": "ec2",
                                 "type": "Subnet",
                                 "name": "subnet-private-b",
-                                "id": "subnet-08be58f743c895b02",
+                                "id": "subnet-08fbfc95b3c3bdde8",
                                 "providerName": "aws",
                                 "groupType": "ec2::Subnet",
                                 "live": {
@@ -1176,12 +1308,16 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-08be58f743c895b02",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "SubnetId": "subnet-08fbfc95b3c3bdde8",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
@@ -1195,19 +1331,15 @@
                                             "Value": "ex-vpc-mod"
                                         },
                                         {
-                                            "Key": "Name",
-                                            "Value": "subnet-private-b"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
                                             "Key": "gc-stage",
                                             "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-private-b"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-08be58f743c895b02"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-08fbfc95b3c3bdde8"
                                 },
                                 "uri": "aws::ec2::Subnet::subnet-private-b",
                                 "displayName": "subnet-private-b",
@@ -1222,7 +1354,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1234,7 +1366,7 @@
                                 "group": "ec2",
                                 "type": "Subnet",
                                 "name": "subnet-public-a",
-                                "id": "subnet-06ad5c0ff6e047189",
+                                "id": "subnet-00b68a43274fbc454",
                                 "providerName": "aws",
                                 "groupType": "ec2::Subnet",
                                 "live": {
@@ -1246,38 +1378,38 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-06ad5c0ff6e047189",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "SubnetId": "subnet-00b68a43274fbc454",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "Tags": [
                                         {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "ex-vpc-mod"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "subnet-public-a"
-                                        },
-                                        {
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
                                         },
                                         {
                                             "Key": "gc-namespace",
                                             "Value": "VPC"
                                         },
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet-public-a"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-06ad5c0ff6e047189"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-00b68a43274fbc454"
                                 },
                                 "uri": "aws::ec2::Subnet::subnet-public-a",
                                 "displayName": "subnet-public-a",
@@ -1292,7 +1424,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1304,7 +1436,7 @@
                                 "group": "ec2",
                                 "type": "Subnet",
                                 "name": "subnet-public-b",
-                                "id": "subnet-0f01dc1a3c159bec3",
+                                "id": "subnet-049363f3a9c9a247d",
                                 "providerName": "aws",
                                 "groupType": "ec2::Subnet",
                                 "live": {
@@ -1316,8 +1448,8 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-0f01dc1a3c159bec3",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "SubnetId": "subnet-049363f3a9c9a247d",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
@@ -1327,8 +1459,12 @@
                                             "Value": "aws"
                                         },
                                         {
-                                            "Key": "Name",
-                                            "Value": "subnet-public-b"
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         },
                                         {
                                             "Key": "gc-project-name",
@@ -1339,15 +1475,11 @@
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
+                                            "Key": "Name",
+                                            "Value": "subnet-public-b"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0f01dc1a3c159bec3"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-049363f3a9c9a247d"
                                 },
                                 "uri": "aws::ec2::Subnet::subnet-public-b",
                                 "displayName": "subnet-public-b",
@@ -1362,7 +1494,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0b6ad2217d4933b1e"
+                                            "vpc-05a8c7cbf00d031b2"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1382,20 +1514,20 @@
                                 "group": "ec2",
                                 "type": "Vpc",
                                 "name": "vpc",
-                                "id": "vpc-0b6ad2217d4933b1e",
+                                "id": "vpc-05a8c7cbf00d031b2",
                                 "providerName": "aws",
                                 "groupType": "ec2::Vpc",
                                 "live": {
                                     "CidrBlock": "192.168.0.0/16",
                                     "DhcpOptionsId": "dopt-bb663fd3",
                                     "State": "available",
-                                    "VpcId": "vpc-0b6ad2217d4933b1e",
+                                    "VpcId": "vpc-05a8c7cbf00d031b2",
                                     "OwnerId": "840541460064",
                                     "InstanceTenancy": "default",
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "CidrBlockAssociationSet": [
                                         {
-                                            "AssociationId": "vpc-cidr-assoc-00703a7a47d236f79",
+                                            "AssociationId": "vpc-cidr-assoc-017717a10cf55e4ec",
                                             "CidrBlock": "192.168.0.0/16",
                                             "CidrBlockState": {
                                                 "State": "associated"
@@ -1405,28 +1537,28 @@
                                     "IsDefault": false,
                                     "Tags": [
                                         {
-                                            "Key": "Name",
-                                            "Value": "vpc"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
                                         },
                                         {
                                             "Key": "gc-managed-by",
                                             "Value": "grucloud"
                                         },
                                         {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
                                         },
                                         {
                                             "Key": "gc-stage",
                                             "Value": "dev"
                                         },
                                         {
-                                            "Key": "gc-project-name",
-                                            "Value": "ex-vpc-mod"
+                                            "Key": "Name",
+                                            "Value": "vpc"
                                         }
                                     ],
                                     "DnsSupport": true,
@@ -1474,8 +1606,8 @@
                                             "Value": "Default"
                                         }
                                     ],
-                                    "DnsHostnames": true,
-                                    "DnsSupport": true
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
                                 },
                                 "uri": "aws::ec2::Vpc::vpc-default",
                                 "displayName": "vpc-default",
@@ -1492,48 +1624,6 @@
                         "groupType": "ec2::Vpc",
                         "type": "Vpc",
                         "group": "ec2",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "iam::Group",
-                        "type": "Group",
-                        "group": "iam",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "iam::Policy",
-                        "type": "Policy",
-                        "group": "iam",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "iam::Role",
-                        "type": "Role",
-                        "group": "iam",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "iam::User",
-                        "type": "User",
-                        "group": "iam",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "lambda::Function",
-                        "type": "Function",
-                        "group": "lambda",
-                        "providerName": "aws"
-                    },
-                    {
-                        "resources": [],
-                        "groupType": "lambda::Layer",
-                        "type": "Layer",
-                        "group": "lambda",
                         "providerName": "aws"
                     }
                 ]

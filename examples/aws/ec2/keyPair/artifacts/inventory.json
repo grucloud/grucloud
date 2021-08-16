@@ -3,12 +3,12 @@
     "commandOptions": {
         "graph": true,
         "title": "keyPair",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/keyPair/artifacts/diagram-live.dot"
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/ec2/keyPair/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
         "noOpen": true,
-        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/keyPair"
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/ec2/keyPair"
     },
     "result": {
         "error": false,
@@ -28,8 +28,8 @@
                                 "providerName": "aws",
                                 "groupType": "ec2::KeyPair",
                                 "live": {
-                                    "KeyPairId": "key-0d03959722d5436f4",
-                                    "KeyFingerprint": "9f:0f:9e:b9:0a:42:82:d6:5a:ed:c2:f9:85:90:b4:a3:47:53:b7:bf",
+                                    "KeyPairId": "key-01322c50815dba079",
+                                    "KeyFingerprint": "71:cd:91:c8:72:2f:8e:6b:23:b3:e5:73:45:d0:87:16:6b:0e:f1:ca",
                                     "KeyName": "kp",
                                     "Tags": [
                                         {

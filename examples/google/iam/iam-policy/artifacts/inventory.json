@@ -29,7 +29,7 @@
                                 "groupType": "iam::Policy",
                                 "live": {
                                     "version": 1,
-                                    "etag": "BwXJZGlHVuo=",
+                                    "etag": "BwXJsBl95S0=",
                                     "bindings": [
                                         {
                                             "role": "roles/compute.admin",
@@ -169,25 +169,25 @@
                             {
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "sa-dev",
-                                "id": "106405075321125981822",
+                                "name": "sa-example-policy",
+                                "id": "107462879733834163311",
                                 "providerName": "google",
                                 "groupType": "iam::ServiceAccount",
                                 "live": {
-                                    "name": "projects/grucloud-test/serviceAccounts/sa-dev@grucloud-test.iam.gserviceaccount.com",
+                                    "name": "projects/grucloud-test/serviceAccounts/sa-example-policy@grucloud-test.iam.gserviceaccount.com",
                                     "projectId": "grucloud-test",
-                                    "uniqueId": "106405075321125981822",
-                                    "email": "sa-dev@grucloud-test.iam.gserviceaccount.com",
+                                    "uniqueId": "107462879733834163311",
+                                    "email": "sa-example-policy@grucloud-test.iam.gserviceaccount.com",
                                     "displayName": "SA dev",
                                     "etag": "MDEwMjE5MjA=",
                                     "description": "Managed By GruCloud",
-                                    "oauth2ClientId": "106405075321125981822",
+                                    "oauth2ClientId": "107462879733834163311",
                                     "iamPolicy": {
                                         "etag": "ACAB"
                                     }
                                 },
-                                "uri": "google::iam::ServiceAccount::sa-dev",
-                                "displayName": "sa-dev",
+                                "uri": "google::iam::ServiceAccount::sa-example-policy",
+                                "displayName": "sa-example-policy",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,

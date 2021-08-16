@@ -24,12 +24,12 @@
                                 "group": "compute",
                                 "type": "Disk",
                                 "name": "db-dev",
-                                "id": "3382061636695629079",
+                                "id": "8942572086190614319",
                                 "providerName": "google",
                                 "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "3382061636695629079",
-                                    "creationTimestamp": "2021-08-12T15:43:04.730-07:00",
+                                    "id": "8942572086190614319",
+                                    "creationTimestamp": "2021-08-16T10:00:48.483-07:00",
                                     "name": "db-dev",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a",
@@ -55,7 +55,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-12T15:43:04.731-07:00",
+                                    "lastAttachTimestamp": "2021-08-16T10:00:48.483-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/db-dev"
                                     ],
@@ -89,12 +89,12 @@
                                 "group": "compute",
                                 "type": "Firewall",
                                 "name": "firewall-dev",
-                                "id": "4928597716951899399",
+                                "id": "7609355688518035268",
                                 "providerName": "google",
                                 "groupType": "compute::Firewall",
                                 "live": {
-                                    "id": "4928597716951899399",
-                                    "creationTimestamp": "2021-08-12T15:42:48.286-07:00",
+                                    "id": "7609355688518035268",
+                                    "creationTimestamp": "2021-08-16T10:00:27.965-07:00",
                                     "name": "firewall-dev",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/vpc-dev",
@@ -132,7 +132,7 @@
                                     {
                                         "type": "Network",
                                         "ids": [
-                                            "6571948944244874528"
+                                            "7585677327656757105"
                                         ],
                                         "providerName": "google",
                                         "groupType": "undefined::Network"
@@ -213,12 +213,12 @@
                                 "group": "compute",
                                 "type": "Network",
                                 "name": "vpc-dev",
-                                "id": "6571948944244874528",
+                                "id": "7585677327656757105",
                                 "providerName": "google",
                                 "groupType": "compute::Network",
                                 "live": {
-                                    "id": "6571948944244874528",
-                                    "creationTimestamp": "2021-08-12T15:42:23.628-07:00",
+                                    "id": "7585677327656757105",
+                                    "creationTimestamp": "2021-08-16T10:00:14.154-07:00",
                                     "name": "vpc-dev",
                                     "description": "Managed By GruCloud",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/vpc-dev",
@@ -296,12 +296,12 @@
                                 "group": "compute",
                                 "type": "SubNetwork",
                                 "name": "subnetwork-dev",
-                                "id": "7514149187122371847",
+                                "id": "9165980432204244804",
                                 "providerName": "google",
                                 "groupType": "compute::SubNetwork",
                                 "live": {
-                                    "id": "7514149187122371847",
-                                    "creationTimestamp": "2021-08-12T15:42:48.309-07:00",
+                                    "id": "9165980432204244804",
+                                    "creationTimestamp": "2021-08-16T10:00:27.601-07:00",
                                     "name": "subnetwork-dev",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/vpc-dev",
@@ -310,7 +310,7 @@
                                     "region": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/subnetworks/subnetwork-dev",
                                     "privateIpGoogleAccess": false,
-                                    "fingerprint": "3b_Faqt6zWw=",
+                                    "fingerprint": "HpJvswbUx1o=",
                                     "privateIpv6GoogleAccess": "DISABLE_GOOGLE_ACCESS",
                                     "purpose": "PRIVATE",
                                     "stackType": "IPV4_ONLY",
@@ -328,7 +328,7 @@
                                     {
                                         "type": "Network",
                                         "ids": [
-                                            "6571948944244874528"
+                                            "7585677327656757105"
                                         ],
                                         "providerName": "google",
                                         "groupType": "undefined::Network"
@@ -348,12 +348,12 @@
                                 "group": "compute",
                                 "type": "VmInstance",
                                 "name": "db-dev",
-                                "id": "5328623519133080855",
+                                "id": "2610589646663919440",
                                 "providerName": "google",
                                 "groupType": "compute::VmInstance",
                                 "live": {
-                                    "id": "5328623519133080855",
-                                    "creationTimestamp": "2021-08-12T15:43:04.719-07:00",
+                                    "id": "2610589646663919440",
+                                    "creationTimestamp": "2021-08-16T10:00:48.468-07:00",
                                     "name": "db-dev",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -372,12 +372,12 @@
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "35.204.137.126",
+                                                    "natIP": "34.141.198.103",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "9ZffKXHAf30=",
+                                            "fingerprint": "DJvSHbsBd5A=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -462,8 +462,8 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "JbHb_-vHbOA=",
-                                    "lastStartTimestamp": "2021-08-12T15:43:14.493-07:00",
+                                    "fingerprint": "7FyT2jfRMCo=",
+                                    "lastStartTimestamp": "2021-08-16T10:00:56.653-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "uri": "google::compute::VmInstance::db-dev",
@@ -478,7 +478,7 @@
                                     {
                                         "type": "Network",
                                         "ids": [
-                                            "6571948944244874528"
+                                            "7585677327656757105"
                                         ],
                                         "providerName": "google",
                                         "groupType": "undefined::Network"
@@ -486,7 +486,7 @@
                                     {
                                         "type": "SubNetwork",
                                         "ids": [
-                                            "7514149187122371847"
+                                            "9165980432204244804"
                                         ],
                                         "providerName": "google",
                                         "groupType": "undefined::SubNetwork"
@@ -565,37 +565,6 @@
                             {
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "sa-dev",
-                                "id": "100080481693897624462",
-                                "providerName": "google",
-                                "groupType": "iam::ServiceAccount",
-                                "live": {
-                                    "name": "projects/grucloud-test/serviceAccounts/sa-dev@grucloud-test.iam.gserviceaccount.com",
-                                    "projectId": "grucloud-test",
-                                    "uniqueId": "100080481693897624462",
-                                    "email": "sa-dev@grucloud-test.iam.gserviceaccount.com",
-                                    "displayName": "SA dev",
-                                    "etag": "MDEwMjE5MjA=",
-                                    "description": "Managed By GruCloud",
-                                    "oauth2ClientId": "100080481693897624462",
-                                    "iamPolicy": {
-                                        "etag": "ACAB"
-                                    }
-                                },
-                                "uri": "google::iam::ServiceAccount::sa-dev",
-                                "displayName": "sa-dev",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "ServiceAccount",
                                 "name": "sa-grucloud",
                                 "id": "105908581481869541232",
                                 "providerName": "google",
@@ -617,6 +586,37 @@
                                 "cannotBeDeleted": true,
                                 "isOurMinion": false,
                                 "managedByUs": false,
+                                "managedByOther": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "show": true
+                            },
+                            {
+                                "group": "iam",
+                                "type": "ServiceAccount",
+                                "name": "sa-test-vm",
+                                "id": "118297484001996522797",
+                                "providerName": "google",
+                                "groupType": "iam::ServiceAccount",
+                                "live": {
+                                    "name": "projects/grucloud-test/serviceAccounts/sa-test-vm@grucloud-test.iam.gserviceaccount.com",
+                                    "projectId": "grucloud-test",
+                                    "uniqueId": "118297484001996522797",
+                                    "email": "sa-test-vm@grucloud-test.iam.gserviceaccount.com",
+                                    "displayName": "SA dev",
+                                    "etag": "MDEwMjE5MjA=",
+                                    "description": "Managed By GruCloud",
+                                    "oauth2ClientId": "118297484001996522797",
+                                    "iamPolicy": {
+                                        "etag": "ACAB"
+                                    }
+                                },
+                                "uri": "google::iam::ServiceAccount::sa-test-vm",
+                                "displayName": "sa-test-vm",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
                                 "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",

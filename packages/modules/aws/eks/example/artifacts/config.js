@@ -101,12 +101,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/internal-elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/internal-elb",
+              Value: "1",
             },
           ],
         },
@@ -139,12 +139,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/elb",
+              Value: "1",
             },
           ],
         },

@@ -307,7 +307,7 @@ const codeBuildName = ({ group, type, resourceVarName }) =>
       assert(type);
       assert(resourceVarName);
     }),
-    () => `name: config.${group}.${type}.${resourceVarName}.name,`,
+    () => `name: get("config.${group}.${type}.${resourceVarName}.name"),`,
   ])();
 
 const codeBuildNamespace = ({ namespace }) =>
@@ -327,7 +327,7 @@ const codeBuildPropertiesDefault = ({
     }),
     () =>
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
+        ? `\nproperties: get("config.${group}.${type}.${resourceVarName}.properties"),`
         : "",
   ])();
 

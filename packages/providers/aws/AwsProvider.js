@@ -35,20 +35,19 @@ const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
-const AwsEC2 = require("./EC2");
+const EC2 = require("./EC2");
 const DynamoDB = require("./DynamoDB");
-
 const ECR = require("./ECR");
-
-const AwsEKS = require("./EKS");
-const AwsELBv2 = require("./ELBv2");
-const AwsIam = require("./IAM");
-const AwsKMS = require("./KMS");
-const AwsLambda = require("./Lambda");
-const AwsRDS = require("./RDS");
-const AwsRoute53 = require("./Route53");
-const AwsRoute53Domain = require("./Route53Domain");
-const AwsS3 = require("./S3");
+const ECS = require("./ECS");
+const EKS = require("./EKS");
+const ELBv2 = require("./ELBv2");
+const IAM = require("./IAM");
+const KMS = require("./KMS");
+const Lambda = require("./Lambda");
+const RDS = require("./RDS");
+const Route53 = require("./Route53");
+const Route53Domain = require("./Route53Domain");
+const S3 = require("./S3");
 const SSM = require("./SSM");
 
 const fnSpecs = (config) =>
@@ -65,17 +64,18 @@ const fnSpecs = (config) =>
       ...AwsCloudFront(),
       ...CognitoIdentityServiceProvider(),
       ...DynamoDB(),
-      ...AwsEC2(),
+      ...EC2(),
       ...ECR(),
-      ...AwsEKS(),
-      ...AwsELBv2(),
-      ...AwsIam(),
-      ...AwsKMS(),
-      ...AwsLambda(),
-      ...AwsRDS(),
-      ...AwsRoute53(),
-      ...AwsRoute53Domain(),
-      ...AwsS3(),
+      ...ECS(),
+      ...EKS(),
+      ...ELBv2(),
+      ...IAM(),
+      ...KMS(),
+      ...Lambda(),
+      ...RDS(),
+      ...Route53(),
+      ...Route53Domain(),
+      ...S3(),
       ...SSM(),
     ],
   ])();
@@ -205,6 +205,8 @@ exports.AwsProvider = ({
         switchCase([
           () => a.Key,
           () => localeCompare({ a, b, key: "Key" }),
+          () => a.key,
+          () => localeCompare({ a, b, key: "key" }),
           () => a.TagKey,
           () => localeCompare({ a, b, key: "TagKey" }),
           () => true,

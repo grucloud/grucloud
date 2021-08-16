@@ -3,12 +3,12 @@
     "commandOptions": {
         "graph": true,
         "title": "iam-policy",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/iam-policy/artifacts/diagram-live.dot"
+        "dotFile": "/Users/fredericheem/grucloud/examples/aws/iam/iam-policy/artifacts/diagram-live.dot"
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
         "noOpen": true,
-        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/iam-policy"
+        "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/iam/iam-policy"
     },
     "result": {
         "error": false,
@@ -64,88 +64,13 @@
                             {
                                 "group": "iam",
                                 "type": "Policy",
-                                "name": "lambda-policy",
-                                "id": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                "providerName": "aws",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "PolicyName": "lambda-policy",
-                                    "PolicyId": "ANPA4HNBM2ZQIZNWGIHJG",
-                                    "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
-                                    "Path": "/",
-                                    "DefaultVersionId": "v1",
-                                    "AttachmentCount": 1,
-                                    "PermissionsBoundaryUsageCount": 0,
-                                    "IsAttachable": true,
-                                    "Description": "Allow logs",
-                                    "CreateDate": "2021-08-15T17:15:44.000Z",
-                                    "UpdateDate": "2021-08-15T17:15:44.000Z",
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-policy"
-                                        }
-                                    ],
-                                    "EntitiesForPolicy": {
-                                        "PolicyGroups": [],
-                                        "PolicyUsers": [],
-                                        "PolicyRoles": [
-                                            {
-                                                "RoleName": "lambda-role",
-                                                "RoleId": "AROA4HNBM2ZQOFYMADF3N"
-                                            }
-                                        ]
-                                    },
-                                    "PolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Action": [
-                                                    "logs:*"
-                                                ],
-                                                "Effect": "Allow",
-                                                "Resource": "*"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "uri": "aws::iam::Policy::lambda-policy",
-                                "displayName": "lambda-policy",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
                                 "name": "policy-allow-ec2",
                                 "id": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
                                 "providerName": "aws",
                                 "groupType": "iam::Policy",
                                 "live": {
                                     "PolicyName": "policy-allow-ec2",
-                                    "PolicyId": "ANPA4HNBM2ZQPWVNLALFY",
+                                    "PolicyId": "ANPA4HNBM2ZQCGYSSASCN",
                                     "Arn": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
                                     "Path": "/",
                                     "DefaultVersionId": "v1",
@@ -153,8 +78,8 @@
                                     "PermissionsBoundaryUsageCount": 0,
                                     "IsAttachable": true,
                                     "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-15T17:37:22.000Z",
-                                    "UpdateDate": "2021-08-15T17:37:22.000Z",
+                                    "CreateDate": "2021-08-16T05:18:42.000Z",
+                                    "UpdateDate": "2021-08-16T05:18:42.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -183,7 +108,7 @@
                                         "PolicyRoles": [
                                             {
                                                 "RoleName": "role-4-policies",
-                                                "RoleId": "AROA4HNBM2ZQA3LGH4NZQ"
+                                                "RoleId": "AROA4HNBM2ZQI6RVX3WLS"
                                             }
                                         ]
                                     },
@@ -222,85 +147,6 @@
                             {
                                 "group": "iam",
                                 "type": "Role",
-                                "name": "lambda-role",
-                                "id": "arn:aws:iam::840541460064:role/lambda-role",
-                                "providerName": "aws",
-                                "groupType": "iam::Role",
-                                "live": {
-                                    "Path": "/",
-                                    "RoleName": "lambda-role",
-                                    "RoleId": "AROA4HNBM2ZQOFYMADF3N",
-                                    "Arn": "arn:aws:iam::840541460064:role/lambda-role",
-                                    "CreateDate": "2021-08-15T17:15:47.000Z",
-                                    "AssumeRolePolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Sid": "",
-                                                "Effect": "Allow",
-                                                "Principal": {
-                                                    "Service": "lambda.amazonaws.com"
-                                                },
-                                                "Action": "sts:AssumeRole"
-                                            }
-                                        ]
-                                    },
-                                    "MaxSessionDuration": 3600,
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "lambda-nodejs-helloworld"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "lambda-role"
-                                        }
-                                    ],
-                                    "AttachedPolicies": [
-                                        {
-                                            "PolicyName": "lambda-policy",
-                                            "PolicyArn": "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        }
-                                    ],
-                                    "Policies": [],
-                                    "InstanceProfiles": []
-                                },
-                                "uri": "aws::iam::Role::lambda-role",
-                                "displayName": "lambda-role",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "Policy",
-                                        "group": "iam",
-                                        "ids": [
-                                            "arn:aws:iam::840541460064:policy/lambda-policy"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "iam::Policy"
-                                    }
-                                ],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Role",
                                 "name": "role-4-policies",
                                 "id": "arn:aws:iam::840541460064:role/role-4-policies",
                                 "providerName": "aws",
@@ -308,9 +154,9 @@
                                 "live": {
                                     "Path": "/",
                                     "RoleName": "role-4-policies",
-                                    "RoleId": "AROA4HNBM2ZQA3LGH4NZQ",
+                                    "RoleId": "AROA4HNBM2ZQI6RVX3WLS",
                                     "Arn": "arn:aws:iam::840541460064:role/role-4-policies",
-                                    "CreateDate": "2021-08-15T17:37:25.000Z",
+                                    "CreateDate": "2021-08-16T05:18:45.000Z",
                                     "AssumeRolePolicyDocument": {
                                         "Version": "2012-10-17",
                                         "Statement": [
@@ -347,7 +193,7 @@
                                             "Value": "role-4-policies"
                                         }
                                     ],
-                                    "InstanceProfiles": [],
+                                    "Policies": [],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "policy-allow-ec2",
@@ -358,7 +204,7 @@
                                             "PolicyArn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
                                         }
                                     ],
-                                    "Policies": []
+                                    "InstanceProfiles": []
                                 },
                                 "uri": "aws::iam::Role::role-4-policies",
                                 "displayName": "role-4-policies",

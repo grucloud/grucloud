@@ -32,7 +32,7 @@
                                     "Type": "String",
                                     "Value": "my-value",
                                     "Version": 1,
-                                    "LastModifiedDate": "2021-08-16T01:31:20.216Z",
+                                    "LastModifiedDate": "2021-08-16T05:45:06.040Z",
                                     "ARN": "arn:aws:ssm:eu-west-2:840541460064:parameter/text-param",
                                     "DataType": "text",
                                     "Tags": [

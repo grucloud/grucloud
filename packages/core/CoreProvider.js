@@ -1835,7 +1835,7 @@ function CoreProvider({
   };
 
   return pipe([
-    () => provider,
+    () => ({}),
     defaultsDeep(
       createResourceMakers({
         provider,
@@ -1861,6 +1861,7 @@ function CoreProvider({
         programOptions: getProgramOptions(),
       })
     ),
+    (enhanced) => Object.assign(provider, enhanced),
   ])();
 }
 

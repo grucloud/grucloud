@@ -23,35 +23,35 @@
                             {
                                 "group": "dynamoDB",
                                 "type": "Table",
-                                "name": "MyModelTypeDemoTable",
-                                "id": "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable",
+                                "name": "myTable",
+                                "id": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
                                 "providerName": "aws",
                                 "groupType": "dynamoDB::Table",
                                 "live": {
                                     "AttributeDefinitions": [
                                         {
-                                            "AttributeName": "id",
+                                            "AttributeName": "Id",
                                             "AttributeType": "S"
                                         }
                                     ],
-                                    "TableName": "MyModelTypeDemoTable",
+                                    "TableName": "myTable",
                                     "KeySchema": [
                                         {
-                                            "AttributeName": "id",
+                                            "AttributeName": "Id",
                                             "KeyType": "HASH"
                                         }
                                     ],
                                     "TableStatus": "ACTIVE",
-                                    "CreationDateTime": "2021-08-15T21:38:44.243Z",
+                                    "CreationDateTime": "2021-08-16T04:56:50.846Z",
                                     "ProvisionedThroughput": {
                                         "NumberOfDecreasesToday": 0,
-                                        "ReadCapacityUnits": 1,
-                                        "WriteCapacityUnits": 1
+                                        "ReadCapacityUnits": 5,
+                                        "WriteCapacityUnits": 5
                                     },
                                     "TableSizeBytes": 0,
                                     "ItemCount": 0,
-                                    "TableArn": "arn:aws:dynamodb:eu-west-2:840541460064:table/MyModelTypeDemoTable",
-                                    "TableId": "40865371-9a1b-4642-b2f2-c6062ef7a42e",
+                                    "TableArn": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
+                                    "TableId": "2340cf01-a04f-4c7c-8302-5e42a32fb231",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -71,12 +71,16 @@
                                         },
                                         {
                                             "Key": "Name",
-                                            "Value": "MyModelTypeDemoTable"
+                                            "Value": "myTable"
+                                        },
+                                        {
+                                            "Key": "TOTOKEY",
+                                            "Value": "TOTO"
                                         }
                                     ]
                                 },
-                                "uri": "aws::dynamoDB::Table::MyModelTypeDemoTable",
-                                "displayName": "MyModelTypeDemoTable",
+                                "uri": "aws::dynamoDB::Table::myTable",
+                                "displayName": "myTable",
                                 "cannotBeDeleted": false,
                                 "isOurMinion": true,
                                 "managedByUs": true,

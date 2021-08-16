@@ -78,22 +78,21 @@ exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AzureProvider, {
     config: require("./config"),
   });
-  const { stage } = provider.config;
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = provider.resourceManagement.makeResourceGroup({
-    name: `resource-group-${stage}`,
+    name: `resource-group`,
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
   const vnet = provider.virtualNetworks.makeVirtualNetwork({
-    name: `virtual-network-${stage}`,
+    name: `virtual-network`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
       properties: {
         addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
         subnets: [
           {
-            name: `subnet-${stage}`,
+            name: `subnet`,
             properties: {
               addressPrefix: "10.0.0.0/24",
             },
@@ -105,7 +104,7 @@ exports.createStack = async ({ createProvider }) => {
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
   const sg = provider.virtualNetworks.makeSecurityGroup({
-    name: `security-group-${stage}`,
+    name: `security-group`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
       properties: {
@@ -130,7 +129,7 @@ exports.createStack = async ({ createProvider }) => {
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
   const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
-    name: `ip-${stage}`,
+    name: `ip`,
     dependencies: {
       resourceGroup: rg,
     },
@@ -142,12 +141,12 @@ exports.createStack = async ({ createProvider }) => {
   });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
   const networkInterface = provider.virtualNetworks.makeNetworkInterface({
-    name: `network-interface-${stage}`,
+    name: `network-interface`,
     dependencies: {
       resourceGroup: rg,
       virtualNetwork: vnet,
       securityGroup: sg,
-      subnet: `subnet-${stage}`,
+      subnet: `subnet`,
       publicIpAddress,
     },
     properties: () => ({
@@ -170,7 +169,7 @@ exports.createStack = async ({ createProvider }) => {
 
   // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/createorupdate
   const vm = provider.compute.makeVirtualMachine({
-    name: `vm-${stage}`,
+    name: `vm`,
     dependencies: {
       resourceGroup: rg,
       networkInterface,

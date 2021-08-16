@@ -22,12 +22,12 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-213 476,-213 476,-54 16,-54"/>
 <text text-anchor="start" x="245.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- ServiceAccount::sa&#45;dev -->
+<!-- ServiceAccount::sa&#45;test&#45;vm -->
 <g id="node1" class="node">
-<title>ServiceAccount::sa&#45;dev</title>
+<title>ServiceAccount::sa&#45;test&#45;vm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="169,-205 24,-205 24,-147 169,-147 169,-205"/>
 <text text-anchor="start" x="36.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="36.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;dev</text>
+<text text-anchor="start" x="36.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;test&#45;vm</text>
 </g>
 <!-- Network::vpc&#45;dev -->
 <g id="node2" class="node">

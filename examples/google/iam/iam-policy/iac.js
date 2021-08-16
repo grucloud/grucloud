@@ -31,11 +31,9 @@ exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(GoogleProvider, {
     config: require("./config"),
   });
-  const { stage } = provider.config;
-  assert(stage, "missing stage");
 
   const serviceAccount = provider.iam.makeServiceAccount({
-    name: `sa-${stage}`,
+    name: `sa-example-policy`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",

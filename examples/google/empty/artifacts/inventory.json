@@ -371,201 +371,63 @@
                                 "providerName": "google",
                                 "groupType": "iam::Policy",
                                 "live": {
-                                    "role": "roles/compute.admin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/compute.serviceAgent",
-                                    "members": [
-                                        "serviceAccount:service-91170824493@compute-system.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/compute.viewer",
-                                    "members": [
-                                        "serviceAccount:sa-grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/dns.admin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/iam.serviceAccountAdmin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/owner",
-                                    "members": [
-                                        "user:fred@grucloud.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/resourcemanager.projectIamAdmin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/storage.admin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
-                                    ]
-                                },
-                                "uri": "google::iam::Policy::policy",
-                                "displayName": "policy",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "iam",
-                                "type": "Policy",
-                                "name": "policy",
-                                "id": "policy",
-                                "providerName": "google",
-                                "groupType": "iam::Policy",
-                                "live": {
-                                    "role": "roles/storage.objectAdmin",
-                                    "members": [
-                                        "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                    "version": 1,
+                                    "etag": "BwXJsBD81KQ=",
+                                    "bindings": [
+                                        {
+                                            "role": "roles/compute.admin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/compute.serviceAgent",
+                                            "members": [
+                                                "serviceAccount:service-91170824493@compute-system.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/compute.viewer",
+                                            "members": [
+                                                "serviceAccount:sa-grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/dns.admin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/iam.serviceAccountAdmin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/owner",
+                                            "members": [
+                                                "user:fred@grucloud.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/resourcemanager.projectIamAdmin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/storage.admin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        },
+                                        {
+                                            "role": "roles/storage.objectAdmin",
+                                            "members": [
+                                                "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"
+                                            ]
+                                        }
                                     ]
                                 },
                                 "uri": "google::iam::Policy::policy",
