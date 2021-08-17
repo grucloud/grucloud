@@ -267,7 +267,10 @@ function CoreProvider({
     assert(spec.groupType);
     const resourceKey = resource.toString();
     logger.debug(`targetResourcesAdd ${resourceKey}`);
-    if (mapNameToResource.has(resourceKey) && !spec.listOnly) {
+    if (mapNameToResource.has(resourceKey)) {
+      if (spec.listOnly) {
+        return;
+      }
       throw {
         code: 400,
         message: `resource '${resourceKey}' already exists`,

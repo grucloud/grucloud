@@ -438,6 +438,16 @@ const findNamespaceInTagsObject =
 
 exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
+const findNameInKeyName = pipe([
+  find(eq(get("Key"), configProviderDefault.nameKey)),
+  get("Value"),
+]);
+
+const findNameInKeyCloudFormation = pipe([
+  find(eq(get("Key"), "aws:cloudformation:logical-id")),
+  get("Value"),
+]);
+
 //TODO params for key and value
 const findNameInTags =
   ({ tags = "Tags" } = {}) =>
@@ -455,10 +465,14 @@ const findNameInTags =
       }),
       switchCase([
         Array.isArray,
-        pipe([
-          find(eq(get("Key"), configProviderDefault.nameKey)),
-          get("Value"),
-        ]),
+        (tags) => {
+          for (fn of [findNameInKeyCloudFormation, findNameInKeyName]) {
+            const name = fn(tags);
+            if (!isEmpty(name)) {
+              return name;
+            }
+          }
+        },
         pipe([get(configProviderDefault.nameKey)]),
       ]),
     ])();

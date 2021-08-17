@@ -1,4 +1,7 @@
-const { pipe, assign, map } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, tap, get } = require("rubico");
+const { when, isString } = require("rubico/x");
+
 const { AwsIamUser } = require("./AwsIamUser");
 const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
 const { AwsIamRole } = require("./AwsIamRole");
@@ -37,6 +40,27 @@ module.exports = () =>
       dependsOn: ["iam::Policy"],
       Client: AwsIamRole,
       isOurMinion,
+      transformDependencies: ({ provider }) =>
+        pipe([
+          assign({
+            policies: pipe([
+              get("policies", []),
+              map(
+                when(isString, (name) =>
+                  provider.iam.usePolicy({
+                    name: name.replace("arn:aws:iam::aws:policy/", ""),
+                    properties: () => ({
+                      Arn: name,
+                    }),
+                  })
+                )
+              ),
+            ]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
     },
     {
       type: "Policy",

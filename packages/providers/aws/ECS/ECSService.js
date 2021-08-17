@@ -9,12 +9,12 @@ const {
   eq,
   not,
   pick,
-  assign,
+  flatMap,
 } = require("rubico");
 const { defaultsDeep, isEmpty, includes, first } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "ECSCapacityProvider",
+  prefix: "ECSService",
 });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -23,25 +23,21 @@ const {
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.capacityProviderArn");
-const findName = get("live.name");
+const findId = get("live.serviceArn");
+const findName = get("live.serviceName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
-exports.ECSCapacityProvider = ({ spec, config }) => {
+exports.ECSService = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live }) => [
     {
-      type: "AutoScalingGroup",
-      group: "autoscaling",
-      ids: [
-        pipe([
-          () => live,
-          get("autoScalingGroupProvider.autoScalingGroupArn"),
-        ])(),
-      ],
+      type: "Cluster",
+      group: "ecs",
+      ids: [pipe([() => live, get("clusterArn")])()],
     },
   ];
 
@@ -52,17 +48,22 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     () => "",
   ]);
 
-  const isInvalidArn = eq(
-    get("message"),
-    "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
-  );
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
-  const describeCapacityProviders = pipe([
+  const isInvalidArn = pipe([
     tap((params) => {
       assert(true);
     }),
-    ecs().describeCapacityProviders,
-    get("capacityProviders"),
+    eq(
+      get("message"),
+      "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
+    ),
+  ]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
+  const describeServices = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    ecs().describeServices,
+    get("services"),
     tap((params) => {
       assert(true);
     }),
@@ -75,8 +76,8 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
         tap(() => {
           assert(name);
         }),
-        () => ({ capacityProviders: [name] }),
-        describeCapacityProviders,
+        () => ({ services: [name] }),
+        describeServices,
         first,
         tap((params) => {
           assert(true);
@@ -91,65 +92,75 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ])
     )();
 
-  const getList = () =>
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listServices-property
+  const getList = ({ lives }) =>
     pipe([
-      describeCapacityProviders,
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: "Cluster",
+          group: "ecs",
+        }),
+      flatMap(
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("id"),
+          tap((params) => {
+            assert(true);
+          }),
+          (cluster) => ({ cluster }),
+          ecs().listServices,
+          get("serviceArns"),
+          (services) => ({ services }),
+          describeServices,
+        ])
+      ),
       tap((params) => {
         assert(true);
       }),
     ])();
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([
-    getByName,
-    switchCase([
-      eq(get("updateStatus"), "DELETE_FAILED"),
-      () => {
-        throw Error(`DELETE_FAILED`);
-      },
-      isEmpty,
-      () => true,
-      () => false,
-    ]),
-  ]);
+  const isInstanceUp = eq(get("status"), "ACTIVE");
+  const isUpByName = pipe([getByName, isInstanceUp]);
+  const isDownByName = pipe([getByName, isEmpty]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
   const create = ({ payload, name, namespace }) =>
     pipe([
       () => payload,
-      ecs().createCapacityProvider,
+      ecs().createService,
       tap(() =>
         retryCall({
-          name: `createCapacityProvider isUpByName: ${name}`,
+          name: `createService isUpByName: ${name}`,
           fn: () => isUpByName({ name }),
         })
       ),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteService-property
   const destroy = ({ live }) =>
     pipe([
       () => live,
-      tap(({ name }) => {
-        assert(name);
+      tap(({ serviceName }) => {
+        assert(serviceName);
       }),
-      ({ name }) => ({ capacityProvider: name }),
+      ({ serviceName }) => ({ service: serviceName }),
       tryCatch(
         pipe([
-          ecs().deleteCapacityProvider,
+          ecs().deleteService,
           () =>
             retryCall({
-              name: `deleteCapacityProvider isDownByName: ${live.name}`,
-              fn: () => isDownByName({ name: live.name }),
+              name: `deleteService isDownByName: ${live.serviceName}`,
+              fn: () => isDownByName({ name: live.serviceName }),
               config,
             }),
         ]),
         (error, params) =>
           pipe([
             tap(() => {
-              logger.error(
-                `error deleteCapacityProvider ${tos({ params, error })}`
-              );
+              logger.error(`error deleteService ${tos({ params, error })}`);
             }),
             () => error,
             switchCase([
@@ -167,12 +178,16 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { cluster },
   }) =>
     pipe([
+      tap(() => {
+        assert(cluster, "missing 'cluster' dependency");
+      }),
       () => otherProps,
       defaultsDeep({
-        name,
+        serviceName: name,
+        cluster: getField(cluster, "clusterArn"),
         tags: buildTags({
           name,
           config,
@@ -183,9 +198,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
         }),
       }),
     ])();
-
-  const cannotBeDeleted = ({ live }) =>
-    pipe([() => ["FARGATE", "FARGATE_SPOT"], includes(live.name)])();
 
   return {
     spec,
@@ -199,8 +211,5 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
-    cannotBeDeleted,
-    managedyOther: cannotBeDeleted,
-    isDefault: cannotBeDeleted,
   };
 };

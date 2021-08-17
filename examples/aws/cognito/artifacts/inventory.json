@@ -21,14 +21,12 @@
                     {
                         "resources": [
                             {
+                                "groupType": "cognitoIdentityServiceProvider::UserPool",
                                 "group": "cognitoIdentityServiceProvider",
                                 "type": "UserPool",
-                                "name": "userpool-test",
-                                "id": "eu-west-2_tcR7wBftR",
                                 "providerName": "aws",
-                                "groupType": "cognitoIdentityServiceProvider::UserPool",
                                 "live": {
-                                    "Id": "eu-west-2_tcR7wBftR",
+                                    "Id": "eu-west-2_WxLOSbuCM",
                                     "Name": "userpool-test",
                                     "Policies": {
                                         "PasswordPolicy": {
@@ -41,8 +39,8 @@
                                         }
                                     },
                                     "LambdaConfig": {},
-                                    "LastModifiedDate": "2021-08-16T04:56:19.520Z",
-                                    "CreationDate": "2021-08-16T04:56:19.520Z",
+                                    "LastModifiedDate": "2021-08-17T16:31:07.391Z",
+                                    "CreationDate": "2021-08-17T16:31:07.391Z",
                                     "SchemaAttributes": [
                                         {
                                             "Name": "sub",
@@ -275,18 +273,19 @@
                                         "AllowAdminCreateUserOnly": false,
                                         "UnusedAccountValidityDays": 7
                                     },
-                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_tcR7wBftR"
+                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_WxLOSbuCM"
                                 },
-                                "uri": "aws::cognitoIdentityServiceProvider::UserPool::userpool-test",
-                                "displayName": "userpool-test",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "userpool-test",
+                                "id": "eu-west-2_WxLOSbuCM",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "userpool-test",
+                                "uri": "aws::cognitoIdentityServiceProvider::UserPool::userpool-test"
                             }
                         ],
                         "groupType": "cognitoIdentityServiceProvider::UserPool",

@@ -88,6 +88,9 @@ const resourceNameFilterDefault = pipe([
   get("name"),
   tap((name) => {
     assert(name);
+    if (!name.startsWith) {
+      assert(false);
+    }
   }),
   and([
     //({ name }) => !name.startsWith("kube"),
@@ -225,7 +228,12 @@ const associationIdString = ({
         ({ nodeFrom, nodeTo }) =>
           `"${nodeFrom}" -> "${nodeTo}" [color="${edge.color}"];`,
       ]),
-      () => "",
+      pipe([
+        tap(() => {
+          console.error(`Ignore ${nameFrom} ${nameTo}`);
+        }),
+        () => "",
+      ]),
     ]),
   ])();
 
@@ -292,7 +300,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
       pipe([
         tap(() => {
           logger.debug(
-            `${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
+            `buildGraphAssociationLive ${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
               dependencies
             )}`
           );

@@ -251,7 +251,17 @@ const configTpl = ({
   ])();
 
 const dependencyValue = ({ key, value }) =>
-  switchCase([() => key.endsWith("s"), () => `[${value}]`, () => value])();
+  pipe([
+    tap(() => {
+      assert(Array.isArray(value));
+    }),
+    () => value,
+    callProp("sort", (a, b) => () => a.name.localeCompare(b.name)),
+    when(
+      () => key.endsWith("s"),
+      (value) => `[${value}]`
+    ),
+  ])();
 
 const buildDependencies = ({
   providerName,
@@ -576,39 +586,36 @@ const removeDefaultDependencies =
                             group,
                             providerName,
                           }),
-                          unless(isEmpty, (dependency) =>
-                            pipe([
-                              tap(() => {
-                                assert(true);
-                              }),
-                              () => dependency,
-                              findDependencySpec({ writersSpec, resource }),
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              any(
-                                pipe([
-                                  get("filterDependency"),
-                                  switchCase([
-                                    isFunction,
-                                    (filterDependency) =>
-                                      filterDependency({ resource })(
-                                        dependency
-                                      ),
-                                    () => true,
-                                  ]),
-                                ])
-                              ),
-                              tap((params) => {
-                                assert(true);
-                              }),
-                            ])()
-                          ),
+                          switchCase([
+                            isEmpty,
+                            pipe([() => true]),
+                            (dependency) =>
+                              pipe([
+                                () => dependency,
+                                findDependencySpec({ writersSpec, resource }),
+                                any(
+                                  pipe([
+                                    get("filterDependency"),
+                                    switchCase([
+                                      isFunction,
+                                      (filterDependency) =>
+                                        filterDependency({ resource })(
+                                          dependency
+                                        ),
+                                      () => true,
+                                    ]),
+                                  ])
+                                ),
+                              ])(),
+                          ]),
                         ])
                       ),
                     ])(),
                 })
               ),
+              tap((params) => {
+                assert(true);
+              }),
             ])(),
         })
       ),

@@ -3,6 +3,7 @@ const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
 const {
+  tryCatch,
   switchCase,
   pipe,
   tap,
@@ -16,7 +17,15 @@ const {
   and,
   fork,
 } = require("rubico");
-const { isEmpty, forEach, pluck, size, find, identity } = require("rubico/x");
+const {
+  callProp,
+  isEmpty,
+  forEach,
+  pluck,
+  size,
+  find,
+  identity,
+} = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
 
@@ -325,6 +334,18 @@ const tablePerTypeDefinitions = [
   },
 ];
 
+const stringifyLimit = tryCatch(
+  pipe([YAML.stringify, callProp("slice", 2e3)]),
+  (error, toFormat) =>
+    pipe([
+      tap((params) => {
+        assert(error);
+        assert(toFormat);
+      }),
+      () => "ERROR",
+    ])()
+);
+
 const tablePerTypeDefault = {
   fields: [
     pipe([
@@ -333,7 +354,7 @@ const tablePerTypeDefault = {
         managedByUs: displayManagedByUs,
         live: get("live"),
       }),
-      YAML.stringify,
+      stringifyLimit,
     ]),
   ],
 };
@@ -348,7 +369,7 @@ const displayLiveItem =
       () =>
         table.push([
           {
-            content: colors.red(YAML.stringify(resource)),
+            content: colors.red(stringifyLimit(resource)),
           },
         ]),
       () => table.push(tableDefinitions.fields.map((field) => field(resource))),

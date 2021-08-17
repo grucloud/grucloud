@@ -21,15 +21,13 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ec2::KeyPair",
                                 "group": "ec2",
                                 "type": "KeyPair",
-                                "name": "kp",
-                                "id": "kp",
                                 "providerName": "aws",
-                                "groupType": "ec2::KeyPair",
                                 "live": {
-                                    "KeyPairId": "key-01322c50815dba079",
-                                    "KeyFingerprint": "71:cd:91:c8:72:2f:8e:6b:23:b3:e5:73:45:d0:87:16:6b:0e:f1:ca",
+                                    "KeyPairId": "key-09edf0d16571d66f2",
+                                    "KeyFingerprint": "bb:50:83:d4:2d:8a:04:17:a0:38:c0:ff:ef:3d:81:24:e7:b6:55:1f",
                                     "KeyName": "kp",
                                     "Tags": [
                                         {
@@ -54,16 +52,17 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::ec2::KeyPair::kp",
-                                "displayName": "kp",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "kp",
+                                "id": "kp",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "kp",
+                                "uri": "aws::ec2::KeyPair::kp"
                             }
                         ],
                         "groupType": "ec2::KeyPair",

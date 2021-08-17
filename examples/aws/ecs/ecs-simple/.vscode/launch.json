@@ -28,7 +28,13 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g", "--json", "artifacts/inventory.json"],
+      "runtimeArgs": [
+        "list",
+        "-g",
+        "--json",
+        "artifacts/inventory.json",
+        "--default-exclude"
+      ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

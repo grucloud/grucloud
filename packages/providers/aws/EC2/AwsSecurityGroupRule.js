@@ -42,7 +42,7 @@ const {
   shouldRetryOnException,
   buildTags,
   findNamespaceInTags,
-  findNameInTagsOrId,
+  findNameInTags,
 } = require("../AwsCommon");
 
 const findProperty = (property) =>
@@ -216,8 +216,6 @@ const ruleDefaultToName = ({
     config,
   })}`;
 
-const findSgrNameInTags = findNameInTagsOrId({ findId });
-
 const findName =
   ({ kind, config }) =>
   ({ live, lives }) =>
@@ -227,7 +225,7 @@ const findName =
         assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
       }),
       () => {
-        for (fn of [findSgrNameInTags, ruleDefaultToName]) {
+        for (fn of [findNameInTags({ findId }), ruleDefaultToName]) {
           const name = fn({ live, lives, kind, config });
           if (!isEmpty(name)) {
             return name;

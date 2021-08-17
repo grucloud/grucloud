@@ -20,7 +20,7 @@ const Axios = require("axios");
 const {
   size,
   first,
-  flatten,
+  find,
   identity,
   pluck,
   includes,
@@ -40,6 +40,7 @@ const {
   findLiveById,
   readModel,
   readMapping,
+  ResourceVarNameDefault,
 } = require("@grucloud/core/generatorUtils");
 
 const { configTpl } = require("./configTpl");
@@ -200,7 +201,38 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
         dependencies: () => ({
-          policies: { type: "Policy", group: "iam" },
+          policies: {
+            type: "Policy",
+            group: "iam",
+            findDependencyNames: ({ resource, lives, providerName }) =>
+              pipe([
+                () => resource.dependencies,
+                find(eq(get("groupType"), `iam::Policy`)),
+                get("ids"),
+                map((id) =>
+                  pipe([
+                    () => id,
+                    findLiveById({
+                      type: "Policy",
+                      group: "iam",
+                      lives,
+                      providerName,
+                    }),
+                    switchCase([
+                      isEmpty,
+                      () => `"${id}"`,
+                      ({ group = "compute", type, name }) =>
+                        `resources.${group}.${type}.${ResourceVarNameDefault(
+                          name
+                        )}`,
+                    ]),
+                  ])()
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+          },
           openIdConnectProvider: {
             type: "OpenIDConnectProvider",
             group: "iam",
@@ -585,6 +617,22 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Key",
         filterLive: () => pick([""]),
         ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+      },
+    ],
+  },
+  {
+    group: "ecs",
+    types: [
+      {
+        type: "Cluster",
+        filterLive: () => pick(["settings"]),
+        dependencies: () => ({
+          capacityProviders: { type: "CapacityProvider", group: "ecs" },
+        }),
+      },
+      {
+        type: "CapacityProvider",
+        filterLive: () => pick([""]),
       },
     ],
   },

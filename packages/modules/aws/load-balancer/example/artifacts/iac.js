@@ -41,8 +41,8 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
       subnets: [
-        resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
       ],
     }),
   });
@@ -103,8 +103,8 @@ const createResources = ({ provider }) => {
     namespace: "LoadBalancer",
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
         resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPublicA,
       ],
       securityGroups: [resources.ec2.SecurityGroup.securityGroupLoadBalancer],
     }),

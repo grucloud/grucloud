@@ -30,13 +30,27 @@ const findId = get("live.clusterArn");
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
-  //TODO
-  const findDependencies = ({ live }) => [
-    // {
-    //   type: "Key",
-    //   group: "kms",
-    //   ids: [live.KeyId],
-    // },
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "CapacityProvider",
+      group: "ecs",
+      ids: pipe([
+        () => live,
+        get("capacityProviders"),
+        map(
+          pipe([
+            (name) =>
+              lives.getByName({
+                name,
+                type: "CapacityProvider",
+                group: "ecs",
+                providerName: config.providerName,
+              }),
+            get("id"),
+          ])
+        ),
+      ])(),
+    },
   ];
 
   const findNamespace = pipe([
@@ -46,36 +60,13 @@ exports.ECSCluster = ({ spec, config }) => {
     () => "",
   ]);
 
-  // const assignTags = assign({
-  //   Tags: pipe([
-  //     tap(({ clusterArn }) => {
-  //       assert(clusterArn);
-  //     }),
-  //     ({ clusterArn }) => ({
-  //       resourceArn: clusterArn,
-  //     }),
-  //     ecs().listTagsForResource,
-  //     tap((params) => {
-  //       assert(true);
-  //     }),
-  //     get("tags"),
-  //   ]),
-  // });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeClusters-property
   const describeClusters = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     ecs().describeClusters,
     tap((params) => {
       assert(true);
     }),
     get("clusters"),
-    tap((params) => {
-      assert(true);
-    }),
-    //map(assignTags),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
@@ -97,12 +88,14 @@ exports.ECSCluster = ({ spec, config }) => {
       ])
     )();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listClusters-property
+
   const getList = () =>
     pipe([
+      ecs().listClusters,
+      get("clusterArns"),
+      (clusters) => ({ clusters }),
       describeClusters,
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const isUpByName = pipe([getByName, not(isEmpty)]);

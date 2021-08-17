@@ -53,8 +53,8 @@
 
 ## Aws
 
-- volume name for root device
-
+- rds: add PreferredBackupWindow: "23:13-23:43",
+  PreferredMaintenanceWindow: "wed:01:32-wed:02:02",
 - gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
 - RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com

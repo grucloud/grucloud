@@ -15,7 +15,7 @@ const {
   or,
 } = require("rubico");
 const {
-  callProp,
+  includes,
   defaultsDeep,
   size,
   isEmpty,
@@ -302,17 +302,17 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       Tags: buildTags({ name, namespace, config }),
     })(properties);
 
-  const cannotBeDeleted = ({ resource }) =>
+  const cannotBeDeleted = ({ live }) =>
     pipe([
       tap(() => {
-        assert(resource);
+        assert(live);
       }),
-      () => resource,
+      () => live,
       get("name"),
       tap((name) => {
-        assert(name);
+        //assert(name);
       }),
-      callProp("startsWith", "Amazon"),
+      includes("Amazon"),
     ])();
 
   return {

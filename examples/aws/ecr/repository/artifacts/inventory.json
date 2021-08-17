@@ -21,12 +21,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ecr::Registry",
                                 "group": "ecr",
                                 "type": "Registry",
-                                "name": "default",
-                                "id": "840541460064",
                                 "providerName": "aws",
-                                "groupType": "ecr::Registry",
                                 "live": {
                                     "registryId": "840541460064",
                                     "replicationConfiguration": {
@@ -42,16 +40,17 @@
                                         ]
                                     }
                                 },
-                                "uri": "aws::ecr::Registry::default",
-                                "displayName": "default",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default",
+                                "id": "840541460064",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default",
+                                "uri": "aws::ecr::Registry::default"
                             }
                         ],
                         "groupType": "ecr::Registry",
@@ -62,41 +61,22 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ecr::Repository",
                                 "group": "ecr",
                                 "type": "Repository",
-                                "name": "starhackit/lb",
-                                "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                 "providerName": "aws",
-                                "groupType": "ecr::Repository",
                                 "live": {
                                     "repositoryArn": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                     "registryId": "840541460064",
                                     "repositoryName": "starhackit/lb",
                                     "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
-                                    "createdAt": "2021-08-16T05:15:31.000Z",
+                                    "createdAt": "2021-08-17T16:48:10.000Z",
                                     "imageTagMutability": "MUTABLE",
                                     "imageScanningConfiguration": {
                                         "scanOnPush": false
                                     },
                                     "encryptionConfiguration": {
                                         "encryptionType": "AES256"
-                                    },
-                                    "lifecyclePolicyText": {
-                                        "rules": [
-                                            {
-                                                "rulePriority": 1,
-                                                "description": "Expire images older than 14 days",
-                                                "selection": {
-                                                    "tagStatus": "untagged",
-                                                    "countType": "sinceImagePushed",
-                                                    "countUnit": "days",
-                                                    "countNumber": 14
-                                                },
-                                                "action": {
-                                                    "type": "expire"
-                                                }
-                                            }
-                                        ]
                                     },
                                     "tags": [
                                         {
@@ -140,18 +120,36 @@
                                                 ]
                                             }
                                         ]
+                                    },
+                                    "lifecyclePolicyText": {
+                                        "rules": [
+                                            {
+                                                "rulePriority": 1,
+                                                "description": "Expire images older than 14 days",
+                                                "selection": {
+                                                    "tagStatus": "untagged",
+                                                    "countType": "sinceImagePushed",
+                                                    "countUnit": "days",
+                                                    "countNumber": 14
+                                                },
+                                                "action": {
+                                                    "type": "expire"
+                                                }
+                                            }
+                                        ]
                                     }
                                 },
-                                "uri": "aws::ecr::Repository::starhackit/lb",
-                                "displayName": "starhackit/lb",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "starhackit/lb",
+                                "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "starhackit/lb",
+                                "uri": "aws::ecr::Repository::starhackit/lb"
                             }
                         ],
                         "groupType": "ecr::Repository",

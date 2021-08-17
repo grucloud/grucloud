@@ -10,6 +10,7 @@ const {
   not,
   pick,
   assign,
+  or,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -59,7 +60,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
       () => live,
       get("InstanceProfileName"),
-      callProp("startsWith", "eks-"),
+      or([callProp("startsWith", "eks-"), callProp("startsWith", "ecs")]),
       tap((params) => {
         assert(true);
       }),

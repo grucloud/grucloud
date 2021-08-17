@@ -78,7 +78,7 @@ const createResources = ({ provider }) => {
   provider.rds.makeDBSubnetGroup({
     name: get("config.rds.DBSubnetGroup.subnetGroupPostgres.name"),
     dependencies: ({ resources }) => ({
-      subnets: [resources.ec2.Subnet.subnet_2, resources.ec2.Subnet.subnet_1],
+      subnets: [resources.ec2.Subnet.subnet_1, resources.ec2.Subnet.subnet_2],
     }),
     properties: get("config.rds.DBSubnetGroup.subnetGroupPostgres.properties"),
   });

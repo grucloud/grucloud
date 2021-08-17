@@ -21,12 +21,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "acm::Certificate",
                                 "group": "acm",
                                 "type": "Certificate",
-                                "name": "aws.grucloud.com",
-                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/8c0dd8fb-206a-41cf-9f83-92daa715d1fe",
                                 "providerName": "aws",
-                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/8c0dd8fb-206a-41cf-9f83-92daa715d1fe",
                                     "DomainName": "aws.grucloud.com",
@@ -84,24 +82,23 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::acm::Certificate::aws.grucloud.com",
-                                "displayName": "aws.grucloud.com",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "aws.grucloud.com",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/8c0dd8fb-206a-41cf-9f83-92daa715d1fe",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "aws.grucloud.com",
+                                "uri": "aws::acm::Certificate::aws.grucloud.com"
                             },
                             {
+                                "groupType": "acm::Certificate",
                                 "group": "acm",
                                 "type": "Certificate",
-                                "name": "example-module-aws-certificate.grucloud.org",
-                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/742a1ad3-085c-4b26-b259-ea510e673754",
                                 "providerName": "aws",
-                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/742a1ad3-085c-4b26-b259-ea510e673754",
                                     "DomainName": "example-module-aws-certificate.grucloud.org",
@@ -182,24 +179,23 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::acm::Certificate::example-module-aws-certificate.grucloud.org",
-                                "displayName": "example-module-aws-certificate.grucloud.org",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "example-module-aws-certificate.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/742a1ad3-085c-4b26-b259-ea510e673754",
                                 "isDefault": false,
                                 "namespace": "Certificate",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "example-module-aws-certificate.grucloud.org",
+                                "uri": "aws::acm::Certificate::example-module-aws-certificate.grucloud.org"
                             },
                             {
+                                "groupType": "acm::Certificate",
                                 "group": "acm",
                                 "type": "Certificate",
-                                "name": "grucloud.org",
-                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/b40c4027-15d2-4ccf-97a3-6558ac4878c4",
                                 "providerName": "aws",
-                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/b40c4027-15d2-4ccf-97a3-6558ac4878c4",
                                     "DomainName": "grucloud.org",
@@ -276,24 +272,23 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::acm::Certificate::grucloud.org",
-                                "displayName": "grucloud.org",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/b40c4027-15d2-4ccf-97a3-6558ac4878c4",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "grucloud.org",
+                                "uri": "aws::acm::Certificate::grucloud.org"
                             },
                             {
+                                "groupType": "acm::Certificate",
                                 "group": "acm",
                                 "type": "Certificate",
-                                "name": "mod-aws-load-balancer.grucloud.org",
-                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/9fe16498-04e5-42b2-bc61-555a41e36743",
                                 "providerName": "aws",
-                                "groupType": "acm::Certificate",
                                 "live": {
                                     "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/9fe16498-04e5-42b2-bc61-555a41e36743",
                                     "DomainName": "mod-aws-load-balancer.grucloud.org",
@@ -374,16 +369,17 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::acm::Certificate::mod-aws-load-balancer.grucloud.org",
-                                "displayName": "mod-aws-load-balancer.grucloud.org",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "mod-aws-load-balancer.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/9fe16498-04e5-42b2-bc61-555a41e36743",
                                 "isDefault": false,
                                 "namespace": "Certificate",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "mod-aws-load-balancer.grucloud.org",
+                                "uri": "aws::acm::Certificate::mod-aws-load-balancer.grucloud.org"
                             }
                         ],
                         "groupType": "acm::Certificate",
@@ -394,16 +390,14 @@
                     {
                         "resources": [
                             {
+                                "groupType": "route53::HostedZone",
                                 "group": "route53",
                                 "type": "HostedZone",
-                                "name": "example-module-aws-certificate.grucloud.org.",
-                                "id": "/hostedzone/Z04986291PHTKGGTSUI9I",
                                 "providerName": "aws",
-                                "groupType": "route53::HostedZone",
                                 "live": {
-                                    "Id": "/hostedzone/Z04986291PHTKGGTSUI9I",
+                                    "Id": "/hostedzone/Z0280563RW2IRXGSL6ZV",
                                     "Name": "example-module-aws-certificate.grucloud.org.",
-                                    "CallerReference": "grucloud-Mon Aug 16 2021 02:52:48 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Tue Aug 17 2021 14:40:13 GMT-0300 (Brasilia Standard Time)",
                                     "Config": {
                                         "PrivateZone": false
                                     },
@@ -441,16 +435,16 @@
                                             "TTL": 172800,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-1918.awsdns-47.co.uk."
+                                                    "Value": "ns-605.awsdns-11.net."
                                                 },
                                                 {
-                                                    "Value": "ns-98.awsdns-12.com."
+                                                    "Value": "ns-1481.awsdns-57.org."
                                                 },
                                                 {
-                                                    "Value": "ns-839.awsdns-40.net."
+                                                    "Value": "ns-1708.awsdns-21.co.uk."
                                                 },
                                                 {
-                                                    "Value": "ns-1026.awsdns-00.org."
+                                                    "Value": "ns-177.awsdns-22.com."
                                                 }
                                             ]
                                         },
@@ -460,7 +454,7 @@
                                             "TTL": 900,
                                             "ResourceRecords": [
                                                 {
-                                                    "Value": "ns-1918.awsdns-47.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                    "Value": "ns-605.awsdns-11.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                                 }
                                             ]
                                         },
@@ -476,12 +470,8 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::route53::HostedZone::example-module-aws-certificate.grucloud.org.",
-                                "displayName": "example-module-aws-certificate.grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "example-module-aws-certificate.grucloud.org.",
+                                "id": "/hostedzone/Z0280563RW2IRXGSL6ZV",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -495,7 +485,12 @@
                                         "groupType": "route53Domain::Domain"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "example-module-aws-certificate.grucloud.org.",
+                                "uri": "aws::route53::HostedZone::example-module-aws-certificate.grucloud.org."
                             }
                         ],
                         "groupType": "route53::HostedZone",
@@ -506,12 +501,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "certificate-validation-example-module-aws-certificate.grucloud.org.",
-                                "id": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.::CNAME",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.",
                                     "Type": "CNAME",
@@ -547,15 +540,11 @@
                                             "Value": "example-module-aws-certificate.grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z04986291PHTKGGTSUI9I",
+                                    "HostedZoneId": "/hostedzone/Z0280563RW2IRXGSL6ZV",
                                     "namespace": "Certificate"
                                 },
-                                "uri": "aws::route53::Record::certificate-validation-example-module-aws-certificate.grucloud.org.",
-                                "displayName": "certificate-validation-example-module-aws-certificate.grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                "id": "_a0545e4d53d32db1d5265d4c633d0585.example-module-aws-certificate.grucloud.org.::CNAME",
                                 "isDefault": false,
                                 "namespace": "Certificate",
                                 "dependencies": [
@@ -563,7 +552,7 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z04986291PHTKGGTSUI9I"
+                                            "/hostedzone/Z0280563RW2IRXGSL6ZV"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
@@ -578,41 +567,40 @@
                                         "groupType": "acm::Certificate"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "certificate-validation-example-module-aws-certificate.grucloud.org.",
+                                "uri": "aws::route53::Record::certificate-validation-example-module-aws-certificate.grucloud.org."
                             },
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "example-module-aws-certificate.grucloud.org.::NS",
-                                "id": "example-module-aws-certificate.grucloud.org.::NS",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "example-module-aws-certificate.grucloud.org.",
                                     "Type": "NS",
                                     "TTL": 172800,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-1918.awsdns-47.co.uk."
+                                            "Value": "ns-605.awsdns-11.net."
                                         },
                                         {
-                                            "Value": "ns-98.awsdns-12.com."
+                                            "Value": "ns-1481.awsdns-57.org."
                                         },
                                         {
-                                            "Value": "ns-839.awsdns-40.net."
+                                            "Value": "ns-1708.awsdns-21.co.uk."
                                         },
                                         {
-                                            "Value": "ns-1026.awsdns-00.org."
+                                            "Value": "ns-177.awsdns-22.com."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z04986291PHTKGGTSUI9I"
+                                    "HostedZoneId": "/hostedzone/Z0280563RW2IRXGSL6ZV"
                                 },
-                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::NS",
-                                "displayName": "example-module-aws-certificate.grucloud.org.::NS",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "example-module-aws-certificate.grucloud.org.::NS",
+                                "id": "example-module-aws-certificate.grucloud.org.::NS",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -620,38 +608,37 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z04986291PHTKGGTSUI9I"
+                                            "/hostedzone/Z0280563RW2IRXGSL6ZV"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "example-module-aws-certificate.grucloud.org.::NS",
+                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::NS"
                             },
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "example-module-aws-certificate.grucloud.org.::SOA",
-                                "id": "example-module-aws-certificate.grucloud.org.::SOA",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "example-module-aws-certificate.grucloud.org.",
                                     "Type": "SOA",
                                     "TTL": 900,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-1918.awsdns-47.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                            "Value": "ns-605.awsdns-11.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z04986291PHTKGGTSUI9I"
+                                    "HostedZoneId": "/hostedzone/Z0280563RW2IRXGSL6ZV"
                                 },
-                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::SOA",
-                                "displayName": "example-module-aws-certificate.grucloud.org.::SOA",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "example-module-aws-certificate.grucloud.org.::SOA",
+                                "id": "example-module-aws-certificate.grucloud.org.::SOA",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -659,13 +646,18 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z04986291PHTKGGTSUI9I"
+                                            "/hostedzone/Z0280563RW2IRXGSL6ZV"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "example-module-aws-certificate.grucloud.org.::SOA",
+                                "uri": "aws::route53::Record::example-module-aws-certificate.grucloud.org.::SOA"
                             }
                         ],
                         "groupType": "route53::Record",
@@ -676,29 +668,27 @@
                     {
                         "resources": [
                             {
+                                "groupType": "route53Domain::Domain",
                                 "group": "route53Domain",
                                 "type": "Domain",
-                                "name": "grucloud.org",
-                                "id": "grucloud.org",
                                 "providerName": "aws",
-                                "groupType": "route53Domain::Domain",
                                 "live": {
                                     "DomainName": "grucloud.org",
                                     "Nameservers": [
                                         {
-                                            "Name": "ns-751.awsdns-29.net",
+                                            "Name": "ns-757.awsdns-30.net",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1919.awsdns-47.co.uk",
+                                            "Name": "ns-322.awsdns-40.com",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1178.awsdns-19.org",
+                                            "Name": "ns-1073.awsdns-06.org",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-35.awsdns-04.com",
+                                            "Name": "ns-1597.awsdns-07.co.uk",
                                             "GlueIps": []
                                         }
                                     ],
@@ -757,16 +747,17 @@
                                         "addPeriod"
                                     ]
                                 },
-                                "uri": "aws::route53Domain::Domain::grucloud.org",
-                                "displayName": "grucloud.org",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": true,
+                                "name": "grucloud.org",
+                                "id": "grucloud.org",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "grucloud.org",
+                                "uri": "aws::route53Domain::Domain::grucloud.org"
                             }
                         ],
                         "groupType": "route53Domain::Domain",

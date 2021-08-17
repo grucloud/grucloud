@@ -8,13 +8,11 @@ const {
   filter,
   eq,
   not,
-  and,
+  or,
   tryCatch,
   switchCase,
-  or,
   omit,
   assign,
-  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -72,9 +70,14 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const managedByOther = hasKeyInTags({
-    key: "eks:cluster-name",
-  });
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "AmazonECSManaged",
+    }),
+  ]);
 
   const findDependencies = ({ live, lives }) => [
     {

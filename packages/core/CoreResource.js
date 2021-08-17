@@ -79,6 +79,7 @@ exports.ResourceMaker = ({
     () => dependencies,
     unless(isFunction, (dependencies) => () => ({ ...dependencies })),
     (dep) => () => dep({ resources: provider.resources() }),
+    (dep) => () => spec.transformDependencies({ provider })(dep()),
   ]);
 
   const getClient = () => provider.clientByType(spec);

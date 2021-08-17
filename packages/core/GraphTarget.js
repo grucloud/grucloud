@@ -98,7 +98,7 @@ const buildSubGraphTargetNodeAssociation = ({ resources, options }) =>
     () => resources,
     map((resource) =>
       pipe([
-        () => resource.getDependencyList(),
+        resource.getDependencyList,
         map(buildEdge({ options, resource })),
         callProp("join", "\n"),
       ])()

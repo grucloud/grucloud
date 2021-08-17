@@ -1,14 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-} = require("rubico");
+const { map, pipe, tap, tryCatch, get, or, eq, not } = require("rubico");
 const {
   find,
   defaultsDeep,
@@ -25,13 +16,24 @@ const {
   AutoScalingNew,
   shouldRetryOnException,
   findValueInTags,
+  findNameInTags,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
 } = require("../AwsCommon");
 const { isOurMinionObject } = require("../AwsCommon");
 
-const findName = get("live.AutoScalingGroupName");
-const findId = findName;
+const findId = get("live.AutoScalingGroupARN");
+
+const findName = (params) => {
+  const fns = [findNameInTags({ findId }), get("live.AutoScalingGroupName")];
+  for (fn of fns) {
+    const name = fn(params);
+    if (!isEmpty(name)) {
+      return name;
+    }
+  }
+  assert(false, "should have a name");
+};
 
 const findClusterName = findValueInTags({ key: "eks:cluster-name" });
 
@@ -82,9 +84,14 @@ exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
 
-  const managedByOther = hasKeyInTags({
-    key: "eks:cluster-name",
-  });
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "AmazonECSManaged",
+    }),
+  ]);
 
   const findDependencies = ({ live }) => [
     { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },

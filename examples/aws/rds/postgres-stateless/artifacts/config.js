@@ -179,8 +179,8 @@ module.exports = ({ stage }) => ({
           EngineVersion: "10.14",
           EngineMode: "serverless",
           Port: 5432,
-          PreferredBackupWindow: "23:13-23:43",
-          PreferredMaintenanceWindow: "wed:01:32-wed:02:02",
+          PreferredBackupWindow: "04:23-04:53",
+          PreferredMaintenanceWindow: "tue:23:05-tue:23:35",
           ScalingConfiguration: {
             MinCapacity: 2,
             MaxCapacity: 4,

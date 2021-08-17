@@ -84,7 +84,7 @@ module.exports = () =>
     },
     {
       type: "SecurityGroup",
-      dependsOn: ["ec2::Subnet"],
+      dependsOn: ["ec2::Vpc", "ec2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
     },

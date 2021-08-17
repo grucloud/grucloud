@@ -7,6 +7,7 @@ const {
   isEmpty,
   unless,
   prepend,
+  identity,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
@@ -83,6 +84,7 @@ const SpecDefault = ({ providerName }) => ({
   isOurMinion: () => false,
   propertiesDefault: {},
   resourceKey: resourceKeyDefault,
+  transformDependencies: () => identity,
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>
