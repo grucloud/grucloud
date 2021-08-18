@@ -84,7 +84,14 @@ const decorateLive =
           ])();
         },
         get id() {
-          return client.findId({ live, lives });
+          return pipe([
+            () => client.findId({ live, lives }),
+            tap((id) => {
+              if (!isString(id)) {
+                assert(isString(id));
+              }
+            }),
+          ])();
         },
         get meta() {
           return client.findMeta({ live, lives });
