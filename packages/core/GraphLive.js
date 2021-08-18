@@ -63,7 +63,7 @@ const buildNode =
   <table color='${node.color}' border="0">
      <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
           node.type.pointSize
-        }"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+        }"><B>${resource.groupType}</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
           node.name.pointSize
         }">${formatNodeName({
