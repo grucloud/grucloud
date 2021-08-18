@@ -333,9 +333,9 @@ const tablePerTypeDefinitions = [
     ],
   },
 ];
-
+//TODO if size > 1e3, truncate and appends [...TRUNCATED]
 const stringifyLimit = tryCatch(
-  pipe([YAML.stringify, callProp("slice", 2e3)]),
+  pipe([YAML.stringify, callProp("slice", 0, 1e3)]),
   (error, toFormat) =>
     pipe([
       tap((params) => {
