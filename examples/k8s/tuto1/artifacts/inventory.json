@@ -21,34 +21,18 @@
                     {
                         "resources": [
                             {
+                                "groupType": "::Deployment",
                                 "group": "",
                                 "type": "Deployment",
-                                "name": "coredns",
-                                "meta": {
-                                    "name": "coredns",
-                                    "namespace": "kube-system",
-                                    "uid": "33749fea-b58d-4a30-870a-33843240adfc",
-                                    "resourceVersion": "523",
-                                    "generation": 2,
-                                    "creationTimestamp": "2021-08-14T22:40:36Z",
-                                    "labels": {
-                                        "k8s-app": "kube-dns"
-                                    },
-                                    "annotations": {
-                                        "deployment.kubernetes.io/revision": "1"
-                                    }
-                                },
-                                "id": "coredns",
                                 "providerName": "k8s",
-                                "groupType": "::Deployment",
                                 "live": {
                                     "metadata": {
                                         "name": "coredns",
                                         "namespace": "kube-system",
-                                        "uid": "33749fea-b58d-4a30-870a-33843240adfc",
-                                        "resourceVersion": "523",
+                                        "uid": "de0690c5-850d-4608-a5aa-84a3ab15f18a",
+                                        "resourceVersion": "593",
                                         "generation": 2,
-                                        "creationTimestamp": "2021-08-14T22:40:36Z",
+                                        "creationTimestamp": "2021-08-21T15:32:35Z",
                                         "labels": {
                                             "k8s-app": "kube-dns"
                                         },
@@ -89,7 +73,7 @@
                                                 "containers": [
                                                     {
                                                         "name": "coredns",
-                                                        "image": "k8s.gcr.io/coredns:1.7.0",
+                                                        "image": "k8s.gcr.io/coredns/coredns:v1.8.0",
                                                         "args": [
                                                             "-conf",
                                                             "/etc/coredns/Corefile"
@@ -214,83 +198,77 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-14T22:40:54Z",
-                                                "lastTransitionTime": "2021-08-14T22:40:54Z",
+                                                "lastUpdateTime": "2021-08-21T15:32:48Z",
+                                                "lastTransitionTime": "2021-08-21T15:32:48Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-14T22:41:08Z",
-                                                "lastTransitionTime": "2021-08-14T22:40:54Z",
+                                                "lastUpdateTime": "2021-08-21T15:33:29Z",
+                                                "lastTransitionTime": "2021-08-21T15:32:48Z",
                                                 "reason": "NewReplicaSetAvailable",
-                                                "message": "ReplicaSet \"coredns-74ff55c5b\" has successfully progressed."
+                                                "message": "ReplicaSet \"coredns-558bd4d5db\" has successfully progressed."
                                             }
                                         ]
                                     }
                                 },
-                                "uri": "k8s::Deployment::kube-system::coredns",
-                                "displayName": "kube-system::coredns",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "coredns",
+                                "id": "coredns",
+                                "meta": {
+                                    "name": "coredns",
+                                    "namespace": "kube-system",
+                                    "uid": "de0690c5-850d-4608-a5aa-84a3ab15f18a",
+                                    "resourceVersion": "593",
+                                    "generation": 2,
+                                    "creationTimestamp": "2021-08-21T15:32:35Z",
+                                    "labels": {
+                                        "k8s-app": "kube-dns"
+                                    },
+                                    "annotations": {
+                                        "deployment.kubernetes.io/revision": "1"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "kube-system",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Deployment::kube-system::coredns",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-system::coredns"
                             },
                             {
+                                "groupType": "::Deployment",
                                 "group": "",
                                 "type": "Deployment",
-                                "name": "ingress-nginx-controller",
-                                "meta": {
-                                    "name": "ingress-nginx-controller",
-                                    "namespace": "kube-system",
-                                    "uid": "8389fc4f-ed5d-491a-b75c-ed73a6b8a8ec",
-                                    "resourceVersion": "637",
-                                    "generation": 1,
-                                    "creationTimestamp": "2021-08-14T22:40:39Z",
-                                    "labels": {
-                                        "addonmanager.kubernetes.io/mode": "Reconcile",
-                                        "app.kubernetes.io/component": "controller",
-                                        "app.kubernetes.io/instance": "ingress-nginx",
-                                        "app.kubernetes.io/name": "ingress-nginx",
-                                        "app.kubernetes.io/part-of": "kube-system"
-                                    },
-                                    "annotations": {
-                                        "deployment.kubernetes.io/revision": "1",
-                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"app.kubernetes.io/part-of\":\"kube-system\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"kube-system\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":1,\"maxUnavailable\":1},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"gcp-auth-skip-secret\":\"true\"}},\"spec\":{\"containers\":[{\"args\":[\"/nginx-ingress-controller\",\"--configmap=$(POD_NAMESPACE)/nginx-load-balancer-conf\",\"--report-node-internal-ip-address\",\"--tcp-services-configmap=$(POD_NAMESPACE)/tcp-services\",\"--udp-services-configmap=$(POD_NAMESPACE)/udp-services\",\"--validating-webhook=:8443\",\"--validating-webhook-certificate=/usr/local/certificates/cert\",\"--validating-webhook-key=/usr/local/certificates/key\"],\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"POD_NAMESPACE\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.namespace\"}}}],\"image\":\"us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.40.2@sha256:46ba23c3fbaafd9e5bd01ea85b2f921d9f2217be082580edc22e6c704a83f02f\",\"imagePullPolicy\":\"IfNotPresent\",\"lifecycle\":{\"preStop\":{\"exec\":{\"command\":[\"/wait-shutdown\"]}}},\"livenessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"name\":\"controller\",\"ports\":[{\"containerPort\":80,\"hostPort\":80,\"name\":\"http\",\"protocol\":\"TCP\"},{\"containerPort\":443,\"hostPort\":443,\"name\":\"https\",\"protocol\":\"TCP\"},{\"containerPort\":8443,\"name\":\"webhook\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"90Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":true,\"capabilities\":{\"add\":[\"NET_BIND_SERVICE\"],\"drop\":[\"ALL\"]},\"runAsUser\":101},\"volumeMounts\":[{\"mountPath\":\"/usr/local/certificates/\",\"name\":\"webhook-cert\",\"readOnly\":true}]}],\"serviceAccountName\":\"ingress-nginx\",\"volumes\":[{\"name\":\"webhook-cert\",\"secret\":{\"secretName\":\"ingress-nginx-admission\"}}]}}}}\n"
-                                    }
-                                },
-                                "id": "ingress-nginx-controller",
                                 "providerName": "k8s",
-                                "groupType": "::Deployment",
                                 "live": {
                                     "metadata": {
                                         "name": "ingress-nginx-controller",
-                                        "namespace": "kube-system",
-                                        "uid": "8389fc4f-ed5d-491a-b75c-ed73a6b8a8ec",
-                                        "resourceVersion": "637",
+                                        "namespace": "ingress-nginx",
+                                        "uid": "1e206432-1d75-4f39-91b2-43dbb98bf52d",
+                                        "resourceVersion": "2058",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-14T22:40:39Z",
+                                        "creationTimestamp": "2021-08-21T15:47:36Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/component": "controller",
                                             "app.kubernetes.io/instance": "ingress-nginx",
-                                            "app.kubernetes.io/name": "ingress-nginx",
-                                            "app.kubernetes.io/part-of": "kube-system"
+                                            "app.kubernetes.io/name": "ingress-nginx"
                                         },
                                         "annotations": {
                                             "deployment.kubernetes.io/revision": "1",
-                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"app.kubernetes.io/part-of\":\"kube-system\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"kube-system\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}},\"strategy\":{\"rollingUpdate\":{\"maxSurge\":1,\"maxUnavailable\":1},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"gcp-auth-skip-secret\":\"true\"}},\"spec\":{\"containers\":[{\"args\":[\"/nginx-ingress-controller\",\"--configmap=$(POD_NAMESPACE)/nginx-load-balancer-conf\",\"--report-node-internal-ip-address\",\"--tcp-services-configmap=$(POD_NAMESPACE)/tcp-services\",\"--udp-services-configmap=$(POD_NAMESPACE)/udp-services\",\"--validating-webhook=:8443\",\"--validating-webhook-certificate=/usr/local/certificates/cert\",\"--validating-webhook-key=/usr/local/certificates/key\"],\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"POD_NAMESPACE\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.namespace\"}}}],\"image\":\"us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.40.2@sha256:46ba23c3fbaafd9e5bd01ea85b2f921d9f2217be082580edc22e6c704a83f02f\",\"imagePullPolicy\":\"IfNotPresent\",\"lifecycle\":{\"preStop\":{\"exec\":{\"command\":[\"/wait-shutdown\"]}}},\"livenessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"name\":\"controller\",\"ports\":[{\"containerPort\":80,\"hostPort\":80,\"name\":\"http\",\"protocol\":\"TCP\"},{\"containerPort\":443,\"hostPort\":443,\"name\":\"https\",\"protocol\":\"TCP\"},{\"containerPort\":8443,\"name\":\"webhook\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"90Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":true,\"capabilities\":{\"add\":[\"NET_BIND_SERVICE\"],\"drop\":[\"ALL\"]},\"runAsUser\":101},\"volumeMounts\":[{\"mountPath\":\"/usr/local/certificates/\",\"name\":\"webhook-cert\",\"readOnly\":true}]}],\"serviceAccountName\":\"ingress-nginx\",\"volumes\":[{\"name\":\"webhook-cert\",\"secret\":{\"secretName\":\"ingress-nginx-admission\"}}]}}}}\n"
+                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"minReadySeconds\":0,\"revisionHistoryLimit\":10,\"selector\":{\"matchLabels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}},\"strategy\":{\"rollingUpdate\":{\"maxUnavailable\":1},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"gcp-auth-skip-secret\":\"true\"}},\"spec\":{\"containers\":[{\"args\":[\"/nginx-ingress-controller\",\"--ingress-class=nginx\",\"--configmap=$(POD_NAMESPACE)/ingress-nginx-controller\",\"--report-node-internal-ip-address\",\"--tcp-services-configmap=$(POD_NAMESPACE)/tcp-services\",\"--udp-services-configmap=$(POD_NAMESPACE)/udp-services\",\"--validating-webhook=:8443\",\"--validating-webhook-certificate=/usr/local/certificates/cert\",\"--validating-webhook-key=/usr/local/certificates/key\"],\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"POD_NAMESPACE\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.namespace\"}}},{\"name\":\"LD_PRELOAD\",\"value\":\"/usr/local/lib/libmimalloc.so\"}],\"image\":\"k8s.gcr.io/ingress-nginx/controller:v0.44.0@sha256:3dd0fac48073beaca2d67a78c746c7593f9c575168a17139a9955a82c63c4b9a\",\"imagePullPolicy\":\"IfNotPresent\",\"lifecycle\":{\"preStop\":{\"exec\":{\"command\":[\"/wait-shutdown\"]}}},\"livenessProbe\":{\"failureThreshold\":5,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"name\":\"controller\",\"ports\":[{\"containerPort\":80,\"hostPort\":80,\"name\":\"http\",\"protocol\":\"TCP\"},{\"containerPort\":443,\"hostPort\":443,\"name\":\"https\",\"protocol\":\"TCP\"},{\"containerPort\":8443,\"name\":\"webhook\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"90Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":true,\"capabilities\":{\"add\":[\"NET_BIND_SERVICE\"],\"drop\":[\"ALL\"]},\"runAsUser\":101},\"volumeMounts\":[{\"mountPath\":\"/usr/local/certificates/\",\"name\":\"webhook-cert\",\"readOnly\":true}]}],\"dnsPolicy\":\"ClusterFirst\",\"serviceAccountName\":\"ingress-nginx\",\"volumes\":[{\"name\":\"webhook-cert\",\"secret\":{\"secretName\":\"ingress-nginx-admission\"}}]}}}}\n"
                                         }
                                     },
                                     "spec": {
                                         "replicas": 1,
                                         "selector": {
                                             "matchLabels": {
+                                                "addonmanager.kubernetes.io/mode": "Reconcile",
                                                 "app.kubernetes.io/component": "controller",
                                                 "app.kubernetes.io/instance": "ingress-nginx",
                                                 "app.kubernetes.io/name": "ingress-nginx"
@@ -320,10 +298,11 @@
                                                 "containers": [
                                                     {
                                                         "name": "controller",
-                                                        "image": "us.gcr.io/k8s-artifacts-prod/ingress-nginx/controller:v0.40.2@sha256:46ba23c3fbaafd9e5bd01ea85b2f921d9f2217be082580edc22e6c704a83f02f",
+                                                        "image": "k8s.gcr.io/ingress-nginx/controller:v0.44.0@sha256:3dd0fac48073beaca2d67a78c746c7593f9c575168a17139a9955a82c63c4b9a",
                                                         "args": [
                                                             "/nginx-ingress-controller",
-                                                            "--configmap=$(POD_NAMESPACE)/nginx-load-balancer-conf",
+                                                            "--ingress-class=nginx",
+                                                            "--configmap=$(POD_NAMESPACE)/ingress-nginx-controller",
                                                             "--report-node-internal-ip-address",
                                                             "--tcp-services-configmap=$(POD_NAMESPACE)/tcp-services",
                                                             "--udp-services-configmap=$(POD_NAMESPACE)/udp-services",
@@ -368,6 +347,10 @@
                                                                         "fieldPath": "metadata.namespace"
                                                                     }
                                                                 }
+                                                            },
+                                                            {
+                                                                "name": "LD_PRELOAD",
+                                                                "value": "/usr/local/lib/libmimalloc.so"
                                                             }
                                                         ],
                                                         "resources": {
@@ -393,7 +376,7 @@
                                                             "timeoutSeconds": 1,
                                                             "periodSeconds": 10,
                                                             "successThreshold": 1,
-                                                            "failureThreshold": 3
+                                                            "failureThreshold": 5
                                                         },
                                                         "readinessProbe": {
                                                             "httpGet": {
@@ -446,7 +429,7 @@
                                             "type": "RollingUpdate",
                                             "rollingUpdate": {
                                                 "maxUnavailable": 1,
-                                                "maxSurge": 1
+                                                "maxSurge": "25%"
                                             }
                                         },
                                         "revisionHistoryLimit": 10,
@@ -462,67 +445,65 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-14T22:40:54Z",
-                                                "lastTransitionTime": "2021-08-14T22:40:54Z",
+                                                "lastUpdateTime": "2021-08-21T15:47:36Z",
+                                                "lastTransitionTime": "2021-08-21T15:47:36Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-14T22:42:40Z",
-                                                "lastTransitionTime": "2021-08-14T22:40:54Z",
+                                                "lastUpdateTime": "2021-08-21T15:47:56Z",
+                                                "lastTransitionTime": "2021-08-21T15:47:36Z",
                                                 "reason": "NewReplicaSetAvailable",
-                                                "message": "ReplicaSet \"ingress-nginx-controller-65cf89dc4f\" has successfully progressed."
+                                                "message": "ReplicaSet \"ingress-nginx-controller-59b45fb494\" has successfully progressed."
                                             }
                                         ]
                                     }
                                 },
-                                "uri": "k8s::Deployment::kube-system::ingress-nginx-controller",
-                                "displayName": "kube-system::ingress-nginx-controller",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "kube-system",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "",
-                                "type": "Deployment",
-                                "name": "nginx-deployment",
+                                "name": "ingress-nginx-controller",
+                                "id": "ingress-nginx-controller",
                                 "meta": {
-                                    "name": "nginx-deployment",
-                                    "namespace": "myapp",
-                                    "uid": "41af5659-355f-404b-903b-df536fcf8d30",
-                                    "resourceVersion": "139693",
+                                    "name": "ingress-nginx-controller",
+                                    "namespace": "ingress-nginx",
+                                    "uid": "1e206432-1d75-4f39-91b2-43dbb98bf52d",
+                                    "resourceVersion": "2058",
                                     "generation": 1,
-                                    "creationTimestamp": "2021-08-16T13:45:01Z",
+                                    "creationTimestamp": "2021-08-21T15:47:36Z",
                                     "labels": {
-                                        "app": "nginx-label"
+                                        "addonmanager.kubernetes.io/mode": "Reconcile",
+                                        "app.kubernetes.io/component": "controller",
+                                        "app.kubernetes.io/instance": "ingress-nginx",
+                                        "app.kubernetes.io/name": "ingress-nginx"
                                     },
                                     "annotations": {
-                                        "Name": "nginx-deployment",
                                         "deployment.kubernetes.io/revision": "1",
-                                        "gc-created-by-provider": "k8s",
-                                        "gc-managed-by": "grucloud",
-                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
-                                        "gc-stage": "dev"
+                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"minReadySeconds\":0,\"revisionHistoryLimit\":10,\"selector\":{\"matchLabels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}},\"strategy\":{\"rollingUpdate\":{\"maxUnavailable\":1},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\",\"gcp-auth-skip-secret\":\"true\"}},\"spec\":{\"containers\":[{\"args\":[\"/nginx-ingress-controller\",\"--ingress-class=nginx\",\"--configmap=$(POD_NAMESPACE)/ingress-nginx-controller\",\"--report-node-internal-ip-address\",\"--tcp-services-configmap=$(POD_NAMESPACE)/tcp-services\",\"--udp-services-configmap=$(POD_NAMESPACE)/udp-services\",\"--validating-webhook=:8443\",\"--validating-webhook-certificate=/usr/local/certificates/cert\",\"--validating-webhook-key=/usr/local/certificates/key\"],\"env\":[{\"name\":\"POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"POD_NAMESPACE\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.namespace\"}}},{\"name\":\"LD_PRELOAD\",\"value\":\"/usr/local/lib/libmimalloc.so\"}],\"image\":\"k8s.gcr.io/ingress-nginx/controller:v0.44.0@sha256:3dd0fac48073beaca2d67a78c746c7593f9c575168a17139a9955a82c63c4b9a\",\"imagePullPolicy\":\"IfNotPresent\",\"lifecycle\":{\"preStop\":{\"exec\":{\"command\":[\"/wait-shutdown\"]}}},\"livenessProbe\":{\"failureThreshold\":5,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"name\":\"controller\",\"ports\":[{\"containerPort\":80,\"hostPort\":80,\"name\":\"http\",\"protocol\":\"TCP\"},{\"containerPort\":443,\"hostPort\":443,\"name\":\"https\",\"protocol\":\"TCP\"},{\"containerPort\":8443,\"name\":\"webhook\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/healthz\",\"port\":10254,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"90Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":true,\"capabilities\":{\"add\":[\"NET_BIND_SERVICE\"],\"drop\":[\"ALL\"]},\"runAsUser\":101},\"volumeMounts\":[{\"mountPath\":\"/usr/local/certificates/\",\"name\":\"webhook-cert\",\"readOnly\":true}]}],\"dnsPolicy\":\"ClusterFirst\",\"serviceAccountName\":\"ingress-nginx\",\"volumes\":[{\"name\":\"webhook-cert\",\"secret\":{\"secretName\":\"ingress-nginx-admission\"}}]}}}}\n"
                                     }
                                 },
-                                "id": "nginx-deployment",
-                                "providerName": "k8s",
+                                "isDefault": false,
+                                "namespace": "ingress-nginx",
+                                "dependencies": [],
+                                "show": true,
+                                "uri": "k8s::Deployment::ingress-nginx::ingress-nginx-controller",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "ingress-nginx::ingress-nginx-controller"
+                            },
+                            {
                                 "groupType": "::Deployment",
+                                "group": "",
+                                "type": "Deployment",
+                                "providerName": "k8s",
                                 "live": {
                                     "metadata": {
                                         "name": "nginx-deployment",
                                         "namespace": "myapp",
-                                        "uid": "41af5659-355f-404b-903b-df536fcf8d30",
-                                        "resourceVersion": "139693",
+                                        "uid": "d804ef82-476d-4ef4-827f-40d006210472",
+                                        "resourceVersion": "4338",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-16T13:45:01Z",
+                                        "creationTimestamp": "2021-08-21T15:58:57Z",
                                         "labels": {
                                             "app": "nginx-label"
                                         },
@@ -593,32 +574,52 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-16T13:45:03Z",
-                                                "lastTransitionTime": "2021-08-16T13:45:03Z",
+                                                "lastUpdateTime": "2021-08-21T15:58:58Z",
+                                                "lastTransitionTime": "2021-08-21T15:58:58Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-16T13:45:03Z",
-                                                "lastTransitionTime": "2021-08-16T13:45:02Z",
+                                                "lastUpdateTime": "2021-08-21T15:58:58Z",
+                                                "lastTransitionTime": "2021-08-21T15:58:57Z",
                                                 "reason": "NewReplicaSetAvailable",
                                                 "message": "ReplicaSet \"nginx-deployment-66cdc8d56b\" has successfully progressed."
                                             }
                                         ]
                                     }
                                 },
-                                "uri": "k8s::Deployment::myapp::nginx-deployment",
-                                "displayName": "myapp::nginx-deployment",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "nginx-deployment",
+                                "id": "nginx-deployment",
+                                "meta": {
+                                    "name": "nginx-deployment",
+                                    "namespace": "myapp",
+                                    "uid": "d804ef82-476d-4ef4-827f-40d006210472",
+                                    "resourceVersion": "4338",
+                                    "generation": 1,
+                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "labels": {
+                                        "app": "nginx-label"
+                                    },
+                                    "annotations": {
+                                        "Name": "nginx-deployment",
+                                        "deployment.kubernetes.io/revision": "1",
+                                        "gc-created-by-provider": "k8s",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
+                                        "gc-stage": "dev"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "myapp",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Deployment::myapp::nginx-deployment",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "myapp::nginx-deployment"
                             }
                         ],
                         "groupType": "::Deployment",
@@ -629,24 +630,19 @@
                     {
                         "resources": [
                             {
+                                "groupType": "::Namespace",
                                 "group": "",
                                 "type": "Namespace",
-                                "name": "default",
-                                "meta": {
-                                    "name": "default",
-                                    "uid": "afa5f26c-a27e-4caf-b6c6-29116f4e0dfa",
-                                    "resourceVersion": "200",
-                                    "creationTimestamp": "2021-08-14T22:40:34Z"
-                                },
-                                "id": "default",
                                 "providerName": "k8s",
-                                "groupType": "::Namespace",
                                 "live": {
                                     "metadata": {
                                         "name": "default",
-                                        "uid": "afa5f26c-a27e-4caf-b6c6-29116f4e0dfa",
-                                        "resourceVersion": "200",
-                                        "creationTimestamp": "2021-08-14T22:40:34Z"
+                                        "uid": "62c7c640-fb0b-4c9a-bfc7-23a0e40a137b",
+                                        "resourceVersion": "206",
+                                        "creationTimestamp": "2021-08-21T15:32:33Z",
+                                        "labels": {
+                                            "kubernetes.io/metadata.name": "default"
+                                        }
                                     },
                                     "spec": {
                                         "finalizers": [
@@ -657,36 +653,98 @@
                                         "phase": "Active"
                                     }
                                 },
-                                "uri": "k8s::Namespace::default",
-                                "displayName": "default",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default",
+                                "id": "default",
+                                "meta": {
+                                    "name": "default",
+                                    "uid": "62c7c640-fb0b-4c9a-bfc7-23a0e40a137b",
+                                    "resourceVersion": "206",
+                                    "creationTimestamp": "2021-08-21T15:32:33Z",
+                                    "labels": {
+                                        "kubernetes.io/metadata.name": "default"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Namespace::default",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default"
                             },
                             {
+                                "groupType": "::Namespace",
                                 "group": "",
                                 "type": "Namespace",
-                                "name": "kube-node-lease",
-                                "meta": {
-                                    "name": "kube-node-lease",
-                                    "uid": "dfa6128e-facc-484d-89c6-d536c11f7a49",
-                                    "resourceVersion": "63",
-                                    "creationTimestamp": "2021-08-14T22:40:33Z"
-                                },
-                                "id": "kube-node-lease",
                                 "providerName": "k8s",
+                                "live": {
+                                    "metadata": {
+                                        "name": "ingress-nginx",
+                                        "uid": "8e1ebafa-90b5-4feb-bd72-82194ecc4650",
+                                        "resourceVersion": "1856",
+                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "labels": {
+                                            "addonmanager.kubernetes.io/mode": "Reconcile",
+                                            "app.kubernetes.io/instance": "ingress-nginx",
+                                            "app.kubernetes.io/name": "ingress-nginx",
+                                            "kubernetes.io/metadata.name": "ingress-nginx"
+                                        },
+                                        "annotations": {
+                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx\"}}\n"
+                                        }
+                                    },
+                                    "spec": {
+                                        "finalizers": [
+                                            "kubernetes"
+                                        ]
+                                    },
+                                    "status": {
+                                        "phase": "Active"
+                                    }
+                                },
+                                "name": "ingress-nginx",
+                                "id": "ingress-nginx",
+                                "meta": {
+                                    "name": "ingress-nginx",
+                                    "uid": "8e1ebafa-90b5-4feb-bd72-82194ecc4650",
+                                    "resourceVersion": "1856",
+                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "labels": {
+                                        "addonmanager.kubernetes.io/mode": "Reconcile",
+                                        "app.kubernetes.io/instance": "ingress-nginx",
+                                        "app.kubernetes.io/name": "ingress-nginx",
+                                        "kubernetes.io/metadata.name": "ingress-nginx"
+                                    },
+                                    "annotations": {
+                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx\"}}\n"
+                                    }
+                                },
+                                "isDefault": false,
+                                "namespace": "default",
+                                "dependencies": [],
+                                "show": true,
+                                "uri": "k8s::Namespace::ingress-nginx",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "ingress-nginx"
+                            },
+                            {
                                 "groupType": "::Namespace",
+                                "group": "",
+                                "type": "Namespace",
+                                "providerName": "k8s",
                                 "live": {
                                     "metadata": {
                                         "name": "kube-node-lease",
-                                        "uid": "dfa6128e-facc-484d-89c6-d536c11f7a49",
-                                        "resourceVersion": "63",
-                                        "creationTimestamp": "2021-08-14T22:40:33Z"
+                                        "uid": "bdb15bae-20bf-4f6b-839d-24886d7ae787",
+                                        "resourceVersion": "67",
+                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "labels": {
+                                            "kubernetes.io/metadata.name": "kube-node-lease"
+                                        }
                                     },
                                     "spec": {
                                         "finalizers": [
@@ -697,36 +755,41 @@
                                         "phase": "Active"
                                     }
                                 },
-                                "uri": "k8s::Namespace::kube-node-lease",
-                                "displayName": "kube-node-lease",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kube-node-lease",
+                                "id": "kube-node-lease",
+                                "meta": {
+                                    "name": "kube-node-lease",
+                                    "uid": "bdb15bae-20bf-4f6b-839d-24886d7ae787",
+                                    "resourceVersion": "67",
+                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "labels": {
+                                        "kubernetes.io/metadata.name": "kube-node-lease"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Namespace::kube-node-lease",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-node-lease"
                             },
                             {
+                                "groupType": "::Namespace",
                                 "group": "",
                                 "type": "Namespace",
-                                "name": "kube-public",
-                                "meta": {
-                                    "name": "kube-public",
-                                    "uid": "be8b810d-2974-49f8-a547-51e2af348398",
-                                    "resourceVersion": "58",
-                                    "creationTimestamp": "2021-08-14T22:40:33Z"
-                                },
-                                "id": "kube-public",
                                 "providerName": "k8s",
-                                "groupType": "::Namespace",
                                 "live": {
                                     "metadata": {
                                         "name": "kube-public",
-                                        "uid": "be8b810d-2974-49f8-a547-51e2af348398",
-                                        "resourceVersion": "58",
-                                        "creationTimestamp": "2021-08-14T22:40:33Z"
+                                        "uid": "3f0b78fb-ffd5-4212-9f40-7577db025fea",
+                                        "resourceVersion": "62",
+                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "labels": {
+                                            "kubernetes.io/metadata.name": "kube-public"
+                                        }
                                     },
                                     "spec": {
                                         "finalizers": [
@@ -737,36 +800,41 @@
                                         "phase": "Active"
                                     }
                                 },
-                                "uri": "k8s::Namespace::kube-public",
-                                "displayName": "kube-public",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kube-public",
+                                "id": "kube-public",
+                                "meta": {
+                                    "name": "kube-public",
+                                    "uid": "3f0b78fb-ffd5-4212-9f40-7577db025fea",
+                                    "resourceVersion": "62",
+                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "labels": {
+                                        "kubernetes.io/metadata.name": "kube-public"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Namespace::kube-public",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-public"
                             },
                             {
+                                "groupType": "::Namespace",
                                 "group": "",
                                 "type": "Namespace",
-                                "name": "kube-system",
-                                "meta": {
-                                    "name": "kube-system",
-                                    "uid": "c4886311-ad1c-4c89-abbf-b1998f5a7ec2",
-                                    "resourceVersion": "24",
-                                    "creationTimestamp": "2021-08-14T22:40:33Z"
-                                },
-                                "id": "kube-system",
                                 "providerName": "k8s",
-                                "groupType": "::Namespace",
                                 "live": {
                                     "metadata": {
                                         "name": "kube-system",
-                                        "uid": "c4886311-ad1c-4c89-abbf-b1998f5a7ec2",
-                                        "resourceVersion": "24",
-                                        "creationTimestamp": "2021-08-14T22:40:33Z"
+                                        "uid": "37328aab-dbeb-4824-8ca1-5b898179f28c",
+                                        "resourceVersion": "20",
+                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "labels": {
+                                            "kubernetes.io/metadata.name": "kube-system"
+                                        }
                                     },
                                     "spec": {
                                         "finalizers": [
@@ -777,43 +845,41 @@
                                         "phase": "Active"
                                     }
                                 },
-                                "uri": "k8s::Namespace::kube-system",
-                                "displayName": "kube-system",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kube-system",
+                                "id": "kube-system",
+                                "meta": {
+                                    "name": "kube-system",
+                                    "uid": "37328aab-dbeb-4824-8ca1-5b898179f28c",
+                                    "resourceVersion": "20",
+                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "labels": {
+                                        "kubernetes.io/metadata.name": "kube-system"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Namespace::kube-system",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-system"
                             },
                             {
+                                "groupType": "::Namespace",
                                 "group": "",
                                 "type": "Namespace",
-                                "name": "myapp",
-                                "meta": {
-                                    "name": "myapp",
-                                    "uid": "25ba602f-f77d-4620-9a44-3c2efc1e5d82",
-                                    "resourceVersion": "139659",
-                                    "creationTimestamp": "2021-08-16T13:45:01Z",
-                                    "annotations": {
-                                        "Name": "myapp",
-                                        "gc-created-by-provider": "k8s",
-                                        "gc-managed-by": "grucloud",
-                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
-                                        "gc-stage": "dev"
-                                    }
-                                },
-                                "id": "myapp",
                                 "providerName": "k8s",
-                                "groupType": "::Namespace",
                                 "live": {
                                     "metadata": {
                                         "name": "myapp",
-                                        "uid": "25ba602f-f77d-4620-9a44-3c2efc1e5d82",
-                                        "resourceVersion": "139659",
-                                        "creationTimestamp": "2021-08-16T13:45:01Z",
+                                        "uid": "33068851-66e1-42ae-9969-807afe901c51",
+                                        "resourceVersion": "4304",
+                                        "creationTimestamp": "2021-08-21T15:58:57Z",
+                                        "labels": {
+                                            "kubernetes.io/metadata.name": "myapp"
+                                        },
                                         "annotations": {
                                             "Name": "myapp",
                                             "gc-created-by-provider": "k8s",
@@ -831,16 +897,33 @@
                                         "phase": "Active"
                                     }
                                 },
-                                "uri": "k8s::Namespace::myapp",
-                                "displayName": "myapp",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "myapp",
+                                "id": "myapp",
+                                "meta": {
+                                    "name": "myapp",
+                                    "uid": "33068851-66e1-42ae-9969-807afe901c51",
+                                    "resourceVersion": "4304",
+                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "labels": {
+                                        "kubernetes.io/metadata.name": "myapp"
+                                    },
+                                    "annotations": {
+                                        "Name": "myapp",
+                                        "gc-created-by-provider": "k8s",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
+                                        "gc-stage": "dev"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Namespace::myapp",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "myapp"
                             }
                         ],
                         "groupType": "::Namespace",
@@ -851,35 +934,17 @@
                     {
                         "resources": [
                             {
+                                "groupType": "::Service",
                                 "group": "",
                                 "type": "Service",
-                                "name": "ingress-nginx-controller-admission",
-                                "meta": {
-                                    "name": "ingress-nginx-controller-admission",
-                                    "namespace": "kube-system",
-                                    "uid": "d7005eeb-5e3b-460d-862a-a75bb59b235d",
-                                    "resourceVersion": "295",
-                                    "creationTimestamp": "2021-08-14T22:40:40Z",
-                                    "labels": {
-                                        "addonmanager.kubernetes.io/mode": "Reconcile",
-                                        "app.kubernetes.io/component": "controller",
-                                        "app.kubernetes.io/instance": "ingress-nginx",
-                                        "app.kubernetes.io/name": "ingress-nginx"
-                                    },
-                                    "annotations": {
-                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller-admission\",\"namespace\":\"kube-system\"},\"spec\":{\"ports\":[{\"name\":\"https-webhook\",\"port\":443,\"targetPort\":\"webhook\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}}}\n"
-                                    }
-                                },
-                                "id": "ingress-nginx-controller-admission",
                                 "providerName": "k8s",
-                                "groupType": "::Service",
                                 "live": {
                                     "metadata": {
-                                        "name": "ingress-nginx-controller-admission",
-                                        "namespace": "kube-system",
-                                        "uid": "d7005eeb-5e3b-460d-862a-a75bb59b235d",
-                                        "resourceVersion": "295",
-                                        "creationTimestamp": "2021-08-14T22:40:40Z",
+                                        "name": "ingress-nginx-controller",
+                                        "namespace": "ingress-nginx",
+                                        "uid": "30fd1cf5-c3f4-40be-9c8e-c9fab179c847",
+                                        "resourceVersion": "1881",
+                                        "creationTimestamp": "2021-08-21T15:47:36Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/component": "controller",
@@ -887,7 +952,95 @@
                                             "app.kubernetes.io/name": "ingress-nginx"
                                         },
                                         "annotations": {
-                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller-admission\",\"namespace\":\"kube-system\"},\"spec\":{\"ports\":[{\"name\":\"https-webhook\",\"port\":443,\"targetPort\":\"webhook\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"}}}\n"
+                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\",\"targetPort\":\"http\"},{\"name\":\"https\",\"port\":443,\"protocol\":\"TCP\",\"targetPort\":\"https\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"type\":\"NodePort\"}}\n"
+                                        }
+                                    },
+                                    "spec": {
+                                        "ports": [
+                                            {
+                                                "name": "http",
+                                                "protocol": "TCP",
+                                                "port": 80,
+                                                "targetPort": "http",
+                                                "nodePort": 31615
+                                            },
+                                            {
+                                                "name": "https",
+                                                "protocol": "TCP",
+                                                "port": 443,
+                                                "targetPort": "https",
+                                                "nodePort": 31106
+                                            }
+                                        ],
+                                        "selector": {
+                                            "app.kubernetes.io/component": "controller",
+                                            "app.kubernetes.io/instance": "ingress-nginx",
+                                            "app.kubernetes.io/name": "ingress-nginx"
+                                        },
+                                        "clusterIP": "10.102.100.44",
+                                        "clusterIPs": [
+                                            "10.102.100.44"
+                                        ],
+                                        "type": "NodePort",
+                                        "sessionAffinity": "None",
+                                        "externalTrafficPolicy": "Cluster",
+                                        "ipFamilies": [
+                                            "IPv4"
+                                        ],
+                                        "ipFamilyPolicy": "SingleStack"
+                                    },
+                                    "status": {
+                                        "loadBalancer": {}
+                                    }
+                                },
+                                "name": "ingress-nginx-controller",
+                                "id": "ingress-nginx-controller",
+                                "meta": {
+                                    "name": "ingress-nginx-controller",
+                                    "namespace": "ingress-nginx",
+                                    "uid": "30fd1cf5-c3f4-40be-9c8e-c9fab179c847",
+                                    "resourceVersion": "1881",
+                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "labels": {
+                                        "addonmanager.kubernetes.io/mode": "Reconcile",
+                                        "app.kubernetes.io/component": "controller",
+                                        "app.kubernetes.io/instance": "ingress-nginx",
+                                        "app.kubernetes.io/name": "ingress-nginx"
+                                    },
+                                    "annotations": {
+                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\",\"targetPort\":\"http\"},{\"name\":\"https\",\"port\":443,\"protocol\":\"TCP\",\"targetPort\":\"https\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"type\":\"NodePort\"}}\n"
+                                    }
+                                },
+                                "isDefault": false,
+                                "namespace": "ingress-nginx",
+                                "dependencies": [],
+                                "show": true,
+                                "uri": "k8s::Service::ingress-nginx::ingress-nginx-controller",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "ingress-nginx::ingress-nginx-controller"
+                            },
+                            {
+                                "groupType": "::Service",
+                                "group": "",
+                                "type": "Service",
+                                "providerName": "k8s",
+                                "live": {
+                                    "metadata": {
+                                        "name": "ingress-nginx-controller-admission",
+                                        "namespace": "ingress-nginx",
+                                        "uid": "7158b4bd-37fa-4f06-b327-d3649784e08e",
+                                        "resourceVersion": "1875",
+                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "labels": {
+                                            "addonmanager.kubernetes.io/mode": "Reconcile",
+                                            "app.kubernetes.io/component": "controller",
+                                            "app.kubernetes.io/instance": "ingress-nginx",
+                                            "app.kubernetes.io/name": "ingress-nginx"
+                                        },
+                                        "annotations": {
+                                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller-admission\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"ports\":[{\"name\":\"https-webhook\",\"port\":443,\"targetPort\":\"webhook\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"type\":\"ClusterIP\"}}\n"
                                         }
                                     },
                                     "spec": {
@@ -904,62 +1057,65 @@
                                             "app.kubernetes.io/instance": "ingress-nginx",
                                             "app.kubernetes.io/name": "ingress-nginx"
                                         },
-                                        "clusterIP": "10.108.73.4",
+                                        "clusterIP": "10.96.234.7",
                                         "clusterIPs": [
-                                            "10.108.73.4"
+                                            "10.96.234.7"
                                         ],
                                         "type": "ClusterIP",
-                                        "sessionAffinity": "None"
+                                        "sessionAffinity": "None",
+                                        "ipFamilies": [
+                                            "IPv4"
+                                        ],
+                                        "ipFamilyPolicy": "SingleStack"
                                     },
                                     "status": {
                                         "loadBalancer": {}
                                     }
                                 },
-                                "uri": "k8s::Service::kube-system::ingress-nginx-controller-admission",
-                                "displayName": "kube-system::ingress-nginx-controller-admission",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
-                                "isDefault": false,
-                                "namespace": "kube-system",
-                                "dependencies": [],
-                                "show": true
-                            },
-                            {
-                                "group": "",
-                                "type": "Service",
-                                "name": "kube-dns",
+                                "name": "ingress-nginx-controller-admission",
+                                "id": "ingress-nginx-controller-admission",
                                 "meta": {
-                                    "name": "kube-dns",
-                                    "namespace": "kube-system",
-                                    "uid": "4f41fcbc-cb5d-407f-970f-4a1e47d664cb",
-                                    "resourceVersion": "234",
-                                    "creationTimestamp": "2021-08-14T22:40:36Z",
+                                    "name": "ingress-nginx-controller-admission",
+                                    "namespace": "ingress-nginx",
+                                    "uid": "7158b4bd-37fa-4f06-b327-d3649784e08e",
+                                    "resourceVersion": "1875",
+                                    "creationTimestamp": "2021-08-21T15:47:36Z",
                                     "labels": {
-                                        "k8s-app": "kube-dns",
-                                        "kubernetes.io/cluster-service": "true",
-                                        "kubernetes.io/name": "KubeDNS"
+                                        "addonmanager.kubernetes.io/mode": "Reconcile",
+                                        "app.kubernetes.io/component": "controller",
+                                        "app.kubernetes.io/instance": "ingress-nginx",
+                                        "app.kubernetes.io/name": "ingress-nginx"
                                     },
                                     "annotations": {
-                                        "prometheus.io/port": "9153",
-                                        "prometheus.io/scrape": "true"
+                                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"addonmanager.kubernetes.io/mode\":\"Reconcile\",\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"name\":\"ingress-nginx-controller-admission\",\"namespace\":\"ingress-nginx\"},\"spec\":{\"ports\":[{\"name\":\"https-webhook\",\"port\":443,\"targetPort\":\"webhook\"}],\"selector\":{\"app.kubernetes.io/component\":\"controller\",\"app.kubernetes.io/instance\":\"ingress-nginx\",\"app.kubernetes.io/name\":\"ingress-nginx\"},\"type\":\"ClusterIP\"}}\n"
                                     }
                                 },
-                                "id": "kube-dns",
-                                "providerName": "k8s",
+                                "isDefault": false,
+                                "namespace": "ingress-nginx",
+                                "dependencies": [],
+                                "show": true,
+                                "uri": "k8s::Service::ingress-nginx::ingress-nginx-controller-admission",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "ingress-nginx::ingress-nginx-controller-admission"
+                            },
+                            {
                                 "groupType": "::Service",
+                                "group": "",
+                                "type": "Service",
+                                "providerName": "k8s",
                                 "live": {
                                     "metadata": {
                                         "name": "kube-dns",
                                         "namespace": "kube-system",
-                                        "uid": "4f41fcbc-cb5d-407f-970f-4a1e47d664cb",
-                                        "resourceVersion": "234",
-                                        "creationTimestamp": "2021-08-14T22:40:36Z",
+                                        "uid": "2545c280-7854-4a05-9c92-d9b612a4e20a",
+                                        "resourceVersion": "272",
+                                        "creationTimestamp": "2021-08-21T15:32:35Z",
                                         "labels": {
                                             "k8s-app": "kube-dns",
                                             "kubernetes.io/cluster-service": "true",
-                                            "kubernetes.io/name": "KubeDNS"
+                                            "kubernetes.io/name": "CoreDNS"
                                         },
                                         "annotations": {
                                             "prometheus.io/port": "9153",
@@ -995,49 +1151,56 @@
                                             "10.96.0.10"
                                         ],
                                         "type": "ClusterIP",
-                                        "sessionAffinity": "None"
+                                        "sessionAffinity": "None",
+                                        "ipFamilies": [
+                                            "IPv4"
+                                        ],
+                                        "ipFamilyPolicy": "SingleStack"
                                     },
                                     "status": {
                                         "loadBalancer": {}
                                     }
                                 },
-                                "uri": "k8s::Service::kube-system::kube-dns",
-                                "displayName": "kube-system::kube-dns",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kube-dns",
+                                "id": "kube-dns",
+                                "meta": {
+                                    "name": "kube-dns",
+                                    "namespace": "kube-system",
+                                    "uid": "2545c280-7854-4a05-9c92-d9b612a4e20a",
+                                    "resourceVersion": "272",
+                                    "creationTimestamp": "2021-08-21T15:32:35Z",
+                                    "labels": {
+                                        "k8s-app": "kube-dns",
+                                        "kubernetes.io/cluster-service": "true",
+                                        "kubernetes.io/name": "CoreDNS"
+                                    },
+                                    "annotations": {
+                                        "prometheus.io/port": "9153",
+                                        "prometheus.io/scrape": "true"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "kube-system",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Service::kube-system::kube-dns",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-system::kube-dns"
                             },
                             {
+                                "groupType": "::Service",
                                 "group": "",
                                 "type": "Service",
-                                "name": "kubelet",
-                                "meta": {
-                                    "name": "kubelet",
-                                    "namespace": "kube-system",
-                                    "uid": "269fa637-85f0-4dbb-89f2-5ad781966025",
-                                    "resourceVersion": "2145",
-                                    "creationTimestamp": "2021-08-14T22:54:33Z",
-                                    "labels": {
-                                        "app.kubernetes.io/managed-by": "prometheus-operator",
-                                        "app.kubernetes.io/name": "kubelet",
-                                        "k8s-app": "kubelet"
-                                    }
-                                },
-                                "id": "kubelet",
                                 "providerName": "k8s",
-                                "groupType": "::Service",
                                 "live": {
                                     "metadata": {
                                         "name": "kubelet",
                                         "namespace": "kube-system",
-                                        "uid": "269fa637-85f0-4dbb-89f2-5ad781966025",
-                                        "resourceVersion": "2145",
-                                        "creationTimestamp": "2021-08-14T22:54:33Z",
+                                        "uid": "6483bd0f-887e-40d1-9792-45a78b9bbf5b",
+                                        "resourceVersion": "3393",
+                                        "creationTimestamp": "2021-08-21T15:54:40Z",
                                         "labels": {
                                             "app.kubernetes.io/managed-by": "prometheus-operator",
                                             "app.kubernetes.io/name": "kubelet",
@@ -1070,48 +1233,53 @@
                                             "None"
                                         ],
                                         "type": "ClusterIP",
-                                        "sessionAffinity": "None"
+                                        "sessionAffinity": "None",
+                                        "ipFamilies": [
+                                            "IPv4",
+                                            "IPv6"
+                                        ],
+                                        "ipFamilyPolicy": "RequireDualStack"
                                     },
                                     "status": {
                                         "loadBalancer": {}
                                     }
                                 },
-                                "uri": "k8s::Service::kube-system::kubelet",
-                                "displayName": "kube-system::kubelet",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kubelet",
+                                "id": "kubelet",
+                                "meta": {
+                                    "name": "kubelet",
+                                    "namespace": "kube-system",
+                                    "uid": "6483bd0f-887e-40d1-9792-45a78b9bbf5b",
+                                    "resourceVersion": "3393",
+                                    "creationTimestamp": "2021-08-21T15:54:40Z",
+                                    "labels": {
+                                        "app.kubernetes.io/managed-by": "prometheus-operator",
+                                        "app.kubernetes.io/name": "kubelet",
+                                        "k8s-app": "kubelet"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "kube-system",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Service::kube-system::kubelet",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "kube-system::kubelet"
                             },
                             {
+                                "groupType": "::Service",
                                 "group": "",
                                 "type": "Service",
-                                "name": "kubernetes",
-                                "meta": {
-                                    "name": "kubernetes",
-                                    "namespace": "default",
-                                    "uid": "7a24c8b4-7aa1-4883-93d1-82b5024e2a80",
-                                    "resourceVersion": "202",
-                                    "creationTimestamp": "2021-08-14T22:40:35Z",
-                                    "labels": {
-                                        "component": "apiserver",
-                                        "provider": "kubernetes"
-                                    }
-                                },
-                                "id": "kubernetes",
                                 "providerName": "k8s",
-                                "groupType": "::Service",
                                 "live": {
                                     "metadata": {
                                         "name": "kubernetes",
                                         "namespace": "default",
-                                        "uid": "7a24c8b4-7aa1-4883-93d1-82b5024e2a80",
-                                        "resourceVersion": "202",
-                                        "creationTimestamp": "2021-08-14T22:40:35Z",
+                                        "uid": "ec785877-fa9f-45e5-913e-0048ecaf8a43",
+                                        "resourceVersion": "208",
+                                        "creationTimestamp": "2021-08-21T15:32:33Z",
                                         "labels": {
                                             "component": "apiserver",
                                             "provider": "kubernetes"
@@ -1131,51 +1299,51 @@
                                             "10.96.0.1"
                                         ],
                                         "type": "ClusterIP",
-                                        "sessionAffinity": "None"
+                                        "sessionAffinity": "None",
+                                        "ipFamilies": [
+                                            "IPv4"
+                                        ],
+                                        "ipFamilyPolicy": "SingleStack"
                                     },
                                     "status": {
                                         "loadBalancer": {}
                                     }
                                 },
-                                "uri": "k8s::Service::default::kubernetes",
-                                "displayName": "default::kubernetes",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "kubernetes",
+                                "id": "kubernetes",
+                                "meta": {
+                                    "name": "kubernetes",
+                                    "namespace": "default",
+                                    "uid": "ec785877-fa9f-45e5-913e-0048ecaf8a43",
+                                    "resourceVersion": "208",
+                                    "creationTimestamp": "2021-08-21T15:32:33Z",
+                                    "labels": {
+                                        "component": "apiserver",
+                                        "provider": "kubernetes"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "default",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Service::default::kubernetes",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default::kubernetes"
                             },
                             {
+                                "groupType": "::Service",
                                 "group": "",
                                 "type": "Service",
-                                "name": "nginx-service",
-                                "meta": {
-                                    "name": "nginx-service",
-                                    "namespace": "myapp",
-                                    "uid": "ddcc9e51-59c6-479e-8ced-d7c0845f4644",
-                                    "resourceVersion": "139667",
-                                    "creationTimestamp": "2021-08-16T13:45:01Z",
-                                    "annotations": {
-                                        "Name": "nginx-service",
-                                        "gc-created-by-provider": "k8s",
-                                        "gc-managed-by": "grucloud",
-                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
-                                        "gc-stage": "dev"
-                                    }
-                                },
-                                "id": "nginx-service",
                                 "providerName": "k8s",
-                                "groupType": "::Service",
                                 "live": {
                                     "metadata": {
                                         "name": "nginx-service",
                                         "namespace": "myapp",
-                                        "uid": "ddcc9e51-59c6-479e-8ced-d7c0845f4644",
-                                        "resourceVersion": "139667",
-                                        "creationTimestamp": "2021-08-16T13:45:01Z",
+                                        "uid": "b1fc5ca4-a9f2-4982-9b1b-d1fd5300ff78",
+                                        "resourceVersion": "4313",
+                                        "creationTimestamp": "2021-08-21T15:58:57Z",
                                         "annotations": {
                                             "Name": "nginx-service",
                                             "gc-created-by-provider": "k8s",
@@ -1196,28 +1364,47 @@
                                         "selector": {
                                             "app": "nginx-label"
                                         },
-                                        "clusterIP": "10.105.23.133",
+                                        "clusterIP": "10.103.194.45",
                                         "clusterIPs": [
-                                            "10.105.23.133"
+                                            "10.103.194.45"
                                         ],
                                         "type": "NodePort",
                                         "sessionAffinity": "None",
-                                        "externalTrafficPolicy": "Cluster"
+                                        "externalTrafficPolicy": "Cluster",
+                                        "ipFamilies": [
+                                            "IPv4"
+                                        ],
+                                        "ipFamilyPolicy": "SingleStack"
                                     },
                                     "status": {
                                         "loadBalancer": {}
                                     }
                                 },
-                                "uri": "k8s::Service::myapp::nginx-service",
-                                "displayName": "myapp::nginx-service",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "nginx-service",
+                                "id": "nginx-service",
+                                "meta": {
+                                    "name": "nginx-service",
+                                    "namespace": "myapp",
+                                    "uid": "b1fc5ca4-a9f2-4982-9b1b-d1fd5300ff78",
+                                    "resourceVersion": "4313",
+                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "annotations": {
+                                        "Name": "nginx-service",
+                                        "gc-created-by-provider": "k8s",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "@grucloud/example-k8s-tuto1",
+                                        "gc-stage": "dev"
+                                    }
+                                },
                                 "isDefault": false,
                                 "namespace": "myapp",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "k8s::Service::myapp::nginx-service",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "myapp::nginx-service"
                             }
                         ],
                         "groupType": "::Service",

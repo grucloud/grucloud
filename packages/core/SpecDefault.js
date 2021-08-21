@@ -33,7 +33,12 @@ const buildNamespaceKey = ({
   pipe([
     () => findNamespaceFromProps(properties),
     when(isEmpty, () => findNamespaceFromLive(live)),
-    when(isEmpty, () => findNamespaceFromDeps(dependencies())),
+    when(isEmpty, () =>
+      tryCatch(
+        () => findNamespaceFromDeps(dependencies()),
+        () => ""
+      )()
+    ),
     unless(isEmpty, prepend("::")),
   ])();
 

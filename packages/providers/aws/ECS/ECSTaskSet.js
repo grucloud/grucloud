@@ -8,10 +8,10 @@ const {
   switchCase,
   eq,
   not,
-  pick,
+  filter,
   flatMap,
 } = require("rubico");
-const { defaultsDeep, isEmpty, includes, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, pluck, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSTaskSet",
@@ -24,9 +24,10 @@ const {
   buildTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const findId = get("live.taskArn");
-const findName = get("live.serviceName");
+const findId = get("live.taskSetArn");
+const findName = get("live.taskDefinition");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
@@ -53,48 +54,30 @@ exports.ECSTaskSet = ({ spec, config }) => {
     () => "",
   ]);
 
-  const isInvalidArn = pipe([
+  const notFound = pipe([
     tap((params) => {
       assert(true);
     }),
-    eq(
-      get("message"),
-      "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
-    ),
-  ]);
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
-  const describeTaskSets = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    ecs().describeTaskSets,
-    get("services"),
-    tap((params) => {
-      assert(true);
-    }),
+    eq(get("code"), "ClusterNotFoundException"),
   ]);
 
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ services: [name] }),
-        describeTaskSets,
-        first,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      switchCase([
-        isInvalidArn,
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
+  const describeTaskSets = (params = {}) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => params,
+      defaultsDeep({ include: ["TAGS"] }),
+      ecs().describeTaskSets,
+      tap((params) => {
+        assert(true);
+      }),
+      get("taskSets"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
   const getList = ({ lives }) =>
@@ -107,44 +90,35 @@ exports.ECSTaskSet = ({ spec, config }) => {
         }),
       flatMap(
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           get("live"),
-          tap((params) => {
-            assert(true);
-          }),
-          ({ clusterArn, serviceName }) => ({
-            cluster: clusterArn,
-            service: serviceName,
-          }),
-          ecs().listTasks,
-          get("taskArns"),
-          (tasks) => ({ tasks }),
-          // describeTaskSets ?
-          describeTaskSets,
+          switchCase([
+            get("taskSets"),
+            pipe([
+              ({ clusterArn, serviceName, taskSets = [] }) => ({
+                cluster: clusterArn,
+                service: serviceName,
+                taskSets: pluck("taskSetArn")(taskSets),
+              }),
+              describeTaskSets,
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+            () => [],
+          ]),
         ])
       ),
+      filter(not(isEmpty)),
       tap((params) => {
         assert(true);
       }),
     ])();
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createTaskSet-property
   const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      ecs().createTaskSet,
-      // tap(() =>
-      //   retryCall({
-      //     name: `createTaskSet isUpByName: ${name}`,
-      //     fn: () => isUpByName({ name }),
-      //   })
-      // ),
-    ])();
+    pipe([() => payload, ecs().createTaskSet])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteTaskSet-property
   const destroy = ({ live }) =>
@@ -155,31 +129,20 @@ exports.ECSTaskSet = ({ spec, config }) => {
         assert(service);
         assert(taskSet);
       }),
-      ({ serviceName }) => ({ service: serviceName }),
-      tryCatch(
+      tryCatch(pipe([ecs().deleteTaskSet]), (error, params) =>
         pipe([
-          ecs().deleteTaskSet,
-          // () =>
-          //   retryCall({
-          //     name: `deleteTaskSet isDownByName: ${live.taskSet}`,
-          //     fn: () => isDownByName({ name: live.taskSet }),
-          //     config,
-          //   }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(`error deleteTaskSet ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              isInvalidArn,
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
+          tap(() => {
+            logger.error(`error deleteTaskSet ${tos({ params, error })}`);
+          }),
+          () => error,
+          switchCase([
+            notFound,
+            () => undefined,
+            () => {
+              throw error;
+            },
+          ]),
+        ])()
       ),
     ])();
 

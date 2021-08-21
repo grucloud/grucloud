@@ -4,7 +4,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
 const { ECSTaskSet } = require("../ECSTaskSet");
 
-describe.skip("ECSTaskSet", async function () {
+describe("ECSTaskSet", async function () {
   let config;
   let provider;
   let taskset;
@@ -24,16 +24,13 @@ describe.skip("ECSTaskSet", async function () {
     pipe([
       () =>
         taskset.destroy({
-          live: { task: "12345" },
-        }),
-    ])
-  );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        taskset.getByName({
-          name: "124",
+          live: {
+            cluster: "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
+            service:
+              "arn:aws:ecs:eu-west-2:840541460064:service/demo/service-demo",
+            taskSet:
+              "arn:aws:ecs:eu-west-2:840541460064:task-set/not-existing/service-demo/ecs-svc/1234567890123456789",
+          },
         }),
     ])
   );

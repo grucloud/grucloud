@@ -88,7 +88,7 @@ const createResources = async ({ provider }) => {
 
   const iamInstanceProfile = provider.iam.makeInstanceProfile({
     name: iamInstanceProfileName,
-    dependencies: { iamRoles: [iamRole] },
+    dependencies: { roles: [iamRole] },
     properties: () => ({}),
   });
 

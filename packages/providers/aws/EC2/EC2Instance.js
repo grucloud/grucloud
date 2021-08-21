@@ -56,7 +56,65 @@ const StateRunning = "running";
 const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
-exports.AwsEC2 = ({ spec, config }) => {
+const configDefault =
+  ({ config }) =>
+  ({
+    name,
+    namespace,
+    properties: { UserData, ...otherProperties },
+    dependencies: {
+      keyPair,
+      subnet,
+      securityGroups = {},
+      iamInstanceProfile,
+      image,
+    },
+  }) =>
+    pipe([
+      () => ({}),
+      defaultsDeep(otherProperties),
+      defaultsDeep({
+        ...(UserData && {
+          UserData: Buffer.from(UserData, "utf-8").toString("base64"),
+        }),
+        ...(image && { ImageId: getField(image, "ImageId") }),
+        ...(subnet ||
+          (!isEmpty(securityGroups) && {
+            NetworkInterfaces: [
+              {
+                AssociatePublicIpAddress: true,
+                DeviceIndex: 0,
+                ...(!isEmpty(securityGroups) && {
+                  Groups: transform(
+                    map((sg) => [getField(sg, "GroupId")]),
+                    () => []
+                  )(securityGroups),
+                }),
+                ...(subnet && { SubnetId: getField(subnet, "SubnetId") }),
+              },
+            ],
+          })),
+        ...(iamInstanceProfile && {
+          IamInstanceProfile: {
+            Arn: getField(iamInstanceProfile, "Arn"),
+          },
+        }),
+        TagSpecifications: [
+          {
+            ResourceType: "instance",
+            Tags: buildTags({ config, namespace, name }),
+          },
+        ],
+        ...(keyPair && { KeyName: keyPair.resource.name }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+exports.configDefault = configDefault;
+
+exports.EC2Instance = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { providerName } = config;
@@ -75,7 +133,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       key: "eks:cluster-name",
     }),
     hasKeyInTags({
-      key: "AmazonECSManaged",
+      key: "aws:autoscaling:groupName",
     }),
   ]);
 
@@ -141,12 +199,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     {
       type: "InstanceProfile",
       group: "iam",
-      ids: pipe([
-        () => live,
-        get("IamInstanceProfile.Arn"),
-        (arn) => [arn],
-        filter(not(isEmpty)),
-      ])(),
+      ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
     },
   ];
 
@@ -504,54 +557,6 @@ exports.AwsEC2 = ({ spec, config }) => {
   //By live
   const destroy = destroyById;
 
-  const configDefault = async ({
-    name,
-    namespace,
-    properties,
-    dependencies,
-  }) => {
-    const {
-      keyPair,
-      subnet,
-      securityGroups = {},
-      iamInstanceProfile,
-      image,
-    } = dependencies;
-    const { UserData, ...otherProperties } = properties;
-    const buildNetworkInterfaces = () => [
-      {
-        AssociatePublicIpAddress: true,
-        DeviceIndex: 0,
-        ...(!isEmpty(securityGroups) && {
-          Groups: transform(
-            map((sg) => [getField(sg, "GroupId")]),
-            () => []
-          )(securityGroups),
-        }),
-        SubnetId: getField(subnet, "SubnetId"),
-      },
-    ];
-    return defaultsDeep({
-      ...(UserData && {
-        UserData: Buffer.from(UserData, "utf-8").toString("base64"),
-      }),
-      ...(image && { ImageId: getField(image, "ImageId") }),
-      ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
-      ...(iamInstanceProfile && {
-        IamInstanceProfile: {
-          Name: getField(iamInstanceProfile, "InstanceProfileName"),
-        },
-      }),
-      TagSpecifications: [
-        {
-          ResourceType: "instance",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-      ...(keyPair && { KeyName: keyPair.resource.name }),
-    })(otherProperties);
-  };
-
   return {
     spec,
     findId,
@@ -564,7 +569,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroyById,
     destroy,
     getList,
-    configDefault,
+    configDefault: configDefault({ config }),
     managedByOther,
   };
 };

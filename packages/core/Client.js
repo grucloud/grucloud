@@ -78,7 +78,8 @@ const decorateLive =
             () => client.findName({ live, lives }),
             tap((name) => {
               if (!isString(name)) {
-                assert(isString(name));
+                logger.error(`no name in ${tos(live)}`);
+                assert(false, `no name in ${tos(live)}`);
               }
             }),
           ])();
@@ -110,6 +111,9 @@ const decorateLive =
                 live,
                 lives,
               }),
+            tap((ids) => {
+              assert(Array.isArray(ids));
+            }),
             map(
               assign({
                 providerName: () => client.spec.providerName,
@@ -125,6 +129,21 @@ const decorateLive =
         Object.defineProperty(resource, "show", {
           enumerable: true,
           get: () => showLive({ options: options })(resource),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "uri", {
+          enumerable: true,
+          get: () =>
+            client.spec.resourceKey({
+              live,
+              providerName: client.spec.providerName,
+              type: client.spec.type,
+              group: client.spec.group,
+              name: resource.name,
+              meta: resource.meta,
+              id: resource.id,
+            }),
         })
       ),
       tap((resource) =>
@@ -154,21 +173,6 @@ const decorateLive =
         Object.defineProperty(resource, "displayName", {
           enumerable: true,
           get: () => client.displayName(resource),
-        })
-      ),
-      tap((resource) =>
-        Object.defineProperty(resource, "uri", {
-          enumerable: true,
-          get: () =>
-            client.spec.resourceKey({
-              live,
-              providerName: client.spec.providerName,
-              type: client.spec.type,
-              group: client.spec.group,
-              name: resource.name,
-              meta: resource.meta,
-              id: resource.id,
-            }),
         })
       ),
     ])();

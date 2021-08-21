@@ -7,11 +7,12 @@ const {
   get,
   switchCase,
   eq,
+  or,
   not,
-  pick,
+  omit,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, includes } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { tos } = require("@grucloud/core/tos");
@@ -21,6 +22,7 @@ const {
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -51,6 +53,14 @@ exports.ECSCluster = ({ spec, config }) => {
         ),
       ])(),
     },
+    {
+      type: "Key",
+      group: "kms",
+      ids: pipe([
+        () => live,
+        get("configuration.executeCommandConfiguration.kmsKeyId"),
+      ])(),
+    },
   ];
 
   const findNamespace = pipe([
@@ -61,13 +71,16 @@ exports.ECSCluster = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeClusters-property
-  const describeClusters = pipe([
-    ecs().describeClusters,
-    tap((params) => {
-      assert(true);
-    }),
-    get("clusters"),
-  ]);
+  const describeClusters = (params = {}) =>
+    pipe([
+      () => params,
+      defaultsDeep({ include: ["TAGS"] }),
+      ecs().describeClusters,
+      get("clusters"),
+      tap((clusters) => {
+        logger.debug(`describeClusters #cluster ${tos(clusters)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
   const getByName = ({ name }) =>
@@ -78,6 +91,7 @@ exports.ECSCluster = ({ spec, config }) => {
         }),
         () => ({ clusters: [name] }),
         describeClusters,
+        first,
       ]),
       switchCase([
         eq(get("code"), "ClusterNotFoundException"),
@@ -97,15 +111,35 @@ exports.ECSCluster = ({ spec, config }) => {
       (clusters) => ({ clusters }),
       describeClusters,
     ])();
-
   const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+
+  const isInstanceDown = or([isEmpty, eq(get("status"), "INACTIVE")]);
+
+  const isDownByName = pipe([getByName, isInstanceDown]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCluster-property
   const create = ({ payload, name, namespace }) =>
     pipe([
       () => payload,
+      omit(["Tags"]),
       ecs().createCluster,
+      // () => ({
+      //   resourceArn: `arn:aws:ecs:${
+      //     config.region
+      //   }:${config.accountId()}:cluster/${name}`,
+      //   tags: buildTags({
+      //     name,
+      //     config,
+      //     namespace,
+      //     UserTags: payload.Tags,
+      //     key: "key",
+      //     value: "value",
+      //   }),
+      // }),
+      // tap((params) => {
+      //   assert(true);
+      // }),
+      // ecs().tagResource,
       tap(() =>
         retryCall({
           name: `createCluster isUpByName: ${name}`,
@@ -124,7 +158,22 @@ exports.ECSCluster = ({ spec, config }) => {
       }),
       tryCatch(
         pipe([
-          ecs().deleteCluster,
+          ({ cluster }) =>
+            retryCall({
+              name: `deleteCluster isDownByName: ${live.clusterName}`,
+              fn: () => ecs().deleteCluster({ cluster }),
+              config,
+              shouldRetryOnException: ({ error }) =>
+                pipe([
+                  tap(() => {
+                    logger.error(
+                      `deleteCluster isExpectedException ${tos(error)}`
+                    );
+                  }),
+                  () => error,
+                  eq(get("code"), "ClusterContainsContainerInstancesException"),
+                ])(),
+            }),
           () =>
             retryCall({
               name: `deleteCluster isDownByName: ${live.clusterName}`,
@@ -139,7 +188,15 @@ exports.ECSCluster = ({ spec, config }) => {
             }),
             () => error,
             switchCase([
-              eq(get("code"), "ClusterNotFoundException"),
+              or([
+                eq(get("code"), "ClusterNotFoundException"),
+                pipe([
+                  get("message"),
+                  includes(
+                    "The specified cluster is inactive. Specify an active cluster and try again."
+                  ),
+                ]),
+              ]),
               () => undefined,
               () => {
                 throw error;
@@ -153,12 +210,16 @@ exports.ECSCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { capacityProviders = [] },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         clusterName: name,
+        capacityProviders: pipe([
+          () => capacityProviders,
+          map((capacityProvider) => getField(capacityProvider, "name")),
+        ])(),
         tags: buildTags({
           name,
           config,
@@ -167,6 +228,9 @@ exports.ECSCluster = ({ spec, config }) => {
           key: "key",
           value: "value",
         }),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

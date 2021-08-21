@@ -445,12 +445,15 @@ exports.ResourceMaker = ({
                 config: provider.getConfig(),
                 dependencies: resolvedDependencies,
               }),
-            (properties) =>
+            (properties = {}) =>
               getClient().configDefault({
                 name: getResourceName(),
                 meta,
                 namespace,
-                properties: defaultsDeep(spec.propertiesDefault)(properties),
+                properties: pipe([
+                  () => properties,
+                  defaultsDeep(spec.propertiesDefault),
+                ])(),
                 dependencies: resolvedDependencies,
                 live,
                 lives: provider.lives,

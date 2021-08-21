@@ -41,6 +41,7 @@ const {
   readModel,
   readMapping,
   ResourceVarNameDefault,
+  omitIfEmpty,
 } = require("@grucloud/core/generatorUtils");
 
 const { configTpl } = require("./configTpl");
@@ -87,6 +88,38 @@ const securityGroupRulePickProperties = pipe([
       ])(),
 ]);
 
+const ec2InstanceDependencies = () => ({
+  subnet: {
+    type: "Subnet",
+    group: "ec2",
+  },
+  keyPair: { type: "KeyPair", group: "ec2" },
+  eip: { type: "ElasticIpAddress", group: "ec2" },
+  iamInstanceProfile: { type: "InstanceProfile", group: "iam" },
+  securityGroups: {
+    type: "SecurityGroup",
+    group: "ec2",
+  },
+  volumes: {
+    type: "Volume",
+    group: "ec2",
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          tap(() => {
+            assert(resource);
+            assert(resource.live);
+            assert(dependency);
+            assert(dependency.live);
+          }),
+          () => dependency,
+          get("live.Attachments"),
+          pluck("Device"),
+          not(includes(resource.live.RootDeviceName)),
+        ])(),
+  },
+});
 const WritersSpec = ({ commandOptions, programOptions }) => [
   {
     group: "s3",
@@ -292,6 +325,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "KeyPair",
         filterLive: () => pick([""]),
       },
+
       {
         type: "Volume",
         filterLive: () =>
@@ -417,38 +451,29 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Instance",
         filterLive: () => pick(["InstanceType", "ImageId"]),
-        dependencies: () => ({
-          subnet: {
-            type: "Subnet",
-            group: "ec2",
-          },
-          keyPair: { type: "KeyPair", group: "ec2" },
-          eip: { type: "ElasticIpAddress", group: "ec2" },
-          iamInstanceProfile: { type: "InstanceProfile", group: "iam" },
-          securityGroups: {
-            type: "SecurityGroup",
-            group: "ec2",
-          },
-          volumes: {
-            type: "Volume",
-            group: "ec2",
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap(() => {
-                    assert(resource);
-                    assert(resource.live);
-                    assert(dependency);
-                    assert(dependency.live);
-                  }),
-                  () => dependency,
-                  get("live.Attachments"),
-                  pluck("Device"),
-                  not(includes(resource.live.RootDeviceName)),
-                ])(),
-          },
-        }),
+        dependencies: ec2InstanceDependencies,
+      },
+      {
+        type: "LaunchTemplate",
+        filterLive: () =>
+          pipe([
+            pick(["LaunchTemplateData"]),
+            omitIfEmpty([
+              "LaunchTemplateData.BlockDeviceMappings",
+              "LaunchTemplateData.ElasticGpuSpecifications",
+              "LaunchTemplateData.ElasticInferenceAccelerators",
+              "LaunchTemplateData.SecurityGroups",
+              "LaunchTemplateData.LicenseSpecifications",
+            ]),
+            omit([
+              "LaunchTemplateData.NetworkInterfaces",
+              "LaunchTemplateData.SecurityGroupIds",
+            ]),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        dependencies: ec2InstanceDependencies,
       },
     ],
   },
@@ -461,23 +486,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pipe([
             pick(["DomainName", "SubjectAlternativeNames"]),
-            tap((params) => {
-              assert(true);
-            }),
             when(
               ({ DomainName, SubjectAlternativeNames }) =>
                 pipe([
                   () => SubjectAlternativeNames,
                   and([eq(size, 1), pipe([first, eq(identity, DomainName)])]),
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ])(),
               omit(["SubjectAlternativeNames"])
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
       },
     ],
@@ -487,8 +503,47 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "AutoScalingGroup",
-        //TODO
-        filterLive: () => pick([]),
+        filterLive: () =>
+          pick([
+            "MinSize",
+            "MaxSize",
+            "DesiredCapacity",
+            "DefaultCooldown",
+            "HealthCheckType",
+            "HealthCheckGracePeriod",
+          ]),
+        dependencies: () => ({
+          targetGroups: { type: "TargetGroup", group: "elb" },
+          subnets: { type: "Subnet", group: "ec2" },
+          launchTemplate: { type: "LaunchTemplate", group: "ec2" },
+          launchConfiguration: {
+            type: "LaunchConfiguration",
+            group: "autoscaling",
+          },
+        }),
+      },
+      {
+        type: "LaunchConfiguration",
+        filterLive: () =>
+          pipe([
+            pick([
+              "InstanceType",
+              "ImageId",
+              "UserData",
+              "InstanceMonitoring",
+              "KernelId",
+              "RamdiskId",
+              "BlockDeviceMappings",
+              "EbsOptimized",
+            ]),
+            omitIfEmpty(["KernelId", "RamdiskId"]),
+          ]),
+        dependencies: () => ({
+          instanceProfile: { type: "InstanceProfile", group: "iam" },
+          keyPair: { type: "KeyPair", group: "ec2" },
+          image: { type: "Image", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+        }),
       },
     ],
   },
@@ -625,14 +680,70 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Cluster",
-        filterLive: () => pick(["settings"]),
+        filterLive: () => pick(["settings", "defaultCapacityProviderStrategy"]),
         dependencies: () => ({
           capacityProviders: { type: "CapacityProvider", group: "ecs" },
         }),
       },
       {
         type: "CapacityProvider",
-        filterLive: () => pick([""]),
+        filterLive: () =>
+          pipe([
+            pick(["autoScalingGroupProvider"]),
+            omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
+          ]),
+        dependencies: () => ({
+          autoScalingGroup: { type: "AutoScalingGroup", group: "autoscaling" },
+        }),
+      },
+      {
+        type: "TaskDefinition",
+        filterLive: () =>
+          pick([
+            "containerDefinitions",
+            "placementConstraints",
+            "requiresCompatibilities",
+          ]),
+      },
+      {
+        type: "Service",
+        filterLive: () =>
+          pipe([
+            pick([
+              "launchType",
+              "desiredCount",
+              "deploymentConfiguration",
+              "placementConstraints",
+              "placementStrategy",
+              "schedulingStrategy",
+              "enableECSManagedTags",
+              "propagateTags",
+              "enableExecuteCommand",
+            ]),
+            when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
+          ]),
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "ecs" },
+          taskDefinition: { type: "TaskDefinition", group: "ecs" },
+          loadBalancers: { type: "LoadBalancer", group: "elb" },
+        }),
+      },
+      {
+        type: "Task",
+        filterLive: () =>
+          pick([
+            "availabilityZone",
+            "cpu",
+            "enableExecuteCommand",
+            "group",
+            "launchType",
+            "memory",
+            "overrides",
+          ]),
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "ecs" },
+          taskDefinition: { type: "TaskDefinition", group: "ecs" },
+        }),
       },
     ],
   },
@@ -1174,6 +1285,38 @@ const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
       ])(),
   ])();
 
+const filterModel = pipe([
+  map(
+    assign({
+      live: pipe([
+        get("live"),
+        assign({
+          Tags: pipe([
+            get("Tags"),
+            filter(
+              and([
+                pipe([
+                  get("Key"),
+                  when(isEmpty, get("key")),
+                  when(isEmpty, get("TagKey")),
+                  switchCase([
+                    isEmpty,
+                    () => true,
+                    not(callProp("startsWith", "aws")),
+                  ]),
+                ]),
+                not(get("ResourceId")),
+              ])
+            ),
+          ]),
+        }),
+      ]),
+    })
+  ),
+  tap((params) => {
+    assert(true);
+  }),
+]);
 exports.generateCode = ({ commandOptions, programOptions }) =>
   pipe([
     () => WritersSpec({ commandOptions, programOptions }),
@@ -1188,6 +1331,7 @@ exports.generateCode = ({ commandOptions, programOptions }) =>
             programOptions,
             iacTpl,
             configTpl,
+            filterModel,
           }),
         () =>
           downloadAssets({

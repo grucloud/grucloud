@@ -90,7 +90,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           ({ name, namespace, properties }) => ({
             name,
             ...(namespace && { namespace }),
-            ...properties(),
+            ...properties({ config }),
           }),
           assign({
             PolicyDocument: ({ Arn }) =>

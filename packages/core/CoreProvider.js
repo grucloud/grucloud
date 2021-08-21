@@ -78,7 +78,6 @@ const {
   contextFromHook,
   contextFromHookAction,
   providerRunning,
-  findClient,
 } = require("./ProviderCommon");
 
 const { createClient, decorateLive } = require("./Client");
@@ -304,18 +303,25 @@ function CoreProvider({
     tap((uri) => {
       assert(uri, "getResource no uri");
     }),
-    (uri) => mapNameToResource.get(uri),
+    (uri) =>
+      pipe([
+        () => mapNameToResource.get(uri),
+        tap((resource) => {
+          if (!resource) {
+            assert(false, `no resource for ${uri}`);
+          }
+        }),
+      ])(),
   ]);
 
-  const getSpecs = () =>
-    pipe([
-      getProviderConfig,
-      fnSpecs,
-      map(createSpec({ config: getProviderConfig() })),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getSpecs = pipe([
+    getProviderConfig,
+    fnSpecs,
+    map(createSpec({ config: getProviderConfig() })),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
   const getResourcesByType = ({ type, group }) =>
     pipe([
@@ -1051,41 +1057,6 @@ function CoreProvider({
       }
     )();
 
-  const findClientByGroupType = (clients) => (groupType) =>
-    pipe([
-      tap(() => {
-        assert(clients);
-        assert(groupType);
-      }),
-      () => clients,
-      find(eq(get("spec.groupType"), groupType)),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
-  const findClientDependencies = (clients) => (client) =>
-    pipe([
-      tap(() => {
-        assert(clients);
-        assert(client);
-      }),
-      () => client,
-      get("spec.dependsOn", []),
-      map(findClientByGroupType(clients)),
-      filter(not(isEmpty)),
-      flatMap(findClientDependencies(clients)),
-      prepend(client),
-    ])();
-
-  const addDependentClients = (clients) =>
-    pipe([
-      () => clients,
-      flatMap(findClientDependencies(clients)),
-      filter(not(isEmpty)),
-      uniq,
-    ])();
-
   const listLives = ({
     onStateChange = identity,
     options = {},
@@ -1097,7 +1068,7 @@ function CoreProvider({
       getClients,
       tap((clients) => {
         logger.info(
-          `listLives #clients: ${clients.length}, ${JSON.stringify({
+          `listLives #clients: ${size(clients)}, ${JSON.stringify({
             providerName,
             title,
             readWrite,
@@ -1107,10 +1078,15 @@ function CoreProvider({
       }),
       switchCase([
         () => readWrite,
-        filterReadWriteClient({ options, targetTypes: getTargetGroupTypes() }),
-        filterReadClient({ options, targetTypes: getTargetGroupTypes() }),
+        filterReadWriteClient({
+          options,
+          targetTypes: getTargetGroupTypes(),
+        }),
+        filterReadClient({
+          options,
+          targetTypes: getTargetGroupTypes(),
+        }),
       ]),
-      addDependentClients,
       tap((clients) => {
         logger.info(`listLives #clients ${size(clients)}`);
       }),
@@ -1206,12 +1182,12 @@ function CoreProvider({
         name: nameToDelete = "",
         id: idToDelete = "",
         types = [],
+        group = [],
       } = {},
       direction,
     }) =>
     (resource) => {
-      const { spec } = client;
-      const { type } = spec;
+      const { type } = client.spec;
       const { name, id, cannotBeDeleted, managedByUs, managedByOther } =
         resource;
 
@@ -1240,8 +1216,8 @@ function CoreProvider({
           logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
           return true;
         },
-        // ManagedByOther
-        () => managedByOther,
+        // ManagedByOther, if types is specified, delete the resource regardless of managedByOther
+        () => managedByOther && isEmpty(types),
         () => false,
         // Delete by id
         () => !isEmpty(idToDelete),
@@ -1250,7 +1226,7 @@ function CoreProvider({
         () => !isEmpty(nameToDelete),
         () => name === nameToDelete,
         // Not our minion
-        () => !managedByUs,
+        () => !managedByUs && isEmpty(types),
         () => {
           logger.debug(
             `filterDestroyResources ${type}/${name}, not our minion`
@@ -1261,7 +1237,7 @@ function CoreProvider({
         () => !isEmpty(types),
         pipe([
           () => types,
-          any((type) => isTypeMatch({ type, typeToMatch: spec.type })),
+          any((type) => isTypeMatch({ type, typeToMatch: client.spec.type })),
           tap((params) => {
             assert(true);
           }),
@@ -1285,10 +1261,9 @@ function CoreProvider({
         assert(livesPerProvider);
       }),
       filter(not(get("error"))),
-      flatMap(({ groupType, type, group, resources }) =>
+      flatMap(({ groupType, resources }) =>
         pipe([
           tap(() => {
-            assert(type);
             //assert(group); k8s
             assert(groupType);
             assert(

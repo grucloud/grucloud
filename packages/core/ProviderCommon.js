@@ -28,6 +28,7 @@ const {
   uniq,
   callProp,
   when,
+  unless,
   prepend,
 } = require("rubico/x");
 
@@ -67,7 +68,7 @@ exports.mergeConfig = ({ configDefault = {}, config, configs = [] }) =>
     filter((x) => x),
     reduce((acc, config) => defaultsDeep(acc)(config(acc)), configDefault),
     tap((merged) => {
-      logger.info(`mergeConfig : ${tos(merged)}`);
+      //logger.info(`mergeConfig : ${tos(merged)}`);
     }),
   ])();
 
@@ -134,21 +135,24 @@ const findDependentTypes = ({ groupTypes, clients }) =>
   ])();
 
 //TODO targetTypes => targetGroupTypes
-const filterByType = ({ types = [], targetTypes }) =>
-  pipe([
-    tap((clients) => {
-      logger.info(
-        `filterByType inputs #clients ${size(clients)}, #targetTypes ${size(
-          targetTypes
-        )}, #types ${size(types)}`
-      );
-    }),
-    (clients) =>
+const filterByType =
+  ({ types = [], groups = [], targetTypes }) =>
+  (clients) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `filterByType inputs #clients ${size(clients)}, #targetTypes ${size(
+            targetTypes
+          )}, #types ${size(types)}, #groups ${size(groups)}`
+        );
+        assert(Array.isArray(clients));
+      }),
+      () => clients,
       filter((client) =>
         pipe([
           () => types,
           when(isEmpty, () => targetTypes),
-          tap(() => {
+          tap((params) => {
             assert(client);
             assert(client.spec);
             assert(client.spec.groupType);
@@ -156,7 +160,7 @@ const filterByType = ({ types = [], targetTypes }) =>
           }),
           switchCase([
             or([
-              isEmpty, //TODO never empty
+              isEmpty,
               pipe([
                 tap((params) => {
                   assert(true);
@@ -177,13 +181,13 @@ const filterByType = ({ types = [], targetTypes }) =>
             isTypesMatch({ typeToMatch: client.spec.type }),
           ]),
         ])()
-      )(clients),
-    tap((clients) => {
-      logger.info(
-        `filterByType result #clients ${pluck("spec.type")(clients)}`
-      );
-    }),
-  ]);
+      ),
+      tap((clients) => {
+        logger.info(
+          `filterByType result #clients ${pluck("spec.groupType")(clients)}`
+        );
+      }),
+    ])();
 
 const displayClientsType = pipe([
   pluck("spec"),
@@ -191,61 +195,117 @@ const displayClientsType = pipe([
   callProp("join", ", "),
 ]);
 
-exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
+const findClientByGroupType = (clients) => (groupType) =>
   pipe([
-    tap((clients) => {
-      assert(targetTypes);
-      logger.info(
-        `filterReadClient types: ${types}, all: ${all}, #clients ${clients.length}, #targets: ${targetTypes.length}`
-      );
+    tap(() => {
+      assert(clients);
+      assert(groupType);
     }),
-    filter(not(get("spec.listHide"))),
-    //TODO unless
-    switchCase([
-      () => all,
-      identity,
-      filterByType({ types, all, targetTypes }),
-    ]),
-    tap((clients) => {
-      logger.info(
-        `filterReadClient types: ${types}, ${size(
-          targetTypes
-        )} targetTypes: ${targetTypes}`
-      );
+    () => clients,
+    find(eq(get("spec.groupType"), groupType)),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
-      logger.info(
-        `filterReadClient #clients ${size(
+const findClientDependencies = (clients) => (client) =>
+  pipe([
+    tap(() => {
+      assert(clients);
+      assert(client);
+    }),
+    () => client,
+    get("spec.dependsOn", []),
+    tap((params) => {
+      assert(true);
+    }),
+    map(findClientByGroupType(clients)),
+    tap((params) => {
+      assert(true);
+    }),
+    filter(not(isEmpty)),
+    flatMap(findClientDependencies(clients)),
+    prepend(client),
+  ])();
+
+const addDependentClients = (clientsAll) => (clients) =>
+  pipe([
+    tap(() => {
+      assert(clients);
+      logger.debug(
+        `addDependentClients #clientsAll ${size(clientsAll)}, #clients ${size(
           clients
-        )}, final types: ${displayClientsType(clients)}`
+        )}`
       );
     }),
-  ]);
+    () => clients,
+    flatMap(findClientDependencies(clientsAll)),
+    filter(not(isEmpty)),
+    uniq,
+    tap((clientsDependents) => {
+      logger.debug(
+        `addDependentClients #clientsAll ${size(
+          clientsAll
+        )}, #clientsDependents ${size(clientsDependents)}`
+      );
+    }),
+  ])();
 
-exports.filterReadWriteClient = ({
-  options: { types, all } = {},
-  targetTypes,
-}) =>
-  pipe([
-    tap((clients) => {
-      assert(targetTypes);
-      logger.info(
-        `filterReadWriteClient types: ${types}, all: ${all}, #clients ${clients.length}`
-      );
-    }),
-    switchCase([
-      () => all,
-      (clients) => clients,
-      filterByType({ types, all, targetTypes }),
-    ]),
-    filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
-    tap((clients) => {
-      logger.info(
-        `filterReadWriteClient ${types}, result #clients ${
-          clients.length
-        }, ${displayClientsType(clients)}`
-      );
-    }),
-  ]);
+exports.filterReadClient =
+  ({ options: { types, all, group: groups } = {}, targetTypes }) =>
+  (clients) =>
+    pipe([
+      tap(() => {
+        assert(targetTypes);
+        logger.info(
+          `filterReadClient types: ${types}, all: ${all}, #clients ${size(
+            clients
+          )}, #targets: ${size(targetTypes)}, groups:${groups} `
+        );
+      }),
+      () => clients,
+      filter(not(get("spec.listHide"))),
+      unless(() => all, filterByType({ types, groups, all, targetTypes })),
+      tap((clients) => {
+        logger.info(
+          `filterReadClient types: ${types}, ${size(
+            targetTypes
+          )} targetTypes: ${targetTypes}`
+        );
+
+        logger.info(
+          `filterReadClient #clients ${size(
+            clients
+          )}, final types: ${displayClientsType(clients)}`
+        );
+      }),
+      addDependentClients(clients),
+    ])();
+
+exports.filterReadWriteClient =
+  ({ options: { types, groups, all } = {}, targetTypes }) =>
+  (clients) =>
+    pipe([
+      tap(() => {
+        assert(targetTypes);
+        logger.info(
+          `filterReadWriteClient types: ${types}, all: ${all}, #clients ${size(
+            clients
+          )}`
+        );
+      }),
+      () => clients,
+      unless(() => all, filterByType({ types, all, targetTypes })),
+      filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
+      tap((clients) => {
+        logger.info(
+          `filterReadWriteClient ${types}, result #clients ${size(
+            clients
+          )}, ${displayClientsType(clients)}`
+        );
+      }),
+      addDependentClients(clients),
+    ])();
 
 const setCompleted = ({ state, uri, spinnies, spinnerMap, displayText }) => {
   const completed = state.completed + 1;

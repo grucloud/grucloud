@@ -87,12 +87,19 @@ module.exports = K8sClient = ({
       get("metadata.name"),
     ])();
 
-  const findMeta = pipe([
-    get("metadata"),
-    tap((metadata) => {
-      assert(metadata);
-    }),
-  ]);
+  const findMeta = ({ live }) =>
+    pipe([
+      tap(() => {
+        if (!live) {
+          assert(live, `findMeta: no live`);
+        }
+      }),
+      () => live,
+      get("metadata"),
+      tap((metadata) => {
+        assert(metadata);
+      }),
+    ])();
 
   const findId = findName;
 
@@ -212,13 +219,13 @@ module.exports = K8sClient = ({
     getByKey({
       resolvePath: pathGetStatus || pathGet,
       name: findName({ live }),
-      namespace: get("namespace")(findMeta(live)),
+      namespace: get("namespace")(findMeta({ live })),
     });
 
   const isUpById = isUpByIdFactory({ getById });
   const isDownById = isDownByIdFactory({ getById });
 
-  const create = async ({ name, payload, dependencies }) =>
+  const create = ({ name, payload, dependencies }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -319,7 +326,7 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -327,7 +334,7 @@ module.exports = K8sClient = ({
         }),
         () => ({
           name: findName({ live }),
-          namespace: findMeta(live).namespace,
+          namespace: findMeta({ live }).namespace,
         }),
         tap((params) => {
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);

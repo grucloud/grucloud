@@ -4,7 +4,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
 const { ECSService } = require("../ECSService");
 
-describe.skip("ECSService", async function () {
+describe("ECSService", async function () {
   let config;
   let provider;
   let service;
@@ -24,16 +24,30 @@ describe.skip("ECSService", async function () {
     pipe([
       () =>
         service.destroy({
-          live: { serviceName: "12345" },
+          live: {
+            clusterArn:
+              "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
+            serviceName: "12345",
+          },
         }),
     ])
   );
-  it(
+  it.skip(
     "getByName with invalid id",
     pipe([
       () =>
         service.getByName({
           name: "124",
+        }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        service.getById({
+          name: "124",
+          cluster: "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
         }),
     ])
   );

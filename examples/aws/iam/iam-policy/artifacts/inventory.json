@@ -1,13 +1,12 @@
 {
     "command": "list",
     "commandOptions": {
-        "graph": true,
+        "dotFile": "artifacts/diagram-live.dot",
         "title": "iam-policy",
-        "dotFile": "/Users/fredericheem/grucloud/examples/aws/iam/iam-policy/artifacts/diagram-live.dot"
+        "graph": true
     },
     "programOptions": {
         "json": "artifacts/inventory.json",
-        "noOpen": true,
         "workingDirectory": "/Users/fredericheem/grucloud/examples/aws/iam/iam-policy"
     },
     "result": {
@@ -59,80 +58,6 @@
                                 "managedByOther": true,
                                 "displayName": "AmazonEKSWorkerNodePolicy",
                                 "uri": "aws::iam::Policy::AmazonEKSWorkerNodePolicy"
-                            },
-                            {
-                                "groupType": "iam::Policy",
-                                "group": "iam",
-                                "type": "Policy",
-                                "providerName": "aws",
-                                "live": {
-                                    "PolicyName": "policy-allow-ec2",
-                                    "PolicyId": "ANPA4HNBM2ZQDXXDW5CZ3",
-                                    "Arn": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
-                                    "Path": "/",
-                                    "DefaultVersionId": "v1",
-                                    "AttachmentCount": 1,
-                                    "PermissionsBoundaryUsageCount": 0,
-                                    "IsAttachable": true,
-                                    "Description": "Allow ec2:Describe",
-                                    "CreateDate": "2021-08-17T19:08:14.000Z",
-                                    "UpdateDate": "2021-08-17T19:08:14.000Z",
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "@grucloud/example-aws-iam-policy"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "policy-allow-ec2"
-                                        }
-                                    ],
-                                    "EntitiesForPolicy": {
-                                        "PolicyGroups": [],
-                                        "PolicyUsers": [],
-                                        "PolicyRoles": [
-                                            {
-                                                "RoleName": "role-4-policies",
-                                                "RoleId": "AROA4HNBM2ZQMC5ZK6USC"
-                                            }
-                                        ]
-                                    },
-                                    "PolicyDocument": {
-                                        "Version": "2012-10-17",
-                                        "Statement": [
-                                            {
-                                                "Action": [
-                                                    "s3:*"
-                                                ],
-                                                "Effect": "Allow",
-                                                "Resource": "*"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "name": "policy-allow-ec2",
-                                "id": "arn:aws:iam::840541460064:policy/policy-allow-ec2",
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "show": true,
-                                "managedByUs": true,
-                                "cannotBeDeleted": false,
-                                "managedByOther": false,
-                                "displayName": "policy-allow-ec2",
-                                "uri": "aws::iam::Policy::policy-allow-ec2"
                             }
                         ],
                         "groupType": "iam::Policy",
@@ -149,12 +74,12 @@
                                 "providerName": "aws",
                                 "live": {
                                     "Path": "/",
-                                    "RoleName": "role-4-policies",
-                                    "RoleId": "AROA4HNBM2ZQMC5ZK6USC",
-                                    "Arn": "arn:aws:iam::840541460064:role/role-4-policies",
-                                    "CreateDate": "2021-08-17T19:08:18.000Z",
+                                    "RoleName": "ecsInstanceRole",
+                                    "RoleId": "AROA4HNBM2ZQOLC747S6A",
+                                    "Arn": "arn:aws:iam::840541460064:role/ecsInstanceRole",
+                                    "CreateDate": "2021-08-17T21:53:39.000Z",
                                     "AssumeRolePolicyDocument": {
-                                        "Version": "2012-10-17",
+                                        "Version": "2008-10-17",
                                         "Statement": [
                                             {
                                                 "Sid": "",
@@ -167,43 +92,25 @@
                                         ]
                                     },
                                     "MaxSessionDuration": 3600,
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "@grucloud/example-aws-iam-policy"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "role-4-policies"
-                                        }
-                                    ],
-                                    "InstanceProfiles": [],
+                                    "Tags": [],
                                     "Policies": [],
                                     "AttachedPolicies": [
                                         {
-                                            "PolicyName": "policy-allow-ec2",
-                                            "PolicyArn": "arn:aws:iam::840541460064:policy/policy-allow-ec2"
-                                        },
+                                            "PolicyName": "AmazonEC2ContainerServiceforEC2Role",
+                                            "PolicyArn": "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+                                        }
+                                    ],
+                                    "InstanceProfiles": [
                                         {
-                                            "PolicyName": "AmazonEKSWorkerNodePolicy",
-                                            "PolicyArn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                                            "InstanceProfileName": "ecsInstanceRole",
+                                            "InstanceProfileId": "AIPA4HNBM2ZQGT26C6RTL",
+                                            "Arn": "arn:aws:iam::840541460064:instance-profile/ecsInstanceRole",
+                                            "Path": "/"
                                         }
                                     ]
                                 },
-                                "name": "role-4-policies",
-                                "id": "arn:aws:iam::840541460064:role/role-4-policies",
+                                "name": "ecsInstanceRole",
+                                "id": "arn:aws:iam::840541460064:role/ecsInstanceRole",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -211,19 +118,18 @@
                                         "type": "Policy",
                                         "group": "iam",
                                         "ids": [
-                                            "arn:aws:iam::840541460064:policy/policy-allow-ec2",
-                                            "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                                            "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "iam::Policy"
                                     }
                                 ],
                                 "show": true,
-                                "managedByUs": true,
+                                "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "role-4-policies",
-                                "uri": "aws::iam::Role::role-4-policies"
+                                "displayName": "ecsInstanceRole",
+                                "uri": "aws::iam::Role::ecsInstanceRole"
                             }
                         ],
                         "groupType": "iam::Role",

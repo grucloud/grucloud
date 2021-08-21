@@ -1,6 +1,6 @@
 const assert = require("assert");
 const {
-  map,
+  filter,
   pipe,
   tap,
   tryCatch,
@@ -11,7 +11,7 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { defaultsDeep, isEmpty, includes, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, unless, first, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSService",
@@ -24,20 +24,46 @@ const {
   buildTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const findId = get("live.serviceArn");
 const findName = get("live.serviceName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
 exports.ECSService = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "Cluster",
       group: "ecs",
-      ids: [pipe([() => live, get("clusterArn")])()],
+      ids: [live.clusterArn],
+    },
+    {
+      type: "TaskDefinition",
+      group: "ecs",
+      ids: [live.taskDefinition],
+    },
+    {
+      type: "LoadBalancer",
+      group: "elb",
+      ids: [
+        pipe([
+          () =>
+            lives.getByName({
+              providerName: config.providerName,
+              name: live.loadBalancerName,
+              type: "LoadBalancer",
+              group: "elb",
+            }),
+          get("id"),
+        ]),
+      ],
+    },
+    {
+      type: "TargetGroup",
+      group: "elb",
+      ids: pluck("targetGroupArn")(live.loadBalancers),
     },
   ];
 
@@ -48,49 +74,26 @@ exports.ECSService = ({ spec, config }) => {
     () => "",
   ]);
 
-  const isInvalidArn = pipe([
+  const clusterNotFoundException = pipe([
     tap((params) => {
       assert(true);
     }),
-    eq(
-      get("message"),
-      "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
-    ),
+    eq(get("code"), "ClusterNotFoundException"),
   ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
   const describeServices = pipe([
-    tap((params) => {
-      assert(true);
+    tap(({ cluster, services }) => {
+      assert(cluster);
+      assert(Array.isArray(services));
     }),
+    defaultsDeep({ include: ["TAGS"] }),
     ecs().describeServices,
     get("services"),
     tap((params) => {
       assert(true);
     }),
   ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ services: [name] }),
-        describeServices,
-        first,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      switchCase([
-        isInvalidArn,
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listServices-property
   const getList = ({ lives }) =>
@@ -103,38 +106,76 @@ exports.ECSService = ({ spec, config }) => {
         }),
       flatMap(
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
-          tap((params) => {
-            assert(true);
+          tap((cluster) => {
+            assert(cluster);
           }),
-          (cluster) => ({ cluster }),
-          ecs().listServices,
-          get("serviceArns"),
-          (services) => ({ services }),
-          describeServices,
+          (cluster) =>
+            pipe([
+              () => ({ cluster }),
+              ecs().listServices,
+              get("serviceArns"),
+              unless(
+                isEmpty,
+                pipe([(services) => ({ cluster, services }), describeServices])
+              ),
+            ])(),
         ])
       ),
+      filter(not(isEmpty)),
       tap((params) => {
         assert(true);
       }),
     ])();
 
+  const getByName = getByNameCore({ getList, findName });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
+
+  const getById = ({ name, cluster }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          assert(name);
+          assert(cluster);
+        }),
+        () => ({ cluster, services: [name] }),
+        describeServices,
+        first,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      switchCase([
+        clusterNotFoundException,
+        () => undefined,
+        (error) => {
+          throw error;
+        },
+      ])
+    )();
+
   const isInstanceUp = eq(get("status"), "ACTIVE");
-  const isUpByName = pipe([getByName, isInstanceUp]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const isUpById = pipe([getById, isInstanceUp]);
+  const isDownById = pipe([getById, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
-  const create = ({ payload, name, namespace }) =>
+  const create = ({
+    payload,
+    name,
+    namespace,
+    resolvedDependencies: { cluster },
+  }) =>
     pipe([
+      tap(() => {
+        assert(cluster.live.clusterArn);
+      }),
       () => payload,
       ecs().createService,
       tap(() =>
         retryCall({
-          name: `createService isUpByName: ${name}`,
-          fn: () => isUpByName({ name }),
+          name: `createService isUpById: ${name}`,
+          fn: () => isUpById({ name, cluster: cluster.live.clusterArn }),
         })
       ),
     ])();
@@ -143,17 +184,26 @@ exports.ECSService = ({ spec, config }) => {
   const destroy = ({ live }) =>
     pipe([
       () => live,
-      tap(({ serviceName }) => {
+      tap(({ serviceName, clusterArn }) => {
         assert(serviceName);
+        assert(clusterArn);
       }),
-      ({ serviceName }) => ({ service: serviceName }),
+      ({ serviceName, clusterArn }) => ({
+        service: serviceName,
+        cluster: clusterArn,
+        force: true,
+      }),
       tryCatch(
         pipe([
           ecs().deleteService,
           () =>
             retryCall({
-              name: `deleteService isDownByName: ${live.serviceName}`,
-              fn: () => isDownByName({ name: live.serviceName }),
+              name: `deleteService isDownById: ${live.serviceName}`,
+              fn: () =>
+                isDownById({
+                  name: live.serviceName,
+                  cluster: live.clusterArn,
+                }),
               config,
             }),
         ]),
@@ -164,7 +214,7 @@ exports.ECSService = ({ spec, config }) => {
             }),
             () => error,
             switchCase([
-              isInvalidArn,
+              clusterNotFoundException,
               () => undefined,
               () => {
                 throw error;
@@ -178,16 +228,21 @@ exports.ECSService = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { cluster },
+    dependencies: { cluster, taskDefinition },
   }) =>
     pipe([
       tap(() => {
         assert(cluster, "missing 'cluster' dependency");
+        assert(taskDefinition, "missing 'taskDefinition' dependency");
       }),
       () => otherProps,
       defaultsDeep({
         serviceName: name,
         cluster: getField(cluster, "clusterArn"),
+        taskDefinition: `${getField(taskDefinition, "family")}:${getField(
+          taskDefinition,
+          "revision"
+        )}`,
         tags: buildTags({
           name,
           config,
@@ -205,6 +260,7 @@ exports.ECSService = ({ spec, config }) => {
     findNamespace,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,

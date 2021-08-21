@@ -23,6 +23,11 @@ const optionFilteredByTypes = [
   "Include by type, multiple values allowed",
   collect,
 ];
+const optionFilteredByGroups = [
+  "--group <value>",
+  "Include by group, multiple values allowed",
+  collect,
+];
 const optionExcludesByTypes = [
   "-e, --types-exclude <value>",
   "Exclude by type, multiple values allowed",
@@ -161,6 +166,7 @@ exports.createProgram = () => {
     .option("-f, --force", "force destroy, will not prompt user")
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option(...optionFilteredByGroups)
     .option(...optionExcludesByTypes)
     .option(
       "-a, --all",
@@ -193,6 +199,7 @@ exports.createProgram = () => {
     )
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option(...optionFilteredByGroups)
     .option(...optionDotFileLive)
     .option("--title <value>", "diagram title", defautTitle)
     .action(runCommand({ commandName: "list", program }));

@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, or, eq, not } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  or,
+  eq,
+  not,
+  switchCase,
+} = require("rubico");
 const {
   find,
   defaultsDeep,
@@ -7,6 +17,7 @@ const {
   isEmpty,
   first,
   includes,
+  callProp,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
@@ -15,12 +26,12 @@ const { tos } = require("@grucloud/core/tos");
 const {
   AutoScalingNew,
   shouldRetryOnException,
-  findValueInTags,
   findNameInTags,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
+  buildTags,
 } = require("../AwsCommon");
-const { isOurMinionObject } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.AutoScalingGroupARN");
 
@@ -35,51 +46,6 @@ const findName = (params) => {
   assert(false, "should have a name");
 };
 
-const findClusterName = findValueInTags({ key: "eks:cluster-name" });
-
-const findClusterNameFromLives = ({ clusterName, clusters }) =>
-  pipe([
-    tap(() => {
-      logger.debug(`findClusterNameFromLives ${clusterName}`);
-      //assert(clusterName);
-      //assert(clusters);
-    }),
-    () => clusters,
-    find(eq(get("name"), clusterName)),
-    tap((resource) => {
-      assert(true);
-    }),
-    get("live"),
-  ])();
-
-exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
-  pipe([
-    tap(() => {
-      assert(live);
-      assert(lives);
-      assert(config.providerName);
-      logger.debug(`autoScalingGroupIsOurMinion`);
-    }),
-    () => findClusterName(live),
-    (clusterName) =>
-      findClusterNameFromLives({
-        clusterName,
-        clusters: lives.getByType({
-          providerName: config.providerName,
-          type: "Cluster",
-          group: "eks",
-        }),
-      }),
-    tap((clusterLive) => {
-      logger.debug(`autoScalingGroupIsOurMinion clusterLive: ${clusterLive}`);
-    }),
-    get("tags"),
-    (tags) => isOurMinionObject({ tags, config }),
-    tap((result) => {
-      logger.debug(`autoScalingGroupIsOurMinion result: ${result}`);
-    }),
-  ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
@@ -88,18 +54,46 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     hasKeyInTags({
       key: "eks:cluster-name",
     }),
-    hasKeyInTags({
-      key: "AmazonECSManaged",
-    }),
   ]);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "LaunchConfiguration",
+      group: "autoscaling",
+      ids: [
+        pipe([
+          () => live,
+          tap((params) => {
+            assert(true);
+          }),
+          get("LaunchConfigurationName"),
+          (name) =>
+            lives.getByName({
+              name,
+              providerName: config.providerName,
+              type: "LaunchConfiguration",
+              group: "autoscaling",
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
     { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },
     {
       type: "Instance",
       group: "ec2",
       ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
     },
+    {
+      type: "Subnet",
+      group: "ec2",
+      ids: pipe([
+        () => live,
+        get("VPCZoneIdentifier"),
+        callProp("split", ","),
+      ])(),
+    },
+    { type: "Role", group: "iam", ids: [live.ServiceLinkedRoleARN] },
   ];
 
   const findNamespace = pipe([
@@ -113,12 +107,12 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
-  const getList = ({ params } = {}) =>
+  const getList = () =>
     pipe([
       tap(() => {
-        logger.info(`getList autoscaling group ${tos(params)}`);
+        logger.info(`getList autoscaling group`);
       }),
-      () => params,
+      () => ({}),
       autoScaling().describeAutoScalingGroups,
       get("AutoScalingGroups"),
       tap((params) => {
@@ -142,53 +136,136 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       }),
     ])();
 
+  const isUpByName = pipe([getByName, not(isEmpty)]);
   const isDownByName = pipe([getByName, isEmpty]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
+  const create = ({ payload, name, namespace }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => payload,
+      autoScaling().createAutoScalingGroup,
+      tap(() =>
+        retryCall({
+          name: `createAutoScalingGroup isUpById: ${name}`,
+          fn: () => isUpByName({ name }),
+        })
+      ),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = ({ live, lives }) =>
     pipe([
-      () => ({ name: findName({ live, lives }) }),
-      ({ name }) =>
+      () => live,
+      tap((params) => {
+        assert(true);
+      }),
+      get("AutoScalingGroupName"),
+      (AutoScalingGroupName) =>
         pipe([
           tap(() => {
             logger.info(
-              `destroy autoscaling group ${JSON.stringify({ name })}`
+              `destroy autoscaling group ${JSON.stringify({
+                AutoScalingGroupName,
+              })}`
             );
           }),
           tryCatch(
             pipe([
-              //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
-              () => ({ AutoScalingGroupName: name, ForceDelete: true }),
+              () => ({ AutoScalingGroupName, ForceDelete: true }),
+              tap((params) => {
+                assert(true);
+              }),
               autoScaling().deleteAutoScalingGroup,
+              tap((params) => {
+                assert(true);
+              }),
               tap(() =>
                 retryCall({
-                  name: `isDownByName: ${name}`,
-                  fn: () => isDownByName({ name }),
+                  name: `isDownByName: ${AutoScalingGroupName}`,
+                  fn: () => isDownByName({ name: AutoScalingGroupName }),
                   config,
                 })
               ),
             ]),
-            tap.if(
+            (error, params) =>
               pipe([
-                get("message"),
-                not(includes("AutoScalingGroup name not found")),
-              ]),
-              (error) => {
-                throw Error(error.message);
-              }
-            )
+                tap(() => {
+                  assert(true);
+                }),
+                () => error,
+                switchCase([
+                  pipe([
+                    get("message"),
+                    includes("AutoScalingGroup name not found"),
+                  ]),
+                  () => false,
+                  (error) => {
+                    throw Error(error.message);
+                  },
+                ]),
+              ])()
           ),
-
-          tap(() => {
-            logger.info(
-              `destroyed autoscaling group ${JSON.stringify({ name })}`
-            );
-          }),
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({})(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {
+      launchTemplate,
+      launchConfiguration,
+      subnets = [],
+      targetGroups = [],
+      serviceRole,
+    },
+  }) =>
+    pipe([
+      () => otherProps,
+      tap(() => {
+        assert(
+          launchTemplate || launchConfiguration,
+          "missing 'launchTemplate' or 'launchConfiguration' dependency"
+        );
+        assert(Array.isArray(subnets), "missing 'subnets' dependency");
+      }),
+      defaultsDeep({
+        AutoScalingGroupName: name,
+        MinSize: 0,
+        MaxSize: 1,
+        ...(launchConfiguration && {
+          LaunchConfigurationName: getField(
+            launchConfiguration,
+            "LaunchConfigurationName"
+          ),
+        }),
+        ...(launchTemplate && {
+          LaunchTemplate: {
+            LaunchTemplateId: getField(launchTemplate, "LaunchTemplateId"),
+          },
+        }),
+        TargetGroupARNs: pipe([
+          () => targetGroups,
+          map((targetGroup) => getField(targetGroup, "TargetGroupArn")),
+        ])(),
+        ...(serviceRole && {
+          ServiceLinkedRoleARN: getField(serviceRole, "Arn"),
+        }),
+        VPCZoneIdentifier: pipe([
+          () => subnets,
+          map((subnet) => getField(subnet, "SubnetId")),
+          callProp("join", ","),
+          (VPCZoneIdentifier) => `${VPCZoneIdentifier}`,
+        ])(),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   return {
     type: "AutoScalingGroup",
@@ -199,6 +276,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     findName,
     getByName,
     findName,
+    create,
     destroy,
     getList,
     configDefault,

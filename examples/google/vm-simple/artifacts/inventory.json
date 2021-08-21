@@ -26,15 +26,15 @@
                                 "type": "Disk",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "4075503704570463664",
-                                    "creationTimestamp": "2021-08-17T06:36:31.897-07:00",
+                                    "id": "3357860621261254114",
+                                    "creationTimestamp": "2021-08-21T07:51:58.423-07:00",
                                     "name": "web-server",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a",
                                     "status": "READY",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/disks/web-server",
-                                    "sourceImage": "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720",
-                                    "sourceImageId": "5084371847132934865",
+                                    "sourceImage": "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210820",
+                                    "sourceImageId": "3629791390366300846",
                                     "type": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/diskTypes/pd-standard",
                                     "licenses": [
                                         "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
@@ -53,7 +53,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-17T06:36:31.897-07:00",
+                                    "lastAttachTimestamp": "2021-08-21T07:51:58.424-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/instances/web-server"
                                     ],
@@ -65,16 +65,16 @@
                                     "kind": "compute#disk"
                                 },
                                 "name": "web-server",
-                                "id": "4075503704570463664",
+                                "id": "3357860621261254114",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "google::compute::Disk::web-server",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "web-server",
-                                "uri": "google::compute::Disk::web-server"
+                                "displayName": "web-server"
                             }
                         ],
                         "groupType": "compute::Disk",
@@ -127,11 +127,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::Firewall::default-allow-icmp",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "default-allow-icmp",
-                                "uri": "google::compute::Firewall::default-allow-icmp"
+                                "displayName": "default-allow-icmp"
                             },
                             {
                                 "groupType": "compute::Firewall",
@@ -188,11 +188,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::Firewall::default-allow-internal",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "default-allow-internal",
-                                "uri": "google::compute::Firewall::default-allow-internal"
+                                "displayName": "default-allow-internal"
                             },
                             {
                                 "groupType": "compute::Firewall",
@@ -240,11 +240,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::Firewall::default-allow-rdp",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "default-allow-rdp",
-                                "uri": "google::compute::Firewall::default-allow-rdp"
+                                "displayName": "default-allow-rdp"
                             },
                             {
                                 "groupType": "compute::Firewall",
@@ -292,11 +292,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::Firewall::default-allow-ssh",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "default-allow-ssh",
-                                "uri": "google::compute::Firewall::default-allow-ssh"
+                                "displayName": "default-allow-ssh"
                             }
                         ],
                         "groupType": "compute::Firewall",
@@ -359,11 +359,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "google::compute::Network::default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "default",
-                                "uri": "google::compute::Network::default"
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "compute::Network",
@@ -408,11 +408,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::SubNetwork::default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "default",
-                                "uri": "google::compute::SubNetwork::default"
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "compute::SubNetwork",
@@ -428,8 +428,8 @@
                                 "type": "VmInstance",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "2031613649842734512",
-                                    "creationTimestamp": "2021-08-17T06:36:31.880-07:00",
+                                    "id": "7397465654515510754",
+                                    "creationTimestamp": "2021-08-21T07:51:58.410-07:00",
                                     "name": "web-server",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -442,18 +442,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.0.34",
+                                            "networkIP": "10.164.0.35",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "35.204.111.17",
+                                                    "natIP": "34.147.106.10",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "vsDiwKFyw3w=",
+                                            "fingerprint": "t8GBFthhRT4=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -538,12 +538,12 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "Ii6mILlIwco=",
-                                    "lastStartTimestamp": "2021-08-17T06:36:41.522-07:00",
+                                    "fingerprint": "BabEiwPJ3qg=",
+                                    "lastStartTimestamp": "2021-08-21T07:52:06.103-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "name": "web-server",
-                                "id": "2031613649842734512",
+                                "id": "7397465654515510754",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -565,11 +565,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "google::compute::VmInstance::web-server",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "web-server",
-                                "uri": "google::compute::VmInstance::web-server"
+                                "displayName": "web-server"
                             }
                         ],
                         "groupType": "compute::VmInstance",
@@ -602,11 +602,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "google::iam::ServiceAccount::90918681706-compute",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "90918681706-compute",
-                                "uri": "google::iam::ServiceAccount::90918681706-compute"
+                                "displayName": "90918681706-compute"
                             },
                             {
                                 "groupType": "iam::ServiceAccount",
@@ -631,11 +631,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "google::iam::ServiceAccount::grucloud",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "grucloud",
-                                "uri": "google::iam::ServiceAccount::grucloud"
+                                "displayName": "grucloud"
                             },
                             {
                                 "groupType": "iam::ServiceAccount",
@@ -660,11 +660,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "google::iam::ServiceAccount::readonly-sa-grucloud",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "readonly-sa-grucloud",
-                                "uri": "google::iam::ServiceAccount::readonly-sa-grucloud"
+                                "displayName": "readonly-sa-grucloud"
                             }
                         ],
                         "groupType": "iam::ServiceAccount",

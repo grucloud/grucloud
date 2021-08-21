@@ -60,7 +60,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
       () => live,
       get("InstanceProfileName"),
-      or([callProp("startsWith", "eks-"), callProp("startsWith", "ecs")]),
+      or([callProp("startsWith", "eks-")]),
       tap((params) => {
         assert(true);
       }),
@@ -133,7 +133,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
 
-  const create = async ({ name, payload = {}, dependencies }) =>
+  const create = ({ name, payload = {}, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`create iam instance profile ${name}`);
@@ -142,10 +142,10 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () => defaultsDeep({})(payload),
       (createParams) => iam().createInstanceProfile(createParams),
       dependencies,
-      get("iamRoles"),
-      tap((iamRoles) => {
-        assert(iamRoles, "missing dependency iamRoles");
-        assert(Array.isArray(iamRoles), "iamRoles must be an array");
+      get("roles"),
+      tap((roles) => {
+        assert(roles, "missing dependency roles");
+        assert(Array.isArray(roles), "roles must be an array");
       }),
       forEach((iamRole) =>
         iam().addRoleToInstanceProfile({
@@ -167,7 +167,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => findName({ live }),
       (InstanceProfileName) =>

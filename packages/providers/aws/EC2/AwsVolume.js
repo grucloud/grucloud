@@ -18,12 +18,11 @@ const {
   find,
   prepend,
   unless,
-  when,
 } = require("rubico/x");
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVolume" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { AwsEC2 } = require("./AwsEC2");
+const { EC2Instance } = require("./EC2Instance");
 
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -48,7 +47,7 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const awsEC2 = AwsEC2({ config, spec });
+  const awsEC2 = EC2Instance({ config, spec });
 
   const managedByOther = or([
     hasKeyInTags({
@@ -218,11 +217,7 @@ exports.AwsVolume = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
-      switchCase([
-        isEmpty,
-        identity,
-        ({ live }) => awsEC2.findNamespace({ live, lives }),
-      ]),
+      unless(isEmpty, ({ live }) => awsEC2.findNamespace({ live, lives })),
       tap((namespace) => {
         logger.debug(`findNamespaceFromInstanceId ${namespace}`);
       }),

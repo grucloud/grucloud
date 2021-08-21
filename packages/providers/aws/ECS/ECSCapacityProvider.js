@@ -11,7 +11,7 @@ const {
   pick,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, includes, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, includes, first, unless } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSCapacityProvider",
@@ -23,7 +23,8 @@ const {
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
-
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsAutoScalingGroup } = require("../autoscaling/AwsAutoScalingGroup");
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
 
@@ -31,7 +32,7 @@ const findName = get("live.name");
 
 exports.ECSCapacityProvider = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-
+  const autoScalingGroup = AwsAutoScalingGroup({ config });
   const findDependencies = ({ live }) => [
     {
       type: "AutoScalingGroup",
@@ -52,21 +53,21 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     () => "",
   ]);
 
-  const isInvalidArn = eq(
+  const notFound = eq(
     get("message"),
     "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
   );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
-  const describeCapacityProviders = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    ecs().describeCapacityProviders,
-    get("capacityProviders"),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const describeCapacityProviders = (params = {}) =>
+    pipe([
+      () => params,
+      defaultsDeep({ include: ["TAGS"] }),
+      ecs().describeCapacityProviders,
+      get("capacityProviders"),
+      tap((capacityProviders) => {
+        logger.debug(`describeCapacityProviders ${tos(capacityProviders)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
   const getByName = ({ name }) =>
@@ -83,7 +84,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
         }),
       ]),
       switchCase([
-        isInvalidArn,
+        notFound,
         () => undefined,
         (error) => {
           throw error;
@@ -91,13 +92,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ])
     )();
 
-  const getList = () =>
-    pipe([
-      describeCapacityProviders,
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getList = () => pipe([describeCapacityProviders])();
 
   const isUpByName = pipe([getByName, not(isEmpty)]);
   const isDownByName = pipe([
@@ -107,6 +102,8 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       () => {
         throw Error(`DELETE_FAILED`);
       },
+      eq(get("updateStatus"), "DELETE_COMPLETE"),
+      () => true,
       isEmpty,
       () => true,
       () => false,
@@ -126,9 +123,37 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
-  const destroy = ({ live }) =>
+  const deleteAutoScalingGroup = ({ live, lives }) =>
     pipe([
+      () => live,
+      get("autoScalingGroupProvider.autoScalingGroupArn"),
+      tap((params) => {
+        assert(true);
+      }),
+      (id) =>
+        lives.getById({
+          id,
+          providerName: config.providerName,
+          type: "AutoScalingGroup",
+          group: "autoscaling",
+        }),
+      get("name"),
+      unless(
+        isEmpty,
+        pipe([
+          (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
+          autoScalingGroup.destroy,
+        ])
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
+  const destroy = ({ live, lives }) =>
+    pipe([
+      () => ({ live, lives }),
+      deleteAutoScalingGroup,
       () => live,
       tap(({ name }) => {
         assert(name);
@@ -153,7 +178,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
             }),
             () => error,
             switchCase([
-              isInvalidArn,
+              notFound,
               () => undefined,
               () => {
                 throw error;
@@ -167,12 +192,20 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { autoScalingGroup },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         name,
+        ...(autoScalingGroup && {
+          autoScalingGroupProvider: {
+            autoScalingGroupArn: getField(
+              autoScalingGroup,
+              "AutoScalingGroupARN"
+            ),
+          },
+        }),
         tags: buildTags({
           name,
           config,
