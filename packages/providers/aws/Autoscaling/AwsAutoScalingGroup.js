@@ -10,6 +10,7 @@ const {
   not,
   switchCase,
   omit,
+  assign,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -107,15 +108,30 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     }),
   ]);
 
+  const describeAutoScalingGroups = (params = {}) =>
+    pipe([
+      () => params,
+      autoScaling().describeAutoScalingGroups,
+      get("AutoScalingGroups"),
+      map(
+        assign({
+          VPCZoneIdentifier: pipe([
+            get("VPCZoneIdentifier"),
+            callProp("split", ","),
+            callProp("sort"),
+            callProp("join", ","),
+          ]),
+        })
+      ),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = () =>
     pipe([
       tap(() => {
         logger.info(`getList autoscaling group`);
       }),
-      () => ({}),
-      autoScaling().describeAutoScalingGroups,
-      get("AutoScalingGroups"),
+      describeAutoScalingGroups,
       tap((params) => {
         assert(true);
       }),
@@ -126,11 +142,10 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`getByName ${tos(name)}`);
       }),
-      () =>
-        autoScaling().describeAutoScalingGroups({
-          AutoScalingGroupNames: [name],
-        }),
-      get("AutoScalingGroups"),
+      () => ({
+        AutoScalingGroupNames: [name],
+      }),
+      describeAutoScalingGroups,
       first,
       tap((result) => {
         logger.debug(`getByName: ${name}, result: ${tos(result)}`);
@@ -266,8 +281,8 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
         VPCZoneIdentifier: pipe([
           () => subnets,
           map((subnet) => getField(subnet, "SubnetId")),
+          callProp("sort"),
           callProp("join", ","),
-          (VPCZoneIdentifier) => `${VPCZoneIdentifier}`,
         ])(),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),

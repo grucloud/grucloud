@@ -118,8 +118,8 @@ module.exports = ({ stage }) => ({
         name: "EcsInstanceAsg",
         properties: {
           MinSize: 0,
-          MaxSize: 2,
-          DesiredCapacity: 2,
+          MaxSize: 1,
+          DesiredCapacity: 1,
           DefaultCooldown: 300,
           HealthCheckType: "EC2",
           HealthCheckGracePeriod: 0,
