@@ -241,10 +241,7 @@ exports.ECSService = ({ spec, config }) => {
       defaultsDeep({
         serviceName: name,
         cluster: getField(cluster, "clusterArn"),
-        taskDefinition: `${getField(taskDefinition, "family")}:${getField(
-          taskDefinition,
-          "revision"
-        )}`,
+        taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
         tags: buildTags({
           name,
           config,

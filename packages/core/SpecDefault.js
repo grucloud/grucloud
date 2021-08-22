@@ -11,7 +11,7 @@ const {
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
-
+const { compare } = require("./Common");
 const findNamespaceFromProps = (properties) =>
   tryCatch(
     pipe([
@@ -83,7 +83,7 @@ const useParams = ({ params, provider, programOptions, spec }) => ({
 });
 
 const SpecDefault = ({ providerName }) => ({
-  compare: detailedDiff,
+  compare: compare(),
   providerName,
   listOnly: false,
   isOurMinion: () => false,

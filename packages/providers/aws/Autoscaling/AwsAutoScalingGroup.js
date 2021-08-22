@@ -9,9 +9,9 @@ const {
   eq,
   not,
   switchCase,
+  omit,
 } = require("rubico");
 const {
-  find,
   defaultsDeep,
   pluck,
   isEmpty,
@@ -22,6 +22,7 @@ const {
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
+
 const { tos } = require("@grucloud/core/tos");
 const {
   AutoScalingNew,
@@ -155,6 +156,21 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       ),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`updateAutoScalingGroup: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => payload,
+      omit(["TargetGroupARNs", "Tags"]),
+      autoScaling().updateAutoScalingGroup,
+      tap(() => {
+        logger.info(`updated authorizer ${name}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = ({ live, lives }) =>
     pipe([
@@ -261,7 +277,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     ])();
 
   return {
-    type: "AutoScalingGroup",
     spec,
     findId,
     findDependencies,
@@ -270,6 +285,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

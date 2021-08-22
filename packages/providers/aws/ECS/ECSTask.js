@@ -12,7 +12,7 @@ const {
   flatMap,
   filter,
 } = require("rubico");
-const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
+const { defaultsDeep, isEmpty, unless, callProp, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSTask",
@@ -37,7 +37,7 @@ const findName = findNameInTagsOrId({ findId });
 exports.ECSTask = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "Cluster",
       group: "ecs",
@@ -53,6 +53,36 @@ exports.ECSTask = ({ spec, config }) => {
       group: "ecs",
       ids: [live.containerInstanceArn],
     },
+    {
+      type: "Service",
+      group: "ecs",
+      ids: [
+        pipe([
+          () => live,
+          get("group"),
+          tap((params) => {
+            assert(true);
+          }),
+          when(
+            callProp("startsWith", "service:"),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              callProp("replace", "service:", ""),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "Service",
+                  group: "ecs",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ])
+          ),
+        ])(),
+      ],
+    },
   ];
 
   const findNamespace = pipe([
@@ -61,6 +91,9 @@ exports.ECSTask = ({ spec, config }) => {
     }),
     () => "",
   ]);
+
+  const managedByOther = ({ live }) =>
+    pipe([() => live, get("group"), callProp("startsWith", "service:")])();
 
   const isNotFound = pipe([
     tap((params) => {
@@ -187,6 +220,7 @@ exports.ECSTask = ({ spec, config }) => {
     findId,
     findNamespace,
     findDependencies,
+    managedByOther,
     getByName,
     findName,
     create,

@@ -118,8 +118,8 @@ module.exports = ({ stage }) => ({
         name: "EcsInstanceAsg",
         properties: {
           MinSize: 0,
-          MaxSize: 1,
-          DesiredCapacity: 1,
+          MaxSize: 2,
+          DesiredCapacity: 2,
           DefaultCooldown: 300,
           HealthCheckType: "EC2",
           HealthCheckGracePeriod: 0,
@@ -208,6 +208,37 @@ module.exports = ({ stage }) => ({
           ],
           placementConstraints: [],
           requiresCompatibilities: ["EC2"],
+        },
+      },
+    },
+    Service: {
+      serviceNginx: {
+        name: "service-nginx",
+        properties: {
+          launchType: "EC2",
+          desiredCount: 1,
+          deploymentConfiguration: {
+            deploymentCircuitBreaker: {
+              enable: false,
+              rollback: false,
+            },
+            maximumPercent: 200,
+            minimumHealthyPercent: 100,
+          },
+          placementConstraints: [],
+          placementStrategy: [
+            {
+              type: "spread",
+              field: "attribute:ecs.availability-zone",
+            },
+            {
+              type: "spread",
+              field: "instanceId",
+            },
+          ],
+          schedulingStrategy: "REPLICA",
+          enableECSManagedTags: true,
+          enableExecuteCommand: false,
         },
       },
     },

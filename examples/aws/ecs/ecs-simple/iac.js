@@ -146,6 +146,15 @@ const createResources = ({ provider }) => {
     name: get("config.ecs.TaskDefinition.nginx.name"),
     properties: get("config.ecs.TaskDefinition.nginx.properties"),
   });
+
+  provider.ecs.makeService({
+    name: get("config.ecs.Service.serviceNginx.name"),
+    properties: get("config.ecs.Service.serviceNginx.properties"),
+    dependencies: ({ resources }) => ({
+      cluster: resources.ecs.Cluster.cluster,
+      taskDefinition: resources.ecs.TaskDefinition.nginx,
+    }),
+  });
 };
 
 exports.createResources = createResources;
