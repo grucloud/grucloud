@@ -12,7 +12,14 @@ const {
   omit,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, first, includes } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  first,
+  includes,
+  unless,
+  size,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { tos } = require("@grucloud/core/tos");
@@ -23,6 +30,7 @@ const {
   buildTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsAutoScalingGroup } = require("../autoscaling/AwsAutoScalingGroup");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -31,6 +39,7 @@ const findId = get("live.clusterArn");
 
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
+  const autoScalingGroup = AwsAutoScalingGroup({ config });
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -123,23 +132,6 @@ exports.ECSCluster = ({ spec, config }) => {
       () => payload,
       omit(["Tags"]),
       ecs().createCluster,
-      // () => ({
-      //   resourceArn: `arn:aws:ecs:${
-      //     config.region
-      //   }:${config.accountId()}:cluster/${name}`,
-      //   tags: buildTags({
-      //     name,
-      //     config,
-      //     namespace,
-      //     UserTags: payload.Tags,
-      //     key: "key",
-      //     value: "value",
-      //   }),
-      // }),
-      // tap((params) => {
-      //   assert(true);
-      // }),
-      // ecs().tagResource,
       tap(() =>
         retryCall({
           name: `createCluster isUpByName: ${name}`,
@@ -148,11 +140,81 @@ exports.ECSCluster = ({ spec, config }) => {
       ),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
-  const destroy = ({ live }) =>
+  const destroyAutoScalingGroup = ({ live, lives }) =>
     pipe([
       () => live,
-      ({ clusterName }) => ({ cluster: clusterName }),
+      get("capacityProviders"),
+      map((name) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () =>
+            lives.getByName({
+              name,
+              type: "CapacityProvider",
+              group: "ecs",
+              providerName: config.providerName,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          get("autoScalingGroupProvider.autoScalingGroupArn"),
+          (id) =>
+            lives.getById({
+              id,
+              providerName: config.providerName,
+              type: "AutoScalingGroup",
+              group: "autoscaling",
+            }),
+          get("name"),
+          unless(
+            isEmpty,
+            pipe([
+              (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
+              tap((params) => {
+                assert(true);
+              }),
+              autoScalingGroup.destroy,
+            ])
+          ),
+        ])()
+      ),
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listContainerInstances-property
+  const deregisterContainerInstance = ({ live }) =>
+    pipe([
+      () => ({ cluster: live.clusterName }),
+      ecs().listContainerInstances,
+      get("containerInstanceArns"),
+      tap((containerInstanceArns) => {
+        logger.debug(
+          `deregisterContainerInstance #size ${size(containerInstanceArns)}`
+        );
+      }),
+      map(
+        pipe([
+          (containerInstance) => ({
+            cluster: live.clusterName,
+            containerInstance,
+            force: true,
+          }),
+          ecs().deregisterContainerInstance,
+        ])
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
+  const destroy = ({ live, lives }) =>
+    pipe([
+      () => ({ live, lives }),
+      tap(deregisterContainerInstance),
+      tap(destroyAutoScalingGroup),
+      () => ({ cluster: live.clusterName }),
       tap(({ cluster }) => {
         assert(cluster);
       }),

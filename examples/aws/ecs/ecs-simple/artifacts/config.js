@@ -49,6 +49,15 @@ module.exports = ({ stage }) => ({
       },
     },
     Subnet: {
+      pubSubnetAz1: {
+        name: "PubSubnetAz1",
+        properties: {
+          CidrBlock: "10.0.0.0/24",
+          AvailabilityZone: "eu-west-2a",
+          MapPublicIpOnLaunch: true,
+          MapCustomerOwnedIpOnLaunch: false,
+        },
+      },
       pubSubnetAz2: {
         name: "PubSubnetAz2",
         properties: {
@@ -85,6 +94,23 @@ module.exports = ({ stage }) => ({
         },
       },
     },
+    SecurityGroupRuleIngress: {
+      ecsSecurityGroupRuleIngressTcp_80V4: {
+        name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
+        properties: {
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 80,
+            ToPort: 80,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+          },
+        },
+      },
+    },
   },
   autoscaling: {
     AutoScalingGroup: {
@@ -101,13 +127,13 @@ module.exports = ({ stage }) => ({
       },
     },
     LaunchConfiguration: {
-      ec2ContainerServiceMyClusterDemoEcsInstanceLc_1Uka3Bbe6Tzqm: {
-        name: "EC2ContainerService-my-cluster-demo-EcsInstanceLc-1UKA3BBE6TZQM",
+      ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj: {
+        name: "EC2ContainerService-cluster-EcsInstanceLc-COYK3CQZ0QRJ",
         properties: {
           InstanceType: "t2.micro",
           ImageId: "ami-02fee912d20d2f3cd",
           UserData:
-            "IyEvYmluL2Jhc2gKZWNobyBFQ1NfQ0xVU1RFUj1teS1jbHVzdGVyLWRlbW8gPj4gL2V0Yy9lY3MvZWNzLmNvbmZpZztlY2hvIEVDU19CQUNLRU5EX0hPU1Q9ID4+IC9ldGMvZWNzL2Vjcy5jb25maWc7",
+            "IyEvYmluL2Jhc2gKZWNobyBFQ1NfQ0xVU1RFUj1jbHVzdGVyID4+IC9ldGMvZWNzL2Vjcy5jb25maWc7ZWNobyBFQ1NfQkFDS0VORF9IT1NUPSA+PiAvZXRjL2Vjcy9lY3MuY29uZmlnOw==",
           InstanceMonitoring: {
             Enabled: true,
           },
@@ -127,8 +153,8 @@ module.exports = ({ stage }) => ({
   },
   ecs: {
     Cluster: {
-      myClusterDemo: {
-        name: "my-cluster-demo",
+      cluster: {
+        name: "cluster",
         properties: {
           settings: [
             {
@@ -141,46 +167,19 @@ module.exports = ({ stage }) => ({
       },
     },
     CapacityProvider: {
-      cpDemo: {
-        name: "cp-demo",
+      cp: {
+        name: "cp",
         properties: {
           autoScalingGroupProvider: {
             managedScaling: {
               status: "ENABLED",
-              targetCapacity: 80,
+              targetCapacity: 100,
               minimumScalingStepSize: 1,
               maximumScalingStepSize: 10000,
               instanceWarmupPeriod: 300,
             },
             managedTerminationProtection: "DISABLED",
           },
-        },
-      },
-    },
-    TaskDefinition: {
-      nginx: {
-        name: "nginx",
-        properties: {
-          containerDefinitions: [
-            {
-              name: "nginx",
-              image: "nginx",
-              cpu: 0,
-              portMappings: [
-                {
-                  containerPort: 80,
-                  hostPort: 80,
-                  protocol: "tcp",
-                },
-              ],
-              essential: true,
-              environment: [],
-              mountPoints: [],
-              volumesFrom: [],
-            },
-          ],
-          placementConstraints: [],
-          requiresCompatibilities: ["EC2"],
         },
       },
     },

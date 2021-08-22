@@ -50,28 +50,6 @@
       "port": 9229
     },
     {
-      "name": "List ECS group",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "--group", "ecs"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
-      "name": "List Route",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-t", "Route"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
       "name": "GenCode",
       "type": "node",
       "request": "launch",

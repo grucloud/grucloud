@@ -238,6 +238,7 @@ exports.AwsIamRole = ({ spec, config }) => {
               RoleName,
             });
           }),
+          //TODO NoSuchEntity
           () =>
             iam().deleteRole({
               RoleName,

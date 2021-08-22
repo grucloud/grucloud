@@ -171,7 +171,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       () =>
         retryCall({
           name: `destroy subnet isDownById: ${name} id: ${id}`,
-          fn: () => ec2().deleteSubnet({ SubnetId: id }),
+          fn: () => ec2().deleteSubnet({ SubnetId: id }), // TODO InvalidSubnetID.NotFound
           shouldRetryOnException: ({ error, name }) =>
             switchCase([
               eq(get("code"), "DependencyViolation"),

@@ -205,6 +205,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       () => detachInternetGateways({ InternetGatewayId: id }),
       tryCatch(
         pipe([
+          // TODO InvalidInternetGatewayID.NotFound
           () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
           () =>
             retryCall({

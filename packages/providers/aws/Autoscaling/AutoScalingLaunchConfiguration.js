@@ -5,14 +5,18 @@ const {
   tryCatch,
   get,
   switchCase,
-  eq,
   not,
-  or,
   pick,
   map,
-  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, size, first, includes } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  size,
+  first,
+  includes,
+  callProp,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchConfiguration",
@@ -51,17 +55,32 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
       group: "iam",
       ids: [
         pipe([
-          () =>
-            lives.getByName({
-              name: live.IamInstanceProfile,
-              type: "InstanceProfile",
-              group: "iam",
-              providerName: config.providerName,
-            }),
-          tap((params) => {
-            assert(true);
-          }),
-          get("id"),
+          () => live.IamInstanceProfile,
+          switchCase([
+            isEmpty,
+            () => undefined,
+            callProp("startsWith", "arn"),
+            pipe([
+              () =>
+                lives.getById({
+                  id: live.IamInstanceProfile,
+                  type: "InstanceProfile",
+                  group: "iam",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+            pipe([
+              () =>
+                lives.getByName({
+                  name: live.IamInstanceProfile,
+                  type: "InstanceProfile",
+                  group: "iam",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+          ]),
         ])(),
       ],
     },

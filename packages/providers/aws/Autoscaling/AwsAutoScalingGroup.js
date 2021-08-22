@@ -159,18 +159,11 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const destroy = ({ live, lives }) =>
     pipe([
       () => live,
-      tap((params) => {
-        assert(true);
-      }),
       get("AutoScalingGroupName"),
       (AutoScalingGroupName) =>
         pipe([
           tap(() => {
-            logger.info(
-              `destroy autoscaling group ${JSON.stringify({
-                AutoScalingGroupName,
-              })}`
-            );
+            logger.info(`destroy autoscaling group ${AutoScalingGroupName}`);
           }),
           tryCatch(
             pipe([

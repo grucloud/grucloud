@@ -55,6 +55,7 @@ module.exports = () =>
       dependsOn: [
         "ecs::Cluster",
         "ecs::TaskDefinition",
+        "ecs::Service",
         "ec2::subnet",
         "ec2::securityGroup",
       ],

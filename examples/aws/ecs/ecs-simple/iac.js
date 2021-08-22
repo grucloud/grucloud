@@ -35,6 +35,14 @@ const createResources = ({ provider }) => {
   });
 
   provider.ec2.makeSubnet({
+    name: get("config.ec2.Subnet.pubSubnetAz1.name"),
+    properties: get("config.ec2.Subnet.pubSubnetAz1.properties"),
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+  });
+
+  provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.pubSubnetAz2.name"),
     properties: get("config.ec2.Subnet.pubSubnetAz2.properties"),
     dependencies: ({ resources }) => ({
@@ -53,7 +61,10 @@ const createResources = ({ provider }) => {
     name: get("config.ec2.RouteTable.routeViaIgw.name"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
-      subnets: [resources.ec2.Subnet.pubSubnetAz2],
+      subnets: [
+        resources.ec2.Subnet.pubSubnetAz2,
+        resources.ec2.Subnet.pubSubnetAz1,
+      ],
     }),
   });
 
@@ -74,25 +85,40 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: get(
+      "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.name"
+    ),
+    properties: get(
+      "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.properties"
+    ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.ecsSecurityGroup,
+    }),
+  });
+
   provider.autoscaling.makeAutoScalingGroup({
     name: get("config.autoscaling.AutoScalingGroup.ecsInstanceAsg.name"),
     properties: get(
       "config.autoscaling.AutoScalingGroup.ecsInstanceAsg.properties"
     ),
     dependencies: ({ resources }) => ({
-      subnets: [resources.ec2.Subnet.pubSubnetAz2],
+      subnets: [
+        resources.ec2.Subnet.pubSubnetAz1,
+        resources.ec2.Subnet.pubSubnetAz2,
+      ],
       launchConfiguration:
         resources.autoscaling.LaunchConfiguration
-          .ec2ContainerServiceMyClusterDemoEcsInstanceLc_1Uka3Bbe6Tzqm,
+          .ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj,
     }),
   });
 
   provider.autoscaling.makeLaunchConfiguration({
     name: get(
-      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceMyClusterDemoEcsInstanceLc_1Uka3Bbe6Tzqm.name"
+      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.name"
     ),
     properties: get(
-      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceMyClusterDemoEcsInstanceLc_1Uka3Bbe6Tzqm.properties"
+      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.properties"
     ),
     dependencies: ({ resources }) => ({
       instanceProfile: resources.iam.InstanceProfile.ecsInstanceRole,
@@ -101,24 +127,19 @@ const createResources = ({ provider }) => {
   });
 
   provider.ecs.makeCluster({
-    name: get("config.ecs.Cluster.myClusterDemo.name"),
-    properties: get("config.ecs.Cluster.myClusterDemo.properties"),
+    name: get("config.ecs.Cluster.cluster.name"),
+    properties: get("config.ecs.Cluster.cluster.properties"),
     dependencies: ({ resources }) => ({
-      capacityProviders: [resources.ecs.CapacityProvider.cpDemo],
+      capacityProviders: [resources.ecs.CapacityProvider.cp],
     }),
   });
 
   provider.ecs.makeCapacityProvider({
-    name: get("config.ecs.CapacityProvider.cpDemo.name"),
-    properties: get("config.ecs.CapacityProvider.cpDemo.properties"),
+    name: get("config.ecs.CapacityProvider.cp.name"),
+    properties: get("config.ecs.CapacityProvider.cp.properties"),
     dependencies: ({ resources }) => ({
       autoScalingGroup: resources.autoscaling.AutoScalingGroup.ecsInstanceAsg,
     }),
-  });
-
-  provider.ecs.makeTaskDefinition({
-    name: get("config.ecs.TaskDefinition.nginx.name"),
-    properties: get("config.ecs.TaskDefinition.nginx.properties"),
   });
 };
 

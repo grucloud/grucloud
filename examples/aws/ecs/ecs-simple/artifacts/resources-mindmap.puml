@@ -5,34 +5,20 @@ skinparam monochrome true
 ++ aws
 +++ iam
 ++++ Policy (1)
-+++++ service-role/AmazonEC2ContainerServiceforEC2Role
 ++++ Role (1)
-+++++ ecsInstanceRole
 ++++ InstanceProfile (1)
-+++++ ecsInstanceRole
 +++ ec2
 ++++ Vpc (1)
-+++++ Vpc
-++++ Subnet (1)
-+++++ PubSubnetAz2
+++++ Subnet (2)
 ++++ InternetGateway (1)
-+++++ InternetGateway
 ++++ RouteTable (1)
-+++++ RouteViaIgw
 ++++ Route (1)
-+++++ RouteViaIgw-igw
 ++++ SecurityGroup (1)
-+++++ EcsSecurityGroup
+++++ SecurityGroupRuleIngress (1)
 +++ autoscaling
 ++++ AutoScalingGroup (1)
-+++++ EcsInstanceAsg
 ++++ LaunchConfiguration (1)
-+++++ EC2ContainerService-my-cluster-demo-EcsInstanceLc-1UKA3BBE6TZQM
 +++ ecs
 ++++ Cluster (1)
-+++++ my-cluster-demo
 ++++ CapacityProvider (1)
-+++++ cp-demo
-++++ TaskDefinition (1)
-+++++ nginx
 @endmindmap

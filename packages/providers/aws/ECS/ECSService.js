@@ -8,7 +8,7 @@ const {
   switchCase,
   eq,
   not,
-  pick,
+  or,
   flatMap,
 } = require("rubico");
 const { defaultsDeep, isEmpty, unless, first, pluck } = require("rubico/x");
@@ -90,8 +90,8 @@ exports.ECSService = ({ spec, config }) => {
     defaultsDeep({ include: ["TAGS"] }),
     ecs().describeServices,
     get("services"),
-    tap((params) => {
-      assert(true);
+    tap((services) => {
+      logger.debug(`describeServices ${tos(services)}`);
     }),
   ]);
 
@@ -157,7 +157,9 @@ exports.ECSService = ({ spec, config }) => {
 
   const isInstanceUp = eq(get("status"), "ACTIVE");
   const isUpById = pipe([getById, isInstanceUp]);
-  const isDownById = pipe([getById, isEmpty]);
+
+  const isInstanceDown = or([isEmpty, eq(get("status"), "INACTIVE")]);
+  const isDownById = pipe([getById, isInstanceDown]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
   const create = ({

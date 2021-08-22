@@ -732,17 +732,18 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Task",
         filterLive: () =>
           pick([
-            "availabilityZone",
-            "cpu",
+            //"cpu",
             "enableExecuteCommand",
-            "group",
+            //"group",
             "launchType",
-            "memory",
+            //"memory",
             "overrides",
           ]),
         dependencies: () => ({
           cluster: { type: "Cluster", group: "ecs" },
           taskDefinition: { type: "TaskDefinition", group: "ecs" },
+          subnets: { type: "Subnet", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
         }),
       },
     ],

@@ -279,7 +279,7 @@ exports.AwsVpc = ({ spec, config }) => {
       tap(destroySubnets),
       tap(destroySecurityGroup),
       tap(destroyRouteTables),
-      tap(ec2().deleteVpc),
+      tap(ec2().deleteVpc), // TODO InvalidVpcID.NotFound
       tap(({ VpcId }) =>
         retryCall({
           name: `destroy vpc isDownById: ${name} id: ${VpcId}`,

@@ -12,7 +12,7 @@ const {
   flatMap,
   filter,
 } = require("rubico");
-const { defaultsDeep, isEmpty, unless, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSTask",
@@ -78,8 +78,8 @@ exports.ECSTask = ({ spec, config }) => {
     defaultsDeep({ include: ["TAGS"] }),
     ecs().describeTasks,
     get("tasks"),
-    tap((params) => {
-      assert(true);
+    tap((tasks) => {
+      logger.debug(`describeTasks ${tos(tasks)}`);
     }),
   ]);
 
@@ -146,21 +146,14 @@ exports.ECSTask = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {
-      cluster,
-      taskDefinition,
-      containerInstances,
-      subnets = [],
-      securityGroups = [],
-    },
+    dependencies: { cluster, taskDefinition, subnets, securityGroups = [] },
   }) =>
     pipe([
       tap(() => {
         assert(cluster, "missing 'cluster' dependency");
         assert(taskDefinition, "missing 'taskDefinition' dependency");
-        assert(containerInstances, "missing 'containerInstances' dependency");
-        assert(subnets, "missing 'subnets' dependency");
-        assert(securityGroups, "missing 'securityGroups' dependency");
+        //assert(subnets, "missing 'subnets' dependency");
+        //assert(securityGroups, "missing 'securityGroups' dependency");
       }),
       () => otherProps,
       defaultsDeep({
@@ -170,12 +163,14 @@ exports.ECSTask = ({ spec, config }) => {
           taskDefinition,
           "revision"
         )}`,
-        networkConfiguration: {
-          subnets: pluck((subnet) => getField(subnet, "SubnetId"))(subnets),
-          securityGroups: pluck((securityGroup) =>
-            getField(securityGroup, "GroupId")
-          )(securityGroups),
-        },
+        // networkConfiguration: {
+        //   awsvpcConfiguration: {
+        //     subnets: pluck((subnet) => getField(subnet, "SubnetId"))(subnets),
+        //     securityGroups: pluck((securityGroup) =>
+        //       getField(securityGroup, "GroupId")
+        //     )(securityGroups),
+        //   },
+        // },
         tags: buildTags({
           name,
           config,
