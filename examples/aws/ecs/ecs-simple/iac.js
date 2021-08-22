@@ -62,8 +62,8 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [
-        resources.ec2.Subnet.pubSubnetAz2,
         resources.ec2.Subnet.pubSubnetAz1,
+        resources.ec2.Subnet.pubSubnetAz2,
       ],
     }),
   });
@@ -140,6 +140,11 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       autoScalingGroup: resources.autoscaling.AutoScalingGroup.ecsInstanceAsg,
     }),
+  });
+
+  provider.ecs.makeTaskDefinition({
+    name: get("config.ecs.TaskDefinition.nginx.name"),
+    properties: get("config.ecs.TaskDefinition.nginx.properties"),
   });
 };
 

@@ -268,7 +268,7 @@ const dependencyValue = ({ key, value }) =>
       assert(Array.isArray(value));
     }),
     () => value,
-    callProp("sort", (a, b) => () => a.name.localeCompare(b.name)),
+    callProp("sort", (a, b) => a.localeCompare(b)),
     when(
       () => key.endsWith("s"),
       (value) => `[${value}]`
