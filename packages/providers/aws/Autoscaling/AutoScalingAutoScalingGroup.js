@@ -45,11 +45,10 @@ const findName = (params) => {
       return name;
     }
   }
-  assert(false, "should have a name");
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
-exports.AwsAutoScalingGroup = ({ spec, config }) => {
+exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
 
   const managedByOther = or([
@@ -181,9 +180,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       () => payload,
       omit(["TargetGroupARNs", "Tags"]),
       autoScaling().updateAutoScalingGroup,
-      tap(() => {
-        logger.info(`updated authorizer ${name}`);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property

@@ -10,6 +10,7 @@
     "test-examples": "mocha --exit '../../../examples/aws/**/iac.test.js' ",
     "test-modules": "mocha --exit '../../modules/aws/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",
+    "coverage-examples": "nyc npm run test-examples",
     "test-all": "npm run test && npm run test-examples && npm run test-modules"
   },
   "author": "",
@@ -61,7 +62,6 @@
       "html",
       "text",
       "text-summary"
-    ],
-    "all": true
+    ]
   }
 }

@@ -1,7 +1,9 @@
 const { pipe, assign, map } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 
-const { AwsAutoScalingGroup } = require("./AwsAutoScalingGroup");
+const {
+  AutoScalingAutoScalingGroup,
+} = require("./AutoScalingAutoScalingGroup");
 const {
   AutoScalingLaunchConfiguration,
 } = require("./AutoScalingLaunchConfiguration");
@@ -20,7 +22,7 @@ module.exports = () =>
         "elb::TargetGroup",
         "eks::Cluster",
       ],
-      Client: AwsAutoScalingGroup,
+      Client: AutoScalingAutoScalingGroup,
       isOurMinion,
     },
     {

@@ -1,5 +1,20 @@
 ## Bugs
 
+- order
+  Querying resources on 1 provider: aws
+  ✓ aws
+  ✓ Initialising
+  ✓ Listing 21/21
+  ✓ Querying
+  ✓ iam::Role 1/1
+  ✓ iam::InstanceProfile 1/1
+  ✓ ec2::Vpc 1/1
+  ✓ ec2::Subnet 2/2
+  ✓ ec2::KeyPair 1/1
+  ✓ ec2::SecurityGroup 1/1
+  ✓ ec2::SecurityGroupRuleIngress 1/1
+  ✓ ec2::LaunchTemplate 1/1
+  ✓ autoscaling::AutoScalingGroup 1/1
 - check stage for all providers
 - compare refactor
 - compare Tags

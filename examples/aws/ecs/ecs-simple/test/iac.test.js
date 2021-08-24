@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { testEnd2End } = require("@grucloud/core/qa");
-
 const { createStack } = require("../iac");
 const config = require("../config");
 const path = require("path");

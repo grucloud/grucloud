@@ -31,7 +31,9 @@ const {
   buildTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsAutoScalingGroup } = require("../autoscaling/AwsAutoScalingGroup");
+const {
+  AutoScalingAutoScalingGroup,
+} = require("../AutoScaling/AutoScalingAutoScalingGroup");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -40,7 +42,7 @@ const findId = get("live.clusterArn");
 
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-  const autoScalingGroup = AwsAutoScalingGroup({ config });
+  const autoScalingGroup = AutoScalingAutoScalingGroup({ config });
 
   const findDependencies = ({ live, lives }) => [
     {
