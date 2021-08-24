@@ -150,9 +150,6 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
         type: "SecurityGroup",
         group: "ec2",
       }),
-    tap((params) => {
-      assert(true);
-    }),
     get("name"),
   ])();
 
@@ -252,7 +249,6 @@ const findDependencies = ({ live }) => [
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
-  const { providerName } = config;
 
   const isDefault =
     ({ IsEgress }) =>
@@ -270,12 +266,9 @@ const SecurityGroupRuleBase = ({ config }) => {
                 lives.getById({
                   type: "SecurityGroup",
                   group: "ec2",
-                  providerName,
+                  providerName: config.providerName,
                   id: live.GroupId,
                 }),
-              tap((params) => {
-                assert(true);
-              }),
               get("isDefault"),
             ]),
           ]),
@@ -292,27 +285,15 @@ const SecurityGroupRuleBase = ({ config }) => {
           ]),
         ]),
         tap((result) => {
-          logger.debug(`securityGroup ${live.GroupId} isDefault ${result}`);
+          logger.debug(
+            `securityGroupRule IsEgress: ${IsEgress}, ${tos(
+              live
+            )} isDefault ${result}`
+          );
         }),
       ])();
 
-  const managedByOther = ({ Egress }) =>
-    or([
-      isDefault({ Egress }),
-      ({ live, lives }) =>
-        pipe([
-          () => live,
-          get("GroupId"),
-          (id) =>
-            lives.getById({
-              type: "SecurityGroup",
-              group: "ec2",
-              providerName,
-              id,
-            }),
-          get("managedByOther"),
-        ])(),
-    ]);
+  const managedByOther = isDefault;
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -332,7 +313,7 @@ const SecurityGroupRuleBase = ({ config }) => {
       ]),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties: { Tags, IpPermission, ...otherProps },
@@ -382,26 +363,26 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.debug(`getList raw sg rules ${kind}: ${tos(rules)}`);
         }),
         mergeSecurityGroupRules,
+        tap((rules) => {
+          assert(rules);
+        }),
       ])();
 
-  const getByName = async ({ name }) =>
+  const getByName = ({ name }) =>
     pipe([
       tap(() => {
-        logger.info(`getByName ${name}`);
+        logger.info(`getByName sgr ${name}`);
       }),
       () => ({
         MaxResults: 1e3,
         Filters: [{ Name: "tag:Name", Values: [name] }],
       }),
-      (params) => ec2().describeSecurityGroupRules(params),
+      ec2().describeSecurityGroupRules,
       get("SecurityGroupRules"),
       mergeSecurityGroupRules,
       first,
-      tap((params) => {
-        assert(true);
-      }),
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        logger.debug(`getByName ${name} result: ${tos(result)}`);
       }),
     ])();
 
@@ -427,7 +408,7 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   const destroy =
     ({ kind, revokeSecurityGroup }) =>
-    async ({ name, live, lives, resource }) =>
+    ({ name, live, lives, resource }) =>
       pipe([
         tap(() => {
           assert(live);
@@ -456,9 +437,6 @@ const SecurityGroupRuleBase = ({ config }) => {
             },
           ])()
         ),
-        tap((params) => {
-          assert(true);
-        }),
         tap(() => {
           logger.debug(`destroyed sg rule ${JSON.stringify({ kind, name })}`);
         }),
@@ -502,17 +480,11 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     getList: getList({ kind: "ingress", IsEgress: false }),
     create: create({
       kind: "ingress",
-      authorizeSecurityGroup: (params) =>
-        ec2().authorizeSecurityGroupIngress(params),
+      authorizeSecurityGroup: ec2().authorizeSecurityGroupIngress,
     }),
     destroy: destroy({
       kind: "ingress",
-      revokeSecurityGroup: pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        (params) => ec2().revokeSecurityGroupIngress(params),
-      ]),
+      revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
     }),
     configDefault,
     shouldRetryOnException,
@@ -546,12 +518,11 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     getList: getList({ kind: "egress", IsEgress: true }),
     create: create({
       kind: "egress",
-      authorizeSecurityGroup: (params) =>
-        ec2().authorizeSecurityGroupEgress(params),
+      authorizeSecurityGroup: ec2().authorizeSecurityGroupEgress,
     }),
     destroy: destroy({
       kind: "egress",
-      revokeSecurityGroup: (params) => ec2().revokeSecurityGroupEgress(params),
+      revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
     }),
     configDefault,
     shouldRetryOnException,
@@ -578,6 +549,7 @@ const filterLive = ({ live }) =>
     }),
   ])();
 
+//TODO
 exports.compareSecurityGroupRule = pipe([
   tap((xxx) => {
     assert(true);
