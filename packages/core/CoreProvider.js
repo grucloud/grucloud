@@ -1123,31 +1123,29 @@ function CoreProvider({
             }),
           ])(),
       })),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: ({ key, meta, result, error, ...other }) => {
-            assert(key);
-            assert(meta.type);
-            assert(meta.groupType);
+      Lister({
+        onStateChange: ({ key, meta, result, error, ...other }) => {
+          assert(key);
+          assert(meta.type);
+          assert(meta.groupType);
 
-            assert(meta.providerName);
-            //TODO do we need this ?
-            if (error) {
-              getLives().addResources({ ...meta, error });
-            }
-            const client = clientByType(meta);
-            assert(client.spec);
-            onStateChange({
-              context: contextFromClient({
-                client,
-                title,
-              }),
-              error,
-              ...other,
-            });
-          },
-        }),
+          assert(meta.providerName);
+          //TODO do we need this ?
+          if (error) {
+            getLives().addResources({ ...meta, error });
+          }
+          const client = clientByType(meta);
+          assert(client.spec);
+          onStateChange({
+            context: contextFromClient({
+              client,
+              title,
+            }),
+            error,
+            ...other,
+          });
+        },
+      }),
       tap((result) => {
         assert(result);
       }),
