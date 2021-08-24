@@ -14,7 +14,7 @@ exports.createStack = async ({ createProvider }) => {
       },
       {
         provider: createProvider(GoogleProvider, {
-          configs: [config, () => ({ region: process.env.GCP_REGION })],
+          config: () => ({ region: process.env.GCP_REGION }),
         }),
       },
       {
