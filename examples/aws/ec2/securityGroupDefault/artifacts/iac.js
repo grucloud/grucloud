@@ -3,11 +3,18 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.ec2.useDefaultSecurityGroup({
+    name: get("config.ec2.SecurityGroup.sgDefaultVpcDefault.name"),
+  });
+
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressTest.name"),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressTest.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.sgDefaultVpcDefault,
+    }),
   });
 
   provider.ec2.makeSecurityGroupRuleEgress({
@@ -15,6 +22,9 @@ const createResources = ({ provider }) => {
     properties: get(
       "config.ec2.SecurityGroupRuleEgress.sgRuleEgressTest.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.sgDefaultVpcDefault,
+    }),
   });
 };
 

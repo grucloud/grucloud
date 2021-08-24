@@ -2,8 +2,8 @@ const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
-const MockStack1 = require("../mock/mock/iac");
-const MockStack2 = require("../mock/mock-simple/iac");
+const MockStack1 = require("../iac");
+const MockStack2 = require("../../mock-simple/iac");
 
 describe("Mock Multi", async function () {
   let config;

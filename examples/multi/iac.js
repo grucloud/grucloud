@@ -3,7 +3,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const { GoogleProvider } = require("@grucloud/provider-google");
 const { AzureProvider } = require("@grucloud/provider-azure");
 const { ScalewayProvider } = require("@grucloud/provider-scaleway");
-const { MockProvider } = require("@grucloud/core");
+const { MockProvider } = require("@grucloud/provider-mock");
 
 //TODO add
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");

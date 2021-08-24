@@ -1,6 +1,11 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-ec2-security-group-default",
   ec2: {
+    SecurityGroup: {
+      sgDefaultVpcDefault: {
+        name: "sg-default-vpc-default",
+      },
+    },
     SecurityGroupRuleIngress: {
       sgRuleIngressTest: {
         name: "sg-rule-ingress-test",

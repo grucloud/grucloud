@@ -245,7 +245,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     cannotBeDeleted,
-    managedyOther: cannotBeDeleted,
+    managedByOther: cannotBeDeleted,
     isDefault: cannotBeDeleted,
   };
 };

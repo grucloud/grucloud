@@ -1,5 +1,7 @@
 ## Bugs
 
+- autoscaling examples, remove volume from generated code
+- examples mock with createProvider
 - order
   Querying resources on 1 provider: aws
   ✓ aws

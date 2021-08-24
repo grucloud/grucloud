@@ -1,16 +1,24 @@
 const assert = require("assert");
-const { pipe, map, tap } = require("rubico");
+const { pipe, map, tap, and, get } = require("rubico");
+const { isEmpty, first } = require("rubico/x");
+
 const { Cli } = require("./cli/cliCommands");
 
-exports.testEnd2End = ({
-  programOptions,
-  createStack,
-  title,
-  listOptions,
-  configs = [],
-}) =>
+const isEmptyPlan = pipe([
+  get("resultQuery.results[0]"),
+  and([
+    pipe([get("resultCreate"), isEmpty]),
+    pipe([get("resultDestroy"), isEmpty]),
+  ]),
+]);
+exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
   pipe([
-    () => Cli({ programOptions, createStack }),
+    () => steps,
+    first,
+    tap((step) => {
+      assert(step, `missing first step`);
+    }),
+    ({ createStack, configs }) => Cli({ programOptions, createStack, configs }),
     (cli) =>
       pipe([
         () =>
@@ -53,13 +61,16 @@ exports.testEnd2End = ({
               input: "artifacts/inventory.json",
             },
           }),
-        () => configs,
-        map((config) =>
+        ([step, ...lastSteps]) => lastSteps,
+        map(({ createStack, configs }) =>
           pipe([
-            () => Cli({ programOptions, createStack, config }),
+            () => Cli({ programOptions, createStack, configs }),
             (cliNext) =>
               pipe([
                 () => cliNext.info({}),
+                tap((params) => {
+                  assert(true);
+                }),
                 () =>
                   cliNext.planApply({
                     commandOptions: { force: true },
@@ -68,10 +79,10 @@ exports.testEnd2End = ({
                   cliNext.list({
                     commandOptions: { our: true },
                   }),
-                () =>
-                  cliNext.planApply({
-                    commandOptions: { force: true },
-                  }),
+                () => cliNext.planQuery({}),
+                tap((result) => {
+                  assert(isEmptyPlan(result), "plan should be empty");
+                }),
               ])(),
           ])()
         ),

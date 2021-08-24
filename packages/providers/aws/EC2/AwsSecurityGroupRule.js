@@ -13,7 +13,6 @@ const {
   map,
   fork,
   assign,
-  omit,
   pick,
 } = require("rubico");
 const {
@@ -30,7 +29,8 @@ const {
   isDeepEqual,
   uniq,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+
+const { compare } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
@@ -175,6 +175,7 @@ const fromSecurityGroup = ({ UserIdGroupPairs, lives, config }) =>
         () =>
           lives.getByType({
             type: "SecurityGroup",
+            group: "ec2",
             providerName: config.providerName,
           }),
         find(eq(get("id"), GroupId)),
@@ -397,9 +398,6 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.debug(`create sg rule: ${tos(payload)}`);
         }),
         () => payload,
-        tap((params) => {
-          assert(true);
-        }),
         authorizeSecurityGroup,
         tap((result) => {
           logger.info(`created sg rule ${kind} ${tos({ name })}`);
@@ -442,12 +440,27 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
+  const update =
+    ({ kind, authorizeSecurityGroup, revokeSecurityGroup }) =>
+    ({ payload, name, namespace, diff, live, lives }) =>
+      pipe([
+        tap(() => {
+          logger.info(
+            `update sg rule ${JSON.stringify({ kind, name, namespace })}`
+          );
+        }),
+        () => ({ name, payload, namespace, live, lives }),
+        tap(destroy({ kind, revokeSecurityGroup })),
+        tap(create({ kind, authorizeSecurityGroup })),
+      ])();
+
   return {
     findNamespace,
     configDefault,
     getList,
     getByName,
     create,
+    update,
     destroy,
     isDefault,
     managedByOther,
@@ -461,6 +474,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     getByName,
     configDefault,
     create,
+    update,
     destroy,
     findNamespace,
     ec2,
@@ -482,6 +496,11 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
       kind: "ingress",
       authorizeSecurityGroup: ec2().authorizeSecurityGroupIngress,
     }),
+    update: update({
+      kind: "ingress",
+      authorizeSecurityGroup: ec2().authorizeSecurityGroupIngress,
+      revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
+    }),
     destroy: destroy({
       kind: "ingress",
       revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
@@ -499,6 +518,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     getByName,
     configDefault,
     create,
+    update,
     destroy,
     findNamespace,
     isDefault,
@@ -520,55 +540,27 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
       kind: "egress",
       authorizeSecurityGroup: ec2().authorizeSecurityGroupEgress,
     }),
+    update: update({
+      kind: "egress",
+      authorizeSecurityGroup: ec2().authorizeSecurityGroupEgress,
+      revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
+    }),
     destroy: destroy({
       kind: "egress",
       revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
     }),
     configDefault,
     shouldRetryOnException,
-    managedByOther: managedByOther({ IsEgress: false }),
+    managedByOther: managedByOther({ IsEgress: true }),
     isDefault: isDefault({ IsEgress: true }),
   };
 };
 
-const filterTarget = ({ target }) =>
-  pipe([
-    () => target,
-    //omit(["IpP", "TagSpecifications", "MinCount", "MaxCount"]),
-    tap((params) => {
-      assert(true);
+exports.compareSecurityGroupRule = compare({
+  filterTarget: pipe([
+    ({ GroupId, IpPermissions }) => ({
+      GroupId,
+      IpPermission: IpPermissions[0],
     }),
-  ])();
-
-const filterLive = ({ live }) =>
-  pipe([
-    () => live, //
-    //omit(["NetworkInterfaces"]),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
-//TODO
-exports.compareSecurityGroupRule = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareSecurityGroupRule ${tos(diff)}`);
-  }),
-]);
+  ]),
+});

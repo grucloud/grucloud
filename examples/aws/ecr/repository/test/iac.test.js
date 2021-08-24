@@ -1,18 +1,19 @@
 const assert = require("assert");
-const { testEnd2End } = require("@grucloud/core/qa");
-const { createStack } = require("../iac");
 const path = require("path");
+const { testEnd2End } = require("@grucloud/core/qa");
+
+const { createStack } = require("../iac");
+const config = require("../config.js");
 
 describe("ECR Repository", async function () {
   it("run repository", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      createStack,
-      configs: [
-        require("../config.js"),
-        require("./configUpdate1.js"),
-        require("./configUpdate2.js"),
-        require("./configUpdate3.js"),
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [require("./configUpdate1.js")] },
+        { createStack, configs: [require("./configUpdate2.js")] },
+        { createStack, configs: [require("./configUpdate3.js")] },
       ],
     });
   });

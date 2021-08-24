@@ -538,26 +538,34 @@ const removeDefaultDependencies =
                     }),
                     () => ids,
                     when(
-                      or([
-                        //group and type not in writersSpec, i.e NetworkInterface
-                        pipe([
-                          () => ({ group, type }),
-                          findResourceSpec({ writersSpec }),
+                      pipe([
+                        () => ({ group, type }),
+                        findResourceSpec({ writersSpec }),
+                        or([
                           isEmpty,
-                        ]),
-                        // Remove ids if there is only one and it is a default.
-                        and([
-                          eq(size, 1),
-                          pipe([
-                            first,
-                            findLiveById({
-                              lives,
-                              type,
-                              group,
-                              providerName,
-                            }),
-                            get("isDefault"),
-                          ]),
+                          (resourceSpec) =>
+                            pipe([
+                              tap(() => {
+                                assert(true);
+                              }),
+                              () => ids,
+                              and([
+                                eq(size, 1),
+                                pipe([
+                                  first,
+                                  findLiveById({
+                                    lives,
+                                    type,
+                                    group,
+                                    providerName,
+                                  }),
+                                  and([
+                                    get("isDefault"),
+                                    () => !resourceSpec.defaultUsedInDependency,
+                                  ]),
+                                ]),
+                              ]),
+                            ])(),
                         ]),
                       ]),
                       () => []
@@ -626,12 +634,12 @@ const removeDefaultDependencies =
                     ])(),
                 })
               ),
-              tap((params) => {
-                assert(true);
-              }),
             ])(),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const addUsedBy =
@@ -648,6 +656,9 @@ const addUsedBy =
           usedBy: findUsedBy({ lives, writersSpec }),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const readModel = ({
@@ -860,12 +871,9 @@ const ignoreDefault =
         assert(resource);
       }),
       () => resource,
-      or([
-        get("isDefault"),
-        and([
-          get("managedByOther"),
-          pipe([get("usedBy"), not(find(eq(get("managedByOther"), false)))]),
-        ]),
+      and([
+        get("managedByOther"),
+        pipe([get("usedBy"), not(find(eq(get("managedByOther"), false)))]),
       ]),
     ])();
 

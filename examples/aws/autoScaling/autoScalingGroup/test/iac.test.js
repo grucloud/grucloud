@@ -1,15 +1,18 @@
 const assert = require("assert");
+const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
-const path = require("path");
+const config = require("../config.js");
 
 describe("AutoScalingGroup", async function () {
   before(async function () {});
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      createStack,
-      configs: [require("../config"), require("./configUpdate1.js")],
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [config, require("./configUpdate1.js")] },
+      ],
     });
   });
 });

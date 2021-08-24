@@ -2,7 +2,6 @@ const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("./iac");
-const config = require("./config");
 
 describe("K8S Redis Module", async function () {
   before(async function () {
@@ -15,7 +14,6 @@ describe("K8S Redis Module", async function () {
   it("run", async function () {
     const cli = await Cli({
       createStack,
-      config,
     });
     await cli.planDestroy({
       commandOptions: { force: true },

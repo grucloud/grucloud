@@ -2,6 +2,7 @@ const assert = require("assert");
 const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const path = require("path");
+const config = require("../config.js");
 
 describe("EC2 Instance", async function () {
   before(async function () {});
@@ -9,7 +10,10 @@ describe("EC2 Instance", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       createStack,
-      configs: [require("./configUpdate1.js")],
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [config, require("./configUpdate1.js")] },
+      ],
     });
   });
 });

@@ -401,6 +401,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "SecurityGroup",
+        defaultUsedInDependency: true,
         filterLive: () => pick(["Description"]),
         dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
       },
@@ -411,6 +412,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           securityGroup: {
             type: "SecurityGroup",
             group: "ec2",
+
             filterDependency:
               ({ resource }) =>
               (dependency) =>

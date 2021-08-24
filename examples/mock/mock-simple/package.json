@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.39.0",
-    "@grucloud/provider-mock": "^1.39.0"
+    "@grucloud/provider-mock": "^1.39.0",
+    "url-join": "^4.0.1"
   },
   "devDependencies": {
     "mocha": "^9.0.3"

@@ -1462,7 +1462,13 @@ const projectNameDefault = ({ programOptions }) =>
       ])()
   )();
 
-exports.Cli = ({ programOptions = {}, createStack, config, stage } = {}) =>
+exports.Cli = ({
+  programOptions = {},
+  createStack,
+  config,
+  configs = [],
+  stage,
+} = {}) =>
   pipe([
     tap(() => {
       logger.debug(`Cli ${JSON.stringify({ programOptions, stage })}`);
@@ -1481,10 +1487,10 @@ exports.Cli = ({ programOptions = {}, createStack, config, stage } = {}) =>
     assign({
       infra: ({ programOptions }) =>
         createStack({
-          config,
           createProvider: createProviderMaker({
             programOptions,
             config,
+            configs,
             stage,
           }),
         }),
