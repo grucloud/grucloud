@@ -15,11 +15,11 @@ const BaseStack = require("../base/k8sStackBase");
 const createAwsStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
     configs: [
-      ModuleAwsCertificate.config,
-      ModuleAwsEks.config,
-      ModuleAwsVpc.config,
-      ModuleAwsLoadBalancer.config,
       require("./configAws"),
+      ModuleAwsLoadBalancer.config,
+      ModuleAwsEks.config,
+      ModuleAwsCertificate.config,
+      ModuleAwsVpc.config,
     ],
   });
 

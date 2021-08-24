@@ -51,7 +51,7 @@ module.exports = ({ stage }) => ({
               Values: ["/*"],
             },
           ],
-          Priority: 1,
+          Priority: "1",
         },
       },
       https: {
@@ -64,7 +64,7 @@ module.exports = ({ stage }) => ({
                 Values: ["/api/*"],
               },
             ],
-            Priority: 10,
+            Priority: "10",
           },
         },
         web: {
@@ -76,7 +76,7 @@ module.exports = ({ stage }) => ({
                 Values: ["/*"],
               },
             ],
-            Priority: 11,
+            Priority: "11",
           },
         },
       },

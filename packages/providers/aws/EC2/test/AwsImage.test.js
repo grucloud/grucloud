@@ -77,6 +77,10 @@ describe("AwsImage", async function () {
             Values: ["x86_64"],
           },
           {
+            Name: "owner-alias",
+            Values: ["amazon"],
+          },
+          {
             Name: "description",
             Values: ["Amazon Linux 2 AMI *"],
           },

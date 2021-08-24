@@ -1,26 +1,18 @@
 const assert = require("assert");
 const path = require("path");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
+const config = require("../config");
 
 const title = "AWS Load Balancer Module";
 
 describe(title, async function () {
-  before(async function () {
-    try {
-      ConfigLoader({ path: "../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-
     await testEnd2End({
-      cli,
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
+      steps: [{ createStack, configs: [config] }],
     });
   }).timeout(35 * 60e3);
 });

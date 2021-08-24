@@ -31,6 +31,9 @@ const { AwsImage } = require("./AwsImage");
 
 const GROUP = "ec2";
 
+const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
+const filterLiveDefault = pipe([omit(["Tags"])]);
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -50,7 +53,8 @@ module.exports = () =>
       isOurMinion,
       setupEbsVolume,
       compare: compare({
-        filterTarget: pipe([omit(["Device", "TagSpecifications"])]),
+        filterTarget: pipe([omit(["Device"]), filterTargetDefault]),
+        filterLive: filterLiveDefault,
       }),
     },
     {
@@ -64,24 +68,40 @@ module.exports = () =>
       dependsOn: ["ec2::Vpc"],
       Client: AwsInternetGateway,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["AllocationId"]), filterTargetDefault]),
+        filterLive: filterLiveDefault,
+      }),
     },
     {
       type: "NatGateway",
       dependsOn: ["ec2::ElasticIpAddress", "ec2::Subnet"],
       Client: AwsNatGateway,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["AllocationId"]), filterTargetDefault]),
+        filterLive: filterLiveDefault,
+      }),
     },
     {
       type: "Subnet",
       dependsOn: ["ec2::Vpc", "ec2::InternetGateway"],
       Client: AwsSubnet,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["VpcId"]), filterTargetDefault]),
+        filterLive: pipe([omit(["VpcId"]), filterLiveDefault]),
+      }),
     },
     {
       type: "RouteTable",
       dependsOn: ["ec2::Vpc", "ec2::Subnet"],
       Client: AwsRouteTable,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["VpcId"]), filterTargetDefault]),
+        filterLive: pipe([omit(["VpcId"]), filterLiveDefault]),
+      }),
     },
     {
       type: "Route",
@@ -95,6 +115,7 @@ module.exports = () =>
       Client: AwsSecurityGroup,
       isOurMinion,
       compare: compare({
+        filterTarget: filterTargetDefault,
         filterLive: pipe([pick(["Description", "GroupName", "VpcId"])]),
       }),
     },

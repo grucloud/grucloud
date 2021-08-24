@@ -6,7 +6,7 @@ const { isEmpty, isFunction } = require("rubico/x");
 const { ConfigLoader } = require("../ConfigLoader");
 const logger = require("../logger")({ prefix: "Infra" });
 
-const filterNotEmpty = filter(not(isEmpty));
+const filterNotEmpty = filter((x) => x);
 const createProviderMaker =
   ({
     programOptions,
@@ -22,15 +22,9 @@ const createProviderMaker =
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
       }),
-      () => ({
-        overrides: filterNotEmpty([configOverride, ...configsOverride]),
-        users: filterNotEmpty([configUser, ...configsUser]),
-      }),
-      switchCase([
-        pipe([get("overrides"), isEmpty]),
-        get("users"),
-        get("overrides"),
-      ]),
+      () => [configOverride, ...configsOverride, configUser, ...configsUser],
+      // IsEmpty does not work with function
+      filter((x) => x),
       (configs) =>
         provider({
           configs,
@@ -63,7 +57,8 @@ const checkFileExist = ({ fileName }) => {
 
 const requireConfig = ({ fileName, stage }) => {
   if (!fileName) {
-    return ConfigLoader({ stage });
+    //return ConfigLoader({ stage });
+    return;
   }
   checkFileExist({ fileName });
 

@@ -316,8 +316,8 @@ exports.isOurMinionObject = ({ tags, config }) => {
   ])();
 };
 
-const filterTargetDefault = pipe([omit(["TagSpecifications", "Tags", "tags"])]);
-const filterLiveDefault = pipe([omit(["Tags", "tags"])]);
+const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
+const filterLiveDefault = pipe([omit(["tags"])]);
 
 exports.compare = ({
   filterTarget = filterTargetDefault,

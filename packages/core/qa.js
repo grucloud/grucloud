@@ -44,6 +44,10 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
           cli.planApply({
             commandOptions: { force: true },
           }),
+        () => cli.planQuery({}),
+        tap((result) => {
+          assert(isEmptyPlan(result), "plan should be empty");
+        }),
         () =>
           cli.list({
             programOptions: {
@@ -75,10 +79,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
                   cliNext.planApply({
                     commandOptions: { force: true },
                   }),
-                () =>
-                  cliNext.list({
-                    commandOptions: { our: true },
-                  }),
+
                 () => cliNext.planQuery({}),
                 tap((result) => {
                   assert(isEmptyPlan(result), "plan should be empty");
@@ -92,7 +93,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
           }),
         () =>
           cli.list({
-            commandOptions: { canBeDeleted: true },
+            commandOptions: { canBeDeleted: true, defaultExclude: true },
           }),
       ])(),
   ])();

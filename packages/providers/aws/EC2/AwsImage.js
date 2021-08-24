@@ -72,7 +72,7 @@ exports.AwsImage = ({ spec, config }) => {
       tap((params) => {
         logger.info(`getByName image params ${JSON.stringify({ params })}`);
       }),
-      (params) => ec2().describeImages(params),
+      ec2().describeImages,
       get("Images"),
       tap((items) => {
         logger.debug(`getByName #image: ${size(items)}`);

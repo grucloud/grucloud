@@ -21,11 +21,11 @@ const { createIngress } = require("./eksIngress");
 const createAwsStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
     configs: [
-      ModuleAwsCertificate.config,
-      ModuleAwsEks.config,
-      ModuleAwsVpc.config,
-      ModuleAwsLoadBalancerController.config,
       require("./configAws"),
+      ModuleAwsLoadBalancerController.config,
+      ModuleAwsEks.config,
+      ModuleAwsCertificate.config,
+      ModuleAwsVpc.config,
     ],
   });
 

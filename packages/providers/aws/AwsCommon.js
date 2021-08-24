@@ -23,6 +23,7 @@ const {
   isFunction,
   includes,
   when,
+  unless,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -286,6 +287,25 @@ exports.isOurMinionObject = ({ tags, config }) => {
   ])();
 };
 
+const localeCompare = ({ key, a, b }) => a[key].localeCompare(b[key]);
+
+const sortTags = () =>
+  callProp("sort", (a, b) =>
+    pipe([
+      switchCase([
+        () => a.Key,
+        () => localeCompare({ a, b, key: "Key" }),
+        () => a.key,
+        () => localeCompare({ a, b, key: "key" }),
+        () => a.TagKey,
+        () => localeCompare({ a, b, key: "TagKey" }),
+        () => true,
+      ]),
+    ])()
+  );
+
+exports.sortTags = sortTags;
+
 exports.buildTags = ({
   name,
   config,
@@ -335,17 +355,17 @@ exports.buildTags = ({
       },
       { [key]: projectNameKey, [value]: projectName },
     ],
-    switchCase([
+    unless(
       () => isEmpty(namespace),
-      identity,
       (tags) => [
         ...tags,
         {
           [key]: namespaceKey,
           [value]: namespace,
         },
-      ],
-    ]),
+      ]
+    ),
+    sortTags(),
   ])();
 };
 

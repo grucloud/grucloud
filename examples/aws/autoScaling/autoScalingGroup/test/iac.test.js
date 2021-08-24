@@ -11,7 +11,7 @@ describe("AutoScalingGroup", async function () {
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       steps: [
         { createStack, configs: [config] },
-        { createStack, configs: [config, require("./configUpdate1.js")] },
+        { createStack, configs: [require("./configUpdate1.js"), config] },
       ],
     });
   });

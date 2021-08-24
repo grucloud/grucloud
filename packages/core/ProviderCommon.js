@@ -66,7 +66,7 @@ exports.mergeConfig = ({ configDefault = {}, config, configs = [] }) =>
     }),
     () => [...configs, config],
     filter((x) => x),
-    reduce((acc, config) => defaultsDeep(acc)(config(acc)), configDefault),
+    reduce((acc, config) => defaultsDeep(config(acc))(acc), configDefault),
     tap((merged) => {
       //logger.info(`mergeConfig : ${tos(merged)}`);
     }),
