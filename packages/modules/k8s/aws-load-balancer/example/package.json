@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-k8s-aws-load-balancer-controller",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "description": "Example of the Kubernetes GruCloud Module for the AWS Load Balancer Controller",
   "main": "iac.js",
   "private": true,
@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@grucloud/core": "^1.39.0",
-    "@grucloud/module-aws-eks": "^1.39.0",
-    "@grucloud/module-aws-load-balancer-controller": "^1.39.0",
-    "@grucloud/module-aws-vpc": "^1.39.0",
-    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.39.0",
+    "@grucloud/module-aws-eks": "^1.40.0",
+    "@grucloud/module-aws-load-balancer-controller": "^1.40.0",
+    "@grucloud/module-aws-vpc": "^1.40.0",
+    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.40.0",
     "@grucloud/module-k8s-cert-manager": "^1.39.0",
-    "@grucloud/provider-aws": "^1.39.0",
+    "@grucloud/provider-aws": "^1.40.0",
     "@grucloud/provider-k8s": "^1.39.0",
     "rubico": "^1.6.21"
   },
