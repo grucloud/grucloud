@@ -13,7 +13,7 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { isEmpty, first, defaultsDeep, pluck, find } = require("rubico/x");
+const { isEmpty, first, defaultsDeep, pluck, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -70,7 +70,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
       tap((name) => {
         assert(name);
       }),
-      (name) => `rt-default-${name}`,
+      prepend("rt-default-"),
     ])();
 
   const findName = switchCase([
@@ -228,7 +228,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({
+  const create = ({
     payload,
     name,
     dependencies,
@@ -259,7 +259,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = async ({ id, name, live }) =>
+  const destroy = ({ id, name, live }) =>
     pipe([
       tap(() => {
         logger.info(`destroy route table ${JSON.stringify({ name, id })}`);
@@ -284,7 +284,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties = {},
     dependencies: { vpc, subnets },
   }) =>
     pipe([

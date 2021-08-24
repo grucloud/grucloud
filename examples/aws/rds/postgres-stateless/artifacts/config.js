@@ -107,13 +107,13 @@ module.exports = ({ stage }) => ({
       securityGroupPostgres: {
         name: "security-group-postgres",
         properties: {
-          Description: "Security Group Postgres",
+          Description: "Managed By GruCloud",
         },
       },
       securityGroupPublic: {
         name: "security-group-public",
         properties: {
-          Description: "Security Group Description",
+          Description: "Managed By GruCloud",
         },
       },
     },
@@ -179,8 +179,8 @@ module.exports = ({ stage }) => ({
           EngineVersion: "10.14",
           EngineMode: "serverless",
           Port: 5432,
-          PreferredBackupWindow: "23:13-23:43",
-          PreferredMaintenanceWindow: "wed:01:32-wed:02:02",
+          PreferredBackupWindow: "23:06-23:36",
+          PreferredMaintenanceWindow: "tue:23:44-wed:00:14",
           ScalingConfiguration: {
             MinCapacity: 2,
             MaxCapacity: 4,

@@ -8,13 +8,11 @@ const {
   filter,
   eq,
   not,
-  and,
+  or,
   tryCatch,
   switchCase,
-  or,
   omit,
   assign,
-  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -58,7 +56,66 @@ const StateRunning = "running";
 const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
-exports.AwsEC2 = ({ spec, config }) => {
+const configDefault =
+  ({ config }) =>
+  ({
+    name,
+    namespace,
+    properties: { UserData, ...otherProperties },
+    dependencies: {
+      keyPair,
+      subnet,
+      securityGroups = {},
+      iamInstanceProfile,
+      image,
+    },
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => otherProperties,
+      defaultsDeep({
+        ...(UserData && {
+          UserData: Buffer.from(UserData, "utf-8").toString("base64"),
+        }),
+        ...(image && { ImageId: getField(image, "ImageId") }),
+        ...((subnet || !isEmpty(securityGroups)) && {
+          NetworkInterfaces: [
+            {
+              AssociatePublicIpAddress: true,
+              DeviceIndex: 0,
+              ...(!isEmpty(securityGroups) && {
+                Groups: transform(
+                  map((sg) => [getField(sg, "GroupId")]),
+                  () => []
+                )(securityGroups),
+              }),
+              ...(subnet && { SubnetId: getField(subnet, "SubnetId") }),
+            },
+          ],
+        }),
+        ...(iamInstanceProfile && {
+          IamInstanceProfile: {
+            Arn: getField(iamInstanceProfile, "Arn"),
+          },
+        }),
+        TagSpecifications: [
+          {
+            ResourceType: "instance",
+            Tags: buildTags({ config, namespace, name }),
+          },
+        ],
+        ...(keyPair && { KeyName: keyPair.resource.name }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+exports.configDefault = configDefault;
+
+exports.EC2Instance = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { providerName } = config;
@@ -72,9 +129,14 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const managedByOther = hasKeyInTags({
-    key: "eks:cluster-name",
-  });
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "aws:autoscaling:groupName",
+    }),
+  ]);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -89,7 +151,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "ec2",
-      ids: filter(not(isEmpty))([live.KeyName]),
+      ids: [live.KeyName],
     },
     { type: "Vpc", group: "ec2", ids: [live.VpcId] },
     { type: "Subnet", group: "ec2", ids: [live.SubnetId] },
@@ -138,12 +200,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     {
       type: "InstanceProfile",
       group: "iam",
-      ids: pipe([
-        () => live,
-        get("IamInstanceProfile.Arn"),
-        (arn) => [arn],
-        filter(not(isEmpty)),
-      ])(),
+      ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
     },
   ];
 
@@ -267,7 +324,9 @@ exports.AwsEC2 = ({ spec, config }) => {
           `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
         );
       }),
-      () => error.message.includes("iamInstanceProfile.name is invalid"),
+      () => error,
+      get("message"),
+      includes("Invalid IAM Instance Profile ARN"),
       tap((retry) => {
         logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
       }),
@@ -281,7 +340,7 @@ exports.AwsEC2 = ({ spec, config }) => {
         not(isEmpty),
         pipe([
           (Value) => ({ InstanceId, InstanceType: { Value } }),
-          (params) => ec2().modifyInstanceAttribute(params),
+          ec2().modifyInstanceAttribute,
         ])
       ),
     ])();
@@ -501,54 +560,6 @@ exports.AwsEC2 = ({ spec, config }) => {
   //By live
   const destroy = destroyById;
 
-  const configDefault = async ({
-    name,
-    namespace,
-    properties,
-    dependencies,
-  }) => {
-    const {
-      keyPair,
-      subnet,
-      securityGroups = {},
-      iamInstanceProfile,
-      image,
-    } = dependencies;
-    const { UserData, ...otherProperties } = properties;
-    const buildNetworkInterfaces = () => [
-      {
-        AssociatePublicIpAddress: true,
-        DeviceIndex: 0,
-        ...(!isEmpty(securityGroups) && {
-          Groups: transform(
-            map((sg) => [getField(sg, "GroupId")]),
-            () => []
-          )(securityGroups),
-        }),
-        SubnetId: getField(subnet, "SubnetId"),
-      },
-    ];
-    return defaultsDeep({
-      ...(UserData && {
-        UserData: Buffer.from(UserData, "utf-8").toString("base64"),
-      }),
-      ...(image && { ImageId: getField(image, "ImageId") }),
-      ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
-      ...(iamInstanceProfile && {
-        IamInstanceProfile: {
-          Name: getField(iamInstanceProfile, "InstanceProfileName"),
-        },
-      }),
-      TagSpecifications: [
-        {
-          ResourceType: "instance",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-      ...(keyPair && { KeyName: keyPair.resource.name }),
-    })(otherProperties);
-  };
-
   return {
     spec,
     findId,
@@ -561,7 +572,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroyById,
     destroy,
     getList,
-    configDefault,
+    configDefault: configDefault({ config }),
     managedByOther,
   };
 };

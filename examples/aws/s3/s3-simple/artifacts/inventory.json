@@ -21,15 +21,13 @@
                     {
                         "resources": [
                             {
+                                "groupType": "s3::Bucket",
                                 "group": "s3",
                                 "type": "Bucket",
-                                "name": "grucloud-simple-bucket",
-                                "id": "grucloud-simple-bucket",
                                 "providerName": "aws",
-                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-simple-bucket",
-                                    "CreationDate": "2021-08-16T05:43:12.000Z",
+                                    "CreationDate": "2021-08-23T23:36:16.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -58,16 +56,17 @@
                                     ],
                                     "LocationConstraint": ""
                                 },
-                                "uri": "aws::s3::Bucket::grucloud-simple-bucket",
-                                "displayName": "grucloud-simple-bucket",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud-simple-bucket",
+                                "id": "grucloud-simple-bucket",
                                 "isDefault": false,
                                 "namespace": "My namespace",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::s3::Bucket::grucloud-simple-bucket",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "grucloud-simple-bucket"
                             }
                         ],
                         "groupType": "s3::Bucket",
@@ -78,48 +77,23 @@
                     {
                         "resources": [
                             {
+                                "groupType": "s3::Object",
                                 "group": "s3",
                                 "type": "Object",
-                                "name": "grucloud-simple-file-test",
-                                "id": "grucloud-simple-file-test",
                                 "providerName": "aws",
-                                "groupType": "s3::Object",
                                 "live": {
                                     "Bucket": "grucloud-simple-bucket",
                                     "Key": "grucloud-simple-file-test",
                                     "AcceptRanges": "bytes",
-                                    "LastModified": "2021-08-16T05:43:23.000Z",
-                                    "ContentLength": 1534,
-                                    "ETag": "\"1968b6e7481dca64f74359aeea2935d2\"",
+                                    "LastModified": "2021-08-23T23:36:29.000Z",
+                                    "ContentLength": 1563,
+                                    "ETag": "\"d81e81936f29eb2e06f4e0d3b8b4a583\"",
                                     "ContentType": "text/plain",
                                     "ServerSideEncryption": "AES256",
                                     "Metadata": {
-                                        "md5hash": "GWi250gdymT3Q1mu6ik10g=="
+                                        "md5hash": "2B6Bk28p6y4G9ODTuLSlgw=="
                                     },
-                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1629093514&Signature=reoLHxDYNTfy4jz4%2BRXly6VgDsY%3D",
-                                    "ACL": {
-                                        "Grants": [
-                                            {
-                                                "Grantee": {
-                                                    "DisplayName": "frederic.heem",
-                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
-                                                    "Type": "CanonicalUser"
-                                                },
-                                                "Permission": "FULL_CONTROL"
-                                            },
-                                            {
-                                                "Grantee": {
-                                                    "Type": "Group",
-                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
-                                                },
-                                                "Permission": "READ"
-                                            }
-                                        ],
-                                        "Owner": {
-                                            "DisplayName": "frederic.heem",
-                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
-                                        }
-                                    },
+                                    "signedUrl": "https://grucloud-simple-bucket.s3.amazonaws.com/grucloud-simple-file-test?AWSAccessKeyId=AKIAI64Y2BD7AGAOL43A&Expires=1629762700&Signature=H976Rl01L4Z8TBvFeiLwTBobVdE%3D",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -149,14 +123,33 @@
                                             "Key": "Key2",
                                             "Value": "Value2"
                                         }
-                                    ]
+                                    ],
+                                    "ACL": {
+                                        "Grants": [
+                                            {
+                                                "Grantee": {
+                                                    "DisplayName": "frederic.heem",
+                                                    "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168",
+                                                    "Type": "CanonicalUser"
+                                                },
+                                                "Permission": "FULL_CONTROL"
+                                            },
+                                            {
+                                                "Grantee": {
+                                                    "Type": "Group",
+                                                    "URI": "http://acs.amazonaws.com/groups/global/AllUsers"
+                                                },
+                                                "Permission": "READ"
+                                            }
+                                        ],
+                                        "Owner": {
+                                            "DisplayName": "frederic.heem",
+                                            "ID": "b157b67b4c277b4513d6733cca65598e1394dbe399994ea181a4413271852168"
+                                        }
+                                    }
                                 },
-                                "uri": "aws::s3::Object::grucloud-simple-file-test",
-                                "displayName": "grucloud-simple-file-test",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud-simple-file-test",
+                                "id": "grucloud-simple-file-test",
                                 "isDefault": false,
                                 "namespace": "My namespace",
                                 "dependencies": [
@@ -170,7 +163,12 @@
                                         "groupType": "s3::Bucket"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::s3::Object::grucloud-simple-file-test",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "grucloud-simple-file-test"
                             }
                         ],
                         "groupType": "s3::Object",

@@ -7,10 +7,11 @@ const {
   isEmpty,
   unless,
   prepend,
+  identity,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
-
+const { compare } = require("./Common");
 const findNamespaceFromProps = (properties) =>
   tryCatch(
     pipe([
@@ -32,7 +33,12 @@ const buildNamespaceKey = ({
   pipe([
     () => findNamespaceFromProps(properties),
     when(isEmpty, () => findNamespaceFromLive(live)),
-    when(isEmpty, () => findNamespaceFromDeps(dependencies())),
+    when(isEmpty, () =>
+      tryCatch(
+        () => findNamespaceFromDeps(dependencies()),
+        () => ""
+      )()
+    ),
     unless(isEmpty, prepend("::")),
   ])();
 
@@ -77,12 +83,13 @@ const useParams = ({ params, provider, programOptions, spec }) => ({
 });
 
 const SpecDefault = ({ providerName }) => ({
-  compare: detailedDiff,
+  compare: compare(),
   providerName,
   listOnly: false,
   isOurMinion: () => false,
   propertiesDefault: {},
   resourceKey: resourceKeyDefault,
+  transformDependencies: () => identity,
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>

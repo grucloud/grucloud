@@ -24,7 +24,7 @@ module.exports = ({ stage }) => ({
               {
                 destinations: [
                   {
-                    region: "us-east-2",
+                    region: "us-west-1",
                     registryId: "840541460064",
                   },
                 ],

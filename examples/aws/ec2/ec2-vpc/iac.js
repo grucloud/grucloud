@@ -28,7 +28,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     name: "subnet",
     dependencies: { vpc },
     properties: () => ({
-      CidrBlock: "10.1.0.1/24",
+      CidrBlock: "10.1.0.0/24",
       AvailabilityZone,
     }),
   });
@@ -48,9 +48,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-      create: {
-        Description: "Security Group Description",
-      },
+      Description: "Security Group Description",
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     }),
   });

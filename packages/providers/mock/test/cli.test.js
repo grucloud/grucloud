@@ -124,7 +124,7 @@ describe("cli", function () {
     await runProgram({ cmds: ["list", "--provider", "Moc"] });
   });
   it("destroy by type", async function () {
-    const result = await runProgram({ cmds: ["d", "--types", "Serv"] });
+    const result = await runProgram({ cmds: ["d", "--types", "Serv", "-f"] });
     assert.equal(result, 0);
   });
   it("--config notexisting.js", async function () {

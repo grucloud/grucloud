@@ -21,18 +21,16 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ssm::Parameter",
                                 "group": "ssm",
                                 "type": "Parameter",
-                                "name": "text-param",
-                                "id": "text-param",
                                 "providerName": "aws",
-                                "groupType": "ssm::Parameter",
                                 "live": {
                                     "Name": "text-param",
                                     "Type": "String",
                                     "Value": "my-value",
                                     "Version": 1,
-                                    "LastModifiedDate": "2021-08-16T05:45:06.040Z",
+                                    "LastModifiedDate": "2021-08-23T23:38:23.599Z",
                                     "ARN": "arn:aws:ssm:eu-west-2:840541460064:parameter/text-param",
                                     "DataType": "text",
                                     "Tags": [
@@ -62,16 +60,17 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::ssm::Parameter::text-param",
-                                "displayName": "text-param",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "text-param",
+                                "id": "text-param",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::ssm::Parameter::text-param",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "text-param"
                             }
                         ],
                         "groupType": "ssm::Parameter",

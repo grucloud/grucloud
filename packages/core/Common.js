@@ -11,6 +11,7 @@ const {
   eq,
   pick,
   tryCatch,
+  assign,
 } = require("rubico");
 const {
   find,
@@ -23,6 +24,7 @@ const {
   isString,
   when,
 } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
 
@@ -313,3 +315,42 @@ exports.isOurMinionObject = ({ tags, config }) => {
     }),
   ])();
 };
+
+const filterTargetDefault = pipe([omit(["TagSpecifications", "Tags", "tags"])]);
+const filterLiveDefault = pipe([omit(["Tags", "tags"])]);
+
+exports.compare = ({
+  filterTarget = filterTargetDefault,
+  filterLive = filterLiveDefault,
+} = {}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      target: pipe([get("target", {}), filterTarget]),
+      live: pipe([get("live"), filterLive]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ target, live }) => ({
+      targetDiff: pipe([
+        () => detailedDiff(target, live),
+        omit(["added"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+      liveDiff: pipe([
+        () => detailedDiff(live, target),
+        omit(["deleted"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+    }),
+    tap((diff) => {
+      logger.debug(`compare ${tos(diff)}`);
+    }),
+  ]);

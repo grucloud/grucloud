@@ -66,6 +66,7 @@ exports.createLives = (livesRaw = []) => {
         assert(type);
         //assert(group);
         //assert(id);
+        assert(providerName);
       }),
       () => getByType({ providerName, type, group }),
       tap.if(isEmpty, () => {
@@ -85,7 +86,7 @@ exports.createLives = (livesRaw = []) => {
   const getByName = ({ providerName, type, group, name }) =>
     pipe([
       tap(() => {
-        //assert(group);
+        assert(providerName);
       }),
       () => getByType({ providerName, type, group }),
       tap.if(isEmpty, () => {

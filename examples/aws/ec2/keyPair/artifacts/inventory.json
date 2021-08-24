@@ -21,15 +21,13 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ec2::KeyPair",
                                 "group": "ec2",
                                 "type": "KeyPair",
-                                "name": "kp",
-                                "id": "kp",
                                 "providerName": "aws",
-                                "groupType": "ec2::KeyPair",
                                 "live": {
-                                    "KeyPairId": "key-01322c50815dba079",
-                                    "KeyFingerprint": "71:cd:91:c8:72:2f:8e:6b:23:b3:e5:73:45:d0:87:16:6b:0e:f1:ca",
+                                    "KeyPairId": "key-0b7b34f48b91faeae",
+                                    "KeyFingerprint": "ef:bf:21:1a:f9:42:88:d7:65:bb:13:ff:0c:8b:38:8f:9d:6c:a4:30",
                                     "KeyName": "kp",
                                     "Tags": [
                                         {
@@ -54,16 +52,17 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::ec2::KeyPair::kp",
-                                "displayName": "kp",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "kp",
+                                "id": "kp",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::ec2::KeyPair::kp",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "kp"
                             }
                         ],
                         "groupType": "ec2::KeyPair",

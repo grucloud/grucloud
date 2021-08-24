@@ -12,37 +12,37 @@ const createResources = ({ provider }) => {
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPrivateA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPrivateA.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPrivateA.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPrivateB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPrivateB.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPrivateB.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
   });
 
   provider.ec2.makeElasticIpAddress({
@@ -100,31 +100,31 @@ const createResources = ({ provider }) => {
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePrivateA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePrivateA.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateA,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
-    properties: get("config.ec2.Route.routePrivateA.properties"),
   });
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePrivateB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePrivateB.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateB,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
-    properties: get("config.ec2.Route.routePrivateB.properties"),
   });
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePublic.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePublic.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePublic,
       ig: resources.ec2.InternetGateway.internetGateway,
     }),
-    properties: get("config.ec2.Route.routePublic.properties"),
   });
 };
 

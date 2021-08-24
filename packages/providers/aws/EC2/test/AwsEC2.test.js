@@ -5,7 +5,6 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-const { CheckAwsTags } = require("../../AwsTagCheck");
 
 const imageUbuntu = {
   name: "ubuntu",

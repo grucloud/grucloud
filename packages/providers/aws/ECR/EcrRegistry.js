@@ -84,53 +84,46 @@ exports.EcrRegistry = ({ spec, config }) => {
   ]);
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putReplicationConfiguration-property
-  const putReplicationConfiguration = ({ payload }) =>
-    pipe([
-      switchCase([
-        get("targetDiff.added.replicationConfiguration"),
-        pipe([
-          () => ({ replicationConfiguration: { rules: [] } }),
-          ecr().putReplicationConfiguration,
-        ]),
-        or([
-          get("liveDiff.updated.replicationConfiguration"),
-          get("liveDiff.added.replicationConfiguration"),
-        ]),
-        pipe([
-          () => payload,
-          pick(["replicationConfiguration"]),
-          ecr().putReplicationConfiguration,
-        ]),
-        () => {
-          assert(true);
-        },
+  const putReplicationConfiguration = pipe([
+    switchCase([
+      get("replicationConfiguration"),
+      pipe([
+        pick(["replicationConfiguration"]),
+        ecr().putReplicationConfiguration,
       ]),
-    ]);
+      pipe([
+        () => ({ replicationConfiguration: { rules: [] } }),
+        ecr().putReplicationConfiguration,
+      ]),
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#deleteRegistryPolicy-property
-
-  const updateOrDeleteRegistryPolicy = ({ payload }) =>
-    pipe([
-      switchCase([
-        get("targetDiff.added.policyText"),
-        pipe([() => ({}), ecr().deleteRegistryPolicy]),
-        or([
-          get("liveDiff.updated.policyText"),
-          get("liveDiff.added.policyText"),
-        ]),
-        pipe([() => payload, putRegistryPolicy]),
-        () => {
-          assert(true);
-        },
+  const updateOrDeleteRegistryPolicy = pipe([
+    switchCase([
+      get("policyText"),
+      pipe([putRegistryPolicy]),
+      pipe([
+        () => ({}),
+        tryCatch(
+          ecr().deleteRegistryPolicy,
+          pipe([
+            eq(get("code"), "RegistryPolicyNotFoundException"),
+            () => undefined,
+            (error) => {
+              throw error;
+            },
+          ])
+        ),
       ]),
-    ]);
+    ]),
+  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#createRepository-property
   const update = ({ payload, name, diff }) =>
     pipe([
-      () => diff,
-      tap(updateOrDeleteRegistryPolicy({ payload })),
-      tap(putReplicationConfiguration({ payload })),
+      () => payload,
+      tap(updateOrDeleteRegistryPolicy),
+      tap(putReplicationConfiguration),
     ])();
 
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
@@ -153,7 +146,7 @@ exports.EcrRegistry = ({ spec, config }) => {
 
 const filterTarget = pipe([get("target", {}), omit(["Tags"])]);
 const filterLive = ({ live }) => pipe([() => live, omit(["registryId"])])();
-
+//TODO remove, use common one
 exports.compareRegistry = pipe([
   tap((xxx) => {
     assert(true);

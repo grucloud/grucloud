@@ -48,7 +48,7 @@ describe("AwsIamInstanceProfile", async function () {
 
     iamInstanceProfile = provider.iam.makeInstanceProfile({
       name: iamInstanceProfileName,
-      dependencies: { iamRoles: [iamRole] },
+      dependencies: { roles: [iamRole] },
       properties: () => ({
         Path: "/",
       }),

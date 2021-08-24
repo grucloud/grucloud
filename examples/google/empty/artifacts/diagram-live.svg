@@ -25,107 +25,107 @@
 <!-- Network::::default -->
 <g id="node1" class="node">
 <title>Network::::default</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="210,-1193 122,-1193 122,-1135 210,-1135 210,-1193"/>
-<text text-anchor="start" x="134" y="-1173.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Network</text>
-<text text-anchor="start" x="134" y="-1148.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="248.5,-1193 83.5,-1193 83.5,-1135 248.5,-1135 248.5,-1193"/>
+<text text-anchor="start" x="96" y="-1173.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">compute::Network</text>
+<text text-anchor="start" x="96" y="-1148.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
 </g>
 <!-- SubNetwork::::default -->
 <g id="node2" class="node">
 <title>SubNetwork::::default</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="225,-1117 107,-1117 107,-1059 225,-1059 225,-1117"/>
-<text text-anchor="start" x="119" y="-1097.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SubNetwork</text>
-<text text-anchor="start" x="119" y="-1072.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="263.5,-1117 68.5,-1117 68.5,-1059 263.5,-1059 263.5,-1117"/>
+<text text-anchor="start" x="81" y="-1097.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">compute::SubNetwork</text>
+<text text-anchor="start" x="81" y="-1072.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
 </g>
 <!-- Binding::::roles/compute.admin -->
 <g id="node3" class="node">
 <title>Binding::::roles/compute.admin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="253.5,-1041 78.5,-1041 78.5,-983 253.5,-983 253.5,-1041"/>
-<text text-anchor="start" x="91" y="-1021.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="91" y="-1021.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="91" y="-996.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/compute.admin</text>
 </g>
 <!-- Binding::::roles/compute.serviceAgent -->
 <g id="node4" class="node">
 <title>Binding::::roles/compute.serviceAgent</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="278.5,-965 53.5,-965 53.5,-907 278.5,-907 278.5,-965"/>
-<text text-anchor="start" x="66" y="-945.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="66" y="-945.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="66" y="-920.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/compute.serviceAgent</text>
 </g>
 <!-- Binding::::roles/compute.viewer -->
 <g id="node5" class="node">
 <title>Binding::::roles/compute.viewer</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="255,-889 77,-889 77,-831 255,-831 255,-889"/>
-<text text-anchor="start" x="89" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="89" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="89" y="-844.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/compute.viewer</text>
 </g>
 <!-- Binding::::roles/dns.admin -->
 <g id="node6" class="node">
 <title>Binding::::roles/dns.admin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="235.5,-813 96.5,-813 96.5,-755 235.5,-755 235.5,-813"/>
-<text text-anchor="start" x="109" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="109" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="109" y="-768.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/dns.admin</text>
 </g>
 <!-- Binding::::roles/iam.serviceAccountAdmin -->
 <g id="node7" class="node">
 <title>Binding::::roles/iam.serviceAccountAdmin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="291.5,-737 40.5,-737 40.5,-679 291.5,-679 291.5,-737"/>
-<text text-anchor="start" x="53" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="53" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="53" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/iam.serviceAccountAdmin</text>
 </g>
 <!-- Binding::::roles/owner -->
 <g id="node8" class="node">
 <title>Binding::::roles/owner</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="220,-661 112,-661 112,-603 220,-603 220,-661"/>
-<text text-anchor="start" x="124" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
-<text text-anchor="start" x="124" y="-616.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/owner</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="227,-661 105,-661 105,-603 227,-603 227,-661"/>
+<text text-anchor="start" x="117" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
+<text text-anchor="start" x="117" y="-616.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/owner</text>
 </g>
 <!-- Binding::::roles/resourcemanager.projectIamAdmin -->
 <g id="node9" class="node">
 <title>Binding::::roles/resourcemanager.projectIamAdmin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="308,-585 24,-585 24,-527 308,-527 308,-585"/>
-<text text-anchor="start" x="36" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="36" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="36" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/resourcemanager.projectIam...</text>
 </g>
 <!-- Binding::::roles/storage.admin -->
 <g id="node10" class="node">
 <title>Binding::::roles/storage.admin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="249.5,-509 82.5,-509 82.5,-451 249.5,-451 249.5,-509"/>
-<text text-anchor="start" x="95" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="95" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="95" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/storage.admin</text>
 </g>
 <!-- Binding::::roles/storage.objectAdmin -->
 <g id="node11" class="node">
 <title>Binding::::roles/storage.objectAdmin</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="272,-433 60,-433 60,-375 272,-375 272,-433"/>
-<text text-anchor="start" x="72" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Binding</text>
+<text text-anchor="start" x="72" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Binding</text>
 <text text-anchor="start" x="72" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">roles/storage.objectAdmin</text>
 </g>
 <!-- Policy::::policy -->
 <g id="node12" class="node">
 <title>Policy::::policy</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="202,-357 130,-357 130,-299 202,-299 202,-357"/>
-<text text-anchor="start" x="142" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
-<text text-anchor="start" x="142" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">policy</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="221,-357 111,-357 111,-299 221,-299 221,-357"/>
+<text text-anchor="start" x="123" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Policy</text>
+<text text-anchor="start" x="123" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">policy</text>
 </g>
 <!-- ServiceAccount::::91170824493&#45;compute -->
 <g id="node13" class="node">
 <title>ServiceAccount::::91170824493&#45;compute</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="261,-281 71,-281 71,-223 261,-223 261,-281"/>
-<text text-anchor="start" x="83" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
+<text text-anchor="start" x="83" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::ServiceAccount</text>
 <text text-anchor="start" x="83" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">91170824493&#45;compute</text>
 </g>
 <!-- ServiceAccount::::grucloud -->
 <g id="node14" class="node">
 <title>ServiceAccount::::grucloud</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="238.5,-205 93.5,-205 93.5,-147 238.5,-147 238.5,-205"/>
-<text text-anchor="start" x="106" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="106" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="258,-205 74,-205 74,-147 258,-147 258,-205"/>
+<text text-anchor="start" x="86" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::ServiceAccount</text>
+<text text-anchor="start" x="86" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud</text>
 </g>
 <!-- ServiceAccount::::sa&#45;grucloud -->
 <g id="node15" class="node">
 <title>ServiceAccount::::sa&#45;grucloud</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="238.5,-129 93.5,-129 93.5,-71 238.5,-71 238.5,-129"/>
-<text text-anchor="start" x="106" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ServiceAccount</text>
-<text text-anchor="start" x="106" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="258,-129 74,-129 74,-71 258,-71 258,-129"/>
+<text text-anchor="start" x="86" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::ServiceAccount</text>
+<text text-anchor="start" x="86" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sa&#45;grucloud</text>
 </g>
 </g>
 </svg>

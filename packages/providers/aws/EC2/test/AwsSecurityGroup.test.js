@@ -52,9 +52,7 @@ describe("AwsSecurityGroup", async function () {
       dependencies: { vpc },
       properties: () => ({
         Tags: [{ Key: k8sSecurityGroupTagKey, Value: "owned" }],
-        create: {
-          Description: "Security Group Description",
-        },
+        Description: "Security Group Description",
       }),
     });
     sgRuleIngress = provider.ec2.makeSecurityGroupRuleIngress({

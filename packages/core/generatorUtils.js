@@ -53,6 +53,18 @@ const ResourceVarNameDefault = pipe([
 
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
+const omitPathIfEmpty = (path) => (obj) =>
+  pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
+
+exports.omitIfEmpty = (paths) => (obj) =>
+  pipe([
+    () => paths,
+    reduce((acc, path) => pipe([() => acc, omitPathIfEmpty(path)])(), obj),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 const findDependencyNames = ({
   type,
   group,
@@ -251,7 +263,17 @@ const configTpl = ({
   ])();
 
 const dependencyValue = ({ key, value }) =>
-  switchCase([() => key.endsWith("s"), () => `[${value}]`, () => value])();
+  pipe([
+    tap(() => {
+      assert(Array.isArray(value));
+    }),
+    () => value,
+    callProp("sort"),
+    when(
+      () => key.endsWith("s"),
+      (value) => `[${value}]`
+    ),
+  ])();
 
 const buildDependencies = ({
   providerName,
@@ -354,18 +376,19 @@ const codeTpl = ({
   provider.${group}.${buildPrefix(resource)}${type}({
   ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
   resource
-)}${buildDependencies({
-  providerName,
-  resource,
-  lives,
-  dependencies,
-})}${codeBuildProperties({
+)}${codeBuildProperties({
   group,
   type,
   resource,
   resourceVarName,
   properties,
   hasNoProperty: hasNoProperty({ resource }),
+})}
+${buildDependencies({
+  providerName,
+  resource,
+  lives,
+  dependencies,
 })}
   });
 `;
@@ -576,39 +599,36 @@ const removeDefaultDependencies =
                             group,
                             providerName,
                           }),
-                          unless(isEmpty, (dependency) =>
-                            pipe([
-                              tap(() => {
-                                assert(true);
-                              }),
-                              () => dependency,
-                              findDependencySpec({ writersSpec, resource }),
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              any(
-                                pipe([
-                                  get("filterDependency"),
-                                  switchCase([
-                                    isFunction,
-                                    (filterDependency) =>
-                                      filterDependency({ resource })(
-                                        dependency
-                                      ),
-                                    () => true,
-                                  ]),
-                                ])
-                              ),
-                              tap((params) => {
-                                assert(true);
-                              }),
-                            ])()
-                          ),
+                          switchCase([
+                            isEmpty,
+                            pipe([() => true]),
+                            (dependency) =>
+                              pipe([
+                                () => dependency,
+                                findDependencySpec({ writersSpec, resource }),
+                                any(
+                                  pipe([
+                                    get("filterDependency"),
+                                    switchCase([
+                                      isFunction,
+                                      (filterDependency) =>
+                                        filterDependency({ resource })(
+                                          dependency
+                                        ),
+                                      () => true,
+                                    ]),
+                                  ])
+                                ),
+                              ])(),
+                          ]),
                         ])
                       ),
                     ])(),
                 })
               ),
+              tap((params) => {
+                assert(true);
+              }),
             ])(),
         })
       ),
@@ -630,7 +650,12 @@ const addUsedBy =
       ),
     ])();
 
-const readModel = ({ writersSpec, commandOptions, programOptions }) =>
+const readModel = ({
+  writersSpec,
+  commandOptions,
+  programOptions,
+  filterModel,
+}) =>
   pipe([
     tap(() => {
       assert(writersSpec);
@@ -651,6 +676,10 @@ const readModel = ({ writersSpec, commandOptions, programOptions }) =>
     flatten,
     pluck("resources"),
     flatten,
+    tap((params) => {
+      assert(true);
+    }),
+    filterModel,
     tap((params) => {
       assert(true);
     }),
@@ -1001,13 +1030,19 @@ exports.generatorMain = ({
   providerType,
   iacTpl,
   configTpl,
+  filterModel,
 }) =>
   pipe([
     tap((xxx) => {
       console.log(name, commandOptions, programOptions);
     }),
     fork({
-      lives: readModel({ commandOptions, programOptions, writersSpec }),
+      lives: readModel({
+        commandOptions,
+        programOptions,
+        writersSpec,
+        filterModel,
+      }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),
     ({ lives, mapping }) =>

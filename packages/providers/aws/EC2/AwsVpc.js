@@ -12,7 +12,7 @@ const {
   assign,
   pick,
 } = require("rubico");
-const { isEmpty, defaultsDeep, identity, size } = require("rubico/x");
+const { isEmpty, defaultsDeep, when, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -47,7 +47,7 @@ exports.AwsVpc = ({ spec, config }) => {
       }),
       () => ec2().describeVpcs(params),
       get("Vpcs"),
-      switchCase([
+      when(
         () => deep,
         map(
           assign({
@@ -68,9 +68,8 @@ exports.AwsVpc = ({ spec, config }) => {
               get("EnableDnsHostnames.Value"),
             ]),
           })
-        ),
-        identity,
-      ]),
+        )
+      ),
     ])();
 
   const getByName = getByNameCore({ getList, findName });
@@ -280,7 +279,7 @@ exports.AwsVpc = ({ spec, config }) => {
       tap(destroySubnets),
       tap(destroySecurityGroup),
       tap(destroyRouteTables),
-      tap(ec2().deleteVpc),
+      tap(ec2().deleteVpc), // TODO InvalidVpcID.NotFound
       tap(({ VpcId }) =>
         retryCall({
           name: `destroy vpc isDownById: ${name} id: ${VpcId}`,

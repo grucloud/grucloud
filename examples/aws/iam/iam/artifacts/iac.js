@@ -25,30 +25,30 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeUser({
     name: get("config.iam.User.alice.name"),
+    properties: get("config.iam.User.alice.properties"),
     dependencies: ({ resources }) => ({
       iamGroups: [resources.iam.Group.admin],
       policies: [resources.iam.Policy.myPolicyToUser],
     }),
-    properties: get("config.iam.User.alice.properties"),
   });
 
   provider.iam.makeGroup({
     name: get("config.iam.Group.admin.name"),
+    properties: get("config.iam.Group.admin.properties"),
     dependencies: ({ resources }) => ({
       policies: [resources.iam.Policy.myPolicyToGroup],
     }),
-    properties: get("config.iam.Group.admin.properties"),
   });
 
   provider.iam.makeRole({
     name: get("config.iam.Role.roleAllowAssumeRole.name"),
+    properties: get("config.iam.Role.roleAllowAssumeRole.properties"),
     dependencies: ({ resources }) => ({
       policies: [
-        resources.iam.Policy.myPolicyToRole,
         resources.iam.Policy.amazonEksWorkerNodePolicy,
+        resources.iam.Policy.myPolicyToRole,
       ],
     }),
-    properties: get("config.iam.Role.roleAllowAssumeRole.properties"),
   });
 
   provider.iam.makeInstanceProfile({
@@ -60,10 +60,10 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.webIam.name"),
+    properties: get("config.ec2.Instance.webIam.properties"),
     dependencies: ({ resources }) => ({
       iamInstanceProfile: resources.iam.InstanceProfile.myProfile,
     }),
-    properties: get("config.ec2.Instance.webIam.properties"),
   });
 };
 

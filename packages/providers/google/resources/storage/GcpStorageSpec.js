@@ -1,6 +1,8 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, get } = require("rubico");
+const { callProp } = require("rubico/x");
+
 const assert = require("assert");
-const { md5FileBase64 } = require("@grucloud/core/Common");
+const { md5FileBase64, compare } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpStorageSpec" });
 
@@ -15,6 +17,13 @@ module.exports = () =>
       type: "Bucket",
       Client: GcpBucket,
       isOurMinion: GoogleTag.isOurMinion,
+      compare: compare({
+        filterTarget: pipe([
+          assign({
+            location: pipe([get("location"), callProp("toUpperCase")]),
+          }),
+        ]),
+      }),
     },
     {
       type: "Object",

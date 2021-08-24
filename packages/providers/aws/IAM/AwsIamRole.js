@@ -6,9 +6,7 @@ const {
   tryCatch,
   filter,
   get,
-  any,
   switchCase,
-  eq,
   not,
   assign,
   pick,
@@ -165,12 +163,19 @@ exports.AwsIamRole = ({ spec, config }) => {
     pipe([() => getByName({ name }), isEmpty])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
+  const attachRolePolicies = ({ name }) =>
+    map((policy) =>
+      iam().attachRolePolicy({
+        PolicyArn: policy.live.Arn,
+        RoleName: name,
+      })
+    );
 
   const create = ({
     name,
     namespace,
     payload = {},
-    resolvedDependencies: { policies },
+    resolvedDependencies: { policies = [] },
   }) =>
     pipe([
       tap(() => {
@@ -184,45 +189,9 @@ exports.AwsIamRole = ({ spec, config }) => {
         ]),
       }),
       iam().createRole,
-      get("Role"),
-      tap(() =>
-        iam().tagRole({
-          RoleName: name,
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: payload.Tags,
-          }),
-        })
-      ),
-      //TODO check error
-      tap.if(
-        () => policies,
-        () =>
-          map(
-            pipe([
-              (policy) =>
-                iam().attachRolePolicy({
-                  PolicyArn: policy.live.Arn,
-                  RoleName: name,
-                }),
-            ])
-          )(policies),
-        () =>
-          listAttachedRolePolicies({
-            RoleName: name,
-          }),
-        tap.if(
-          (attachedRolePolicies) =>
-            attachedRolePolicies.length != policies.length,
-          () => {
-            throw Error(`attachRolePolicy fails`);
-          }
-        )
-      ),
-      tap((Role) => {
-        logger.info(`created role ${tos({ name, Role })}`);
+      pipe([() => policies, attachRolePolicies({ name })]),
+      tap(() => {
+        logger.info(`created role ${tos({ name })}`);
       }),
     ])();
 
@@ -269,6 +238,7 @@ exports.AwsIamRole = ({ spec, config }) => {
               RoleName,
             });
           }),
+          //TODO NoSuchEntity
           () =>
             iam().deleteRole({
               RoleName,
@@ -316,16 +286,26 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const configDefault = ({
     name,
-    properties,
+    properties: { Tags, ...otherProps },
+    namespace,
     dependencies: { openIdConnectProvider },
   }) =>
     pipe([
       tap(() => {
         assert(name);
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep(openIdConnectProviderProperties({ openIdConnectProvider })),
-      defaultsDeep({ RoleName: name, Path: "/" }),
+      defaultsDeep({
+        RoleName: name,
+        Path: "/",
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
     ])();
 
   const cannotBeDeleted = pipe([

@@ -10,7 +10,6 @@ const createResources = ({ provider }) => {
 
   provider.ecr.makeRegistry({
     name: get("config.ecr.Registry.default.name"),
-    properties: get("config.ecr.Registry.default.properties"),
   });
 };
 

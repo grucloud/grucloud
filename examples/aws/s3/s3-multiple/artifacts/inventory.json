@@ -21,15 +21,13 @@
                     {
                         "resources": [
                             {
+                                "groupType": "s3::Bucket",
                                 "group": "s3",
                                 "type": "Bucket",
-                                "name": "grucloud-bucket-0",
-                                "id": "grucloud-bucket-0",
                                 "providerName": "aws",
-                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-bucket-0",
-                                    "CreationDate": "2021-08-16T05:42:29.000Z",
+                                    "CreationDate": "2021-08-23T23:35:30.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -54,27 +52,26 @@
                                     ],
                                     "LocationConstraint": ""
                                 },
-                                "uri": "aws::s3::Bucket::grucloud-bucket-0",
-                                "displayName": "grucloud-bucket-0",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud-bucket-0",
+                                "id": "grucloud-bucket-0",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::s3::Bucket::grucloud-bucket-0",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "grucloud-bucket-0"
                             },
                             {
+                                "groupType": "s3::Bucket",
                                 "group": "s3",
                                 "type": "Bucket",
-                                "name": "grucloud-bucket-1",
-                                "id": "grucloud-bucket-1",
                                 "providerName": "aws",
-                                "groupType": "s3::Bucket",
                                 "live": {
                                     "Name": "grucloud-bucket-1",
-                                    "CreationDate": "2021-08-16T05:42:29.000Z",
+                                    "CreationDate": "2021-08-23T23:35:30.000Z",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -99,16 +96,17 @@
                                     ],
                                     "LocationConstraint": ""
                                 },
-                                "uri": "aws::s3::Bucket::grucloud-bucket-1",
-                                "displayName": "grucloud-bucket-1",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud-bucket-1",
+                                "id": "grucloud-bucket-1",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::s3::Bucket::grucloud-bucket-1",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "grucloud-bucket-1"
                             }
                         ],
                         "groupType": "s3::Bucket",

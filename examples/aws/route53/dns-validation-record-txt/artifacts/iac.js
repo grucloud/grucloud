@@ -9,10 +9,10 @@ const createResources = ({ provider }) => {
 
   provider.route53.makeRecord({
     name: get("config.route53.Record.txtGrucloudOrg.name"),
+    properties: get("config.route53.Record.txtGrucloudOrg.properties"),
     dependencies: ({ resources }) => ({
       hostedZone: resources.route53.HostedZone.grucloudOrg,
     }),
-    properties: get("config.route53.Record.txtGrucloudOrg.properties"),
   });
 };
 

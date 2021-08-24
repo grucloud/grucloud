@@ -10,10 +10,10 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeRole({
     name: get("config.iam.Role.lambdaRole.name"),
+    properties: get("config.iam.Role.lambdaRole.properties"),
     dependencies: ({ resources }) => ({
       policies: [resources.iam.Policy.lambdaPolicy],
     }),
-    properties: get("config.iam.Role.lambdaRole.properties"),
   });
 
   provider.lambda.makeLayer({
@@ -23,11 +23,11 @@ const createResources = ({ provider }) => {
 
   provider.lambda.makeFunction({
     name: get("config.lambda.Function.lambdaHelloWorld.name"),
+    properties: get("config.lambda.Function.lambdaHelloWorld.properties"),
     dependencies: ({ resources }) => ({
       layers: [resources.lambda.Layer.lambdaLayer],
       role: resources.iam.Role.lambdaRole,
     }),
-    properties: get("config.lambda.Function.lambdaHelloWorld.properties"),
   });
 };
 

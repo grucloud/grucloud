@@ -21,12 +21,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "dynamoDB::Table",
                                 "group": "dynamoDB",
                                 "type": "Table",
-                                "name": "myTable",
-                                "id": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
                                 "providerName": "aws",
-                                "groupType": "dynamoDB::Table",
                                 "live": {
                                     "AttributeDefinitions": [
                                         {
@@ -42,7 +40,7 @@
                                         }
                                     ],
                                     "TableStatus": "ACTIVE",
-                                    "CreationDateTime": "2021-08-16T04:56:50.846Z",
+                                    "CreationDateTime": "2021-08-23T22:41:54.573Z",
                                     "ProvisionedThroughput": {
                                         "NumberOfDecreasesToday": 0,
                                         "ReadCapacityUnits": 5,
@@ -51,7 +49,7 @@
                                     "TableSizeBytes": 0,
                                     "ItemCount": 0,
                                     "TableArn": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
-                                    "TableId": "2340cf01-a04f-4c7c-8302-5e42a32fb231",
+                                    "TableId": "a3bbc6c7-4e5c-4d5c-9d24-35dc80ce615a",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -79,16 +77,17 @@
                                         }
                                     ]
                                 },
-                                "uri": "aws::dynamoDB::Table::myTable",
-                                "displayName": "myTable",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "myTable",
+                                "id": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::dynamoDB::Table::myTable",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "myTable"
                             }
                         ],
                         "groupType": "dynamoDB::Table",

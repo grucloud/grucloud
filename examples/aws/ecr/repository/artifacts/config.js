@@ -57,20 +57,6 @@ module.exports = ({ stage }) => ({
     Registry: {
       default: {
         name: "default",
-        properties: {
-          replicationConfiguration: {
-            rules: [
-              {
-                destinations: [
-                  {
-                    region: "us-east-2",
-                    registryId: "840541460064",
-                  },
-                ],
-              },
-            ],
-          },
-        },
       },
     },
   },

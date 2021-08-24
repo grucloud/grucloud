@@ -63,7 +63,7 @@ const buildNode =
   <table color='${node.color}' border="0">
      <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
           node.type.pointSize
-        }"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+        }"><B>${resource.groupType}</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
           node.name.pointSize
         }">${formatNodeName({
@@ -88,6 +88,9 @@ const resourceNameFilterDefault = pipe([
   get("name"),
   tap((name) => {
     assert(name);
+    if (!name.startsWith) {
+      assert(false);
+    }
   }),
   and([
     //({ name }) => !name.startsWith("kube"),
@@ -225,7 +228,12 @@ const associationIdString = ({
         ({ nodeFrom, nodeTo }) =>
           `"${nodeFrom}" -> "${nodeTo}" [color="${edge.color}"];`,
       ]),
-      () => "",
+      pipe([
+        tap(() => {
+          console.error(`Ignore ${nameFrom} ${nameTo}`);
+        }),
+        () => "",
+      ]),
     ]),
   ])();
 
@@ -292,7 +300,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
       pipe([
         tap(() => {
           logger.debug(
-            `${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
+            `buildGraphAssociationLive ${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
               dependencies
             )}`
           );

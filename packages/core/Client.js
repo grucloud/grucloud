@@ -65,47 +65,39 @@ const decorateLive =
         assert(live);
       }),
       () => ({
+        groupType: client.spec.groupType,
         group: client.spec.group,
         type: client.spec.type,
-        name: client.findName({ live, lives }),
-        meta: client.findMeta(live),
-        id: client.findId({ live, lives }),
         providerName: client.spec.providerName,
-        groupType: client.spec.groupType,
         live,
-      }),
-      assign({
-        uri: ({ name, id, meta }) =>
-          client.spec.resourceKey({
-            live,
-            providerName: client.spec.providerName,
-            type: client.spec.type,
-            group: client.spec.group,
-            name,
-            meta,
-            id,
-          }),
-        displayName: ({ name, meta }) => client.displayName({ name, meta }),
       }),
       (resource) => ({
         ...resource,
-        get cannotBeDeleted() {
-          return client.cannotBeDeleted({
-            resource,
-            live,
-            lives,
-          });
+        get name() {
+          return pipe([
+            () => client.findName({ live, lives }),
+            tap((name) => {
+              if (!isString(name)) {
+                logger.error(`no name in ${tos(live)}`);
+                assert(false, `no name in ${tos(live)}`);
+              }
+            }),
+          ])();
         },
-        //TODO isOurMinion or managedByUs
-        get isOurMinion() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
+        get id() {
+          return pipe([
+            () => client.findId({ live, lives }),
+            tap((id) => {
+              if (!isString(id)) {
+                assert(isString(id));
+              }
+            }),
+          ])();
         },
-        get managedByUs() {
-          return client.isOurMinion({ uri: resource.uri, live, lives });
+        get meta() {
+          return client.findMeta({ live, lives });
         },
-        get managedByOther() {
-          return client.managedByOther({ resource, live, lives });
-        },
+
         get isDefault() {
           return client.isDefault({ live, lives });
         },
@@ -119,6 +111,9 @@ const decorateLive =
                 live,
                 lives,
               }),
+            tap((ids) => {
+              assert(Array.isArray(ids));
+            }),
             map(
               assign({
                 providerName: () => client.spec.providerName,
@@ -134,6 +129,50 @@ const decorateLive =
         Object.defineProperty(resource, "show", {
           enumerable: true,
           get: () => showLive({ options: options })(resource),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "uri", {
+          enumerable: true,
+          get: () =>
+            client.spec.resourceKey({
+              live,
+              providerName: client.spec.providerName,
+              type: client.spec.type,
+              group: client.spec.group,
+              name: resource.name,
+              meta: resource.meta,
+              id: resource.id,
+            }),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "managedByUs", {
+          enumerable: true,
+          get: () => client.isOurMinion({ uri: resource.uri, live, lives }),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "cannotBeDeleted", {
+          enumerable: true,
+          get: () =>
+            client.cannotBeDeleted({
+              resource,
+              live,
+              lives,
+            }),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "managedByOther", {
+          enumerable: true,
+          get: () => client.managedByOther({ resource, live, lives }),
+        })
+      ),
+      tap((resource) =>
+        Object.defineProperty(resource, "displayName", {
+          enumerable: true,
+          get: () => client.displayName(resource),
         })
       ),
     ])();

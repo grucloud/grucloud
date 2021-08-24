@@ -25,61 +25,18 @@
                     {
                         "resources": [
                             {
+                                "groupType": "route53::HostedZone",
                                 "group": "route53",
                                 "type": "HostedZone",
-                                "name": "grucloud.org.",
-                                "id": "/hostedzone/Z033732631G192IZLH1ZD",
                                 "providerName": "aws",
-                                "groupType": "route53::HostedZone",
                                 "live": {
-                                    "Id": "/hostedzone/Z033732631G192IZLH1ZD",
+                                    "Id": "/hostedzone/Z0682606KI9EU51X4DJ1",
                                     "Name": "grucloud.org.",
-                                    "CallerReference": "grucloud-Mon Aug 16 2021 02:41:43 GMT-0300 (Brasilia Standard Time)",
+                                    "CallerReference": "grucloud-Mon Aug 23 2021 20:34:41 GMT-0300 (Brasilia Standard Time)",
                                     "Config": {
                                         "PrivateZone": false
                                     },
                                     "ResourceRecordSetCount": 3,
-                                    "RecordSet": [
-                                        {
-                                            "Name": "grucloud.org.",
-                                            "Type": "NS",
-                                            "TTL": 172800,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "ns-774.awsdns-32.net."
-                                                },
-                                                {
-                                                    "Value": "ns-1920.awsdns-48.co.uk."
-                                                },
-                                                {
-                                                    "Value": "ns-13.awsdns-01.com."
-                                                },
-                                                {
-                                                    "Value": "ns-1178.awsdns-19.org."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "Name": "grucloud.org.",
-                                            "Type": "SOA",
-                                            "TTL": 900,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "ns-774.awsdns-32.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "Name": "grucloud.org.",
-                                            "Type": "TXT",
-                                            "TTL": 60,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "\"google-site-verification=q_tZuuK8OFGzYbrhd_VXoqtOTtruiAmH811iULb-m30\""
-                                                }
-                                            ]
-                                        }
-                                    ],
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -105,18 +62,70 @@
                                             "Key": "Name",
                                             "Value": "grucloud.org."
                                         }
+                                    ],
+                                    "RecordSet": [
+                                        {
+                                            "Name": "grucloud.org.",
+                                            "Type": "NS",
+                                            "TTL": 172800,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-518.awsdns-00.net."
+                                                },
+                                                {
+                                                    "Value": "ns-477.awsdns-59.com."
+                                                },
+                                                {
+                                                    "Value": "ns-1669.awsdns-16.co.uk."
+                                                },
+                                                {
+                                                    "Value": "ns-1229.awsdns-25.org."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "grucloud.org.",
+                                            "Type": "SOA",
+                                            "TTL": 900,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-518.awsdns-00.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "grucloud.org.",
+                                            "Type": "TXT",
+                                            "TTL": 60,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "\"google-site-verification=q_tZuuK8OFGzYbrhd_VXoqtOTtruiAmH811iULb-m30\""
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
-                                "uri": "aws::route53::HostedZone::grucloud.org.",
-                                "displayName": "grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud.org.",
+                                "id": "/hostedzone/Z0682606KI9EU51X4DJ1",
                                 "isDefault": false,
                                 "namespace": "",
-                                "dependencies": [],
-                                "show": true
+                                "dependencies": [
+                                    {
+                                        "type": "Domain",
+                                        "group": "route53Domain",
+                                        "ids": [
+                                            "grucloud.org"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "route53Domain::Domain"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::route53::HostedZone::grucloud.org.",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "grucloud.org."
                             }
                         ],
                         "groupType": "route53::HostedZone",
@@ -127,38 +136,32 @@
                     {
                         "resources": [
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "grucloud.org.::NS",
-                                "id": "grucloud.org.::NS",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "grucloud.org.",
                                     "Type": "NS",
                                     "TTL": 172800,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-774.awsdns-32.net."
+                                            "Value": "ns-518.awsdns-00.net."
                                         },
                                         {
-                                            "Value": "ns-1920.awsdns-48.co.uk."
+                                            "Value": "ns-477.awsdns-59.com."
                                         },
                                         {
-                                            "Value": "ns-13.awsdns-01.com."
+                                            "Value": "ns-1669.awsdns-16.co.uk."
                                         },
                                         {
-                                            "Value": "ns-1178.awsdns-19.org."
+                                            "Value": "ns-1229.awsdns-25.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD"
+                                    "HostedZoneId": "/hostedzone/Z0682606KI9EU51X4DJ1"
                                 },
-                                "uri": "aws::route53::Record::grucloud.org.::NS",
-                                "displayName": "grucloud.org.::NS",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud.org.::NS",
+                                "id": "grucloud.org.::NS",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -166,38 +169,37 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z033732631G192IZLH1ZD"
+                                            "/hostedzone/Z0682606KI9EU51X4DJ1"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::route53::Record::grucloud.org.::NS",
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "grucloud.org.::NS"
                             },
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "grucloud.org.::SOA",
-                                "id": "grucloud.org.::SOA",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "grucloud.org.",
                                     "Type": "SOA",
                                     "TTL": 900,
                                     "ResourceRecords": [
                                         {
-                                            "Value": "ns-774.awsdns-32.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                            "Value": "ns-518.awsdns-00.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD"
+                                    "HostedZoneId": "/hostedzone/Z0682606KI9EU51X4DJ1"
                                 },
-                                "uri": "aws::route53::Record::grucloud.org.::SOA",
-                                "displayName": "grucloud.org.::SOA",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "grucloud.org.::SOA",
+                                "id": "grucloud.org.::SOA",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -205,21 +207,24 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z033732631G192IZLH1ZD"
+                                            "/hostedzone/Z0682606KI9EU51X4DJ1"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::route53::Record::grucloud.org.::SOA",
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "grucloud.org.::SOA"
                             },
                             {
+                                "groupType": "route53::Record",
                                 "group": "route53",
                                 "type": "Record",
-                                "name": "txt.grucloud.org.",
-                                "id": "grucloud.org.::TXT",
                                 "providerName": "aws",
-                                "groupType": "route53::Record",
                                 "live": {
                                     "Name": "grucloud.org.",
                                     "Type": "TXT",
@@ -255,15 +260,11 @@
                                             "Value": "grucloud.org."
                                         }
                                     ],
-                                    "HostedZoneId": "/hostedzone/Z033732631G192IZLH1ZD",
+                                    "HostedZoneId": "/hostedzone/Z0682606KI9EU51X4DJ1",
                                     "namespace": ""
                                 },
-                                "uri": "aws::route53::Record::txt.grucloud.org.",
-                                "displayName": "txt.grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "txt.grucloud.org.",
+                                "id": "grucloud.org.::TXT",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -271,13 +272,18 @@
                                         "type": "HostedZone",
                                         "group": "route53",
                                         "ids": [
-                                            "/hostedzone/Z033732631G192IZLH1ZD"
+                                            "/hostedzone/Z0682606KI9EU51X4DJ1"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "route53::HostedZone"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::route53::Record::txt.grucloud.org.",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "txt.grucloud.org."
                             }
                         ],
                         "groupType": "route53::Record",

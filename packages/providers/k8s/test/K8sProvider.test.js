@@ -47,26 +47,6 @@ describe("K8sProvider", async function () {
     label: "db",
   };
 
-  const types = [
-    "Namespace",
-    "ConfigMap",
-    "Deployment",
-    "Ingress",
-    "PersistentVolume",
-    "PersistentVolumeClaim",
-    "Secret",
-    "Service",
-    "ServiceAccount",
-    "StatefulSet",
-    "StorageClass",
-    "ClusterRole",
-    "ClusterRoleBinding",
-    "CustomResourceDefinition",
-    "MutatingWebhookConfiguration",
-    "Role",
-    "RoleBinding",
-  ];
-
   before(async function () {
     provider = K8sProvider({
       config: () => ({}),
@@ -382,9 +362,8 @@ describe("K8sProvider", async function () {
 
   it("k8s deployment apply and destroy", async function () {
     try {
-      await testPlanDeploy({ provider, types });
-
-      await testPlanDestroy({ provider, types });
+      await testPlanDeploy({ provider });
+      await testPlanDestroy({ provider });
     } catch (error) {
       throw error;
     }

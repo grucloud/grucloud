@@ -1,4 +1,6 @@
-const { assign, map } = require("rubico");
+const { assign, map, pipe, omit } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
+
 const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
 const { EcrRegistry, compareRegistry } = require("./EcrRegistry");

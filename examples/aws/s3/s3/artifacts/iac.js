@@ -60,10 +60,10 @@ const createResources = ({ provider }) => {
 
   provider.s3.makeObject({
     name: get("config.s3.Object.fileTest.name"),
+    properties: get("config.s3.Object.fileTest.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.grucloudTestBasic,
     }),
-    properties: get("config.s3.Object.fileTest.properties"),
   });
 };
 

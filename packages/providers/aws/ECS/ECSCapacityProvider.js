@@ -9,9 +9,9 @@ const {
   eq,
   not,
   pick,
-  assign,
+  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, isEmpty, includes, first, unless } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSCapacityProvider",
@@ -23,16 +23,28 @@ const {
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
-
-const findName = get("live.clusterName");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsAutoScalingGroup } = require("../autoscaling/AwsAutoScalingGroup");
 const findId = get("live.capacityProviderArn");
+const findName = get("live.name");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSCapacityProvider = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-
-  const findDependencies = ({ live }) => [];
+  const autoScalingGroup = AwsAutoScalingGroup({ config });
+  const findDependencies = ({ live }) => [
+    {
+      type: "AutoScalingGroup",
+      group: "autoscaling",
+      ids: [
+        pipe([
+          () => live,
+          get("autoScalingGroupProvider.autoScalingGroupArn"),
+        ])(),
+      ],
+    },
+  ];
 
   const findNamespace = pipe([
     tap((params) => {
@@ -41,17 +53,21 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     () => "",
   ]);
 
+  const notFound = eq(
+    get("message"),
+    "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
+  );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
-  const describeCapacityProviders = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    ecs().describeCapacityProviders,
-    get("capacityProviders"),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const describeCapacityProviders = (params = {}) =>
+    pipe([
+      () => params,
+      defaultsDeep({ include: ["TAGS"] }),
+      ecs().describeCapacityProviders,
+      get("capacityProviders"),
+      tap((capacityProviders) => {
+        logger.debug(`describeCapacityProviders ${tos(capacityProviders)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
   const getByName = ({ name }) =>
@@ -62,9 +78,13 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
         }),
         () => ({ capacityProviders: [name] }),
         describeCapacityProviders,
+        first,
+        tap((params) => {
+          assert(true);
+        }),
       ]),
       switchCase([
-        eq(get("code"), "ClientException"),
+        notFound,
         () => undefined,
         (error) => {
           throw error;
@@ -75,7 +95,20 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   const getList = () => pipe([describeCapacityProviders])();
 
   const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const isDownByName = pipe([
+    getByName,
+    switchCase([
+      eq(get("updateStatus"), "DELETE_FAILED"),
+      () => {
+        throw Error(`DELETE_FAILED`);
+      },
+      eq(get("updateStatus"), "DELETE_COMPLETE"),
+      () => true,
+      isEmpty,
+      () => true,
+      () => false,
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property
   const create = ({ payload, name, namespace }) =>
@@ -90,9 +123,46 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
-  const destroy = ({ live }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
+  const update = ({ payload, name, namespace }) =>
     pipe([
+      () => payload,
+      pick(["name", "autoScalingGroupProvider"]),
+      omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
+      ecs().updateCapacityProvider,
+    ])();
+
+  const deleteAutoScalingGroup = ({ live, lives }) =>
+    pipe([
+      () => live,
+      get("autoScalingGroupProvider.autoScalingGroupArn"),
+      tap((params) => {
+        assert(true);
+      }),
+      (id) =>
+        lives.getById({
+          id,
+          providerName: config.providerName,
+          type: "AutoScalingGroup",
+          group: "autoscaling",
+        }),
+      get("name"),
+      unless(
+        isEmpty,
+        pipe([
+          (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
+          autoScalingGroup.destroy,
+        ])
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
+  const destroy = ({ live, lives }) =>
+    pipe([
+      () => ({ live, lives }),
+      deleteAutoScalingGroup,
       () => live,
       tap(({ name }) => {
         assert(name);
@@ -117,7 +187,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
             }),
             () => error,
             switchCase([
-              eq(get("code"), "ClientException"),
+              notFound,
               () => undefined,
               () => {
                 throw error;
@@ -131,12 +201,20 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { autoScalingGroup },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         name,
+        ...(autoScalingGroup && {
+          autoScalingGroupProvider: {
+            autoScalingGroupArn: getField(
+              autoScalingGroup,
+              "AutoScalingGroupARN"
+            ),
+          },
+        }),
         tags: buildTags({
           name,
           config,
@@ -148,6 +226,9 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       }),
     ])();
 
+  const cannotBeDeleted = ({ live }) =>
+    pipe([() => ["FARGATE", "FARGATE_SPOT"], includes(live.name)])();
+
   return {
     spec,
     findId,
@@ -156,9 +237,13 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,
     shouldRetryOnException,
+    cannotBeDeleted,
+    managedyOther: cannotBeDeleted,
+    isDefault: cannotBeDeleted,
   };
 };

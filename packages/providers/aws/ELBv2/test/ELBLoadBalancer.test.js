@@ -56,9 +56,7 @@ describe("AwsLoadBalancerV2", async function () {
       name: formatName("security-group-load-balancer-test"),
       dependencies: { vpc },
       properties: () => ({
-        create: {
-          Description: "Load Balancer HTTP HTTPS Security Group",
-        },
+        Description: "Load Balancer HTTP HTTPS Security Group",
       }),
     });
 

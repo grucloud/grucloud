@@ -18,9 +18,7 @@ const createResourcesRds = async ({
     name: "security-group-postgres",
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
-      create: {
-        Description: "Security Group Postgres",
-      },
+      Description: "Security Group Postgres",
     }),
   });
 
@@ -80,9 +78,7 @@ const createResourcesBastion = async ({
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-      create: {
-        Description: "Security Group Description",
-      },
+      Description: "Security Group Description",
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     }),
   });

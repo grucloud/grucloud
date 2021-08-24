@@ -30,7 +30,7 @@ module.exports = CoreClient = ({
   isDefault,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
-  configDefault = async ({ name, properties }) => ({
+  configDefault = ({ name, properties }) => ({
     name,
     ...properties,
   }),

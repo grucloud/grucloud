@@ -65,9 +65,6 @@ module.exports = ({ stage }) => ({
     ApiKey: {
       da2Wbuvlxl5cfapbifytstbzthsxy: {
         name: "da2-wbuvlxl5cfapbifytstbzthsxy",
-        properties: {
-          expires: 1629554400,
-        },
       },
     },
     DataSource: {

@@ -79,9 +79,7 @@ describe.skip("AwsProvider", async function () {
       dependencies: { vpc },
       properties: () => ({
         //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-        create: {
-          Description: "Security Group Description",
-        },
+        Description: "Security Group Description",
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
       }),
     });

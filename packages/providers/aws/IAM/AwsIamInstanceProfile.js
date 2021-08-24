@@ -10,6 +10,7 @@ const {
   not,
   pick,
   assign,
+  or,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -59,7 +60,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
       () => live,
       get("InstanceProfileName"),
-      callProp("startsWith", "eks-"),
+      or([callProp("startsWith", "eks-")]),
       tap((params) => {
         assert(true);
       }),
@@ -74,23 +75,15 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
-  const getList = async ({ params } = {}) =>
+  const getList = () =>
     pipe([
-      tap(() => {
-        logger.debug(`getList instance profile`);
-      }),
-      () => iam().listInstanceProfiles(params),
+      () => ({}),
+      iam().listInstanceProfiles,
       get("InstanceProfiles"),
-      tap((instanceProfiles) => {
-        assert(instanceProfiles);
-      }),
       map.pool(
         mapPoolSize,
         assign({
           Tags: pipe([
-            tap((params) => {
-              assert(true);
-            }),
             pick(["InstanceProfileName"]),
             iam().listInstanceProfileTags,
             get("Tags"),
@@ -99,6 +92,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ),
     ])();
 
+  //TODO getById should be getByName
   const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
@@ -132,19 +126,19 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
 
-  const create = async ({ name, payload = {}, dependencies }) =>
+  const create = ({ name, payload = {}, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`create iam instance profile ${name}`);
         logger.debug(`payload: ${tos(payload)}`);
       }),
-      () => defaultsDeep({})(payload),
-      (createParams) => iam().createInstanceProfile(createParams),
+      () => payload,
+      iam().createInstanceProfile,
       dependencies,
-      get("iamRoles"),
-      tap((iamRoles) => {
-        assert(iamRoles, "missing dependency iamRoles");
-        assert(Array.isArray(iamRoles), "iamRoles must be an array");
+      get("roles"),
+      tap((roles) => {
+        assert(roles, "missing dependency roles");
+        assert(Array.isArray(roles), "roles must be an array");
       }),
       forEach((iamRole) =>
         iam().addRoleToInstanceProfile({
@@ -166,7 +160,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => findName({ live }),
       (InstanceProfileName) =>

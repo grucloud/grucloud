@@ -10,10 +10,10 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.server_4TestVolume.name"),
+    properties: get("config.ec2.Instance.server_4TestVolume.properties"),
     dependencies: ({ resources }) => ({
       volumes: [resources.ec2.Volume.volumeTestVolume],
     }),
-    properties: get("config.ec2.Instance.server_4TestVolume.properties"),
   });
 };
 

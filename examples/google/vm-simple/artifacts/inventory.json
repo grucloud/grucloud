@@ -21,22 +21,20 @@
                     {
                         "resources": [
                             {
+                                "groupType": "compute::Disk",
                                 "group": "compute",
                                 "type": "Disk",
-                                "name": "web-server",
-                                "id": "333132338302493781",
                                 "providerName": "google",
-                                "groupType": "compute::Disk",
                                 "live": {
-                                    "id": "333132338302493781",
-                                    "creationTimestamp": "2021-08-16T10:04:58.967-07:00",
+                                    "id": "1700246237075099055",
+                                    "creationTimestamp": "2021-08-23T12:13:04.618-07:00",
                                     "name": "web-server",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a",
                                     "status": "READY",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/disks/web-server",
-                                    "sourceImage": "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210720",
-                                    "sourceImageId": "5084371847132934865",
+                                    "sourceImage": "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210820",
+                                    "sourceImageId": "3629791390366300846",
                                     "type": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/diskTypes/pd-standard",
                                     "licenses": [
                                         "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/licenses/ubuntu-2004-lts"
@@ -55,7 +53,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-16T10:04:58.968-07:00",
+                                    "lastAttachTimestamp": "2021-08-23T12:13:04.619-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/instances/web-server"
                                     ],
@@ -66,16 +64,17 @@
                                     "physicalBlockSizeBytes": "4096",
                                     "kind": "compute#disk"
                                 },
-                                "uri": "google::compute::Disk::web-server",
-                                "displayName": "web-server",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "web-server",
+                                "id": "1700246237075099055",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Disk::web-server",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "web-server"
                             }
                         ],
                         "groupType": "compute::Disk",
@@ -86,12 +85,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "compute::Firewall",
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "default-allow-icmp",
-                                "id": "5285077270892330268",
                                 "providerName": "google",
-                                "groupType": "compute::Firewall",
                                 "live": {
                                     "id": "5285077270892330268",
                                     "creationTimestamp": "2021-05-23T09:33:55.184-07:00",
@@ -115,12 +112,8 @@
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/firewalls/default-allow-icmp",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::default-allow-icmp",
-                                "displayName": "default-allow-icmp",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default-allow-icmp",
+                                "id": "5285077270892330268",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -133,15 +126,18 @@
                                         "groupType": "undefined::Network"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Firewall::default-allow-icmp",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "default-allow-icmp"
                             },
                             {
+                                "groupType": "compute::Firewall",
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "default-allow-internal",
-                                "id": "171558043715583260",
                                 "providerName": "google",
-                                "groupType": "compute::Firewall",
                                 "live": {
                                     "id": "171558043715583260",
                                     "creationTimestamp": "2021-05-23T09:33:55.172-07:00",
@@ -177,12 +173,8 @@
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/firewalls/default-allow-internal",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::default-allow-internal",
-                                "displayName": "default-allow-internal",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default-allow-internal",
+                                "id": "171558043715583260",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -195,15 +187,18 @@
                                         "groupType": "undefined::Network"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Firewall::default-allow-internal",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "default-allow-internal"
                             },
                             {
+                                "groupType": "compute::Firewall",
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "default-allow-rdp",
-                                "id": "5942359957562670364",
                                 "providerName": "google",
-                                "groupType": "compute::Firewall",
                                 "live": {
                                     "id": "5942359957562670364",
                                     "creationTimestamp": "2021-05-23T09:33:55.180-07:00",
@@ -230,12 +225,8 @@
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/firewalls/default-allow-rdp",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::default-allow-rdp",
-                                "displayName": "default-allow-rdp",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default-allow-rdp",
+                                "id": "5942359957562670364",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -248,15 +239,18 @@
                                         "groupType": "undefined::Network"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Firewall::default-allow-rdp",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "default-allow-rdp"
                             },
                             {
+                                "groupType": "compute::Firewall",
                                 "group": "compute",
                                 "type": "Firewall",
-                                "name": "default-allow-ssh",
-                                "id": "3339011543076912412",
                                 "providerName": "google",
-                                "groupType": "compute::Firewall",
                                 "live": {
                                     "id": "3339011543076912412",
                                     "creationTimestamp": "2021-05-23T09:33:55.176-07:00",
@@ -283,12 +277,8 @@
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/firewalls/default-allow-ssh",
                                     "kind": "compute#firewall"
                                 },
-                                "uri": "google::compute::Firewall::default-allow-ssh",
-                                "displayName": "default-allow-ssh",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default-allow-ssh",
+                                "id": "3339011543076912412",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -301,7 +291,12 @@
                                         "groupType": "undefined::Network"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Firewall::default-allow-ssh",
+                                "managedByUs": false,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "default-allow-ssh"
                             }
                         ],
                         "groupType": "compute::Firewall",
@@ -312,12 +307,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "compute::Network",
                                 "group": "compute",
                                 "type": "Network",
-                                "name": "default",
-                                "id": "1538262271330303271",
                                 "providerName": "google",
-                                "groupType": "compute::Network",
                                 "live": {
                                     "id": "1538262271330303271",
                                     "creationTimestamp": "2021-05-23T09:33:12.064-07:00",
@@ -360,16 +353,17 @@
                                     },
                                     "kind": "compute#network"
                                 },
-                                "uri": "google::compute::Network::default",
-                                "displayName": "default",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default",
+                                "id": "1538262271330303271",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::Network::default",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "compute::Network",
@@ -380,12 +374,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "compute::SubNetwork",
                                 "group": "compute",
                                 "type": "SubNetwork",
-                                "name": "default",
-                                "id": "2053712691071499553",
                                 "providerName": "google",
-                                "groupType": "compute::SubNetwork",
                                 "live": {
                                     "id": "2053712691071499553",
                                     "creationTimestamp": "2021-05-23T09:33:18.467-07:00",
@@ -401,12 +393,8 @@
                                     "stackType": "UNSPECIFIED_STACK_TYPE",
                                     "kind": "compute#subnetwork"
                                 },
-                                "uri": "google::compute::SubNetwork::default",
-                                "displayName": "default",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "default",
+                                "id": "2053712691071499553",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -419,7 +407,12 @@
                                         "groupType": "undefined::Network"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::SubNetwork::default",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "compute::SubNetwork",
@@ -430,15 +423,13 @@
                     {
                         "resources": [
                             {
+                                "groupType": "compute::VmInstance",
                                 "group": "compute",
                                 "type": "VmInstance",
-                                "name": "web-server",
-                                "id": "7832028813440001109",
                                 "providerName": "google",
-                                "groupType": "compute::VmInstance",
                                 "live": {
-                                    "id": "7832028813440001109",
-                                    "creationTimestamp": "2021-08-16T10:04:58.952-07:00",
+                                    "id": "6846293407658036655",
+                                    "creationTimestamp": "2021-08-23T12:13:04.603-07:00",
                                     "name": "web-server",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -451,18 +442,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.0.33",
+                                            "networkIP": "10.164.0.36",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "34.141.211.195",
+                                                    "natIP": "34.91.135.42",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "BJS9W-d6IiY=",
+                                            "fingerprint": "8jadVAwWqRw=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -547,16 +538,12 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "f5khoCvmRE0=",
-                                    "lastStartTimestamp": "2021-08-16T10:05:08.387-07:00",
+                                    "fingerprint": "YBpXsR-qsck=",
+                                    "lastStartTimestamp": "2021-08-23T12:13:13.338-07:00",
                                     "kind": "compute#instance"
                                 },
-                                "uri": "google::compute::VmInstance::web-server",
-                                "displayName": "web-server",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "web-server",
+                                "id": "6846293407658036655",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -577,7 +564,12 @@
                                         "groupType": "undefined::SubNetwork"
                                     }
                                 ],
-                                "show": true
+                                "show": true,
+                                "uri": "google::compute::VmInstance::web-server",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "web-server"
                             }
                         ],
                         "groupType": "compute::VmInstance",
@@ -588,12 +580,10 @@
                     {
                         "resources": [
                             {
+                                "groupType": "iam::ServiceAccount",
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "90918681706-compute",
-                                "id": "115412951898562019900",
                                 "providerName": "google",
-                                "groupType": "iam::ServiceAccount",
                                 "live": {
                                     "name": "projects/grucloud-vm-tuto-1/serviceAccounts/90918681706-compute@developer.gserviceaccount.com",
                                     "projectId": "grucloud-vm-tuto-1",
@@ -606,24 +596,23 @@
                                         "etag": "ACAB"
                                     }
                                 },
-                                "uri": "google::iam::ServiceAccount::90918681706-compute",
-                                "displayName": "90918681706-compute",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "90918681706-compute",
+                                "id": "115412951898562019900",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "google::iam::ServiceAccount::90918681706-compute",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "90918681706-compute"
                             },
                             {
+                                "groupType": "iam::ServiceAccount",
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "grucloud",
-                                "id": "116948353439282795681",
                                 "providerName": "google",
-                                "groupType": "iam::ServiceAccount",
                                 "live": {
                                     "name": "projects/grucloud-vm-tuto-1/serviceAccounts/grucloud@grucloud-vm-tuto-1.iam.gserviceaccount.com",
                                     "projectId": "grucloud-vm-tuto-1",
@@ -636,24 +625,23 @@
                                         "etag": "ACAB"
                                     }
                                 },
-                                "uri": "google::iam::ServiceAccount::grucloud",
-                                "displayName": "grucloud",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "grucloud",
+                                "id": "116948353439282795681",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "google::iam::ServiceAccount::grucloud",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "grucloud"
                             },
                             {
+                                "groupType": "iam::ServiceAccount",
                                 "group": "iam",
                                 "type": "ServiceAccount",
-                                "name": "readonly-sa-grucloud",
-                                "id": "114319035332297228442",
                                 "providerName": "google",
-                                "groupType": "iam::ServiceAccount",
                                 "live": {
                                     "name": "projects/grucloud-vm-tuto-1/serviceAccounts/readonly-sa-grucloud@grucloud-vm-tuto-1.iam.gserviceaccount.com",
                                     "projectId": "grucloud-vm-tuto-1",
@@ -666,16 +654,17 @@
                                         "etag": "ACAB"
                                     }
                                 },
-                                "uri": "google::iam::ServiceAccount::readonly-sa-grucloud",
-                                "displayName": "readonly-sa-grucloud",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
+                                "name": "readonly-sa-grucloud",
+                                "id": "114319035332297228442",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "google::iam::ServiceAccount::readonly-sa-grucloud",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "readonly-sa-grucloud"
                             }
                         ],
                         "groupType": "iam::ServiceAccount",

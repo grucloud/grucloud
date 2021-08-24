@@ -4,7 +4,7 @@ const { createStack } = require("../iac");
 const config = require("../config");
 const path = require("path");
 
-describe("Iam Test Example", async function () {
+describe("Iam Test Policy Example", async function () {
   before(async function () {});
   it("run", async function () {
     const programOptions = { workingDirectory: path.resolve(__dirname, "../") };

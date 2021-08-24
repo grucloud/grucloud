@@ -10,10 +10,10 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnet.name"),
+    properties: get("config.ec2.Subnet.subnet.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcEc2Example,
     }),
-    properties: get("config.ec2.Subnet.subnet.properties"),
   });
 
   provider.ec2.makeKeyPair({
@@ -46,43 +46,44 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routeIg.name"),
+    properties: get("config.ec2.Route.routeIg.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTable,
       ig: resources.ec2.InternetGateway.ig,
     }),
-    properties: get("config.ec2.Route.routeIg.properties"),
   });
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.securityGroup.name"),
+    properties: get("config.ec2.SecurityGroup.securityGroup.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcEc2Example,
     }),
-    properties: get("config.ec2.SecurityGroup.securityGroup.properties"),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.name"),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroup,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+    }),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.name"),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroup,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+    }),
   });
 
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.webServerEc2Vpc.name"),
+    properties: get("config.ec2.Instance.webServerEc2Vpc.properties"),
     dependencies: ({ resources }) => ({
       subnet: resources.ec2.Subnet.subnet,
       keyPair: resources.ec2.KeyPair.kpEc2Vpc,
@@ -90,7 +91,6 @@ const createResources = ({ provider }) => {
       securityGroups: [resources.ec2.SecurityGroup.securityGroup],
       volumes: [resources.ec2.Volume.volume],
     }),
-    properties: get("config.ec2.Instance.webServerEc2Vpc.properties"),
   });
 };
 

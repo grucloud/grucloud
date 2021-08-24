@@ -42,9 +42,7 @@ exports.createResources = async ({
     namespace,
     dependencies: { vpc },
     properties: () => ({
-      create: {
-        Description: "Load Balancer HTTP HTTPS Security Group",
-      },
+      Description: "Load Balancer HTTP HTTPS Security Group",
     }),
   });
 

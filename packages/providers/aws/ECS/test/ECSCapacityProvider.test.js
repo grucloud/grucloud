@@ -28,15 +28,15 @@ describe("ECSCapacityProvider", async function () {
       }),
     ])
   );
-  it(
-    "delete with invalid id",
-    pipe([
-      () =>
-        capacityprovider.destroy({
-          live: { name: "12345" },
-        }),
-    ])
-  );
+  // it(
+  //   "delete with invalid id",
+  //   pipe([
+  //     () =>
+  //       capacityprovider.destroy({
+  //         live: { name: "12345" },
+  //       }),
+  //   ])
+  // );
   it(
     "getByName with invalid id",
     pipe([

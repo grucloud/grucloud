@@ -26,21 +26,21 @@
 <g id="node1" class="node">
 <title>Policy::::AmazonEKSWorkerNodePolicy</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="435,-129 186,-129 186,-71 435,-71 435,-129"/>
-<text text-anchor="start" x="198.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
+<text text-anchor="start" x="198.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Policy</text>
 <text text-anchor="start" x="198.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">AmazonEKSWorkerNodePolicy</text>
 </g>
 <!-- Policy::::policy&#45;allow&#45;ec2 -->
 <g id="node2" class="node">
 <title>Policy::::policy&#45;allow&#45;ec2</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="380.5,-205 240.5,-205 240.5,-147 380.5,-147 380.5,-205"/>
-<text text-anchor="start" x="252.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
+<text text-anchor="start" x="252.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Policy</text>
 <text text-anchor="start" x="252.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">policy&#45;allow&#45;ec2</text>
 </g>
 <!-- Role::::role&#45;4&#45;policies -->
 <g id="node3" class="node">
 <title>Role::::role&#45;4&#45;policies</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="150,-167 24,-167 24,-109 150,-109 150,-167"/>
-<text text-anchor="start" x="36" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="36" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Role</text>
 <text text-anchor="start" x="36" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;4&#45;policies</text>
 </g>
 <!-- Role::::role&#45;4&#45;policies&#45;&gt;Policy::::AmazonEKSWorkerNodePolicy -->

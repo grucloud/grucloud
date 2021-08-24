@@ -21,37 +21,24 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ecr::Registry",
                                 "group": "ecr",
                                 "type": "Registry",
+                                "providerName": "aws",
+                                "live": {
+                                    "registryId": "840541460064"
+                                },
                                 "name": "default",
                                 "id": "840541460064",
-                                "providerName": "aws",
-                                "groupType": "ecr::Registry",
-                                "live": {
-                                    "registryId": "840541460064",
-                                    "replicationConfiguration": {
-                                        "rules": [
-                                            {
-                                                "destinations": [
-                                                    {
-                                                        "region": "us-east-2",
-                                                        "registryId": "840541460064"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                },
-                                "uri": "aws::ecr::Registry::default",
-                                "displayName": "default",
-                                "cannotBeDeleted": true,
-                                "isOurMinion": false,
-                                "managedByUs": false,
-                                "managedByOther": false,
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::ecr::Registry::default",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": false,
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "ecr::Registry",
@@ -62,18 +49,16 @@
                     {
                         "resources": [
                             {
+                                "groupType": "ecr::Repository",
                                 "group": "ecr",
                                 "type": "Repository",
-                                "name": "starhackit/lb",
-                                "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                 "providerName": "aws",
-                                "groupType": "ecr::Repository",
                                 "live": {
                                     "repositoryArn": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                     "registryId": "840541460064",
                                     "repositoryName": "starhackit/lb",
                                     "repositoryUri": "840541460064.dkr.ecr.eu-west-2.amazonaws.com/starhackit/lb",
-                                    "createdAt": "2021-08-16T05:15:31.000Z",
+                                    "createdAt": "2021-08-23T22:58:37.000Z",
                                     "imageTagMutability": "MUTABLE",
                                     "imageScanningConfiguration": {
                                         "scanOnPush": false
@@ -98,6 +83,27 @@
                                             }
                                         ]
                                     },
+                                    "policyText": {
+                                        "Version": "2008-10-17",
+                                        "Statement": [
+                                            {
+                                                "Sid": "AllowPushPull",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "AWS": "arn:aws:iam::840541460064:root"
+                                                },
+                                                "Action": [
+                                                    "ecr:GetDownloadUrlForLayer",
+                                                    "ecr:BatchGetImage",
+                                                    "ecr:BatchCheckLayerAvailability",
+                                                    "ecr:PutImage",
+                                                    "ecr:InitiateLayerUpload",
+                                                    "ecr:UploadLayerPart",
+                                                    "ecr:CompleteLayerUpload"
+                                                ]
+                                            }
+                                        ]
+                                    },
                                     "tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -119,39 +125,19 @@
                                             "Key": "Name",
                                             "Value": "starhackit/lb"
                                         }
-                                    ],
-                                    "policyText": {
-                                        "Version": "2008-10-17",
-                                        "Statement": [
-                                            {
-                                                "Sid": "AllowPushPull",
-                                                "Effect": "Allow",
-                                                "Principal": {
-                                                    "AWS": "arn:aws:iam::840541460064:root"
-                                                },
-                                                "Action": [
-                                                    "ecr:GetDownloadUrlForLayer",
-                                                    "ecr:BatchGetImage",
-                                                    "ecr:BatchCheckLayerAvailability",
-                                                    "ecr:PutImage",
-                                                    "ecr:InitiateLayerUpload",
-                                                    "ecr:UploadLayerPart",
-                                                    "ecr:CompleteLayerUpload"
-                                                ]
-                                            }
-                                        ]
-                                    }
+                                    ]
                                 },
-                                "uri": "aws::ecr::Repository::starhackit/lb",
-                                "displayName": "starhackit/lb",
-                                "cannotBeDeleted": false,
-                                "isOurMinion": true,
-                                "managedByUs": true,
-                                "managedByOther": false,
+                                "name": "starhackit/lb",
+                                "id": "arn:aws:ecr:eu-west-2:840541460064:repository/starhackit/lb",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
-                                "show": true
+                                "show": true,
+                                "uri": "aws::ecr::Repository::starhackit/lb",
+                                "managedByUs": true,
+                                "cannotBeDeleted": false,
+                                "managedByOther": false,
+                                "displayName": "starhackit/lb"
                             }
                         ],
                         "groupType": "ecr::Repository",

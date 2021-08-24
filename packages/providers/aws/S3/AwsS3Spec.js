@@ -1,4 +1,6 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, omit } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
+
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { isOurMinion } = require("../AwsCommon");
@@ -11,6 +13,9 @@ module.exports = () =>
       type: "Bucket",
       Client: AwsS3Bucket,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["Bucket"])]),
+      }),
     },
     {
       type: "Object",

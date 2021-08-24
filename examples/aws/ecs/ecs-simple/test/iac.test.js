@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
+
 const { createStack } = require("../iac");
 const config = require("../config");
 const path = require("path");
@@ -7,8 +8,10 @@ const path = require("path");
 describe("ECS Simple", async function () {
   before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack, config });
-    await testEnd2End({ cli });
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      createStack,
+      configs: [require("./configUpdate1.js")],
+    });
   });
 });

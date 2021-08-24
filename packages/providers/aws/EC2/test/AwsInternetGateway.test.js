@@ -35,7 +35,6 @@ describe("AwsInternetGateway", async function () {
     ig = provider.ec2.makeInternetGateway({
       name: resourceName,
       dependencies: { vpc },
-      properties: () => ({}),
     });
 
     await provider.start();

@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Bucket::My namespace::grucloud&#45;simple&#45;bucket</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="450,-150 257,-150 257,-92 450,-92 450,-150"/>
-<text text-anchor="start" x="269.5" y="-130.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="269.5" y="-130.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="269.5" y="-105.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;simple&#45;bucket</text>
 </g>
 <!-- Object::My namespace::grucloud&#45;simple&#45;file&#45;test -->
 <g id="node2" class="node">
 <title>Object::My namespace::grucloud&#45;simple&#45;file&#45;test</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="221,-150 24,-150 24,-92 221,-92 221,-150"/>
-<text text-anchor="start" x="36.5" y="-130.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Object</text>
+<text text-anchor="start" x="36.5" y="-130.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Object</text>
 <text text-anchor="start" x="36.5" y="-105.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;simple&#45;file&#45;test</text>
 </g>
 <!-- Object::My namespace::grucloud&#45;simple&#45;file&#45;test&#45;&gt;Bucket::My namespace::grucloud&#45;simple&#45;bucket -->

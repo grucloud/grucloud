@@ -1,18 +1,21 @@
-const { pipe, assign, map } = require("rubico");
-
+const assert = require("assert");
+const { pipe, get, assign, map, omit, tap, pick } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
 
 const {
-  AwsEC2,
+  EC2Instance,
   isOurMinionEC2Instance,
   compareEC2Instance,
-} = require("./AwsEC2");
+} = require("./EC2Instance");
+const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
+
 const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { AwsRouteTable } = require("./AwsRouteTable");
-const { AwsRoute } = require("./AwsRoute");
+const { EC2Route } = require("./EC2Route");
 const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 const {
@@ -33,8 +36,9 @@ module.exports = () =>
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
-      isOurMinion, // TODO do we need isOurMinion for listOnly ?
+      isOurMinion,
     },
+
     {
       type: "Image",
       Client: AwsImage,
@@ -45,6 +49,9 @@ module.exports = () =>
       Client: AwsVolume,
       isOurMinion,
       setupEbsVolume,
+      compare: compare({
+        filterTarget: pipe([omit(["Device", "TagSpecifications"])]),
+      }),
     },
     {
       type: "Vpc",
@@ -79,14 +86,17 @@ module.exports = () =>
     {
       type: "Route",
       dependsOn: ["ec2::RouteTable", "ec2::InternetGateway", "ec2::NatGateway"],
-      Client: AwsRoute,
+      Client: EC2Route,
       isOurMinion,
     },
     {
       type: "SecurityGroup",
-      dependsOn: ["ec2::Subnet"],
+      dependsOn: ["ec2::Vpc", "ec2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([pick(["Description", "GroupName", "VpcId"])]),
+      }),
     },
     {
       type: "SecurityGroupRuleIngress",
@@ -115,12 +125,12 @@ module.exports = () =>
         "ec2::SecurityGroup",
         "ec2::Subnet",
         "ec2::ElasticIpAddress",
-        "iam::InstanceProfile",
         "ec2::Volume",
         "ec2::NetworkInterface",
         "ec2::InternetGateway",
+        "iam::InstanceProfile",
       ],
-      Client: AwsEC2,
+      Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
         InstanceType: "t2.micro",
@@ -130,6 +140,23 @@ module.exports = () =>
       compare: compareEC2Instance,
       isOurMinion: isOurMinionEC2Instance,
     },
+    {
+      type: "LaunchTemplate",
+      dependsOn: [
+        "ec2::KeyPair",
+        "ec2::SecurityGroup",
+        "ec2::Subnet",
+        "ec2::ElasticIpAddress",
+        "ec2::Volume",
+        "ec2::NetworkInterface",
+        "ec2::InternetGateway",
+        "iam::Role",
+        "iam::InstanceProfile",
+      ],
+      Client: EC2LaunchTemplate,
+      isOurMinion,
+    },
+
     {
       type: "NetworkInterface",
       dependsOn: ["ec2::Subnet", "ec2::SecurityGroup"],

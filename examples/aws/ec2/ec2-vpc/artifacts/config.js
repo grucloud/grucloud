@@ -64,7 +64,7 @@ module.exports = ({ stage }) => ({
       securityGroup: {
         name: "security-group",
         properties: {
-          Description: "Security Group Description",
+          Description: "Managed By GruCloud",
         },
       },
     },

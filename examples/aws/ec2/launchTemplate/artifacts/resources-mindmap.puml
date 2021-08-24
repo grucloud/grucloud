@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project launchTemplate
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Role (1)
+++++ InstanceProfile (1)
++++ ec2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ KeyPair (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ LaunchTemplate (1)
+@endmindmap

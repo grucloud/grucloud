@@ -7,12 +7,22 @@ const {
   tap,
   eq,
   omit,
+  or,
+  any,
 } = require("rubico");
-const { isEmpty, defaultsDeep, first, identity, find } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  first,
+  identity,
+  find,
+  prepend,
+  unless,
+} = require("rubico/x");
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVolume" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { AwsEC2 } = require("./AwsEC2");
+const { EC2Instance } = require("./EC2Instance");
 
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -37,30 +47,80 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const awsEC2 = AwsEC2({ config, spec });
+  const awsEC2 = EC2Instance({ config, spec });
 
-  const managedByOther = hasKeyInTags({
-    key: "kubernetes.io/cluster/",
-  });
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "kubernetes.io/cluster/",
+    }),
+    ({ live, lives }) =>
+      pipe([
+        () => live,
+        get("Attachments"),
+        any(({ Device, InstanceId }) =>
+          pipe([
+            () =>
+              lives.getById({
+                providerName: config.providerName,
+                type: "Instance",
+                group: "ec2",
+                id: InstanceId,
+              }),
+            eq(get("live.RootDeviceName"), Device),
+          ])()
+        ),
+      ])(),
+  ]);
 
   const findId = get("live.VolumeId");
-  const findName = pipe([
-    switchCase([
-      managedByOther,
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("live"),
-        findValueInTags({ key: "kubernetes.io/created-for/pvc/name" }),
-        tap((pvcName) => {
-          assert(pvcName);
-        }),
-        (pvcName) => `kubernetes-${pvcName}`,
-      ]),
-      findNameInTagsOrId({ findId }),
+
+  const findNameKubernetes = switchCase([
+    managedByOther,
+    pipe([
+      get("live"),
+      findValueInTags({ key: "kubernetes.io/created-for/pvc/name" }),
+      tap((pvcName) => {
+        //assert(pvcName);
+      }),
+      unless(isEmpty, prepend("kubernetes-")),
     ]),
+    () => undefined,
   ]);
+
+  const findNameEC2 = switchCase([
+    managedByOther,
+    ({ live, lives }) =>
+      pipe([
+        () => live,
+        get("Attachments"),
+        first,
+        ({ InstanceId }) =>
+          lives.getById({
+            providerName: config.providerName,
+            type: "Instance",
+            group: "ec2",
+            id: InstanceId,
+          }),
+        get("name"),
+        prepend("vol-"),
+      ])(),
+    () => undefined,
+  ]);
+
+  const findName = (params) => {
+    const fns = [
+      findNameKubernetes,
+      findNameEC2,
+      findNameInTagsOrId({ findId }),
+    ];
+    for (fn of fns) {
+      const name = fn(params);
+      if (!isEmpty(name)) {
+        return name;
+      }
+    }
+    assert(false, "should have a name");
+  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVolumes-property
   const getList = ({ params } = {}) =>
@@ -84,7 +144,7 @@ exports.AwsVolume = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVolume-property
 
-  const create = async ({ payload, name }) =>
+  const create = ({ payload, name }) =>
     pipe([
       tap(() => {
         logger.info(`create volume ${tos({ name })}`);
@@ -103,7 +163,7 @@ exports.AwsVolume = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVolume-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy volume ${JSON.stringify({ name, id })}`);
@@ -126,7 +186,7 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties, dependencies }) =>
+  const configDefault = ({ name, namespace, properties, dependencies }) =>
     defaultsDeep({
       Size: 10,
       Device: "/dev/sdf",
@@ -157,11 +217,7 @@ exports.AwsVolume = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
-      switchCase([
-        isEmpty,
-        identity,
-        ({ live }) => awsEC2.findNamespace({ live, lives }),
-      ]),
+      unless(isEmpty, ({ live }) => awsEC2.findNamespace({ live, lives })),
       tap((namespace) => {
         logger.debug(`findNamespaceFromInstanceId ${namespace}`);
       }),

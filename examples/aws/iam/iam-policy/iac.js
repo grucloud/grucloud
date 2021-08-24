@@ -1,7 +1,7 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
-const createResources = async ({ provider, resources: { keyPair } }) => {
+const createResources = async ({ provider }) => {
   const roleName = "role-4-policies";
 
   const policyName = "policy-allow-ec2";
@@ -25,16 +25,14 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyEKSWorkerNode = provider.iam.usePolicy({
-    name: "AmazonEKSWorkerNodePolicy",
-    properties: () => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    }),
-  });
-
   const iamRole = provider.iam.makeRole({
     name: roleName,
-    dependencies: { policies: [iamPolicy, iamPolicyEKSWorkerNode] },
+    dependencies: {
+      policies: [
+        iamPolicy,
+        "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      ],
+    },
     properties: () => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -53,13 +51,13 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  return { iamRole, iamPolicy, iamPolicyEKSWorkerNode };
+  return { iamRole, iamPolicy };
 };
 exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, { config: require("./config") });
-  const resources = await createResources({ provider, resources: {} });
+  const resources = await createResources({ provider });
 
   return {
     provider,

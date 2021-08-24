@@ -12,12 +12,12 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeRole({
     name: get("config.iam.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name"),
-    dependencies: ({ resources }) => ({
-      policies: [resources.iam.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable],
-    }),
     properties: get(
       "config.iam.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties"
     ),
+    dependencies: ({ resources }) => ({
+      policies: [resources.iam.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable],
+    }),
   });
 
   provider.appSync.makeGraphqlApi({
@@ -30,17 +30,14 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       graphqlApi: resources.appSync.GraphqlApi.myAppSyncApp,
     }),
-    properties: get(
-      "config.appSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.properties"
-    ),
   });
 
   provider.appSync.makeDataSource({
     name: get("config.appSync.DataSource.datasource.name"),
+    properties: get("config.appSync.DataSource.datasource.properties"),
     dependencies: ({ resources }) => ({
       graphqlApi: resources.appSync.GraphqlApi.myAppSyncApp,
     }),
-    properties: get("config.appSync.DataSource.datasource.properties"),
   });
 };
 

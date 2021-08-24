@@ -11,10 +11,10 @@ const createResources = ({ provider }) => {
   provider.s3.makeObject({
     name: get("config.s3.Object.grucloudSimpleFileTest.name"),
     namespace: "My namespace",
+    properties: get("config.s3.Object.grucloudSimpleFileTest.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.grucloudSimpleBucket,
     }),
-    properties: get("config.s3.Object.grucloudSimpleFileTest.properties"),
   });
 };
 

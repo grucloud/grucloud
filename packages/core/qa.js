@@ -59,7 +59,7 @@ exports.testEnd2End = ({
             () => Cli({ programOptions, createStack, config }),
             (cliNext) =>
               pipe([
-                //() => cliNext.info({}),
+                () => cliNext.info({}),
                 () =>
                   cliNext.planApply({
                     commandOptions: { force: true },

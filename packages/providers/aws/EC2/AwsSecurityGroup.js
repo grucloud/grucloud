@@ -9,10 +9,7 @@ const {
   fork,
   filter,
   not,
-  tryCatch,
-  switchCase,
   omit,
-  pick,
 } = require("rubico");
 const {
   find,
@@ -21,12 +18,15 @@ const {
   flatten,
   isEmpty,
   identity,
+  when,
+  prepend,
 } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
+  findNameInTags,
   findNamespaceInTagsOrEksCluster,
   revokeSecurityGroupIngress,
 } = require("../AwsCommon");
@@ -49,35 +49,49 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const findName = ({ live, lives }) =>
+  const findNameGroupName = ({ live, lives }) =>
     pipe([
       tap(() => {
         assert(lives);
       }),
       () => live,
       get("GroupName"),
-      switchCase([
+      when(
         eq(identity, "default"),
         pipe([
-          () => lives.getByType({ type: "Vpc", group: "ec2", providerName }),
-          find(eq(get("live.VpcId"), live.VpcId)),
+          () =>
+            lives.getById({
+              id: live.VpcId,
+              type: "Vpc",
+              group: "ec2",
+              providerName,
+            }),
           tap((vpc) => {
-            //assert(vpc);
+            assert(vpc);
           }),
           get("name"),
           tap((vpcName) => {
-            //assert(vpcName);
+            assert(vpcName);
           }),
-          (vpcName) => `sg-default-${vpcName}`,
-          tap((xxx) => {
-            assert(true);
-          }),
-        ]),
-        identity,
-      ]),
+          prepend("sg-default-"),
+        ])
+      ),
     ])();
 
+  const findName = (params) => {
+    const fns = [findNameInTags({ findId }), findNameGroupName];
+
+    for (fn of fns) {
+      const name = fn(params);
+      if (!isEmpty(name)) {
+        return name;
+      }
+    }
+    assert(false, "should have a name");
+  };
+
   const findId = get("live.GroupId");
+
   const findDependencies = ({ live }) => [
     { type: "Vpc", group: "ec2", ids: [live.VpcId] },
     {
@@ -153,12 +167,8 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`create sg ${tos({ name })}`);
       }),
-      () =>
-        ec2().createSecurityGroup({
-          Description: managedByDescription,
-          GroupName: name,
-          ...payload.create,
-        }),
+      () => payload,
+      ec2().createSecurityGroup,
       get("GroupId"),
       tap((GroupId) =>
         pipe([
@@ -276,15 +286,15 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     const { vpc } = dependencies;
     //assert(vpc, "missing vpc dependency");
     return defaultsDeep(otherProps)({
-      create: {
-        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-        TagSpecifications: [
-          {
-            ResourceType: "security-group",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-          },
-        ],
-      },
+      GroupName: name,
+      Description: managedByDescription,
+      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+      TagSpecifications: [
+        {
+          ResourceType: "security-group",
+          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+        },
+      ],
     });
   };
 

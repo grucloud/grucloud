@@ -15,13 +15,13 @@ module.exports = ({ stage }) => ({
       securityGroupClusterTest: {
         name: "security-group-cluster-test",
         properties: {
-          Description: "SG for the EKS Cluster",
+          Description: "Managed By GruCloud",
         },
       },
       securityGroupNodeGroupTest: {
         name: "security-group-node-group-test",
         properties: {
-          Description: "SG for the EKS Nodes",
+          Description: "Managed By GruCloud",
         },
       },
     },
