@@ -38,7 +38,8 @@ exports.createLives = (livesRaw = []) => {
   const getByType = ({ providerName, type, group }) =>
     pipe([
       tap(() => {
-        //assert(group);
+        assert(providerName);
+        assert(type);
       }),
       () => mapPerProvider.get(providerName) || new Map(),
       (mapPerType) => mapPerType.get(JSON.stringify({ type, group })),
@@ -62,21 +63,7 @@ exports.createLives = (livesRaw = []) => {
 
   const getById = ({ providerName, type, group, id }) =>
     pipe([
-      tap(() => {
-        assert(type);
-        //assert(group);
-        //assert(id);
-        assert(providerName);
-      }),
       () => getByType({ providerName, type, group }),
-      tap.if(isEmpty, () => {
-        logger.error(`cannot find type ${type} on provider ${providerName}`);
-      }),
-      tap((resources) => {
-        logger.debug(
-          `live.getById ${type} ${id}, #resources ${size(resources)}`
-        );
-      }),
       find(eq(get("id"), id)),
       tap((result) => {
         assert(true);
@@ -85,13 +72,7 @@ exports.createLives = (livesRaw = []) => {
 
   const getByName = ({ providerName, type, group, name }) =>
     pipe([
-      tap(() => {
-        assert(providerName);
-      }),
       () => getByType({ providerName, type, group }),
-      tap.if(isEmpty, () => {
-        logger.error(`cannot find type ${type} on provider ${providerName}`);
-      }),
       find(eq(get("name"), name)),
       tap((result) => {
         assert(true);
