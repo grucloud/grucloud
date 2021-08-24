@@ -2,13 +2,10 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
-  testPlanDeploy,
-  testPlanDestroy,
-} = require("@grucloud/core/E2ETestUtils");
+  AutoScalingAutoScalingGroup,
+} = require("../AutoScalingAutoScalingGroup");
 
-const { AwsAutoScalingGroup } = require("../AwsAutoScalingGroup");
-
-describe("AwsAutoScalingGroup", async function () {
+describe("AutoScalingAutoScalingGroup", async function () {
   let config;
   let provider;
   let autoSg;
@@ -21,7 +18,7 @@ describe("AwsAutoScalingGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    autoSg = AwsAutoScalingGroup({ config: provider.config });
+    autoSg = AutoScalingAutoScalingGroup({ config: provider.config });
     await provider.start();
   });
   after(async () => {});
