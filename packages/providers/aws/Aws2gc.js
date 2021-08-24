@@ -808,8 +808,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "ApiKey",
-        filterLive: () =>
-          pick(["description", "expires", "xrayEnabled", "wafWebAclArn"]),
+        filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "appSync" },
         }),

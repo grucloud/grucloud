@@ -459,8 +459,9 @@ const displayPlanItemUpdate =
           return [key, value];
         })
       ),
+      () => diff.liveDiff.added,
       tap.if(
-        () => diff.liveDiff.added,
+        not(isEmpty),
         map.entries(([key, value]) => {
           tableItem.push([
             {

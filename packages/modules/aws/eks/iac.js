@@ -136,9 +136,7 @@ const createResources = async ({
     dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-      create: {
-        Description: "EKS Cluster Security Group",
-      },
+      Description: "EKS Cluster Security Group",
     }),
   });
 
@@ -198,9 +196,7 @@ const createResources = async ({
     properties: () => ({
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-      create: {
-        Description: "SG for the EKS Nodes",
-      },
+      Description: "SG for the EKS Nodes",
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     }),
   });

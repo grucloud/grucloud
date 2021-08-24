@@ -35,7 +35,7 @@
                                         "gc-stage": "dev"
                                     },
                                     "properties": {
-                                        "vmId": "0a3916e5-3f20-4476-a220-87656f03c670",
+                                        "vmId": "c1e4af49-6d4d-4756-bd92-eb6296b68677",
                                         "hardwareProfile": {
                                             "vmSize": "Standard_A1_v2"
                                         },
@@ -49,12 +49,12 @@
                                             },
                                             "osDisk": {
                                                 "osType": "Linux",
-                                                "name": "vm_OsDisk_1_668fcac2a8984cce98800a2472d0e304",
+                                                "name": "vm_OsDisk_1_3758e0e2a712404094dbd25370b7d684",
                                                 "createOption": "FromImage",
                                                 "caching": "ReadWrite",
                                                 "managedDisk": {
                                                     "storageAccountType": "Standard_LRS",
-                                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Compute/disks/vm_OsDisk_1_668fcac2a8984cce98800a2472d0e304"
+                                                    "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Compute/disks/vm_OsDisk_1_3758e0e2a712404094dbd25370b7d684"
                                                 },
                                                 "diskSizeGB": 30
                                             },
@@ -190,7 +190,7 @@
                                 "live": {
                                     "name": "network-interface",
                                     "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface",
-                                    "etag": "W/\"a40c4e37-4751-4d85-a0d3-20a12e11f83b\"",
+                                    "etag": "W/\"904573aa-14aa-410b-a349-e2380d9800d6\"",
                                     "location": "uksouth",
                                     "tags": {
                                         "gc-managed-by": "grucloud",
@@ -198,12 +198,12 @@
                                     },
                                     "properties": {
                                         "provisioningState": "Succeeded",
-                                        "resourceGuid": "17c9c267-09ff-4da1-8435-e4d41bb44704",
+                                        "resourceGuid": "7f116ada-a4bc-4c2a-93c3-47a6c167dd72",
                                         "ipConfigurations": [
                                             {
                                                 "name": "ipconfig",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig",
-                                                "etag": "W/\"a40c4e37-4751-4d85-a0d3-20a12e11f83b\"",
+                                                "etag": "W/\"904573aa-14aa-410b-a349-e2380d9800d6\"",
                                                 "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -223,9 +223,9 @@
                                         "dnsSettings": {
                                             "dnsServers": [],
                                             "appliedDnsServers": [],
-                                            "internalDomainNameSuffix": "ocd1ru3xjpjedoc5142jnjrs5g.zx.internal.cloudapp.net"
+                                            "internalDomainNameSuffix": "qrudgdwro5mu1at0y3zvch2tkh.zx.internal.cloudapp.net"
                                         },
-                                        "macAddress": "00-22-48-40-26-73",
+                                        "macAddress": "00-22-48-40-55-30",
                                         "enableAcceleratedNetworking": false,
                                         "enableIPForwarding": false,
                                         "networkSecurityGroup": {
@@ -302,7 +302,7 @@
                                 "live": {
                                     "name": "ip",
                                     "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/publicIPAddresses/ip",
-                                    "etag": "W/\"8f0c3b7e-f883-4e3e-b476-ee0dfb686c92\"",
+                                    "etag": "W/\"010d43d2-7014-42e3-84ba-7d4d2fe144d3\"",
                                     "location": "uksouth",
                                     "tags": {
                                         "gc-managed-by": "grucloud",
@@ -310,8 +310,8 @@
                                     },
                                     "properties": {
                                         "provisioningState": "Succeeded",
-                                        "resourceGuid": "beade16c-a80b-4dbd-af7e-8519fc707f33",
-                                        "ipAddress": "20.90.154.229",
+                                        "resourceGuid": "47ee0e01-c3ec-406a-80f9-8c596c316cda",
+                                        "ipAddress": "51.145.29.154",
                                         "publicIPAddressVersion": "IPv4",
                                         "publicIPAllocationMethod": "Dynamic",
                                         "idleTimeoutInMinutes": 4,
@@ -362,7 +362,7 @@
                                 "live": {
                                     "name": "security-group",
                                     "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group",
-                                    "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                    "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                     "type": "Microsoft.Network/networkSecurityGroups",
                                     "location": "uksouth",
                                     "tags": {
@@ -371,12 +371,12 @@
                                     },
                                     "properties": {
                                         "provisioningState": "Succeeded",
-                                        "resourceGuid": "8547fa55-8686-4b8c-aa27-824280e42396",
+                                        "resourceGuid": "d50406b0-b438-426b-87f0-9d82f3abe3f6",
                                         "securityRules": [
                                             {
                                                 "name": "SSH",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/securityRules/SSH",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/securityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -397,7 +397,7 @@
                                             {
                                                 "name": "ICMP",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/securityRules/ICMP",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/securityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -420,7 +420,7 @@
                                             {
                                                 "name": "AllowVnetInBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowVnetInBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -442,7 +442,7 @@
                                             {
                                                 "name": "AllowAzureLoadBalancerInBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowAzureLoadBalancerInBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -464,7 +464,7 @@
                                             {
                                                 "name": "DenyAllInBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/DenyAllInBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -486,7 +486,7 @@
                                             {
                                                 "name": "AllowVnetOutBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowVnetOutBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -508,7 +508,7 @@
                                             {
                                                 "name": "AllowInternetOutBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowInternetOutBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -530,7 +530,7 @@
                                             {
                                                 "name": "DenyAllOutBound",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/DenyAllOutBound",
-                                                "etag": "W/\"bd902489-c5b6-47ea-9d02-04e4c3b78751\"",
+                                                "etag": "W/\"652e6fd2-e948-4dd1-ab17-5b91a7bf14bb\"",
                                                 "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
@@ -594,7 +594,7 @@
                                 "live": {
                                     "name": "virtual-network",
                                     "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/virtualNetworks/virtual-network",
-                                    "etag": "W/\"4b6fb32f-b600-4ee3-9051-3c3b0c058633\"",
+                                    "etag": "W/\"521a294b-6910-49b1-9b25-e6c134203a27\"",
                                     "type": "Microsoft.Network/virtualNetworks",
                                     "location": "uksouth",
                                     "tags": {
@@ -603,7 +603,7 @@
                                     },
                                     "properties": {
                                         "provisioningState": "Succeeded",
-                                        "resourceGuid": "d3b88770-4bb7-41d2-b85f-dfb896a632fe",
+                                        "resourceGuid": "0e336884-77d1-4dd9-827a-c773511f9357",
                                         "addressSpace": {
                                             "addressPrefixes": [
                                                 "10.0.0.0/16"
@@ -613,7 +613,7 @@
                                             {
                                                 "name": "subnet",
                                                 "id": "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/virtualNetworks/virtual-network/subnets/subnet",
-                                                "etag": "W/\"4b6fb32f-b600-4ee3-9051-3c3b0c058633\"",
+                                                "etag": "W/\"521a294b-6910-49b1-9b25-e6c134203a27\"",
                                                 "properties": {
                                                     "provisioningState": "Succeeded",
                                                     "addressPrefix": "10.0.0.0/24",

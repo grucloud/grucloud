@@ -1,6 +1,5 @@
 ## Bugs
 
-- gc d -t Api
 - check stage for all providers
 - compare refactor
 - compare Tags

@@ -30,7 +30,7 @@
                                     "Type": "String",
                                     "Value": "my-value",
                                     "Version": 1,
-                                    "LastModifiedDate": "2021-08-17T17:31:34.268Z",
+                                    "LastModifiedDate": "2021-08-23T23:38:23.599Z",
                                     "ARN": "arn:aws:ssm:eu-west-2:840541460064:parameter/text-param",
                                     "DataType": "text",
                                     "Tags": [
@@ -66,11 +66,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ssm::Parameter::text-param",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "text-param",
-                                "uri": "aws::ssm::Parameter::text-param"
+                                "displayName": "text-param"
                             }
                         ],
                         "groupType": "ssm::Parameter",

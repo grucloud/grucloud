@@ -52,11 +52,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::alias/aws/acm",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "alias/aws/acm",
-                                "uri": "aws::kms::Key::alias/aws/acm"
+                                "displayName": "alias/aws/acm"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -88,11 +88,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::alias/aws/dynamodb",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "alias/aws/dynamodb",
-                                "uri": "aws::kms::Key::alias/aws/dynamodb"
+                                "displayName": "alias/aws/dynamodb"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -124,11 +124,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::alias/aws/ebs",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "alias/aws/ebs",
-                                "uri": "aws::kms::Key::alias/aws/ebs"
+                                "displayName": "alias/aws/ebs"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -160,11 +160,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::alias/aws/rds",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "alias/aws/rds",
-                                "uri": "aws::kms::Key::alias/aws/rds"
+                                "displayName": "alias/aws/rds"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -196,11 +196,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::alias/aws/ssm",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "alias/aws/ssm",
-                                "uri": "aws::kms::Key::alias/aws/ssm"
+                                "displayName": "alias/aws/ssm"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -212,11 +212,10 @@
                                     "KeyId": "1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "Arn": "arn:aws:kms:eu-west-2:840541460064:key/1d04f4a2-c858-4be8-aaec-65a4f2004438",
                                     "CreationDate": "2021-07-09T20:59:18.231Z",
-                                    "Enabled": false,
+                                    "Enabled": true,
                                     "Description": "",
                                     "KeyUsage": "ENCRYPT_DECRYPT",
-                                    "KeyState": "PendingDeletion",
-                                    "DeletionDate": "2021-08-24T15:53:00.283Z",
+                                    "KeyState": "Enabled",
                                     "Origin": "AWS_KMS",
                                     "KeyManager": "CUSTOMER",
                                     "CustomerMasterKeySpec": "SYMMETRIC_DEFAULT",
@@ -253,11 +252,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::eks-key",
                                 "managedByUs": false,
-                                "cannotBeDeleted": true,
+                                "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "eks-key",
-                                "uri": "aws::kms::Key::eks-key"
+                                "displayName": "eks-key"
                             },
                             {
                                 "groupType": "kms::Key",
@@ -310,11 +309,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::kms::Key::secret-key-test",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "secret-key-test",
-                                "uri": "aws::kms::Key::secret-key-test"
+                                "displayName": "secret-key-test"
                             }
                         ],
                         "groupType": "kms::Key",

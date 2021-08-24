@@ -1,5 +1,7 @@
-const { assign, map } = require("rubico");
+const { assign, map, pipe, get, omit } = require("rubico");
+
 const { isOurMinionFactory } = require("../AwsCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
@@ -42,8 +44,22 @@ module.exports = () =>
       dependsOn: ["ecs::Cluster", "ecs::TaskDefinition"],
       Client: ECSService,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([
+          assign({ cluster: get("clusterArn") }),
+          omit([
+            "clusterArn",
+            "createdAt",
+            "events",
+            "deployments",
+            "runningCount",
+            "pendingCount",
+            "status",
+            "tags",
+          ]),
+        ]),
+      }),
     },
-
     {
       type: "TaskSet",
       dependsOn: ["ecs::Cluster", "ecs::Service"],

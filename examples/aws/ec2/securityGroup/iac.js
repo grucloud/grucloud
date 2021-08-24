@@ -15,9 +15,7 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "security-group-cluster-test",
     dependencies: { vpc },
     properties: () => ({
-      create: {
-        Description: "SG for the EKS Cluster",
-      },
+      Description: "SG for the EKS Cluster",
     }),
   });
 
@@ -71,9 +69,7 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "security-group-node-group-test",
     dependencies: { vpc },
     properties: () => ({
-      create: {
-        Description: "SG for the EKS Nodes",
-      },
+      Description: "SG for the EKS Nodes",
     }),
   });
 

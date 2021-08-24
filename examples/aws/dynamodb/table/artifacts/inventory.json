@@ -40,7 +40,7 @@
                                         }
                                     ],
                                     "TableStatus": "ACTIVE",
-                                    "CreationDateTime": "2021-08-17T16:31:53.916Z",
+                                    "CreationDateTime": "2021-08-23T22:41:54.573Z",
                                     "ProvisionedThroughput": {
                                         "NumberOfDecreasesToday": 0,
                                         "ReadCapacityUnits": 5,
@@ -49,7 +49,7 @@
                                     "TableSizeBytes": 0,
                                     "ItemCount": 0,
                                     "TableArn": "arn:aws:dynamodb:eu-west-2:840541460064:table/myTable",
-                                    "TableId": "e20da36b-9c44-4cd6-bc7d-32bdaf2520f6",
+                                    "TableId": "a3bbc6c7-4e5c-4d5c-9d24-35dc80ce615a",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -83,11 +83,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::dynamoDB::Table::myTable",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "myTable",
-                                "uri": "aws::dynamoDB::Table::myTable"
+                                "displayName": "myTable"
                             }
                         ],
                         "groupType": "dynamoDB::Table",

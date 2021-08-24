@@ -21,6 +21,7 @@
     "chance": "^1.1.7",
     "crypto": "^1.0.1",
     "deep-object-diff": "^1.1.0",
+    "mime-types": "^2.1.32",
     "moment": "^2.29.1",
     "rubico": "^1.7.3",
     "shelljs": "^0.8.4"

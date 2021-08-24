@@ -57,11 +57,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::InternetGateway::default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "default",
-                                "uri": "aws::ec2::InternetGateway::default"
+                                "displayName": "default"
                             }
                         ],
                         "groupType": "ec2::InternetGateway",
@@ -77,7 +77,7 @@
                                 "type": "SecurityGroup",
                                 "providerName": "aws",
                                 "live": {
-                                    "Description": "SG for the EKS Cluster",
+                                    "Description": "Managed By GruCloud",
                                     "GroupName": "security-group-cluster-test",
                                     "IpPermissions": [
                                         {
@@ -99,7 +99,7 @@
                                         }
                                     ],
                                     "OwnerId": "840541460064",
-                                    "GroupId": "sg-0999e8fa7a174bc9b",
+                                    "GroupId": "sg-0516ed360500e4ba0",
                                     "IpPermissionsEgress": [
                                         {
                                             "IpProtocol": "-1",
@@ -152,28 +152,28 @@
                                             "Value": "security-group-cluster-test"
                                         }
                                     ],
-                                    "VpcId": "vpc-0c01d4196be929dfa"
+                                    "VpcId": "vpc-06d2b9bb69986cf97"
                                 },
                                 "name": "security-group-cluster-test",
-                                "id": "sg-0999e8fa7a174bc9b",
+                                "id": "sg-0516ed360500e4ba0",
                                 "isDefault": false,
                                 "dependencies": [
                                     {
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0c01d4196be929dfa"
+                                            "vpc-06d2b9bb69986cf97"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::security-group-cluster-test",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "security-group-cluster-test",
-                                "uri": "aws::ec2::SecurityGroup::security-group-cluster-test"
+                                "displayName": "security-group-cluster-test"
                             },
                             {
                                 "groupType": "ec2::SecurityGroup",
@@ -181,7 +181,7 @@
                                 "type": "SecurityGroup",
                                 "providerName": "aws",
                                 "live": {
-                                    "Description": "SG for the EKS Nodes",
+                                    "Description": "Managed By GruCloud",
                                     "GroupName": "security-group-node-group-test",
                                     "IpPermissions": [
                                         {
@@ -201,14 +201,14 @@
                                             "ToPort": 65535,
                                             "UserIdGroupPairs": [
                                                 {
-                                                    "GroupId": "sg-0999e8fa7a174bc9b",
+                                                    "GroupId": "sg-0516ed360500e4ba0",
                                                     "UserId": "840541460064"
                                                 }
                                             ]
                                         }
                                     ],
                                     "OwnerId": "840541460064",
-                                    "GroupId": "sg-0aded3bc348a54a55",
+                                    "GroupId": "sg-076e9601281a97ec9",
                                     "IpPermissionsEgress": [
                                         {
                                             "IpProtocol": "-1",
@@ -244,17 +244,17 @@
                                             "Value": "security-group-node-group-test"
                                         }
                                     ],
-                                    "VpcId": "vpc-0c01d4196be929dfa"
+                                    "VpcId": "vpc-06d2b9bb69986cf97"
                                 },
                                 "name": "security-group-node-group-test",
-                                "id": "sg-0aded3bc348a54a55",
+                                "id": "sg-076e9601281a97ec9",
                                 "isDefault": false,
                                 "dependencies": [
                                     {
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0c01d4196be929dfa"
+                                            "vpc-06d2b9bb69986cf97"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -263,18 +263,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0999e8fa7a174bc9b"
+                                            "sg-0516ed360500e4ba0"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::security-group-node-group-test",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "security-group-node-group-test",
-                                "uri": "aws::ec2::SecurityGroup::security-group-node-group-test"
+                                "displayName": "security-group-node-group-test"
                             },
                             {
                                 "groupType": "ec2::SecurityGroup",
@@ -284,46 +284,10 @@
                                 "live": {
                                     "Description": "default VPC security group",
                                     "GroupName": "default",
-                                    "IpPermissions": [
-                                        {
-                                            "FromPort": 22,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 22,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
+                                    "IpPermissions": [],
                                     "OwnerId": "840541460064",
                                     "GroupId": "sg-f4139a96",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "FromPort": 1024,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 65535,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
+                                    "IpPermissionsEgress": [],
                                     "Tags": [],
                                     "VpcId": "vpc-bbbafcd3"
                                 },
@@ -342,11 +306,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc-default",
-                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default"
+                                "displayName": "sg-default-vpc-default"
                             },
                             {
                                 "groupType": "ec2::SecurityGroup",
@@ -364,14 +328,14 @@
                                             "PrefixListIds": [],
                                             "UserIdGroupPairs": [
                                                 {
-                                                    "GroupId": "sg-07d1123380a79dee9",
+                                                    "GroupId": "sg-00b910a4811b79035",
                                                     "UserId": "840541460064"
                                                 }
                                             ]
                                         }
                                     ],
                                     "OwnerId": "840541460064",
-                                    "GroupId": "sg-07d1123380a79dee9",
+                                    "GroupId": "sg-00b910a4811b79035",
                                     "IpPermissionsEgress": [
                                         {
                                             "IpProtocol": "-1",
@@ -386,17 +350,17 @@
                                         }
                                     ],
                                     "Tags": [],
-                                    "VpcId": "vpc-0c01d4196be929dfa"
+                                    "VpcId": "vpc-06d2b9bb69986cf97"
                                 },
                                 "name": "sg-default-vpc-test-sg",
-                                "id": "sg-07d1123380a79dee9",
+                                "id": "sg-00b910a4811b79035",
                                 "isDefault": true,
                                 "dependencies": [
                                     {
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-0c01d4196be929dfa"
+                                            "vpc-06d2b9bb69986cf97"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -405,18 +369,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-07d1123380a79dee9"
+                                            "sg-00b910a4811b79035"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-test-sg",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc-test-sg",
-                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-test-sg"
+                                "displayName": "sg-default-vpc-test-sg"
                             }
                         ],
                         "groupType": "ec2::SecurityGroup",
@@ -432,8 +396,8 @@
                                 "type": "SecurityGroupRuleEgress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-0999e8fa7a174bc9b",
-                                    "SecurityGroupRuleId": "sgr-038bcd3697f8e75d7",
+                                    "GroupId": "sg-0516ed360500e4ba0",
+                                    "SecurityGroupRuleId": "sgr-08cc1e704528472c8",
                                     "IpPermission": {
                                         "IpProtocol": "-1",
                                         "FromPort": -1,
@@ -447,7 +411,7 @@
                                     "Tags": []
                                 },
                                 "name": "security-group-cluster-test-rule-egress-all-v4",
-                                "id": "sgr-038bcd3697f8e75d7",
+                                "id": "sgr-08cc1e704528472c8",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -455,18 +419,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0999e8fa7a174bc9b"
+                                            "sg-0516ed360500e4ba0"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-cluster-test-rule-egress-all-v4",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "security-group-cluster-test-rule-egress-all-v4",
-                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-cluster-test-rule-egress-all-v4"
+                                "displayName": "security-group-cluster-test-rule-egress-all-v4"
                             },
                             {
                                 "groupType": "ec2::SecurityGroupRuleEgress",
@@ -474,8 +438,8 @@
                                 "type": "SecurityGroupRuleEgress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-0aded3bc348a54a55",
-                                    "SecurityGroupRuleId": "sgr-03af1c7d95fb12dd9",
+                                    "GroupId": "sg-076e9601281a97ec9",
+                                    "SecurityGroupRuleId": "sgr-07a6f54c0d2d534b8",
                                     "IpPermission": {
                                         "IpProtocol": "-1",
                                         "FromPort": -1,
@@ -489,7 +453,7 @@
                                     "Tags": []
                                 },
                                 "name": "security-group-node-group-test-rule-egress-all-v4",
-                                "id": "sgr-03af1c7d95fb12dd9",
+                                "id": "sgr-07a6f54c0d2d534b8",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -497,18 +461,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0aded3bc348a54a55"
+                                            "sg-076e9601281a97ec9"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-node-group-test-rule-egress-all-v4",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "security-group-node-group-test-rule-egress-all-v4",
-                                "uri": "aws::ec2::SecurityGroupRuleEgress::security-group-node-group-test-rule-egress-all-v4"
+                                "displayName": "security-group-node-group-test-rule-egress-all-v4"
                             },
                             {
                                 "groupType": "ec2::SecurityGroupRuleEgress",
@@ -516,8 +480,8 @@
                                 "type": "SecurityGroupRuleEgress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-07d1123380a79dee9",
-                                    "SecurityGroupRuleId": "sgr-0afce1a493957e11d",
+                                    "GroupId": "sg-00b910a4811b79035",
+                                    "SecurityGroupRuleId": "sgr-0eceb787815e634ce",
                                     "IpPermission": {
                                         "IpProtocol": "-1",
                                         "FromPort": -1,
@@ -531,7 +495,7 @@
                                     "Tags": []
                                 },
                                 "name": "sg-default-vpc-test-sg-rule-egress-all-v4",
-                                "id": "sgr-0afce1a493957e11d",
+                                "id": "sgr-0eceb787815e634ce",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -539,18 +503,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-07d1123380a79dee9"
+                                            "sg-00b910a4811b79035"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-default-vpc-test-sg-rule-egress-all-v4",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc-test-sg-rule-egress-all-v4",
-                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-default-vpc-test-sg-rule-egress-all-v4"
+                                "displayName": "sg-default-vpc-test-sg-rule-egress-all-v4"
                             },
                             {
                                 "groupType": "ec2::SecurityGroupRuleEgress",
@@ -558,8 +522,8 @@
                                 "type": "SecurityGroupRuleEgress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-0999e8fa7a174bc9b",
-                                    "SecurityGroupRuleId": "sgr-0e11c660e28093dcb",
+                                    "GroupId": "sg-0516ed360500e4ba0",
+                                    "SecurityGroupRuleId": "sgr-09726adb0d1f71f7e",
                                     "IpPermission": {
                                         "IpProtocol": "tcp",
                                         "FromPort": 1024,
@@ -599,7 +563,7 @@
                                     ]
                                 },
                                 "name": "sg-rule-cluster-egress",
-                                "id": "sgr-0e11c660e28093dcb",
+                                "id": "sgr-09726adb0d1f71f7e",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -607,86 +571,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0999e8fa7a174bc9b"
+                                            "sg-0516ed360500e4ba0"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-rule-cluster-egress",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "sg-rule-cluster-egress",
-                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-rule-cluster-egress"
-                            },
-                            {
-                                "groupType": "ec2::SecurityGroupRuleEgress",
-                                "group": "ec2",
-                                "type": "SecurityGroupRuleEgress",
-                                "providerName": "aws",
-                                "live": {
-                                    "GroupId": "sg-f4139a96",
-                                    "SecurityGroupRuleId": "sgr-09ad4dbe655b70584",
-                                    "IpPermission": {
-                                        "IpProtocol": "tcp",
-                                        "FromPort": 1024,
-                                        "ToPort": 65535,
-                                        "IpRanges": [
-                                            {
-                                                "CidrIp": "0.0.0.0/0"
-                                            }
-                                        ],
-                                        "Ipv6Ranges": [
-                                            {
-                                                "CidrIpv6": "::/0"
-                                            }
-                                        ]
-                                    },
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "gru-test"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "sg-rule-egress-test"
-                                        }
-                                    ]
-                                },
-                                "name": "sg-rule-egress-test",
-                                "id": "sgr-09ad4dbe655b70584",
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "SecurityGroup",
-                                        "group": "ec2",
-                                        "ids": [
-                                            "sg-f4139a96"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "ec2::SecurityGroup"
-                                    }
-                                ],
-                                "show": true,
-                                "managedByUs": false,
-                                "cannotBeDeleted": false,
-                                "managedByOther": true,
-                                "displayName": "sg-rule-egress-test",
-                                "uri": "aws::ec2::SecurityGroupRuleEgress::sg-rule-egress-test"
+                                "displayName": "sg-rule-cluster-egress"
                             }
                         ],
                         "groupType": "ec2::SecurityGroupRuleEgress",
@@ -702,22 +598,22 @@
                                 "type": "SecurityGroupRuleIngress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-07d1123380a79dee9",
-                                    "SecurityGroupRuleId": "sgr-04fc6bcea5b070334",
+                                    "GroupId": "sg-00b910a4811b79035",
+                                    "SecurityGroupRuleId": "sgr-07cf441b97fde7885",
                                     "IpPermission": {
                                         "IpProtocol": "-1",
                                         "FromPort": -1,
                                         "ToPort": -1,
                                         "UserIdGroupPairs": [
                                             {
-                                                "GroupId": "sg-07d1123380a79dee9"
+                                                "GroupId": "sg-00b910a4811b79035"
                                             }
                                         ]
                                     },
                                     "Tags": []
                                 },
                                 "name": "sg-default-vpc-test-sg-rule-ingress-all",
-                                "id": "sgr-04fc6bcea5b070334",
+                                "id": "sgr-07cf441b97fde7885",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -725,18 +621,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-07d1123380a79dee9"
+                                            "sg-00b910a4811b79035"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-default-vpc-test-sg-rule-ingress-all",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc-test-sg-rule-ingress-all",
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-default-vpc-test-sg-rule-ingress-all"
+                                "displayName": "sg-default-vpc-test-sg-rule-ingress-all"
                             },
                             {
                                 "groupType": "ec2::SecurityGroupRuleIngress",
@@ -744,8 +640,8 @@
                                 "type": "SecurityGroupRuleIngress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-0999e8fa7a174bc9b",
-                                    "SecurityGroupRuleId": "sgr-0622405272f128a66",
+                                    "GroupId": "sg-0516ed360500e4ba0",
+                                    "SecurityGroupRuleId": "sgr-018b4155ae3a4b7d8",
                                     "IpPermission": {
                                         "IpProtocol": "tcp",
                                         "FromPort": 22,
@@ -785,7 +681,7 @@
                                     ]
                                 },
                                 "name": "sg-rule-cluster-ingress-port-22",
-                                "id": "sgr-0622405272f128a66",
+                                "id": "sgr-018b4155ae3a4b7d8",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -793,18 +689,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0999e8fa7a174bc9b"
+                                            "sg-0516ed360500e4ba0"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-cluster-ingress-port-22",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "sg-rule-cluster-ingress-port-22",
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-cluster-ingress-port-22"
+                                "displayName": "sg-rule-cluster-ingress-port-22"
                             },
                             {
                                 "groupType": "ec2::SecurityGroupRuleIngress",
@@ -812,76 +708,8 @@
                                 "type": "SecurityGroupRuleIngress",
                                 "providerName": "aws",
                                 "live": {
-                                    "GroupId": "sg-f4139a96",
-                                    "SecurityGroupRuleId": "sgr-03b8de3540152cf89",
-                                    "IpPermission": {
-                                        "IpProtocol": "tcp",
-                                        "FromPort": 22,
-                                        "ToPort": 22,
-                                        "IpRanges": [
-                                            {
-                                                "CidrIp": "0.0.0.0/0"
-                                            }
-                                        ],
-                                        "Ipv6Ranges": [
-                                            {
-                                                "CidrIpv6": "::/0"
-                                            }
-                                        ]
-                                    },
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "gru-test"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "sg-rule-ingress-test"
-                                        }
-                                    ]
-                                },
-                                "name": "sg-rule-ingress-test",
-                                "id": "sgr-03b8de3540152cf89",
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "SecurityGroup",
-                                        "group": "ec2",
-                                        "ids": [
-                                            "sg-f4139a96"
-                                        ],
-                                        "providerName": "aws",
-                                        "groupType": "ec2::SecurityGroup"
-                                    }
-                                ],
-                                "show": true,
-                                "managedByUs": false,
-                                "cannotBeDeleted": false,
-                                "managedByOther": true,
-                                "displayName": "sg-rule-ingress-test",
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-ingress-test"
-                            },
-                            {
-                                "groupType": "ec2::SecurityGroupRuleIngress",
-                                "group": "ec2",
-                                "type": "SecurityGroupRuleIngress",
-                                "providerName": "aws",
-                                "live": {
-                                    "GroupId": "sg-0aded3bc348a54a55",
-                                    "SecurityGroupRuleId": "sgr-0f9ae802905365acf",
+                                    "GroupId": "sg-076e9601281a97ec9",
+                                    "SecurityGroupRuleId": "sgr-0faad258abcde4bd8",
                                     "IpPermission": {
                                         "IpProtocol": "tcp",
                                         "FromPort": 0,
@@ -898,7 +726,7 @@
                                         ],
                                         "UserIdGroupPairs": [
                                             {
-                                                "GroupId": "sg-0999e8fa7a174bc9b"
+                                                "GroupId": "sg-0516ed360500e4ba0"
                                             }
                                         ]
                                     },
@@ -926,7 +754,7 @@
                                     ]
                                 },
                                 "name": "sg-rule-node-group-ingress-cluster",
-                                "id": "sgr-0f9ae802905365acf",
+                                "id": "sgr-0faad258abcde4bd8",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -934,19 +762,19 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-0aded3bc348a54a55",
-                                            "sg-0999e8fa7a174bc9b"
+                                            "sg-076e9601281a97ec9",
+                                            "sg-0516ed360500e4ba0"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-node-group-ingress-cluster",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "sg-rule-node-group-ingress-cluster",
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-node-group-ingress-cluster"
+                                "displayName": "sg-rule-node-group-ingress-cluster"
                             }
                         ],
                         "groupType": "ec2::SecurityGroupRuleIngress",
@@ -994,11 +822,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "subnet-default",
-                                "uri": "aws::ec2::Subnet::subnet-default"
+                                "displayName": "subnet-default"
                             }
                         ],
                         "groupType": "ec2::Subnet",
@@ -1046,11 +874,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ec2::Vpc::vpc-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "vpc-default",
-                                "uri": "aws::ec2::Vpc::vpc-default"
+                                "displayName": "vpc-default"
                             },
                             {
                                 "groupType": "ec2::Vpc",
@@ -1061,13 +889,13 @@
                                     "CidrBlock": "10.1.0.0/16",
                                     "DhcpOptionsId": "dopt-bb663fd3",
                                     "State": "available",
-                                    "VpcId": "vpc-0c01d4196be929dfa",
+                                    "VpcId": "vpc-06d2b9bb69986cf97",
                                     "OwnerId": "840541460064",
                                     "InstanceTenancy": "default",
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "CidrBlockAssociationSet": [
                                         {
-                                            "AssociationId": "vpc-cidr-assoc-0247c7f46b851ffee",
+                                            "AssociationId": "vpc-cidr-assoc-02b3af7eb424abcf0",
                                             "CidrBlock": "10.1.0.0/16",
                                             "CidrBlockState": {
                                                 "State": "associated"
@@ -1101,16 +929,16 @@
                                     "DnsHostnames": false
                                 },
                                 "name": "vpc-test-sg",
-                                "id": "vpc-0c01d4196be929dfa",
+                                "id": "vpc-06d2b9bb69986cf97",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ec2::Vpc::vpc-test-sg",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "vpc-test-sg",
-                                "uri": "aws::ec2::Vpc::vpc-test-sg"
+                                "displayName": "vpc-test-sg"
                             }
                         ],
                         "groupType": "ec2::Vpc",

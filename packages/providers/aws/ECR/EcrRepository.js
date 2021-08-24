@@ -145,6 +145,19 @@ exports.EcrRepository = ({ spec, config }) => {
       putLifecyclePolicy({ payload }),
     ])();
 
+  const update = async ({ payload, live, name, diff }) =>
+    pipe([
+      () => live,
+      tap(() => {
+        assert(diff);
+        assert(payload);
+        assert(live);
+      }),
+      //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putImageScanningConfiguration-property
+      setRepositoryPolicy({ payload }),
+      putLifecyclePolicy({ payload }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#deleteRepository-property
   const destroy = ({ live }) =>
     pipe([
@@ -201,6 +214,7 @@ exports.EcrRepository = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

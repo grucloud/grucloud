@@ -359,7 +359,7 @@
                                 "providerName": "google",
                                 "live": {
                                     "version": 1,
-                                    "etag": "BwXKEsjd78Q=",
+                                    "etag": "BwXKPquDjUA=",
                                     "bindings": [
                                         {
                                             "role": "roles/compute.admin",

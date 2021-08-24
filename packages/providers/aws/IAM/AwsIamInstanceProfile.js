@@ -75,23 +75,15 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
-  const getList = async ({ params } = {}) =>
+  const getList = () =>
     pipe([
-      tap(() => {
-        logger.debug(`getList instance profile`);
-      }),
-      () => iam().listInstanceProfiles(params),
+      () => ({}),
+      iam().listInstanceProfiles,
       get("InstanceProfiles"),
-      tap((instanceProfiles) => {
-        assert(instanceProfiles);
-      }),
       map.pool(
         mapPoolSize,
         assign({
           Tags: pipe([
-            tap((params) => {
-              assert(true);
-            }),
             pick(["InstanceProfileName"]),
             iam().listInstanceProfileTags,
             get("Tags"),
@@ -100,6 +92,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ),
     ])();
 
+  //TODO getById should be getByName
   const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
@@ -139,8 +132,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         logger.info(`create iam instance profile ${name}`);
         logger.debug(`payload: ${tos(payload)}`);
       }),
-      () => defaultsDeep({})(payload),
-      (createParams) => iam().createInstanceProfile(createParams),
+      () => payload,
+      iam().createInstanceProfile,
       dependencies,
       get("roles"),
       tap((roles) => {

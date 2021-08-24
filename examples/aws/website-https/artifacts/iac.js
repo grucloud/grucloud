@@ -12,55 +12,55 @@ const createResources = ({ provider }) => {
 
   provider.s3.makeObject({
     name: get("config.s3.Object.buildBundleCss.name"),
+    properties: get("config.s3.Object.buildBundleCss.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: get("config.s3.Object.buildBundleCss.properties"),
   });
 
   provider.s3.makeObject({
     name: get("config.s3.Object.buildBundleJs.name"),
+    properties: get("config.s3.Object.buildBundleJs.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: get("config.s3.Object.buildBundleJs.properties"),
   });
 
   provider.s3.makeObject({
     name: get("config.s3.Object.faviconPng.name"),
+    properties: get("config.s3.Object.faviconPng.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: get("config.s3.Object.faviconPng.properties"),
   });
 
   provider.s3.makeObject({
     name: get("config.s3.Object.globalCss.name"),
+    properties: get("config.s3.Object.globalCss.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: get("config.s3.Object.globalCss.properties"),
   });
 
   provider.s3.makeObject({
     name: get("config.s3.Object.indexHtml.name"),
+    properties: get("config.s3.Object.indexHtml.properties"),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
-    properties: get("config.s3.Object.indexHtml.properties"),
   });
 
   provider.cloudFront.makeDistribution({
     name: get(
       "config.cloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.name"
     ),
+    properties: get(
+      "config.cloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.properties"
+    ),
     dependencies: ({ resources }) => ({
       bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
       certificate: resources.acm.Certificate.devCloudfrontAwsTestGrucloudOrg,
     }),
-    properties: get(
-      "config.cloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.properties"
-    ),
   });
 
   provider.acm.makeCertificate({

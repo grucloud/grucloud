@@ -100,7 +100,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
 
   const configDefault = ({ name, namespace, properties }) =>
     defaultsDeep({
-      Domain: "Vpc",
+      Domain: "vpc",
       TagSpecifications: [
         {
           ResourceType: "elastic-ip",

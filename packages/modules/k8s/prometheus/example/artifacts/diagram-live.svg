@@ -29,12 +29,12 @@
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_k8s_ingress&#45;nginx</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="26,-318 26,-1790 324,-1790 324,-318 26,-318"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="26.5,-318 26.5,-1790 323.5,-1790 323.5,-318 26.5,-318"/>
 <text text-anchor="start" x="110" y="-329" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">ingress&#45;nginx</text>
 </g>
 <g id="clust5" class="cluster">
 <title>cluster_k8s_pgo</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="80.5,-54 80.5,-310 269.5,-310 269.5,-54 80.5,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="84.5,-54 84.5,-310 265.5,-310 265.5,-54 84.5,-54"/>
 <text text-anchor="start" x="156.5" y="-65" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">pgo</text>
 </g>
 <!-- Alertmanager::monitoring::main -->
@@ -401,26 +401,26 @@
 <text text-anchor="start" x="70" y="-11714.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
 <text text-anchor="start" x="70" y="-11689.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alertmanager&#45;main&#45;tls&#45;assets</text>
 </g>
-<!-- Secret::monitoring::alertmanager&#45;main&#45;token&#45;ppp5f -->
+<!-- Secret::monitoring::alertmanager&#45;main&#45;token&#45;mtvcn -->
 <g id="node53" class="node">
-<title>Secret::monitoring::alertmanager&#45;main&#45;token&#45;ppp5f</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="300.5,-11658 49.5,-11658 49.5,-11600 300.5,-11600 300.5,-11658"/>
-<text text-anchor="start" x="62" y="-11638.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="62" y="-11613.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alertmanager&#45;main&#45;token&#45;ppp5f</text>
+<title>Secret::monitoring::alertmanager&#45;main&#45;token&#45;mtvcn</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="302,-11658 48,-11658 48,-11600 302,-11600 302,-11658"/>
+<text text-anchor="start" x="60" y="-11638.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="60" y="-11613.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alertmanager&#45;main&#45;token&#45;mtvcn</text>
 </g>
-<!-- Secret::monitoring::blackbox&#45;exporter&#45;token&#45;7rj9s -->
+<!-- Secret::monitoring::blackbox&#45;exporter&#45;token&#45;lkcb4 -->
 <g id="node54" class="node">
-<title>Secret::monitoring::blackbox&#45;exporter&#45;token&#45;7rj9s</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="294.5,-11582 55.5,-11582 55.5,-11524 294.5,-11524 294.5,-11582"/>
-<text text-anchor="start" x="68" y="-11562.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="68" y="-11537.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">blackbox&#45;exporter&#45;token&#45;7rj9s</text>
+<title>Secret::monitoring::blackbox&#45;exporter&#45;token&#45;lkcb4</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="296,-11582 54,-11582 54,-11524 296,-11524 296,-11582"/>
+<text text-anchor="start" x="66" y="-11562.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="66" y="-11537.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">blackbox&#45;exporter&#45;token&#45;lkcb4</text>
 </g>
-<!-- Secret::monitoring::default&#45;token&#45;flkh9 -->
+<!-- Secret::monitoring::default&#45;token&#45;x5k6g -->
 <g id="node55" class="node">
-<title>Secret::monitoring::default&#45;token&#45;flkh9</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="254,-11506 96,-11506 96,-11448 254,-11448 254,-11506"/>
-<text text-anchor="start" x="108" y="-11486.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="108" y="-11461.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;flkh9</text>
+<title>Secret::monitoring::default&#45;token&#45;x5k6g</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="258.5,-11506 91.5,-11506 91.5,-11448 258.5,-11448 258.5,-11506"/>
+<text text-anchor="start" x="104" y="-11486.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="104" y="-11461.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;x5k6g</text>
 </g>
 <!-- Secret::monitoring::grafana&#45;datasources -->
 <g id="node56" class="node">
@@ -429,33 +429,33 @@
 <text text-anchor="start" x="101" y="-11410.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
 <text text-anchor="start" x="101" y="-11385.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grafana&#45;datasources</text>
 </g>
-<!-- Secret::monitoring::grafana&#45;token&#45;k6wp4 -->
+<!-- Secret::monitoring::grafana&#45;token&#45;z8sk8 -->
 <g id="node57" class="node">
-<title>Secret::monitoring::grafana&#45;token&#45;k6wp4</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="263,-11354 87,-11354 87,-11296 263,-11296 263,-11354"/>
-<text text-anchor="start" x="99" y="-11334.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="99" y="-11309.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grafana&#45;token&#45;k6wp4</text>
+<title>Secret::monitoring::grafana&#45;token&#45;z8sk8</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="261,-11354 89,-11354 89,-11296 261,-11296 261,-11354"/>
+<text text-anchor="start" x="101" y="-11334.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="101" y="-11309.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grafana&#45;token&#45;z8sk8</text>
 </g>
-<!-- Secret::monitoring::kube&#45;state&#45;metrics&#45;token&#45;2cd8h -->
+<!-- Secret::monitoring::kube&#45;state&#45;metrics&#45;token&#45;8mv6q -->
 <g id="node58" class="node">
-<title>Secret::monitoring::kube&#45;state&#45;metrics&#45;token&#45;2cd8h</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="301.5,-11278 48.5,-11278 48.5,-11220 301.5,-11220 301.5,-11278"/>
-<text text-anchor="start" x="61" y="-11258.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="61" y="-11233.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kube&#45;state&#45;metrics&#45;token&#45;2cd8h</text>
+<title>Secret::monitoring::kube&#45;state&#45;metrics&#45;token&#45;8mv6q</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="303.5,-11278 46.5,-11278 46.5,-11220 303.5,-11220 303.5,-11278"/>
+<text text-anchor="start" x="59" y="-11258.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="59" y="-11233.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kube&#45;state&#45;metrics&#45;token&#45;8mv6q</text>
 </g>
-<!-- Secret::monitoring::node&#45;exporter&#45;token&#45;zxvw2 -->
+<!-- Secret::monitoring::node&#45;exporter&#45;token&#45;hpv7q -->
 <g id="node59" class="node">
-<title>Secret::monitoring::node&#45;exporter&#45;token&#45;zxvw2</title>
+<title>Secret::monitoring::node&#45;exporter&#45;token&#45;hpv7q</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="285,-11202 65,-11202 65,-11144 285,-11144 285,-11202"/>
 <text text-anchor="start" x="77" y="-11182.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="77" y="-11157.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">node&#45;exporter&#45;token&#45;zxvw2</text>
+<text text-anchor="start" x="77" y="-11157.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">node&#45;exporter&#45;token&#45;hpv7q</text>
 </g>
-<!-- Secret::monitoring::prometheus&#45;adapter&#45;token&#45;ggcj8 -->
+<!-- Secret::monitoring::prometheus&#45;adapter&#45;token&#45;pwst4 -->
 <g id="node60" class="node">
-<title>Secret::monitoring::prometheus&#45;adapter&#45;token&#45;ggcj8</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="304.5,-11126 45.5,-11126 45.5,-11068 304.5,-11068 304.5,-11126"/>
-<text text-anchor="start" x="58" y="-11106.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="58" y="-11081.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;adapter&#45;token&#45;ggcj8</text>
+<title>Secret::monitoring::prometheus&#45;adapter&#45;token&#45;pwst4</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="306,-11126 44,-11126 44,-11068 306,-11068 306,-11126"/>
+<text text-anchor="start" x="56" y="-11106.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="56" y="-11081.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;adapter&#45;token&#45;pwst4</text>
 </g>
 <!-- Secret::monitoring::prometheus&#45;k8s -->
 <g id="node61" class="node">
@@ -471,19 +471,19 @@
 <text text-anchor="start" x="80" y="-10954.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
 <text text-anchor="start" x="80" y="-10929.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;k8s&#45;tls&#45;assets</text>
 </g>
-<!-- Secret::monitoring::prometheus&#45;k8s&#45;token&#45;m9gq7 -->
+<!-- Secret::monitoring::prometheus&#45;k8s&#45;token&#45;d5dv4 -->
 <g id="node63" class="node">
-<title>Secret::monitoring::prometheus&#45;k8s&#45;token&#45;m9gq7</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="295.5,-10898 54.5,-10898 54.5,-10840 295.5,-10840 295.5,-10898"/>
-<text text-anchor="start" x="67" y="-10878.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="67" y="-10853.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;k8s&#45;token&#45;m9gq7</text>
+<title>Secret::monitoring::prometheus&#45;k8s&#45;token&#45;d5dv4</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="292.5,-10898 57.5,-10898 57.5,-10840 292.5,-10840 292.5,-10898"/>
+<text text-anchor="start" x="70" y="-10878.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="70" y="-10853.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;k8s&#45;token&#45;d5dv4</text>
 </g>
-<!-- Secret::monitoring::prometheus&#45;operator&#45;token&#45;7f85f -->
+<!-- Secret::monitoring::prometheus&#45;operator&#45;token&#45;dkx6g -->
 <g id="node64" class="node">
-<title>Secret::monitoring::prometheus&#45;operator&#45;token&#45;7f85f</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="306,-10822 44,-10822 44,-10764 306,-10764 306,-10822"/>
-<text text-anchor="start" x="56" y="-10802.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="56" y="-10777.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;operator&#45;token&#45;7f85f</text>
+<title>Secret::monitoring::prometheus&#45;operator&#45;token&#45;dkx6g</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="309.5,-10822 40.5,-10822 40.5,-10764 309.5,-10764 309.5,-10822"/>
+<text text-anchor="start" x="53" y="-10802.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="53" y="-10777.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;operator&#45;token&#45;dkx6g</text>
 </g>
 <!-- Service::monitoring::alertmanager&#45;main -->
 <g id="node65" class="node">
@@ -1283,12 +1283,12 @@
 <text text-anchor="start" x="117" y="-2102.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::RoleBinding</text>
 <text text-anchor="start" x="117" y="-2077.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prometheus&#45;k8s</text>
 </g>
-<!-- Secret::default::default&#45;token&#45;76xbj -->
+<!-- Secret::default::default&#45;token&#45;mzgjj -->
 <g id="node179" class="node">
-<title>Secret::default::default&#45;token&#45;76xbj</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="256.5,-2046 93.5,-2046 93.5,-1988 256.5,-1988 256.5,-2046"/>
+<title>Secret::default::default&#45;token&#45;mzgjj</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="256,-2046 94,-2046 94,-1988 256,-1988 256,-2046"/>
 <text text-anchor="start" x="106" y="-2026.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="106" y="-2001.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;76xbj</text>
+<text text-anchor="start" x="106" y="-2001.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;mzgjj</text>
 </g>
 <!-- Service::default::kubernetes -->
 <g id="node180" class="node">
@@ -1374,12 +1374,12 @@
 <text text-anchor="start" x="87" y="-1078.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::RoleBinding</text>
 <text text-anchor="start" x="87" y="-1053.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;admission</text>
 </g>
-<!-- Secret::ingress&#45;nginx::default&#45;token&#45;mq5tg -->
+<!-- Secret::ingress&#45;nginx::default&#45;token&#45;nclwm -->
 <g id="node192" class="node">
-<title>Secret::ingress&#45;nginx::default&#45;token&#45;mq5tg</title>
+<title>Secret::ingress&#45;nginx::default&#45;token&#45;nclwm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="259.5,-1022 90.5,-1022 90.5,-964 259.5,-964 259.5,-1022"/>
 <text text-anchor="start" x="103" y="-1002.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="103" y="-977.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;mq5tg</text>
+<text text-anchor="start" x="103" y="-977.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;nclwm</text>
 </g>
 <!-- Secret::ingress&#45;nginx::ingress&#45;nginx&#45;admission -->
 <g id="node193" class="node">
@@ -1388,19 +1388,19 @@
 <text text-anchor="start" x="87" y="-926.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
 <text text-anchor="start" x="87" y="-901.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;admission</text>
 </g>
-<!-- Secret::ingress&#45;nginx::ingress&#45;nginx&#45;admission&#45;token&#45;gb2v5 -->
+<!-- Secret::ingress&#45;nginx::ingress&#45;nginx&#45;admission&#45;token&#45;s2lbk -->
 <g id="node194" class="node">
-<title>Secret::ingress&#45;nginx::ingress&#45;nginx&#45;admission&#45;token&#45;gb2v5</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="316,-870 34,-870 34,-812 316,-812 316,-870"/>
-<text text-anchor="start" x="46" y="-850.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="46" y="-825.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;admission&#45;token&#45;gb...</text>
+<title>Secret::ingress&#45;nginx::ingress&#45;nginx&#45;admission&#45;token&#45;s2lbk</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="315.5,-870 34.5,-870 34.5,-812 315.5,-812 315.5,-870"/>
+<text text-anchor="start" x="47" y="-850.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="47" y="-825.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;admission&#45;token&#45;s2...</text>
 </g>
-<!-- Secret::ingress&#45;nginx::ingress&#45;nginx&#45;token&#45;2slr7 -->
+<!-- Secret::ingress&#45;nginx::ingress&#45;nginx&#45;token&#45;chxmw -->
 <g id="node195" class="node">
-<title>Secret::ingress&#45;nginx::ingress&#45;nginx&#45;token&#45;2slr7</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="278.5,-794 71.5,-794 71.5,-736 278.5,-736 278.5,-794"/>
-<text text-anchor="start" x="84" y="-774.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="84" y="-749.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;token&#45;2slr7</text>
+<title>Secret::ingress&#45;nginx::ingress&#45;nginx&#45;token&#45;chxmw</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="286,-794 64,-794 64,-736 286,-736 286,-794"/>
+<text text-anchor="start" x="76" y="-774.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="76" y="-749.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ingress&#45;nginx&#45;token&#45;chxmw</text>
 </g>
 <!-- Service::ingress&#45;nginx::ingress&#45;nginx&#45;controller -->
 <g id="node196" class="node">
@@ -1444,12 +1444,12 @@
 <text text-anchor="start" x="118" y="-282.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::ConfigMap</text>
 <text text-anchor="start" x="118" y="-257.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kube&#45;root&#45;ca.crt</text>
 </g>
-<!-- Secret::pgo::default&#45;token&#45;m4qg7 -->
+<!-- Secret::pgo::default&#45;token&#45;8d8rq -->
 <g id="node202" class="node">
-<title>Secret::pgo::default&#45;token&#45;m4qg7</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="261.5,-226 88.5,-226 88.5,-168 261.5,-168 261.5,-226"/>
-<text text-anchor="start" x="101" y="-206.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="101" y="-181.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;m4qg7</text>
+<title>Secret::pgo::default&#45;token&#45;8d8rq</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="257.5,-226 92.5,-226 92.5,-168 257.5,-168 257.5,-226"/>
+<text text-anchor="start" x="105" y="-206.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
+<text text-anchor="start" x="105" y="-181.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;8d8rq</text>
 </g>
 <!-- ServiceAccount::pgo::default -->
 <g id="node203" class="node">

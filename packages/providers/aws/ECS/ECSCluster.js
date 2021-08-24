@@ -10,6 +10,7 @@ const {
   or,
   not,
   omit,
+  pick,
   assign,
 } = require("rubico");
 const {
@@ -184,28 +185,46 @@ exports.ECSCluster = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listContainerInstances-property
   const deregisterContainerInstance = ({ live }) =>
+    tryCatch(
+      pipe([
+        () => ({ cluster: live.clusterName }),
+        ecs().listContainerInstances,
+        get("containerInstanceArns"),
+        tap((containerInstanceArns) => {
+          logger.debug(
+            `deregisterContainerInstance #size ${size(containerInstanceArns)}`
+          );
+        }),
+        map(
+          pipe([
+            (containerInstance) => ({
+              cluster: live.clusterName,
+              containerInstance,
+              force: true,
+            }),
+            ecs().deregisterContainerInstance,
+          ])
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      switchCase([
+        eq(get("code"), "ClusterNotFoundException"),
+        () => undefined,
+        (error) => {
+          throw error;
+        },
+      ])
+    )();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property
+  const update = ({ payload, name, namespace }) =>
     pipe([
-      () => ({ cluster: live.clusterName }),
-      ecs().listContainerInstances,
-      get("containerInstanceArns"),
-      tap((containerInstanceArns) => {
-        logger.debug(
-          `deregisterContainerInstance #size ${size(containerInstanceArns)}`
-        );
-      }),
-      map(
-        pipe([
-          (containerInstance) => ({
-            cluster: live.clusterName,
-            containerInstance,
-            force: true,
-          }),
-          ecs().deregisterContainerInstance,
-        ])
-      ),
-      tap((params) => {
-        assert(true);
-      }),
+      () => payload,
+      assign({ cluster: get("clusterName") }),
+      pick(["cluster", "settings", "configuration"]),
+      ecs().updateCluster,
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
@@ -304,6 +323,7 @@ exports.ECSCluster = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

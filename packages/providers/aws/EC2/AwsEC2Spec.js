@@ -1,5 +1,6 @@
-const { pipe, assign, map } = require("rubico");
-
+const assert = require("assert");
+const { pipe, get, assign, map, omit, tap, pick } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
 
 const {
@@ -48,6 +49,9 @@ module.exports = () =>
       Client: AwsVolume,
       isOurMinion,
       setupEbsVolume,
+      compare: compare({
+        filterTarget: pipe([omit(["Device", "TagSpecifications"])]),
+      }),
     },
     {
       type: "Vpc",
@@ -90,6 +94,9 @@ module.exports = () =>
       dependsOn: ["ec2::Vpc", "ec2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([pick(["Description", "GroupName", "VpcId"])]),
+      }),
     },
     {
       type: "SecurityGroupRuleIngress",

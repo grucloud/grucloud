@@ -26,13 +26,13 @@
                                 "type": "ElasticIpAddress",
                                 "providerName": "aws",
                                 "live": {
-                                    "PublicIp": "35.178.130.160",
-                                    "AllocationId": "eipalloc-0a98f830461c697d8",
-                                    "AssociationId": "eipassoc-039a6977333c74194",
+                                    "PublicIp": "18.168.63.229",
+                                    "AllocationId": "eipalloc-03e3cfe6ca1dc2a93",
+                                    "AssociationId": "eipassoc-0386435ddb5c02e45",
                                     "Domain": "vpc",
-                                    "NetworkInterfaceId": "eni-050b069653f93e11c",
+                                    "NetworkInterfaceId": "eni-05e2bb0bf119edfca",
                                     "NetworkInterfaceOwnerId": "840541460064",
-                                    "PrivateIpAddress": "192.168.11.50",
+                                    "PrivateIpAddress": "192.168.16.61",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -63,7 +63,7 @@
                                     "NetworkBorderGroup": "eu-west-2"
                                 },
                                 "name": "iep",
-                                "id": "eipalloc-0a98f830461c697d8",
+                                "id": "eipalloc-03e3cfe6ca1dc2a93",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -71,18 +71,18 @@
                                         "type": "NetworkInterface",
                                         "group": "ec2",
                                         "ids": [
-                                            "eni-050b069653f93e11c"
+                                            "eni-05e2bb0bf119edfca"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NetworkInterface"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::ElasticIpAddress::iep",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "iep",
-                                "uri": "aws::ec2::ElasticIpAddress::iep"
+                                "displayName": "iep"
                             }
                         ],
                         "groupType": "ec2::ElasticIpAddress",
@@ -129,11 +129,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::InternetGateway::default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "default",
-                                "uri": "aws::ec2::InternetGateway::default"
+                                "displayName": "default"
                             },
                             {
                                 "groupType": "ec2::InternetGateway",
@@ -144,10 +144,10 @@
                                     "Attachments": [
                                         {
                                             "State": "available",
-                                            "VpcId": "vpc-098a159142bb3a381"
+                                            "VpcId": "vpc-06f91983523390b40"
                                         }
                                     ],
-                                    "InternetGatewayId": "igw-0295e38b5f3782815",
+                                    "InternetGatewayId": "igw-03d8073baf975aab7",
                                     "OwnerId": "840541460064",
                                     "Tags": [
                                         {
@@ -177,7 +177,7 @@
                                     ]
                                 },
                                 "name": "internet-gateway",
-                                "id": "igw-0295e38b5f3782815",
+                                "id": "igw-03d8073baf975aab7",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -185,18 +185,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::InternetGateway::internet-gateway",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "internet-gateway",
-                                "uri": "aws::ec2::InternetGateway::internet-gateway"
+                                "displayName": "internet-gateway"
                             }
                         ],
                         "groupType": "ec2::InternetGateway",
@@ -212,19 +212,19 @@
                                 "type": "NatGateway",
                                 "providerName": "aws",
                                 "live": {
-                                    "CreateTime": "2021-08-17T18:35:17.000Z",
+                                    "CreateTime": "2021-08-24T00:35:45.000Z",
                                     "NatGatewayAddresses": [
                                         {
-                                            "AllocationId": "eipalloc-0a98f830461c697d8",
-                                            "NetworkInterfaceId": "eni-050b069653f93e11c",
-                                            "PrivateIp": "192.168.11.50",
-                                            "PublicIp": "35.178.130.160"
+                                            "AllocationId": "eipalloc-03e3cfe6ca1dc2a93",
+                                            "NetworkInterfaceId": "eni-05e2bb0bf119edfca",
+                                            "PrivateIp": "192.168.16.61",
+                                            "PublicIp": "18.168.63.229"
                                         }
                                     ],
-                                    "NatGatewayId": "nat-03e6eb806752b29bc",
+                                    "NatGatewayId": "nat-003047c63a4161ada",
                                     "State": "available",
-                                    "SubnetId": "subnet-024acf4d8c4712333",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "SubnetId": "subnet-0060e52ec0291fe75",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -254,7 +254,7 @@
                                     "ConnectivityType": "public"
                                 },
                                 "name": "nat-gateway",
-                                "id": "nat-03e6eb806752b29bc",
+                                "id": "nat-003047c63a4161ada",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -262,7 +262,7 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-024acf4d8c4712333"
+                                            "subnet-0060e52ec0291fe75"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
@@ -271,7 +271,7 @@
                                         "type": "NetworkInterface",
                                         "group": "ec2",
                                         "ids": [
-                                            "eni-050b069653f93e11c"
+                                            "eni-05e2bb0bf119edfca"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NetworkInterface"
@@ -280,18 +280,18 @@
                                         "type": "ElasticIpAddress",
                                         "group": "ec2",
                                         "ids": [
-                                            "eipalloc-0a98f830461c697d8"
+                                            "eipalloc-03e3cfe6ca1dc2a93"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::ElasticIpAddress"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::NatGateway::nat-gateway",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "nat-gateway",
-                                "uri": "aws::ec2::NatGateway::nat-gateway"
+                                "displayName": "nat-gateway"
                             }
                         ],
                         "groupType": "ec2::NatGateway",
@@ -308,41 +308,41 @@
                                 "providerName": "aws",
                                 "live": {
                                     "Association": {
-                                        "AllocationId": "eipalloc-0a98f830461c697d8",
-                                        "AssociationId": "eipassoc-039a6977333c74194",
+                                        "AllocationId": "eipalloc-03e3cfe6ca1dc2a93",
+                                        "AssociationId": "eipassoc-0386435ddb5c02e45",
                                         "IpOwnerId": "840541460064",
-                                        "PublicDnsName": "ec2-35-178-130-160.eu-west-2.compute.amazonaws.com",
-                                        "PublicIp": "35.178.130.160"
+                                        "PublicDnsName": "ec2-18-168-63-229.eu-west-2.compute.amazonaws.com",
+                                        "PublicIp": "18.168.63.229"
                                     },
                                     "Attachment": {
-                                        "AttachmentId": "ela-attach-0fe9f39c106a23bde",
+                                        "AttachmentId": "ela-attach-010eab55106a54436",
                                         "DeleteOnTermination": false,
                                         "DeviceIndex": 1,
                                         "InstanceOwnerId": "amazon-aws",
                                         "Status": "attached"
                                     },
                                     "AvailabilityZone": "eu-west-2a",
-                                    "Description": "Interface for NAT Gateway nat-03e6eb806752b29bc",
+                                    "Description": "Interface for NAT Gateway nat-003047c63a4161ada",
                                     "Groups": [],
                                     "InterfaceType": "nat_gateway",
                                     "Ipv6Addresses": [],
-                                    "MacAddress": "06:ed:ed:c0:20:0a",
-                                    "NetworkInterfaceId": "eni-050b069653f93e11c",
+                                    "MacAddress": "06:f7:b3:5f:2d:1c",
+                                    "NetworkInterfaceId": "eni-05e2bb0bf119edfca",
                                     "OwnerId": "840541460064",
-                                    "PrivateDnsName": "ip-192-168-11-50.eu-west-2.compute.internal",
-                                    "PrivateIpAddress": "192.168.11.50",
+                                    "PrivateDnsName": "ip-192-168-16-61.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "192.168.16.61",
                                     "PrivateIpAddresses": [
                                         {
                                             "Association": {
-                                                "AllocationId": "eipalloc-0a98f830461c697d8",
-                                                "AssociationId": "eipassoc-039a6977333c74194",
+                                                "AllocationId": "eipalloc-03e3cfe6ca1dc2a93",
+                                                "AssociationId": "eipassoc-0386435ddb5c02e45",
                                                 "IpOwnerId": "840541460064",
-                                                "PublicDnsName": "ec2-35-178-130-160.eu-west-2.compute.amazonaws.com",
-                                                "PublicIp": "35.178.130.160"
+                                                "PublicDnsName": "ec2-18-168-63-229.eu-west-2.compute.amazonaws.com",
+                                                "PublicIp": "18.168.63.229"
                                             },
                                             "Primary": true,
-                                            "PrivateDnsName": "ip-192-168-11-50.eu-west-2.compute.internal",
-                                            "PrivateIpAddress": "192.168.11.50"
+                                            "PrivateDnsName": "ip-192-168-16-61.eu-west-2.compute.internal",
+                                            "PrivateIpAddress": "192.168.16.61"
                                         }
                                     ],
                                     "Ipv4Prefixes": [],
@@ -351,19 +351,19 @@
                                     "RequesterManaged": true,
                                     "SourceDestCheck": false,
                                     "Status": "in-use",
-                                    "SubnetId": "subnet-024acf4d8c4712333",
+                                    "SubnetId": "subnet-0060e52ec0291fe75",
                                     "TagSet": [],
-                                    "VpcId": "vpc-098a159142bb3a381"
+                                    "VpcId": "vpc-06f91983523390b40"
                                 },
-                                "name": "eni-050b069653f93e11c",
-                                "id": "eni-050b069653f93e11c",
+                                "name": "eni-05e2bb0bf119edfca",
+                                "id": "eni-05e2bb0bf119edfca",
                                 "isDefault": false,
                                 "dependencies": [
                                     {
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -372,18 +372,18 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-024acf4d8c4712333"
+                                            "subnet-0060e52ec0291fe75"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::NetworkInterface::eni-05e2bb0bf119edfca",
                                 "managedByUs": false,
                                 "cannotBeDeleted": false,
                                 "managedByOther": true,
-                                "displayName": "eni-050b069653f93e11c",
-                                "uri": "aws::ec2::NetworkInterface::eni-050b069653f93e11c"
+                                "displayName": "eni-05e2bb0bf119edfca"
                             }
                         ],
                         "groupType": "ec2::NetworkInterface",
@@ -400,11 +400,11 @@
                                 "providerName": "aws",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "NatGatewayId": "nat-03e6eb806752b29bc",
+                                    "NatGatewayId": "nat-003047c63a4161ada",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-private-a",
-                                    "RouteTableId": "rtb-031612c25d78e53f8",
+                                    "RouteTableId": "rtb-086099b7d3f195bc3",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -433,7 +433,7 @@
                                     ]
                                 },
                                 "name": "route-private-a",
-                                "id": "route-private-a",
+                                "id": "route-table-private-a-igw",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -441,7 +441,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-031612c25d78e53f8"
+                                            "rtb-086099b7d3f195bc3"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -450,18 +450,18 @@
                                         "type": "NatGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "nat-03e6eb806752b29bc"
+                                            "nat-003047c63a4161ada"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NatGateway"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Route::route-private-a",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-private-a",
-                                "uri": "aws::ec2::Route::route-private-a"
+                                "displayName": "route-private-a"
                             },
                             {
                                 "groupType": "ec2::Route",
@@ -470,11 +470,11 @@
                                 "providerName": "aws",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "NatGatewayId": "nat-03e6eb806752b29bc",
+                                    "NatGatewayId": "nat-003047c63a4161ada",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-private-b",
-                                    "RouteTableId": "rtb-0694b7dc4374efb42",
+                                    "RouteTableId": "rtb-029adeacf575dd5c1",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -503,7 +503,7 @@
                                     ]
                                 },
                                 "name": "route-private-b",
-                                "id": "route-private-b",
+                                "id": "route-table-private-b-igw",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -511,7 +511,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-0694b7dc4374efb42"
+                                            "rtb-029adeacf575dd5c1"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -520,18 +520,18 @@
                                         "type": "NatGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "nat-03e6eb806752b29bc"
+                                            "nat-003047c63a4161ada"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::NatGateway"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Route::route-private-b",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-private-b",
-                                "uri": "aws::ec2::Route::route-private-b"
+                                "displayName": "route-private-b"
                             },
                             {
                                 "groupType": "ec2::Route",
@@ -540,11 +540,11 @@
                                 "providerName": "aws",
                                 "live": {
                                     "DestinationCidrBlock": "0.0.0.0/0",
-                                    "GatewayId": "igw-0295e38b5f3782815",
+                                    "GatewayId": "igw-03d8073baf975aab7",
                                     "Origin": "CreateRoute",
                                     "State": "active",
                                     "name": "route-public",
-                                    "RouteTableId": "rtb-0d461a83b7f93ca17",
+                                    "RouteTableId": "rtb-0a5aa086fc0b03bde",
                                     "Tags": [
                                         {
                                             "Key": "gc-created-by-provider",
@@ -573,7 +573,7 @@
                                     ]
                                 },
                                 "name": "route-public",
-                                "id": "route-public",
+                                "id": "route-table-public-igw",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -581,7 +581,7 @@
                                         "type": "RouteTable",
                                         "group": "ec2",
                                         "ids": [
-                                            "rtb-0d461a83b7f93ca17"
+                                            "rtb-0a5aa086fc0b03bde"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::RouteTable"
@@ -590,18 +590,313 @@
                                         "type": "InternetGateway",
                                         "group": "ec2",
                                         "ids": [
-                                            "igw-0295e38b5f3782815"
+                                            "igw-03d8073baf975aab7"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::InternetGateway"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Route::route-public",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-public",
-                                "uri": "aws::ec2::Route::route-public"
+                                "displayName": "route-public"
+                            },
+                            {
+                                "groupType": "ec2::Route",
+                                "group": "ec2",
+                                "type": "Route",
+                                "providerName": "aws",
+                                "live": {
+                                    "DestinationCidrBlock": "192.168.0.0/16",
+                                    "GatewayId": "local",
+                                    "Origin": "CreateRouteTable",
+                                    "State": "active",
+                                    "RouteTableId": "rtb-086099b7d3f195bc3",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-private-a"
+                                        }
+                                    ]
+                                },
+                                "name": "route-table-private-a-local",
+                                "id": "route-table-private-a-local",
+                                "isDefault": true,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-086099b7d3f195bc3"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "local"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::ec2::Route::route-table-private-a-local",
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "route-table-private-a-local"
+                            },
+                            {
+                                "groupType": "ec2::Route",
+                                "group": "ec2",
+                                "type": "Route",
+                                "providerName": "aws",
+                                "live": {
+                                    "DestinationCidrBlock": "192.168.0.0/16",
+                                    "GatewayId": "local",
+                                    "Origin": "CreateRouteTable",
+                                    "State": "active",
+                                    "RouteTableId": "rtb-029adeacf575dd5c1",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-private-b"
+                                        }
+                                    ]
+                                },
+                                "name": "route-table-private-b-local",
+                                "id": "route-table-private-b-local",
+                                "isDefault": true,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-029adeacf575dd5c1"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "local"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::ec2::Route::route-table-private-b-local",
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "route-table-private-b-local"
+                            },
+                            {
+                                "groupType": "ec2::Route",
+                                "group": "ec2",
+                                "type": "Route",
+                                "providerName": "aws",
+                                "live": {
+                                    "DestinationCidrBlock": "192.168.0.0/16",
+                                    "GatewayId": "local",
+                                    "Origin": "CreateRouteTable",
+                                    "State": "active",
+                                    "RouteTableId": "rtb-0a5aa086fc0b03bde",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "ex-vpc-mod"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table-public"
+                                        }
+                                    ]
+                                },
+                                "name": "route-table-public-local",
+                                "id": "route-table-public-local",
+                                "isDefault": true,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-0a5aa086fc0b03bde"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "local"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::ec2::Route::route-table-public-local",
+                                "managedByUs": true,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "route-table-public-local"
+                            },
+                            {
+                                "groupType": "ec2::Route",
+                                "group": "ec2",
+                                "type": "Route",
+                                "providerName": "aws",
+                                "live": {
+                                    "DestinationCidrBlock": "172.31.0.0/16",
+                                    "GatewayId": "local",
+                                    "Origin": "CreateRouteTable",
+                                    "State": "active",
+                                    "RouteTableId": "rtb-668fbc0e",
+                                    "Tags": []
+                                },
+                                "name": "rt-default-vpc-default-local",
+                                "id": "rt-default-vpc-default-local",
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-668fbc0e"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "local"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::ec2::Route::rt-default-vpc-default-local",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "rt-default-vpc-default-local"
+                            },
+                            {
+                                "groupType": "ec2::Route",
+                                "group": "ec2",
+                                "type": "Route",
+                                "providerName": "aws",
+                                "live": {
+                                    "DestinationCidrBlock": "192.168.0.0/16",
+                                    "GatewayId": "local",
+                                    "Origin": "CreateRouteTable",
+                                    "State": "active",
+                                    "RouteTableId": "rtb-085ad0ef2bd7da470",
+                                    "Tags": []
+                                },
+                                "name": "rt-default-vpc-local",
+                                "id": "rt-default-vpc-local",
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "rtb-085ad0ef2bd7da470"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::RouteTable"
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "group": "ec2",
+                                        "ids": [
+                                            "local"
+                                        ],
+                                        "providerName": "aws",
+                                        "groupType": "ec2::InternetGateway"
+                                    }
+                                ],
+                                "show": true,
+                                "uri": "aws::ec2::Route::rt-default-vpc-local",
+                                "managedByUs": false,
+                                "cannotBeDeleted": true,
+                                "managedByOther": true,
+                                "displayName": "rt-default-vpc-local"
                             }
                         ],
                         "groupType": "ec2::Route",
@@ -620,16 +915,16 @@
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-05cb935c591fc15b9",
-                                            "RouteTableId": "rtb-031612c25d78e53f8",
-                                            "SubnetId": "subnet-01c46eccb0dbc9689",
+                                            "RouteTableAssociationId": "rtbassoc-0a333c9d3d358126b",
+                                            "RouteTableId": "rtb-086099b7d3f195bc3",
+                                            "SubnetId": "subnet-0d86191a39df35495",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-031612c25d78e53f8",
+                                    "RouteTableId": "rtb-086099b7d3f195bc3",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -639,7 +934,7 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "NatGatewayId": "nat-03e6eb806752b29bc",
+                                            "NatGatewayId": "nat-003047c63a4161ada",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
@@ -670,11 +965,11 @@
                                             "Value": "route-table-private-a"
                                         }
                                     ],
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064"
                                 },
                                 "name": "route-table-private-a",
-                                "id": "rtb-031612c25d78e53f8",
+                                "id": "rtb-086099b7d3f195bc3",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -682,7 +977,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -691,18 +986,18 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-01c46eccb0dbc9689"
+                                            "subnet-0d86191a39df35495"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::RouteTable::route-table-private-a",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-table-private-a",
-                                "uri": "aws::ec2::RouteTable::route-table-private-a"
+                                "displayName": "route-table-private-a"
                             },
                             {
                                 "groupType": "ec2::RouteTable",
@@ -713,16 +1008,16 @@
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-03eb900c045bcd2c1",
-                                            "RouteTableId": "rtb-0694b7dc4374efb42",
-                                            "SubnetId": "subnet-0895d8e362f4c4248",
+                                            "RouteTableAssociationId": "rtbassoc-0d01f26279829a687",
+                                            "RouteTableId": "rtb-029adeacf575dd5c1",
+                                            "SubnetId": "subnet-00479c5503b7212cc",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-0694b7dc4374efb42",
+                                    "RouteTableId": "rtb-029adeacf575dd5c1",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -732,7 +1027,7 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "NatGatewayId": "nat-03e6eb806752b29bc",
+                                            "NatGatewayId": "nat-003047c63a4161ada",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
@@ -763,11 +1058,11 @@
                                             "Value": "route-table-private-b"
                                         }
                                     ],
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064"
                                 },
                                 "name": "route-table-private-b",
-                                "id": "rtb-0694b7dc4374efb42",
+                                "id": "rtb-029adeacf575dd5c1",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -775,7 +1070,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -784,18 +1079,18 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-0895d8e362f4c4248"
+                                            "subnet-00479c5503b7212cc"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::RouteTable::route-table-private-b",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-table-private-b",
-                                "uri": "aws::ec2::RouteTable::route-table-private-b"
+                                "displayName": "route-table-private-b"
                             },
                             {
                                 "groupType": "ec2::RouteTable",
@@ -806,25 +1101,25 @@
                                     "Associations": [
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-0359887d5a7ccdd2c",
-                                            "RouteTableId": "rtb-0d461a83b7f93ca17",
-                                            "SubnetId": "subnet-0e47eb63a235e71b8",
+                                            "RouteTableAssociationId": "rtbassoc-09d69f8ff6cc19c36",
+                                            "RouteTableId": "rtb-0a5aa086fc0b03bde",
+                                            "SubnetId": "subnet-0060e52ec0291fe75",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         },
                                         {
                                             "Main": false,
-                                            "RouteTableAssociationId": "rtbassoc-0f8265870575f8a3e",
-                                            "RouteTableId": "rtb-0d461a83b7f93ca17",
-                                            "SubnetId": "subnet-024acf4d8c4712333",
+                                            "RouteTableAssociationId": "rtbassoc-0829c6afe05749bae",
+                                            "RouteTableId": "rtb-0a5aa086fc0b03bde",
+                                            "SubnetId": "subnet-01c817dceac6a676c",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-0d461a83b7f93ca17",
+                                    "RouteTableId": "rtb-0a5aa086fc0b03bde",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -834,7 +1129,7 @@
                                         },
                                         {
                                             "DestinationCidrBlock": "0.0.0.0/0",
-                                            "GatewayId": "igw-0295e38b5f3782815",
+                                            "GatewayId": "igw-03d8073baf975aab7",
                                             "Origin": "CreateRoute",
                                             "State": "active"
                                         }
@@ -865,11 +1160,11 @@
                                             "Value": "route-table-public"
                                         }
                                     ],
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064"
                                 },
                                 "name": "route-table-public",
-                                "id": "rtb-0d461a83b7f93ca17",
+                                "id": "rtb-0a5aa086fc0b03bde",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -877,7 +1172,7 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -886,19 +1181,19 @@
                                         "type": "Subnet",
                                         "group": "ec2",
                                         "ids": [
-                                            "subnet-0e47eb63a235e71b8",
-                                            "subnet-024acf4d8c4712333"
+                                            "subnet-0060e52ec0291fe75",
+                                            "subnet-01c817dceac6a676c"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Subnet"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::RouteTable::route-table-public",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "route-table-public",
-                                "uri": "aws::ec2::RouteTable::route-table-public"
+                                "displayName": "route-table-public"
                             },
                             {
                                 "groupType": "ec2::RouteTable",
@@ -909,15 +1204,15 @@
                                     "Associations": [
                                         {
                                             "Main": true,
-                                            "RouteTableAssociationId": "rtbassoc-0c62a12b18818403e",
-                                            "RouteTableId": "rtb-02d9401a741221315",
+                                            "RouteTableAssociationId": "rtbassoc-054714f1168064ac2",
+                                            "RouteTableId": "rtb-085ad0ef2bd7da470",
                                             "AssociationState": {
                                                 "State": "associated"
                                             }
                                         }
                                     ],
                                     "PropagatingVgws": [],
-                                    "RouteTableId": "rtb-02d9401a741221315",
+                                    "RouteTableId": "rtb-085ad0ef2bd7da470",
                                     "Routes": [
                                         {
                                             "DestinationCidrBlock": "192.168.0.0/16",
@@ -927,11 +1222,11 @@
                                         }
                                     ],
                                     "Tags": [],
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064"
                                 },
                                 "name": "rt-default-vpc",
-                                "id": "rtb-02d9401a741221315",
+                                "id": "rtb-085ad0ef2bd7da470",
                                 "isDefault": true,
                                 "namespace": "",
                                 "dependencies": [
@@ -939,18 +1234,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::RouteTable::rt-default-vpc",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "rt-default-vpc",
-                                "uri": "aws::ec2::RouteTable::rt-default-vpc"
+                                "displayName": "rt-default-vpc"
                             },
                             {
                                 "groupType": "ec2::RouteTable",
@@ -998,11 +1293,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::RouteTable::rt-default-vpc-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": false,
-                                "displayName": "rt-default-vpc-default",
-                                "uri": "aws::ec2::RouteTable::rt-default-vpc-default"
+                                "displayName": "rt-default-vpc-default"
                             }
                         ],
                         "groupType": "ec2::RouteTable",
@@ -1028,14 +1323,14 @@
                                             "PrefixListIds": [],
                                             "UserIdGroupPairs": [
                                                 {
-                                                    "GroupId": "sg-023ecff2e5d277bf7",
+                                                    "GroupId": "sg-0850b65f7f86bed99",
                                                     "UserId": "840541460064"
                                                 }
                                             ]
                                         }
                                     ],
                                     "OwnerId": "840541460064",
-                                    "GroupId": "sg-023ecff2e5d277bf7",
+                                    "GroupId": "sg-0850b65f7f86bed99",
                                     "IpPermissionsEgress": [
                                         {
                                             "IpProtocol": "-1",
@@ -1050,17 +1345,17 @@
                                         }
                                     ],
                                     "Tags": [],
-                                    "VpcId": "vpc-098a159142bb3a381"
+                                    "VpcId": "vpc-06f91983523390b40"
                                 },
                                 "name": "sg-default-vpc",
-                                "id": "sg-023ecff2e5d277bf7",
+                                "id": "sg-0850b65f7f86bed99",
                                 "isDefault": true,
                                 "dependencies": [
                                     {
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
@@ -1069,18 +1364,18 @@
                                         "type": "SecurityGroup",
                                         "group": "ec2",
                                         "ids": [
-                                            "sg-023ecff2e5d277bf7"
+                                            "sg-0850b65f7f86bed99"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::SecurityGroup"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc",
-                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc"
+                                "displayName": "sg-default-vpc"
                             },
                             {
                                 "groupType": "ec2::SecurityGroup",
@@ -1090,46 +1385,10 @@
                                 "live": {
                                     "Description": "default VPC security group",
                                     "GroupName": "default",
-                                    "IpPermissions": [
-                                        {
-                                            "FromPort": 22,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 22,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
+                                    "IpPermissions": [],
                                     "OwnerId": "840541460064",
                                     "GroupId": "sg-f4139a96",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "FromPort": 1024,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 65535,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
+                                    "IpPermissionsEgress": [],
                                     "Tags": [],
                                     "VpcId": "vpc-bbbafcd3"
                                 },
@@ -1148,11 +1407,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "sg-default-vpc-default",
-                                "uri": "aws::ec2::SecurityGroup::sg-default-vpc-default"
+                                "displayName": "sg-default-vpc-default"
                             }
                         ],
                         "groupType": "ec2::SecurityGroup",
@@ -1200,11 +1459,11 @@
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "subnet-default",
-                                "uri": "aws::ec2::Subnet::subnet-default"
+                                "displayName": "subnet-default"
                             },
                             {
                                 "groupType": "ec2::Subnet",
@@ -1220,8 +1479,8 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-01c46eccb0dbc9689",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "SubnetId": "subnet-0d86191a39df35495",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
@@ -1251,10 +1510,10 @@
                                             "Value": "subnet-private-a"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-01c46eccb0dbc9689"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0d86191a39df35495"
                                 },
                                 "name": "subnet-private-a",
-                                "id": "subnet-01c46eccb0dbc9689",
+                                "id": "subnet-0d86191a39df35495",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -1262,18 +1521,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-private-a",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "subnet-private-a",
-                                "uri": "aws::ec2::Subnet::subnet-private-a"
+                                "displayName": "subnet-private-a"
                             },
                             {
                                 "groupType": "ec2::Subnet",
@@ -1289,8 +1548,8 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-0895d8e362f4c4248",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "SubnetId": "subnet-00479c5503b7212cc",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
@@ -1320,10 +1579,10 @@
                                             "Value": "subnet-private-b"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0895d8e362f4c4248"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-00479c5503b7212cc"
                                 },
                                 "name": "subnet-private-b",
-                                "id": "subnet-0895d8e362f4c4248",
+                                "id": "subnet-00479c5503b7212cc",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -1331,18 +1590,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-private-b",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "subnet-private-b",
-                                "uri": "aws::ec2::Subnet::subnet-private-b"
+                                "displayName": "subnet-private-b"
                             },
                             {
                                 "groupType": "ec2::Subnet",
@@ -1358,8 +1617,8 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-024acf4d8c4712333",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "SubnetId": "subnet-0060e52ec0291fe75",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
@@ -1389,10 +1648,10 @@
                                             "Value": "subnet-public-a"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-024acf4d8c4712333"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0060e52ec0291fe75"
                                 },
                                 "name": "subnet-public-a",
-                                "id": "subnet-024acf4d8c4712333",
+                                "id": "subnet-0060e52ec0291fe75",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -1400,18 +1659,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-public-a",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "subnet-public-a",
-                                "uri": "aws::ec2::Subnet::subnet-public-a"
+                                "displayName": "subnet-public-a"
                             },
                             {
                                 "groupType": "ec2::Subnet",
@@ -1427,8 +1686,8 @@
                                     "MapPublicIpOnLaunch": false,
                                     "MapCustomerOwnedIpOnLaunch": false,
                                     "State": "available",
-                                    "SubnetId": "subnet-0e47eb63a235e71b8",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "SubnetId": "subnet-01c817dceac6a676c",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064",
                                     "AssignIpv6AddressOnCreation": false,
                                     "Ipv6CidrBlockAssociationSet": [],
@@ -1458,10 +1717,10 @@
                                             "Value": "subnet-public-b"
                                         }
                                     ],
-                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0e47eb63a235e71b8"
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-01c817dceac6a676c"
                                 },
                                 "name": "subnet-public-b",
-                                "id": "subnet-0e47eb63a235e71b8",
+                                "id": "subnet-01c817dceac6a676c",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [
@@ -1469,18 +1728,18 @@
                                         "type": "Vpc",
                                         "group": "ec2",
                                         "ids": [
-                                            "vpc-098a159142bb3a381"
+                                            "vpc-06f91983523390b40"
                                         ],
                                         "providerName": "aws",
                                         "groupType": "ec2::Vpc"
                                     }
                                 ],
                                 "show": true,
+                                "uri": "aws::ec2::Subnet::subnet-public-b",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "subnet-public-b",
-                                "uri": "aws::ec2::Subnet::subnet-public-b"
+                                "displayName": "subnet-public-b"
                             }
                         ],
                         "groupType": "ec2::Subnet",
@@ -1499,13 +1758,13 @@
                                     "CidrBlock": "192.168.0.0/16",
                                     "DhcpOptionsId": "dopt-bb663fd3",
                                     "State": "available",
-                                    "VpcId": "vpc-098a159142bb3a381",
+                                    "VpcId": "vpc-06f91983523390b40",
                                     "OwnerId": "840541460064",
                                     "InstanceTenancy": "default",
                                     "Ipv6CidrBlockAssociationSet": [],
                                     "CidrBlockAssociationSet": [
                                         {
-                                            "AssociationId": "vpc-cidr-assoc-0b627a5ecd85508ef",
+                                            "AssociationId": "vpc-cidr-assoc-08a26a8d438088622",
                                             "CidrBlock": "192.168.0.0/16",
                                             "CidrBlockState": {
                                                 "State": "associated"
@@ -1543,16 +1802,16 @@
                                     "DnsHostnames": true
                                 },
                                 "name": "vpc",
-                                "id": "vpc-098a159142bb3a381",
+                                "id": "vpc-06f91983523390b40",
                                 "isDefault": false,
                                 "namespace": "VPC",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ec2::Vpc::vpc",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "vpc",
-                                "uri": "aws::ec2::Vpc::vpc"
+                                "displayName": "vpc"
                             },
                             {
                                 "groupType": "ec2::Vpc",
@@ -1583,8 +1842,8 @@
                                             "Value": "Default"
                                         }
                                     ],
-                                    "DnsHostnames": true,
-                                    "DnsSupport": true
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
                                 },
                                 "name": "vpc-default",
                                 "id": "vpc-bbbafcd3",
@@ -1592,11 +1851,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ec2::Vpc::vpc-default",
                                 "managedByUs": false,
                                 "cannotBeDeleted": true,
                                 "managedByOther": true,
-                                "displayName": "vpc-default",
-                                "uri": "aws::ec2::Vpc::vpc-default"
+                                "displayName": "vpc-default"
                             }
                         ],
                         "groupType": "ec2::Vpc",

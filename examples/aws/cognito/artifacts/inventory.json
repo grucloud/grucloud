@@ -26,7 +26,7 @@
                                 "type": "UserPool",
                                 "providerName": "aws",
                                 "live": {
-                                    "Id": "eu-west-2_WxLOSbuCM",
+                                    "Id": "eu-west-2_A5ccsogR1",
                                     "Name": "userpool-test",
                                     "Policies": {
                                         "PasswordPolicy": {
@@ -39,8 +39,8 @@
                                         }
                                     },
                                     "LambdaConfig": {},
-                                    "LastModifiedDate": "2021-08-17T16:31:07.391Z",
-                                    "CreationDate": "2021-08-17T16:31:07.391Z",
+                                    "LastModifiedDate": "2021-08-23T22:41:16.038Z",
+                                    "CreationDate": "2021-08-23T22:41:16.038Z",
                                     "SchemaAttributes": [
                                         {
                                             "Name": "sub",
@@ -273,19 +273,19 @@
                                         "AllowAdminCreateUserOnly": false,
                                         "UnusedAccountValidityDays": 7
                                     },
-                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_WxLOSbuCM"
+                                    "Arn": "arn:aws:cognito-idp:eu-west-2:840541460064:userpool/eu-west-2_A5ccsogR1"
                                 },
                                 "name": "userpool-test",
-                                "id": "eu-west-2_WxLOSbuCM",
+                                "id": "eu-west-2_A5ccsogR1",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::cognitoIdentityServiceProvider::UserPool::userpool-test",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "userpool-test",
-                                "uri": "aws::cognitoIdentityServiceProvider::UserPool::userpool-test"
+                                "displayName": "userpool-test"
                             }
                         ],
                         "groupType": "cognitoIdentityServiceProvider::UserPool",

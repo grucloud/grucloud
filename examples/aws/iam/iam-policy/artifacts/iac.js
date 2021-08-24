@@ -15,13 +15,13 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeRole({
     name: get("config.iam.Role.role_4Policies.name"),
+    properties: get("config.iam.Role.role_4Policies.properties"),
     dependencies: ({ resources }) => ({
       policies: [
-        resources.iam.Policy.policyAllowEc2,
         resources.iam.Policy.amazonEksWorkerNodePolicy,
+        resources.iam.Policy.policyAllowEc2,
       ],
     }),
-    properties: get("config.iam.Role.role_4Policies.properties"),
   });
 };
 

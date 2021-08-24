@@ -1,5 +1,6 @@
 const assert = require("assert");
 const {
+  assign,
   filter,
   pipe,
   tap,
@@ -10,6 +11,7 @@ const {
   not,
   or,
   flatMap,
+  omit,
 } = require("rubico");
 const { defaultsDeep, isEmpty, unless, first, pluck } = require("rubico/x");
 
@@ -182,6 +184,32 @@ exports.ECSService = ({ spec, config }) => {
       ),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateService-property
+  const update = ({
+    payload,
+    name,
+    namespace,
+    resolvedDependencies: { cluster },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(cluster.live.clusterArn);
+      }),
+      () => payload,
+      assign({
+        service: get("serviceName"),
+        cluster: () => cluster.live.clusterArn,
+      }),
+      omit([
+        "launchType",
+        "schedulingStrategy",
+        "enableECSManagedTags",
+        "serviceName",
+        "tags",
+      ]),
+      ecs().updateService,
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteService-property
   const destroy = ({ live }) =>
     pipe([
@@ -251,6 +279,9 @@ exports.ECSService = ({ spec, config }) => {
           value: "value",
         }),
       }),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   return {
@@ -262,6 +293,7 @@ exports.ECSService = ({ spec, config }) => {
     getById,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

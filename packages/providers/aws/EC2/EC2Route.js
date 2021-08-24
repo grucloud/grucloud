@@ -6,6 +6,8 @@ const {
   filter,
   map,
   not,
+  and,
+  or,
   eq,
   fork,
   switchCase,
@@ -14,7 +16,15 @@ const {
   assign,
   flatMap,
 } = require("rubico");
-const { isEmpty, defaultsDeep, find, unless, append } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  find,
+  unless,
+  append,
+  unionWith,
+  when,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 const { tos } = require("@grucloud/core/tos");
@@ -57,7 +67,16 @@ exports.EC2Route = ({ spec, config }) => {
       }),
     ])();
 
-  const findName = findId;
+  const findName = (params) => {
+    const fns = [get("live.name"), findId];
+    for (fn of fns) {
+      const name = fn(params);
+      if (!isEmpty(name)) {
+        return name;
+      }
+    }
+    assert(false, "should have a name");
+  };
 
   const isDefault = ({ live, lives }) =>
     pipe([
@@ -86,7 +105,72 @@ exports.EC2Route = ({ spec, config }) => {
     },
   ];
 
-  const getList = ({ resources, lives }) =>
+  const getListFromTarget = ({ resources, lives } = {}) =>
+    pipe([
+      tap(() => {
+        assert(Array.isArray(resources));
+        logger.info(`getList #routes ${resources.length}`);
+      }),
+      () => resources,
+      map((resource) =>
+        pipe([
+          tap(() => {
+            logger.debug(`getList resource ${resource.name}`);
+          }),
+          () => resource.resolveDependencies({ lives }),
+          tap((resolvedDependencies) => {
+            logger.debug(
+              `getList route resolvedDependencies ${tos(resolvedDependencies)}`
+            );
+          }),
+          ({ routeTable, ig, natGateway }) =>
+            switchCase([
+              () => isEmpty(routeTable.live),
+              () => null,
+              tryCatch(
+                pipe([
+                  () => routeTable.live.Routes,
+                  find(
+                    or([
+                      and([
+                        () => !isEmpty(ig?.live?.InternetGatewayId),
+                        eq(get("GatewayId"), ig?.live?.InternetGatewayId),
+                      ]),
+                      and([
+                        () => !isEmpty(natGateway?.live?.NatGatewayId),
+                        eq(get("NatGatewayId"), natGateway?.live?.NatGatewayId),
+                      ]),
+                    ])
+                  ),
+                  switchCase([
+                    not(isEmpty),
+                    assign({
+                      name: () => resource.name,
+                      RouteTableId: () => routeTable.live.RouteTableId,
+                      Tags: () =>
+                        buildTags({
+                          config,
+                          namespace: findNamespaceInTags(config)({
+                            live: routeTable.live,
+                          }),
+                          name: resource.name,
+                        }),
+                    }),
+                    () => undefined,
+                  ]),
+                ]),
+                (error, params) => ({
+                  error,
+                  params,
+                })
+              ),
+            ])(),
+        ])()
+      ),
+      filter(not(isEmpty)),
+    ])();
+
+  const getListFromLive = ({ resources, lives }) =>
     pipe([
       tap(() => {
         assert(Array.isArray(resources));
@@ -113,7 +197,7 @@ exports.EC2Route = ({ spec, config }) => {
               () => Routes,
               map(
                 pipe([
-                  pick(["DestinationCidrBlock", "GatewayId", "NatGatewayId"]),
+                  //pick(["DestinationCidrBlock", "GatewayId", "NatGatewayId"]),
                   assign({
                     RouteTableId: () => RouteTableId,
                     Tags: () => Tags,
@@ -131,6 +215,37 @@ exports.EC2Route = ({ spec, config }) => {
       }),
       filter(not(isEmpty)),
     ])();
+
+  const isRouteEqual = (live, target) =>
+    pipe([
+      tap((params) => {
+        assert(live);
+        assert(target);
+      }),
+      and([
+        eq(live.RouteTableId, target.RouteTableId),
+        eq(live.DestinationCidrBlock, target.DestinationCidrBlock),
+        or([
+          eq(live.GatewayId, target.GatewayId),
+          eq(live.NatGatewayId, target.NatGatewayId),
+        ]),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const getList = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    fork({ fromTarget: getListFromTarget, fromLive: getListFromLive }),
+    ({ fromTarget, fromLive }) => [fromTarget, fromLive],
+    unionWith(isRouteEqual),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
   const getByName = getByNameCore({ getList, findName });
 

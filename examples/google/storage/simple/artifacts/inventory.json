@@ -35,11 +35,11 @@
                                     "location": "EUROPE-WEST4",
                                     "storageClass": "STANDARD",
                                     "etag": "CAE=",
-                                    "timeCreated": "2021-08-21T14:46:14.606Z",
-                                    "updated": "2021-08-21T14:46:14.606Z",
+                                    "timeCreated": "2021-08-23T19:07:28.113Z",
+                                    "updated": "2021-08-23T19:07:28.113Z",
                                     "labels": {
-                                        "managed-by": "grucloud",
-                                        "gc-stage": "dev"
+                                        "gc-stage": "dev",
+                                        "managed-by": "grucloud"
                                     },
                                     "iamConfiguration": {
                                         "bucketPolicyOnly": {
@@ -100,29 +100,29 @@
                                 "providerName": "google",
                                 "live": {
                                     "kind": "storage#object",
-                                    "id": "grucloud-test/myfile/1629557179515969",
+                                    "id": "grucloud-test/myfile/1629745651886914",
                                     "selfLink": "https://www.googleapis.com/storage/v1/b/grucloud-test/o/myfile",
-                                    "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/grucloud-test/o/myfile?generation=1629557179515969&alt=media",
+                                    "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/grucloud-test/o/myfile?generation=1629745651886914&alt=media",
                                     "name": "myfile",
                                     "bucket": "grucloud-test",
-                                    "generation": "1629557179515969",
+                                    "generation": "1629745651886914",
                                     "metageneration": "1",
                                     "contentType": "text/json",
                                     "storageClass": "STANDARD",
                                     "size": "1282",
                                     "md5Hash": "4KvavRZh6xQnGeXsw4Ag5Q==",
                                     "crc32c": "qHpG9A==",
-                                    "etag": "CMGIzsatwvICEAE=",
-                                    "timeCreated": "2021-08-21T14:46:19.517Z",
-                                    "updated": "2021-08-21T14:46:19.517Z",
-                                    "timeStorageClassUpdated": "2021-08-21T14:46:19.517Z",
+                                    "etag": "CMLWntXrx/ICEAE=",
+                                    "timeCreated": "2021-08-23T19:07:31.888Z",
+                                    "updated": "2021-08-23T19:07:31.888Z",
+                                    "timeStorageClassUpdated": "2021-08-23T19:07:31.888Z",
                                     "metadata": {
                                         "managed-by": "grucloud",
                                         "gc-stage": "dev"
                                     }
                                 },
                                 "name": "myfile",
-                                "id": "grucloud-test/myfile/1629557179515969",
+                                "id": "grucloud-test/myfile/1629745651886914",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [

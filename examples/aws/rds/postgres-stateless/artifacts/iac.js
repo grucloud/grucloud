@@ -12,37 +12,37 @@ const createResources = ({ provider }) => {
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPrivateA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPrivateA.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPrivateA.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPrivateB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPrivateB.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPrivateB.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
   });
 
   provider.ec2.makeKeyPair({
@@ -108,105 +108,105 @@ const createResources = ({ provider }) => {
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePrivateA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePrivateA.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateA,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
-    properties: get("config.ec2.Route.routePrivateA.properties"),
   });
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePrivateB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePrivateB.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateB,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
-    properties: get("config.ec2.Route.routePrivateB.properties"),
   });
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePublic.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePublic.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePublic,
       ig: resources.ec2.InternetGateway.internetGateway,
     }),
-    properties: get("config.ec2.Route.routePublic.properties"),
   });
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.securityGroupPostgres.name"),
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
-    }),
     properties: get(
       "config.ec2.SecurityGroup.securityGroupPostgres.properties"
     ),
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
   });
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.securityGroupPublic.name"),
+    properties: get("config.ec2.SecurityGroup.securityGroupPublic.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.SecurityGroup.securityGroupPublic.properties"),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.name"),
+    properties: get(
+      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.properties"
+    ),
     dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupPostgres,
       securityGroupFrom: resources.ec2.SecurityGroup.securityGroupPublic,
     }),
-    properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.properties"
-    ),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressSshBastion.name"
     ),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupPublic,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressSshBastion.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupPublic,
+    }),
   });
 
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.bastion.name"),
+    properties: get("config.ec2.Instance.bastion.properties"),
     dependencies: ({ resources }) => ({
       subnet: resources.ec2.Subnet.subnetPublicA,
       keyPair: resources.ec2.KeyPair.kpPostgresStateless,
       eip: resources.ec2.ElasticIpAddress.eipBastion,
       securityGroups: [resources.ec2.SecurityGroup.securityGroupPublic],
     }),
-    properties: get("config.ec2.Instance.bastion.properties"),
   });
 
   provider.rds.makeDBCluster({
     name: get("config.rds.DBCluster.clusterPostgresStateless.name"),
+    properties: get("config.rds.DBCluster.clusterPostgresStateless.properties"),
     dependencies: ({ resources }) => ({
       dbSubnetGroup: resources.rds.DBSubnetGroup.subnetGroupPostgresStateless,
       securityGroups: [resources.ec2.SecurityGroup.securityGroupPostgres],
     }),
-    properties: get("config.rds.DBCluster.clusterPostgresStateless.properties"),
   });
 
   provider.rds.makeDBSubnetGroup({
     name: get("config.rds.DBSubnetGroup.subnetGroupPostgresStateless.name"),
+    properties: get(
+      "config.rds.DBSubnetGroup.subnetGroupPostgresStateless.properties"
+    ),
     dependencies: ({ resources }) => ({
       subnets: [
         resources.ec2.Subnet.subnetPrivateA,
         resources.ec2.Subnet.subnetPrivateB,
       ],
     }),
-    properties: get(
-      "config.rds.DBSubnetGroup.subnetGroupPostgresStateless.properties"
-    ),
   });
 };
 

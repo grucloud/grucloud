@@ -9,7 +9,7 @@ const {
   eq,
   not,
   pick,
-  assign,
+  omit,
 } = require("rubico");
 const { defaultsDeep, isEmpty, includes, first, unless } = require("rubico/x");
 
@@ -123,6 +123,15 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
+  const update = ({ payload, name, namespace }) =>
+    pipe([
+      () => payload,
+      pick(["name", "autoScalingGroupProvider"]),
+      omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
+      ecs().updateCapacityProvider,
+    ])();
+
   const deleteAutoScalingGroup = ({ live, lives }) =>
     pipe([
       () => live,
@@ -228,6 +237,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

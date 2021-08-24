@@ -53,7 +53,7 @@ module.exports = ({ stage }) => ({
       securityGroupLoadBalancer: {
         name: "security-group-load-balancer",
         properties: {
-          Description: "Load Balancer HTTP HTTPS Security Group",
+          Description: "Managed By GruCloud",
         },
       },
     },

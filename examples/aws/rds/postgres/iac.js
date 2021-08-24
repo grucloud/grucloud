@@ -21,9 +21,7 @@ const createResources = async ({ provider }) => {
     name: "security-group",
     dependencies: { vpc },
     properties: () => ({
-      create: {
-        Description: "Security Group Postgres",
-      },
+      Description: "Security Group Postgres",
     }),
   });
 

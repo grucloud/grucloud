@@ -35,6 +35,7 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
+const { detailedDiff } = require("deep-object-diff");
 
 const { compare, isOurMinion } = require("./K8sCommon");
 const { K8sUtils, toApiVersion } = require("./K8sUtils");
@@ -112,6 +113,7 @@ const fnSpecs = () => [
       ]),
     }),
     isOurMinion,
+    compare: detailedDiff,
   },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch
   {

@@ -10,18 +10,18 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnet_1.name"),
+    properties: get("config.ec2.Subnet.subnet_1.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcPostgres,
     }),
-    properties: get("config.ec2.Subnet.subnet_1.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnet_2.name"),
+    properties: get("config.ec2.Subnet.subnet_2.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcPostgres,
     }),
-    properties: get("config.ec2.Subnet.subnet_2.properties"),
   });
 
   provider.ec2.makeInternetGateway({
@@ -35,52 +35,52 @@ const createResources = ({ provider }) => {
     name: get("config.ec2.RouteTable.routeTablePublic.name"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcPostgres,
-      subnets: [resources.ec2.Subnet.subnet_2, resources.ec2.Subnet.subnet_1],
+      subnets: [resources.ec2.Subnet.subnet_1, resources.ec2.Subnet.subnet_2],
     }),
   });
 
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePublic.name"),
+    properties: get("config.ec2.Route.routePublic.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePublic,
       ig: resources.ec2.InternetGateway.igPostgres,
     }),
-    properties: get("config.ec2.Route.routePublic.properties"),
   });
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.securityGroup.name"),
+    properties: get("config.ec2.SecurityGroup.securityGroup.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcPostgres,
     }),
-    properties: get("config.ec2.SecurityGroup.securityGroup.properties"),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.name"),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroup,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressPostgres.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+    }),
   });
 
   provider.rds.makeDBInstance({
     name: get("config.rds.DBInstance.dbInstance.name"),
+    properties: get("config.rds.DBInstance.dbInstance.properties"),
     dependencies: ({ resources }) => ({
       dbSubnetGroup: resources.rds.DBSubnetGroup.subnetGroupPostgres,
       securityGroups: [resources.ec2.SecurityGroup.securityGroup],
     }),
-    properties: get("config.rds.DBInstance.dbInstance.properties"),
   });
 
   provider.rds.makeDBSubnetGroup({
     name: get("config.rds.DBSubnetGroup.subnetGroupPostgres.name"),
+    properties: get("config.rds.DBSubnetGroup.subnetGroupPostgres.properties"),
     dependencies: ({ resources }) => ({
       subnets: [resources.ec2.Subnet.subnet_1, resources.ec2.Subnet.subnet_2],
     }),
-    properties: get("config.rds.DBSubnetGroup.subnetGroupPostgres.properties"),
   });
 };
 

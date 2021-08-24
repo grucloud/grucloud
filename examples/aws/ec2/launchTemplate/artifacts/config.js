@@ -1,5 +1,33 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-ec2-launch-template",
+  iam: {
+    Role: {
+      roleEcs: {
+        name: "role-ecs",
+        properties: {
+          RoleName: "role-ecs",
+          Path: "/",
+          AssumeRolePolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  Service: "ec2.amazonaws.com",
+                },
+                Action: "sts:AssumeRole",
+              },
+            ],
+          },
+        },
+      },
+    },
+    InstanceProfile: {
+      roleEcs: {
+        name: "role-ecs",
+      },
+    },
+  },
   ec2: {
     Vpc: {
       vpc: {
@@ -67,6 +95,9 @@ module.exports = ({ stage }) => ({
         properties: {
           LaunchTemplateData: {
             EbsOptimized: false,
+            IamInstanceProfile: {
+              Arn: "arn:aws:iam::840541460064:instance-profile/role-ecs",
+            },
             ImageId: "ami-0d26eb3972b7f8c96",
             InstanceType: "t2.micro",
             KeyName: "kp-ecs",

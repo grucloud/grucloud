@@ -29,10 +29,10 @@
                                     "metadata": {
                                         "name": "coredns",
                                         "namespace": "kube-system",
-                                        "uid": "de0690c5-850d-4608-a5aa-84a3ab15f18a",
-                                        "resourceVersion": "593",
+                                        "uid": "695c95f6-9d6d-4a2c-8e7f-4fa9544bdba5",
+                                        "resourceVersion": "534",
                                         "generation": 2,
-                                        "creationTimestamp": "2021-08-21T15:32:35Z",
+                                        "creationTimestamp": "2021-08-23T13:15:22Z",
                                         "labels": {
                                             "k8s-app": "kube-dns"
                                         },
@@ -198,16 +198,16 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:32:48Z",
-                                                "lastTransitionTime": "2021-08-21T15:32:48Z",
+                                                "lastUpdateTime": "2021-08-23T13:15:36Z",
+                                                "lastTransitionTime": "2021-08-23T13:15:36Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:33:29Z",
-                                                "lastTransitionTime": "2021-08-21T15:32:48Z",
+                                                "lastUpdateTime": "2021-08-23T13:15:39Z",
+                                                "lastTransitionTime": "2021-08-23T13:15:36Z",
                                                 "reason": "NewReplicaSetAvailable",
                                                 "message": "ReplicaSet \"coredns-558bd4d5db\" has successfully progressed."
                                             }
@@ -219,10 +219,10 @@
                                 "meta": {
                                     "name": "coredns",
                                     "namespace": "kube-system",
-                                    "uid": "de0690c5-850d-4608-a5aa-84a3ab15f18a",
-                                    "resourceVersion": "593",
+                                    "uid": "695c95f6-9d6d-4a2c-8e7f-4fa9544bdba5",
+                                    "resourceVersion": "534",
                                     "generation": 2,
-                                    "creationTimestamp": "2021-08-21T15:32:35Z",
+                                    "creationTimestamp": "2021-08-23T13:15:22Z",
                                     "labels": {
                                         "k8s-app": "kube-dns"
                                     },
@@ -249,10 +249,10 @@
                                     "metadata": {
                                         "name": "ingress-nginx-controller",
                                         "namespace": "ingress-nginx",
-                                        "uid": "1e206432-1d75-4f39-91b2-43dbb98bf52d",
-                                        "resourceVersion": "2058",
+                                        "uid": "de2b7be0-057f-481b-b040-c6a28e988e8d",
+                                        "resourceVersion": "634",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "creationTimestamp": "2021-08-23T13:15:24Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/component": "controller",
@@ -445,16 +445,16 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:47:36Z",
-                                                "lastTransitionTime": "2021-08-21T15:47:36Z",
+                                                "lastUpdateTime": "2021-08-23T13:15:36Z",
+                                                "lastTransitionTime": "2021-08-23T13:15:36Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:47:56Z",
-                                                "lastTransitionTime": "2021-08-21T15:47:36Z",
+                                                "lastUpdateTime": "2021-08-23T13:16:46Z",
+                                                "lastTransitionTime": "2021-08-23T13:15:36Z",
                                                 "reason": "NewReplicaSetAvailable",
                                                 "message": "ReplicaSet \"ingress-nginx-controller-59b45fb494\" has successfully progressed."
                                             }
@@ -466,10 +466,10 @@
                                 "meta": {
                                     "name": "ingress-nginx-controller",
                                     "namespace": "ingress-nginx",
-                                    "uid": "1e206432-1d75-4f39-91b2-43dbb98bf52d",
-                                    "resourceVersion": "2058",
+                                    "uid": "de2b7be0-057f-481b-b040-c6a28e988e8d",
+                                    "resourceVersion": "634",
                                     "generation": 1,
-                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "creationTimestamp": "2021-08-23T13:15:24Z",
                                     "labels": {
                                         "addonmanager.kubernetes.io/mode": "Reconcile",
                                         "app.kubernetes.io/component": "controller",
@@ -500,10 +500,10 @@
                                     "metadata": {
                                         "name": "nginx-deployment",
                                         "namespace": "myapp",
-                                        "uid": "d804ef82-476d-4ef4-827f-40d006210472",
-                                        "resourceVersion": "4338",
+                                        "uid": "635d12ea-7178-4fef-b441-ac3c8e68c7d6",
+                                        "resourceVersion": "2968",
                                         "generation": 1,
-                                        "creationTimestamp": "2021-08-21T15:58:57Z",
+                                        "creationTimestamp": "2021-08-23T13:30:35Z",
                                         "labels": {
                                             "app": "nginx-label"
                                         },
@@ -574,16 +574,16 @@
                                             {
                                                 "type": "Available",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:58:58Z",
-                                                "lastTransitionTime": "2021-08-21T15:58:58Z",
+                                                "lastUpdateTime": "2021-08-23T13:30:37Z",
+                                                "lastTransitionTime": "2021-08-23T13:30:37Z",
                                                 "reason": "MinimumReplicasAvailable",
                                                 "message": "Deployment has minimum availability."
                                             },
                                             {
                                                 "type": "Progressing",
                                                 "status": "True",
-                                                "lastUpdateTime": "2021-08-21T15:58:58Z",
-                                                "lastTransitionTime": "2021-08-21T15:58:57Z",
+                                                "lastUpdateTime": "2021-08-23T13:30:37Z",
+                                                "lastTransitionTime": "2021-08-23T13:30:35Z",
                                                 "reason": "NewReplicaSetAvailable",
                                                 "message": "ReplicaSet \"nginx-deployment-66cdc8d56b\" has successfully progressed."
                                             }
@@ -595,10 +595,10 @@
                                 "meta": {
                                     "name": "nginx-deployment",
                                     "namespace": "myapp",
-                                    "uid": "d804ef82-476d-4ef4-827f-40d006210472",
-                                    "resourceVersion": "4338",
+                                    "uid": "635d12ea-7178-4fef-b441-ac3c8e68c7d6",
+                                    "resourceVersion": "2968",
                                     "generation": 1,
-                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "creationTimestamp": "2021-08-23T13:30:35Z",
                                     "labels": {
                                         "app": "nginx-label"
                                     },
@@ -637,9 +637,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "default",
-                                        "uid": "62c7c640-fb0b-4c9a-bfc7-23a0e40a137b",
+                                        "uid": "6a056b07-1891-4925-a98c-3b0c69ee3643",
                                         "resourceVersion": "206",
-                                        "creationTimestamp": "2021-08-21T15:32:33Z",
+                                        "creationTimestamp": "2021-08-23T13:15:21Z",
                                         "labels": {
                                             "kubernetes.io/metadata.name": "default"
                                         }
@@ -657,9 +657,9 @@
                                 "id": "default",
                                 "meta": {
                                     "name": "default",
-                                    "uid": "62c7c640-fb0b-4c9a-bfc7-23a0e40a137b",
+                                    "uid": "6a056b07-1891-4925-a98c-3b0c69ee3643",
                                     "resourceVersion": "206",
-                                    "creationTimestamp": "2021-08-21T15:32:33Z",
+                                    "creationTimestamp": "2021-08-23T13:15:21Z",
                                     "labels": {
                                         "kubernetes.io/metadata.name": "default"
                                     }
@@ -682,9 +682,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "ingress-nginx",
-                                        "uid": "8e1ebafa-90b5-4feb-bd72-82194ecc4650",
-                                        "resourceVersion": "1856",
-                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "uid": "74fd022a-b783-4997-aaa8-759c9055b98e",
+                                        "resourceVersion": "294",
+                                        "creationTimestamp": "2021-08-23T13:15:24Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/instance": "ingress-nginx",
@@ -708,9 +708,9 @@
                                 "id": "ingress-nginx",
                                 "meta": {
                                     "name": "ingress-nginx",
-                                    "uid": "8e1ebafa-90b5-4feb-bd72-82194ecc4650",
-                                    "resourceVersion": "1856",
-                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "uid": "74fd022a-b783-4997-aaa8-759c9055b98e",
+                                    "resourceVersion": "294",
+                                    "creationTimestamp": "2021-08-23T13:15:24Z",
                                     "labels": {
                                         "addonmanager.kubernetes.io/mode": "Reconcile",
                                         "app.kubernetes.io/instance": "ingress-nginx",
@@ -739,9 +739,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "kube-node-lease",
-                                        "uid": "bdb15bae-20bf-4f6b-839d-24886d7ae787",
-                                        "resourceVersion": "67",
-                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "uid": "2fb7f3b0-9478-4978-84f1-bd3190ba6fc1",
+                                        "resourceVersion": "62",
+                                        "creationTimestamp": "2021-08-23T13:15:18Z",
                                         "labels": {
                                             "kubernetes.io/metadata.name": "kube-node-lease"
                                         }
@@ -759,9 +759,9 @@
                                 "id": "kube-node-lease",
                                 "meta": {
                                     "name": "kube-node-lease",
-                                    "uid": "bdb15bae-20bf-4f6b-839d-24886d7ae787",
-                                    "resourceVersion": "67",
-                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "uid": "2fb7f3b0-9478-4978-84f1-bd3190ba6fc1",
+                                    "resourceVersion": "62",
+                                    "creationTimestamp": "2021-08-23T13:15:18Z",
                                     "labels": {
                                         "kubernetes.io/metadata.name": "kube-node-lease"
                                     }
@@ -784,9 +784,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "kube-public",
-                                        "uid": "3f0b78fb-ffd5-4212-9f40-7577db025fea",
-                                        "resourceVersion": "62",
-                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "uid": "f6e65e5f-e7b0-4669-b850-1ab25c41c52a",
+                                        "resourceVersion": "54",
+                                        "creationTimestamp": "2021-08-23T13:15:18Z",
                                         "labels": {
                                             "kubernetes.io/metadata.name": "kube-public"
                                         }
@@ -804,9 +804,9 @@
                                 "id": "kube-public",
                                 "meta": {
                                     "name": "kube-public",
-                                    "uid": "3f0b78fb-ffd5-4212-9f40-7577db025fea",
-                                    "resourceVersion": "62",
-                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "uid": "f6e65e5f-e7b0-4669-b850-1ab25c41c52a",
+                                    "resourceVersion": "54",
+                                    "creationTimestamp": "2021-08-23T13:15:18Z",
                                     "labels": {
                                         "kubernetes.io/metadata.name": "kube-public"
                                     }
@@ -829,9 +829,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "kube-system",
-                                        "uid": "37328aab-dbeb-4824-8ca1-5b898179f28c",
-                                        "resourceVersion": "20",
-                                        "creationTimestamp": "2021-08-21T15:32:32Z",
+                                        "uid": "30829f87-a2f9-4551-89c4-c492653326c9",
+                                        "resourceVersion": "23",
+                                        "creationTimestamp": "2021-08-23T13:15:18Z",
                                         "labels": {
                                             "kubernetes.io/metadata.name": "kube-system"
                                         }
@@ -849,9 +849,9 @@
                                 "id": "kube-system",
                                 "meta": {
                                     "name": "kube-system",
-                                    "uid": "37328aab-dbeb-4824-8ca1-5b898179f28c",
-                                    "resourceVersion": "20",
-                                    "creationTimestamp": "2021-08-21T15:32:32Z",
+                                    "uid": "30829f87-a2f9-4551-89c4-c492653326c9",
+                                    "resourceVersion": "23",
+                                    "creationTimestamp": "2021-08-23T13:15:18Z",
                                     "labels": {
                                         "kubernetes.io/metadata.name": "kube-system"
                                     }
@@ -874,9 +874,9 @@
                                 "live": {
                                     "metadata": {
                                         "name": "myapp",
-                                        "uid": "33068851-66e1-42ae-9969-807afe901c51",
-                                        "resourceVersion": "4304",
-                                        "creationTimestamp": "2021-08-21T15:58:57Z",
+                                        "uid": "f279ffc9-274c-443e-beea-0787dca59321",
+                                        "resourceVersion": "2935",
+                                        "creationTimestamp": "2021-08-23T13:30:35Z",
                                         "labels": {
                                             "kubernetes.io/metadata.name": "myapp"
                                         },
@@ -901,9 +901,9 @@
                                 "id": "myapp",
                                 "meta": {
                                     "name": "myapp",
-                                    "uid": "33068851-66e1-42ae-9969-807afe901c51",
-                                    "resourceVersion": "4304",
-                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "uid": "f279ffc9-274c-443e-beea-0787dca59321",
+                                    "resourceVersion": "2935",
+                                    "creationTimestamp": "2021-08-23T13:30:35Z",
                                     "labels": {
                                         "kubernetes.io/metadata.name": "myapp"
                                     },
@@ -942,9 +942,9 @@
                                     "metadata": {
                                         "name": "ingress-nginx-controller",
                                         "namespace": "ingress-nginx",
-                                        "uid": "30fd1cf5-c3f4-40be-9c8e-c9fab179c847",
-                                        "resourceVersion": "1881",
-                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "uid": "131827b3-59b1-4f02-9b3a-ea336c99aad6",
+                                        "resourceVersion": "317",
+                                        "creationTimestamp": "2021-08-23T13:15:24Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/component": "controller",
@@ -962,14 +962,14 @@
                                                 "protocol": "TCP",
                                                 "port": 80,
                                                 "targetPort": "http",
-                                                "nodePort": 31615
+                                                "nodePort": 32431
                                             },
                                             {
                                                 "name": "https",
                                                 "protocol": "TCP",
                                                 "port": 443,
                                                 "targetPort": "https",
-                                                "nodePort": 31106
+                                                "nodePort": 31039
                                             }
                                         ],
                                         "selector": {
@@ -977,9 +977,9 @@
                                             "app.kubernetes.io/instance": "ingress-nginx",
                                             "app.kubernetes.io/name": "ingress-nginx"
                                         },
-                                        "clusterIP": "10.102.100.44",
+                                        "clusterIP": "10.106.41.103",
                                         "clusterIPs": [
-                                            "10.102.100.44"
+                                            "10.106.41.103"
                                         ],
                                         "type": "NodePort",
                                         "sessionAffinity": "None",
@@ -998,9 +998,9 @@
                                 "meta": {
                                     "name": "ingress-nginx-controller",
                                     "namespace": "ingress-nginx",
-                                    "uid": "30fd1cf5-c3f4-40be-9c8e-c9fab179c847",
-                                    "resourceVersion": "1881",
-                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "uid": "131827b3-59b1-4f02-9b3a-ea336c99aad6",
+                                    "resourceVersion": "317",
+                                    "creationTimestamp": "2021-08-23T13:15:24Z",
                                     "labels": {
                                         "addonmanager.kubernetes.io/mode": "Reconcile",
                                         "app.kubernetes.io/component": "controller",
@@ -1030,9 +1030,9 @@
                                     "metadata": {
                                         "name": "ingress-nginx-controller-admission",
                                         "namespace": "ingress-nginx",
-                                        "uid": "7158b4bd-37fa-4f06-b327-d3649784e08e",
-                                        "resourceVersion": "1875",
-                                        "creationTimestamp": "2021-08-21T15:47:36Z",
+                                        "uid": "cfbf30cb-8675-4a94-ac4f-8f780c1cb120",
+                                        "resourceVersion": "313",
+                                        "creationTimestamp": "2021-08-23T13:15:24Z",
                                         "labels": {
                                             "addonmanager.kubernetes.io/mode": "Reconcile",
                                             "app.kubernetes.io/component": "controller",
@@ -1057,9 +1057,9 @@
                                             "app.kubernetes.io/instance": "ingress-nginx",
                                             "app.kubernetes.io/name": "ingress-nginx"
                                         },
-                                        "clusterIP": "10.96.234.7",
+                                        "clusterIP": "10.103.199.120",
                                         "clusterIPs": [
-                                            "10.96.234.7"
+                                            "10.103.199.120"
                                         ],
                                         "type": "ClusterIP",
                                         "sessionAffinity": "None",
@@ -1077,9 +1077,9 @@
                                 "meta": {
                                     "name": "ingress-nginx-controller-admission",
                                     "namespace": "ingress-nginx",
-                                    "uid": "7158b4bd-37fa-4f06-b327-d3649784e08e",
-                                    "resourceVersion": "1875",
-                                    "creationTimestamp": "2021-08-21T15:47:36Z",
+                                    "uid": "cfbf30cb-8675-4a94-ac4f-8f780c1cb120",
+                                    "resourceVersion": "313",
+                                    "creationTimestamp": "2021-08-23T13:15:24Z",
                                     "labels": {
                                         "addonmanager.kubernetes.io/mode": "Reconcile",
                                         "app.kubernetes.io/component": "controller",
@@ -1109,9 +1109,9 @@
                                     "metadata": {
                                         "name": "kube-dns",
                                         "namespace": "kube-system",
-                                        "uid": "2545c280-7854-4a05-9c92-d9b612a4e20a",
-                                        "resourceVersion": "272",
-                                        "creationTimestamp": "2021-08-21T15:32:35Z",
+                                        "uid": "46edf7b1-f7b3-417a-8aa9-c4b2d60472c6",
+                                        "resourceVersion": "259",
+                                        "creationTimestamp": "2021-08-23T13:15:22Z",
                                         "labels": {
                                             "k8s-app": "kube-dns",
                                             "kubernetes.io/cluster-service": "true",
@@ -1166,9 +1166,9 @@
                                 "meta": {
                                     "name": "kube-dns",
                                     "namespace": "kube-system",
-                                    "uid": "2545c280-7854-4a05-9c92-d9b612a4e20a",
-                                    "resourceVersion": "272",
-                                    "creationTimestamp": "2021-08-21T15:32:35Z",
+                                    "uid": "46edf7b1-f7b3-417a-8aa9-c4b2d60472c6",
+                                    "resourceVersion": "259",
+                                    "creationTimestamp": "2021-08-23T13:15:22Z",
                                     "labels": {
                                         "k8s-app": "kube-dns",
                                         "kubernetes.io/cluster-service": "true",
@@ -1198,9 +1198,9 @@
                                     "metadata": {
                                         "name": "kubelet",
                                         "namespace": "kube-system",
-                                        "uid": "6483bd0f-887e-40d1-9792-45a78b9bbf5b",
-                                        "resourceVersion": "3393",
-                                        "creationTimestamp": "2021-08-21T15:54:40Z",
+                                        "uid": "74ad116e-b2ed-4568-9d94-05c0b8a6f5ac",
+                                        "resourceVersion": "1953",
+                                        "creationTimestamp": "2021-08-23T13:25:04Z",
                                         "labels": {
                                             "app.kubernetes.io/managed-by": "prometheus-operator",
                                             "app.kubernetes.io/name": "kubelet",
@@ -1249,9 +1249,9 @@
                                 "meta": {
                                     "name": "kubelet",
                                     "namespace": "kube-system",
-                                    "uid": "6483bd0f-887e-40d1-9792-45a78b9bbf5b",
-                                    "resourceVersion": "3393",
-                                    "creationTimestamp": "2021-08-21T15:54:40Z",
+                                    "uid": "74ad116e-b2ed-4568-9d94-05c0b8a6f5ac",
+                                    "resourceVersion": "1953",
+                                    "creationTimestamp": "2021-08-23T13:25:04Z",
                                     "labels": {
                                         "app.kubernetes.io/managed-by": "prometheus-operator",
                                         "app.kubernetes.io/name": "kubelet",
@@ -1277,9 +1277,9 @@
                                     "metadata": {
                                         "name": "kubernetes",
                                         "namespace": "default",
-                                        "uid": "ec785877-fa9f-45e5-913e-0048ecaf8a43",
+                                        "uid": "683ac199-addf-4634-a308-f13fe221dd74",
                                         "resourceVersion": "208",
-                                        "creationTimestamp": "2021-08-21T15:32:33Z",
+                                        "creationTimestamp": "2021-08-23T13:15:21Z",
                                         "labels": {
                                             "component": "apiserver",
                                             "provider": "kubernetes"
@@ -1314,9 +1314,9 @@
                                 "meta": {
                                     "name": "kubernetes",
                                     "namespace": "default",
-                                    "uid": "ec785877-fa9f-45e5-913e-0048ecaf8a43",
+                                    "uid": "683ac199-addf-4634-a308-f13fe221dd74",
                                     "resourceVersion": "208",
-                                    "creationTimestamp": "2021-08-21T15:32:33Z",
+                                    "creationTimestamp": "2021-08-23T13:15:21Z",
                                     "labels": {
                                         "component": "apiserver",
                                         "provider": "kubernetes"
@@ -1341,9 +1341,9 @@
                                     "metadata": {
                                         "name": "nginx-service",
                                         "namespace": "myapp",
-                                        "uid": "b1fc5ca4-a9f2-4982-9b1b-d1fd5300ff78",
-                                        "resourceVersion": "4313",
-                                        "creationTimestamp": "2021-08-21T15:58:57Z",
+                                        "uid": "f56fd4bc-1e5b-4a8c-b61c-221804d7d1f0",
+                                        "resourceVersion": "2946",
+                                        "creationTimestamp": "2021-08-23T13:30:35Z",
                                         "annotations": {
                                             "Name": "nginx-service",
                                             "gc-created-by-provider": "k8s",
@@ -1364,9 +1364,9 @@
                                         "selector": {
                                             "app": "nginx-label"
                                         },
-                                        "clusterIP": "10.103.194.45",
+                                        "clusterIP": "10.108.46.74",
                                         "clusterIPs": [
-                                            "10.103.194.45"
+                                            "10.108.46.74"
                                         ],
                                         "type": "NodePort",
                                         "sessionAffinity": "None",
@@ -1385,9 +1385,9 @@
                                 "meta": {
                                     "name": "nginx-service",
                                     "namespace": "myapp",
-                                    "uid": "b1fc5ca4-a9f2-4982-9b1b-d1fd5300ff78",
-                                    "resourceVersion": "4313",
-                                    "creationTimestamp": "2021-08-21T15:58:57Z",
+                                    "uid": "f56fd4bc-1e5b-4a8c-b61c-221804d7d1f0",
+                                    "resourceVersion": "2946",
+                                    "creationTimestamp": "2021-08-23T13:30:35Z",
                                     "annotations": {
                                         "Name": "nginx-service",
                                         "gc-created-by-provider": "k8s",

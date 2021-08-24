@@ -21,4 +21,6 @@ skinparam monochrome true
 +++ ecs
 ++++ Cluster (1)
 ++++ CapacityProvider (1)
+++++ TaskDefinition (1)
+++++ Service (1)
 @endmindmap

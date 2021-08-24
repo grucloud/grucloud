@@ -12,9 +12,7 @@ const sg = provider.ec2.makeSecurityGroup({
   name: "securityGroup",
   dependencies: { vpc },
   properties: () => ({
-    create: {
-      Description: "Security Group SSH",
-    },
+    Description: "Security Group SSH",
   }),
 });
 ```

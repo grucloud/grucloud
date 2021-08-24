@@ -26,8 +26,8 @@
                                 "type": "Disk",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "3357860621261254114",
-                                    "creationTimestamp": "2021-08-21T07:51:58.423-07:00",
+                                    "id": "1700246237075099055",
+                                    "creationTimestamp": "2021-08-23T12:13:04.618-07:00",
                                     "name": "web-server",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a",
@@ -53,7 +53,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-21T07:51:58.424-07:00",
+                                    "lastAttachTimestamp": "2021-08-23T12:13:04.619-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/zones/europe-west4-a/instances/web-server"
                                     ],
@@ -65,7 +65,7 @@
                                     "kind": "compute#disk"
                                 },
                                 "name": "web-server",
-                                "id": "3357860621261254114",
+                                "id": "1700246237075099055",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
@@ -428,8 +428,8 @@
                                 "type": "VmInstance",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "7397465654515510754",
-                                    "creationTimestamp": "2021-08-21T07:51:58.410-07:00",
+                                    "id": "6846293407658036655",
+                                    "creationTimestamp": "2021-08-23T12:13:04.603-07:00",
                                     "name": "web-server",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -442,18 +442,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-vm-tuto-1/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.0.35",
+                                            "networkIP": "10.164.0.36",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "34.147.106.10",
+                                                    "natIP": "34.91.135.42",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "t8GBFthhRT4=",
+                                            "fingerprint": "8jadVAwWqRw=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -538,12 +538,12 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "BabEiwPJ3qg=",
-                                    "lastStartTimestamp": "2021-08-21T07:52:06.103-07:00",
+                                    "fingerprint": "YBpXsR-qsck=",
+                                    "lastStartTimestamp": "2021-08-23T12:13:13.338-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "name": "web-server",
-                                "id": "7397465654515510754",
+                                "id": "6846293407658036655",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [

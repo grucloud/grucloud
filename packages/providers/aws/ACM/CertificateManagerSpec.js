@@ -1,5 +1,6 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, omit } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const { AwsCertificate } = require("./AwsCertificate");
 
@@ -11,5 +12,8 @@ module.exports = () =>
       type: "Certificate",
       Client: AwsCertificate,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["ValidationMethod", "Tags"])]),
+      }),
     },
   ]);

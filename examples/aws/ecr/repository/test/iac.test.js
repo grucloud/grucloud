@@ -9,9 +9,10 @@ describe("ECR Repository", async function () {
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       createStack,
       configs: [
+        require("../config.js"),
         require("./configUpdate1.js"),
         require("./configUpdate2.js"),
-        require("../config.js"),
+        require("./configUpdate3.js"),
       ],
     });
   });

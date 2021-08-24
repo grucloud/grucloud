@@ -26,8 +26,8 @@
                                 "type": "KeyPair",
                                 "providerName": "aws",
                                 "live": {
-                                    "KeyPairId": "key-09edf0d16571d66f2",
-                                    "KeyFingerprint": "bb:50:83:d4:2d:8a:04:17:a0:38:c0:ff:ef:3d:81:24:e7:b6:55:1f",
+                                    "KeyPairId": "key-0b7b34f48b91faeae",
+                                    "KeyFingerprint": "ef:bf:21:1a:f9:42:88:d7:65:bb:13:ff:0c:8b:38:8f:9d:6c:a4:30",
                                     "KeyName": "kp",
                                     "Tags": [
                                         {
@@ -58,11 +58,11 @@
                                 "namespace": "",
                                 "dependencies": [],
                                 "show": true,
+                                "uri": "aws::ec2::KeyPair::kp",
                                 "managedByUs": true,
                                 "cannotBeDeleted": false,
                                 "managedByOther": false,
-                                "displayName": "kp",
-                                "uri": "aws::ec2::KeyPair::kp"
+                                "displayName": "kp"
                             }
                         ],
                         "groupType": "ec2::KeyPair",

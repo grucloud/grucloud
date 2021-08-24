@@ -514,6 +514,12 @@ exports.ResourceMaker = ({
         throw Error(`Resource ${toString()} does not exist`);
       }),
       getClient,
+      tap((client) => {
+        assert(
+          client.update,
+          `client ${client.spec.groupType} has no update function`
+        );
+      }),
       (client) =>
         retryCall({
           name: `update ${toString()}`,

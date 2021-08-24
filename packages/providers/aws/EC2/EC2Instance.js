@@ -71,29 +71,30 @@ const configDefault =
     },
   }) =>
     pipe([
-      () => ({}),
-      defaultsDeep(otherProperties),
+      tap((params) => {
+        assert(true);
+      }),
+      () => otherProperties,
       defaultsDeep({
         ...(UserData && {
           UserData: Buffer.from(UserData, "utf-8").toString("base64"),
         }),
         ...(image && { ImageId: getField(image, "ImageId") }),
-        ...(subnet ||
-          (!isEmpty(securityGroups) && {
-            NetworkInterfaces: [
-              {
-                AssociatePublicIpAddress: true,
-                DeviceIndex: 0,
-                ...(!isEmpty(securityGroups) && {
-                  Groups: transform(
-                    map((sg) => [getField(sg, "GroupId")]),
-                    () => []
-                  )(securityGroups),
-                }),
-                ...(subnet && { SubnetId: getField(subnet, "SubnetId") }),
-              },
-            ],
-          })),
+        ...((subnet || !isEmpty(securityGroups)) && {
+          NetworkInterfaces: [
+            {
+              AssociatePublicIpAddress: true,
+              DeviceIndex: 0,
+              ...(!isEmpty(securityGroups) && {
+                Groups: transform(
+                  map((sg) => [getField(sg, "GroupId")]),
+                  () => []
+                )(securityGroups),
+              }),
+              ...(subnet && { SubnetId: getField(subnet, "SubnetId") }),
+            },
+          ],
+        }),
         ...(iamInstanceProfile && {
           IamInstanceProfile: {
             Arn: getField(iamInstanceProfile, "Arn"),
@@ -150,7 +151,7 @@ exports.EC2Instance = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "ec2",
-      ids: filter(not(isEmpty))([live.KeyName]),
+      ids: [live.KeyName],
     },
     { type: "Vpc", group: "ec2", ids: [live.VpcId] },
     { type: "Subnet", group: "ec2", ids: [live.SubnetId] },
@@ -323,7 +324,9 @@ exports.EC2Instance = ({ spec, config }) => {
           `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
         );
       }),
-      () => error.message.includes("iamInstanceProfile.name is invalid"),
+      () => error,
+      get("message"),
+      includes("Invalid IAM Instance Profile ARN"),
       tap((retry) => {
         logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
       }),
@@ -337,7 +340,7 @@ exports.EC2Instance = ({ spec, config }) => {
         not(isEmpty),
         pipe([
           (Value) => ({ InstanceId, InstanceType: { Value } }),
-          (params) => ec2().modifyInstanceAttribute(params),
+          ec2().modifyInstanceAttribute,
         ])
       ),
     ])();

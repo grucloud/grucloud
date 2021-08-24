@@ -316,20 +316,20 @@ exports.isOurMinionObject = ({ tags, config }) => {
   ])();
 };
 
-const filterTargetDefault = ({ target = {} }) =>
-  pipe([() => target, omit(["Tags", "tags"])])();
-
-const filterLiveDefault = ({ live }) =>
-  pipe([() => live, omit(["Tags", "tags"])])();
+const filterTargetDefault = pipe([omit(["TagSpecifications", "Tags", "tags"])]);
+const filterLiveDefault = pipe([omit(["Tags", "tags"])]);
 
 exports.compare = ({
   filterTarget = filterTargetDefault,
   filterLive = filterLiveDefault,
 } = {}) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     assign({
-      target: filterTarget,
-      live: filterLive,
+      target: pipe([get("target", {}), filterTarget]),
+      live: pipe([get("live"), filterLive]),
     }),
     tap((params) => {
       assert(true);
@@ -337,14 +337,14 @@ exports.compare = ({
     ({ target, live }) => ({
       targetDiff: pipe([
         () => detailedDiff(target, live),
-        omit(["added", "deleted"]),
+        omit(["added"]),
         tap((params) => {
           assert(true);
         }),
       ])(),
       liveDiff: pipe([
         () => detailedDiff(live, target),
-        omit(["added", "deleted"]),
+        omit(["deleted"]),
         tap((params) => {
           assert(true);
         }),

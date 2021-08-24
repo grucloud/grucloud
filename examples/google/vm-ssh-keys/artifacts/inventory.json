@@ -26,11 +26,11 @@
                                 "type": "Address",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "1706507290075245857",
-                                    "creationTimestamp": "2021-08-21T07:55:10.140-07:00",
+                                    "id": "1670127465379285738",
+                                    "creationTimestamp": "2021-08-23T12:16:21.298-07:00",
                                     "name": "ip-webserver-ssh-keys",
                                     "description": "Managed By GruCloud",
-                                    "address": "35.204.18.228",
+                                    "address": "34.90.47.153",
                                     "status": "IN_USE",
                                     "region": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4",
                                     "selfLink": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/addresses/ip-webserver-ssh-keys",
@@ -42,7 +42,7 @@
                                     "kind": "compute#address"
                                 },
                                 "name": "ip-webserver-ssh-keys",
-                                "id": "1706507290075245857",
+                                "id": "1670127465379285738",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
@@ -67,8 +67,8 @@
                                 "type": "Disk",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "5578056412020124980",
-                                    "creationTimestamp": "2021-08-21T07:55:23.836-07:00",
+                                    "id": "2021531123918457597",
+                                    "creationTimestamp": "2021-08-23T12:16:34.981-07:00",
                                     "name": "webserver-ssh-keys",
                                     "sizeGb": "20",
                                     "zone": "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a",
@@ -94,7 +94,7 @@
                                             "type": "GVNIC"
                                         }
                                     ],
-                                    "lastAttachTimestamp": "2021-08-21T07:55:23.837-07:00",
+                                    "lastAttachTimestamp": "2021-08-23T12:16:34.982-07:00",
                                     "users": [
                                         "https://www.googleapis.com/compute/v1/projects/grucloud-test/zones/europe-west4-a/instances/webserver-ssh-keys"
                                     ],
@@ -106,7 +106,7 @@
                                     "kind": "compute#disk"
                                 },
                                 "name": "webserver-ssh-keys",
-                                "id": "5578056412020124980",
+                                "id": "2021531123918457597",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [],
@@ -131,8 +131,8 @@
                                 "type": "Firewall",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "6639175309957311777",
-                                    "creationTimestamp": "2021-08-21T07:55:10.086-07:00",
+                                    "id": "1102592874887662314",
+                                    "creationTimestamp": "2021-08-23T12:16:21.039-07:00",
                                     "name": "firewall-22",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
@@ -157,7 +157,7 @@
                                     "kind": "compute#firewall"
                                 },
                                 "name": "firewall-22",
-                                "id": "6639175309957311777",
+                                "id": "1102592874887662314",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -183,8 +183,8 @@
                                 "type": "Firewall",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "1933414754534862113",
-                                    "creationTimestamp": "2021-08-21T07:55:10.081-07:00",
+                                    "id": "4845481260728863466",
+                                    "creationTimestamp": "2021-08-23T12:16:21.120-07:00",
                                     "name": "firewall-icmp",
                                     "description": "Managed By GruCloud",
                                     "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
@@ -206,7 +206,7 @@
                                     "kind": "compute#firewall"
                                 },
                                 "name": "firewall-icmp",
-                                "id": "1933414754534862113",
+                                "id": "4845481260728863466",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [
@@ -357,8 +357,8 @@
                                 "type": "VmInstance",
                                 "providerName": "google",
                                 "live": {
-                                    "id": "6708163127660031284",
-                                    "creationTimestamp": "2021-08-21T07:55:23.820-07:00",
+                                    "id": "8946696663541369597",
+                                    "creationTimestamp": "2021-08-23T12:16:34.964-07:00",
                                     "name": "webserver-ssh-keys",
                                     "tags": {
                                         "fingerprint": "42WmSpB8rSM="
@@ -371,18 +371,18 @@
                                         {
                                             "network": "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/default",
                                             "subnetwork": "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/subnetworks/default",
-                                            "networkIP": "10.164.0.35",
+                                            "networkIP": "10.164.0.38",
                                             "name": "nic0",
                                             "accessConfigs": [
                                                 {
                                                     "type": "ONE_TO_ONE_NAT",
                                                     "name": "External NAT",
-                                                    "natIP": "35.204.18.228",
+                                                    "natIP": "34.90.47.153",
                                                     "networkTier": "PREMIUM",
                                                     "kind": "compute#accessConfig"
                                                 }
                                             ],
-                                            "fingerprint": "ywiUVap5_4k=",
+                                            "fingerprint": "hc8GUnQFBDQ=",
                                             "stackType": "IPV4_ONLY",
                                             "kind": "compute#networkInterface"
                                         }
@@ -467,12 +467,12 @@
                                     "confidentialInstanceConfig": {
                                         "enableConfidentialCompute": false
                                     },
-                                    "fingerprint": "UTeE9zJQEMo=",
-                                    "lastStartTimestamp": "2021-08-21T07:55:32.536-07:00",
+                                    "fingerprint": "1S43YvV2XLY=",
+                                    "lastStartTimestamp": "2021-08-23T12:16:42.565-07:00",
                                     "kind": "compute#instance"
                                 },
                                 "name": "webserver-ssh-keys",
-                                "id": "6708163127660031284",
+                                "id": "8946696663541369597",
                                 "isDefault": false,
                                 "namespace": "",
                                 "dependencies": [

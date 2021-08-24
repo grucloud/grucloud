@@ -26,91 +26,91 @@
 <g id="node1" class="node">
 <title>Bucket::::grucloud&#45;acceleration</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="236,-889 56,-889 56,-831 236,-831 236,-889"/>
-<text text-anchor="start" x="68" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="68" y="-869.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="68" y="-844.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;acceleration</text>
 </g>
 <!-- Bucket::::grucloud&#45;cors -->
 <g id="node2" class="node">
 <title>Bucket::::grucloud&#45;cors</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="207.5,-813 84.5,-813 84.5,-755 207.5,-755 207.5,-813"/>
-<text text-anchor="start" x="97" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="97" y="-793.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="97" y="-768.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;cors</text>
 </g>
 <!-- Bucket::::grucloud&#45;encryption -->
 <g id="node3" class="node">
 <title>Bucket::::grucloud&#45;encryption</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="229.5,-737 62.5,-737 62.5,-679 229.5,-679 229.5,-737"/>
-<text text-anchor="start" x="75" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="75" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="75" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;encryption</text>
 </g>
 <!-- Bucket::::grucloud&#45;lifecycleconfiguration -->
 <g id="node4" class="node">
 <title>Bucket::::grucloud&#45;lifecycleconfiguration</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="268,-661 24,-661 24,-603 268,-603 268,-661"/>
-<text text-anchor="start" x="36" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="36" y="-641.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="36" y="-616.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;lifecycleconfiguration</text>
 </g>
 <!-- Bucket::::grucloud&#45;log&#45;destination -->
 <g id="node5" class="node">
 <title>Bucket::::grucloud&#45;log&#45;destination</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="245,-585 47,-585 47,-527 245,-527 245,-585"/>
-<text text-anchor="start" x="59" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="59" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="59" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;log&#45;destination</text>
 </g>
 <!-- Bucket::::grucloud&#45;policy -->
 <g id="node6" class="node">
 <title>Bucket::::grucloud&#45;policy</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="213,-509 79,-509 79,-451 213,-451 213,-509"/>
-<text text-anchor="start" x="91" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="91" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="91" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;policy</text>
 </g>
 <!-- Bucket::::grucloud&#45;request&#45;payment -->
 <g id="node7" class="node">
 <title>Bucket::::grucloud&#45;request&#45;payment</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="253,-433 39,-433 39,-375 253,-375 253,-433"/>
-<text text-anchor="start" x="51" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="51" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="51" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;request&#45;payment</text>
 </g>
 <!-- Bucket::::grucloud&#45;tag -->
 <g id="node8" class="node">
 <title>Bucket::::grucloud&#45;tag</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="203.5,-357 88.5,-357 88.5,-299 203.5,-299 203.5,-357"/>
-<text text-anchor="start" x="101" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="101" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="101" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;tag</text>
 </g>
 <!-- Bucket::::grucloud&#45;test&#45;basic -->
 <g id="node9" class="node">
 <title>Bucket::::grucloud&#45;test&#45;basic</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="466,-129 304,-129 304,-71 466,-71 466,-129"/>
-<text text-anchor="start" x="316" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="316" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="316" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;test&#45;basic</text>
 </g>
 <!-- Bucket::::grucloud&#45;versioning -->
 <g id="node10" class="node">
 <title>Bucket::::grucloud&#45;versioning</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="229,-281 63,-281 63,-223 229,-223 229,-281"/>
-<text text-anchor="start" x="75" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="75" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="75" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;versioning</text>
 </g>
 <!-- Bucket::::grucloud&#45;website -->
 <g id="node11" class="node">
 <title>Bucket::::grucloud&#45;website</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="219.5,-205 72.5,-205 72.5,-147 219.5,-147 219.5,-205"/>
-<text text-anchor="start" x="85" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="85" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Bucket</text>
 <text text-anchor="start" x="85" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;website</text>
 </g>
 <!-- Object::::file&#45;test -->
 <g id="node12" class="node">
 <title>Object::::file&#45;test</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="184.5,-129 107.5,-129 107.5,-71 184.5,-71 184.5,-129"/>
-<text text-anchor="start" x="120" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Object</text>
-<text text-anchor="start" x="120" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">file&#45;test</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="197.5,-129 94.5,-129 94.5,-71 197.5,-71 197.5,-129"/>
+<text text-anchor="start" x="107" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">s3::Object</text>
+<text text-anchor="start" x="107" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">file&#45;test</text>
 </g>
 <!-- Object::::file&#45;test&#45;&gt;Bucket::::grucloud&#45;test&#45;basic -->
 <g id="edge1" class="edge">
 <title>Object::::file&#45;test&#45;&gt;Bucket::::grucloud&#45;test&#45;basic</title>
-<path fill="none" stroke="#707070" d="M184.55,-100C213.91,-100 255.96,-100 293.89,-100"/>
-<polygon fill="#707070" stroke="#707070" points="293.94,-103.5 303.94,-100 293.94,-96.5 293.94,-103.5"/>
+<path fill="none" stroke="#707070" d="M197.55,-100C225.52,-100 261.11,-100 293.69,-100"/>
+<polygon fill="#707070" stroke="#707070" points="293.69,-103.5 303.69,-100 293.69,-96.5 293.69,-103.5"/>
 </g>
 </g>
 </svg>

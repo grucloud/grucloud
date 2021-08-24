@@ -60,12 +60,14 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     eq(get("message"), "The specified task definition does not exist."),
   ]);
 
-  // isUpByName,  status : ACTIVE INACTIVE
-
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinition-property
-  const getList = ({ lives }) =>
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
+  const listTaskDefinitions = (params = {}) =>
     pipe([
-      () => ({}),
+      tap((params) => {
+        assert(true);
+      }),
+      () => params,
+      defaultsDeep({ sort: "DESC" }),
       ecs().listTaskDefinitions,
       get("taskDefinitionArns"),
       map(
@@ -78,7 +80,20 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
       ),
     ])();
 
-  const getByName = getByNameCore({ getList, findName });
+  const getList = ({ lives }) => pipe([listTaskDefinitions])();
+
+  const getByName = ({ name }) =>
+    pipe([
+      tap(() => {
+        assert(name);
+      }),
+      () => ({ familyPrefix: name }),
+      listTaskDefinitions,
+      tap((params) => {
+        assert(true);
+      }),
+      first,
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#registerTaskDefinition-property
   const create = ({ payload, name, namespace }) =>
@@ -148,6 +163,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update: create,
     destroy,
     getList,
     configDefault,

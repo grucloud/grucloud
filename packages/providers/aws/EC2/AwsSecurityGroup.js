@@ -167,12 +167,8 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`create sg ${tos({ name })}`);
       }),
-      () =>
-        ec2().createSecurityGroup({
-          Description: managedByDescription,
-          GroupName: name,
-          ...payload.create,
-        }),
+      () => payload,
+      ec2().createSecurityGroup,
       get("GroupId"),
       tap((GroupId) =>
         pipe([
@@ -290,15 +286,15 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     const { vpc } = dependencies;
     //assert(vpc, "missing vpc dependency");
     return defaultsDeep(otherProps)({
-      create: {
-        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-        TagSpecifications: [
-          {
-            ResourceType: "security-group",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-          },
-        ],
-      },
+      GroupName: name,
+      Description: managedByDescription,
+      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+      TagSpecifications: [
+        {
+          ResourceType: "security-group",
+          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+        },
+      ],
     });
   };
 

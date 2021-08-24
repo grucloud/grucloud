@@ -26,47 +26,47 @@
 <g id="node1" class="node">
 <title>ApiKey::::da2&#45;wbuvlxl5cfapbifytstbzthsxy</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="302,-281 54,-281 54,-223 302,-223 302,-281"/>
-<text text-anchor="start" x="66" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ApiKey</text>
+<text text-anchor="start" x="66" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">appSync::ApiKey</text>
 <text text-anchor="start" x="66" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">da2&#45;wbuvlxl5cfapbifytstbzthsxy</text>
 </g>
 <!-- GraphqlApi::::My AppSync App -->
 <g id="node3" class="node">
 <title>GraphqlApi::::My AppSync App</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="595.5,-243 448.5,-243 448.5,-185 595.5,-185 595.5,-243"/>
-<text text-anchor="start" x="461" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">GraphqlApi</text>
-<text text-anchor="start" x="461" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">My AppSync App</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="616.5,-243 427.5,-243 427.5,-185 616.5,-185 616.5,-243"/>
+<text text-anchor="start" x="440" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">appSync::GraphqlApi</text>
+<text text-anchor="start" x="440" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">My AppSync App</text>
 </g>
 <!-- ApiKey::::da2&#45;wbuvlxl5cfapbifytstbzthsxy&#45;&gt;GraphqlApi::::My AppSync App -->
 <g id="edge1" class="edge">
 <title>ApiKey::::da2&#45;wbuvlxl5cfapbifytstbzthsxy&#45;&gt;GraphqlApi::::My AppSync App</title>
-<path fill="none" stroke="#707070" d="M302.47,-238.28C347.62,-233.26 397.58,-227.71 438.32,-223.19"/>
-<polygon fill="#707070" stroke="#707070" points="438.92,-226.64 448.47,-222.06 438.15,-219.68 438.92,-226.64"/>
+<path fill="none" stroke="#707070" d="M302.47,-238.28C340.07,-234.1 381,-229.56 417.17,-225.54"/>
+<polygon fill="#707070" stroke="#707070" points="417.68,-229 427.24,-224.42 416.91,-222.04 417.68,-229"/>
 </g>
 <!-- DataSource::::datasource -->
 <g id="node2" class="node">
 <title>DataSource::::datasource</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="234.5,-205 121.5,-205 121.5,-147 234.5,-147 234.5,-205"/>
-<text text-anchor="start" x="134" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DataSource</text>
-<text text-anchor="start" x="134" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">datasource</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="273,-205 83,-205 83,-147 273,-147 273,-205"/>
+<text text-anchor="start" x="95" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">appSync::DataSource</text>
+<text text-anchor="start" x="95" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">datasource</text>
 </g>
 <!-- DataSource::::datasource&#45;&gt;GraphqlApi::::My AppSync App -->
 <g id="edge2" class="edge">
 <title>DataSource::::datasource&#45;&gt;GraphqlApi::::My AppSync App</title>
-<path fill="none" stroke="#707070" d="M234.71,-182.19C289.84,-188.32 374.91,-197.77 438,-204.78"/>
-<polygon fill="#707070" stroke="#707070" points="438,-208.3 448.32,-205.92 438.77,-201.34 438,-208.3"/>
+<path fill="none" stroke="#707070" d="M273.36,-186.48C318.03,-191.45 371.49,-197.39 417.29,-202.48"/>
+<polygon fill="#707070" stroke="#707070" points="416.92,-205.96 427.25,-203.58 417.69,-199 416.92,-205.96"/>
 </g>
 <!-- Policy::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable -->
 <g id="node4" class="node">
 <title>Policy::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="676,-129 368,-129 368,-71 676,-71 676,-129"/>
-<text text-anchor="start" x="380" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Policy</text>
+<text text-anchor="start" x="380" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Policy</text>
 <text text-anchor="start" x="380" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTyp...</text>
 </g>
 <!-- Role::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable -->
 <g id="node5" class="node">
 <title>Role::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="332,-129 24,-129 24,-71 332,-71 332,-129"/>
-<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">iam::Role</text>
 <text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTyp...</text>
 </g>
 <!-- Role::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable&#45;&gt;Policy::::appsync&#45;ds&#45;ddb&#45;kq4yge&#45;MyModelTypeDemoTable -->

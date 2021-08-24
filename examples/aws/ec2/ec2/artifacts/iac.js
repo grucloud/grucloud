@@ -13,11 +13,11 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.webServerEc2Example.name"),
+    properties: get("config.ec2.Instance.webServerEc2Example.properties"),
     dependencies: ({ resources }) => ({
       keyPair: resources.ec2.KeyPair.kpEc2Example,
       eip: resources.ec2.ElasticIpAddress.eip,
     }),
-    properties: get("config.ec2.Instance.webServerEc2Example.properties"),
   });
 };
 

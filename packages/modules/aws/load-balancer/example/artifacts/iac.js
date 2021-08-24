@@ -12,19 +12,19 @@ const createResources = ({ provider }) => {
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicA.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.subnetPublicB.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
     }),
-    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
   });
 
   provider.ec2.makeInternetGateway({
@@ -50,44 +50,44 @@ const createResources = ({ provider }) => {
   provider.ec2.makeRoute({
     name: get("config.ec2.Route.routePublic.name"),
     namespace: "VPC",
+    properties: get("config.ec2.Route.routePublic.properties"),
     dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePublic,
       ig: resources.ec2.InternetGateway.internetGateway,
     }),
-    properties: get("config.ec2.Route.routePublic.properties"),
   });
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.securityGroupLoadBalancer.name"),
     namespace: "LoadBalancer",
-    dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
-    }),
     properties: get(
       "config.ec2.SecurityGroup.securityGroupLoadBalancer.properties"
     ),
+    dependencies: ({ resources }) => ({
+      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+    }),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name"),
     namespace: "LoadBalancer",
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
+    }),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name"),
     namespace: "LoadBalancer",
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
+    }),
   });
 
   provider.acm.makeCertificate({
@@ -101,82 +101,82 @@ const createResources = ({ provider }) => {
   provider.elb.makeLoadBalancer({
     name: get("config.elb.LoadBalancer.loadBalancer.name"),
     namespace: "LoadBalancer",
+    properties: get("config.elb.LoadBalancer.loadBalancer.properties"),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
       ],
       securityGroups: [resources.ec2.SecurityGroup.securityGroupLoadBalancer],
     }),
-    properties: get("config.elb.LoadBalancer.loadBalancer.properties"),
   });
 
   provider.elb.makeTargetGroup({
     name: get("config.elb.TargetGroup.targetGroupRest.name"),
     namespace: "LoadBalancer",
+    properties: get("config.elb.TargetGroup.targetGroupRest.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
     }),
-    properties: get("config.elb.TargetGroup.targetGroupRest.properties"),
   });
 
   provider.elb.makeTargetGroup({
     name: get("config.elb.TargetGroup.targetGroupWeb.name"),
     namespace: "LoadBalancer",
+    properties: get("config.elb.TargetGroup.targetGroupWeb.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
     }),
-    properties: get("config.elb.TargetGroup.targetGroupWeb.properties"),
   });
 
   provider.elb.makeListener({
     name: get("config.elb.Listener.listenerHttp.name"),
     namespace: "LoadBalancer",
+    properties: get("config.elb.Listener.listenerHttp.properties"),
     dependencies: ({ resources }) => ({
       loadBalancer: resources.elb.LoadBalancer.loadBalancer,
       targetGroup: resources.elb.TargetGroup.targetGroupWeb,
     }),
-    properties: get("config.elb.Listener.listenerHttp.properties"),
   });
 
   provider.elb.makeListener({
     name: get("config.elb.Listener.listenerHttps.name"),
     namespace: "LoadBalancer",
+    properties: get("config.elb.Listener.listenerHttps.properties"),
     dependencies: ({ resources }) => ({
       loadBalancer: resources.elb.LoadBalancer.loadBalancer,
       targetGroup: resources.elb.TargetGroup.targetGroupWeb,
       certificate: resources.acm.Certificate.modAwsLoadBalancerGrucloudOrg,
     }),
-    properties: get("config.elb.Listener.listenerHttps.properties"),
   });
 
   provider.elb.makeRule({
     name: get("config.elb.Rule.ruleHttpRedirectHttps.name"),
     namespace: "LoadBalancer",
+    properties: () => config.elb.Rule.ruleHttpRedirectHttps.properties,
     dependencies: ({ resources }) => ({
       listener: resources.elb.Listener.listenerHttp,
     }),
-    properties: () => config.elb.Rule.ruleHttpRedirectHttps.properties,
   });
 
   provider.elb.makeRule({
     name: get("config.elb.Rule.ruleRestHttps.name"),
     namespace: "LoadBalancer",
+    properties: () => config.elb.Rule.ruleRestHttps.properties,
     dependencies: ({ resources }) => ({
       listener: resources.elb.Listener.listenerHttps,
       targetGroup: resources.elb.TargetGroup.targetGroupRest,
     }),
-    properties: () => config.elb.Rule.ruleRestHttps.properties,
   });
 
   provider.elb.makeRule({
     name: get("config.elb.Rule.ruleWebHttps.name"),
     namespace: "LoadBalancer",
+    properties: () => config.elb.Rule.ruleWebHttps.properties,
     dependencies: ({ resources }) => ({
       listener: resources.elb.Listener.listenerHttps,
       targetGroup: resources.elb.TargetGroup.targetGroupWeb,
     }),
-    properties: () => config.elb.Rule.ruleWebHttps.properties,
   });
 
   provider.route53Domain.useDomain({
