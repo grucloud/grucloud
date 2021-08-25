@@ -1,47 +1,31 @@
 const assert = require("assert");
+const { tryCatch, pipe, tap } = require("rubico");
+
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const {
-  testPlanDeploy,
-  testPlanDestroy,
-} = require("@grucloud/core/E2ETestUtils");
+const { EKSCluster } = require("../EKSCluster");
 
 describe("EKSCluster", async function () {
   let config;
   let provider;
   let cluster;
-  const clusterName = "cluster";
-  const types = ["Cluster"];
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({
       name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });
+    cluster = EKSCluster({ config: provider.config });
 
     await provider.start();
-
-    cluster = provider.eks.makeCluster({
-      name: clusterName,
-      properties: () => ({}),
-    });
   });
-  after(async () => {});
-  it.skip("cluster apply plan", async function () {
-    await testPlanDeploy({
-      provider,
-      types,
-      planResult: { create: 1, destroy: 0 },
-    });
 
-    const clusterLive = await cluster.getLive();
-    assert(clusterLive);
-
-    await testPlanDestroy({ provider, types });
-  });
+  it.only(
+    "delete with invalid id",
+    pipe([
+      () =>
+        cluster.destroy({
+          live: { name: "12345" },
+        }),
+    ])
+  );
 });

@@ -23,6 +23,7 @@ const {
   isDeepEqual,
   isString,
   when,
+  identity,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -317,7 +318,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
 };
 
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
-const filterLiveDefault = pipe([omit(["tags"])]);
+const filterLiveDefault = identity;
 
 exports.compare = ({
   filterTarget = filterTargetDefault,
