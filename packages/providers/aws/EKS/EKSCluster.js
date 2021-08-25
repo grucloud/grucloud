@@ -27,6 +27,7 @@ const {
   shouldRetryOnException,
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
+const { waitForUpdate } = require("./EKSCommon");
 
 const findName = get("live.name");
 const findId = findName;
@@ -225,46 +226,12 @@ exports.EKSCluster = ({ spec, config }) => {
       get("update"),
       tap((result) => {
         logger.info(`updateClusterConfig: ${tos({ result })}`);
-        logger.debug(tos({ payload, diff, live }));
       }),
       get("id"),
       (updateId) =>
-        retryCall({
-          name: `describeUpdate: ${name}`,
-          fn: pipe([
-            () => ({
-              name,
-              updateId: updateId,
-            }),
-            tap((params) => {
-              logger.debug(
-                `describeUpdate: ${name}, ${JSON.stringify(params)}`
-              );
-            }),
-            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeUpdate-property
-            eks().describeUpdate,
-            get("update"),
-            switchCase([
-              eq(get("status"), "Failed"),
-              () => {
-                throw Error(`fail to update the cluster`);
-              },
-              eq(get("status"), "Cancelled"),
-              () => {
-                throw Error(`cluster update cancelled`);
-              },
-              eq(get("status"), "InProgress"),
-              () => {
-                logger.debug(`cluster InProgress`);
-              },
-              eq(get("status"), "Successful"),
-              () => true,
-              ({ status }) => {
-                logger.debug(`cluster: not a known status: '${status}'`);
-              },
-            ]),
-          ]),
-          config: { retryCount: 12 * 20, retryDelay: 5e3 },
+        waitForUpdate({ eks })({
+          name,
+          updateId: updateId,
         }),
     ])();
 

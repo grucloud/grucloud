@@ -19,7 +19,7 @@ describe("EKSCluster", async function () {
     await provider.start();
   });
 
-  it.only(
+  it(
     "delete with invalid id",
     pipe([
       () =>

@@ -321,6 +321,7 @@ const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = identity;
 
 exports.compare = ({
+  filterAll = identity,
   filterTarget = filterTargetDefault,
   filterLive = filterLiveDefault,
 } = {}) =>
@@ -329,8 +330,8 @@ exports.compare = ({
       assert(true);
     }),
     assign({
-      target: pipe([get("target", {}), filterTarget]),
-      live: pipe([get("live"), filterLive]),
+      target: pipe([get("target", {}), filterTarget, filterAll]),
+      live: pipe([get("live"), filterLive, filterAll]),
     }),
     tap((params) => {
       assert(true);

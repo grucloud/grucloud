@@ -90,6 +90,17 @@
       "port": 9229
     },
     {
+      "name": "Destroy All",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f", "-a"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/example",
+      "port": 9229
+    },
+    {
       "name": "Info",
       "type": "node",
       "request": "launch",

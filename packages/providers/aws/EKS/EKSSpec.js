@@ -1,4 +1,5 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, pick } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
@@ -32,6 +33,14 @@ module.exports = () =>
       ],
       Client: EKSNodeGroup,
       isOurMinion,
-      compare: compareNodeGroup,
+      compare: compare({
+        filterAll: pick([
+          "amiType",
+          "capacityType",
+          "diskSize",
+          "instanceTypes",
+          "scalingConfig",
+        ]),
+      }),
     },
   ]);

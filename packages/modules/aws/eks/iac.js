@@ -243,6 +243,7 @@ const createResources = async ({
       role: roleCluster,
       key,
     },
+    properties: ({ config }) => config.eks.cluster.properties,
   });
 
   // defines a bunch of Node Groups on public subnets

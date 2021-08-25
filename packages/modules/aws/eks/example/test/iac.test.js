@@ -9,7 +9,11 @@ describe(title, async function () {
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      steps: [{ createStack, configs: [config] }],
+      title,
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [require("./configUpdate1"), config] },
+      ],
     });
   }).timeout(35 * 60e3);
 });
