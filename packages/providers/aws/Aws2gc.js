@@ -330,6 +330,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Volume",
         filterLive: () =>
           pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+        //TODO do we need that ?
         ignoreResource:
           ({ lives }) =>
           (resource) =>
@@ -401,18 +402,17 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "SecurityGroup",
-        defaultUsedInDependency: true,
         filterLive: () => pick(["Description"]),
         dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
       },
       {
         type: "SecurityGroupRuleIngress",
         filterLive: securityGroupRulePickProperties,
+        includeDefaultDependencies: true,
         dependencies: () => ({
           securityGroup: {
             type: "SecurityGroup",
             group: "ec2",
-
             filterDependency:
               ({ resource }) =>
               (dependency) =>
@@ -445,6 +445,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "SecurityGroupRuleEgress",
         filterLive: securityGroupRulePickProperties,
+        includeDefaultDependencies: true,
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
@@ -466,10 +467,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LaunchTemplateData.ElasticInferenceAccelerators",
               "LaunchTemplateData.SecurityGroups",
               "LaunchTemplateData.LicenseSpecifications",
+              "LaunchTemplateData.TagSpecifications",
             ]),
             omit([
               "LaunchTemplateData.NetworkInterfaces",
               "LaunchTemplateData.SecurityGroupIds",
+              "LaunchTemplateData.IamInstanceProfile.name",
             ]),
             tap((params) => {
               assert(true);

@@ -32,7 +32,6 @@ exports.createStack = async ({ createProvider }) => {
     properties: () => ({
       allowed: [
         {
-          sourceRanges: ["0.0.0.0/0"],
           IPProtocol: "icmp",
         },
       ],

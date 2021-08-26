@@ -543,50 +543,56 @@ const removeDefaultDependencies =
       () => lives,
       map(
         assign({
-          dependencies: pipe([
-            get("dependencies"),
-            map(
-              assign({
-                ids: ({ group, type, ids, providerName }) =>
-                  pipe([
-                    tap(() => {
-                      assert(group);
-                      assert(type);
-                      assert(providerName);
-                    }),
-                    () => ({ group, type }),
-                    findResourceSpec({ writersSpec }),
-                    switchCase([
-                      isEmpty,
-                      () => [],
-                      pipe([
-                        switchCase([
-                          get("defaultUsedInDependency"),
-                          () => ids,
-                          pipe([
+          dependencies: (resource) =>
+            pipe([
+              () => resource.dependencies,
+              map(
+                assign({
+                  ids: ({ group, type, ids, providerName }) =>
+                    pipe([
+                      tap(() => {
+                        assert(group);
+                        assert(type);
+                        assert(providerName);
+                      }),
+                      () => ({ group, type }),
+                      findResourceSpec({ writersSpec }),
+                      switchCase([
+                        isEmpty,
+                        () => [],
+                        pipe([
+                          () => resource,
+                          findResourceSpec({ writersSpec }),
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          switchCase([
+                            get("includeDefaultDependencies"),
                             () => ids,
-                            filter(
-                              pipe([
-                                findLiveById({
-                                  lives,
-                                  type,
-                                  group,
-                                  providerName,
-                                }),
-                                tap((params) => {
-                                  assert(true);
-                                }),
-                                not(get("managedByOther")),
-                              ])
-                            ),
+                            pipe([
+                              () => ids,
+                              filter(
+                                pipe([
+                                  findLiveById({
+                                    lives,
+                                    type,
+                                    group,
+                                    providerName,
+                                  }),
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  not(get("managedByOther")),
+                                ])
+                              ),
+                            ]),
                           ]),
                         ]),
                       ]),
-                    ]),
-                  ])(),
-              })
-            ),
-          ]),
+                    ])(),
+                })
+              ),
+            ])(),
         })
       ),
       map(
