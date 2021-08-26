@@ -13,9 +13,8 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     properties: () => ({
       allowed: [
         {
-          sourceRanges: ["0.0.0.0/0"],
-          IPProtocol: "TCP",
-          ports: [22, 80, 433],
+          IPProtocol: "tcp",
+          ports: ["22", "80", "433"],
         },
       ],
     }),

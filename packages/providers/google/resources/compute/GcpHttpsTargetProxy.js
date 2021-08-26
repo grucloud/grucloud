@@ -37,6 +37,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "SslCertificate",
+      group: "compute",
       ids: pipe([
         () => live,
         get("sslCertificates"),
@@ -56,6 +57,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     },
     {
       type: "UrlMap",
+      group: "compute",
       ids: [
         pipe([
           () => live,

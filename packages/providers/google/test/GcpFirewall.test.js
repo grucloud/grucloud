@@ -40,8 +40,8 @@ describe("GcpFirewall", async function () {
       properties: () => ({
         allowed: [
           {
-            IPProtocol: "TCP",
-            ports: [80, 433],
+            IPProtocol: "tcp",
+            ports: ["80", "433"],
           },
         ],
       }),

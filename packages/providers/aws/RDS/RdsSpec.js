@@ -1,4 +1,6 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, omit } = require("rubico");
+const { compare } = require("@grucloud/core/Common");
+
 const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
 const { DBInstance, compareDBInstance } = require("./DBInstance");
@@ -13,7 +15,9 @@ module.exports = () =>
       dependsOn: ["ec2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
-      //TODO compare:
+      compare: compare({
+        filterAll: pipe([omit(["SubnetIds", "Tags"])]),
+      }),
     },
     {
       type: "DBCluster",

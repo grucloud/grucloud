@@ -47,7 +47,7 @@ describe("GoogleProvider", async function () {
       properties: () => ({
         allowed: [
           {
-            IPProtocol: "TCP",
+            IPProtocol: "tcp",
             ports: [80, 433],
           },
         ],

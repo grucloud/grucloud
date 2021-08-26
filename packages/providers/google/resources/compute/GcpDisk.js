@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, eq, pipe, tap, any } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpDisk" });
 const { tos } = require("@grucloud/core/tos");
@@ -31,6 +31,27 @@ exports.GcpDisk = ({ spec, config }) => {
       getById,
     });
 
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(live);
+      }),
+      () =>
+        lives.getByType({
+          type: "VmInstance",
+          group: "compute",
+          providerName: config.providerName,
+        }),
+      any(
+        pipe([
+          get("live.disks"),
+          find(eq(get("source"), live.selfLink)),
+          get("boot"),
+        ])
+      ),
+    ])();
+
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -39,5 +60,6 @@ exports.GcpDisk = ({ spec, config }) => {
     isInstanceUp,
     isUpByIdFactory,
     configDefault,
+    managedByOther,
   });
 };

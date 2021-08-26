@@ -36,6 +36,8 @@ const {
   flatten,
   defaultsDeep,
   keys,
+  append,
+  prepend,
   includes,
   isString,
   isObject,
@@ -108,6 +110,8 @@ const isNotOurTagKey = not(
 );
 
 const buildProperties = ({
+  providerConfig,
+  lives,
   resource,
   dependencies,
   environmentVariables = [],
@@ -119,7 +123,7 @@ const buildProperties = ({
     }),
     () => resource,
     get("live"),
-    filterLive({ resource, dependencies }),
+    filterLive({ providerConfig, lives, resource, dependencies }),
     tap((params) => {
       assert(true);
     }),
@@ -158,6 +162,10 @@ const buildProperties = ({
       ])(),
   ])();
 
+const isNumeric = (num) =>
+  (typeof num === "number" || (typeof num === "string" && num.trim() !== "")) &&
+  !isNaN(num);
+
 const printPropertiesDo = (value) =>
   pipe([
     () => value,
@@ -165,8 +173,9 @@ const printPropertiesDo = (value) =>
       isFunction,
       (fun) => pipe([() => fun()])(),
       isString,
-      //TODO check if string has single or double quote
-      (value) => `'${value}'`,
+      pipe([(value) => JSON.stringify(value)]),
+      isNumeric,
+      pipe([identity]),
       Array.isArray,
       pipe([
         map(printPropertiesDo),
@@ -183,11 +192,8 @@ const printPropertiesDo = (value) =>
         callProp("join", "\n"),
         (result) => `{\n${result}}`,
       ]),
-      identity,
+      pipe([identity]),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const printProperties = (value) =>
@@ -199,7 +205,6 @@ const printProperties = (value) =>
     printPropertiesDo,
     tap((params) => {
       assert(true);
-      //console.log("Out", JSON.stringify(params, null, 4));
     }),
   ])();
 
@@ -216,6 +221,9 @@ const configBuildPropertiesDefault = ({
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
         ? `\n,properties: ${printProperties(properties)}`
         : "",
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.hasDependency = ({ type, group }) =>
@@ -401,11 +409,21 @@ const writeToFile =
         assert(filename);
         assert(content);
       }),
-      () => prettier.format(content, { parser: "babel" }),
-      (formatted) => fs.writeFile(filename, formatted),
-      tap(() => {
-        console.log(`written to ${filename}`);
-      }),
+      tryCatch(
+        pipe([
+          () => prettier.format(content, { parser: "babel" }),
+          (formatted) => fs.writeFile(filename, formatted),
+        ]),
+        (error) =>
+          pipe([
+            tap(() => {
+              console.error(content);
+            }),
+            () => {
+              throw error;
+            },
+          ])()
+      ),
     ])();
 
 exports.writeToFile = writeToFile;
@@ -536,40 +554,35 @@ const removeDefaultDependencies =
                       assert(type);
                       assert(providerName);
                     }),
-                    () => ids,
-                    when(
+                    () => ({ group, type }),
+                    findResourceSpec({ writersSpec }),
+                    switchCase([
+                      isEmpty,
+                      () => [],
                       pipe([
-                        () => ({ group, type }),
-                        findResourceSpec({ writersSpec }),
-                        or([
-                          isEmpty,
-                          (resourceSpec) =>
-                            pipe([
-                              tap(() => {
-                                assert(true);
-                              }),
-                              () => ids,
-                              and([
-                                eq(size, 1),
-                                pipe([
-                                  first,
-                                  findLiveById({
-                                    lives,
-                                    type,
-                                    group,
-                                    providerName,
-                                  }),
-                                  and([
-                                    get("isDefault"),
-                                    () => !resourceSpec.defaultUsedInDependency,
-                                  ]),
-                                ]),
-                              ]),
-                            ])(),
+                        switchCase([
+                          get("defaultUsedInDependency"),
+                          () => ids,
+                          pipe([
+                            () => ids,
+                            filter(
+                              pipe([
+                                findLiveById({
+                                  lives,
+                                  type,
+                                  group,
+                                  providerName,
+                                }),
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                                not(get("managedByOther")),
+                              ])
+                            ),
+                          ]),
                         ]),
                       ]),
-                      () => []
-                    ),
+                    ]),
                   ])(),
               })
             ),
@@ -670,6 +683,7 @@ const readModel = ({
   pipe([
     tap(() => {
       assert(writersSpec);
+      assert(programOptions);
       assert(programOptions.workingDirectory);
     }),
     () =>
@@ -880,6 +894,7 @@ const ignoreDefault =
 const writeResource =
   ({
     providerName,
+    providerConfig,
     type,
     typeTarget,
     group,
@@ -917,6 +932,8 @@ const writeResource =
               () => properties({ resource, mapping }),
               defaultsDeep(
                 buildProperties({
+                  providerConfig,
+                  lives,
                   resource,
                   filterLive,
                   dependencies: dependencies(),
@@ -968,6 +985,7 @@ const writeResource =
 const writeResources =
   ({
     options,
+    providerConfig,
     type,
     typeTarget,
     group,
@@ -999,6 +1017,9 @@ const writeResources =
           eq(get("group"), group),
         ])
       ),
+      tap((resources) => {
+        console.log(`Resources ${group}::${type} #${size(resources)}`);
+      }),
       map(
         pipe([
           tap((params) => {
@@ -1006,6 +1027,7 @@ const writeResources =
           }),
           (resource) =>
             writeResource({
+              providerConfig,
               environmentVariables,
               options,
               type,
@@ -1032,6 +1054,7 @@ const writeResources =
 
 exports.generatorMain = ({
   name,
+  providerConfig,
   commandOptions,
   programOptions,
   writersSpec,
@@ -1072,6 +1095,7 @@ exports.generatorMain = ({
               resources: pipe([
                 () => ({ lives, mapping }),
                 writeResources({
+                  providerConfig,
                   mapping,
                   commandOptions,
                   group,

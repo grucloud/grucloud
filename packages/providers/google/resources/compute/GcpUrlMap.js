@@ -25,6 +25,7 @@ exports.GcpUrlMap = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "BackendBucket",
+      group: "compute",
       ids: pipe([
         () => live,
         get("defaultService"),

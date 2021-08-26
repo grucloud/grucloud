@@ -29,6 +29,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Bucket",
+      group: "storage",
       ids: pipe([
         () => live,
         get("bucketName"),

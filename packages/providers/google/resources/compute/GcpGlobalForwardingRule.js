@@ -34,6 +34,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "HttpsTargetProxy",
+      group: "compute",
       ids: pipe([
         () => live,
         get("target"),

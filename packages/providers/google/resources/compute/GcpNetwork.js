@@ -14,6 +14,7 @@ exports.GcpNetwork = ({ spec, config }) => {
   const { projectId, managedByDescription } = config;
   const isDefault = eq(get("live.name"), "default");
   const cannotBeDeleted = isDefault;
+  const managedByOther = isDefault;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -29,5 +30,6 @@ exports.GcpNetwork = ({ spec, config }) => {
     configDefault,
     isDefault,
     cannotBeDeleted,
+    managedByOther,
   });
 };

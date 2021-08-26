@@ -22,6 +22,7 @@ const {
   includes,
   size,
   isEmpty,
+  flatten,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -62,6 +63,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Network",
+      group: "compute",
       ids: pipe([
         () => live,
         get("networkInterfaces"),
@@ -82,6 +84,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
     },
     {
       type: "SubNetwork",
+      group: "compute",
       ids: pipe([
         () => live,
         get("networkInterfaces"),
@@ -102,6 +105,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
     },
     {
       type: "Disk",
+      group: "compute",
       ids: pipe([
         () => live,
         get("disks"),
@@ -112,10 +116,32 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
               lives.getByType({
                 type: "Disk",
                 group: "compute",
-                group: "storage",
                 providerName,
               }),
             find(eq(get("live.selfLink"), source)),
+            get("id"),
+          ])()
+        ),
+      ])(),
+    },
+    {
+      type: "Address",
+      group: "compute",
+      ids: pipe([
+        () => live,
+        get("networkInterfaces"),
+        pluck("accessConfigs"),
+        flatten,
+        pluck("natIP"),
+        map((natIP) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "Address",
+                group: "compute",
+                providerName,
+              }),
+            find(eq(get("live.address"), natIP)),
             get("id"),
           ])()
         ),

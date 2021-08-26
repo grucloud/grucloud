@@ -5,6 +5,7 @@ const { find } = require("rubico/x");
 
 exports.findDependenciesNetwork = ({ live, lives, providerName }) => ({
   type: "Network",
+  group: "compute",
   ids: pipe([
     () => live,
     get("network"),

@@ -156,8 +156,13 @@ const findDependsOnType = ({
       assert(Array.isArray(dependsOnType));
     }),
     () => dependsOnType,
-    //TODO group
-    find(and([eq(get("providerName"), providerName), eq(get("type"), type)])),
+    find(
+      and([
+        eq(get("providerName"), providerName),
+        eq(get("group"), group),
+        eq(get("type"), type),
+      ])
+    ),
     tap((x) => {
       assert(x);
     }),

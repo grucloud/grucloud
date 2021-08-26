@@ -47,6 +47,8 @@ const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
+const { generateCode } = require("./Gcp2gc");
+
 const computeDefault = {
   region: "europe-west4",
   zone: "europe-west4-a",
@@ -1147,6 +1149,13 @@ exports.GoogleProvider = ({
         projectId: projectId(),
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
+      }),
+    generateCode: ({ commandOptions, programOptions }) =>
+      generateCode({
+        providerConfig: mergedConfig,
+        specs: fnSpecs(mergedConfig),
+        commandOptions,
+        programOptions,
       }),
   });
 
