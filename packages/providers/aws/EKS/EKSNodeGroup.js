@@ -167,6 +167,8 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   },
   */
 
+  // TODO instanceTypes needs a destroy
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateNodegroupConfig-property
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -180,8 +182,10 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         "nodegroupName",
         //"labels", //TODO
         "scalingConfig",
-        "taints",
+        //"taints",
         "updateConfig",
+        "instanceTypes",
+        "amiType",
       ]),
       eks().updateNodegroupConfig,
       get("update"),
