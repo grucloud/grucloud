@@ -193,7 +193,10 @@ exports.EKSCluster = ({ spec, config }) => {
               }),
               () => error,
               get("message"),
-              includes("The KeyArn in encryptionConfig provider"),
+              or([
+                includes("The KeyArn in encryptionConfig provider"),
+                includes("Role with arn: "),
+              ]),
             ])(),
         }),
       get("cluster"),
