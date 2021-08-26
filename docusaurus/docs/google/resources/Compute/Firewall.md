@@ -29,7 +29,6 @@ const firewallIcmp = provider.compute.makeFirewall({
   properties: () => ({
     allowed: [
       {
-        sourceRanges: ["0.0.0.0/0"],
         IPProtocol: "icmp",
       },
     ],

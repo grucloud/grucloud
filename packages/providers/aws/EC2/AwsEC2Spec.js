@@ -166,16 +166,16 @@ module.exports = () =>
       dependsOn: [
         "ec2::KeyPair",
         "ec2::SecurityGroup",
-        "ec2::Subnet",
-        "ec2::ElasticIpAddress",
         "ec2::Volume",
-        "ec2::NetworkInterface",
-        "ec2::InternetGateway",
         "iam::Role",
         "iam::InstanceProfile",
       ],
       Client: EC2LaunchTemplate,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: filterLiveDefault,
+      }),
     },
 
     {

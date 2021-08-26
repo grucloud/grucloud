@@ -49,7 +49,9 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "InstanceProfile",
       group: "iam",
-      ids: [live.LaunchTemplateData.IamInstanceProfile.Arn],
+      ids: [
+        pipe([() => live, get("LaunchTemplateData.IamInstanceProfile.Arn")])(),
+      ],
     },
   ];
 
@@ -94,6 +96,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         tap((params) => {
           assert(true);
         }),
+        omit(["LaunchTemplateData.TagSpecifications"]),
         defaultsDeep(launchTemplate),
         tap((params) => {
           assert(true);
@@ -150,6 +153,24 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       //   })
       // ),
     ])();
+
+  // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property
+
+  //TODO update
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update launchTemplate: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => payload,
+      omit(["TagSpecifications"]),
+      ec2().createLaunchTemplateVersion,
+      tap(() => {
+        logger.info(`updated launchTemplate ${name}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteLaunchTemplate-property
   const destroy = ({ live }) =>
     pipe([
@@ -195,7 +216,10 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         ],
       }),
       defaultsDeep({
-        LaunchTemplateData: EC2Instance.configDefault({ config })({
+        LaunchTemplateData: EC2Instance.configDefault({
+          config,
+          includeTags: false,
+        })({
           name,
           namespace,
           properties: {},
@@ -215,6 +239,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

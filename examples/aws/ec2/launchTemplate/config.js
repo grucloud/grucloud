@@ -95,39 +95,9 @@ module.exports = ({ stage }) => ({
         properties: {
           LaunchTemplateData: {
             EbsOptimized: false,
-            IamInstanceProfile: {
-              Arn: "arn:aws:iam::840541460064:instance-profile/role-ecs",
-            },
             ImageId: "ami-0d26eb3972b7f8c96",
             InstanceType: "t2.micro",
             KeyName: "kp-ecs",
-            TagSpecifications: [
-              {
-                ResourceType: "instance",
-                Tags: [
-                  {
-                    Key: "Name",
-                    Value: "lt-ec2-micro",
-                  },
-                  {
-                    Key: "gc-managed-by",
-                    Value: "grucloud",
-                  },
-                  {
-                    Key: "gc-created-by-provider",
-                    Value: "aws",
-                  },
-                  {
-                    Key: "gc-stage",
-                    Value: "dev",
-                  },
-                  {
-                    Key: "gc-project-name",
-                    Value: "example-grucloud-ec2-launch-template",
-                  },
-                ],
-              },
-            ],
           },
         },
       },
