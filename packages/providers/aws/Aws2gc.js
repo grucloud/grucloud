@@ -233,6 +233,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Role",
         filterLive: () =>
           pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
+        includeDefaultDependencies: true,
         dependencies: () => ({
           policies: {
             type: "Policy",
@@ -927,6 +928,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "HostedZone",
         filterLive: () => pick([]),
+        includeDefaultDependencies: true,
         dependencies: () => ({
           domain: { type: "Domain", group: "route53Domain" },
           hostedZone: { type: "HostedZone", group: "route53" },
