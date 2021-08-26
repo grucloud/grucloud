@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, map, tap, and, get } = require("rubico");
-const { isEmpty, first } = require("rubico/x");
+const { isEmpty, first, callProp } = require("rubico/x");
 
 const { Cli } = require("./cli/cliCommands");
 
@@ -21,6 +21,10 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
     ({ createStack, configs }) => Cli({ programOptions, createStack, configs }),
     (cli) =>
       pipe([
+        () => cli.info({}),
+        tap((params) => {
+          assert(true);
+        }),
         () =>
           cli.graphTree({
             commandOptions: { title },
@@ -39,7 +43,6 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
           cli.list({
             commandOptions: { our: true, canBeDeleted: true },
           }),
-        //emptyResult,
         () =>
           cli.planApply({
             commandOptions: { force: true },
@@ -65,7 +68,11 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
               input: "artifacts/inventory.json",
             },
           }),
-        ([step, ...lastSteps]) => lastSteps,
+        () => steps,
+        callProp("splice", 1),
+        tap((params) => {
+          assert(true);
+        }),
         map(({ createStack, configs }) =>
           pipe([
             () => Cli({ programOptions, createStack, configs }),
