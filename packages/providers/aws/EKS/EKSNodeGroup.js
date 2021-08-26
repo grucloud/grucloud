@@ -153,6 +153,20 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO
+  /*
+    labels: {
+    addOrUpdateLabels: {
+      '<labelKey>': 'STRING_VALUE',
+       '<labelKey>': ... 
+    },
+    removeLabels: [
+      'STRING_VALUE',
+       more items 
+    ]
+  },
+  */
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateNodegroupConfig-property
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -164,7 +178,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       pick([
         "clusterName",
         "nodegroupName",
-        "labels",
+        //"labels", //TODO
         "scalingConfig",
         "taints",
         "updateConfig",
