@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, and, tap } = require("rubico");
+const { get, pipe, and, tap } = require("rubico");
 const { pluck, identity } = require("rubico/x");
 
 exports.config = require("./config");
@@ -30,8 +30,7 @@ const createResources = async ({
   assert(config.eks);
   assert(config.eks.cluster);
   assert(config.eks.roleCluster);
-  assert(config.eks.nodeGroupsPublic);
-  assert(config.eks.nodeGroupsPrivate);
+  //assert(config.eks.nodeGroupsPrivate);
 
   assert(config.vpc);
   assert(resources);
@@ -246,41 +245,24 @@ const createResources = async ({
     properties: ({ config }) => config.eks.cluster.properties,
   });
 
-  // defines a bunch of Node Groups on public subnets
-  /*
-  const nodeGroupsPublic = await map((nodeGroup) =>
-    provider.eks.makeNodeGroup({
-      name: nodeGroup.name,
-      dependencies: {
-        subnets: subnetsPublic,
-        cluster,
-        role: roleNodeGroup,
-      },
-      properties: nodeGroup.properties,
-    })
-  )(config.eks.nodeGroupsPublic);
-*/
-  // Create a bunch of Node Groups on private subnets
-  const nodeGroupsPrivate = await map((nodeGroup) =>
-    provider.eks.makeNodeGroup({
-      name: formatName(nodeGroup.name, config),
-      namespace,
-      dependencies: {
-        subnets: pluck("subnet")(privates),
-        cluster,
-        role: roleNodeGroup,
-      },
-      properties: nodeGroup.properties,
-    })
-  )(config.eks.nodeGroupsPrivate);
+  // Create a node group on private subnets
+  const nodeGroupPrivate = provider.eks.makeNodeGroup({
+    name: get("config.eks.NodeGroup.nodeGroupPrivateCluster.name"),
+    namespace: "EKS",
+    properties: get("config.eks.NodeGroup.nodeGroupPrivateCluster.properties"),
+    dependencies: {
+      subnets: pluck("subnet")(privates),
+      cluster,
+      role: roleNodeGroup,
+    },
+  });
 
   return {
     roleCluster,
     roleNodeGroup,
     securityGroupCluster,
     cluster,
-    //nodeGroupsPublic,
-    nodeGroupsPrivate,
+    nodeGroupPrivate,
   };
 };
 

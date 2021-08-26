@@ -1,38 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-module-aws-eks",
   iam: {
-    Policy: {
-      amazonEc2ContainerRegistryReadOnly: {
-        name: "AmazonEC2ContainerRegistryReadOnly",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        },
-      },
-      amazonEksCniPolicy: {
-        name: "AmazonEKS_CNI_Policy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-        },
-      },
-      amazonEksClusterPolicy: {
-        name: "AmazonEKSClusterPolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-        },
-      },
-      amazonEksvpcResourceController: {
-        name: "AmazonEKSVPCResourceController",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-        },
-      },
-      amazonEksWorkerNodePolicy: {
-        name: "AmazonEKSWorkerNodePolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        },
-      },
-    },
     Role: {
       roleCluster: {
         name: "role-cluster",
@@ -216,6 +184,19 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroup: {
+      eksClusterSgMyCluster_1909614887: {
+        name: "eks-cluster-sg-my-cluster-1909614887",
+        properties: {
+          Description:
+            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
+          Tags: [
+            {
+              Key: "kubernetes.io/cluster/my-cluster",
+              Value: "owned",
+            },
+          ],
+        },
+      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -228,7 +209,7 @@ module.exports = ({ stage }) => ({
           Description: "Managed By GruCloud",
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
+              Key: "kubernetes.io/cluster/my-cluster",
               Value: "owned",
             },
           ],
@@ -236,6 +217,17 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroupRuleIngress: {
+      eksClusterSgMyCluster_1909614887RuleIngressAllFromEksClusterSgMyCluster_1909614887:
+        {
+          name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
+          properties: {
+            IpPermission: {
+              IpProtocol: "-1",
+              FromPort: -1,
+              ToPort: -1,
+            },
+          },
+        },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
         properties: {
@@ -300,12 +292,12 @@ module.exports = ({ stage }) => ({
       },
     },
     LaunchTemplate: {
-      eksD8bdbab8E53bC758_8bd1_0bef90c17965: {
-        name: "eks-d8bdbab8-e53b-c758-8bd1-0bef90c17965",
+      eks_70bdc1baBd70_6598C620_7ed97878945d: {
+        name: "eks-70bdc1ba-bd70-6598-c620-7ed97878945d",
         properties: {
           LaunchTemplateData: {
             IamInstanceProfile: {
-              Name: "eks-d8bdbab8-e53b-c758-8bd1-0bef90c17965",
+              Name: "eks-70bdc1ba-bd70-6598-c620-7ed97878945d",
             },
             BlockDeviceMappings: [
               {
@@ -318,10 +310,9 @@ module.exports = ({ stage }) => ({
               },
             ],
             ImageId: "ami-0e6732e69988617b8",
-            InstanceType: "t2.medium",
+            InstanceType: "t2.small",
             UserData:
-              "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVaM2xOZWtsNlRsUkpNRTlXYjFoRVZFMTRUVVJuZVUxVVNYcE9WRWt3VDFadmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJURFpWQ2xWMWVVVllRbWRxVERRMWEzUjNlVVo2ZVc5RFN6QmtRMFJPTkVFNVVuRmtSa1JNUzFKSGRtRk1NVE0yWTAxT1NFWlFlWFJSWlZCVFlsZHROSGd5TVhvS1pWcHNlRzh5V2pKSlMweDBiMjlYYTB4TFMxcGllWEZ2TlZGelptb3piVGxtT1dsTVpqTlRWbXBsU21kUGExZHFhRzFGYVdwMFp5dG1TR0Z0T0ZONlVRcFFkWFJ3VkZwTlUzcGljMVExWWxWR1lteEthazVJY25WcmVHcEpPRGxXYUVwMldqWlpXbWxTTnlzcllUSlBXazh2TlZRclozVnFVbEZ4ZW10eE5UUlhDblZpYzBOS05UY3ZXbkJDWjFSdGNtazJRMDFpT1UxalRFSkVkbmRXY0U5VldGRnFUbFY2WTNsUldIUTRLelE1UlN0aWF6aHVaWGxvU0RKR09FeE1TMFVLTTA5Vk1WUmtTRlF6UlVaalVITTFaSEJMVnl0SGRUWTRXa2R0WjFONGEyeERiMnRRUWpSek1rOVdjRXAxZGpkc1NtYzNWWGt5TDJoSWVrZHRjbVp1UlFwaGNtODFaVkJUTld4cWIwUktNV1o0V1ZKVlEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaSlNIZGpkemRUVVM5eGJIVk9WV0ZDTUhCNFNHNTJhVUZhTDNkTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQ01HMXNlVmhETUhsNFIycHlRMGxpU25wVVpqTlBXR00yYUhwdVFqRmxaa1JrY25neFFuRXJjak1yUVhCcmJ6azFUd29yU1VFNFZXWjRkU3QzV0hsS2JYZGxVV2RRZW1kc1lUZEdSRTV6TkdWWmVUbGtSMGxtTVVwdWN6SmlRM041ZWs1WmNDOUNiVFJXZFRGbmRXSmhhelJVQ25ocVIzWkVWbFJvYmtoQldHMWxZekkxVkVseFVVNVFUVm9yWjBnMk5EaGlSRFV4WkV0dGVtcEtXSHBvUkRSdGVIcGFOREpsYXpsaWRXdEhla3hNTWxrS2FEUlZWbmhJYW1VMFJ6WlZNRTVUZDJOWE4waDRUSEJDYTNkcFFuVjROVE4yY1Zsa1VHRTVaalozT1dNclRXa3lNRkZNWVc1WFFVcFNSM2xNZFdwT1VBcDRLM2hVUm00dlVWQnlTM2MyY3poR1drMTNhRzA0TTNKeWNsaHVPRVUwWld0UE1VTnJVRGxKVDNSVlJVaGxWbUpMTkRCUFVsWkxhamwzTmtWT2VIUkdDbWxoU0VOSU4yWmlkek52V2xFelEyUlVNaXR2ZUd4blkwVmpWVVp6SzFoRlJGcHJRZ290TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vMDkzQkM2QkEzNEU1MjhERjcwQjFGNDVBNzNCRTIzNTIuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIGNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wZTY3MzJlNjk5ODg2MTdiOCxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
-            TagSpecifications: [],
+              "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVaM2xPYWtVelRWUkZlazB4YjFoRVZFMTRUVVJuZVU1RVJUTk5WRVY2VFRGdmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUWFkwQ2tGd2JuTlVha3h4UVhCMFlUSkRjeTlzVlRZNVRsVmpVMkp1ZWxwbmNXMXJZek5hU2tjeGJUQm9UV2xVWkhkek16Vk5lRWxzWTBsUFJFOVpSR1IwVGxZS1lVeHBjWEpJTkRWRWVEZElSSFkyY2tSUlZHMUljbWxJWjNsME9XZHFTbEJoWnpFNGFrOVdjRkJxTVVjMksxcFhaSHBxZWpaWFpWSlVPSGxuY0U5eFF3cE5jR05yVUZoS2RHaGpaemcxYTBKTlRYWTNaRkpHVGxKV2QwZG1TblJaVFd0dmRHbDNRa3BUVmtSSFNUTTJhR0pRWnpkbU5sRjViM0JYVmk5TWIwTnFDbEkwTlhoSFRYRjFZVWQwWVRsdE1uaHRZbFpTTTBvNGNHeEZkWHA0TW5WeGRrZFplVFZLTjA5d1ZGbDJXamhOZGtWTWFYcDJPR04xYjNCYVRHbDBhSEVLTVVKeVYwcDJNSHBSU2taak0ybHlMell3U2s5S1MwMDVlVnBWWXpka1V6SnRlSHA2VEhOalJYVklZbkEyVm1KamNVODNLM054VjNwUlNUbEtVWEZWVWdwNlRtMTZhMjQwUXpsNmFrTnlUR1FyZGprd1EwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaQlZsTnFkRFF4VUVka2MweDZkVGQ1ZFd0MU9HNUdiRU15UTJOTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQ1YyWlpXRmRMWmtvMWEybDNLMnBwSzI5SlJGZE5OVzQ1UkRkWWJVWm5NR3gyWTBoeWNWUnVXVU50YjJoUVpFRlRaQXBGZEdwNU1GSkpia2RaT1doUWN5czFURmRWUmxVM1oxRlhPV2s0YW1oT1JEQnZkbmx6VkVOT2JsWjVRblZMZDNBemFGSlpUMWMzZW1oNFpEZzFiWGxsQ25wbU1FSkpTM2hsUkdaNlYyVjZielZHV2xReFYzcDJNWEZRVGtFeVMyNXNaR3B5TVRRd1ZEaHFaRmhQT1c5MVVuRktXRTVYWVVGd1dIUTNWbGRzUW0wS2JWcG1ZbVV2T1hSVFkyUnBWelp5T0d4NFNWSlljWEZCWW1GcFIzcHJPSHB1WkRNelpFc3hUMjFuU2tOSWIyb3lSMXBGSzJaVk1HdGFWa3RwYjNKU01BcDNSSFp1U2tWVGJqZDRhRUUzV1dkWVlsQlhXa3R3WVdoeU1GZEVWVlJuUkVVMFZ6SnhZVnAxU1dVemJrVjBiMjFhYVU5c1pVUlJha2RsZG5Gek5ERjNDa1ZsZFROeU1FOVZMMFV3YWxkSlZtZzROREk1ZVVWS0sxUktVRWhaUVdodE9WbDFWUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vRTE1RTNFOUIzN0MwNzgzMEU5MUQyNUE5NjhCMkM1QTQuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIG15LWNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wZTY3MzJlNjk5ODg2MTdiOCxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
             MetadataOptions: {
               HttpPutResponseHopLimit: 2,
             },
@@ -329,7 +320,7 @@ module.exports = ({ stage }) => ({
           Tags: [
             {
               Key: "eks:cluster-name",
-              Value: "cluster",
+              Value: "my-cluster",
             },
             {
               Key: "eks:nodegroup-name",
@@ -342,8 +333,8 @@ module.exports = ({ stage }) => ({
   },
   eks: {
     Cluster: {
-      cluster: {
-        name: "cluster",
+      myCluster: {
+        name: "my-cluster",
         properties: {
           version: "1.20",
         },
@@ -359,7 +350,7 @@ module.exports = ({ stage }) => ({
             maxSize: 1,
             desiredSize: 1,
           },
-          instanceTypes: ["t2.medium"],
+          instanceTypes: ["t2.small"],
           amiType: "AL2_x86_64",
           labels: {},
           diskSize: 20,

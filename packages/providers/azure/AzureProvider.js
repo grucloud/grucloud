@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, filter, map, not, reduce } = require("rubico");
+const { pipe, eq, get, tap, filter, map, not, omit } = require("rubico");
 
 const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
 
@@ -13,21 +13,14 @@ const {
   mergeConfig,
 } = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
-const { isUpByIdCore } = require("@grucloud/core/Common");
+const { isUpByIdCore, compare } = require("@grucloud/core/Common");
 const { checkEnv } = require("@grucloud/core/Utils");
 const { tos } = require("@grucloud/core/tos");
+const { generateCode } = require("./Az2gc");
 
 const fnSpecs = (config) => {
-  const {
-    location,
-    managedByKey,
-    managedByValue,
-    stageTagKey,
-    stage,
-    providerName,
-  } = config;
+  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
-  assert(providerName);
   //TODO move isInstanceUp and  isUpByIdFactory in AzClient
   const getStateName = (instance) => {
     const { provisioningState } = instance.properties;
@@ -56,6 +49,7 @@ const fnSpecs = (config) => {
 
   const findDependenciesResourceGroup = ({ live }) => ({
     type: "ResourceGroup",
+    group: "resourceManagement",
     ids: [live.id.replace(`/providers/${live.type}/${live.name}`, "")],
   });
 
@@ -83,6 +77,7 @@ const fnSpecs = (config) => {
               tags: buildTags(config),
             })(properties),
           isDefault: isDefaultResourceGroup,
+          managedByOhter: isDefaultResourceGroup,
           cannotBeDeleted: isDefaultResourceGroup,
         }),
       isOurMinion,
@@ -94,6 +89,9 @@ const fnSpecs = (config) => {
       group: "virtualNetworks",
       type: "VirtualNetwork",
       dependsOn: ["resourceManagement::ResourceGroup"],
+      dependencies: () => ({
+        resourceGroup: { type: "ResourceGroup", group: "resourceManagement" },
+      }),
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -125,6 +123,9 @@ const fnSpecs = (config) => {
       group: "virtualNetworks",
       type: "SecurityGroup",
       dependsOn: ["resourceManagement::ResourceGroup"],
+      dependencies: () => ({
+        resourceGroup: { type: "ResourceGroup", group: "resourceManagement" },
+      }),
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -158,6 +159,9 @@ const fnSpecs = (config) => {
       group: "virtualNetworks",
       type: "PublicIpAddress",
       dependsOn: ["resourceManagement::ResourceGroup"],
+      dependencies: () => ({
+        resourceGroup: { type: "ResourceGroup", group: "resourceManagement" },
+      }),
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -197,6 +201,30 @@ const fnSpecs = (config) => {
         "virtualNetworks::SecurityGroup",
         "virtualNetworks::PublicIpAddress",
       ],
+      dependencies: () => ({
+        resourceGroup: { type: "ResourceGroup", group: "resourceManagement" },
+        virtualNetwork: {
+          type: "VirtualNetwork",
+          group: "virtualNetworks",
+        },
+        publicIpAddress: {
+          type: "PublicIpAddress",
+          group: "virtualNetworks",
+        },
+        securityGroup: { type: "SecurityGroup", group: "virtualNetworks" },
+      }),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -209,10 +237,12 @@ const fnSpecs = (config) => {
             `/providers/Microsoft.Network/networkInterfaces`,
           queryParameters: () => "?api-version=2020-05-01",
           isInstanceUp,
+
           findDependencies: ({ live, lives }) => [
             findDependenciesResourceGroup({ live }),
             {
               type: "VirtualNetwork",
+              group: "virtualNetworks",
               ids: pipe([
                 () => live,
                 get("properties.ipConfigurations"),
@@ -226,6 +256,7 @@ const fnSpecs = (config) => {
             },
             {
               type: "PublicIpAddress",
+              group: "virtualNetworks",
               ids: pipe([
                 () => live,
                 get("properties.ipConfigurations"),
@@ -236,6 +267,7 @@ const fnSpecs = (config) => {
             },
             {
               type: "SecurityGroup",
+              group: "virtualNetworks",
               ids: [get("properties.networkSecurityGroup.id")(live)],
             },
           ],
@@ -317,6 +349,26 @@ const fnSpecs = (config) => {
         "resourceManagement::ResourceGroup",
         "virtualNetworks::NetworkInterface",
       ],
+      dependencies: () => ({
+        resourceGroup: { type: "ResourceGroup", group: "resourceManagement" },
+        networkInterface: {
+          type: "NetworkInterface",
+          group: "virtualNetworks",
+        },
+      }),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["properties.osProfile.adminPassword"]),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -353,6 +405,7 @@ const fnSpecs = (config) => {
           findDependencies: ({ live }) => [
             {
               type: "ResourceGroup",
+              group: "resourceManagement",
               ids: pipe([
                 () => [
                   live.id
@@ -364,6 +417,7 @@ const fnSpecs = (config) => {
             },
             {
               type: "NetworkInterface",
+              group: "virtualNetworks",
               ids: pipe([
                 () => live,
                 get("properties.networkProfile.networkInterfaces"),
@@ -421,6 +475,13 @@ exports.AzureProvider = ({
     fnSpecs,
     start,
     info,
+    generateCode: ({ commandOptions, programOptions }) =>
+      generateCode({
+        providerConfig: makeConfig(),
+        specs: fnSpecs(makeConfig()),
+        commandOptions,
+        programOptions,
+      }),
   });
 
   return core;

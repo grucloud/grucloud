@@ -241,7 +241,13 @@ exports.AwsProvider = ({
     fnSpecs,
     start,
     info,
-    generateCode,
+    generateCode: ({ commandOptions, programOptions }) =>
+      generateCode({
+        providerConfig: makeConfig(),
+        specs: fnSpecs(makeConfig()),
+        commandOptions,
+        programOptions,
+      }),
     getListHof,
   });
 };

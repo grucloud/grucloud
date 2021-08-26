@@ -11,6 +11,7 @@
     "test-modules": "mocha --exit '../../modules/aws/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",
     "coverage-examples": "nyc npm run test-examples",
+    "coverage-modules": "nyc npm run test-modules",
     "test-all": "npm run test && npm run test-examples && npm run test-modules"
   },
   "author": "",

@@ -26,7 +26,6 @@ const {
 
 const {
   size,
-  first,
   isEmpty,
   find,
   callProp,
@@ -36,8 +35,6 @@ const {
   flatten,
   defaultsDeep,
   keys,
-  append,
-  prepend,
   includes,
   isString,
   isObject,
@@ -984,6 +981,9 @@ const writeResource =
               codeBuildProperties,
             }),
           }),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
       ]),
     ])();
@@ -1023,7 +1023,7 @@ const writeResources =
           eq(get("group"), group),
         ])
       ),
-      tap((resources) => {
+      tap.if(not(isEmpty), (resources) => {
         console.log(`Resources ${group}::${type} #${size(resources)}`);
       }),
       map(
@@ -1128,7 +1128,7 @@ exports.generatorMain = ({
             programOptions,
           }),
         }),
-        tap(() => {
+        tap((params) => {
           assert(true);
         }),
       ])(),

@@ -8,6 +8,12 @@ module.exports = ({}) => {
     eks: {
       cluster: {
         name: "my-cluster",
+        properties: {
+          resourcesVpcConfig: {
+            endpointPublicAccess: true,
+            endpointPrivateAccess: false,
+          },
+        },
       },
     },
   };
