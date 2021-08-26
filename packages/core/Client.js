@@ -115,11 +115,17 @@ const decorateLive =
               assert(Array.isArray(ids));
             }),
             map(
-              assign({
-                providerName: () => client.spec.providerName,
-                groupType: ({ group, type }) => `${group}::${type}`,
-                ids: pipe([get("ids"), filter(not(isEmpty))]),
-              })
+              pipe([
+                tap(({ type, group }) => {
+                  assert(type);
+                  assert(group);
+                }),
+                assign({
+                  providerName: () => client.spec.providerName,
+                  groupType: ({ group, type }) => `${group}::${type}`,
+                  ids: pipe([get("ids"), filter(not(isEmpty))]),
+                }),
+              ])
             ),
             filter(pipe([get("ids"), not(isEmpty)])),
           ])();
