@@ -182,10 +182,8 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         "nodegroupName",
         //"labels", //TODO
         "scalingConfig",
-        //"taints",
+        //"taints", //TODO
         "updateConfig",
-        "instanceTypes",
-        "amiType",
       ]),
       eks().updateNodegroupConfig,
       get("update"),
