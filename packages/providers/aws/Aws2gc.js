@@ -850,7 +850,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Repository",
         filterLive: () =>
           pick([
-            "repositoryName",
             "imageTagMutability",
             "imageScanningConfiguration",
             "encryptionConfiguration",

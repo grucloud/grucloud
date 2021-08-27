@@ -3,9 +3,11 @@ id: Registry
 title: Registry
 ---
 
-Manages a Docker Registry.
+Manages a [Docker Registry](https://console.aws.amazon.com/ecr/home)
 
 ## Sample Code
+
+The following code describes a repository with a policy and a replication configuration:
 
 ```js
 provider.ecr.makeRepository({
@@ -49,8 +51,5 @@ provider.ecr.makeRepository({
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property)
-
-### Used By
-
-- [Repository](./Repository)
+- [putRegistryPolicy properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putRegistryPolicy-property)
+- [putReplicationConfiguration properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putReplicationConfiguration-property)
