@@ -12,7 +12,14 @@ const {
   map,
   omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, size, first } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  size,
+  first,
+  unless,
+  prepend,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchTemplate",
@@ -23,12 +30,33 @@ const {
   createEndpoint,
   shouldRetryOnException,
   buildTags,
+  findValueInTags,
+  findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 
 const EC2Instance = require("./EC2Instance");
 
-const findName = get("live.LaunchTemplateName");
 const findId = get("live.LaunchTemplateId");
+
+const findNameEks = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live"),
+  findValueInTags({ key: "eks:nodegroup-name" }),
+  unless(isEmpty, prepend("lt-")),
+]);
+
+const findName = (params) => {
+  const fns = [findNameEks, get("live.LaunchTemplateName")];
+  for (fn of fns) {
+    const name = fn(params);
+    if (!isEmpty(name)) {
+      return name;
+    }
+  }
+  assert(false, "should have a name");
+};
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 
@@ -51,11 +79,26 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       group: "iam",
       ids: [
         pipe([() => live, get("LaunchTemplateData.IamInstanceProfile.Arn")])(),
+        pipe([
+          () => live,
+          get("LaunchTemplateData.IamInstanceProfile.Name"),
+          (name) =>
+            lives.getByName({
+              name,
+              type: "InstanceProfile",
+              group: "iam",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
       ],
     },
   ];
 
-  const findNamespace = pipe([() => ""]);
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "eks:cluster-name",
+  });
 
   const notFound = or([
     eq(get("code"), "InvalidLaunchTemplateId.NotFound"),

@@ -16,7 +16,7 @@ const {
   assign,
   omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -38,13 +38,29 @@ const findId = findName;
 exports.EKSNodeGroup = ({ spec, config }) => {
   const eks = EKSNew(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     { type: "Cluster", group: "eks", ids: [live.clusterName] },
     { type: "Subnet", group: "ec2", ids: live.subnets },
     {
       type: "AutoScalingGroup",
       group: "autoscaling",
-      ids: pipe([get("resources.autoScalingGroups"), pluck("name")])(live),
+      ids: pipe([
+        () => live,
+        get("resources.autoScalingGroups"),
+        pluck("name"),
+        map((name) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "AutoScalingGroup",
+                group: "autoscaling",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.AutoScalingGroupName"), name)),
+            get("id"),
+          ])()
+        ),
+      ])(),
     },
     { type: "Role", group: "iam", ids: [live.nodeRole] },
   ];

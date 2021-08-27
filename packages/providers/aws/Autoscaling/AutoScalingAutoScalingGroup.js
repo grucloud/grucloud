@@ -19,6 +19,8 @@ const {
   first,
   includes,
   callProp,
+  unless,
+  prepend,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
@@ -28,17 +30,26 @@ const { tos } = require("@grucloud/core/tos");
 const {
   AutoScalingNew,
   shouldRetryOnException,
-  findNameInTags,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
   buildTags,
+  findValueInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.AutoScalingGroupARN");
 
+const findNameEks = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live"),
+  findValueInTags({ key: "eks:nodegroup-name" }),
+  unless(isEmpty, prepend("asg-")),
+]);
+
 const findName = (params) => {
-  const fns = [findNameInTags({ findId }), get("live.AutoScalingGroupName")];
+  const fns = [findNameEks, get("live.AutoScalingGroupName")];
   for (fn of fns) {
     const name = fn(params);
     if (!isEmpty(name)) {
@@ -82,7 +93,15 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     {
       type: "LaunchTemplate",
       group: "ec2",
-      ids: [pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])()],
+      ids: [
+        pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
+        pipe([
+          () => live,
+          get(
+            "MixedInstancesPolicy.LaunchTemplate.LaunchTemplateSpecification.LaunchTemplateId"
+          ),
+        ])(),
+      ],
     },
     { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },
     {

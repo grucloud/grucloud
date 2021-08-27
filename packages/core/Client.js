@@ -128,7 +128,9 @@ const decorateLive =
                 }),
               ])
             ),
-            filter(pipe([get("ids"), not(isEmpty)])),
+            tap((params) => {
+              assert(true);
+            }),
           ])();
         },
       }),

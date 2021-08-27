@@ -36,7 +36,6 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
 const {
   Ec2New,
   shouldRetryOnException,
@@ -250,7 +249,6 @@ const findDependencies = ({ live }) => [
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
-
   const isDefault =
     ({ IsEgress }) =>
     ({ live, lives }) =>
@@ -294,7 +292,11 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
-  const managedByOther = isDefault;
+  const managedByOther = ({ IsEgress }) =>
+    or([
+      isDefault({ IsEgress }),
+      pipe([get("resource.name"), callProp("startsWith", "eks-")]),
+    ]);
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -341,12 +343,16 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
-  const findNamespace = ({ live }) =>
+  const findNamespace = ({ live, lives }) =>
     pipe([
-      () => findNamespaceInTags(config)({ live }),
-      tap((namespace) => {
-        logger.debug(`findNamespace ${namespace}`);
-      }),
+      () =>
+        lives.getById({
+          id: live.GroupId,
+          type: "SecurityGroup",
+          group: "ec2",
+          providerName: config.providerName,
+        }),
+      get("namespace"),
     ])();
 
   //TODO add common describeSecurityGroupRules

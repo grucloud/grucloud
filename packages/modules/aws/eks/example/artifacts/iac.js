@@ -243,18 +243,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.ec2.makeLaunchTemplate({
-    name: get(
-      "config.ec2.LaunchTemplate.eksD8bdbab8E53bC758_8bd1_0bef90c17965.name"
-    ),
+    name: get("config.ec2.LaunchTemplate.ltNodeGroupPrivateCluster.name"),
+    namespace: "EKS",
     properties: get(
-      "config.ec2.LaunchTemplate.eksD8bdbab8E53bC758_8bd1_0bef90c17965.properties"
+      "config.ec2.LaunchTemplate.ltNodeGroupPrivateCluster.properties"
     ),
   });
 
   provider.eks.makeCluster({
-    name: get("config.eks.Cluster.cluster.name"),
+    name: get("config.eks.Cluster.myCluster.name"),
     namespace: "EKS",
-    properties: get("config.eks.Cluster.cluster.properties"),
+    properties: get("config.eks.Cluster.myCluster.properties"),
     dependencies: ({ resources }) => ({
       subnets: [
         resources.ec2.Subnet.subnetPrivateA,
@@ -275,7 +274,7 @@ const createResources = ({ provider }) => {
     namespace: "EKS",
     properties: get("config.eks.NodeGroup.nodeGroupPrivateCluster.properties"),
     dependencies: ({ resources }) => ({
-      cluster: resources.eks.Cluster.cluster,
+      cluster: resources.eks.Cluster.myCluster,
       subnets: [
         resources.ec2.Subnet.subnetPrivateA,
         resources.ec2.Subnet.subnetPrivateB,

@@ -1,6 +1,38 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-module-aws-eks",
   iam: {
+    Policy: {
+      amazonEc2ContainerRegistryReadOnly: {
+        name: "AmazonEC2ContainerRegistryReadOnly",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        },
+      },
+      amazonEksCniPolicy: {
+        name: "AmazonEKS_CNI_Policy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        },
+      },
+      amazonEksClusterPolicy: {
+        name: "AmazonEKSClusterPolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+        },
+      },
+      amazonEksvpcResourceController: {
+        name: "AmazonEKSVPCResourceController",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+        },
+      },
+      amazonEksWorkerNodePolicy: {
+        name: "AmazonEKSWorkerNodePolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+      },
+    },
     Role: {
       roleCluster: {
         name: "role-cluster",
@@ -184,19 +216,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroup: {
-      eksClusterSgMyCluster_1909614887: {
-        name: "eks-cluster-sg-my-cluster-1909614887",
-        properties: {
-          Description:
-            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-          Tags: [
-            {
-              Key: "kubernetes.io/cluster/my-cluster",
-              Value: "owned",
-            },
-          ],
-        },
-      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -217,17 +236,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroupRuleIngress: {
-      eksClusterSgMyCluster_1909614887RuleIngressAllFromEksClusterSgMyCluster_1909614887:
-        {
-          name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
-          properties: {
-            IpPermission: {
-              IpProtocol: "-1",
-              FromPort: -1,
-              ToPort: -1,
-            },
-          },
-        },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
         properties: {
@@ -292,13 +300,10 @@ module.exports = ({ stage }) => ({
       },
     },
     LaunchTemplate: {
-      eks_70bdc1baBd70_6598C620_7ed97878945d: {
-        name: "eks-70bdc1ba-bd70-6598-c620-7ed97878945d",
+      ltNodeGroupPrivateCluster: {
+        name: "lt-node-group-private-cluster",
         properties: {
           LaunchTemplateData: {
-            IamInstanceProfile: {
-              Name: "eks-70bdc1ba-bd70-6598-c620-7ed97878945d",
-            },
             BlockDeviceMappings: [
               {
                 DeviceName: "/dev/xvda",
@@ -309,10 +314,10 @@ module.exports = ({ stage }) => ({
                 },
               },
             ],
-            ImageId: "ami-0e6732e69988617b8",
+            ImageId: "ami-06de1935f1242d2d8",
             InstanceType: "t2.small",
             UserData:
-              "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVaM2xPYWtVelRWUkZlazB4YjFoRVZFMTRUVVJuZVU1RVJUTk5WRVY2VFRGdmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUWFkwQ2tGd2JuTlVha3h4UVhCMFlUSkRjeTlzVlRZNVRsVmpVMkp1ZWxwbmNXMXJZek5hU2tjeGJUQm9UV2xVWkhkek16Vk5lRWxzWTBsUFJFOVpSR1IwVGxZS1lVeHBjWEpJTkRWRWVEZElSSFkyY2tSUlZHMUljbWxJWjNsME9XZHFTbEJoWnpFNGFrOVdjRkJxTVVjMksxcFhaSHBxZWpaWFpWSlVPSGxuY0U5eFF3cE5jR05yVUZoS2RHaGpaemcxYTBKTlRYWTNaRkpHVGxKV2QwZG1TblJaVFd0dmRHbDNRa3BUVmtSSFNUTTJhR0pRWnpkbU5sRjViM0JYVmk5TWIwTnFDbEkwTlhoSFRYRjFZVWQwWVRsdE1uaHRZbFpTTTBvNGNHeEZkWHA0TW5WeGRrZFplVFZLTjA5d1ZGbDJXamhOZGtWTWFYcDJPR04xYjNCYVRHbDBhSEVLTVVKeVYwcDJNSHBSU2taak0ybHlMell3U2s5S1MwMDVlVnBWWXpka1V6SnRlSHA2VEhOalJYVklZbkEyVm1KamNVODNLM054VjNwUlNUbEtVWEZWVWdwNlRtMTZhMjQwUXpsNmFrTnlUR1FyZGprd1EwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaQlZsTnFkRFF4VUVka2MweDZkVGQ1ZFd0MU9HNUdiRU15UTJOTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQ1YyWlpXRmRMWmtvMWEybDNLMnBwSzI5SlJGZE5OVzQ1UkRkWWJVWm5NR3gyWTBoeWNWUnVXVU50YjJoUVpFRlRaQXBGZEdwNU1GSkpia2RaT1doUWN5czFURmRWUmxVM1oxRlhPV2s0YW1oT1JEQnZkbmx6VkVOT2JsWjVRblZMZDNBemFGSlpUMWMzZW1oNFpEZzFiWGxsQ25wbU1FSkpTM2hsUkdaNlYyVjZielZHV2xReFYzcDJNWEZRVGtFeVMyNXNaR3B5TVRRd1ZEaHFaRmhQT1c5MVVuRktXRTVYWVVGd1dIUTNWbGRzUW0wS2JWcG1ZbVV2T1hSVFkyUnBWelp5T0d4NFNWSlljWEZCWW1GcFIzcHJPSHB1WkRNelpFc3hUMjFuU2tOSWIyb3lSMXBGSzJaVk1HdGFWa3RwYjNKU01BcDNSSFp1U2tWVGJqZDRhRUUzV1dkWVlsQlhXa3R3WVdoeU1GZEVWVlJuUkVVMFZ6SnhZVnAxU1dVemJrVjBiMjFhYVU5c1pVUlJha2RsZG5Gek5ERjNDa1ZsZFROeU1FOVZMMFV3YWxkSlZtZzROREk1ZVVWS0sxUktVRWhaUVdodE9WbDFWUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vRTE1RTNFOUIzN0MwNzgzMEU5MUQyNUE5NjhCMkM1QTQuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIG15LWNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wZTY3MzJlNjk5ODg2MTdiOCxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
+              "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVaM2xPZWtVMFRXcFJlazVzYjFoRVZFMTRUVVJuZVU1VVJUUk5hbEY2VG14dmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUekprQ2xwME0xTnBaamd4Tm5WbWNXODNVek5OVFRKTFdGbGxSVWxKTVhodFdWTmlhRkZVVkRCNlJVMXplVm8wTWtFd2NtaEllRGhoTVhJd01pOWxZM1ZwTWpBS2FYRmpZbUoyY2twVWFFczVhMDQxYmpoTE9HRjRNakpTUjBwdWVERnhUMVl5V21zdlpteE9ZbXRRZUdod2NXWXlPRlpTY1RKUGQxZG9TRW8zWmxsM2NBbzRabWRMVmk5M1NtdE9kbTFNWlRRMmMyeERVM2h1UjFKcFpVbFdRMHh3TlZNMVVGWjZZekphTVVjd0x6Y3JkR1ozVEN0TE9IazRTamgxTDJobVQyOTVDa3RUTTFoTVpHZHZhVzl0Y1ZSaFYyWnRjbEJzVFZoeUszcEpVek5pYTFoeVJtTXpPSGxCVm5odlVHbEhhVEJJTUROSFlscGxWM2w0Yml0WVNHSndOSEFLVjFaeGFsZEZlVTVIVUhWU0swUkZUazVEYmxCM1dUaDNOSE51T0VSblZtc3lTM3A2VmpaMFdrcEZMM1ptYTAxUkwyUTNOVEZNYW5CMmRpc3JSRVJrY1FvME9IazRValpKYUV4cU1rRXhMemxoV1dOalEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaSWNUTk9lVWR4U1c5cU1VMW5hMVJqVVhOQ01rRk9iVmRDTDFGTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGRE5uSlRia05OVXpFMVdqVldhVzFQYkU5c2FrTllVR0ZETkROV2RYRjJTV053U0c1WFowVTRaVkpZYm5SR1F6bGFTUXBWUlhNdk4xZFhLM0pQZFZoamVIbDBXbVpyZFV4QlZpOHpiakZIUVhoU1dGTkRjV29yTW1SUWNUQnVaRGN3WjJNNGQyTlljRWQwU3k5d2IwVmxVaXM1Q2s1blIxVnBXV1Z1VDJ4dlJWcDVibXRUUTNKeU9IaERkM0JqUTNoTWVGWXZjR1JrVVZCTGIwdE5ablp2VjBWVVl6UnFZakIwV1c5bEsySmlhR0pHWlVRS1NHUkxURkZLZVZCd05VRldhR1EzYm05Q2FqSTVOMlJtUkVjeGJ6Qm1NV3BFTUVwc2IyOTBZbmw2YUV0TU1WQlhTV05KSzJ4NFlXY3liMFpTT0ZoMFpRcHVkVkV5ZWtSUVduVkVUV3N4ZUd3MFozZDVXbXBKTkVSeldqTTBNekk1ZGpkd01rUjVjMFJ0UkV4dFUzVXZZaTlQVkcxTVpqUlNObk5HYjFGVVQzQkpDakZRYXpSSldpOVJTVlZSUmxjNGNEVlRkRXhHU2xsVlZqaHJSelo0UVZkeFZuVnFhUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vQTU3MERCNTU0Q0JDNjZGNEVCODM3NUI4RDM1Mzc1NTkuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIG15LWNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wNmRlMTkzNWYxMjQyZDJkOCxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
             MetadataOptions: {
               HttpPutResponseHopLimit: 2,
             },

@@ -21,6 +21,8 @@ const {
   flatten,
   pluck,
   callProp,
+  unless,
+  prepend,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -50,8 +52,30 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findName = get("live.InstanceProfileName");
   const findId = get("live.Arn");
+
+  const findNameEks = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type: "LaunchTemplate",
+          group: "ec2",
+          providerName: config.providerName,
+        }),
+      find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
+      get("name"),
+      unless(isEmpty, prepend("instance-profile-")),
+    ])();
+
+  const findName = (params) => {
+    const fns = [findNameEks, get("live.InstanceProfileName")];
+    for (fn of fns) {
+      const name = fn(params);
+      if (!isEmpty(name)) {
+        return name;
+      }
+    }
+  };
 
   const managedByOther = ({ live, lives }) =>
     pipe([
@@ -230,21 +254,28 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: pipe([
-      get("live.Roles"),
-      tap((namespace) => {
-        logger.info(`IamInstanceProfile ${namespace}`);
-      }),
-      first,
-      switchCase([
-        isEmpty,
-        () => undefined,
-        (live) => findNamespaceInTags(config)({ live }),
-      ]),
-      tap((namespace) => {
-        logger.info(`IamInstanceProfile ${namespace}`);
-      }),
-    ]),
+    findNamespace: ({ live, lives }) =>
+      pipe([
+        () => live,
+        get("Roles"),
+        tap((roles) => {
+          logger.info(`IamInstanceProfile ${roles}`);
+        }),
+        first,
+        unless(
+          isEmpty,
+          pipe([
+            ({ RoleName }) =>
+              lives.getByName({
+                name: RoleName,
+                type: "Role",
+                group: "iam",
+                providerName: config.providerName,
+              }),
+            findNamespaceInTags(config),
+          ])
+        ),
+      ])(),
     getByName,
     findName,
     create,
