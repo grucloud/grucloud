@@ -11,7 +11,7 @@ exports.createStack = async ({ createProvider }) => {
       require("./config"),
       ModuleAwsLoadBalancer.config,
       ModuleAwsCertificate.config,
-      ModuleAwsVpc.config,
+      //ModuleAwsVpc.config,
     ],
   });
 
