@@ -215,6 +215,7 @@ exports.KmsKey = ({ spec, config }) => {
     configDefault,
     cannotBeDeleted,
     isDefault,
+    managedByOther: isDefault,
     shouldRetryOnException,
   };
 };
