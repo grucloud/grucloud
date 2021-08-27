@@ -5,7 +5,7 @@ module.exports = ({ stage }) => ({
       webServerEc2Simple: {
         name: "web-server-ec2-simple",
         properties: {
-          InstanceType: "t2.micro",
+          InstanceType: "t2.small",
           ImageId: "ami-093d2024466a862c1",
         },
       },

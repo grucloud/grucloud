@@ -10,7 +10,10 @@ describe("EC2 simple instance", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       createStack,
-      steps: [{ createStack, configs: [config] }],
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [require("./configUpdate1"), config] },
+      ],
     });
   });
 });
