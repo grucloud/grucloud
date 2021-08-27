@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, eq, pipe, tap, any } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { get, eq, pipe, tap, any, assign } = require("rubico");
+const { defaultsDeep, find, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpDisk" });
 const { tos } = require("@grucloud/core/tos");
@@ -18,10 +18,20 @@ exports.GcpDisk = ({ spec, config }) => {
   assert(zone);
 
   const configDefault = ({ name, properties }) =>
-    defaultsDeep({
-      name,
-      labels: buildLabel(config),
-    })(properties);
+    pipe([
+      () => properties,
+      when(
+        get("type"),
+        assign({
+          type: ({ type }) =>
+            `projects/${projectId}/zones/${zone}/diskTypes/${type}`,
+        })
+      ),
+      defaultsDeep({
+        name,
+        labels: buildLabel(config),
+      }),
+    ])();
 
   const isInstanceUp = eq(get("status"), "READY");
 

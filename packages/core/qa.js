@@ -49,7 +49,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
           }),
         () => cli.planQuery({}),
         tap((result) => {
-          assert(isEmptyPlan(result), "plan should be empty");
+          assert(isEmptyPlan(result), "plan should be empty after first apply");
         }),
         () =>
           cli.list({
@@ -73,7 +73,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
         tap((params) => {
           assert(true);
         }),
-        map(({ createStack, configs }) =>
+        map.series(({ createStack, configs }) =>
           pipe([
             () => Cli({ programOptions, createStack, configs }),
             (cliNext) =>
@@ -86,10 +86,19 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
                   cliNext.planApply({
                     commandOptions: { force: true },
                   }),
-
+                () =>
+                  cli.list({
+                    commandOptions: {
+                      canBeDeleted: true,
+                      defaultExclude: true,
+                    },
+                  }),
                 () => cliNext.planQuery({}),
                 tap((result) => {
-                  assert(isEmptyPlan(result), "plan should be empty");
+                  assert(
+                    isEmptyPlan(result),
+                    "plan should be empty after an update"
+                  );
                 }),
               ])(),
           ])()

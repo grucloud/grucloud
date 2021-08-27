@@ -15,5 +15,5 @@ describe(title, async function () {
         { createStack, configs: [require("./configUpdate1"), config] },
       ],
     });
-  }).timeout(35 * 60e3);
+  }).timeout(50 * 60e3);
 });

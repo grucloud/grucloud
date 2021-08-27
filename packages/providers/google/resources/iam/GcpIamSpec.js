@@ -28,7 +28,12 @@ module.exports = () =>
       Client: GcpServiceAccount,
       isOurMinion: isOurMinionServiceAccount,
       resourceVarName: pipe([prepend("sa_"), camelCase]),
-      resourceName: pipe([prepend("sa_"), camelCase]),
+      filterLive: () =>
+        pipe([
+          ({ description, displayName }) => ({
+            serviceAccount: { displayName, description },
+          }),
+        ]),
       compare: compare({
         filterTarget: pipe([
           tap(({ serviceAccount }) => {

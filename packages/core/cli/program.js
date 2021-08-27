@@ -248,6 +248,7 @@ exports.createProgram = () => {
     .description("Generate infrastruture code from deployed resources")
     .alias("c")
     .option("--projectName <value>", "The project name")
+    .option("--projectId <value>", "The project id")
     .option("--input <file>", "lives resources", "artifacts/inventory.json")
     .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
     .option(

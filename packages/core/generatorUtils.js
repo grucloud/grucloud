@@ -808,7 +808,11 @@ const writeConfig =
         assert(true);
       }),
       (content) =>
-        configTpl({ content, projectName: commandOptions.projectName }),
+        configTpl({
+          content,
+          projectName: commandOptions.projectName,
+          projectId: commandOptions.projectId,
+        }),
       writeToFile({ filename }),
     ])();
 

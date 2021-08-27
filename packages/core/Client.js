@@ -55,7 +55,7 @@ const showLive =
     ])();
 
 const decorateLive =
-  ({ client, options, lives }) =>
+  ({ client, options, lives, config }) =>
   (live) =>
     pipe([
       tap((params) => {
@@ -63,6 +63,7 @@ const decorateLive =
         assert(client.spec);
         assert(lives);
         assert(live);
+        assert(config);
       }),
       () => ({
         groupType: client.spec.groupType,
@@ -75,7 +76,7 @@ const decorateLive =
         ...resource,
         get name() {
           return pipe([
-            () => client.findName({ live, lives }),
+            () => client.findName({ live, lives, config }),
             tap((name) => {
               if (!isString(name)) {
                 logger.error(`no name in ${tos(live)}`);
@@ -86,7 +87,7 @@ const decorateLive =
         },
         get id() {
           return pipe([
-            () => client.findId({ live, lives }),
+            () => client.findId({ live, lives, config }),
             tap((id) => {
               if (!isString(id)) {
                 assert(isString(id));
@@ -95,14 +96,14 @@ const decorateLive =
           ])();
         },
         get meta() {
-          return client.findMeta({ live, lives });
+          return client.findMeta({ live, lives, config });
         },
 
         get isDefault() {
-          return client.isDefault({ live, lives });
+          return client.isDefault({ live, lives, config });
         },
         get namespace() {
-          return client.findNamespace({ live, lives });
+          return client.findNamespace({ live, lives, config });
         },
         get dependencies() {
           return pipe([
@@ -134,7 +135,7 @@ const decorateLive =
       tap((resource) =>
         Object.defineProperty(resource, "show", {
           enumerable: true,
-          get: () => showLive({ options: options })(resource),
+          get: () => showLive({ options })(resource),
         })
       ),
       tap((resource) =>
@@ -149,13 +150,15 @@ const decorateLive =
               name: resource.name,
               meta: resource.meta,
               id: resource.id,
+              config,
             }),
         })
       ),
       tap((resource) =>
         Object.defineProperty(resource, "managedByUs", {
           enumerable: true,
-          get: () => client.isOurMinion({ uri: resource.uri, live, lives }),
+          get: () =>
+            client.isOurMinion({ uri: resource.uri, live, lives, config }),
         })
       ),
       tap((resource) =>
@@ -166,13 +169,19 @@ const decorateLive =
               resource,
               live,
               lives,
+              config,
             }),
         })
       ),
       tap((resource) =>
         Object.defineProperty(resource, "managedByOther", {
           enumerable: true,
-          get: () => client.managedByOther({ resource, live, lives }),
+          get: pipe([
+            () => client.managedByOther({ resource, live, lives, config }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
         })
       ),
       tap((resource) =>
@@ -189,6 +198,7 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
   pipe([
     tap((params) => {
       assert(client);
+      assert(config);
     }),
     get("items", []), // remove
     filter(not(get("error"))),

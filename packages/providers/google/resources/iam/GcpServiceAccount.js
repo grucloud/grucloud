@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, map, get, eq, assign, not } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
+const { defaultsDeep, first, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "GcpServiceAccount",
@@ -10,15 +10,12 @@ const GoogleClient = require("../../GoogleClient");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
-const findName = pipe([
-  get("live.email"), //
-  (email) => email.split("@"),
-  first,
-]);
+const findName = pipe([get("live.email"), callProp("split", "@"), first]);
 
 const isOurMinionServiceAccount = ({ config, live }) =>
   pipe([
     tap(() => {
+      assert(config);
       assert(config.managedByDescription, `missing managedByDescription`);
       assert(live, "live");
     }),
@@ -69,13 +66,17 @@ exports.GcpServiceAccount = ({ spec, config }) => {
 
   const onResponseGet = ({ data }) =>
     pipe([
+      tap(() => {
+        assert(data.name);
+      }),
+      () => data,
       assign({
         iamPolicy: () => fetchIamPolicy({ name: data.name }),
       }),
       tap((xxx) => {
         logger.debug("onResponseGet");
       }),
-    ])(data);
+    ])();
 
   const onResponseList = ({ accounts = [] }) =>
     pipe([
@@ -103,6 +104,8 @@ exports.GcpServiceAccount = ({ spec, config }) => {
     onResponseGet,
     onResponseList,
     configDefault,
+    isDefault: cannotBeDeleted,
+    managedByOther: cannotBeDeleted,
     cannotBeDeleted,
   });
 };

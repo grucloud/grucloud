@@ -23,6 +23,7 @@ const {
   get,
   eq,
   gte,
+  fork,
 } = require("rubico");
 const {
   find,
@@ -51,6 +52,7 @@ const {
   saveToJson,
   defaultTitle,
 } = require("./cliUtils");
+const { ConfigLoader } = require("../ConfigLoader");
 const { createProviderMaker } = require("./infra");
 const {
   displayPlan,
@@ -1455,10 +1457,27 @@ const projectNameDefault = ({ programOptions }) =>
     ]),
     (error) =>
       pipe([
-        tap((params) => {
+        tap(() => {
           assert(error);
         }),
         () => "GruCloud Project",
+      ])()
+  )();
+
+const projectIdDefault = ({ programOptions, stage }) =>
+  tryCatch(
+    pipe([
+      () => ({ baseDir: programOptions.workingDirectory, stage }),
+      ConfigLoader,
+      (makeConfig) => makeConfig({ stage }),
+      get("projectId"),
+    ]),
+    (error) =>
+      pipe([
+        tap(() => {
+          //logger.error(`Cannot find projetId in config.js`);
+        }),
+        () => undefined,
       ])()
   )();
 
@@ -1583,27 +1602,29 @@ exports.Cli = ({
         ])(),
       genCode: ({ commandOptions } = {}) =>
         pipe([
-          async () => ({
+          fork({
+            projectName: () => projectNameDefault({ programOptions }),
+            projectId: () => projectIdDefault({ programOptions, stage }),
+          }),
+          (projectDefaults) => defaultsDeep(projectDefaults)(commandOptions),
+          defaultsDeep({
+            outputCode: path.resolve(
+              programOptions.workingDirectory,
+              "artifacts/iac.js"
+            ),
+            outputConfig: path.resolve(
+              programOptions.workingDirectory,
+              "artifacts/config.js"
+            ),
+            outputEnv: path.resolve(
+              programOptions.workingDirectory,
+              "artifacts/default.env"
+            ),
+          }),
+          (commandOptions) => ({
             infra,
             programOptions,
-            commandOptions: pipe([
-              () => commandOptions,
-              defaultsDeep({
-                projectName: await projectNameDefault({ programOptions }),
-                outputCode: path.resolve(
-                  programOptions.workingDirectory,
-                  "artifacts/iac.js"
-                ),
-                outputConfig: path.resolve(
-                  programOptions.workingDirectory,
-                  "artifacts/config.js"
-                ),
-                outputEnv: path.resolve(
-                  programOptions.workingDirectory,
-                  "artifacts/default.env"
-                ),
-              }),
-            ])(),
+            commandOptions,
           }),
           genCode,
         ])(),
