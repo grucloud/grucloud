@@ -173,7 +173,10 @@ module.exports = () =>
       Client: EC2LaunchTemplate,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
+        filterTarget: pipe([
+          omit(["LaunchTemplateData", "TagSpecifications"]),
+          filterTargetDefault,
+        ]),
         filterLive: filterLiveDefault,
       }),
     },
