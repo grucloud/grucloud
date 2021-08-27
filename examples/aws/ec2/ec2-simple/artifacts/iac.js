@@ -3,16 +3,9 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.useDefaultSecurityGroup({
-    name: get("config.ec2.SecurityGroup.sgDefaultVpcDefault.name"),
-  });
-
   provider.ec2.makeInstance({
     name: get("config.ec2.Instance.webServerEc2Simple.name"),
     properties: get("config.ec2.Instance.webServerEc2Simple.properties"),
-    dependencies: ({ resources }) => ({
-      securityGroups: [resources.ec2.SecurityGroup.sgDefaultVpcDefault],
-    }),
   });
 };
 
