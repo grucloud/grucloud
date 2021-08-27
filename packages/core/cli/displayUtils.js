@@ -16,6 +16,7 @@ const {
   eq,
   and,
   fork,
+  gt,
 } = require("rubico");
 const {
   callProp,
@@ -25,6 +26,8 @@ const {
   size,
   find,
   identity,
+  when,
+  append,
 } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
@@ -333,9 +336,19 @@ const tablePerTypeDefinitions = [
     ],
   },
 ];
-//TODO if size > 1e3, truncate and appends [...TRUNCATED]
+
+const MaxLine = 300;
+
 const stringifyLimit = tryCatch(
-  pipe([YAML.stringify, callProp("slice", 0, 5e3)]),
+  pipe([
+    YAML.stringify,
+    callProp("split", "\n"),
+    when(
+      gt(size, MaxLine),
+      pipe([callProp("slice", 0, MaxLine), append("[TRUNCATED]")])
+    ),
+    callProp("join", "\n"),
+  ]),
   (error, toFormat) =>
     pipe([
       tap((params) => {
@@ -506,7 +519,7 @@ const displayPlanItemCreate =
           {
             colSpan: 2,
             //TODO limit size
-            content: colors.green(YAML.stringify(resource.target)),
+            content: colors.green(stringifyLimit(resource.target)),
           },
         ]),
     ])();
@@ -531,8 +544,7 @@ const displayPlanItemDestroy =
         tableItem.push([
           {
             colSpan: 2,
-            //TODO limit size
-            content: colors.red(YAML.stringify(resource.live)),
+            content: colors.red(stringifyLimit(resource.live)),
           },
         ]),
     ])();

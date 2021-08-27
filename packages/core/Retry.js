@@ -76,7 +76,9 @@ const retryCall = async ({
             ]),
             pipe([
               tap((error) => {
-                logger.info(`${name} throws exception`);
+                logger.error(
+                  `${name} throws not expected exception, ${error.stack}`
+                );
               }),
               (error) => {
                 throw error;

@@ -59,6 +59,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
             },
             commandOptions: {
               graph: true,
+              defaultExclude,
               excludeTypes: ["NetworkInterface"],
               ...listOptions,
             },
