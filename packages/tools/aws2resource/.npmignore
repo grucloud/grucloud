@@ -1,0 +1,10 @@
+package-lock.json
+node_modules/
+.env
+.nyc_output
+coverage
+*.log
+.vscode/
+.github
+**/test/*
+*-resources.js
