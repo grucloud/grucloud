@@ -1,4 +1,4 @@
-module.exports = ({ stage, accountId }) => ({
+module.exports = (config) => ({
   projectName: "aws-ecr-repository",
   ecr: {
     Repository: {
@@ -65,10 +65,12 @@ module.exports = ({ stage, accountId }) => ({
                 Sid: "stis-2",
                 Effect: "Allow",
                 Principal: {
-                  AWS: "arn:aws:iam::840541460064:root",
+                  AWS: `arn:aws:iam::${config.accountId()}:root`,
                 },
                 Action: ["ecr:CreateRepository", "ecr:ReplicateImage"],
-                Resource: "arn:aws:ecr:eu-west-2:840541460064:repository/*",
+                Resource: `arn:aws:ecr:${
+                  config.region
+                }:${config.accountId()}:repository/*`,
               },
             ],
           },
@@ -77,8 +79,8 @@ module.exports = ({ stage, accountId }) => ({
               {
                 destinations: [
                   {
-                    region: "us-west-1",
-                    registryId: accountId(),
+                    region: "us-west-2",
+                    registryId: config.accountId(),
                   },
                 ],
               },

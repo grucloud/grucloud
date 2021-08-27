@@ -13,7 +13,7 @@ describe("ECR Repository", async function () {
         { createStack, configs: [config] },
         { createStack, configs: [require("./configUpdate1.js")] },
         { createStack, configs: [require("./configUpdate2.js")] },
-        { createStack, configs: [require("./configUpdate3.js")] },
+        { createStack, configs: [config] },
       ],
     });
   });
