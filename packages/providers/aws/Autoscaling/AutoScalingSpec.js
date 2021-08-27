@@ -50,7 +50,6 @@ module.exports = () =>
         "ec2::SecurityGroup",
         "ec2::Subnet",
         "iam::InstanceProfile",
-        "ec2::Volume",
       ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,

@@ -166,7 +166,6 @@ module.exports = () =>
       dependsOn: [
         "ec2::KeyPair",
         "ec2::SecurityGroup",
-        "ec2::Volume",
         "iam::Role",
         "iam::InstanceProfile",
       ],

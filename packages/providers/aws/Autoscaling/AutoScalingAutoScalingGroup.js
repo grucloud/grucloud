@@ -79,6 +79,11 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
       ],
     },
+    {
+      type: "LaunchTemplate",
+      group: "ec2",
+      ids: [pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])()],
+    },
     { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },
     {
       type: "Instance",
@@ -195,26 +200,17 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
           tryCatch(
             pipe([
               () => ({ AutoScalingGroupName, ForceDelete: true }),
-              tap((params) => {
-                assert(true);
-              }),
               autoScaling().deleteAutoScalingGroup,
-              tap((params) => {
-                assert(true);
-              }),
               tap(() =>
                 retryCall({
                   name: `isDownByName: ${AutoScalingGroupName}`,
                   fn: () => isDownByName({ name: AutoScalingGroupName }),
-                  config,
+                  config: { retryCount: 12 * 15, retryDelay: 5e3 },
                 })
               ),
             ]),
             (error, params) =>
               pipe([
-                tap(() => {
-                  assert(true);
-                }),
                 () => error,
                 switchCase([
                   pipe([

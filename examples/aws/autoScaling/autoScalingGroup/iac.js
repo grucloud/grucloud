@@ -22,18 +22,18 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.pubSubnetAz1.name"),
+    properties: get("config.ec2.Subnet.pubSubnetAz1.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.pubSubnetAz1.properties"),
   });
 
   provider.ec2.makeSubnet({
     name: get("config.ec2.Subnet.pubSubnetAz2.name"),
+    properties: get("config.ec2.Subnet.pubSubnetAz2.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.Subnet.pubSubnetAz2.properties"),
   });
 
   provider.ec2.makeKeyPair({
@@ -42,36 +42,36 @@ const createResources = ({ provider }) => {
 
   provider.ec2.makeSecurityGroup({
     name: get("config.ec2.SecurityGroup.ecsSecurityGroup.name"),
+    properties: get("config.ec2.SecurityGroup.ecsSecurityGroup.properties"),
     dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
-    properties: get("config.ec2.SecurityGroup.ecsSecurityGroup.properties"),
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: get(
       "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.name"
     ),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.ecsSecurityGroup,
-    }),
     properties: get(
       "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.properties"
     ),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.ec2.SecurityGroup.ecsSecurityGroup,
+    }),
   });
 
   provider.ec2.makeLaunchTemplate({
     name: get("config.ec2.LaunchTemplate.ltEc2Micro.name"),
+    properties: get("config.ec2.LaunchTemplate.ltEc2Micro.properties"),
     dependencies: ({ resources }) => ({
       keyPair: resources.ec2.KeyPair.kpEcs,
       iamInstanceProfile: resources.iam.InstanceProfile.roleEcs,
-      securityGroups: [resources.ec2.SecurityGroup.ecsSecurityGroup],
     }),
-    properties: get("config.ec2.LaunchTemplate.ltEc2Micro.properties"),
   });
 
   provider.autoscaling.makeAutoScalingGroup({
     name: get("config.autoscaling.AutoScalingGroup.asg.name"),
+    properties: get("config.autoscaling.AutoScalingGroup.asg.properties"),
     dependencies: ({ resources }) => ({
       subnets: [
         resources.ec2.Subnet.pubSubnetAz1,
@@ -79,7 +79,6 @@ const createResources = ({ provider }) => {
       ],
       launchTemplate: resources.ec2.LaunchTemplate.ltEc2Micro,
     }),
-    properties: get("config.autoscaling.AutoScalingGroup.asg.properties"),
   });
 };
 

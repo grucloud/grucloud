@@ -77,6 +77,10 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 - [VPC](../EC2/Vpc.md)
 - [EKS NodeGroup](../EKS/EksNodeGroup.md)
 
+## Used By
+
+- [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+
 ## List
 
 ```sh

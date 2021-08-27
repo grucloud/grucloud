@@ -473,7 +473,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             omit([
               "LaunchTemplateData.NetworkInterfaces",
               "LaunchTemplateData.SecurityGroupIds",
-              "LaunchTemplateData.IamInstanceProfile.name",
+              "LaunchTemplateData.IamInstanceProfile",
             ]),
             tap((params) => {
               assert(true);
