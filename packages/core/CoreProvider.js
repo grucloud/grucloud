@@ -1057,6 +1057,19 @@ function CoreProvider({
       }
     )();
 
+  const sortResources = callProp("sort", (a, b) =>
+    pipe([
+      tap(() => {
+        assert(a);
+        assert(a.name.localeCompare);
+        assert(a.name);
+        assert(b);
+        assert(b.name);
+      }),
+      () => a.name.localeCompare(b.name),
+    ])()
+  );
+
   const listLives = ({
     onStateChange = identity,
     options = {},
@@ -1154,7 +1167,19 @@ function CoreProvider({
           get("results"),
           unless(
             isEmpty,
-            callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType))
+            pipe([
+              callProp("sort", (a, b) =>
+                a.groupType.localeCompare(b.groupType)
+              ),
+              map(
+                assign({
+                  resources: pipe([
+                    get("resources"),
+                    unless(isEmpty, sortResources),
+                  ]),
+                })
+              ),
+            ])
           ),
         ]),
       }),

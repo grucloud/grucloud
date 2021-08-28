@@ -56,6 +56,10 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const findNameEks = ({ live, lives }) =>
     pipe([
+      tap(() => {
+        assert(lives);
+        assert(live.InstanceProfileName);
+      }),
       () =>
         lives.getByType({
           type: "LaunchTemplate",
@@ -184,9 +188,9 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = ({ live }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
-      () => findName({ live }),
+      () => findName({ live, lives }),
       (InstanceProfileName) =>
         pipe([
           tap(() => {

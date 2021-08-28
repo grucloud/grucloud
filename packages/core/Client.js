@@ -208,18 +208,6 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
     tap((results) => {
       assert(Array.isArray(results));
     }),
-    callProp("sort", (a, b) =>
-      pipe([
-        tap(() => {
-          assert(a);
-          assert(a.name.localeCompare);
-          assert(a.name);
-          assert(b);
-          assert(b.name);
-        }),
-        () => a.name.localeCompare(b.name),
-      ])()
-    ),
   ]);
 
 const createClient = ({
