@@ -54,6 +54,12 @@ const showLive =
       }),
     ])();
 
+const buildGroupType = switchCase([
+  get("group"),
+  ({ group, type }) => `${group}::${type}`,
+  ({ type }) => type,
+]);
+
 const decorateLive =
   ({ client, options, lives, config }) =>
   (live) =>
@@ -119,11 +125,11 @@ const decorateLive =
               pipe([
                 tap(({ type, group }) => {
                   assert(type);
-                  assert(group);
+                  //assert(group);
                 }),
                 assign({
                   providerName: () => client.spec.providerName,
-                  groupType: ({ group, type }) => `${group}::${type}`,
+                  groupType: buildGroupType,
                   ids: pipe([get("ids"), filter(not(isEmpty))]),
                 }),
               ])
