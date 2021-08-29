@@ -296,106 +296,105 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
     flatten,
     filterResources(options),
     filter(pipe([get("dependencies"), not(isEmpty)])),
-    flatMap(({ providerName, type, namespace, id, name, dependencies }) =>
-      pipe([
-        tap(() => {
-          logger.debug(
-            `buildGraphAssociationLive ${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
-              dependencies
-            )}`
-          );
-          assert(id);
-          assert(name);
-        }),
-        () => dependencies,
-        map((dependency) =>
-          pipe([
-            tap(() => {
-              assert(dependency.type);
-              assert(dependency.groupType);
+    flatMap(
+      ({ providerName, type, group, namespace, id, name, dependencies }) =>
+        pipe([
+          tap(() => {
+            logger.debug(
+              `buildGraphAssociationLive ${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
+                dependencies
+              )}`
+            );
+            assert(id);
+            assert(name);
+          }),
+          () => dependencies,
+          map((dependency) =>
+            pipe([
+              tap(() => {
+                assert(dependency.type);
+                assert(dependency.groupType);
 
-              assert(
-                Array.isArray(dependency.ids),
-                `no ids array in ${JSON.stringify({
-                  type,
-                  providerName,
-                  dependency,
-                })}`
-              );
-              logger.debug(
-                `type ${dependency.type}, #ids ${size(dependency.ids)}`
-              );
-            }),
-            () => dependency.ids,
-            filter(not(isEmpty)),
-            map((dependencyId) =>
-              switchCase([
-                isString,
-                (idTo) =>
-                  pipe([
-                    () => resourcesPerType,
-                    find(eq(get("groupType"), dependency.groupType)),
-                    get("resources"),
-                    find(eq(get("id"), idTo)),
-                    tap.if(isEmpty, () => {
-                      console.error(
-                        `no resource for id: ${idTo}, type: ${dependency.groupType}, from ${name}, type: ${type}`
-                      );
-                    }),
-                    get("name"),
-                    tap((name) => {
-                      assert(true);
-                    }),
-                    switchCase([
-                      isEmpty,
-                      () => "",
-                      (nameTo) =>
-                        associationIdString({
-                          options,
-                          type,
-                          idFrom: id,
-                          nameFrom: name,
-                          idTo,
-                          nameTo,
-                          namespace,
-                          dependency,
-                          resources: getResourceByType({
-                            resourcesPerType,
-                            groupType: dependency.groupType,
-                          }),
-                        }),
-                    ]),
-                  ])(),
-                isObject,
-                (dependencyId) =>
-                  associationIdObject({
-                    options,
+                assert(
+                  Array.isArray(dependency.ids),
+                  `no ids array in ${JSON.stringify({
                     type,
-                    idFrom: id,
-                    namespaceFrom: namespace,
+                    group,
+                    providerName,
                     dependency,
-                    dependencyId,
-                    resources: getResourceByType({
-                      resourcesPerType,
-                      groupType: dependency.groupType,
-                    }),
-                  })(),
-                (dependencyId) => {
-                  assert(
-                    false,
-                    `dependencyId not valid: ${JSON.stringify({
+                  })}`
+                );
+                logger.debug(
+                  `type ${dependency.type}, #ids ${size(dependency.ids)}`
+                );
+              }),
+              () => dependency.ids,
+              filter(not(isEmpty)),
+              map((dependencyId) =>
+                switchCase([
+                  isString,
+                  (idTo) =>
+                    pipe([
+                      () => resourcesPerType,
+                      find(eq(get("groupType"), dependency.groupType)),
+                      get("resources"),
+                      find(eq(get("id"), idTo)),
+                      tap.if(isEmpty, () => {
+                        console.error(
+                          `no resource for id: ${idTo}, type: ${dependency.groupType}, from ${name}, type: ${type}`
+                        );
+                      }),
+                      get("name"),
+                      switchCase([
+                        isEmpty,
+                        () => "",
+                        (nameTo) =>
+                          associationIdString({
+                            options,
+                            type,
+                            idFrom: id,
+                            nameFrom: name,
+                            idTo,
+                            nameTo,
+                            namespace,
+                            dependency,
+                            resources: getResourceByType({
+                              resourcesPerType,
+                              groupType: dependency.groupType,
+                            }),
+                          }),
+                      ]),
+                    ])(),
+                  isObject,
+                  (dependencyId) =>
+                    associationIdObject({
+                      options,
                       type,
-                      namespace,
-                      id,
+                      idFrom: id,
+                      namespaceFrom: namespace,
+                      dependency,
                       dependencyId,
-                    })}`
-                  );
-                },
-              ])(dependencyId)
-            ),
-          ])()
-        ),
-      ])()
+                      resources: getResourceByType({
+                        resourcesPerType,
+                        groupType: dependency.groupType,
+                      }),
+                    })(),
+                  (dependencyId) => {
+                    assert(
+                      false,
+                      `dependencyId not valid: ${JSON.stringify({
+                        type,
+                        namespace,
+                        id,
+                        dependencyId,
+                      })}`
+                    );
+                  },
+                ])(dependencyId)
+              ),
+            ])()
+          ),
+        ])()
     ),
     flatten,
     callProp("join", "\n"),

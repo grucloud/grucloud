@@ -68,10 +68,12 @@ exports.ECSCluster = ({ spec, config }) => {
     {
       type: "Key",
       group: "kms",
-      ids: pipe([
-        () => live,
-        get("configuration.executeCommandConfiguration.kmsKeyId"),
-      ])(),
+      ids: [
+        pipe([
+          () => live,
+          get("configuration.executeCommandConfiguration.kmsKeyId"),
+        ])(),
+      ],
     },
   ];
 
