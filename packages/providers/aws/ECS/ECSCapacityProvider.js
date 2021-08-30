@@ -34,7 +34,7 @@ const findName = get("live.name");
 
 exports.ECSCapacityProvider = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-  const autoScalingGroup = AutoScalingAutoScalingGroup({ config });
+  const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
   const findDependencies = ({ live }) => [
     {
       type: "AutoScalingGroup",

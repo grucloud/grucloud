@@ -1,9 +1,10 @@
-const { pipe, assign, map, omit } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, omit, tap, get } = require("rubico");
 const { compare } = require("@grucloud/core/Common");
 
 const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
-const { DBInstance, compareDBInstance } = require("./DBInstance");
+const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
 
 const GROUP = "rds";
@@ -24,7 +25,20 @@ module.exports = () =>
       dependsOn: ["rds::DBSubnetGroup", "ec2::SecurityGroup", "kms::Key"],
       Client: DBCluster,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      //TODO compare
+      compare: compare({
+        filterAll: pipe([omit(["SubnetIds", "Tags"])]),
+        filterTarget: pipe([
+          omit([
+            "VpcSecurityGroupIds",
+            "MasterUserPassword",
+            "DBSubnetGroupName",
+          ]),
+        ]),
+        filterLive: pipe([
+          assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
+          omit(["ScalingConfigurationInfo"]),
+        ]),
+      }),
     },
     {
       type: "DBInstance",
@@ -37,6 +51,15 @@ module.exports = () =>
       ],
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compareDBInstance,
+      compare: compare({
+        filterAll: omit(["Tags"]),
+        filterTarget: pipe([
+          omit([
+            "VpcSecurityGroupIds",
+            "MasterUserPassword",
+            "DBSubnetGroupName",
+          ]),
+        ]),
+      }),
     },
   ]);

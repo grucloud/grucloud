@@ -1,14 +1,20 @@
-const assert = require("assert");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
 const path = require("path");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
+const config = require("../config");
 
-describe("RDS Postgres", async function () {
-  before(async function () {});
+const title = "RDS Postgres";
+
+describe(title, async function () {
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-
-    await testEnd2End({ cli });
-  }).timeout(20 * 60e3);
+    await testEnd2End({
+      noEmptyPlanCheck: true,
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      title,
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [require("./configUpdate1"), config] },
+      ],
+    });
+  }).timeout(35 * 60e3);
 });

@@ -11,7 +11,13 @@ const isEmptyPlan = pipe([
     pipe([get("resultDestroy"), isEmpty]),
   ]),
 ]);
-exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
+exports.testEnd2End = ({
+  programOptions,
+  title,
+  listOptions,
+  steps = [],
+  noEmptyPlanCheck,
+}) =>
   pipe([
     () => steps,
     first,
@@ -97,10 +103,11 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
                   }),
                 () => cliNext.planQuery({}),
                 tap((result) => {
-                  assert(
-                    isEmptyPlan(result),
-                    "plan should be empty after an update"
-                  );
+                  noEmptyPlanCheck &&
+                    assert(
+                      isEmptyPlan(result),
+                      "plan should be empty after an update"
+                    );
                 }),
               ])(),
           ])()

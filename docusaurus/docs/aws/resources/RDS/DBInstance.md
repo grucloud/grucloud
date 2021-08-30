@@ -3,7 +3,7 @@ id: DBInstance
 title: DB Instance
 ---
 
-Manages a [DB Instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html).
+Manages a [DB Instance](https://console.aws.amazon.com/rds/home?#databases:).
 
 ## Example
 

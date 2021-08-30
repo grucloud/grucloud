@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project postgres
+title Resources for project RDS Postgres
 skinparam monochrome true
 + Infra
 ++ aws

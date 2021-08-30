@@ -95,9 +95,6 @@ module.exports = ({ stage }) => ({
         properties: {
           LaunchTemplateData: {
             EbsOptimized: false,
-            IamInstanceProfile: {
-              Arn: "arn:aws:iam::840541460064:instance-profile/role-ecs",
-            },
             ImageId: "ami-0d26eb3972b7f8c96",
             InstanceType: "t2.micro",
             KeyName: "kp-ecs",

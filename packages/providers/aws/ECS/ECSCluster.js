@@ -42,7 +42,7 @@ const findId = get("live.clusterArn");
 
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-  const autoScalingGroup = AutoScalingAutoScalingGroup({ config });
+  const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
