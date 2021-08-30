@@ -523,18 +523,28 @@ exports.ResourceMaker = ({
       (client) =>
         retryCall({
           name: `update ${toString()}`,
-          fn: () =>
-            client.update({
-              name: getResourceName(),
-              payload,
-              dependencies: getDependencies(),
-              resolvedDependencies,
-              diff,
-              live,
-              lives: provider.lives,
-              id: client.findId({ live }),
-              programOptions,
-            }),
+          fn: tryCatch(
+            pipe([
+              () =>
+                client.update({
+                  name: getResourceName(),
+                  payload,
+                  dependencies: getDependencies(),
+                  resolvedDependencies,
+                  diff,
+                  live,
+                  lives: provider.lives,
+                  id: client.findId({ live }),
+                  programOptions,
+                }),
+            ]),
+            (error) => {
+              logger.error(
+                `error updating: ${toString()}, error: ${tos(error)}`
+              );
+              throw error;
+            }
+          ),
           shouldRetryOnException: client.shouldRetryOnException,
           config: provider.config,
         }),

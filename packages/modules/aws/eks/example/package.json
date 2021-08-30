@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "graph-target": "gc graph --title 'EKS Module'",
-    "graph-live": "gc list --graph --title 'EKS Module'",
+    "list": "gc list --graph --title 'EKS Module' --json artifacts/inventory.json --default-exclude -e Key -e NetworkInterface",
     "test": "mocha"
   },
   "author": "",

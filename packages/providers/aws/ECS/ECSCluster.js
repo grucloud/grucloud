@@ -42,7 +42,7 @@ const findId = get("live.clusterArn");
 
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-  const autoScalingGroup = AutoScalingAutoScalingGroup({ config });
+  const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -68,10 +68,12 @@ exports.ECSCluster = ({ spec, config }) => {
     {
       type: "Key",
       group: "kms",
-      ids: pipe([
-        () => live,
-        get("configuration.executeCommandConfiguration.kmsKeyId"),
-      ])(),
+      ids: [
+        pipe([
+          () => live,
+          get("configuration.executeCommandConfiguration.kmsKeyId"),
+        ])(),
+      ],
     },
   ];
 

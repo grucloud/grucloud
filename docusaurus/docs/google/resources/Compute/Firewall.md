@@ -13,9 +13,8 @@ const firewall22_80_433 = provider.compute.makeFirewall({
   properties: () => ({
     allowed: [
       {
-        sourceRanges: ["0.0.0.0/0"],
-        IPProtocol: "TCP",
-        ports: [22, 80, 433],
+        IPProtocol: "tcp",
+        ports: ["22", "80", "433"],
       },
     ],
   }),
@@ -30,7 +29,6 @@ const firewallIcmp = provider.compute.makeFirewall({
   properties: () => ({
     allowed: [
       {
-        sourceRanges: ["0.0.0.0/0"],
         IPProtocol: "icmp",
       },
     ],

@@ -19,6 +19,7 @@ exports.GcpSubNetwork = ({ spec, config }) => {
 
   const isDefault = eq(get("live.name"), "default");
   const cannotBeDeleted = isDefault;
+  const managedByOther = isDefault;
 
   const { projectId, region, managedByDescription } = config;
   assert(region);
@@ -49,6 +50,7 @@ exports.GcpSubNetwork = ({ spec, config }) => {
     configDefault,
     isDefault,
     cannotBeDeleted,
+    managedByOther,
     findDependencies,
   });
 };

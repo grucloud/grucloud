@@ -1,5 +1,9 @@
-const { pipe, assign, map } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, tap, pick } = require("rubico");
+const { prepend } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
+const { camelCase } = require("change-case");
+const { compare } = require("@grucloud/core/Common");
 
 const {
   GcpServiceAccount,
@@ -23,6 +27,27 @@ module.exports = () =>
       type: "ServiceAccount",
       Client: GcpServiceAccount,
       isOurMinion: isOurMinionServiceAccount,
+      resourceVarName: pipe([prepend("sa_"), camelCase]),
+      filterLive: () =>
+        pipe([
+          ({ description, displayName }) => ({
+            serviceAccount: { displayName, description },
+          }),
+        ]),
+      compare: compare({
+        filterTarget: pipe([
+          tap(({ serviceAccount }) => {
+            assert(true);
+          }),
+          ({ serviceAccount }) => serviceAccount,
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          pick(["displayName", "description"]),
+        ]),
+      }),
     },
     {
       type: "Policy",

@@ -4,28 +4,38 @@ module.exports = ({}) => ({
   eks: {
     cluster: {
       name: clusterName,
+      properties: {
+        resourcesVpcConfig: {
+          endpointPublicAccess: true,
+          endpointPrivateAccess: false,
+        },
+      },
+    },
+    NodeGroup: {
+      nodeGroupPrivateCluster: {
+        name: "node-group-private-cluster",
+        properties: {
+          capacityType: "ON_DEMAND",
+          scalingConfig: {
+            minSize: 1,
+            maxSize: 1,
+            desiredSize: 1,
+          },
+          instanceTypes: ["t2.small"],
+          amiType: "AL2_x86_64",
+          labels: {},
+          diskSize: 20,
+        },
+      },
     },
     key: {
       name: "eks-key",
     },
+
     roleCluster: { name: `role-cluster` },
     roleNodeGroup: { name: `role-node-group` },
     securityGroupCluster: { name: "security-group-cluster" },
     securityGroupNode: { name: "security-group-node" },
-    nodeGroupsPublic: [
-      {
-        //TODO remove the function
-        name: `node-group-public-${clusterName}`,
-        properties: () => ({ diskSize: 20, instanceTypes: ["t2.medium"] }),
-      },
-    ],
-    nodeGroupsPrivate: [
-      {
-        name: `node-group-private-${clusterName}`,
-        //TODO remove the function
-        properties: () => ({ diskSize: 20, instanceTypes: ["t2.medium"] }),
-      },
-    ],
   },
   vpc: {
     vpc: {

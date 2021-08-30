@@ -41,6 +41,8 @@ module.exports = ({ stage, region }) => ({
         },
         MasterUsername: process.env.MASTER_USERNAME,
         MasterUserPassword: process.env.MASTER_USER_PASSWORD,
+        PreferredBackupWindow: "01:39-02:09",
+        PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
       },
     },
     eip: { name: "eip-bastion" },

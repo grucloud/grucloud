@@ -40,12 +40,16 @@ exports.EcrRepository = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
-  const getRepositoryPolicy = pipe([
-    pickParam,
-    ecr().getRepositoryPolicy,
-    get("policyText"),
-    JSON.parse,
-  ]);
+  const getRepositoryPolicy = tryCatch(
+    pipe([pickParam, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
+    switchCase([
+      eq(get("code"), "RepositoryPolicyNotFoundException"),
+      () => undefined,
+      () => {
+        throw error;
+      },
+    ])
+  );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
   const getLifecyclePolicy = tryCatch(

@@ -16,26 +16,21 @@ const {
   assign,
   omit,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  forEach,
-  pluck,
-  flatten,
-} = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
+
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const {
   EKSNew,
   shouldRetryOnException,
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
 
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { waitForUpdate } = require("./EKSCommon");
 const findName = get("live.nodegroupName");
 const findId = findName;
 
@@ -43,24 +38,40 @@ const findId = findName;
 exports.EKSNodeGroup = ({ spec, config }) => {
   const eks = EKSNew(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     { type: "Cluster", group: "eks", ids: [live.clusterName] },
     { type: "Subnet", group: "ec2", ids: live.subnets },
     {
       type: "AutoScalingGroup",
       group: "autoscaling",
-      ids: pipe([get("resources.autoScalingGroups"), pluck("name")])(live),
+      ids: pipe([
+        () => live,
+        get("resources.autoScalingGroups"),
+        pluck("name"),
+        map((name) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "AutoScalingGroup",
+                group: "autoscaling",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.AutoScalingGroupName"), name)),
+            get("id"),
+          ])()
+        ),
+      ])(),
     },
     { type: "Role", group: "iam", ids: [live.nodeRole] },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
-  const getList = async ({ resources = [] } = {}) =>
+  const getList = ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList nodeGroup`);
       }),
-      () => eks().listClusters(),
+      eks().listClusters,
       get("clusters"),
       flatMap((clusterName) =>
         pipe([
@@ -116,7 +127,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([
     getById,
-    switchCase([isEmpty, () => true, () => false]),
+    isEmpty,
     tap((result) => {
       logger.info(`nodeGroup isDownById: ${result}`);
     }),
@@ -137,11 +148,11 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         assert(subnets, "subnets");
         assert(role, "role");
       }),
-      () => defaultsDeep({})(payload),
+      () => payload,
       tap((params) => {
         logger.debug(`create nodeGroup: ${name}, params: ${tos(params)}`);
       }),
-      (params) => eks().createNodegroup(params),
+      eks().createNodegroup,
       get("nodeGroup"),
       () =>
         retryCall({
@@ -158,37 +169,66 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const update = async ({ name, payload, resolvedDependencies, live, diff }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          logger.info(`update ${name}, diff: ${tos(diff)}`);
-          assert(name);
-          assert(payload);
-        }),
-        () => destroy({ live }),
-        () => create({ name, payload, resolvedDependencies }),
-        tap((result) => {
-          logger.info(`updated ${name}, status: ${result}`);
-        }),
+  //TODO
+  /*
+    labels: {
+    addOrUpdateLabels: {
+      '<labelKey>': 'STRING_VALUE',
+       '<labelKey>': ... 
+    },
+    removeLabels: [
+      'STRING_VALUE',
+       more items 
+    ]
+  },
+  */
+
+  // TODO instanceTypes needs a destroy
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateNodegroupConfig-property
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`updateNodegroupConfig: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => payload,
+      pick([
+        "clusterName",
+        "nodegroupName",
+        //"labels", //TODO
+        "scalingConfig",
+        //"taints", //TODO
+        "updateConfig",
       ]),
-      (error) => {
-        throw error(error);
-      }
-    )();
+      eks().updateNodegroupConfig,
+      get("update"),
+      tap((result) => {
+        logger.info(`updateNodegroupConfig: ${tos({ result })}`);
+      }),
+      get("id"),
+      (updateId) =>
+        waitForUpdate({ eks })({
+          name: live.clusterName,
+          nodegroupName: live.nodegroupName,
+          updateId,
+        }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteNodegroup-property
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
-      //TODO pluck
-      () => ({
-        nodegroupName: live.nodegroupName,
-        clusterName: live.clusterName,
+      () => live,
+      pick(["nodegroupName", "clusterName"]),
+      tap((params) => {
+        assert(true);
       }),
       ({ clusterName, nodegroupName }) =>
         pipe([
           tap(() => {
-            logger.info(`destroy nodeGroup: ${clusterName}`);
+            logger.info(
+              `destroy nodeGroup: ${clusterName}, nodegroupName: ${nodegroupName}`
+            );
             logger.debug(`destroy ${JSON.stringify({ live })}`);
             assert(live);
             assert(nodegroupName);
@@ -254,38 +294,3 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
-
-const pickCompare = pick([
-  "amiType",
-  "capacityType",
-  "diskSize",
-  "instanceTypes",
-  "scalingConfig",
-]);
-const filterTarget = ({ config, target }) =>
-  pipe([() => target, pickCompare])();
-
-const filterLive = ({ live }) => pipe([() => live, pickCompare])();
-
-exports.compareNodeGroup = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareNodeGroup ${tos(diff)}`);
-  }),
-]);

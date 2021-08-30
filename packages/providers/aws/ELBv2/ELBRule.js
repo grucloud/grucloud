@@ -11,6 +11,7 @@ const {
   switchCase,
   assign,
   map,
+  or,
 } = require("rubico");
 const {
   first,
@@ -19,7 +20,7 @@ const {
   pluck,
   find,
   identity,
-  size,
+  prepend,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -53,11 +54,7 @@ exports.ELBRule = ({ spec, config }) => {
       () => ({ live, lives }),
       switchCase([
         get("live.IsDefault"),
-        //() => false,
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () =>
             lives.getById({
               type: "Listener",
@@ -72,7 +69,7 @@ exports.ELBRule = ({ spec, config }) => {
           tap((listenerName) => {
             assert(listenerName);
           }),
-          (listenerName) => `rule-default-${listenerName}`,
+          prepend("rule-default-")
         ]),
         findNameInTagsOrId({ findId }),
       ]),
@@ -81,35 +78,48 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(live.ListenerArn);
-      }),
-      () =>
-        lives.getById({
-          type: "Listener",
-          group: "elb",
-          providerName,
-          id: live.ListenerArn,
-        }),
-      tap((listener) => {
-        assert(listener);
-      }),
-      get("live.LoadBalancerArn"),
-      tap((LoadBalancerArn) => {
-        assert(LoadBalancerArn);
-      }),
-      (LoadBalancerArn) =>
-        lives.getById({
-          type: "LoadBalancer",
-          group: "elb",
-          providerName,
-          id: LoadBalancerArn,
-        }),
-      get("managedByOther"),
-    ])();
+  const isDefault = get("live.IsDefault");
+
+  const managedByOther = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    or([
+      isDefault,
+      ({ live, lives }) =>
+        pipe([
+          tap(() => {
+            assert(lives);
+            assert(live.ListenerArn);
+          }),
+          () =>
+            lives.getById({
+              type: "Listener",
+              group: "elb",
+              providerName,
+              id: live.ListenerArn,
+            }),
+          tap((listener) => {
+            assert(listener);
+          }),
+          get("live.LoadBalancerArn"),
+          tap((LoadBalancerArn) => {
+            assert(LoadBalancerArn);
+          }),
+          (LoadBalancerArn) =>
+            lives.getById({
+              type: "LoadBalancer",
+              group: "elb",
+              providerName,
+              id: LoadBalancerArn,
+            }),
+          get("managedByOther"),
+        ])(),
+    ]),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
   const findDependencies = ({ live }) => [
     { type: "Listener", group: "elb", ids: [live.ListenerArn] },
@@ -327,7 +337,6 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const isDefault = get("live.IsDefault");
   const cannotBeDeleted = isDefault;
 
   return {

@@ -79,7 +79,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBSubnetGroup-property
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create: ${name}`);
@@ -100,7 +100,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     ])();
 
   //TODO
-  const update = async ({ name, payload, diff, live }) =>
+  const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
         logger.info(`update: ${name}`);
@@ -114,7 +114,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBSubnetGroup-property
 
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => ({ id: findId({ live }) }),
       ({ id }) =>
@@ -129,7 +129,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,
@@ -158,26 +158,3 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareDBSubnetGroup = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareDBSubnetGroup ${tos(diff)}`);
-  }),
-]);

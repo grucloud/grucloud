@@ -36,6 +36,23 @@
       "port": 9229
     },
     {
+      "name": "Debug Aws Provider Examples",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test-examples",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/packages/providers/aws",
+      "port": 9229
+    },
+    {
       "name": "Debug Google Provider",
       "type": "node",
       "request": "launch",

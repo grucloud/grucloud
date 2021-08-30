@@ -24,11 +24,11 @@
       "port": 9229
     },
     {
-      "name": "List -g -o",
+      "name": "List",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g", "-o"],
+      "runtimeArgs": ["list", "-g", "--json", "artifacts/inventory.json"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

@@ -1,18 +1,36 @@
 const assert = require("assert");
-const { pipe, map, tap } = require("rubico");
+const { pipe, map, tap, and, get } = require("rubico");
+const { isEmpty, first, callProp } = require("rubico/x");
+
 const { Cli } = require("./cli/cliCommands");
 
+const isEmptyPlan = pipe([
+  get("resultQuery.results[0]"),
+  and([
+    pipe([get("resultCreate"), isEmpty]),
+    pipe([get("resultDestroy"), isEmpty]),
+  ]),
+]);
 exports.testEnd2End = ({
   programOptions,
-  createStack,
   title,
   listOptions,
-  configs = [],
+  steps = [],
+  noEmptyPlanCheck,
 }) =>
   pipe([
-    () => Cli({ programOptions, createStack }),
+    () => steps,
+    first,
+    tap((step) => {
+      assert(step, `missing first step`);
+    }),
+    ({ createStack, configs }) => Cli({ programOptions, createStack, configs }),
     (cli) =>
       pipe([
+        () => cli.info({}),
+        tap((params) => {
+          assert(true);
+        }),
         () =>
           cli.graphTree({
             commandOptions: { title },
@@ -31,11 +49,14 @@ exports.testEnd2End = ({
           cli.list({
             commandOptions: { our: true, canBeDeleted: true },
           }),
-        //emptyResult,
         () =>
           cli.planApply({
             commandOptions: { force: true },
           }),
+        () => cli.planQuery({}),
+        tap((result) => {
+          assert(isEmptyPlan(result), "plan should be empty after first apply");
+        }),
         () =>
           cli.list({
             programOptions: {
@@ -44,6 +65,8 @@ exports.testEnd2End = ({
             },
             commandOptions: {
               graph: true,
+              defaultExclude: true,
+              typesExclude: ["NetworkInterface"],
               ...listOptions,
             },
           }),
@@ -53,25 +76,39 @@ exports.testEnd2End = ({
               input: "artifacts/inventory.json",
             },
           }),
-        () => configs,
-        map((config) =>
+        () => steps,
+        callProp("splice", 1),
+        tap((params) => {
+          assert(true);
+        }),
+        map.series(({ createStack, configs }) =>
           pipe([
-            () => Cli({ programOptions, createStack, config }),
+            () => Cli({ programOptions, createStack, configs }),
             (cliNext) =>
               pipe([
                 () => cliNext.info({}),
+                tap((params) => {
+                  assert(true);
+                }),
                 () =>
                   cliNext.planApply({
                     commandOptions: { force: true },
                   }),
                 () =>
-                  cliNext.list({
-                    commandOptions: { our: true },
+                  cli.list({
+                    commandOptions: {
+                      canBeDeleted: true,
+                      defaultExclude: true,
+                    },
                   }),
-                () =>
-                  cliNext.planApply({
-                    commandOptions: { force: true },
-                  }),
+                () => cliNext.planQuery({}),
+                tap((result) => {
+                  noEmptyPlanCheck &&
+                    assert(
+                      isEmptyPlan(result),
+                      "plan should be empty after an update"
+                    );
+                }),
               ])(),
           ])()
         ),
@@ -81,7 +118,7 @@ exports.testEnd2End = ({
           }),
         () =>
           cli.list({
-            commandOptions: { canBeDeleted: true },
+            commandOptions: { canBeDeleted: true, defaultExclude: true },
           }),
       ])(),
   ])();

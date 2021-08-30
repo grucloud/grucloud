@@ -77,6 +77,7 @@ const createResources = ({ provider }) => {
         resources.ec2.Subnet.pubSubnetAz1,
         resources.ec2.Subnet.pubSubnetAz2,
       ],
+      launchTemplate: resources.ec2.LaunchTemplate.ltEc2Micro,
     }),
   });
 };

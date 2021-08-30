@@ -5,7 +5,6 @@ module.exports = ({ stage }) => ({
       starhackitLb: {
         name: "starhackit/lb",
         properties: {
-          repositoryName: "starhackit/lb",
           imageTagMutability: "MUTABLE",
           imageScanningConfiguration: {
             scanOnPush: false,

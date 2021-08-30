@@ -1,0 +1,432 @@
+module.exports = ({ stage }) => ({
+  projectName: "@grucloud/example-azure",
+  resourceManagement: {
+    ResourceGroup: {
+      networkWatcherRg: {
+        name: "NetworkWatcherRG",
+      },
+      resourceGroup: {
+        name: "resource-group",
+        properties: {
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group",
+          name: "resource-group",
+          type: "Microsoft.Resources/resourceGroups",
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            provisioningState: "Succeeded",
+          },
+        },
+      },
+    },
+  },
+  virtualNetworks: {
+    VirtualNetwork: {
+      virtualNetwork: {
+        name: "virtual-network",
+        properties: {
+          name: "virtual-network",
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/virtualNetworks/virtual-network",
+          etag: 'W/"bb6f3b5c-50b7-4394-b9fc-7304c0752a38"',
+          type: "Microsoft.Network/virtualNetworks",
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            provisioningState: "Succeeded",
+            resourceGuid: "eb104135-a644-4342-a29e-a8075e5de162",
+            addressSpace: {
+              addressPrefixes: ["10.0.0.0/16"],
+            },
+            subnets: [
+              {
+                name: "subnet",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/virtualNetworks/virtual-network/subnets/subnet",
+                etag: 'W/"bb6f3b5c-50b7-4394-b9fc-7304c0752a38"',
+                properties: {
+                  provisioningState: "Succeeded",
+                  addressPrefix: "10.0.0.0/24",
+                  ipConfigurations: [
+                    {
+                      id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig",
+                    },
+                  ],
+                  delegations: [],
+                  privateEndpointNetworkPolicies: "Enabled",
+                  privateLinkServiceNetworkPolicies: "Enabled",
+                },
+                type: "Microsoft.Network/virtualNetworks/subnets",
+              },
+            ],
+            virtualNetworkPeerings: [],
+            enableDdosProtection: false,
+          },
+        },
+      },
+    },
+    SecurityGroup: {
+      securityGroup: {
+        name: "security-group",
+        properties: {
+          name: "security-group",
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group",
+          etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+          type: "Microsoft.Network/networkSecurityGroups",
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            provisioningState: "Succeeded",
+            resourceGuid: "a2e2bbd8-b345-4865-8956-fb0c3821fb96",
+            securityRules: [
+              {
+                name: "SSH",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/securityRules/SSH",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/securityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  protocol: "Tcp",
+                  sourcePortRange: "*",
+                  destinationPortRange: "22",
+                  sourceAddressPrefix: "*",
+                  destinationAddressPrefix: "*",
+                  access: "Allow",
+                  priority: 1000,
+                  direction: "Inbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "ICMP",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/securityRules/ICMP",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/securityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  protocol: "Icmp",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "*",
+                  destinationAddressPrefix: "*",
+                  access: "Allow",
+                  priority: 1001,
+                  direction: "Inbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+            ],
+            defaultSecurityRules: [
+              {
+                name: "AllowVnetInBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowVnetInBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description: "Allow inbound traffic from all VMs in VNET",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "VirtualNetwork",
+                  destinationAddressPrefix: "VirtualNetwork",
+                  access: "Allow",
+                  priority: 65000,
+                  direction: "Inbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "AllowAzureLoadBalancerInBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowAzureLoadBalancerInBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description: "Allow inbound traffic from azure load balancer",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "AzureLoadBalancer",
+                  destinationAddressPrefix: "*",
+                  access: "Allow",
+                  priority: 65001,
+                  direction: "Inbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "DenyAllInBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/DenyAllInBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description: "Deny all inbound traffic",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "*",
+                  destinationAddressPrefix: "*",
+                  access: "Deny",
+                  priority: 65500,
+                  direction: "Inbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "AllowVnetOutBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowVnetOutBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description:
+                    "Allow outbound traffic from all VMs to all VMs in VNET",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "VirtualNetwork",
+                  destinationAddressPrefix: "VirtualNetwork",
+                  access: "Allow",
+                  priority: 65000,
+                  direction: "Outbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "AllowInternetOutBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/AllowInternetOutBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description:
+                    "Allow outbound traffic from all VMs to Internet",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "*",
+                  destinationAddressPrefix: "Internet",
+                  access: "Allow",
+                  priority: 65001,
+                  direction: "Outbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+              {
+                name: "DenyAllOutBound",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group/defaultSecurityRules/DenyAllOutBound",
+                etag: 'W/"e6042a69-9003-4321-adee-2550d96b66f9"',
+                type: "Microsoft.Network/networkSecurityGroups/defaultSecurityRules",
+                properties: {
+                  provisioningState: "Succeeded",
+                  description: "Deny all outbound traffic",
+                  protocol: "*",
+                  sourcePortRange: "*",
+                  destinationPortRange: "*",
+                  sourceAddressPrefix: "*",
+                  destinationAddressPrefix: "*",
+                  access: "Deny",
+                  priority: 65500,
+                  direction: "Outbound",
+                  sourcePortRanges: [],
+                  destinationPortRanges: [],
+                  sourceAddressPrefixes: [],
+                  destinationAddressPrefixes: [],
+                },
+              },
+            ],
+            networkInterfaces: [
+              {
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface",
+              },
+            ],
+          },
+        },
+      },
+    },
+    PublicIpAddress: {
+      ip: {
+        name: "ip",
+        properties: {
+          name: "ip",
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/publicIPAddresses/ip",
+          etag: 'W/"2707c282-def4-4d2e-b32d-76cca1161eb0"',
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            provisioningState: "Succeeded",
+            resourceGuid: "ec4c1fe9-2982-447b-8cf5-8dcc90edf38e",
+            ipAddress: "20.90.248.51",
+            publicIPAddressVersion: "IPv4",
+            publicIPAllocationMethod: "Dynamic",
+            idleTimeoutInMinutes: 4,
+            ipTags: [],
+            ipConfiguration: {
+              id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig",
+            },
+          },
+          type: "Microsoft.Network/publicIPAddresses",
+          sku: {
+            name: "Basic",
+          },
+        },
+      },
+    },
+    NetworkInterface: {
+      networkInterface: {
+        name: "network-interface",
+        properties: {
+          name: "network-interface",
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface",
+          etag: 'W/"6faf36c5-766a-4fcd-9baa-28c7c317bfb6"',
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            provisioningState: "Succeeded",
+            resourceGuid: "602ccd2a-c654-422f-ab03-0f4ec11ab1a9",
+            ipConfigurations: [
+              {
+                name: "ipconfig",
+                id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig",
+                etag: 'W/"6faf36c5-766a-4fcd-9baa-28c7c317bfb6"',
+                type: "Microsoft.Network/networkInterfaces/ipConfigurations",
+                properties: {
+                  provisioningState: "Succeeded",
+                  privateIPAddress: "10.0.0.4",
+                  privateIPAllocationMethod: "Dynamic",
+                  publicIPAddress: {
+                    id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/publicIPAddresses/ip",
+                  },
+                  subnet: {
+                    id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/virtualNetworks/virtual-network/subnets/subnet",
+                  },
+                  primary: true,
+                  privateIPAddressVersion: "IPv4",
+                },
+              },
+            ],
+            dnsSettings: {
+              dnsServers: [],
+              appliedDnsServers: [],
+              internalDomainNameSuffix:
+                "gvarb00euzbehiu4vadv2xpbmc.zx.internal.cloudapp.net",
+            },
+            macAddress: "00-22-48-3F-65-29",
+            enableAcceleratedNetworking: false,
+            enableIPForwarding: false,
+            networkSecurityGroup: {
+              id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkSecurityGroups/security-group",
+            },
+            primary: true,
+            virtualMachine: {
+              id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Compute/virtualMachines/vm",
+            },
+            hostedWorkloads: [],
+            tapConfigurations: [],
+            nicType: "Standard",
+          },
+          type: "Microsoft.Network/networkInterfaces",
+        },
+      },
+    },
+  },
+  compute: {
+    VirtualMachine: {
+      vm: {
+        name: "vm",
+        properties: {
+          name: "vm",
+          id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/RESOURCE-GROUP/providers/Microsoft.Compute/virtualMachines/vm",
+          type: "Microsoft.Compute/virtualMachines",
+          location: "uksouth",
+          tags: {
+            "gc-managed-by": "grucloud",
+            "gc-stage": "dev",
+          },
+          properties: {
+            vmId: "9e5cd791-5bb1-4a8d-bafb-692ba54c0cf3",
+            hardwareProfile: {
+              vmSize: "Standard_A1_v2",
+            },
+            storageProfile: {
+              imageReference: {
+                publisher: "Canonical",
+                offer: "UbuntuServer",
+                sku: "18.04-LTS",
+                version: "latest",
+                exactVersion: "18.04.202107200",
+              },
+              osDisk: {
+                osType: "Linux",
+                name: "vm_disk1_926735b7b94d4be1855414717c943412",
+                createOption: "FromImage",
+                caching: "ReadWrite",
+                managedDisk: {
+                  storageAccountType: "Standard_LRS",
+                  id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Compute/disks/vm_disk1_926735b7b94d4be1855414717c943412",
+                },
+                diskSizeGB: 30,
+              },
+              dataDisks: [],
+            },
+            osProfile: {
+              computerName: "myVM",
+              adminUsername: "ops",
+              linuxConfiguration: {
+                disablePasswordAuthentication: false,
+                provisionVMAgent: true,
+              },
+              secrets: [],
+              allowExtensionOperations: true,
+              requireGuestProvisionSignal: true,
+            },
+            networkProfile: {
+              networkInterfaces: [
+                {
+                  id: "/subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group/providers/Microsoft.Network/networkInterfaces/network-interface",
+                },
+              ],
+            },
+            provisioningState: "Succeeded",
+          },
+        },
+      },
+    },
+  },
+});

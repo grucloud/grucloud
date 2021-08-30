@@ -1,39 +1,19 @@
 const assert = require("assert");
-const { Cli } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
-const config = require("../config");
 const path = require("path");
+const config = require("../config.js");
 
-describe.skip("EC2 simple instance", async function () {
+describe("EC2 simple instance", async function () {
   before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack, config });
-
-    await cli.graphTree({
-      commandOptions: {},
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      createStack,
+      steps: [
+        { createStack, configs: [config] },
+        { createStack, configs: [require("./configUpdate1"), config] },
+      ],
     });
-
-    await cli.graphTarget({
-      commandOptions: {},
-    });
-
-    await cli.planDestroy({
-      commandOptions: { force: true },
-    });
-    await cli.planApply({
-      commandOptions: { force: true },
-    });
-    await cli.list({
-      commandOptions: { our: true, graph: true },
-    });
-    await cli.planDestroy({
-      commandOptions: { force: true },
-    });
-    // TODO list should be empty
-    const result = await cli.list({
-      commandOptions: { our: true },
-    });
-    assert(result);
   });
 });

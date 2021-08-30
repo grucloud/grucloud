@@ -7,9 +7,9 @@ exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
     configs: [
       require("./config"),
+      ModuleAwsLoadBalancerController.config,
       ModuleAwsEks.config,
       ModuleAwsVpc.config,
-      ModuleAwsLoadBalancerController.config,
     ],
   });
 

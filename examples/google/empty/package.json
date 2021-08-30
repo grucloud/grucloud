@@ -7,7 +7,7 @@
   "scripts": {
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +15,8 @@
     "@grucloud/core": "^1.39.0",
     "@grucloud/provider-google": "^1.39.0",
     "rubico": "^1.6.29"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }

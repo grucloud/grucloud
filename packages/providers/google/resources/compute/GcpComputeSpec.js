@@ -1,9 +1,24 @@
-const { pipe, assign, map } = require("rubico");
-const { compare } = require("@grucloud/core/Utils");
+const assert = require("assert");
+const {
+  pipe,
+  assign,
+  map,
+  pick,
+  tap,
+  omit,
+  get,
+  eq,
+  filter,
+} = require("rubico");
+const { prepend, callProp, find } = require("rubico/x");
+const { camelCase } = require("change-case");
+
+const { compare } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpComputeSpec" });
 
 const { tos } = require("@grucloud/core/tos");
 const GoogleTag = require("../../GoogleTag");
+const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
 const { GcpNetwork } = require("./GcpNetwork");
 const { GcpSubNetwork } = require("./GcpSubNetwork");
@@ -19,6 +34,10 @@ const { GcpDisk } = require("./GcpDisk");
 
 const GROUP = "compute";
 
+const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
+const ResourceNameSubnet = (name) =>
+  ResourceVarNameSubnet(name).replace(/_/g, "-");
+
 module.exports = () => {
   const isOurMinion = GoogleTag.isOurMinion;
 
@@ -33,22 +52,31 @@ module.exports = () => {
       Client: GcpBackendBucket,
       isOurMinion,
     },
-
     {
       type: "UrlMap",
       dependsOn: ["compute::BackendBucket"],
+      dependencies: () => ({
+        backendBucket: { type: "BackendBucket", group: "compute" },
+      }),
       Client: GcpUrlMap,
       isOurMinion,
     },
     {
       type: "HttpsTargetProxy",
       dependsOn: ["compute::UrlMap", "compute::SslCertificate"],
+      dependencies: () => ({
+        urlMap: { type: "UrlMap", group: "compute" },
+        certificate: { type: "SslCertificate", group: "compute" },
+      }),
       Client: GcpHttpsTargetProxy,
       isOurMinion,
     },
     {
       type: "GlobalForwardingRule",
       dependsOn: ["compute::HttpsTargetProxy"],
+      dependencies: () => ({
+        httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
+      }),
       Client: GcpGlobalForwardingRule,
       isOurMinion,
     },
@@ -56,28 +84,80 @@ module.exports = () => {
       type: "Network",
       Client: GcpNetwork,
       isOurMinion,
+      filterLive: () =>
+        pick(["description", "autoCreateSubnetworks", "routingConfig"]),
     },
     {
       type: "SubNetwork",
       dependsOn: ["compute::Network"],
       Client: GcpSubNetwork,
+      dependencies: () => ({
+        network: { type: "Network", group: "compute" },
+      }),
       isOurMinion,
+      resourceVarName: ResourceVarNameSubnet,
+      resourceName: ResourceNameSubnet,
     },
     {
       type: "Firewall",
       dependsOn: ["compute::Network"],
       Client: GcpFirewall,
       isOurMinion,
+      dependencies: () => ({
+        network: { type: "Network", group: "compute" },
+      }),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "description",
+            "priority",
+            "sourceRanges",
+            "allowed",
+            "direction",
+            "logConfig",
+          ]),
+          // TODO remove if sourceRanges: ["0.0.0.0/0"],
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
     },
     {
       type: "Address",
       Client: GcpAddress,
       isOurMinion,
+      filterLive: () => pick(["description"]),
     },
     {
       type: "Disk",
       Client: GcpDisk,
       isOurMinion,
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          pick(["sizeGb", "type"]),
+          assign({
+            type: pipe([
+              get("type"),
+              callProp(
+                "replace",
+                `${GCP_COMPUTE_BASE_URL}/projects/${providerConfig.projectId}/zones/${providerConfig.zone}/diskTypes/`,
+                ""
+              ),
+            ]),
+          }),
+        ]),
     },
     {
       type: "VmInstance",
@@ -98,6 +178,64 @@ module.exports = () => {
       },
       isOurMinion,
       compare: compareVmInstance,
+      dependencies: () => ({
+        address: { type: "Address", group: "compute" },
+        subnetworks: { type: "SubNetwork", group: "compute" },
+        disks: { type: "Disk", group: "compute" },
+        frewall: { type: "Firewall", group: "compute" },
+        serviceAccount: { type: "ServiceAccount", group: "iam" },
+      }),
+      filterLive: ({ providerConfig, lives }) =>
+        pipe([
+          assign({
+            sourceImage: pipe([
+              get("disks"),
+              find(get("boot")),
+              get("source"),
+              (source) =>
+                pipe([
+                  () => lives,
+                  filter(eq(get("groupType"), "compute::Disk")),
+                  find(eq(get("live.selfLink"), source)),
+                  get("live.sourceImage"),
+                  callProp("replace", `${GCP_COMPUTE_BASE_URL}/`, ""),
+                ])(),
+            ]),
+          }),
+          omit([
+            "disks",
+            "networkInterfaces",
+            "scheduling",
+            "serviceAccounts",
+            "id",
+            "creationTimestamp",
+            "name",
+            "status",
+            "selfLink",
+            "cpuPlatform",
+            "labelFingerprint",
+            "fingerprint",
+            "lastStartTimestamp",
+            "kind",
+            "zone",
+          ]),
+          omit(["tags.fingerprint", "metadata.fingerprint", "metadata.kind"]),
+          ///TODO remove our tags in labels
+          //TODO remove tags if empty
+          assign({
+            machineType: pipe([
+              get("machineType"),
+              callProp(
+                "replace",
+                `${GCP_COMPUTE_BASE_URL}/projects/${providerConfig.projectId}/zones/${providerConfig.zone}/machineTypes/`,
+                ""
+              ),
+            ]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
     },
   ]);
 };

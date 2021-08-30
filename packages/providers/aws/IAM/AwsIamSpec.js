@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, tap, get } = require("rubico");
-const { when, isString } = require("rubico/x");
+const { when, isString, prepend } = require("rubico/x");
 
 const { AwsIamUser } = require("./AwsIamUser");
 const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
@@ -11,6 +11,7 @@ const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
+const { compare } = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
 
@@ -22,6 +23,14 @@ module.exports = () =>
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([
+          assign({ Url: pipe([get("Url"), prepend("https://")]) }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
     },
     {
       type: "User",

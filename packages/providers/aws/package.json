@@ -11,6 +11,7 @@
     "test-modules": "mocha --exit '../../modules/aws/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",
     "coverage-examples": "nyc npm run test-examples",
+    "coverage-modules": "nyc npm run test-modules",
     "test-all": "npm run test && npm run test-examples && npm run test-modules"
   },
   "author": "",
@@ -20,7 +21,6 @@
     "adm-zip": "^0.5.5",
     "aws-sdk": "^2.956.0",
     "chance": "^1.1.7",
-    "crypto": "^1.0.1",
     "deep-object-diff": "^1.1.0",
     "mime-types": "^2.1.32",
     "moment": "^2.29.1",

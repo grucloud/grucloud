@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, eq, pipe, tap, any, assign } = require("rubico");
+const { defaultsDeep, find, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpDisk" });
 const { tos } = require("@grucloud/core/tos");
@@ -18,10 +18,20 @@ exports.GcpDisk = ({ spec, config }) => {
   assert(zone);
 
   const configDefault = ({ name, properties }) =>
-    defaultsDeep({
-      name,
-      labels: buildLabel(config),
-    })(properties);
+    pipe([
+      () => properties,
+      when(
+        get("type"),
+        assign({
+          type: ({ type }) =>
+            `projects/${projectId}/zones/${zone}/diskTypes/${type}`,
+        })
+      ),
+      defaultsDeep({
+        name,
+        labels: buildLabel(config),
+      }),
+    ])();
 
   const isInstanceUp = eq(get("status"), "READY");
 
@@ -31,6 +41,27 @@ exports.GcpDisk = ({ spec, config }) => {
       getById,
     });
 
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(live);
+      }),
+      () =>
+        lives.getByType({
+          type: "VmInstance",
+          group: "compute",
+          providerName: config.providerName,
+        }),
+      any(
+        pipe([
+          get("live.disks"),
+          find(eq(get("source"), live.selfLink)),
+          get("boot"),
+        ])
+      ),
+    ])();
+
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -39,5 +70,6 @@ exports.GcpDisk = ({ spec, config }) => {
     isInstanceUp,
     isUpByIdFactory,
     configDefault,
+    managedByOther,
   });
 };

@@ -12,7 +12,14 @@ const {
   map,
   omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, size, first } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  size,
+  first,
+  unless,
+  prepend,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchTemplate",
@@ -23,12 +30,33 @@ const {
   createEndpoint,
   shouldRetryOnException,
   buildTags,
+  findValueInTags,
+  findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 
 const EC2Instance = require("./EC2Instance");
 
-const findName = get("live.LaunchTemplateName");
 const findId = get("live.LaunchTemplateId");
+
+const findNameEks = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live"),
+  findValueInTags({ key: "eks:nodegroup-name" }),
+  unless(isEmpty, prepend("lt-")),
+]);
+
+const findName = (params) => {
+  const fns = [findNameEks, get("live.LaunchTemplateName")];
+  for (fn of fns) {
+    const name = fn(params);
+    if (!isEmpty(name)) {
+      return name;
+    }
+  }
+  assert(false, "should have a name");
+};
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 
@@ -49,11 +77,28 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "InstanceProfile",
       group: "iam",
-      ids: [live.LaunchTemplateData.IamInstanceProfile.Arn],
+      ids: [
+        pipe([() => live, get("LaunchTemplateData.IamInstanceProfile.Arn")])(),
+        pipe([
+          () => live,
+          get("LaunchTemplateData.IamInstanceProfile.Name"),
+          (name) =>
+            lives.getByName({
+              name,
+              type: "InstanceProfile",
+              group: "iam",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
     },
   ];
 
-  const findNamespace = pipe([() => ""]);
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "eks:cluster-name",
+  });
 
   const notFound = or([
     eq(get("code"), "InvalidLaunchTemplateId.NotFound"),
@@ -94,6 +139,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         tap((params) => {
           assert(true);
         }),
+        omit(["LaunchTemplateData.TagSpecifications"]),
         defaultsDeep(launchTemplate),
         tap((params) => {
           assert(true);
@@ -150,6 +196,24 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       //   })
       // ),
     ])();
+
+  // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property
+
+  //TODO update
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update launchTemplate: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => payload,
+      omit(["TagSpecifications"]),
+      ec2().createLaunchTemplateVersion,
+      tap(() => {
+        logger.info(`updated launchTemplate ${name}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteLaunchTemplate-property
   const destroy = ({ live }) =>
     pipe([
@@ -195,7 +259,10 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         ],
       }),
       defaultsDeep({
-        LaunchTemplateData: EC2Instance.configDefault({ config })({
+        LaunchTemplateData: EC2Instance.configDefault({
+          config,
+          includeTags: false,
+        })({
           name,
           namespace,
           properties: {},
@@ -215,6 +282,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

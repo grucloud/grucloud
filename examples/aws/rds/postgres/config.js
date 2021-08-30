@@ -39,6 +39,7 @@ module.exports = ({ stage, region }) => ({
         AllocatedStorage: 20,
         MaxAllocatedStorage: 1000,
         PubliclyAccessible: true,
+        PreferredBackupWindow: "22:10-22:40",
       },
     },
     databaseName: "dev",

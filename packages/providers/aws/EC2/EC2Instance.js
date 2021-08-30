@@ -57,7 +57,7 @@ const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
 const configDefault =
-  ({ config }) =>
+  ({ config, includeTags = true }) =>
   ({
     name,
     namespace,
@@ -100,12 +100,14 @@ const configDefault =
             Arn: getField(iamInstanceProfile, "Arn"),
           },
         }),
-        TagSpecifications: [
-          {
-            ResourceType: "instance",
-            Tags: buildTags({ config, namespace, name }),
-          },
-        ],
+        ...(includeTags && {
+          TagSpecifications: [
+            {
+              ResourceType: "instance",
+              Tags: buildTags({ config, namespace, name }),
+            },
+          ],
+        }),
         ...(keyPair && { KeyName: keyPair.resource.name }),
       }),
       tap((params) => {

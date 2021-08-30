@@ -8,10 +8,10 @@ const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
     configs: [
+      require("./config"),
+      ModuleAwsLoadBalancer.config,
       ModuleAwsCertificate.config,
       //ModuleAwsVpc.config,
-      ModuleAwsLoadBalancer.config,
-      require("./config"),
     ],
   });
 

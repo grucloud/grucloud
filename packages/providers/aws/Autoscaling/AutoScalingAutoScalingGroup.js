@@ -6,7 +6,7 @@ const {
   tryCatch,
   get,
   or,
-  eq,
+  pick,
   not,
   switchCase,
   omit,
@@ -19,6 +19,8 @@ const {
   first,
   includes,
   callProp,
+  unless,
+  prepend,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
@@ -28,17 +30,28 @@ const { tos } = require("@grucloud/core/tos");
 const {
   AutoScalingNew,
   shouldRetryOnException,
-  findNameInTags,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
   buildTags,
+  findValueInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.AutoScalingGroupARN");
+const pickId = pick(["AutoScalingGroupName"]);
+
+const findNameEks = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live"),
+  findValueInTags({ key: "eks:nodegroup-name" }),
+  unless(isEmpty, prepend("asg-")),
+]);
 
 const findName = (params) => {
-  const fns = [findNameInTags({ findId }), get("live.AutoScalingGroupName")];
+  const fns = [findNameEks, get("live.AutoScalingGroupName")];
   for (fn of fns) {
     const name = fn(params);
     if (!isEmpty(name)) {
@@ -50,6 +63,12 @@ const findName = (params) => {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
+
+  const client = AwsClient({
+    type: spec.type,
+    config,
+    endpointName: "AutoScaling",
+  });
 
   const managedByOther = or([
     hasKeyInTags({
@@ -76,6 +95,19 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
               group: "autoscaling",
             }),
           get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "LaunchTemplate",
+      group: "ec2",
+      ids: [
+        pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
+        pipe([
+          () => live,
+          get(
+            "MixedInstancesPolicy.LaunchTemplate.LaunchTemplateSpecification.LaunchTemplateId"
+          ),
         ])(),
       ],
     },
@@ -107,68 +139,39 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     }),
   ]);
 
-  const describeAutoScalingGroups = (params = {}) =>
-    pipe([
-      () => params,
-      autoScaling().describeAutoScalingGroups,
-      get("AutoScalingGroups"),
-      map(
-        assign({
-          VPCZoneIdentifier: pipe([
-            get("VPCZoneIdentifier"),
-            callProp("split", ","),
-            callProp("sort"),
-            callProp("join", ","),
-          ]),
-        })
-      ),
-    ])();
+  const decorate = assign({
+    VPCZoneIdentifier: pipe([
+      get("VPCZoneIdentifier"),
+      callProp("split", ","),
+      callProp("sort"),
+      callProp("join", ","),
+    ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList autoscaling group`);
-      }),
-      describeAutoScalingGroups,
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getList = client.getList({
+    method: "describeAutoScalingGroups",
+    getParam: "AutoScalingGroups",
+    decorate,
+  });
 
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${tos(name)}`);
-      }),
-      () => ({
-        AutoScalingGroupNames: [name],
-      }),
-      describeAutoScalingGroups,
-      first,
-      tap((result) => {
-        logger.debug(`getByName: ${name}, result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId: ({ AutoScalingGroupName }) => ({
+      AutoScalingGroupNames: [AutoScalingGroupName],
+    }),
+    method: "describeAutoScalingGroups",
+    getField: "AutoScalingGroups",
+  });
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getByName = ({ name }) => getById({ AutoScalingGroupName: name });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      tap(() => {
-        assert(true);
-      }),
-      () => payload,
-      autoScaling().createAutoScalingGroup,
-      tap(() =>
-        retryCall({
-          name: `createAutoScalingGroup isUpById: ${name}`,
-          fn: () => isUpByName({ name }),
-        })
-      ),
-    ])();
+  const create = client.create({
+    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
+    method: "createAutoScalingGroup",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
   const update = ({ name, payload, diff, live }) =>
@@ -183,53 +186,19 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
-  const destroy = ({ live, lives }) =>
-    pipe([
-      () => live,
-      get("AutoScalingGroupName"),
-      (AutoScalingGroupName) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy autoscaling group ${AutoScalingGroupName}`);
-          }),
-          tryCatch(
-            pipe([
-              () => ({ AutoScalingGroupName, ForceDelete: true }),
-              tap((params) => {
-                assert(true);
-              }),
-              autoScaling().deleteAutoScalingGroup,
-              tap((params) => {
-                assert(true);
-              }),
-              tap(() =>
-                retryCall({
-                  name: `isDownByName: ${AutoScalingGroupName}`,
-                  fn: () => isDownByName({ name: AutoScalingGroupName }),
-                  config,
-                })
-              ),
-            ]),
-            (error, params) =>
-              pipe([
-                tap(() => {
-                  assert(true);
-                }),
-                () => error,
-                switchCase([
-                  pipe([
-                    get("message"),
-                    includes("AutoScalingGroup name not found"),
-                  ]),
-                  () => false,
-                  (error) => {
-                    throw Error(error.message);
-                  },
-                ]),
-              ])()
-          ),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    extraParam: {
+      ForceDelete: true,
+    },
+    method: "deleteAutoScalingGroup",
+    getById,
+    ignoreError: pipe([
+      get("message"),
+      includes("AutoScalingGroup name not found"),
+    ]),
+    config: { retryCount: 12 * 15, retryDelay: 5e3 },
+  });
 
   const configDefault = ({
     name,

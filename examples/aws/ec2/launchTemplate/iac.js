@@ -65,6 +65,7 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       keyPair: resources.ec2.KeyPair.kpEcs,
       securityGroups: [resources.ec2.SecurityGroup.ecsSecurityGroup],
+      iamInstanceProfile: resources.iam.InstanceProfile.roleEcs,
     }),
     properties: get("config.ec2.LaunchTemplate.ltEc2Micro.properties"),
   });

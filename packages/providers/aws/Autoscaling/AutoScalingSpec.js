@@ -1,5 +1,8 @@
-const { pipe, assign, map } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, tap, filter, not, get } = require("rubico");
+const { includes } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const {
   AutoScalingAutoScalingGroup,
@@ -9,6 +12,10 @@ const {
 } = require("./AutoScalingLaunchConfiguration");
 
 const GROUP = "autoscaling";
+
+const filterTags = filter((tag) =>
+  pipe([() => ["AmazonECSManaged"], not(includes(tag.Key))])()
+);
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -24,6 +31,17 @@ module.exports = () =>
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          assign({ Tags: pipe([get("Tags"), filterTags]) }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
     },
     {
       type: "LaunchConfiguration",
@@ -31,11 +49,7 @@ module.exports = () =>
         "ec2::KeyPair",
         "ec2::SecurityGroup",
         "ec2::Subnet",
-        "ec2::ElasticIpAddress",
         "iam::InstanceProfile",
-        "ec2::Volume",
-        "ec2::NetworkInterface",
-        "ec2::InternetGateway",
       ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,

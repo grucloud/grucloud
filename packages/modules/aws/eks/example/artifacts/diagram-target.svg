@@ -400,54 +400,54 @@
 <path fill="none" stroke="#707070" d="M536.6,-754.94C572.87,-746.55 611.8,-737.54 645.77,-729.69"/>
 <polygon fill="#707070" stroke="#707070" points="646.72,-733.06 655.67,-727.39 645.14,-726.24 646.72,-733.06"/>
 </g>
-<!-- Cluster::cluster -->
+<!-- Cluster::my&#45;cluster -->
 <g id="node27" class="node">
-<title>Cluster::cluster</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="449.5,-737 370.5,-737 370.5,-679 449.5,-679 449.5,-737"/>
-<text text-anchor="start" x="383" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Cluster</text>
-<text text-anchor="start" x="383" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">cluster</text>
+<title>Cluster::my&#45;cluster</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="460,-737 360,-737 360,-679 460,-679 460,-737"/>
+<text text-anchor="start" x="372" y="-717.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Cluster</text>
+<text text-anchor="start" x="372" y="-692.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;cluster</text>
 </g>
-<!-- Cluster::cluster&#45;&gt;Subnet::subnet&#45;public&#45;a -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;public&#45;a -->
 <g id="edge32" class="edge">
-<title>Cluster::cluster&#45;&gt;Subnet::subnet&#45;public&#45;a</title>
+<title>Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;public&#45;a</title>
 <path fill="none" stroke="#707070" d="M444.72,-678.95C476.78,-649.14 523.38,-599.64 546,-546 576.12,-474.57 530.96,-257.35 582,-199 601.88,-176.27 632.78,-165.93 661.96,-161.57"/>
 <polygon fill="#707070" stroke="#707070" points="662.72,-165 672.19,-160.27 661.83,-158.06 662.72,-165"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;Subnet::subnet&#45;public&#45;b -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;public&#45;b -->
 <g id="edge33" class="edge">
-<title>Cluster::cluster&#45;&gt;Subnet::subnet&#45;public&#45;b</title>
+<title>Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;public&#45;b</title>
 <path fill="none" stroke="#707070" d="M442.71,-678.87C473.7,-648.62 519.92,-598.45 546,-546 577.49,-482.68 535.2,-444.03 582,-391 602.61,-367.64 633.48,-353.68 662.44,-345.34"/>
 <polygon fill="#707070" stroke="#707070" points="663.42,-348.7 672.17,-342.72 661.61,-341.94 663.42,-348.7"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;Subnet::subnet&#45;private&#45;a -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;private&#45;a -->
 <g id="edge34" class="edge">
-<title>Cluster::cluster&#45;&gt;Subnet::subnet&#45;private&#45;a</title>
+<title>Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;private&#45;a</title>
 <path fill="none" stroke="#707070" d="M444.26,-678.74C474.2,-650.92 517.73,-606.67 546,-561 569.55,-522.96 548.39,-496.53 582,-467 603.27,-448.31 632.15,-438.45 659.38,-433.35"/>
 <polygon fill="#707070" stroke="#707070" points="660.04,-436.79 669.32,-431.69 658.88,-429.89 660.04,-436.79"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;Subnet::subnet&#45;private&#45;b -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;private&#45;b -->
 <g id="edge35" class="edge">
-<title>Cluster::cluster&#45;&gt;Subnet::subnet&#45;private&#45;b</title>
+<title>Cluster::my&#45;cluster&#45;&gt;Subnet::subnet&#45;private&#45;b</title>
 <path fill="none" stroke="#707070" d="M445.6,-679C473.5,-655.14 513.34,-619.99 546,-587 563.06,-569.77 561.36,-558.73 582,-546 605.25,-531.67 633.39,-522.31 659.42,-516.22"/>
 <polygon fill="#707070" stroke="#707070" points="660.27,-519.62 669.28,-514.04 658.76,-512.78 660.27,-519.62"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;Role::role&#45;cluster -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Role::role&#45;cluster -->
 <g id="edge38" class="edge">
-<title>Cluster::cluster&#45;&gt;Role::role&#45;cluster</title>
-<path fill="none" stroke="#707070" d="M449.65,-716.94C505.87,-729.95 610.79,-754.22 677.78,-769.72"/>
-<polygon fill="#707070" stroke="#707070" points="677.26,-773.19 687.79,-772.04 678.83,-766.37 677.26,-773.19"/>
+<title>Cluster::my&#45;cluster&#45;&gt;Role::role&#45;cluster</title>
+<path fill="none" stroke="#707070" d="M460.18,-719.38C518.28,-732.82 615,-755.2 678,-769.77"/>
+<polygon fill="#707070" stroke="#707070" points="677.28,-773.2 687.81,-772.04 678.86,-766.38 677.28,-773.2"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;SecurityGroup::security&#45;group&#45;cluster -->
+<!-- Cluster::my&#45;cluster&#45;&gt;SecurityGroup::security&#45;group&#45;cluster -->
 <g id="edge36" class="edge">
-<title>Cluster::cluster&#45;&gt;SecurityGroup::security&#45;group&#45;cluster</title>
-<path fill="none" stroke="#707070" d="M449.62,-710.35C479.03,-713.99 518.94,-723.14 546,-746 574.55,-770.12 553,-798.42 582,-822 598.58,-835.48 619.19,-844.31 639.98,-850.05"/>
+<title>Cluster::my&#45;cluster&#45;&gt;SecurityGroup::security&#45;group&#45;cluster</title>
+<path fill="none" stroke="#707070" d="M460.32,-711.86C488.18,-716.31 522.1,-725.81 546,-746 574.55,-770.12 553,-798.42 582,-822 598.58,-835.48 619.19,-844.31 639.98,-850.05"/>
 <polygon fill="#707070" stroke="#707070" points="639.3,-853.49 649.85,-852.56 641.02,-846.71 639.3,-853.49"/>
 </g>
-<!-- Cluster::cluster&#45;&gt;SecurityGroup::security&#45;group&#45;node -->
+<!-- Cluster::my&#45;cluster&#45;&gt;SecurityGroup::security&#45;group&#45;node -->
 <g id="edge37" class="edge">
-<title>Cluster::cluster&#45;&gt;SecurityGroup::security&#45;group&#45;node</title>
-<path fill="none" stroke="#707070" d="M449.65,-708C497.46,-708 580.5,-708 645.48,-708"/>
-<polygon fill="#707070" stroke="#707070" points="645.74,-711.5 655.74,-708 645.74,-704.5 645.74,-711.5"/>
+<title>Cluster::my&#45;cluster&#45;&gt;SecurityGroup::security&#45;group&#45;node</title>
+<path fill="none" stroke="#707070" d="M460.18,-708C508.99,-708 585.06,-708 645.49,-708"/>
+<polygon fill="#707070" stroke="#707070" points="645.81,-711.5 655.81,-708 645.81,-704.5 645.81,-711.5"/>
 </g>
 <!-- Key::eks&#45;key -->
 <g id="node29" class="node">
@@ -456,10 +456,10 @@
 <text text-anchor="start" x="712.5" y="-605.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Key</text>
 <text text-anchor="start" x="712.5" y="-580.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eks&#45;key</text>
 </g>
-<!-- Cluster::cluster&#45;&gt;Key::eks&#45;key -->
+<!-- Cluster::my&#45;cluster&#45;&gt;Key::eks&#45;key -->
 <g id="edge39" class="edge">
-<title>Cluster::cluster&#45;&gt;Key::eks&#45;key</title>
-<path fill="none" stroke="#707070" d="M449.8,-690.07C484.08,-674.67 535.68,-652.56 582,-637 617.65,-625.02 658.8,-614.42 690.1,-607"/>
+<title>Cluster::my&#45;cluster&#45;&gt;Key::eks&#45;key</title>
+<path fill="none" stroke="#707070" d="M460.07,-685.49C493.88,-670.51 540.1,-651.08 582,-637 617.65,-625.02 658.8,-614.42 690.1,-607"/>
 <polygon fill="#707070" stroke="#707070" points="690.96,-610.39 699.9,-604.7 689.36,-603.57 690.96,-610.39"/>
 </g>
 <!-- NodeGroup::node&#45;group&#45;private&#45;cluster -->
@@ -487,11 +487,11 @@
 <path fill="none" stroke="#707070" d="M139.38,-737.32C154.75,-792.26 195.48,-910.84 274,-974 290.22,-987.05 310.67,-995.62 330.71,-1001.25"/>
 <polygon fill="#707070" stroke="#707070" points="329.93,-1004.67 340.49,-1003.78 331.69,-997.89 329.93,-1004.67"/>
 </g>
-<!-- NodeGroup::node&#45;group&#45;private&#45;cluster&#45;&gt;Cluster::cluster -->
+<!-- NodeGroup::node&#45;group&#45;private&#45;cluster&#45;&gt;Cluster::my&#45;cluster -->
 <g id="edge42" class="edge">
-<title>NodeGroup::node&#45;group&#45;private&#45;cluster&#45;&gt;Cluster::cluster</title>
-<path fill="none" stroke="#707070" d="M238.3,-708C280.34,-708 326.56,-708 360.29,-708"/>
-<polygon fill="#707070" stroke="#707070" points="360.34,-711.5 370.34,-708 360.34,-704.5 360.34,-711.5"/>
+<title>NodeGroup::node&#45;group&#45;private&#45;cluster&#45;&gt;Cluster::my&#45;cluster</title>
+<path fill="none" stroke="#707070" d="M238.3,-708C276.02,-708 317.12,-708 349.53,-708"/>
+<polygon fill="#707070" stroke="#707070" points="349.74,-711.5 359.74,-708 349.74,-704.5 349.74,-711.5"/>
 </g>
 </g>
 </svg>

@@ -156,8 +156,13 @@ const findDependsOnType = ({
       assert(Array.isArray(dependsOnType));
     }),
     () => dependsOnType,
-    //TODO group
-    find(and([eq(get("providerName"), providerName), eq(get("type"), type)])),
+    find(
+      and([
+        eq(get("providerName"), providerName),
+        eq(get("group"), group),
+        eq(get("type"), type),
+      ])
+    ),
     tap((x) => {
       assert(x);
     }),
@@ -431,6 +436,7 @@ exports.Planner = ({
                 () => runItem(entry, onEnd),
                 (error) => {
                   logger.error(`Planner onEnd  ${tos({ error, entry })}`);
+                  error.stack && logger.error(`Planner onEnd  ${error.stack}`);
                   return { error, entry };
                 }
               ),
@@ -442,6 +448,7 @@ exports.Planner = ({
           ]),
           (error) => {
             logger.error(`Planner onEnd  ${tos({ error, entry })}`);
+            error.stack && logger.error(`Planner onEnd  ${error.stack}`);
             return { error, entry };
           }
         )(entry.dependsOn)

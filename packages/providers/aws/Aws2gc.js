@@ -233,6 +233,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Role",
         filterLive: () =>
           pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
+        includeDefaultDependencies: true,
         dependencies: () => ({
           policies: {
             type: "Policy",
@@ -330,6 +331,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Volume",
         filterLive: () =>
           pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+        //TODO do we need that ?
         ignoreResource:
           ({ lives }) =>
           (resource) =>
@@ -407,6 +409,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "SecurityGroupRuleIngress",
         filterLive: securityGroupRulePickProperties,
+        includeDefaultDependencies: true,
         dependencies: () => ({
           securityGroup: {
             type: "SecurityGroup",
@@ -443,6 +446,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "SecurityGroupRuleEgress",
         filterLive: securityGroupRulePickProperties,
+        includeDefaultDependencies: true,
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
@@ -464,10 +468,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LaunchTemplateData.ElasticInferenceAccelerators",
               "LaunchTemplateData.SecurityGroups",
               "LaunchTemplateData.LicenseSpecifications",
+              "LaunchTemplateData.TagSpecifications",
             ]),
             omit([
               "LaunchTemplateData.NetworkInterfaces",
               "LaunchTemplateData.SecurityGroupIds",
+              "LaunchTemplateData.IamInstanceProfile",
             ]),
             tap((params) => {
               assert(true);
@@ -844,7 +850,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Repository",
         filterLive: () =>
           pick([
-            "repositoryName",
             "imageTagMutability",
             "imageScanningConfiguration",
             "encryptionConfiguration",
@@ -922,6 +927,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "HostedZone",
         filterLive: () => pick([]),
+        includeDefaultDependencies: true,
         dependencies: () => ({
           domain: { type: "Domain", group: "route53Domain" },
           hostedZone: { type: "HostedZone", group: "route53" },

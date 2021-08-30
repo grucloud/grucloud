@@ -1,14 +1,14 @@
 const assert = require("assert");
 const path = require("path");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
+const config = require("../config");
 
 describe("Gcp VM in network", async function () {
-  before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-
-    await testEnd2End({ cli });
-  });
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      steps: [{ createStack, configs: [config] }],
+    });
+  }).timeout(35 * 60e3);
 });

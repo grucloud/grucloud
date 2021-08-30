@@ -232,22 +232,20 @@ exports.ProviderGru = ({
                   }),
               ])(),
           })),
-          (inputs) =>
-            Lister({
-              inputs,
-              onStateChange: ({ key, result, nextState }) =>
-                pipe([
-                  tap.if(
-                    () => includes(nextState)(["DONE", "ERROR"]),
-                    pipe([
-                      () => getProvider({ providerName: key }),
-                      (provider) => {
-                        //TODO
-                      },
-                    ])
-                  ),
-                ])(),
-            }),
+          Lister({
+            onStateChange: ({ key, result, nextState }) =>
+              pipe([
+                tap.if(
+                  () => includes(nextState)(["DONE", "ERROR"]),
+                  pipe([
+                    () => getProvider({ providerName: key }),
+                    (provider) => {
+                      //TODO
+                    },
+                  ])
+                ),
+              ])(),
+          }),
           (result) => ({
             lives: lives,
             resultQuery: result,
@@ -374,27 +372,25 @@ exports.ProviderGru = ({
             }),
           ])(),
       })),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: ({ key, result, nextState }) =>
-            pipe([
-              tap.if(
-                () => includes(nextState)(["ERROR"]),
-                pipe([
-                  () => getProvider({ providerName: key }),
-                  tap((provider) => {
-                    logger.info(`filterProviderUp provider ${provider.name}`);
+      Lister({
+        onStateChange: ({ key, result, nextState }) =>
+          pipe([
+            tap.if(
+              () => includes(nextState)(["ERROR"]),
+              pipe([
+                () => getProvider({ providerName: key }),
+                tap((provider) => {
+                  logger.info(`filterProviderUp provider ${provider.name}`);
+                }),
+                (provider) =>
+                  provider.spinnersStopListLives({
+                    onStateChange,
+                    error: true,
                   }),
-                  (provider) =>
-                    provider.spinnersStopListLives({
-                      onStateChange,
-                      error: true,
-                    }),
-                ])
-              ),
-            ])(),
-        }),
+              ])
+            ),
+          ])(),
+      }),
       get("results"),
       tap((results) => {
         logger.info(`filterProviderUp #providers ${size(results)}`);
@@ -482,11 +478,9 @@ exports.ProviderGru = ({
           }),
         ])()
       ),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: onStateChangeDefault({ onStateChange }),
-        }),
+      Lister({
+        onStateChange: onStateChangeDefault({ onStateChange }),
+      }),
       tap((result) => {
         logger.debug(`planDestroy done`);
       }),
@@ -526,11 +520,9 @@ exports.ProviderGru = ({
             }),
           ])(),
       })),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: onStateChangeDefault({ onStateChange }),
-        }),
+      Lister({
+        onStateChange: onStateChangeDefault({ onStateChange }),
+      }),
       tap((result) => {
         logger.info(`runCommand result: ${tos(result)}`);
       }),

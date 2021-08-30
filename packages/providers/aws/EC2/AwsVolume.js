@@ -66,6 +66,9 @@ exports.AwsVolume = ({ spec, config }) => {
                 group: "ec2",
                 id: InstanceId,
               }),
+            tap((instance) => {
+              assert(instance, "cannot find ec2 instance");
+            }),
             eq(get("live.RootDeviceName"), Device),
           ])()
         ),

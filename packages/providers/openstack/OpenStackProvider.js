@@ -24,7 +24,8 @@ const {
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const OpenStackClient = require("./OpenStackClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
-const { getField, notAvailable } = require("@grucloud/core/ProviderCommon");
+const { mergeConfig } = require("@grucloud/core/ProviderCommon");
+
 const { isUpByIdCore } = require("@grucloud/core/Common");
 const { checkEnv } = require("@grucloud/core/Utils");
 const { tos } = require("@grucloud/core/tos");
@@ -225,9 +226,12 @@ const fnSpecs = (config) => {
   ];
 };
 
-exports.OpenStackProvider = ({ name = "openstack", config, ...other }) => {
-  assert(isFunction(config), "config must be a function");
-
+exports.OpenStackProvider = ({
+  name = "openstack",
+  config,
+  configs = [],
+  ...other
+}) => {
   const {
     OS_USERNAME,
     OS_PASSWORD,
@@ -253,7 +257,7 @@ exports.OpenStackProvider = ({ name = "openstack", config, ...other }) => {
     });
   };
 
-  const configProviderDefault = {
+  const configDefault = {
     bearerToken: () => bearerToken,
     username: OS_USERNAME,
     projectId: OS_PROJECT_ID,
@@ -261,6 +265,8 @@ exports.OpenStackProvider = ({ name = "openstack", config, ...other }) => {
     retryCount: 60,
     retryDelay: 10e3,
   };
+
+  const makeConfig = () => mergeConfig({ configDefault, config, configs });
 
   const info = () => ({
     username: OS_USERNAME,
@@ -271,10 +277,7 @@ exports.OpenStackProvider = ({ name = "openstack", config, ...other }) => {
     type: "openstack",
     name,
     mandatoryConfigKeys: [""],
-    makeConfig: pipe([
-      () => config(configProviderDefault),
-      defaultsDeep(configProviderDefault),
-    ]),
+    makeConfig,
     fnSpecs,
     start,
     info,

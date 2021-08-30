@@ -11,3 +11,4 @@ test-results.xml
 *.dot
 list.svg
 .DS_Store
+inventory.json

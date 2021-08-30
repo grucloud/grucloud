@@ -1,21 +1,33 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const { pipe, tap, filter, not, tryCatch, get } = require("rubico");
+const { pipe, tap, filter, not, switchCase, get } = require("rubico");
 const { isEmpty, isFunction } = require("rubico/x");
 const { ConfigLoader } = require("../ConfigLoader");
 const logger = require("../logger")({ prefix: "Infra" });
 
+const filterNotEmpty = filter((x) => x);
 const createProviderMaker =
-  ({ programOptions, stage, config }) =>
-  (provider, { config: configUser, configs = [], ...otherProps } = {}) =>
+  ({
+    programOptions,
+    stage,
+    config: configOverride,
+    configs: configsOverride = [],
+  }) =>
+  (
+    provider,
+    { config: configUser, configs: configsUser = [], ...otherProps } = {}
+  ) =>
     pipe([
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
       }),
-      () =>
+      () => [configOverride, ...configsOverride, configUser, ...configsUser],
+      // IsEmpty does not work with function
+      filter((x) => x),
+      (configs) =>
         provider({
-          configs: [config || configUser, ...configs],
+          configs,
           programOptions,
           stage,
           ...otherProps,
@@ -45,7 +57,8 @@ const checkFileExist = ({ fileName }) => {
 
 const requireConfig = ({ fileName, stage }) => {
   if (!fileName) {
-    return ConfigLoader({ stage });
+    //return ConfigLoader({ stage });
+    return;
   }
   checkFileExist({ fileName });
 

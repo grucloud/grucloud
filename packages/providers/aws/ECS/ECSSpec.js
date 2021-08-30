@@ -55,7 +55,6 @@ module.exports = () =>
             "runningCount",
             "pendingCount",
             "status",
-            "tags",
           ]),
         ]),
       }),

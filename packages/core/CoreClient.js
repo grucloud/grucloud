@@ -28,6 +28,7 @@ module.exports = CoreClient = ({
   verbCreate = "POST",
   isInstanceUp,
   isDefault,
+  managedByOther,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   configDefault = ({ name, properties }) => ({
@@ -248,6 +249,7 @@ module.exports = CoreClient = ({
     isInstanceUp,
     findName,
     isDefault,
+    managedByOther,
     cannotBeDeleted,
     shouldRetryOnException,
     isUpById,

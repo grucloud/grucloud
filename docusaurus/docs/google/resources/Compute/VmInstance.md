@@ -111,9 +111,8 @@ const firewall22 = provider.compute.makeFirewall({
   properties: () => ({
     allowed: [
       {
-        sourceRanges: ["0.0.0.0/0"],
-        IPProtocol: "TCP",
-        ports: [22],
+        IPProtocol: "tcp",
+        ports: ["22"],
       },
     ],
   }),

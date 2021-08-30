@@ -47,7 +47,7 @@ const retryCall = async ({
               isExpectedResult,
               pipe([
                 tap((result) => {
-                  logger.info(`retryCall ${name}, expected result`);
+                  //logger.info(`retryCall ${name}, expected result`);
                 }),
                 identity,
               ]),
@@ -76,7 +76,9 @@ const retryCall = async ({
             ]),
             pipe([
               tap((error) => {
-                logger.info(`${name} throws exception`);
+                logger.error(
+                  `${name} throws not expected exception, ${error.stack}`
+                );
               }),
               (error) => {
                 throw error;

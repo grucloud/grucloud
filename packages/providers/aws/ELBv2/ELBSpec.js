@@ -1,9 +1,11 @@
-const { pipe, assign, map } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, omit, tap } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
 const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
+const { compare } = require("@grucloud/core/Common");
 
 const GROUP = "elb";
 
@@ -19,12 +21,18 @@ module.exports = () =>
       ],
       Client: ELBLoadBalancerV2,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["Name", "Subnets"])]),
+      }),
     },
     {
       type: "TargetGroup",
       dependsOn: ["ec2::Vpc"],
       Client: ELBTargetGroup,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["Name"])]),
+      }),
     },
     {
       type: "Listener",
@@ -37,5 +45,17 @@ module.exports = () =>
       dependsOn: ["elb::Listener", "elb::TargetGroup"],
       Client: ELBRule,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
     },
   ]);

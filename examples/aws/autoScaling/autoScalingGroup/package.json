@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph"
+    "list": "gc list --graph --json artifacts/inventory.json -e Key --default-exclude"
   },
   "author": "",
   "license": "ISC",

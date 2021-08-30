@@ -1,5 +1,10 @@
 ## Bugs
 
+npm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+npm WARN deprecated uuid@3.3.2: Please upgrade to version 7 or higher. Older versions may use Math.random() in certain circumstances, which is known to be problematic. See https://v8.dev/blog/math-random for details.
+
+- autoscaling examples, remove volume from generated code
+- examples mock with createProvider
 - order
   Querying resources on 1 provider: aws
   ✓ aws

@@ -268,11 +268,10 @@ const createResources = ({ provider }) => {
   });
 
   provider.ec2.makeLaunchTemplate({
-    name: get(
-      "config.ec2.LaunchTemplate.eks_34bdbac3_2c97_5ba6_4a37_700ff67fb21c.name"
-    ),
+    name: get("config.ec2.LaunchTemplate.ltNodeGroupPrivateCluster.name"),
+    namespace: "EKS",
     properties: get(
-      "config.ec2.LaunchTemplate.eks_34bdbac3_2c97_5ba6_4a37_700ff67fb21c.properties"
+      "config.ec2.LaunchTemplate.ltNodeGroupPrivateCluster.properties"
     ),
   });
 

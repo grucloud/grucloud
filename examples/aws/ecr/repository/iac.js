@@ -1,5 +1,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
+//TODO get config from parameter
 const createResources = ({ provider }) => {
   const { getConfig } = provider;
   provider.ecr.makeRepository({

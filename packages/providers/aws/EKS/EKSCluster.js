@@ -11,6 +11,8 @@ const {
   not,
   filter,
   eq,
+  omit,
+  pick,
 } = require("rubico");
 const { defaultsDeep, includes, size, isEmpty } = require("rubico/x");
 
@@ -25,6 +27,7 @@ const {
   shouldRetryOnException,
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
+const { waitForUpdate } = require("./EKSCommon");
 
 const findName = get("live.name");
 const findId = findName;
@@ -49,7 +52,6 @@ const findDependencies = ({ live }) => [
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
-  assert(spec);
   assert(config);
 
   const eks = EKSNew(config);
@@ -135,11 +137,11 @@ exports.EKSCluster = ({ spec, config }) => {
   const kubeConfigRemove = ({ arn }) =>
     pipe([
       tap(() => {
-        assert(arn);
+        //assert(arn);
         logger.debug(`kubeConfigRemove: ${arn}`);
       }),
       tap.if(
-        () => !process.env.CONTINUOUS_INTEGRATION,
+        () => !process.env.CONTINUOUS_INTEGRATION && arn,
         pipe([
           () =>
             `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
@@ -191,7 +193,10 @@ exports.EKSCluster = ({ spec, config }) => {
               }),
               () => error,
               get("message"),
-              includes("The KeyArn in encryptionConfig provider"),
+              or([
+                includes("The KeyArn in encryptionConfig provider"),
+                includes("Role with arn: "),
+              ]),
             ])(),
         }),
       get("cluster"),
@@ -207,52 +212,97 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
-  const destroy = ({ id, name, live }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateClusterConfig-property
+  const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy cluster ${name}`);
+        logger.info(`updateClusterConfig: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
       }),
-      () => kubeConfigRemove(live),
-      () =>
-        eks().deleteCluster({
+      () => payload,
+      pick(["name", "clientRequestToken", "logging", "resourcesVpcConfig"]),
+      omit([
+        "resourcesVpcConfig.securityGroupIds",
+        "resourcesVpcConfig.subnetIds",
+      ]),
+      eks().updateClusterConfig,
+      get("update"),
+      tap((result) => {
+        logger.info(`updateClusterConfig: ${tos({ result })}`);
+      }),
+      get("id"),
+      (updateId) =>
+        waitForUpdate({ eks })({
           name,
+          updateId: updateId,
         }),
-      tap(() =>
-        retryCall({
-          name: `cluster isDownByName: ${name}`,
-          fn: () => isDownByName({ name }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`cluster destroyed ${name}`);
-      }),
+    ])();
+
+  // https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
+  const destroy = ({ live }) =>
+    pipe([
+      () => live,
+      tap(kubeConfigRemove),
+      pick(["name"]),
+      ({ name }) =>
+        tryCatch(
+          pipe([
+            tap(() => {
+              logger.info(`destroy cluster ${name}`);
+            }),
+            () => ({ name }),
+            eks().deleteCluster,
+            () =>
+              retryCall({
+                name: `cluster isDownByName: ${name}`,
+                fn: () => isDownByName({ name }),
+                config,
+              }),
+          ]),
+          switchCase([
+            eq(get("code"), "ResourceNotFoundException"),
+            () => undefined,
+            (error) => {
+              logger.error(`deleteCluster error: ${tos(error)}`);
+              throw error;
+            },
+          ])
+        )(),
     ])();
 
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { subnets, securityGroups, role, key },
   }) =>
-    defaultsDeep({
-      resourcesVpcConfig: {
-        securityGroupIds: map((sg) => getField(sg, "GroupId"))(securityGroups),
-        subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-      },
-      ...(role && { roleArn: getField(role, "Arn") }),
-      ...(key && {
-        encryptionConfig: [
-          {
-            provider: { keyArn: getField(key, "Arn") },
-            resources: ["secrets"],
-          },
-        ],
+    pipe([
+      tap(() => {
+        assert(subnets, "missing 'subnets' dependency");
+        assert(securityGroups, "missing 'securityGroups' dependency");
       }),
-      name,
-      tags: buildTagsObject({ config, namespace, name }),
-    })(properties);
+      () => otherProps,
+      defaultsDeep({
+        resourcesVpcConfig: {
+          securityGroupIds: map((sg) => getField(sg, "GroupId"))(
+            securityGroups
+          ),
+          subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+        },
+        ...(role && { roleArn: getField(role, "Arn") }),
+        ...(key && {
+          encryptionConfig: [
+            {
+              provider: { keyArn: getField(key, "Arn") },
+              resources: ["secrets"],
+            },
+          ],
+        }),
+        name,
+        tags: buildTagsObject({ config, namespace, name }),
+      }),
+    ])();
 
   return {
     spec,
@@ -262,6 +312,7 @@ exports.EKSCluster = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

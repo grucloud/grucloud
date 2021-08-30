@@ -1,34 +1,25 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-  assign,
-} = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, not, pick, assign } = require("rubico");
+const { defaultsDeep, isEmpty, includes } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "SSMParameter" });
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
 
+const { AwsClient } = require("../AwsClient");
+
 const findName = get("live.Name");
 const findId = get("live.Name");
-const pickParam = pick(["Name"]);
+const pickId = pick(["Name"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 
 exports.SSMParameter = ({ spec, config }) => {
+  const client = AwsClient({ type: spec.type, config, endpointName: "SSM" });
+
   const ssm = () => createEndpoint({ endpointName: "SSM" })(config);
 
   const findDependencies = ({ live }) => [
@@ -58,85 +49,47 @@ exports.SSMParameter = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#getParameter-property
-  const getByName = ({ name: Name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(Name);
-        }),
-        () => ({ Name }),
-        ssm().getParameter,
-        get("Parameter"),
-        assignTags,
-      ]),
-      switchCase([
-        eq(get("code"), "ParameterNotFound"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
+  const getById = client.getById({
+    pickId,
+    method: "getParameter",
+    getField: "Parameter",
+    decorate: assignTags,
+    ignoreErrorCodes: ["ParameterNotFound"],
+  });
+
+  const getByName = ({ name }) => getById({ Name: name });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#describeParameters-property
-  const getList = () =>
-    pipe([
-      () => ({}),
-      ssm().describeParameters,
-      get("Parameters"),
-      map(({ Name }) => getByName({ name: Name })),
-    ])();
-
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getList = client.getList({
+    method: "describeParameters",
+    getParam: "Parameters",
+    decorate: getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#putParameter-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      ssm().putParameter,
-      tap(() =>
-        retryCall({
-          name: `putParameter isUpByName: ${name}`,
-          fn: () => isUpByName({ name }),
-        })
-      ),
-    ])();
+  const create = client.create({
+    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
+    method: "putParameter",
+    getById,
+    config,
+  });
+
+  const update = client.update({
+    pickId,
+    method: "putParameter",
+    extraParam: { Overwrite: true },
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#deleteParameter-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.Name);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(
-        pipe([
-          ssm().deleteParameter,
-          () =>
-            retryCall({
-              name: `deleteParameter isDownByName: ${live.Name}`,
-              fn: () => isDownByName({ name: live.Name }),
-              config,
-            }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(`error deleteParameter ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              eq(get("code"), "ParameterNotFound"),
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteParameter",
+    getById,
+    ignoreError: ({ code }) =>
+      pipe([() => ["ParameterNotFound"], includes(code)]),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -160,6 +113,7 @@ exports.SSMParameter = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

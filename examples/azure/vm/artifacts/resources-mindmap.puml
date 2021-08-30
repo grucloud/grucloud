@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project vm
+title Resources for project Azure VM
 skinparam monochrome true
 + Infra
 ++ azure

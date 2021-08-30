@@ -23,7 +23,7 @@ const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { Ec2New } = require("./AwsCommon");
+const { Ec2New, sortTags } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const { generateCode } = require("./Aws2gc");
@@ -197,23 +197,6 @@ exports.AwsProvider = ({
     config: omit(["accountId", "zone"])(makeConfig()),
   });
 
-  const localeCompare = ({ key, a, b }) => a[key].localeCompare(b[key]);
-
-  const sortTags = () =>
-    callProp("sort", (a, b) =>
-      pipe([
-        switchCase([
-          () => a.Key,
-          () => localeCompare({ a, b, key: "Key" }),
-          () => a.key,
-          () => localeCompare({ a, b, key: "key" }),
-          () => a.TagKey,
-          () => localeCompare({ a, b, key: "TagKey" }),
-          () => true,
-        ]),
-      ])()
-    );
-
   const assignTags = switchCase([
     pipe([get("Tags"), Array.isArray]),
     assign({ Tags: pipe([get("Tags"), sortTags()]) }),
@@ -258,7 +241,13 @@ exports.AwsProvider = ({
     fnSpecs,
     start,
     info,
-    generateCode,
+    generateCode: ({ commandOptions, programOptions }) =>
+      generateCode({
+        providerConfig: makeConfig(),
+        specs: fnSpecs(makeConfig()),
+        commandOptions,
+        programOptions,
+      }),
     getListHof,
   });
 };
