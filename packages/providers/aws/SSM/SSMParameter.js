@@ -18,14 +18,14 @@ const pickId = pick(["Name"]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 
 exports.SSMParameter = ({ spec, config }) => {
-  const client = AwsClient({ type: spec.type, config, endpointName: "SSM" });
+  const client = AwsClient({ spec, config });
 
   const ssm = () => createEndpoint({ endpointName: "SSM" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [live.KeyId],
     },
   ];

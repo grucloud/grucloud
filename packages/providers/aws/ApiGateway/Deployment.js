@@ -31,6 +31,7 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
@@ -38,24 +39,25 @@ const findName = findNameInTagsOrId({ findId });
 const pickParam = ({ restApiId, id }) => ({ restApiId, deploymentId: id });
 
 exports.Deployment = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "RestApi",
-      group: "apiGateway",
+      group: "APIGateway",
       ids: [live.ApiId],
     },
     {
       type: "Stage",
-      group: "apiGateway",
+      group: "APIGateway",
       ids: pipe([
         () =>
           lives.getByType({
             providerName: config.providerName,
             type: "Stage",
-            group: "apiGateway",
+            group: "APIGateway",
           }),
         filter(eq(get("live.id"), live.deploymentId)),
         pluck("id"),
@@ -74,7 +76,7 @@ exports.Deployment = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "RestApi",
-          group: "apiGateway",
+          group: "APIGateway",
         }),
       pluck("id"),
       flatMap((restApiId) =>

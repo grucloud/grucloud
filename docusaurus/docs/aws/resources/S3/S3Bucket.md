@@ -10,7 +10,7 @@ Manages [S3 Buckets](https://docs.aws.amazon.com/s3/index.html)
 ### Basic
 
 ```js
-const s3Bucket = provider.s3.makeBucket({
+const s3Bucket = provider.S3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
   properties: () => ({}),
 });
@@ -23,7 +23,7 @@ Enable or disable the bucket acceleration.
 See the [AccelerateConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property)
 
 ```js
-const s3Accelerated = provider.s3.makeBucket({
+const s3Accelerated = provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere`,
   properties: () => ({
     AccelerateConfiguration: {
@@ -41,7 +41,7 @@ See the
 [CORSConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property) for a full list of supported options.
 
 ```js
-provider.s3.makeBucket({
+provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere `,
   properties: () => ({
     CORSConfiguration: {
@@ -66,7 +66,7 @@ See the
 [ServerSideEncryptionConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property) for a full list of supported options.
 
 ```js
-const s3Encryption = provider.s3.makeBucket({
+const s3Encryption = provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere`,
   properties: () => ({
     ServerSideEncryptionConfiguration: {
@@ -89,7 +89,7 @@ Enable or disable the bucket lifecycle.
 See the [LifecycleConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property)
 
 ```js
-const s3Lifecycle = provider.s3.makeBucket({
+const s3Lifecycle = provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere`,
   properties: () => ({
     LifecycleConfiguration: {
@@ -126,14 +126,14 @@ See [BucketLoggingStatus](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AW
 
 ```js
 const bucketLogDestination = `yourgloballyuniquebucketnamehere-log-destination`;
-provider.s3.makeBucket({
+provider.S3.makeBucket({
   name: bucketLogDestination,
   properties: () => ({
     ACL: "log-delivery-write",
   }),
 });
 
-provider.s3.makeBucket({
+provider.S3.makeBucket({
   name: `${bucketName}-logged`,
   properties: () => ({
     BucketLoggingStatus: {
@@ -168,7 +168,7 @@ See the
 const bucketName = "yourgloballyuniquebucketnamehere";
 const topicId = "123456789012";
 
-provider.s3.makeBucket({
+provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere-notification-configuration`,
   properties: () => ({
     NotificationConfiguration: {
@@ -189,7 +189,7 @@ provider.s3.makeBucket({
 const bucketName = "yourgloballyuniquebucketnamehere";
 const lambdaFunctionArn = "123456789012";
 
-provider.s3.makeBucket({
+provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere-notification-configuration`,
   properties: () => ({
     NotificationConfiguration: {
@@ -214,7 +214,7 @@ See the
 ```js
 const bucketName = "yourgloballyuniquebucketnamehere";
 
-const s3pPolicy = provider.s3.makeBucket({
+const s3pPolicy = provider.S3.makeBucket({
   name: bucketName,
   properties: () => ({
     Policy: {
@@ -247,7 +247,7 @@ See the
 const bucketName = "yourgloballyuniquebucketnamehere";
 const iamUser = "1233445";
 
-const s3Replication = provider.s3.makeBucket({
+const s3Replication = provider.S3.makeBucket({
   name: bucketName,
   properties: () => ({
     ReplicationConfiguration: {
@@ -275,7 +275,7 @@ See the
 [RequestPaymentConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property) for a full list of supported options.
 
 ```js
-const s3RequestPayment = provider.s3.makeBucket({
+const s3RequestPayment = provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere`,
   properties: () => ({
     RequestPaymentConfiguration: { Payer: "Requester" },
@@ -288,7 +288,7 @@ const s3RequestPayment = provider.s3.makeBucket({
 Set bucket tags.
 
 ```js
-const s3Bucket = provider.s3.makeBucket({
+const s3Bucket = provider.S3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
   properties: () => ({
     Tags: [
@@ -312,7 +312,7 @@ Enable or disable the bucket versioning.
 See the [VersioningConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property)
 
 ```js
-const s3Bucket = provider.s3.makeBucket({
+const s3Bucket = provider.S3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
   properties: () => ({
     VersioningConfiguration: {
@@ -331,7 +331,7 @@ See the
 [WebsiteConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property) for a full list of supported options.
 
 ```js
-const s3Bucket = provider.s3.makeBucket({
+const s3Bucket = provider.S3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
   properties: () => ({
     ACL: "public-read",

@@ -36,6 +36,7 @@ const {
   buildTags,
   findNamespaceInTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
 
@@ -43,7 +44,7 @@ const isDefault =
   ({ providerName }) =>
   ({ live, lives }) =>
     pipe([
-      () => lives.getByType({ type: "Vpc", group: "ec2", providerName }),
+      () => lives.getByType({ type: "Vpc", group: "EC2", providerName }),
       find(get("isDefault")),
       switchCase([
         eq(get("live.VpcId"), findVpcId(live)),
@@ -55,8 +56,7 @@ const isDefault =
 exports.isDefault = isDefault;
 
 exports.AwsInternetGateway = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = get("live.InternetGatewayId");
@@ -66,7 +66,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Vpc",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("Attachments"), pluck("VpcId")])(),
     },
   ];

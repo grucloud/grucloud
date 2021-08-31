@@ -25,6 +25,7 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId, tags: "tags" });
@@ -38,12 +39,13 @@ const buildTagKey = ({ id }) => `gc-api-key-${id}`;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncApiKey = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "GraphqlApi",
-      group: "appSync",
+      group: "AppSync",
       ids: [live.apiId],
     },
   ];
@@ -65,7 +67,7 @@ exports.AppSyncApiKey = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "GraphqlApi",
-          group: "appSync",
+          group: "AppSync",
         }),
       pluck("id"),
       flatMap((apiId) =>

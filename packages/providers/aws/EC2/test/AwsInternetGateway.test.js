@@ -25,14 +25,14 @@ describe("AwsInternetGateway", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = provider.ec2.makeVpc({
+    vpc = provider.EC2.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    ig = provider.ec2.makeInternetGateway({
+    ig = provider.EC2.makeInternetGateway({
       name: resourceName,
       dependencies: { vpc },
     });

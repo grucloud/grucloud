@@ -10,7 +10,7 @@ The following example creates a Open ID Connect Provider for an EKS Cluster.
 Upon creation, the SSL certicate chain is fetched from the `identity.oidc.issuer` URL provided by the EKS cluster. The thumbprint of the last certificate is formatted, it is required as an input for the creation of the OpenIDConnectProvider resource.
 
 ```js
-const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
+const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
   name: "oidp-eks",
   dependencies: { cluster },
 });

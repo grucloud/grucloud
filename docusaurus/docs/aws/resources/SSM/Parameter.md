@@ -10,7 +10,7 @@ Manage a [System Manager Parameter](https://console.aws.amazon.com/systems-manag
 Create a text parameter:
 
 ```js
-provider.ssm.makeParameter({
+provider.SSM.makeParameter({
   name: "my-param"
   properties: () => ({
     Type: "String",

@@ -34,6 +34,7 @@ const {
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 //TODO look in spec.type instead
@@ -43,15 +44,13 @@ const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.AwsDistribution = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const cloudfront = CloudFrontNew(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Certificate",
-      group: "acm",
+      group: "ACM",
       ids: pipe([
         () => live,
         get("ViewerCertificate.ACMCertificateArn"),
@@ -64,7 +63,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     },
     {
       type: "Bucket",
-      group: "s3",
+      group: "S3",
       ids: pipe([
         () => live,
         get("Origins.Items", []),
@@ -351,7 +350,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: RESOURCE_TYPE,
-          group: "cloudFront",
+          group: "CloudFront",
         }),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);

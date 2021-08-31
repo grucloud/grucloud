@@ -37,22 +37,24 @@ const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.FunctionArn");
 const findName = get("live.FunctionName");
 
 exports.Function = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Role",
-      group: "iam",
+      group: "IAM",
       ids: [live.Role],
     },
     {
       type: "Layer",
-      group: "lambda",
+      group: "Lambda",
       ids: pipe([
         () => live,
         get("Layers"),
@@ -62,7 +64,7 @@ exports.Function = ({ spec, config }) => {
               lives.getByType({
                 providerName: config.providerName,
                 type: "Layer",
-                group: "lambda",
+                group: "Lambda",
               }),
             filter(
               pipe([

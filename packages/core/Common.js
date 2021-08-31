@@ -12,6 +12,7 @@ const {
   pick,
   tryCatch,
   assign,
+  reduce,
 } = require("rubico");
 const {
   find,
@@ -56,6 +57,18 @@ exports.HookType = {
   ON_DEPLOYED: "onDeployed",
   ON_DESTROYED: "onDestroyed",
 };
+
+const omitPathIfEmpty = (path) => (obj) =>
+  pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
+
+exports.omitIfEmpty = (paths) => (obj) =>
+  pipe([
+    () => paths,
+    reduce((acc, path) => pipe([() => acc, omitPathIfEmpty(path)])(), obj),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;

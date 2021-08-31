@@ -6,7 +6,7 @@ title: Iam User
 Provides an Iam User
 
 ```js
-const iamUser = provider.iam.makeUser({
+const iamUser = provider.IAM.makeUser({
   name: "Alice",
   properties: () => ({}),
 });
@@ -15,12 +15,12 @@ const iamUser = provider.iam.makeUser({
 ### Add a user to groups
 
 ```js
-const iamGroup = provider.iam.makeGroup({
+const iamGroup = provider.IAM.makeGroup({
   name: "Admin",
   properties: () => ({}),
 });
 
-const iamUser = provider.iam.makeUser({
+const iamUser = provider.IAM.makeUser({
   name: "Alice",
   dependencies: { iamGroups: [iamGroup] },
   properties: () => ({}),

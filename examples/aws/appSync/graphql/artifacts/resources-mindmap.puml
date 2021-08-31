@@ -3,10 +3,10 @@ title Resources for project graphql
 skinparam monochrome true
 + Infra
 ++ aws
-+++ iam
++++ IAM
 ++++ Policy (1)
 ++++ Role (1)
-+++ appSync
++++ AppSync
 ++++ GraphqlApi (1)
 ++++ ApiKey (1)
 ++++ DataSource (1)

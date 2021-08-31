@@ -11,7 +11,7 @@ const { ECSTaskDefinition } = require("./ECSTaskDefinition");
 const { ECSTask } = require("./ECSTask");
 const { ECSContainerInstance } = require("./ECSContainerInstance");
 
-const GROUP = "ecs";
+const GROUP = "ECS";
 
 const isOurMinion = isOurMinionFactory({
   key: "key",
@@ -23,25 +23,25 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "CapacityProvider",
-      dependsOn: ["autoscaling::AutoScalingGroup"],
+      dependsOn: ["AutoScaling::AutoScalingGroup"],
       Client: ECSCapacityProvider,
       isOurMinion,
     },
     {
       type: "Cluster",
-      dependsOn: ["ecs::CapacityProvider", "ec2::Instance"],
+      dependsOn: ["ECS::CapacityProvider", "EC2::Instance"],
       Client: ECSCluster,
       isOurMinion,
     },
     {
       type: "TaskDefinition",
-      dependsOn: ["iam::Role"],
+      dependsOn: ["IAM::Role"],
       Client: ECSTaskDefinition,
       isOurMinion,
     },
     {
       type: "Service",
-      dependsOn: ["ecs::Cluster", "ecs::TaskDefinition"],
+      dependsOn: ["ECS::Cluster", "ECS::TaskDefinition"],
       Client: ECSService,
       isOurMinion,
       compare: compare({
@@ -61,25 +61,25 @@ module.exports = () =>
     },
     {
       type: "TaskSet",
-      dependsOn: ["ecs::Cluster", "ecs::Service"],
+      dependsOn: ["ECS::Cluster", "ECS::Service"],
       Client: ECSTaskSet,
       isOurMinion,
     },
     {
       type: "Task",
       dependsOn: [
-        "ecs::Cluster",
-        "ecs::TaskDefinition",
-        "ecs::Service",
-        "ec2::subnet",
-        "ec2::securityGroup",
+        "ECS::Cluster",
+        "ECS::TaskDefinition",
+        "ECS::Service",
+        "EC2::subnet",
+        "EC2::securityGroup",
       ],
       Client: ECSTask,
       isOurMinion,
     },
     {
       type: "ContainerInstance",
-      dependsOn: ["ecs::Cluster"],
+      dependsOn: ["ECS::Cluster"],
       Client: ECSContainerInstance,
       isOurMinion,
     },

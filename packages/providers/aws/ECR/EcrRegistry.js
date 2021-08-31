@@ -18,6 +18,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
 const { tos } = require("@grucloud/core/tos");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = () => "default";
 const findId = get("live.registryId");

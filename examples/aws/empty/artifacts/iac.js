@@ -2,11 +2,7 @@
 const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-const createResources = ({ provider }) => {
-  provider.ecr.makeRegistry({
-    name: get("config.ecr.Registry.default.name"),
-  });
-};
+const createResources = ({ provider }) => {};
 
 exports.createResources = createResources;
 

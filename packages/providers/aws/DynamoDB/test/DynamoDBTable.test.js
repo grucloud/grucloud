@@ -16,14 +16,14 @@ describe("DynamoDBTable", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    table = DynamoDBTable({ config: provider.config });
+    table = provider.getClient({ groupType: "DynamoDB::Table" });
     await provider.start();
   });
   it(
     "list",
     pipe([
       () => table.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

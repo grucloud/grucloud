@@ -6,5 +6,5 @@ module.exports = ({ stage }) => ({
     rootDomainName: "grucloud.org",
     domainName: "starhackit-eks-lbc.grucloud.org",
   },
-  eks: { cluster: { name: `cluster` } },
+  EKS: { cluster: { name: `cluster` } },
 });

@@ -3,6 +3,6 @@ title Resources for project keyPair
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ KeyPair (1)
 @endmindmap

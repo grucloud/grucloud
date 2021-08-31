@@ -27,28 +27,30 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.serviceArn");
 const findName = get("live.serviceName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSService = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Cluster",
-      group: "ecs",
+      group: "ECS",
       ids: [live.clusterArn],
     },
     {
       type: "TaskDefinition",
-      group: "ecs",
+      group: "ECS",
       ids: [live.taskDefinition],
     },
     {
       type: "LoadBalancer",
-      group: "elb",
+      group: "ELBv2",
       ids: [
         pipe([
           () =>
@@ -56,7 +58,7 @@ exports.ECSService = ({ spec, config }) => {
               providerName: config.providerName,
               name: live.loadBalancerName,
               type: "LoadBalancer",
-              group: "elb",
+              group: "ELBv2",
             }),
           get("id"),
         ]),
@@ -64,7 +66,7 @@ exports.ECSService = ({ spec, config }) => {
     },
     {
       type: "TargetGroup",
-      group: "elb",
+      group: "ELBv2",
       ids: pluck("targetGroupArn")(live.loadBalancers),
     },
   ];
@@ -104,7 +106,7 @@ exports.ECSService = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Cluster",
-          group: "ecs",
+          group: "ECS",
         }),
       flatMap(
         pipe([

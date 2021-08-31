@@ -27,22 +27,24 @@ const {
   shouldRetryOnException,
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
+
 const { waitForUpdate } = require("./EKSCommon");
 
 const findName = get("live.name");
 const findId = findName;
 
 const findDependencies = ({ live }) => [
-  { type: "Vpc", group: "ec2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
-  { type: "Role", group: "iam", ids: [live.roleArn] },
+  { type: "Vpc", group: "EC2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
+  { type: "Role", group: "IAM", ids: [live.roleArn] },
   {
     type: "Subnet",
-    group: "ec2",
+    group: "EC2",
     ids: get("resourcesVpcConfig.subnetIds")(live),
   },
   {
     type: "SecurityGroup",
-    group: "ec2",
+    group: "EC2",
     ids: [
       get("resourcesVpcConfig.clusterSecurityGroupId")(live),
       ...get("resourcesVpcConfig.securityGroupIds")(live),
@@ -52,8 +54,7 @@ const findDependencies = ({ live }) => [
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const eks = EKSNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
@@ -240,6 +241,8 @@ exports.EKSCluster = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
+
+  // ClientException: No cluster found for name
   const destroy = ({ live }) =>
     pipe([
       () => live,

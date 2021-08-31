@@ -6,7 +6,7 @@ exports.config = require("./config");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-  const keyPair = provider.ec2.makeKeyPair({
+  const keyPair = provider.EC2.makeKeyPair({
     name: config.keyPair.name,
   });
 

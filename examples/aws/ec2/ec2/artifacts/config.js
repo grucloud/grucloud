@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-ec2",
-  ec2: {
+  EC2: {
     KeyPair: {
       kpEc2Example: {
         name: "kp-ec2-example",

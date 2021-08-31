@@ -33,8 +33,10 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.EC2Route = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = ({ live, lives }) =>
@@ -45,7 +47,7 @@ exports.EC2Route = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "RouteTable",
-          group: "ec2",
+          group: "EC2",
           providerName: config.providerName,
           id: live.RouteTableId,
         }),
@@ -90,17 +92,17 @@ exports.EC2Route = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "RouteTable",
-      group: "ec2",
+      group: "EC2",
       ids: [live.RouteTableId],
     },
     {
       type: "InternetGateway",
-      group: "ec2",
+      group: "EC2",
       ids: [live.GatewayId],
     },
     {
       type: "NatGateway",
-      group: "ec2",
+      group: "EC2",
       ids: [live.NatGatewayId],
     },
   ];
@@ -178,7 +180,7 @@ exports.EC2Route = ({ spec, config }) => {
       () =>
         lives.getByType({
           type: "RouteTable",
-          group: "ec2",
+          group: "EC2",
           providerName: config.providerName,
         }),
       flatMap((resource) =>

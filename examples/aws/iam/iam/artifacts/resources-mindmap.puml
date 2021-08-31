@@ -3,13 +3,13 @@ title Resources for project iam
 skinparam monochrome true
 + Infra
 ++ aws
-+++ iam
++++ IAM
 ++++ Policy (4)
 ++++ Group (1)
 ++++ User (1)
 ++++ Role (1)
 ++++ InstanceProfile (1)
-+++ ec2
++++ EC2
 ++++ Image (1)
 ++++ Instance (1)
 @endmindmap

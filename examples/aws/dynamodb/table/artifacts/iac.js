@@ -3,9 +3,9 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.dynamoDB.makeTable({
-    name: get("config.dynamoDB.Table.myTable.name"),
-    properties: get("config.dynamoDB.Table.myTable.properties"),
+  provider.DynamoDB.makeTable({
+    name: get("config.DynamoDB.Table.myTable.name"),
+    properties: get("config.DynamoDB.Table.myTable.properties"),
   });
 };
 

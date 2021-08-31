@@ -7,36 +7,36 @@ const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  const domain = provider.route53Domain.useDomain({
+  const domain = provider.Route53Domains.useDomain({
     name: config.domainName,
   });
 
-  const hostedZone = provider.route53.makeHostedZone({
+  const hostedZone = provider.Route53.makeHostedZone({
     name: `${config.domainName}.`,
     dependencies: { domain },
   });
 
-  const certificate = provider.acm.makeCertificate({
+  const certificate = provider.ACM.makeCertificate({
     name: config.domainName,
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: `certificate-validation-${config.domainName}.`,
     dependencies: { hostedZone, certificate },
   });
 
-  const iamPolicy = provider.iam.makePolicy({
+  const iamPolicy = provider.IAM.makePolicy({
     name: "lambda-policy",
     properties: () => lambdaPolicy,
   });
 
-  const iamRole = provider.iam.makeRole({
+  const iamRole = provider.IAM.makeRole({
     name: "lambda-role",
     dependencies: { policies: [iamPolicy] },
     properties: () => lambdaAssumePolicy,
   });
 
-  const lambdaFunction = provider.lambda.makeFunction({
+  const lambdaFunction = provider.Lambda.makeFunction({
     name: "my-function",
     dependencies: { role: iamRole },
     properties: () => ({
@@ -46,23 +46,23 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  const api = provider.apiGatewayV2.makeApi({
+  const api = provider.ApiGatewayV2.makeApi({
     name: "my-api",
     properties: () => ({}),
   });
 
-  const apiGatewayDomainName = provider.apiGatewayV2.makeDomainName({
+  const apiGatewayDomainName = provider.ApiGatewayV2.makeDomainName({
     name: config.domainName,
     dependencies: { certificate },
     properties: () => ({}),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: `api-gateway-alias-record`,
     dependencies: { apiGatewayV2DomainName: apiGatewayDomainName, hostedZone },
   });
 
-  const integration = provider.apiGatewayV2.makeIntegration({
+  const integration = provider.ApiGatewayV2.makeIntegration({
     name: "integration-lambda",
     dependencies: { api, lambdaFunction: lambdaFunction },
     properties: () => ({
@@ -72,29 +72,29 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.apiGatewayV2.makeRoute({
+  provider.ApiGatewayV2.makeRoute({
     name: config.apiGatewayV2.route.name,
     dependencies: { api, integration },
     properties: () => ({}),
   });
 
-  const stage = provider.apiGatewayV2.makeStage({
+  const stage = provider.ApiGatewayV2.makeStage({
     name: "my-api-stage-dev",
     dependencies: { api },
     properties: () => ({}),
   });
-  // const authorizer = provider.apiGatewayV2.makeAuthorizer({
+  // const authorizer = provider.ApiGatewayV2.makeAuthorizer({
   //   name: "my-authorizer-stage-dev",
   //   dependencies: { api },
   //   properties: () => ({}),
   // });
-  provider.apiGatewayV2.makeApiMapping({
+  provider.ApiGatewayV2.makeApiMapping({
     name: "api-mapping-dev",
     dependencies: { api, stage, domainName: apiGatewayDomainName },
     properties: () => ({ ApiMappingKey: "my-function" }),
   });
 
-  provider.apiGatewayV2.makeDeployment({
+  provider.ApiGatewayV2.makeDeployment({
     name: "my-api-deployment",
     dependencies: { api, stage },
     properties: () => ({}),

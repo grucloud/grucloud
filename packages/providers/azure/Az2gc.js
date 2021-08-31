@@ -16,45 +16,47 @@ const {
   fork,
   filter,
 } = require("rubico");
-const Axios = require("axios");
-const {
-  size,
-  first,
-  find,
-  identity,
-  pluck,
-  includes,
-  when,
-  callProp,
-  isEmpty,
-  groupBy,
-  values,
-} = require("rubico/x");
+const { isEmpty, groupBy, values, unless } = require("rubico/x");
 
 const path = require("path");
 const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const {
-  generatorMain,
-  hasDependency,
-  findLiveById,
-  readModel,
-  readMapping,
-  ResourceVarNameDefault,
-  omitIfEmpty,
-} = require("@grucloud/core/generatorUtils");
+const { generatorMain } = require("@grucloud/core/generatorUtils");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { configTpl } = require("./configTpl");
 const { iacTpl } = require("./iacTpl");
 
 const filterModel = pipe([
+  map(
+    assign({
+      live: pipe([
+        get("live"),
+        assign({
+          tags: pipe([
+            get("tags"),
+            unless(
+              isEmpty,
+              pipe([
+                map.entries(([key, value]) => [
+                  key,
+                  key.startsWith("gc-") ? undefined : value,
+                ]),
+                filter(not(isEmpty)),
+              ])
+            ),
+          ]),
+        }),
+        omitIfEmpty(["tags"]),
+      ]),
+    })
+  ),
   tap((params) => {
     assert(true);
   }),
 ]);
-
 exports.generateCode = ({
   specs,
   providerConfig,

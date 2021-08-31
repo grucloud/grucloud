@@ -4,9 +4,9 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.dynamoDB.makeTable({
-    name: config.dynamoDB.Table.myTable.name,
-    properties: () => config.dynamoDB.Table.myTable.properties,
+  provider.DynamoDB.makeTable({
+    name: config.DynamoDB.Table.myTable.name,
+    properties: () => config.DynamoDB.Table.myTable.properties,
   });
 };
 

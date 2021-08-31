@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "api-gateway-lambda",
-  iam: {
+  IAM: {
     Policy: {
       lambdaPolicy: {
         name: "lambda-policy",
@@ -44,7 +44,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  acm: {
+  ACM: {
     Certificate: {
       grucloudOrg: {
         name: "grucloud.org",
@@ -54,14 +54,14 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  route53Domain: {
+  Route53Domains: {
     Domain: {
       grucloudOrg: {
         name: "grucloud.org",
       },
     },
   },
-  route53: {
+  Route53: {
     HostedZone: {
       grucloudOrg: {
         name: "grucloud.org.",
@@ -76,7 +76,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  lambda: {
+  Lambda: {
     Function: {
       myFunction: {
         name: "my-function",
@@ -92,7 +92,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  apiGatewayV2: {
+  ApiGatewayV2: {
     Api: {
       myApi: {
         name: "my-api",

@@ -24,11 +24,10 @@ const {
   getByIdCore,
   buildTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsImage = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = get("live.ImageId");

@@ -6,36 +6,36 @@ const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  const domain = provider.route53Domain.useDomain({
+  const domain = provider.Route53Domains.useDomain({
     name: config.domainName,
   });
 
-  const hostedZone = provider.route53.makeHostedZone({
+  const hostedZone = provider.Route53.makeHostedZone({
     name: `${config.domainName}.`,
     dependencies: { domain },
   });
 
-  const certificate = provider.acm.makeCertificate({
+  const certificate = provider.ACM.makeCertificate({
     name: config.domainName,
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: `certificate-validation-${config.domainName}.`,
     dependencies: { hostedZone, certificate },
   });
 
-  const iamPolicy = provider.iam.makePolicy({
+  const iamPolicy = provider.IAM.makePolicy({
     name: "lambda-policy",
     properties: () => lambdaPolicy,
   });
 
-  const iamRole = provider.iam.makeRole({
+  const iamRole = provider.IAM.makeRole({
     name: "lambda-role",
     dependencies: { policies: [iamPolicy] },
     properties: () => lambdaAssumePolicy,
   });
 
-  const lambdaFunction = provider.lambda.makeFunction({
+  const lambdaFunction = provider.Lambda.makeFunction({
     name: "my-function",
     dependencies: { role: iamRole },
     properties: () => ({
@@ -45,29 +45,29 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  const apiGatewayDomainName = provider.apiGateway.makeDomainName({
+  const apiGatewayDomainName = provider.APIGateway.makeDomainName({
     name: config.domainName,
     dependencies: { regionalCertificate: certificate },
     properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: `api-gateway-alias-record`,
     dependencies: { apiGatewayDomainName, hostedZone },
   });
 
-  const restApi = provider.apiGateway.makeRestApi({
+  const restApi = provider.APIGateway.makeRestApi({
     name: "my-restapi",
     properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
   });
 
-  // const resourceGet = provider.apiGateway.makeResource({
+  // const resourceGet = provider.APIGateway.makeResource({
   //   name: "resource-get",
   //   dependencies: { restApi },
   //   properties: () => ({ pathPart: "/customers" }),
   // });
 
-  // const integration = provider.apiGateway.makeIntegration({
+  // const integration = provider.APIGateway.makeIntegration({
   //   name: "integration-lambda",
   //   dependencies: {
   //     restApi,
@@ -80,19 +80,19 @@ const createResources = ({ provider }) => {
   //   }),
   // });
 
-  // const stage = provider.apiGateway.makeStage({
+  // const stage = provider.APIGateway.makeStage({
   //   name: "my-api-stage-dev",
   //   dependencies: { restApi },
   //   properties: () => ({}),
   // });
 
-  // const authorizer = provider.apiGateway.makeAuthorizer({
+  // const authorizer = provider.APIGateway.makeAuthorizer({
   //   name: "my-authorizer-stage-dev",
-  //   dependencies: { api },
+  //   dependencies: { restApi },
   //   properties: () => ({}),
   // });
 
-  // provider.apiGateway.makeDeployment({
+  // provider.APIGateway.makeDeployment({
   //   name: "my-api-deployment",
   //   dependencies: { restApi, stage },
   //   properties: () => ({}),

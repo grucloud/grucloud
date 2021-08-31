@@ -180,8 +180,8 @@ module.exports = () => {
       compare: compareVmInstance,
       dependencies: () => ({
         address: { type: "Address", group: "compute" },
-        subnetworks: { type: "SubNetwork", group: "compute" },
-        disks: { type: "Disk", group: "compute" },
+        subnetworks: { type: "SubNetwork", group: "compute", list: true },
+        disks: { type: "Disk", group: "compute", list: true },
         frewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       }),

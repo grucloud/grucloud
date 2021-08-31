@@ -15,7 +15,7 @@ describe("AwsDomain", async function () {
       config: () => ({}),
     });
 
-    domain = provider.route53Domain.useDomain({
+    domain = provider.Route53Domains.useDomain({
       name: domainName,
     });
 

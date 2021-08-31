@@ -6,7 +6,7 @@ title: EC2 Instance
 Manages an EC2 instance resource, a.k.a virtual machine.
 
 ```js
-const server = provider.ec2.makeInstance({
+const server = provider.EC2.makeInstance({
   name: "myserver",
   properties: () => ({
     InstanceType: "t2.micro",

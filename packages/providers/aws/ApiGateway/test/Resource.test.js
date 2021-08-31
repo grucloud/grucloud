@@ -16,7 +16,7 @@ describe("Api Gateway Resource", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    resource = Resource({ config: provider.config });
+    resource = provider.getClient({ groupType: "APIGateway::Resource" });
     await provider.start();
   });
   after(async () => {});

@@ -17,7 +17,7 @@ const createResources = async ({ provider }) => {
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
 
-  const websiteBucket = provider.s3.makeBucket({
+  const websiteBucket = provider.S3.makeBucket({
     name: bucketName,
     properties: () => ({
       ACL: "public-read",
@@ -33,7 +33,7 @@ const createResources = async ({ provider }) => {
   });
 
   await map((file) =>
-    provider.s3.makeObject({
+    provider.S3.makeObject({
       name: file,
       dependencies: { bucket: websiteBucket },
       properties: () => ({
@@ -49,23 +49,23 @@ const createResources = async ({ provider }) => {
     stage,
   });
 
-  const certificate = provider.acm.makeCertificate({
+  const certificate = provider.ACM.makeCertificate({
     name: domainName,
     properties: () => ({
       DomainName: domainName,
     }),
   });
 
-  const domain = provider.route53Domain.useDomain({
+  const domain = provider.Route53Domains.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = provider.route53.makeHostedZone({
+  const hostedZone = provider.Route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });
 
-  const recordValidation = provider.route53.makeRecord({
+  const recordValidation = provider.Route53.makeRecord({
     name: `validation-${domainName}.`,
     dependencies: { hostedZone, certificate },
     // properties: ({ dependencies: { certificate } }) => {
@@ -93,7 +93,7 @@ const createResources = async ({ provider }) => {
     // },
   });
 
-  const distribution = provider.cloudFront.makeDistribution({
+  const distribution = provider.CloudFront.makeDistribution({
     name: `distribution-${bucketName}`,
     dependencies: { websiteBucket, certificate },
     properties: ({}) => {
@@ -137,7 +137,7 @@ const createResources = async ({ provider }) => {
   //   stage,
   // })}.`;
 
-  const recordCloudFront = provider.route53.makeRecord({
+  const recordCloudFront = provider.Route53.makeRecord({
     name: `distribution-alias-${domainName}`,
     dependencies: { hostedZone, distribution },
   });

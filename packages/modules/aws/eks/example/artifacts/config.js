@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-module-aws-eks",
-  iam: {
+  IAM: {
     Policy: {
       amazonEc2ContainerRegistryReadOnly: {
         name: "AmazonEC2ContainerRegistryReadOnly",
@@ -74,7 +74,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ec2: {
+  EC2: {
     Vpc: {
       vpc: {
         name: "vpc",
@@ -336,7 +336,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  eks: {
+  EKS: {
     Cluster: {
       myCluster: {
         name: "my-cluster",

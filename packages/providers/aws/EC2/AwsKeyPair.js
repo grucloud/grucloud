@@ -7,10 +7,10 @@ const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });
 const { tos } = require("@grucloud/core/tos");
 const { Ec2New, buildTags } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsClientKeyPair = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findName = get("live.KeyName");

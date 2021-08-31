@@ -40,11 +40,10 @@ const {
   hasKeyInTags,
   findValueInTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsVolume = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const awsEC2 = EC2Instance({ config, spec });
@@ -63,7 +62,7 @@ exports.AwsVolume = ({ spec, config }) => {
               lives.getById({
                 providerName: config.providerName,
                 type: "Instance",
-                group: "ec2",
+                group: "EC2",
                 id: InstanceId,
               }),
             tap((instance) => {
@@ -101,7 +100,7 @@ exports.AwsVolume = ({ spec, config }) => {
           lives.getById({
             providerName: config.providerName,
             type: "Instance",
-            group: "ec2",
+            group: "EC2",
             id: InstanceId,
           }),
         get("name"),
@@ -216,7 +215,7 @@ exports.AwsVolume = ({ spec, config }) => {
       () =>
         lives.getByType({
           type: "Instance",
-          group: "ec2",
+          group: "EC2",
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),

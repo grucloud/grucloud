@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project artifacts
+skinparam monochrome true
++ Infra
+++ google
++++ compute
+++++ Firewall (2)
++++++ firewall-22
++++++ firewall-icmp
+++++ Address (1)
++++++ ip-webserver-ssh-keys
+++++ VmInstance (1)
++++++ webserver-ssh-keys
+@endmindmap

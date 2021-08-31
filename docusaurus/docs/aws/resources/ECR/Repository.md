@@ -1,6 +1,6 @@
 ---
-id: Registry
-title: Registry
+id: Repository
+title: Repository
 ---
 
 Manages a [Docker Repository](https://console.aws.amazon.com/ecr/home)
@@ -8,7 +8,7 @@ Manages a [Docker Repository](https://console.aws.amazon.com/ecr/home)
 ## Sample Code
 
 ```js
-provider.ecr.makeRepository({
+provider.ECR.makeRepository({
   name: "my-repo",
   properties: ({ config }) => ({
     imageTagMutability: "MUTABLE",

@@ -13,7 +13,7 @@ const {
   filter,
   not,
 } = require("rubico");
-const { defaultsDeep, first, size, isEmpty } = require("rubico/x");
+const { defaultsDeep, first, identity, isEmpty } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
@@ -28,7 +28,7 @@ const {
   buildTags,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
-const identity = require("rubico/x/identity");
+const { AwsClient } = require("../AwsClient");
 
 const SubnetAttributes = [
   "MapPublicIpOnLaunch",
@@ -38,6 +38,7 @@ const SubnetAttributes = [
 ];
 
 exports.AwsSubnet = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const isDefault = get("live.DefaultForAz");
@@ -55,7 +56,7 @@ exports.AwsSubnet = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Vpc",
-      group: "ec2",
+      group: "EC2",
       ids: [live.VpcId],
     },
   ];

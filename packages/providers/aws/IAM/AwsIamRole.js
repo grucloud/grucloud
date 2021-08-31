@@ -34,11 +34,11 @@ const {
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const iam = IAMNew(config);
 
@@ -48,12 +48,12 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Policy",
-      group: "iam",
+      group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
     {
       type: "OpenIDConnectProvider",
-      group: "iam",
+      group: "IAM",
       ids: pipe([
         () => live,
         get("AssumeRolePolicyDocument.Statement"),
@@ -64,7 +64,7 @@ exports.AwsIamRole = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "OpenIDConnectProvider",
-                group: "iam",
+                group: "IAM",
                 providerName,
               }),
             filter((connectProvider) =>

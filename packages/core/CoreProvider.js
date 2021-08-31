@@ -35,8 +35,7 @@ const {
   isFunction,
   identity,
   size,
-  uniq,
-  prepend,
+  append,
   unless,
 } = require("rubico/x");
 
@@ -83,6 +82,8 @@ const {
 const { createClient, decorateLive } = require("./Client");
 const { createLives } = require("./Lives");
 
+const groupName = switchCase([isEmpty, () => "", pipe([append(".")])]);
+
 const createResourceMakers = ({
   specs,
   provider,
@@ -96,7 +97,7 @@ const createResourceMakers = ({
     reduce(
       (acc, spec) =>
         set(
-          `${spec.group ? `${spec.group}.` : ""}${prefix}${spec.type}`,
+          `${groupName(spec.group)}${prefix}${spec.type}`,
           spec[`${prefix}Resource`]({
             provider,
             spec,
@@ -275,9 +276,10 @@ function CoreProvider({
         message: `resource '${resourceKey}' already exists`,
       };
     }
+
     const resourceVarName = camelCase(name);
     resourcesObj = set(
-      `${group ? `${group}.` : ""}${type}.${resourceVarName}`,
+      `${groupName(group)}${type}.${resourceVarName}`,
       resource
     )(resourcesObj);
 
@@ -353,15 +355,18 @@ function CoreProvider({
     });
 
   const getClients = pipe([getSpecs, map(createClientFromSpec)]);
-  const clientByType = ({ groupType }) =>
+  const getClient = ({ groupType }) =>
     pipe([
       tap(() => {
         assert(groupType);
       }),
       getSpecs,
+      tap((params) => {
+        assert(true);
+      }),
       find(eq(get("groupType"), groupType)),
       tap((spec) => {
-        assert(spec);
+        assert(spec, `no ${groupType}`);
       }),
       createClientFromSpec,
       tap((params) => {
@@ -1147,7 +1152,7 @@ function CoreProvider({
           if (error) {
             getLives().addResources({ ...meta, error });
           }
-          const client = clientByType(meta);
+          const client = getClient(meta);
           assert(client.spec);
           onStateChange({
             context: contextFromClient({
@@ -1294,7 +1299,7 @@ function CoreProvider({
               `no resources for type ${groupType}`
             );
           }),
-          () => clientByType({ groupType }),
+          () => getClient({ groupType }),
           (client) =>
             pipe([
               () => resources,
@@ -1713,7 +1718,7 @@ function CoreProvider({
         assert(resource);
         logger.debug(`destroyById: ${tos(resource.toString())}`);
       }),
-      () => clientByType(resource),
+      () => getClient(resource),
       tap((client) => {
         assert(client, `Cannot find endpoint ${resource.toString()}}`);
         assert(client.spec);
@@ -1808,7 +1813,7 @@ function CoreProvider({
     listTargets,
     listConfig,
     targetResourcesAdd,
-    clientByType,
+    getClient,
     getResource,
     getResourcesByType,
     getTargetResources,

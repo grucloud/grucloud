@@ -3,8 +3,8 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeKeyPair({
-    name: get("config.ec2.KeyPair.kp.name"),
+  provider.EC2.makeKeyPair({
+    name: get("config.EC2.KeyPair.kp.name"),
   });
 };
 

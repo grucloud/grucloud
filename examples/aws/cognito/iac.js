@@ -6,7 +6,7 @@ exports.config = require("./config");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-  provider.cognitoIdentityServiceProvider.makeUserPool({
+  provider.CognitoIdentityServiceProvider.makeUserPool({
     name: "userpool-test",
     properties: () => ({}),
   });

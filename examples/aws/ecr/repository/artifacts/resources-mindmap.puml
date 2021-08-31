@@ -3,7 +3,7 @@ title Resources for project repository
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ecr
++++ ECR
 ++++ Repository (1)
 ++++ Registry (1)
 @endmindmap

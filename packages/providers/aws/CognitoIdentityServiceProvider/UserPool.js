@@ -23,15 +23,14 @@ const {
   findNamespaceInTagsObject,
   createEndpoint,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Id");
 const findName = get("live.Name");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.UserPool = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const cognitoIdentityServiceProvider = () =>
     createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
 

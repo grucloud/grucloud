@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-dynamodb-table",
-  dynamoDB: {
+  DynamoDB: {
     Table: {
       myTable: {
         name: "myTable",

@@ -3,20 +3,20 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeKeyPair({
-    name: get("config.ec2.KeyPair.kpEc2Example.name"),
+  provider.EC2.makeKeyPair({
+    name: get("config.EC2.KeyPair.kpEc2Example.name"),
   });
 
-  provider.ec2.makeElasticIpAddress({
-    name: get("config.ec2.ElasticIpAddress.eip.name"),
+  provider.EC2.makeElasticIpAddress({
+    name: get("config.EC2.ElasticIpAddress.eip.name"),
   });
 
-  provider.ec2.makeInstance({
-    name: get("config.ec2.Instance.webServerEc2Example.name"),
-    properties: get("config.ec2.Instance.webServerEc2Example.properties"),
+  provider.EC2.makeInstance({
+    name: get("config.EC2.Instance.webServerEc2Example.name"),
+    properties: get("config.EC2.Instance.webServerEc2Example.properties"),
     dependencies: ({ resources }) => ({
-      keyPair: resources.ec2.KeyPair.kpEc2Example,
-      eip: resources.ec2.ElasticIpAddress.eip,
+      keyPair: resources.EC2.KeyPair.kpEc2Example,
+      eip: resources.EC2.ElasticIpAddress.eip,
     }),
   });
 };

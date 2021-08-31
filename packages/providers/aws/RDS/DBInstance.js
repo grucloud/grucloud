@@ -16,22 +16,22 @@ const findName = findId;
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
 exports.DBInstance = ({ spec, config }) => {
-  const client = AwsClient({ type: spec.type, config, endpointName: "RDS" });
+  const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "DBSubnetGroup",
-      group: "rds",
+      group: "RDS",
       ids: [get("DBSubnetGroup.DBSubnetGroupName")(live)],
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
     },
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [live.KmsKeyId],
     },
   ];

@@ -15,7 +15,7 @@ In this example, we'll create a TargetGroup associated to an [EKS Node Group](..
 When an EKS Node Group is created, an [Auto Scaling Group](../AutoScaling/AutoScalingGroup.md) is also created. During the deployment, the Target Group is attached automatically to this Auto Scaling Group.
 
 ```js
-const vpc = provider.ec2.makeVpc({
+const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
@@ -24,7 +24,7 @@ const vpc = provider.ec2.makeVpc({
 
 const nodeGroup = {}; // Insert node group here
 
-const targetGroupRest = provider.elb.makeTargetGroup({
+const targetGroupRest = provider.ELBv2.makeTargetGroup({
   name: "target-group-rest",
   dependencies: {
     vpc,
@@ -42,7 +42,7 @@ const targetGroupRest = provider.elb.makeTargetGroup({
 In this example, a TargetGroup is associated with an [AutoScaling Group](../AutoScaling/AutoScalingGroup.md). The goal is to attach the target group to the autoscaling group.
 
 ```js
-const vpc = provider.ec2.makeVpc({
+const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
@@ -51,7 +51,7 @@ const vpc = provider.ec2.makeVpc({
 
 const autoScalingGroup = {}; // Insert autoscaling
 
-const targetGroupRest = provider.elb.makeTargetGroup({
+const targetGroupRest = provider.ELBv2.makeTargetGroup({
   name: "target-group-rest",
   dependencies: {
     vpc,

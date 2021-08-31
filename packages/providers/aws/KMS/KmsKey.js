@@ -30,6 +30,8 @@ const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
 const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
+const { AwsClient } = require("../AwsClient");
+
 const findId = get("live.Arn");
 
 const findNameInTags = pipe([
@@ -44,6 +46,7 @@ const findName = (item) =>
   pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
 
 exports.KmsKey = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const kms = KmsNew(config);
 
   const getList = ({ params } = {}) =>

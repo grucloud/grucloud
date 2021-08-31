@@ -24,8 +24,9 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.stageName");
 const findName = get("live.stageName");
@@ -33,13 +34,14 @@ const findName = get("live.stageName");
 const pickParam = pick(["restApiId", "stageName"]);
 
 exports.Stage = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "RestApi",
-      group: "apiGateway",
+      group: "APIGateway",
       ids: [live.restApiId],
     },
   ];
@@ -55,7 +57,7 @@ exports.Stage = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "RestApi",
-          group: "apiGateway",
+          group: "APIGateway",
         }),
       pluck("id"),
       flatMap((restApiId) =>

@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "lambda-nodejs-helloworld",
-  iam: {
+  IAM: {
     Policy: {
       lambdaPolicy: {
         name: "lambda-policy",
@@ -44,7 +44,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  lambda: {
+  Lambda: {
     Layer: {
       lambdaLayer: {
         name: "lambda-layer",

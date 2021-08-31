@@ -21,19 +21,21 @@ const logger = require("@grucloud/core/logger")({
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.domainName");
 const findName = get("live.domainName");
 
 exports.DomainName = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",
-      group: "acm",
+      group: "ACM",
       ids: [live.certificateArn],
     },
   ];

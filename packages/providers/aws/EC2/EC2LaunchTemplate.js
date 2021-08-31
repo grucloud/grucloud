@@ -33,6 +33,7 @@ const {
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const EC2Instance = require("./EC2Instance");
 
@@ -61,22 +62,23 @@ const findName = (params) => {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 
 exports.EC2LaunchTemplate = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = () => createEndpoint({ endpointName: "EC2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "KeyPair",
-      group: "ec2",
+      group: "EC2",
       ids: [live.LaunchTemplateData.KeyName],
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: live.LaunchTemplateData.SecurityGroupIds,
     },
     {
       type: "InstanceProfile",
-      group: "iam",
+      group: "IAM",
       ids: [
         pipe([() => live, get("LaunchTemplateData.IamInstanceProfile.Arn")])(),
         pipe([
@@ -86,7 +88,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
             lives.getByName({
               name,
               type: "InstanceProfile",
-              group: "iam",
+              group: "IAM",
               providerName: config.providerName,
             }),
           get("id"),

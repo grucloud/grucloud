@@ -37,7 +37,7 @@ describe("AwsS3BucketPerf", async function () {
           ),
       async (buckets) =>
         await map(async (bucket) =>
-          provider.s3.makeBucket({
+          provider.S3.makeBucket({
             name: bucket,
             properties: () => ({}),
           })

@@ -1,5 +1,5 @@
 module.exports = ({ stage, region }) => ({
-  rds: {
+  RDS: {
     instance: {
       name: "db-instance",
       properties: {

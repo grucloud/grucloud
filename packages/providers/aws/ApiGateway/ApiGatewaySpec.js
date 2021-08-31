@@ -8,13 +8,13 @@ const { DomainName, compareDomainName } = require("./DomainName");
 const { Authorizer, compareAuthorizer } = require("./Authorizer");
 const { Resource, compareResource } = require("./Resource");
 
-const GROUP = "apiGateway";
+const GROUP = "APIGateway";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DomainName",
-      dependsOn: ["acm::Certificate"],
+      dependsOn: ["ACM::Certificate"],
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -30,7 +30,7 @@ module.exports = () =>
 
     {
       type: "Stage",
-      dependsOn: ["apiGateway::RestApi"],
+      dependsOn: ["APIGateway::RestApi"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -38,7 +38,7 @@ module.exports = () =>
     },
     {
       type: "Resource",
-      dependsOn: ["apiGateway::RestApi"],
+      dependsOn: ["APIGateway::RestApi"],
       Client: Resource,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -46,7 +46,7 @@ module.exports = () =>
     },
     {
       type: "Authorizer",
-      dependsOn: ["apiGateway::RestApi"],
+      dependsOn: ["APIGateway::RestApi"],
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -56,9 +56,9 @@ module.exports = () =>
     {
       type: "Integration",
       dependsOn: [
-        "apiGateway::RestApi",
-        "apiGateway::Resource",
-        "lambda::Function",
+        "APIGateway::RestApi",
+        "APIGateway::Resource",
+        "Lambda::Function",
       ],
       Client: Integration,
       isOurMinion: ({ live, config }) =>
@@ -68,10 +68,10 @@ module.exports = () =>
     {
       type: "Deployment",
       dependsOn: [
-        "apiGateway::RestApi",
-        "apiGateway::Stage",
-        "apiGateway::Resource",
-        "apiGateway::Integration",
+        "APIGateway::RestApi",
+        "APIGateway::Stage",
+        "APIGateway::Resource",
+        "APIGateway::Integration",
       ],
       Client: Deployment,
       isOurMinion: ({ live, config }) =>

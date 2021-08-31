@@ -21,9 +21,11 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
@@ -39,7 +41,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
         lives.getById({
           providerName: config.providerName,
           type: "SecurityGroup",
-          group: "ec2",
+          group: "EC2",
           id: GroupId,
         }),
       switchCase([
@@ -55,17 +57,17 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
     },
     {
       type: "Vpc",
-      group: "ec2",
+      group: "EC2",
       ids: [live.VpcId],
     },
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: [live.SubnetId],
     },
   ];

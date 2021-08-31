@@ -3,13 +3,9 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ecr.makeRepository({
-    name: get("config.ecr.Repository.starhackitLb.name"),
-    properties: get("config.ecr.Repository.starhackitLb.properties"),
-  });
-
-  provider.ecr.makeRegistry({
-    name: get("config.ecr.Registry.default.name"),
+  provider.ECR.makeRepository({
+    name: get("config.ECR.Repository.starhackitLb.name"),
+    properties: get("config.ECR.Repository.starhackitLb.properties"),
   });
 };
 

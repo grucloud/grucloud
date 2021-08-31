@@ -3,212 +3,212 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeVpc({
-    name: get("config.ec2.Vpc.vpcModuleLoadBalancer.name"),
+  provider.EC2.makeVpc({
+    name: get("config.EC2.Vpc.vpcModuleLoadBalancer.name"),
     namespace: "VPC",
-    properties: get("config.ec2.Vpc.vpcModuleLoadBalancer.properties"),
+    properties: get("config.EC2.Vpc.vpcModuleLoadBalancer.properties"),
   });
 
-  provider.ec2.makeSubnet({
-    name: get("config.ec2.Subnet.subnetPublicA.name"),
+  provider.EC2.makeSubnet({
+    name: get("config.EC2.Subnet.subnetPublicA.name"),
     namespace: "VPC",
-    properties: get("config.ec2.Subnet.subnetPublicA.properties"),
+    properties: get("config.EC2.Subnet.subnetPublicA.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.ec2.makeSubnet({
-    name: get("config.ec2.Subnet.subnetPublicB.name"),
+  provider.EC2.makeSubnet({
+    name: get("config.EC2.Subnet.subnetPublicB.name"),
     namespace: "VPC",
-    properties: get("config.ec2.Subnet.subnetPublicB.properties"),
+    properties: get("config.EC2.Subnet.subnetPublicB.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.ec2.makeInternetGateway({
-    name: get("config.ec2.InternetGateway.internetGateway.name"),
+  provider.EC2.makeInternetGateway({
+    name: get("config.EC2.InternetGateway.internetGateway.name"),
     namespace: "VPC",
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.ec2.makeRouteTable({
-    name: get("config.ec2.RouteTable.routeTablePublic.name"),
+  provider.EC2.makeRouteTable({
+    name: get("config.EC2.RouteTable.routeTablePublic.name"),
     namespace: "VPC",
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
-        resources.ec2.Subnet.subnetPublicB,
+        resources.EC2.Subnet.subnetPublicA,
+        resources.EC2.Subnet.subnetPublicB,
       ],
     }),
   });
 
-  provider.ec2.makeRoute({
-    name: get("config.ec2.Route.routePublic.name"),
+  provider.EC2.makeRoute({
+    name: get("config.EC2.Route.routePublic.name"),
     namespace: "VPC",
-    properties: get("config.ec2.Route.routePublic.properties"),
+    properties: get("config.EC2.Route.routePublic.properties"),
     dependencies: ({ resources }) => ({
-      routeTable: resources.ec2.RouteTable.routeTablePublic,
-      ig: resources.ec2.InternetGateway.internetGateway,
+      routeTable: resources.EC2.RouteTable.routeTablePublic,
+      ig: resources.EC2.InternetGateway.internetGateway,
     }),
   });
 
-  provider.ec2.makeSecurityGroup({
-    name: get("config.ec2.SecurityGroup.securityGroupLoadBalancer.name"),
+  provider.EC2.makeSecurityGroup({
+    name: get("config.EC2.SecurityGroup.securityGroupLoadBalancer.name"),
     namespace: "LoadBalancer",
     properties: get(
-      "config.ec2.SecurityGroup.securityGroupLoadBalancer.properties"
+      "config.EC2.SecurityGroup.securityGroupLoadBalancer.properties"
     ),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name"),
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: get("config.EC2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name"),
     namespace: "LoadBalancer",
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
+      securityGroup: resources.EC2.SecurityGroup.securityGroupLoadBalancer,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name"),
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: get("config.EC2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name"),
     namespace: "LoadBalancer",
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupLoadBalancer,
+      securityGroup: resources.EC2.SecurityGroup.securityGroupLoadBalancer,
     }),
   });
 
-  provider.acm.makeCertificate({
-    name: get("config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.name"),
+  provider.ACM.makeCertificate({
+    name: get("config.ACM.Certificate.modAwsLoadBalancerGrucloudOrg.name"),
     namespace: "Certificate",
     properties: get(
-      "config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.properties"
+      "config.ACM.Certificate.modAwsLoadBalancerGrucloudOrg.properties"
     ),
   });
 
-  provider.elb.makeLoadBalancer({
-    name: get("config.elb.LoadBalancer.loadBalancer.name"),
+  provider.ELBv2.makeLoadBalancer({
+    name: get("config.ELBv2.LoadBalancer.loadBalancer.name"),
     namespace: "LoadBalancer",
-    properties: get("config.elb.LoadBalancer.loadBalancer.properties"),
+    properties: get("config.ELBv2.LoadBalancer.loadBalancer.properties"),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
-        resources.ec2.Subnet.subnetPublicB,
+        resources.EC2.Subnet.subnetPublicA,
+        resources.EC2.Subnet.subnetPublicB,
       ],
-      securityGroups: [resources.ec2.SecurityGroup.securityGroupLoadBalancer],
+      securityGroups: [resources.EC2.SecurityGroup.securityGroupLoadBalancer],
     }),
   });
 
-  provider.elb.makeTargetGroup({
-    name: get("config.elb.TargetGroup.targetGroupRest.name"),
+  provider.ELBv2.makeTargetGroup({
+    name: get("config.ELBv2.TargetGroup.targetGroupRest.name"),
     namespace: "LoadBalancer",
-    properties: get("config.elb.TargetGroup.targetGroupRest.properties"),
+    properties: get("config.ELBv2.TargetGroup.targetGroupRest.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.elb.makeTargetGroup({
-    name: get("config.elb.TargetGroup.targetGroupWeb.name"),
+  provider.ELBv2.makeTargetGroup({
+    name: get("config.ELBv2.TargetGroup.targetGroupWeb.name"),
     namespace: "LoadBalancer",
-    properties: get("config.elb.TargetGroup.targetGroupWeb.properties"),
+    properties: get("config.ELBv2.TargetGroup.targetGroupWeb.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcModuleLoadBalancer,
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
   });
 
-  provider.elb.makeListener({
-    name: get("config.elb.Listener.listenerHttp.name"),
+  provider.ELBv2.makeListener({
+    name: get("config.ELBv2.Listener.listenerHttp.name"),
     namespace: "LoadBalancer",
-    properties: get("config.elb.Listener.listenerHttp.properties"),
+    properties: get("config.ELBv2.Listener.listenerHttp.properties"),
     dependencies: ({ resources }) => ({
-      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
-      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
+      loadBalancer: resources.ELBv2.LoadBalancer.loadBalancer,
+      targetGroup: resources.ELBv2.TargetGroup.targetGroupWeb,
     }),
   });
 
-  provider.elb.makeListener({
-    name: get("config.elb.Listener.listenerHttps.name"),
+  provider.ELBv2.makeListener({
+    name: get("config.ELBv2.Listener.listenerHttps.name"),
     namespace: "LoadBalancer",
-    properties: get("config.elb.Listener.listenerHttps.properties"),
+    properties: get("config.ELBv2.Listener.listenerHttps.properties"),
     dependencies: ({ resources }) => ({
-      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
-      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
-      certificate: resources.acm.Certificate.modAwsLoadBalancerGrucloudOrg,
+      loadBalancer: resources.ELBv2.LoadBalancer.loadBalancer,
+      targetGroup: resources.ELBv2.TargetGroup.targetGroupWeb,
+      certificate: resources.ACM.Certificate.modAwsLoadBalancerGrucloudOrg,
     }),
   });
 
-  provider.elb.makeRule({
-    name: get("config.elb.Rule.ruleHttpRedirectHttps.name"),
+  provider.ELBv2.makeRule({
+    name: get("config.ELBv2.Rule.ruleHttpRedirectHttps.name"),
     namespace: "LoadBalancer",
-    properties: () => config.elb.Rule.ruleHttpRedirectHttps.properties,
+    properties: () => config.ELBv2.Rule.ruleHttpRedirectHttps.properties,
     dependencies: ({ resources }) => ({
-      listener: resources.elb.Listener.listenerHttp,
+      listener: resources.ELBv2.Listener.listenerHttp,
     }),
   });
 
-  provider.elb.makeRule({
-    name: get("config.elb.Rule.ruleRestHttps.name"),
+  provider.ELBv2.makeRule({
+    name: get("config.ELBv2.Rule.ruleRestHttps.name"),
     namespace: "LoadBalancer",
-    properties: () => config.elb.Rule.ruleRestHttps.properties,
+    properties: () => config.ELBv2.Rule.ruleRestHttps.properties,
     dependencies: ({ resources }) => ({
-      listener: resources.elb.Listener.listenerHttps,
-      targetGroup: resources.elb.TargetGroup.targetGroupRest,
+      listener: resources.ELBv2.Listener.listenerHttps,
+      targetGroup: resources.ELBv2.TargetGroup.targetGroupRest,
     }),
   });
 
-  provider.elb.makeRule({
-    name: get("config.elb.Rule.ruleWebHttps.name"),
+  provider.ELBv2.makeRule({
+    name: get("config.ELBv2.Rule.ruleWebHttps.name"),
     namespace: "LoadBalancer",
-    properties: () => config.elb.Rule.ruleWebHttps.properties,
+    properties: () => config.ELBv2.Rule.ruleWebHttps.properties,
     dependencies: ({ resources }) => ({
-      listener: resources.elb.Listener.listenerHttps,
-      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
+      listener: resources.ELBv2.Listener.listenerHttps,
+      targetGroup: resources.ELBv2.TargetGroup.targetGroupWeb,
     }),
   });
 
-  provider.route53Domain.useDomain({
-    name: get("config.route53Domain.Domain.grucloudOrg.name"),
+  provider.Route53Domains.useDomain({
+    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
   });
 
-  provider.route53.makeHostedZone({
-    name: get("config.route53.HostedZone.modAwsLoadBalancerGrucloudOrg.name"),
+  provider.Route53.makeHostedZone({
+    name: get("config.Route53.HostedZone.modAwsLoadBalancerGrucloudOrg.name"),
     dependencies: ({ resources }) => ({
-      domain: resources.route53Domain.Domain.grucloudOrg,
+      domain: resources.Route53Domains.Domain.grucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: get(
-      "config.route53.Record.certificateValidationModAwsLoadBalancerGrucloudOrg.name"
+      "config.Route53.Record.certificateValidationModAwsLoadBalancerGrucloudOrg.name"
     ),
     namespace: "Certificate",
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.modAwsLoadBalancerGrucloudOrg,
-      certificate: resources.acm.Certificate.modAwsLoadBalancerGrucloudOrg,
+      hostedZone: resources.Route53.HostedZone.modAwsLoadBalancerGrucloudOrg,
+      certificate: resources.ACM.Certificate.modAwsLoadBalancerGrucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: get(
-      "config.route53.Record.loadBalancerDnsRecordAliasModAwsLoadBalancerGrucloudOrg.name"
+      "config.Route53.Record.loadBalancerDnsRecordAliasModAwsLoadBalancerGrucloudOrg.name"
     ),
     namespace: "LoadBalancer",
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.modAwsLoadBalancerGrucloudOrg,
-      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+      hostedZone: resources.Route53.HostedZone.modAwsLoadBalancerGrucloudOrg,
+      loadBalancer: resources.ELBv2.LoadBalancer.loadBalancer,
     }),
   });
 };

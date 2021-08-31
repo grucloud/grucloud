@@ -36,6 +36,7 @@ const {
   shouldRetryOnException,
   hasKeyInTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.LoadBalancerName");
 const findId = get("live.LoadBalancerArn");
@@ -43,6 +44,7 @@ const findId = get("live.LoadBalancerArn");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
 exports.ELBLoadBalancerV2 = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
   const { providerName } = config;
 
@@ -53,22 +55,22 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: live.SecurityGroups,
     },
     {
       type: "NetworkInterface",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () =>
           lives.getByType({
             type: "NetworkInterface",
-            group: "ec2",
+            group: "EC2",
             providerName,
           }),
         filter(

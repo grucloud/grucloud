@@ -3,103 +3,103 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev.name"),
     properties: get(
-      "config.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev.properties"
+      "config.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev.properties"
     ),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.buildBundleCss.name"),
-    properties: get("config.s3.Object.buildBundleCss.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.buildBundleCss.name"),
+    properties: get("config.S3.Object.buildBundleCss.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.buildBundleJs.name"),
-    properties: get("config.s3.Object.buildBundleJs.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.buildBundleJs.name"),
+    properties: get("config.S3.Object.buildBundleJs.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.faviconPng.name"),
-    properties: get("config.s3.Object.faviconPng.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.faviconPng.name"),
+    properties: get("config.S3.Object.faviconPng.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.globalCss.name"),
-    properties: get("config.s3.Object.globalCss.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.globalCss.name"),
+    properties: get("config.S3.Object.globalCss.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.indexHtml.name"),
-    properties: get("config.s3.Object.indexHtml.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.indexHtml.name"),
+    properties: get("config.S3.Object.indexHtml.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.cloudFront.makeDistribution({
+  provider.CloudFront.makeDistribution({
     name: get(
-      "config.cloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.name"
+      "config.CloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.name"
     ),
     properties: get(
-      "config.cloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.properties"
+      "config.CloudFront.Distribution.distributionCloudfrontAwsTestGrucloudOrgDev.properties"
     ),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-      certificate: resources.acm.Certificate.devCloudfrontAwsTestGrucloudOrg,
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+      certificate: resources.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg,
     }),
   });
 
-  provider.acm.makeCertificate({
-    name: get("config.acm.Certificate.devCloudfrontAwsTestGrucloudOrg.name"),
+  provider.ACM.makeCertificate({
+    name: get("config.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg.name"),
     properties: get(
-      "config.acm.Certificate.devCloudfrontAwsTestGrucloudOrg.properties"
+      "config.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg.properties"
     ),
   });
 
-  provider.route53Domain.useDomain({
-    name: get("config.route53Domain.Domain.grucloudOrg.name"),
+  provider.Route53Domains.useDomain({
+    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
   });
 
-  provider.route53.makeHostedZone({
-    name: get("config.route53.HostedZone.devCloudfrontAwsTestGrucloudOrg.name"),
+  provider.Route53.makeHostedZone({
+    name: get("config.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg.name"),
     dependencies: ({ resources }) => ({
-      domain: resources.route53Domain.Domain.grucloudOrg,
+      domain: resources.Route53Domains.Domain.grucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: get(
-      "config.route53.Record.distributionAliasDevCloudfrontAwsTestGrucloudOrg.name"
+      "config.Route53.Record.distributionAliasDevCloudfrontAwsTestGrucloudOrg.name"
     ),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
+      hostedZone: resources.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
       distribution:
-        resources.cloudFront.Distribution
+        resources.CloudFront.Distribution
           .distributionCloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: get(
-      "config.route53.Record.validationDevCloudfrontAwsTestGrucloudOrg.name"
+      "config.Route53.Record.validationDevCloudfrontAwsTestGrucloudOrg.name"
     ),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
-      certificate: resources.acm.Certificate.devCloudfrontAwsTestGrucloudOrg,
+      hostedZone: resources.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
+      certificate: resources.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg,
     }),
   });
 };

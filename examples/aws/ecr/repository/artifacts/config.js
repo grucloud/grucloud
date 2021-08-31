@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "aws-ecr-repository",
-  ecr: {
+  ECR: {
     Repository: {
       starhackitLb: {
         name: "starhackit/lb",
@@ -51,11 +51,6 @@ module.exports = ({ stage }) => ({
             ],
           },
         },
-      },
-    },
-    Registry: {
-      default: {
-        name: "default",
       },
     },
   },

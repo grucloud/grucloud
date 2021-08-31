@@ -40,23 +40,23 @@ describe.skip("AwsProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    keyPair = provider.ec2.makeKeyPair({
+    keyPair = provider.EC2.makeKeyPair({
       name: keyPairName,
     });
 
-    vpc = provider.ec2.makeVpc({
+    vpc = provider.EC2.makeVpc({
       name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    ig = provider.ec2.makeInternetGateway({
+    ig = provider.EC2.makeInternetGateway({
       name: formatName("ig"),
       dependencies: { vpc },
     });
 
-    subnet = provider.ec2.makeSubnet({
+    subnet = provider.EC2.makeSubnet({
       name: formatName(subnetName),
       dependencies: { vpc },
       properties: () => ({
@@ -64,17 +64,17 @@ describe.skip("AwsProvider", async function () {
       }),
     });
 
-    routeTable = provider.ec2.makeRouteTable({
+    routeTable = provider.EC2.makeRouteTable({
       name: formatName("rt"),
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = provider.ec2.makeRoute({
+    routeIg = provider.EC2.makeRoute({
       name: formatName("routeIg"),
       dependencies: { routeTable, ig },
     });
 
-    sg = provider.ec2.makeSecurityGroup({
+    sg = provider.EC2.makeSecurityGroup({
       name: formatName(securityGroupName),
       dependencies: { vpc },
       properties: () => ({
@@ -83,7 +83,7 @@ describe.skip("AwsProvider", async function () {
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
       }),
     });
-    const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+    const sgRuleIngressSsh = provider.EC2.makeSecurityGroupRuleIngress({
       name: "sg-rule-ingress-ssh",
       dependencies: {
         securityGroup: sg,
@@ -106,12 +106,12 @@ describe.skip("AwsProvider", async function () {
         },
       }),
     });
-    eip = provider.ec2.makeElasticIpAddress({
+    eip = provider.EC2.makeElasticIpAddress({
       name: formatName("myip"),
       properties: () => ({}),
     });
 
-    image = provider.ec2.useImage({
+    image = provider.EC2.useImage({
       name: "Amazon Linux 2",
       properties: () => ({
         Filters: [
@@ -131,7 +131,7 @@ describe.skip("AwsProvider", async function () {
       }),
     });
 
-    server = provider.ec2.makeInstance({
+    server = provider.EC2.makeInstance({
       name: formatName(serverName),
       properties: () => ({}),
       dependencies: { image, keyPair, subnet, securityGroups: [sg], eip },

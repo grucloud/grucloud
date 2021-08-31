@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "aws-appsync-graphql",
-  iam: {
+  IAM: {
     Policy: {
       appsyncDsDdbKq4ygeMyModelTypeDemoTable: {
         name: "appsync-ds-ddb-kq4yge-MyModelTypeDemoTable",
@@ -52,7 +52,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  appSync: {
+  AppSync: {
     GraphqlApi: {
       myAppSyncApp: {
         name: "My AppSync App",

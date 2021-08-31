@@ -26,21 +26,20 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.GroupName");
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamGroup = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const iam = IAMNew(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Policy",
-      group: "iam",
+      group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
   ];

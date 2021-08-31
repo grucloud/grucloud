@@ -35,6 +35,7 @@ const {
   isDownByIdCore,
 } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const formatThumbPrint = pipe([
   get("fingerprint"),
@@ -91,8 +92,7 @@ exports.fetchThumbprint = fetchThumbprint;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const iam = IAMNew(config);
 
@@ -102,13 +102,13 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Cluster",
-      group: "eks",
+      group: "EKS",
       ids: [
         pipe([
           () =>
             lives.getByType({
               type: "Cluster",
-              group: "eks",
+              group: "EKS",
               providerName,
             }),
           find(eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)),

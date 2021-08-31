@@ -121,6 +121,17 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
+    },
+    {
+      "name": "tree",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["tree"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
     }
   ]
 }

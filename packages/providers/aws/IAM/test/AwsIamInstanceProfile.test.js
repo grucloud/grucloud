@@ -26,7 +26,7 @@ describe("AwsIamInstanceProfile", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    iamRole = provider.iam.makeRole({
+    iamRole = provider.IAM.makeRole({
       name: iamRoleName,
       properties: () => ({
         Path: "/",
@@ -46,7 +46,7 @@ describe("AwsIamInstanceProfile", async function () {
       }),
     });
 
-    iamInstanceProfile = provider.iam.makeInstanceProfile({
+    iamInstanceProfile = provider.IAM.makeInstanceProfile({
       name: iamInstanceProfileName,
       dependencies: { roles: [iamRole] },
       properties: () => ({

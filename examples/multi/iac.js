@@ -48,7 +48,7 @@ const createAws = async ({ createProvider }) => {
     ],
   });
 
-  const keyPair = provider.ec2.makeKeyPair({
+  const keyPair = provider.EC2.makeKeyPair({
     name: "kp",
   });
 
@@ -118,7 +118,7 @@ const createGoogle = async ({ createProvider }) => {
   });
 
   // Service Account
-  const serviceAccount = provider.iam.makeServiceAccount({
+  const serviceAccount = provider.IAM.makeServiceAccount({
     name: `sa-test`,
     properties: () => ({
       serviceAccount: {

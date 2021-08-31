@@ -29,6 +29,8 @@ const {
   identity,
 } = require("rubico/x");
 
+const { AwsClient } = require("../AwsClient");
+
 const logger = require("@grucloud/core/logger")({ prefix: "HostedZone" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
@@ -78,8 +80,7 @@ const findDnsServers = (live) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const route53 = Route53New(config);
   const route53domains = Route53DomainsNew(config);
@@ -87,12 +88,12 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Domain",
-      group: "route53Domain",
+      group: "Route53Domains",
       ids: pipe([
         () =>
           lives.getByType({
             type: "Domain",
-            group: "route53Domain",
+            group: "Route53Domains",
             providerName,
           }),
         filter(
@@ -107,12 +108,12 @@ exports.Route53HostedZone = ({ spec, config }) => {
     },
     {
       type: "HostedZone",
-      group: "route53",
+      group: "Route53",
       ids: pipe([
         () =>
           lives.getByType({
             type: "HostedZone",
-            group: "route53",
+            group: "Route53",
             providerName,
           }),
         filter(not(eq(get("name"), live.Name))),

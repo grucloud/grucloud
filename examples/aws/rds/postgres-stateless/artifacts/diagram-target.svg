@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1109)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-1109 852,-1109 852,4 -4,4"/>
-<text text-anchor="start" x="287" y="-1080.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project postgres&#45;stateless</text>
-<text text-anchor="start" x="420" y="-1064.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="287" y="-1043.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="260" y="-1080.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project RDS Postgres Stateless</text>
+<text text-anchor="start" x="420.5" y="-1064.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="260" y="-1043.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-1021 840,-1021 840,-8 8,-8"/>

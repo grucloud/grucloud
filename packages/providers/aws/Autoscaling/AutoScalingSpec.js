@@ -11,7 +11,7 @@ const {
   AutoScalingLaunchConfiguration,
 } = require("./AutoScalingLaunchConfiguration");
 
-const GROUP = "autoscaling";
+const GROUP = "AutoScaling";
 
 const filterTags = filter((tag) =>
   pipe([() => ["AmazonECSManaged"], not(includes(tag.Key))])()
@@ -22,12 +22,12 @@ module.exports = () =>
     {
       type: "AutoScalingGroup",
       dependsOn: [
-        "autoscaling::LaunchConfiguration",
-        "ec2::LaunchTemplate",
-        "ec2::Subnet",
-        "elb::LoadBalancer",
-        "elb::TargetGroup",
-        "eks::Cluster",
+        "AutoScaling::LaunchConfiguration",
+        "EC2::LaunchTemplate",
+        "EC2::Subnet",
+        "ELBv2::LoadBalancer",
+        "ELBv2::TargetGroup",
+        "EKS::Cluster",
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
@@ -46,10 +46,10 @@ module.exports = () =>
     {
       type: "LaunchConfiguration",
       dependsOn: [
-        "ec2::KeyPair",
-        "ec2::SecurityGroup",
-        "ec2::Subnet",
-        "iam::InstanceProfile",
+        "EC2::KeyPair",
+        "EC2::SecurityGroup",
+        "EC2::Subnet",
+        "IAM::InstanceProfile",
       ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,

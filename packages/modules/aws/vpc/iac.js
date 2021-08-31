@@ -22,7 +22,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
     }),
     assign({
       vpc: () =>
-        provider.ec2.makeVpc({
+        provider.EC2.makeVpc({
           name: formatName(config.vpc.vpc.name, config),
           namespace,
           properties: () => ({
@@ -34,7 +34,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
     }),
     assign({
       internetGateway: ({ vpc }) =>
-        provider.ec2.makeInternetGateway({
+        provider.EC2.makeInternetGateway({
           name: formatName(config.vpc.internetGateway.name, config),
           namespace,
           dependencies: { vpc },
@@ -45,7 +45,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
         pipe([
           () => config.vpc.subnets.publics,
           map(({ name, CidrBlock, AvailabilityZone }) =>
-            provider.ec2.makeSubnet({
+            provider.EC2.makeSubnet({
               name: formatName(name, config),
               namespace,
               dependencies: { vpc },
@@ -65,7 +65,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
     }),
     assign({
       routeTablePublic: ({ vpc, subnetsPublic }) =>
-        provider.ec2.makeRouteTable({
+        provider.EC2.makeRouteTable({
           name: formatName(config.vpc.routeTablePublic.name, config),
           namespace,
           dependencies: { vpc, subnets: subnetsPublic },
@@ -73,7 +73,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
     }),
     assign({
       routePublic: ({ routeTablePublic, internetGateway }) =>
-        provider.ec2.makeRoute({
+        provider.EC2.makeRoute({
           name: formatName(config.vpc.routePublic.name, config),
           namespace,
           dependencies: { routeTable: routeTablePublic, ig: internetGateway },
@@ -84,14 +84,14 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
       pipe([
         assign({
           eip: () =>
-            provider.ec2.makeElasticIpAddress({
+            provider.EC2.makeElasticIpAddress({
               namespace,
               name: formatName(config.vpc.eip.name, config),
             }),
         }),
         assign({
           natGateway: ({ subnetsPublic, eip }) =>
-            provider.ec2.makeNatGateway({
+            provider.EC2.makeNatGateway({
               name: formatName(config.vpc.natGateway.name, config),
               namespace,
               dependencies: { subnet: subnetsPublic[0], eip },
@@ -112,7 +112,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
                   pipe([
                     assign({
                       subnet: () =>
-                        provider.ec2.makeSubnet({
+                        provider.EC2.makeSubnet({
                           name: formatName(name, config),
                           namespace,
                           dependencies: { vpc },
@@ -125,7 +125,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
                     }),
                     assign({
                       routeTable: ({ subnet }) =>
-                        provider.ec2.makeRouteTable({
+                        provider.EC2.makeRouteTable({
                           name: formatName(routeTableName, config),
                           namespace,
                           dependencies: { vpc, subnets: [subnet] },
@@ -133,7 +133,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
                     }),
                     assign({
                       routeNat: ({ routeTable }) =>
-                        provider.ec2.makeRoute({
+                        provider.EC2.makeRoute({
                           name: formatName(routeName, config),
                           namespace,
                           dependencies: { routeTable, natGateway },

@@ -28,7 +28,7 @@ describe.skip("AwsVpc", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = provider.ec2.makeVpc({
+    vpc = provider.EC2.makeVpc({
       name: vpcName,
       properties: () => ({
         DnsHostnames: true,
@@ -36,7 +36,7 @@ describe.skip("AwsVpc", async function () {
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
     });
-    vpcDefault = provider.ec2.useDefaultVpc({
+    vpcDefault = provider.EC2.useDefaultVpc({
       name: "vpc-default",
     });
   });

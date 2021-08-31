@@ -3,13 +3,13 @@ const { isOurMinionObject } = require("../AwsCommon");
 const { Function, compareFunction } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
 
-const GROUP = "lambda";
+const GROUP = "Lambda";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Layer",
-      dependsOn: ["iam::Role"],
+      dependsOn: ["IAM::Role"],
       Client: Layer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -17,7 +17,7 @@ module.exports = () =>
     },
     {
       type: "Function",
-      dependsOn: ["iam::Role", "lambda::Layer"],
+      dependsOn: ["IAM::Role", "Lambda::Layer"],
       Client: Function,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),

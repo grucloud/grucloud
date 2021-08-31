@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-module-aws-certificate",
-  acm: {
+  ACM: {
     Certificate: {
       exampleModuleAwsCertificateGrucloudOrg: {
         name: "example-module-aws-certificate.grucloud.org",
@@ -10,14 +10,14 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  route53Domain: {
+  Route53Domains: {
     Domain: {
       grucloudOrg: {
         name: "grucloud.org",
       },
     },
   },
-  route53: {
+  Route53: {
     HostedZone: {
       exampleModuleAwsCertificateGrucloudOrg: {
         name: "example-module-aws-certificate.grucloud.org.",

@@ -29,6 +29,7 @@ const {
   buildTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
@@ -42,17 +43,17 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "KeyPair",
-      group: "ec2",
+      group: "EC2",
       ids: [live.KeyName],
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: live.SecurityGroups,
     },
     {
       type: "InstanceProfile",
-      group: "iam",
+      group: "IAM",
       ids: [
         pipe([
           () => live.IamInstanceProfile,
@@ -65,7 +66,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
                 lives.getById({
                   id: live.IamInstanceProfile,
                   type: "InstanceProfile",
-                  group: "iam",
+                  group: "IAM",
                   providerName: config.providerName,
                 }),
               get("id"),
@@ -75,7 +76,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
                 lives.getByName({
                   name: live.IamInstanceProfile,
                   type: "InstanceProfile",
-                  group: "iam",
+                  group: "IAM",
                   providerName: config.providerName,
                 }),
               get("id"),
@@ -87,7 +88,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     //TODO
     // {
     //   type: "Image",
-    //   group: "ec2",
+    //   group: "EC2",
     //   ids: [live.ImageId],
     // },
   ];

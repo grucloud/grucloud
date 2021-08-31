@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-ecs-simple",
-  ecs: {
+  ECS: {
     Cluster: {
       cluster: {
         name: "cluster",

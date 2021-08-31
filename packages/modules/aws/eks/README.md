@@ -27,7 +27,7 @@ These tags are required by the [Aws Load Balancer Controller](https://docs.aws.a
 const clusterName = "cluster";
 
 module.exports = ({}) => ({
-  eks: {
+  EKS: {
     cluster: {
       name: clusterName,
     },

@@ -13,18 +13,18 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   assert(config.availabilityZoneSuffix);
   const AvailabilityZone = `${config.region}${config.availabilityZoneSuffix}`;
 
-  const vpc = provider.ec2.makeVpc({
+  const vpc = provider.EC2.makeVpc({
     name: "vpc-ec2-example",
     properties: () => ({
       CidrBlock: "10.1.0.0/16",
     }),
   });
-  const ig = provider.ec2.makeInternetGateway({
+  const ig = provider.EC2.makeInternetGateway({
     name: "ig",
     dependencies: { vpc },
   });
 
-  const subnet = provider.ec2.makeSubnet({
+  const subnet = provider.EC2.makeSubnet({
     name: "subnet",
     dependencies: { vpc },
     properties: () => ({
@@ -32,18 +32,18 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       AvailabilityZone,
     }),
   });
-  const routeTable = provider.ec2.makeRouteTable({
+  const routeTable = provider.EC2.makeRouteTable({
     name: "route-table",
     dependencies: { vpc, subnets: [subnet] },
     properties: () => ({}),
   });
 
-  const routeIg = provider.ec2.makeRoute({
+  const routeIg = provider.EC2.makeRoute({
     name: "route-ig",
     dependencies: { routeTable, ig },
   });
 
-  const sg = provider.ec2.makeSecurityGroup({
+  const sg = provider.EC2.makeSecurityGroup({
     name: "security-group",
     dependencies: { vpc },
     properties: () => ({
@@ -53,7 +53,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressSsh = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-ssh",
     dependencies: {
       securityGroup: sg,
@@ -77,7 +77,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const sgRuleIngressIcmp = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressIcmp = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-icmp",
     dependencies: {
       securityGroup: sg,
@@ -101,12 +101,12 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const eip = provider.ec2.makeElasticIpAddress({
+  const eip = provider.EC2.makeElasticIpAddress({
     name: "myip",
     properties: () => ({}),
   });
 
-  const volume = provider.ec2.makeVolume({
+  const volume = provider.EC2.makeVolume({
     name: "volume",
     properties: () => ({
       Size: 5,
@@ -116,7 +116,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const image = provider.ec2.useImage({
+  const image = provider.EC2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -137,7 +137,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   // Allocate a server
-  const server = provider.ec2.makeInstance({
+  const server = provider.EC2.makeInstance({
     name: "web-server-ec2-vpc",
     dependencies: {
       keyPair,
@@ -162,7 +162,7 @@ exports.createStack = async ({ createProvider }) => {
   // Create a AWS provider
   const provider = createProvider(AwsProvider, { config: require("./config") });
 
-  const keyPair = provider.ec2.makeKeyPair({
+  const keyPair = provider.EC2.makeKeyPair({
     name: "kp-ec2-vpc",
   });
 

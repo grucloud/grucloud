@@ -17,7 +17,7 @@ const createResources = async ({ provider }) => {
     ],
   };
 
-  const iamPolicy = provider.iam.makePolicy({
+  const iamPolicy = provider.IAM.makePolicy({
     name: policyName,
     properties: () => ({
       PolicyDocument,
@@ -25,7 +25,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const iamRole = provider.iam.makeRole({
+  const iamRole = provider.IAM.makeRole({
     name: roleName,
     dependencies: {
       policies: [

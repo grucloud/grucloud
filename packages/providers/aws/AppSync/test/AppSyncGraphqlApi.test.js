@@ -16,7 +16,7 @@ describe("AppSynGraphqlApi", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    graphqlApi = AppSyncGraphqlApi({ config: provider.config });
+    graphqlApi = provider.getClient({ groupType: "AppSync::GraphqlApi" });
     await provider.start();
   });
   it(

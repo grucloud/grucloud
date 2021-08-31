@@ -26,49 +26,49 @@
 <g id="node1" class="node">
 <title>Key::::alias/aws/acm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="173.5,-585 46.5,-585 46.5,-527 173.5,-527 173.5,-585"/>
-<text text-anchor="start" x="59" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="59" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="59" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alias/aws/acm</text>
 </g>
 <!-- Key::::alias/aws/dynamodb -->
 <g id="node2" class="node">
 <title>Key::::alias/aws/dynamodb</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="196,-509 24,-509 24,-451 196,-451 196,-509"/>
-<text text-anchor="start" x="36" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="36" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="36" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alias/aws/dynamodb</text>
 </g>
 <!-- Key::::alias/aws/ebs -->
 <g id="node3" class="node">
 <title>Key::::alias/aws/ebs</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="171,-433 49,-433 49,-375 171,-375 171,-433"/>
-<text text-anchor="start" x="61" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="61" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="61" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alias/aws/ebs</text>
 </g>
 <!-- Key::::alias/aws/rds -->
 <g id="node4" class="node">
 <title>Key::::alias/aws/rds</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="169,-357 51,-357 51,-299 169,-299 169,-357"/>
-<text text-anchor="start" x="63" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="63" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="63" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alias/aws/rds</text>
 </g>
 <!-- Key::::alias/aws/ssm -->
 <g id="node5" class="node">
 <title>Key::::alias/aws/ssm</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="173,-281 47,-281 47,-223 173,-223 173,-281"/>
-<text text-anchor="start" x="59" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="59" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="59" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">alias/aws/ssm</text>
 </g>
 <!-- Key::::eks&#45;key -->
 <g id="node6" class="node">
 <title>Key::::eks&#45;key</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="158.5,-205 61.5,-205 61.5,-147 158.5,-147 158.5,-205"/>
-<text text-anchor="start" x="74" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
-<text text-anchor="start" x="74" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eks&#45;key</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="160,-205 60,-205 60,-147 160,-147 160,-205"/>
+<text text-anchor="start" x="72" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
+<text text-anchor="start" x="72" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eks&#45;key</text>
 </g>
 <!-- Key::::secret&#45;key&#45;test -->
 <g id="node7" class="node">
 <title>Key::::secret&#45;key&#45;test</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="175.5,-129 44.5,-129 44.5,-71 175.5,-71 175.5,-129"/>
-<text text-anchor="start" x="57" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">kms::Key</text>
+<text text-anchor="start" x="57" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
 <text text-anchor="start" x="57" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">secret&#45;key&#45;test</text>
 </g>
 </g>

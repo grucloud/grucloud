@@ -3,9 +3,9 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeInstance({
-    name: get("config.ec2.Instance.webServerEc2Simple.name"),
-    properties: get("config.ec2.Instance.webServerEc2Simple.properties"),
+  provider.EC2.makeInstance({
+    name: get("config.EC2.Instance.webServerEc2Simple.name"),
+    properties: get("config.EC2.Instance.webServerEc2Simple.properties"),
   });
 };
 

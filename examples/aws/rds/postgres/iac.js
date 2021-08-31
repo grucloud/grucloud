@@ -4,20 +4,20 @@ const { map } = require("rubico");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
-  const vpc = provider.ec2.makeVpc({
-    name: config.rds.vpc.name,
+  const vpc = provider.EC2.makeVpc({
+    name: config.RDS.vpc.name,
     properties: () => ({
       DnsHostnames: true,
       CidrBlock: "192.168.0.0/16",
     }),
   });
 
-  const internetGateway = provider.ec2.makeInternetGateway({
-    name: config.rds.internetGateway.name,
+  const internetGateway = provider.EC2.makeInternetGateway({
+    name: config.RDS.internetGateway.name,
     dependencies: { vpc },
   });
 
-  const securityGroup = provider.ec2.makeSecurityGroup({
+  const securityGroup = provider.EC2.makeSecurityGroup({
     name: "security-group",
     dependencies: { vpc },
     properties: () => ({
@@ -25,7 +25,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const sgRuleIngressPostgres = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressPostgres = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-postgres",
     dependencies: {
       securityGroup,
@@ -50,34 +50,34 @@ const createResources = async ({ provider }) => {
   });
 
   const subnets = await map((subnet) =>
-    provider.ec2.makeSubnet({
+    provider.EC2.makeSubnet({
       name: subnet.name,
       dependencies: { vpc },
       properties: () => subnet.properties,
     })
-  )(config.rds.subnets);
+  )(config.RDS.subnets);
 
-  const routeTablePublic = provider.ec2.makeRouteTable({
+  const routeTablePublic = provider.EC2.makeRouteTable({
     name: "route-table-public",
     dependencies: { vpc, subnets },
   });
 
-  provider.ec2.makeRoute({
+  provider.EC2.makeRoute({
     name: "route-public",
     dependencies: { routeTable: routeTablePublic, ig: internetGateway },
   });
 
-  const dbSubnetGroup = provider.rds.makeDBSubnetGroup({
-    name: config.rds.subnetGroup.name,
+  const dbSubnetGroup = provider.RDS.makeDBSubnetGroup({
+    name: config.RDS.subnetGroup.name,
     dependencies: { subnets },
     properties: () => ({ DBSubnetGroupDescription: "db subnet group" }),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
-  const dbInstance = provider.rds.makeDBInstance({
-    name: config.rds.instance.name,
+  const dbInstance = provider.RDS.makeDBInstance({
+    name: config.RDS.instance.name,
     dependencies: { dbSubnetGroup, securityGroups: [securityGroup] },
-    properties: () => config.rds.instance.properties,
+    properties: () => config.RDS.instance.properties,
   });
 
   return {

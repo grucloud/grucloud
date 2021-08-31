@@ -1,9 +1,9 @@
 @startmindmap
-title Resources for project postgres-stateless
+title Resources for project RDS Postgres Stateless
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ KeyPair (1)
 ++++ Vpc (1)
 ++++ InternetGateway (1)
@@ -16,7 +16,7 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (2)
 ++++ Image (1)
 ++++ Instance (1)
-+++ rds
++++ RDS
 ++++ DBSubnetGroup (1)
 ++++ DBCluster (1)
 @endmindmap

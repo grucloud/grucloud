@@ -30,24 +30,26 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 const { buildPayloadDescriptionTags } = require("./ApiGatewayCommon");
 
 const findId = get("live.IntegrationId");
 const findName = findNameInTagsOrId({ findId });
 
 exports.Integration = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.ApiId],
     },
     {
       type: "Function",
-      group: "lambda",
+      group: "Lambda",
       ids: pipe([
         () => live,
         when(
@@ -71,7 +73,7 @@ exports.Integration = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apiGatewayV2",
+          group: "ApiGatewayV2",
         }),
       pluck("id"),
       flatMap((ApiId) =>

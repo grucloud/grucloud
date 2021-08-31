@@ -23,7 +23,7 @@ describe("AwsIamUser", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    iamUser = provider.iam.makeUser({
+    iamUser = provider.IAM.makeUser({
       name: iamUserName,
       properties: () => ({
         UserName: iamUserName,

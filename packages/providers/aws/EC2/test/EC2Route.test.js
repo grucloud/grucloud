@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
-const { EC2Route } = require("../EC2Route");
 
 describe("EC2Route", async function () {
   let config;
@@ -10,13 +8,8 @@ describe("EC2Route", async function () {
   let route;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
-    route = EC2Route({ config: provider.config });
+    route = provider.getClient({ groupType: "EC2::Route" });
     await provider.start();
   });
 

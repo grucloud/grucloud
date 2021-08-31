@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "list": "gc list --graph --json artifacts/inventory.json",
+    "list": "gc list --graph --json artifacts/inventory.json --types-exclude EC2::NetworkInterface",
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",

@@ -1,9 +1,9 @@
 const { assign, map } = require("rubico");
-const { isOurMinionObject, isOurMinion } = require("../AwsCommon");
+const { isOurMinion } = require("../AwsCommon");
 
 const { DynamoDBTable } = require("./DynamoDBTable");
 
-const GROUP = "dynamoDB";
+const GROUP = "DynamoDB";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

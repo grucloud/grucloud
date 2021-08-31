@@ -7,11 +7,11 @@ exports.config = require("./config");
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const { config } = provider;
   assert(config.eip);
-  const eip = provider.ec2.makeElasticIpAddress({
+  const eip = provider.EC2.makeElasticIpAddress({
     name: config.eip.name,
   });
 
-  const image = provider.ec2.useImage({
+  const image = provider.EC2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -31,7 +31,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const ec2Instance = provider.ec2.makeInstance({
+  const ec2Instance = provider.EC2.makeInstance({
     name: config.ec2Instance.name,
     dependencies: { keyPair, eip, image },
     properties: config.ec2Instance.properties,
@@ -47,7 +47,7 @@ exports.createResources = createResources;
 exports.createStack = async ({ createProvider }) => {
   // Create a AWS provider
   const provider = createProvider(AwsProvider, { config: require("./config") });
-  const keyPair = provider.ec2.makeKeyPair({
+  const keyPair = provider.EC2.makeKeyPair({
     name: provider.config.keyPair.name,
   });
   const resources = await createResources({ provider, resources: { keyPair } });

@@ -3,14 +3,14 @@ title Resources for project AWS Load Balancer Module
 skinparam monochrome true
 + Infra
 ++ aws
-+++ route53Domain
++++ Route53Domains
 ++++ Domain (1)
-+++ route53
++++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ acm
++++ ACM
 ++++ Certificate (1)
-+++ ec2
++++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ Subnet (2)
@@ -18,7 +18,7 @@ skinparam monochrome true
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (2)
-+++ elb
++++ ELBv2
 ++++ LoadBalancer (1)
 ++++ TargetGroup (2)
 ++++ Listener (2)

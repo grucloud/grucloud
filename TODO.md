@@ -3,7 +3,6 @@
 npm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
 npm WARN deprecated uuid@3.3.2: Please upgrade to version 7 or higher. Older versions may use Math.random() in certain circumstances, which is known to be problematic. See https://v8.dev/blog/math-random for details.
 
-- autoscaling examples, remove volume from generated code
 - examples mock with createProvider
 - order
   Querying resources on 1 provider: aws
@@ -72,8 +71,8 @@ npm WARN deprecated uuid@3.3.2: Please upgrade to version 7 or higher. Older ver
 
 ## Aws
 
-- rds: add PreferredBackupWindow: "23:13-23:43",
-  PreferredMaintenanceWindow: "wed:01:32-wed:02:02",
+- examples ecr use accountId from config in configUpdate1
+
 - gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
 - RDS postgres default::onDeployed getaddrinfo ENOTFOUND db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com

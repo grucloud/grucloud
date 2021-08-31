@@ -66,7 +66,7 @@ exports.testEnd2End = ({
             commandOptions: {
               graph: true,
               defaultExclude: true,
-              typesExclude: ["NetworkInterface"],
+              typesExclude: ["EC2::NetworkInterface"],
               ...listOptions,
             },
           }),
@@ -103,7 +103,7 @@ exports.testEnd2End = ({
                   }),
                 () => cliNext.planQuery({}),
                 tap((result) => {
-                  noEmptyPlanCheck &&
+                  !noEmptyPlanCheck &&
                     assert(
                       isEmptyPlan(result),
                       "plan should be empty after an update"

@@ -18,7 +18,7 @@ describe("AutoScalingAutoScalingGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    autoSg = AutoScalingAutoScalingGroup({ config: provider.config });
+    autoSg = provider.getClient({ groupType: "AutoScaling::AutoScalingGroup" });
     await provider.start();
   });
   after(async () => {});

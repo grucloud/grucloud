@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
-const { DBInstance } = require("../DBInstance");
 
 describe("DBInstance", async function () {
   let config;
@@ -10,20 +8,15 @@ describe("DBInstance", async function () {
   let cluster;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
-    cluster = DBInstance({ config: provider.config });
+    cluster = provider.getClient({ groupType: "RDS::DBInstance" });
     await provider.start();
   });
   it(
     "list",
     pipe([
       () => cluster.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

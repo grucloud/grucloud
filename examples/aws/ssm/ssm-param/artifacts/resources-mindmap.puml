@@ -3,6 +3,6 @@ title Resources for project ssm-param
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ssm
++++ SSM
 ++++ Parameter (1)
 @endmindmap

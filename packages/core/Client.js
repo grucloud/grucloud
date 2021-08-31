@@ -13,6 +13,7 @@ const {
   and,
   pick,
   fork,
+  any,
 } = require("rubico");
 
 const {
@@ -35,10 +36,15 @@ const showLive =
       () => resource,
       and([
         (resource) =>
-          switchCase([not(isEmpty), includes(resource.type), () => true])(
-            options.types
-          ),
-        (resource) => !includes(resource.type)(options.typesExclude),
+          pipe([
+            () => options.types,
+            switchCase([
+              not(isEmpty),
+              any((type) => pipe([() => resource.groupType, includes(type)])()),
+              () => true,
+            ]),
+          ])(),
+        pipe([get("groupType"), not(includes(options.typesExclude))]),
         (resource) => (options.defaultExclude ? !resource.isDefault : true),
         (resource) => (options.our ? resource.managedByUs : true),
         (resource) => (options.name ? resource.name === options.name : true),

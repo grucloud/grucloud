@@ -9,18 +9,20 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsNetworkAcl = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = get("live.NetworkAclId");
   const findName = findNameInTagsOrId({ findId });
   const isDefault = get("live.IsDefault");
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
+    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("Associations"), pluck("SubnetId")])(),
     },
   ];

@@ -14,7 +14,7 @@ const certificate = providerUsEast.makeCertificate({
   name: domainName,
 });
 
-const websiteBucket = provider.s3.makeBucket({
+const websiteBucket = provider.S3.makeBucket({
   name: `${domainName}-bucket`,
   properties: () => ({
     ACL: "public-read",
@@ -29,7 +29,7 @@ const websiteBucket = provider.s3.makeBucket({
   }),
 });
 
-const distribution = provider.cloudFront.makeDistribution({
+const distribution = provider.CloudFront.makeDistribution({
   name: `distribution-${domainName}`,
   dependencies: { websiteBucket, certificate },
   properties: ({ dependencies }) => {

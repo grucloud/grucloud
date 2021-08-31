@@ -10,14 +10,14 @@ The examples below uses a read only policy and add it to a role, a user or a gro
 ### Attach an existing policy to a role
 
 ```js
-const iamPolicyEKSCluster = provider.iam.usePolicyReadOnly({
+const iamPolicyEKSCluster = provider.IAM.usePolicyReadOnly({
   name: "AmazonEKSClusterPolicy",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   }),
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "eks-role",
   dependencies: { policies: [iamPolicyEKSCluster] },
   properties: () => ({

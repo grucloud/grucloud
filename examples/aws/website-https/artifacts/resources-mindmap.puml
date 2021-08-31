@@ -3,16 +3,16 @@ title Resources for project website-https
 skinparam monochrome true
 + Infra
 ++ aws
-+++ s3
++++ S3
 ++++ Bucket (1)
 ++++ Object (5)
-+++ acm
++++ ACM
 ++++ Certificate (1)
-+++ route53Domain
++++ Route53Domains
 ++++ Domain (1)
-+++ route53
++++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ cloudFront
++++ CloudFront
 ++++ Distribution (1)
 @endmindmap

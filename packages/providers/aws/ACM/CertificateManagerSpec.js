@@ -4,7 +4,7 @@ const { compare } = require("@grucloud/core/Common");
 
 const { AwsCertificate } = require("./AwsCertificate");
 
-const GROUP = "acm";
+const GROUP = "ACM";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

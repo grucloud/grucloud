@@ -13,18 +13,18 @@ Provides an [Lambda Function](https://console.aws.amazon.com/lambda/home)
 const lambdaPolicy = require("./lambdaPolicy.json");
 const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "lambda-policy",
   properties: () => lambdaPolicy,
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "lambda-role",
   dependencies: { policies: [iamPolicy] },
   properties: () => lambdaAssumePolicy,
 });
 
-const lambda = provider.lambda.makeFunction({
+const lambda = provider.Lambda.makeFunction({
   name: "lambda-hello-world", // Source must be located in the direcory 'lambda-hello-world'
   dependencies: { role: iamRole },
   properties: () => ({

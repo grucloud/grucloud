@@ -3,63 +3,63 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeVpc({
-    name: get("config.ec2.Vpc.vpcTestSg.name"),
-    properties: get("config.ec2.Vpc.vpcTestSg.properties"),
+  provider.EC2.makeVpc({
+    name: get("config.EC2.Vpc.vpcTestSg.name"),
+    properties: get("config.EC2.Vpc.vpcTestSg.properties"),
   });
 
-  provider.ec2.makeSecurityGroup({
-    name: get("config.ec2.SecurityGroup.securityGroupClusterTest.name"),
+  provider.EC2.makeSecurityGroup({
+    name: get("config.EC2.SecurityGroup.securityGroupClusterTest.name"),
     properties: get(
-      "config.ec2.SecurityGroup.securityGroupClusterTest.properties"
+      "config.EC2.SecurityGroup.securityGroupClusterTest.properties"
     ),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcTestSg,
+      vpc: resources.EC2.Vpc.vpcTestSg,
     }),
   });
 
-  provider.ec2.makeSecurityGroup({
-    name: get("config.ec2.SecurityGroup.securityGroupNodeGroupTest.name"),
+  provider.EC2.makeSecurityGroup({
+    name: get("config.EC2.SecurityGroup.securityGroupNodeGroupTest.name"),
     properties: get(
-      "config.ec2.SecurityGroup.securityGroupNodeGroupTest.properties"
+      "config.EC2.SecurityGroup.securityGroupNodeGroupTest.properties"
     ),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcTestSg,
+      vpc: resources.EC2.Vpc.vpcTestSg,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
+  provider.EC2.makeSecurityGroupRuleIngress({
     name: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22.name"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22.name"
     ),
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleClusterIngressPort_22.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupClusterTest,
+      securityGroup: resources.EC2.SecurityGroup.securityGroupClusterTest,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
+  provider.EC2.makeSecurityGroupRuleIngress({
     name: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster.name"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster.name"
     ),
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupNodeGroupTest,
-      securityGroupFrom: resources.ec2.SecurityGroup.securityGroupClusterTest,
+      securityGroup: resources.EC2.SecurityGroup.securityGroupNodeGroupTest,
+      securityGroupFrom: resources.EC2.SecurityGroup.securityGroupClusterTest,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleEgress({
-    name: get("config.ec2.SecurityGroupRuleEgress.sgRuleClusterEgress.name"),
+  provider.EC2.makeSecurityGroupRuleEgress({
+    name: get("config.EC2.SecurityGroupRuleEgress.sgRuleClusterEgress.name"),
     properties: get(
-      "config.ec2.SecurityGroupRuleEgress.sgRuleClusterEgress.properties"
+      "config.EC2.SecurityGroupRuleEgress.sgRuleClusterEgress.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroupClusterTest,
+      securityGroup: resources.EC2.SecurityGroup.securityGroupClusterTest,
     }),
   });
 };

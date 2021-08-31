@@ -16,7 +16,7 @@ describe("Api Gateway Deployment", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    deployment = Deployment({ config: provider.config });
+    deployment = provider.getClient({ groupType: "APIGateway::Deployment" });
     await provider.start();
   });
   it(

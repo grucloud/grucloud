@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-ssm-parameter",
-  ssm: {
+  SSM: {
     Parameter: {
       textParam: {
         name: "text-param",

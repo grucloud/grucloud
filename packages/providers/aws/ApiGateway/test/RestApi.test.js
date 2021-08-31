@@ -2,7 +2,6 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
-const { RestApi } = require("../RestApi");
 
 describe("RestApi", async function () {
   let config;
@@ -16,7 +15,7 @@ describe("RestApi", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    restApi = RestApi({ config: provider.config });
+    restApi = provider.getClient({ groupType: "APIGateway::RestApi" });
     await provider.start();
   });
   after(async () => {});

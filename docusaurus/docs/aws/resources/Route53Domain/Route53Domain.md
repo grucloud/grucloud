@@ -11,11 +11,11 @@ By using a _route53 domain_ as a dependency to an _hostedZone_, the nameservers 
 
 ```js
 const domainName = "mydomain.com";
-const domain = provider.route53Domain.useDomain({
+const domain = provider.Route53Domains.useDomain({
   name: domainName,
 });
 
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
   properties: ({}) => ({}),

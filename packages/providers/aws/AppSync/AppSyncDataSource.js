@@ -21,6 +21,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.dataSourceArn");
 const findName = get("live.name");
@@ -40,27 +41,28 @@ const buildTagKey = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncDataSource = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "GraphqlApi",
-      group: "appSync",
+      group: "AppSync",
       ids: [live.apiId],
     },
     {
       type: "Role",
-      group: "appSync",
+      group: "AppSync",
       ids: [live.serviceRoleArn],
     },
     {
       type: "Function",
-      group: "lambda",
+      group: "Lambda",
       ids: [get("lambdaConfig.lambdaFunctionArn")(live)],
     },
     {
       type: "DBCluster",
-      group: "rds",
+      group: "RDS",
       ids: [
         get(
           "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier"
@@ -88,7 +90,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "GraphqlApi",
-          group: "appSync",
+          group: "AppSync",
         }),
       pluck("id"),
       flatMap((apiId) =>

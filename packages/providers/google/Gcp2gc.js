@@ -36,15 +36,9 @@ const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const {
-  generatorMain,
-  hasDependency,
-  findLiveById,
-  readModel,
-  readMapping,
-  ResourceVarNameDefault,
-  omitIfEmpty,
-} = require("@grucloud/core/generatorUtils");
+const { generatorMain } = require("@grucloud/core/generatorUtils");
+
+//const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { configTpl } = require("./configTpl");
 const { iacTpl } = require("./iacTpl");

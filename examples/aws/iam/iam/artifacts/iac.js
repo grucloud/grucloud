@@ -3,66 +3,66 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.iam.usePolicy({
-    name: get("config.iam.Policy.amazonEksWorkerNodePolicy.name"),
-    properties: get("config.iam.Policy.amazonEksWorkerNodePolicy.properties"),
+  provider.IAM.usePolicy({
+    name: get("config.IAM.Policy.amazonEksWorkerNodePolicy.name"),
+    properties: get("config.IAM.Policy.amazonEksWorkerNodePolicy.properties"),
   });
 
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.myPolicyToGroup.name"),
-    properties: get("config.iam.Policy.myPolicyToGroup.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.myPolicyToGroup.name"),
+    properties: get("config.IAM.Policy.myPolicyToGroup.properties"),
   });
 
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.myPolicyToRole.name"),
-    properties: get("config.iam.Policy.myPolicyToRole.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.myPolicyToRole.name"),
+    properties: get("config.IAM.Policy.myPolicyToRole.properties"),
   });
 
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.myPolicyToUser.name"),
-    properties: get("config.iam.Policy.myPolicyToUser.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.myPolicyToUser.name"),
+    properties: get("config.IAM.Policy.myPolicyToUser.properties"),
   });
 
-  provider.iam.makeUser({
-    name: get("config.iam.User.alice.name"),
-    properties: get("config.iam.User.alice.properties"),
+  provider.IAM.makeUser({
+    name: get("config.IAM.User.alice.name"),
+    properties: get("config.IAM.User.alice.properties"),
     dependencies: ({ resources }) => ({
-      iamGroups: [resources.iam.Group.admin],
-      policies: [resources.iam.Policy.myPolicyToUser],
+      iamGroups: [resources.IAM.Group.admin],
+      policies: [resources.IAM.Policy.myPolicyToUser],
     }),
   });
 
-  provider.iam.makeGroup({
-    name: get("config.iam.Group.admin.name"),
-    properties: get("config.iam.Group.admin.properties"),
+  provider.IAM.makeGroup({
+    name: get("config.IAM.Group.admin.name"),
+    properties: get("config.IAM.Group.admin.properties"),
     dependencies: ({ resources }) => ({
-      policies: [resources.iam.Policy.myPolicyToGroup],
+      policies: [resources.IAM.Policy.myPolicyToGroup],
     }),
   });
 
-  provider.iam.makeRole({
-    name: get("config.iam.Role.roleAllowAssumeRole.name"),
-    properties: get("config.iam.Role.roleAllowAssumeRole.properties"),
+  provider.IAM.makeRole({
+    name: get("config.IAM.Role.roleAllowAssumeRole.name"),
+    properties: get("config.IAM.Role.roleAllowAssumeRole.properties"),
     dependencies: ({ resources }) => ({
       policies: [
-        resources.iam.Policy.amazonEksWorkerNodePolicy,
-        resources.iam.Policy.myPolicyToRole,
+        resources.IAM.Policy.amazonEksWorkerNodePolicy,
+        resources.IAM.Policy.myPolicyToRole,
       ],
     }),
   });
 
-  provider.iam.makeInstanceProfile({
-    name: get("config.iam.InstanceProfile.myProfile.name"),
+  provider.IAM.makeInstanceProfile({
+    name: get("config.IAM.InstanceProfile.myProfile.name"),
     dependencies: ({ resources }) => ({
-      roles: [resources.iam.Role.roleAllowAssumeRole],
+      roles: [resources.IAM.Role.roleAllowAssumeRole],
     }),
   });
 
-  provider.ec2.makeInstance({
-    name: get("config.ec2.Instance.webIam.name"),
-    properties: get("config.ec2.Instance.webIam.properties"),
+  provider.EC2.makeInstance({
+    name: get("config.EC2.Instance.webIam.name"),
+    properties: get("config.EC2.Instance.webIam.properties"),
     dependencies: ({ resources }) => ({
-      iamInstanceProfile: resources.iam.InstanceProfile.myProfile,
+      iamInstanceProfile: resources.IAM.InstanceProfile.myProfile,
     }),
   });
 };

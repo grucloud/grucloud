@@ -34,6 +34,8 @@ const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
+const { omitIfEmpty } = require("@grucloud/core/Common");
+
 const {
   generatorMain,
   hasDependency,
@@ -41,9 +43,7 @@ const {
   readModel,
   readMapping,
   ResourceVarNameDefault,
-  omitIfEmpty,
 } = require("@grucloud/core/generatorUtils");
-
 const { configTpl } = require("./configTpl");
 const { iacTpl } = require("./iacTpl");
 
@@ -77,7 +77,7 @@ const securityGroupRulePickProperties = pipe([
         () => live,
         switchCase([
           () =>
-            hasDependency({ type: "SecurityGroup", group: "ec2" })(resource),
+            hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
           omit(["IpPermission.UserIdGroupPairs"]),
           identity,
         ]),
@@ -91,18 +91,20 @@ const securityGroupRulePickProperties = pipe([
 const ec2InstanceDependencies = () => ({
   subnet: {
     type: "Subnet",
-    group: "ec2",
+    group: "EC2",
   },
-  keyPair: { type: "KeyPair", group: "ec2" },
-  eip: { type: "ElasticIpAddress", group: "ec2" },
-  iamInstanceProfile: { type: "InstanceProfile", group: "iam" },
+  keyPair: { type: "KeyPair", group: "EC2" },
+  eip: { type: "ElasticIpAddress", group: "EC2" },
+  iamInstanceProfile: { type: "InstanceProfile", group: "IAM" },
   securityGroups: {
     type: "SecurityGroup",
-    group: "ec2",
+    group: "EC2",
+    list: true,
   },
   volumes: {
     type: "Volume",
-    group: "ec2",
+    group: "EC2",
+    list: true,
     filterDependency:
       ({ resource }) =>
       (dependency) =>
@@ -122,7 +124,7 @@ const ec2InstanceDependencies = () => ({
 });
 const WritersSpec = ({ commandOptions, programOptions }) => [
   {
-    group: "s3",
+    group: "S3",
     types: [
       {
         type: "Bucket",
@@ -144,14 +146,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LifecycleConfiguration",
               "WebsiteConfiguration",
             ]),
+            //TODO omitIfEmpty(["LocationConstraint"])
             when(
               pipe([get("LocationConstraint"), isEmpty]),
               omit(["LocationConstraint"])
             ),
             omit(["WebsiteConfiguration.RoutingRules"]),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
       },
       {
@@ -159,9 +159,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: ({ resource: { live } }) =>
           pipe([
             pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
-            tap((params) => {
-              assert(true);
-            }),
             assign({
               source: () =>
                 objectFileNameFromLive({
@@ -170,18 +167,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                   programOptions,
                 }),
             }),
-            tap((params) => {
-              assert(live);
-            }),
           ]),
         dependencies: () => ({
-          bucket: { type: "Bucket", group: "s3" },
+          bucket: { type: "Bucket", group: "S3" },
         }),
       },
     ],
   },
   {
-    group: "cloudFront",
+    group: "CloudFront",
     types: [
       {
         type: "Distribution",
@@ -197,14 +191,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "Logging",
           ]),
         dependencies: () => ({
-          bucket: { type: "Bucket", group: "s3" },
-          certificate: { type: "Certificate", group: "acm" },
+          bucket: { type: "Bucket", group: "S3" },
+          certificate: { type: "Certificate", group: "ACM" },
         }),
       },
     ],
   },
   {
-    group: "iam",
+    group: "IAM",
     types: [
       {
         type: "Policy",
@@ -218,15 +212,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "User",
         filterLive: () => pick(["UserName", "Path"]),
         dependencies: () => ({
-          iamGroups: { type: "Group", group: "iam" },
-          policies: { type: "Policy", group: "iam" },
+          iamGroups: { type: "Group", group: "IAM", list: true },
+          policies: { type: "Policy", group: "IAM", list: true },
         }),
       },
       {
         type: "Group",
         filterLive: () => pick(["GroupName", "Path"]),
         dependencies: () => ({
-          policies: { type: "Policy", group: "iam" },
+          policies: { type: "Policy", group: "IAM", list: true },
         }),
       },
       {
@@ -237,18 +231,19 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         dependencies: () => ({
           policies: {
             type: "Policy",
-            group: "iam",
+            group: "IAM",
+            list: true,
             findDependencyNames: ({ resource, lives, providerName }) =>
               pipe([
                 () => resource.dependencies,
-                find(eq(get("groupType"), `iam::Policy`)),
+                find(eq(get("groupType"), `IAM::Policy`)),
                 get("ids"),
                 map((id) =>
                   pipe([
                     () => id,
                     findLiveById({
                       type: "Policy",
-                      group: "iam",
+                      group: "IAM",
                       lives,
                       providerName,
                     }),
@@ -262,6 +257,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                     ]),
                   ])()
                 ),
+                (dependencyVarNames) => ({ list: true, dependencyVarNames }),
                 tap((params) => {
                   assert(true);
                 }),
@@ -269,39 +265,41 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           },
           openIdConnectProvider: {
             type: "OpenIDConnectProvider",
-            group: "iam",
+            group: "IAM",
           },
         }),
         hasNoProperty: ({ resource }) =>
           pipe([
             () => resource,
             or([
-              hasDependency({ type: "OpenIDConnectProvider", group: "iam" }),
+              hasDependency({ type: "OpenIDConnectProvider", group: "IAM" }),
             ]),
           ])(),
       },
       {
         type: "InstanceProfile",
         filterLive: () => pick([]),
-        dependencies: () => ({ roles: { type: "Role", group: "iam" } }),
+        dependencies: () => ({
+          roles: { type: "Role", group: "IAM", list: true },
+        }),
       },
       {
         type: "OpenIDConnectProvider",
         filterLive: () => pick(["ClientIDList"]),
         dependencies: () => ({
-          cluster: { type: "Cluster", group: "eks" },
-          role: { type: "Role", group: "iam" },
+          cluster: { type: "Cluster", group: "EKS" },
+          role: { type: "Role", group: "IAM" },
         }),
         hasNoProperty: ({ lives, resource }) =>
           pipe([
             () => resource,
-            or([hasDependency({ type: "Cluster", group: "eks" })]),
+            or([hasDependency({ type: "Cluster", group: "EKS" })]),
           ])(),
       },
     ],
   },
   {
-    group: "ec2",
+    group: "EC2",
     types: [
       {
         type: "Vpc",
@@ -319,7 +317,8 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "MapCustomerOwnedIpOnLaunch",
             "MapPublicIpOnLaunch",
           ]),
-        dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
@@ -349,7 +348,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                       () => InstanceId,
                       findLiveById({
                         type: "Instance",
-                        group: "ec2",
+                        group: "EC2",
                         lives,
                         providerName: resource.providerName,
                       }),
@@ -370,41 +369,45 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "InternetGateway",
         filterLive: () => pick([]),
-        dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
         type: "NatGateway",
         filterLive: () => pick([]),
         dependencies: () => ({
-          subnet: { type: "Subnet", group: "ec2" },
-          eip: { type: "ElasticIpAddress", group: "ec2" },
+          subnet: { type: "Subnet", group: "EC2" },
+          eip: { type: "ElasticIpAddress", group: "EC2" },
         }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
         type: "RouteTable",
         filterLive: () => pick([]),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
         dependencies: () => ({
-          vpc: { type: "Vpc", group: "ec2" },
-          subnets: { type: "Subnet", group: "ec2" },
+          vpc: { type: "Vpc", group: "EC2" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
         }),
       },
       {
         type: "Route",
         filterLive: () => pick(["DestinationCidrBlock"]),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
         dependencies: () => ({
-          routeTable: { type: "RouteTable", group: "ec2" },
-          ig: { type: "InternetGateway", group: "ec2" },
-          natGateway: { type: "NatGateway", group: "ec2" },
+          routeTable: { type: "RouteTable", group: "EC2" },
+          ig: { type: "InternetGateway", group: "EC2" },
+          natGateway: { type: "NatGateway", group: "EC2" },
         }),
       },
       {
         type: "SecurityGroup",
         filterLive: () => pick(["Description"]),
-        dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
       },
       {
         type: "SecurityGroupRuleIngress",
@@ -413,7 +416,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         dependencies: () => ({
           securityGroup: {
             type: "SecurityGroup",
-            group: "ec2",
+            group: "EC2",
             filterDependency:
               ({ resource }) =>
               (dependency) =>
@@ -424,7 +427,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           },
           securityGroupFrom: {
             type: "SecurityGroup",
-            group: "ec2",
+            group: "EC2",
             filterDependency:
               ({ resource }) =>
               (dependency) =>
@@ -448,7 +451,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: securityGroupRulePickProperties,
         includeDefaultDependencies: true,
         dependencies: () => ({
-          securityGroup: { type: "SecurityGroup", group: "ec2" },
+          securityGroup: { type: "SecurityGroup", group: "EC2" },
         }),
       },
 
@@ -475,16 +478,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LaunchTemplateData.SecurityGroupIds",
               "LaunchTemplateData.IamInstanceProfile",
             ]),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
         dependencies: ec2InstanceDependencies,
       },
     ],
   },
   {
-    group: "acm",
+    group: "ACM",
     types: [
       {
         type: "Certificate",
@@ -505,7 +505,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "autoscaling",
+    group: "AutoScaling",
     types: [
       {
         type: "AutoScalingGroup",
@@ -519,12 +519,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "HealthCheckGracePeriod",
           ]),
         dependencies: () => ({
-          targetGroups: { type: "TargetGroup", group: "elb" },
-          subnets: { type: "Subnet", group: "ec2" },
-          launchTemplate: { type: "LaunchTemplate", group: "ec2" },
+          targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
+          subnets: { type: "Subnet", group: "EC2", list: true },
+          launchTemplate: { type: "LaunchTemplate", group: "EC2" },
           launchConfiguration: {
             type: "LaunchConfiguration",
-            group: "autoscaling",
+            group: "AutoScaling",
           },
         }),
       },
@@ -545,25 +545,25 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             omitIfEmpty(["KernelId", "RamdiskId"]),
           ]),
         dependencies: () => ({
-          instanceProfile: { type: "InstanceProfile", group: "iam" },
-          keyPair: { type: "KeyPair", group: "ec2" },
-          image: { type: "Image", group: "ec2" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          instanceProfile: { type: "InstanceProfile", group: "IAM" },
+          keyPair: { type: "KeyPair", group: "EC2" },
+          image: { type: "Image", group: "EC2" },
+          securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         }),
       },
     ],
   },
   {
-    group: "elb",
+    group: "ELBv2",
     types: [
       {
         type: "LoadBalancer",
         filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
         dependencies: () => ({
-          subnets: { type: "Subnet", group: "ec2" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
-          role: { type: "Role", group: "iam" },
-          key: { type: "Key", group: "kms" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
+          securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+          role: { type: "Role", group: "IAM" },
+          key: { type: "Key", group: "KMS" },
         }),
       },
       {
@@ -585,10 +585,10 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           ]),
 
         dependencies: () => ({
-          vpc: { type: "Vpc", group: "ec2" },
+          vpc: { type: "Vpc", group: "EC2" },
           nodeGroup: {
             type: "NodeGroup",
-            group: "eks",
+            group: "EKS",
           },
           //TODO autoScalingGroup
         }),
@@ -603,9 +603,10 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             (live) =>
               pipe([
                 () => live,
+                //TODO when
                 switchCase([
                   () =>
-                    hasDependency({ type: "TargetGroup", group: "elb" })(
+                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
                       resource
                     ),
                   omit(["DefaultActions"]),
@@ -618,9 +619,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               ])(),
         ]),
         dependencies: () => ({
-          loadBalancer: { type: "LoadBalancer", group: "elb" },
-          targetGroup: { type: "TargetGroup", group: "elb" },
-          certificate: { type: "Certificate", group: "acm" },
+          loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+          targetGroup: { type: "TargetGroup", group: "ELBv2" },
+          certificate: { type: "Certificate", group: "ACM" },
         }),
       },
       {
@@ -630,9 +631,10 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             (live) =>
               pipe([
                 () => live,
+                //TODO when
                 switchCase([
                   () =>
-                    hasDependency({ type: "TargetGroup", group: "elb" })(
+                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
                       resource
                     ),
                   omit(["Actions"]),
@@ -665,14 +667,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           ])(),
 
         dependencies: () => ({
-          listener: { type: "Listener", group: "elb" },
-          targetGroup: { type: "TargetGroup", group: "elb" },
+          listener: { type: "Listener", group: "ELBv2" },
+          targetGroup: { type: "TargetGroup", group: "ELBv2" },
         }),
       },
     ],
   },
   {
-    group: "kms",
+    group: "KMS",
     types: [
       {
         type: "Key",
@@ -682,13 +684,17 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "ecs",
+    group: "ECS",
     types: [
       {
         type: "Cluster",
         filterLive: () => pick(["settings", "defaultCapacityProviderStrategy"]),
         dependencies: () => ({
-          capacityProviders: { type: "CapacityProvider", group: "ecs" },
+          capacityProviders: {
+            type: "CapacityProvider",
+            group: "ECS",
+            list: true,
+          },
         }),
       },
       {
@@ -699,7 +705,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
           ]),
         dependencies: () => ({
-          autoScalingGroup: { type: "AutoScalingGroup", group: "autoscaling" },
+          autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
         }),
       },
       {
@@ -729,9 +735,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
           ]),
         dependencies: () => ({
-          cluster: { type: "Cluster", group: "ecs" },
-          taskDefinition: { type: "TaskDefinition", group: "ecs" },
-          loadBalancers: { type: "LoadBalancer", group: "elb" },
+          cluster: { type: "Cluster", group: "ECS" },
+          taskDefinition: { type: "TaskDefinition", group: "ECS" },
+          loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
         }),
       },
       {
@@ -746,16 +752,16 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "overrides",
           ]),
         dependencies: () => ({
-          cluster: { type: "Cluster", group: "ecs" },
-          taskDefinition: { type: "TaskDefinition", group: "ecs" },
-          subnets: { type: "Subnet", group: "ec2" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          cluster: { type: "Cluster", group: "ECS" },
+          taskDefinition: { type: "TaskDefinition", group: "ECS" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
+          securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         }),
       },
     ],
   },
   {
-    group: "ssm",
+    group: "SSM",
     types: [
       {
         type: "Parameter",
@@ -772,7 +778,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "dynamoDB",
+    group: "DynamoDB",
     types: [
       {
         type: "Table",
@@ -799,13 +805,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             ),
           ]),
         dependencies: () => ({
-          kmsKey: { type: "Key", group: "kms" },
+          kmsKey: { type: "Key", group: "KMS" },
         }),
       },
     ],
   },
   {
-    group: "appSync",
+    group: "AppSync",
     types: [
       {
         type: "GraphqlApi",
@@ -816,7 +822,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "ApiKey",
         filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
         dependencies: () => ({
-          graphqlApi: { type: "GraphqlApi", group: "appSync" },
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
         }),
       },
       {
@@ -832,10 +838,10 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "relationalDatabaseConfig",
           ]),
         dependencies: () => ({
-          serviceRole: { type: "Role", group: "iam" },
-          graphqlApi: { type: "GraphqlApi", group: "appSync" },
-          dbCluster: { type: "DBCluster", group: "rds" },
-          function: { type: "Function", group: "lambda" },
+          serviceRole: { type: "Role", group: "IAM" },
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+          dbCluster: { type: "DBCluster", group: "RDS" },
+          function: { type: "Function", group: "Lambda" },
           //TODO
           //elasticsearch
           //dynamodbTable: { type: "Table", group: "dynamodb" },
@@ -844,10 +850,11 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "ecr",
+    group: "ECR",
     types: [
       {
         type: "Repository",
+
         filterLive: () =>
           pick([
             "imageTagMutability",
@@ -859,22 +866,35 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Registry",
+        ignoreResource: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            get("live"),
+            not(and([get("policyText"), get("replicationConfiguration")])),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+
         filterLive: () =>
           pipe([pick(["policyText", "replicationConfiguration"])]),
       },
     ],
   },
   {
-    group: "eks",
+    group: "EKS",
     types: [
       {
         type: "Cluster",
         filterLive: () => pick(["version"]),
         dependencies: () => ({
-          subnets: { type: "Subnet", group: "ec2" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
           securityGroups: {
             type: "SecurityGroup",
-            group: "ec2",
+            group: "EC2",
+            list: true,
             filterDependency:
               ({ resource }) =>
               (dependency) =>
@@ -889,8 +909,8 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                   }),
                 ])(),
           },
-          role: { type: "Role", group: "iam" },
-          key: { type: "Key", group: "kms" },
+          role: { type: "Role", group: "IAM" },
+          key: { type: "Key", group: "KMS" },
         }),
       },
       {
@@ -905,15 +925,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "diskSize",
           ]),
         dependencies: () => ({
-          cluster: { type: "Cluster", group: "eks" },
-          subnets: { type: "Subnet", group: "ec2" },
-          role: { type: "Role", group: "iam" },
+          cluster: { type: "Cluster", group: "EKS" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
+          role: { type: "Role", group: "IAM" },
         }),
       },
     ],
   },
   {
-    group: "route53Domain",
+    group: "Route53Domains",
     types: [
       {
         type: "Domain",
@@ -922,15 +942,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
-    group: "route53",
+    group: "Route53",
     types: [
       {
         type: "HostedZone",
         filterLive: () => pick([]),
         includeDefaultDependencies: true,
         dependencies: () => ({
-          domain: { type: "Domain", group: "route53Domain" },
-          hostedZone: { type: "HostedZone", group: "route53" },
+          domain: { type: "Domain", group: "Route53Domains" },
+          hostedZone: { type: "HostedZone", group: "Route53" },
         }),
       },
       {
@@ -941,6 +961,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
+            //TODO omitIfEmpty(["ResourceRecords"])
             when(
               pipe([get("ResourceRecords"), isEmpty]),
               omit(["ResourceRecords"])
@@ -950,25 +971,26 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           pipe([
             () => resource,
             or([
-              hasDependency({ type: "LoadBalancer", group: "elb" }),
-              hasDependency({ type: "Certificate", group: "acm" }),
-              hasDependency({ type: "Distribution", group: "cloudFront" }),
-              hasDependency({ type: "DomainName", group: "apiGatewayV2" }),
+              hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
+              hasDependency({ type: "Certificate", group: "ACM" }),
+              hasDependency({ type: "Distribution", group: "CloudFront" }),
+              hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
             ]),
           ])(),
         dependencies: () => ({
-          hostedZone: { type: "HostedZone", group: "route53" },
-          loadBalancer: { type: "LoadBalancer", group: "elb" },
-          certificate: { type: "Certificate", group: "acm" },
-          distribution: { type: "Distribution", group: "cloudFront" },
-          apiGatewayV2DomainName: { type: "DomainName", group: "apiGatewayV2" },
+          hostedZone: { type: "HostedZone", group: "Route53" },
+          loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+          certificate: { type: "Certificate", group: "ACM" },
+          distribution: { type: "Distribution", group: "CloudFront" },
+          apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
         }),
+        //TODO remove ?
         ignoreResource: () => get("cannotBeDeleted"),
       },
     ],
   },
   {
-    group: "lambda",
+    group: "Lambda",
     types: [
       {
         type: "Layer",
@@ -1041,14 +1063,14 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               ),
             ])(),
         dependencies: () => ({
-          layers: { type: "Layer", group: "lambda" },
-          role: { type: "Role", group: "iam" },
+          layers: { type: "Layer", group: "Lambda", list: true },
+          role: { type: "Role", group: "IAM" },
         }),
       },
     ],
   },
   {
-    group: "apiGatewayV2",
+    group: "ApiGatewayV2",
     types: [
       {
         type: "Api",
@@ -1088,8 +1110,8 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "PayloadFormatVersion",
           ]),
         dependencies: () => ({
-          api: { type: "Api", group: "apiGatewayV2" },
-          lambdaFunction: { type: "Function", group: "lambda" },
+          api: { type: "Api", group: "ApiGatewayV2" },
+          lambdaFunction: { type: "Function", group: "Lambda" },
         }),
       },
       {
@@ -1097,36 +1119,36 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apiGatewayV2" },
-          integration: { type: "Integration", group: "apiGatewayV2" },
+          api: { type: "Api", group: "ApiGatewayV2" },
+          integration: { type: "Integration", group: "ApiGatewayV2" },
         }),
       },
       {
         type: "Stage",
         filterLive: () => pick(["StageName", "StageVariables"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apiGatewayV2" },
+          api: { type: "Api", group: "ApiGatewayV2" },
         }),
       },
       {
         type: "Deployment",
         filterLive: () => pick(["Description"]),
         dependencies: () => ({
-          api: { type: "Api", group: "apiGatewayV2" },
-          stage: { type: "Stage", group: "apiGatewayV2" },
+          api: { type: "Api", group: "ApiGatewayV2" },
+          stage: { type: "Stage", group: "ApiGatewayV2" },
         }),
       },
       {
         type: "DomainName",
         filterLive: () => pick(["DomainName"]),
         dependencies: () => ({
-          certificate: { type: "Certificate", group: "acm" },
+          certificate: { type: "Certificate", group: "ACM" },
         }),
       },
     ],
   },
   {
-    group: "rds",
+    group: "RDS",
     types: [
       {
         type: "DBCluster",
@@ -1142,23 +1164,20 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "PreferredBackupWindow",
               "PreferredMaintenanceWindow",
             ]),
-            tap((params) => {
-              assert(true);
-            }),
             assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
             omit(["ScalingConfigurationInfo"]),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
 
-        environmentVariables: () => ["MasterUsername", "MasterUserPassword"],
+        environmentVariables: () => [
+          { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+          { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+        ],
         dependencies: () => ({
-          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+          securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
           key: {
             type: "Key",
-            group: "kms",
+            group: "KMS",
           },
         }),
       },
@@ -1175,17 +1194,20 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "PreferredBackupWindow",
             "BackupRetentionPeriod",
           ]),
-        environmentVariables: () => ["MasterUsername", "MasterUserPassword"],
+        environmentVariables: () => [
+          { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+          { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+        ],
         dependencies: () => ({
-          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+          securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         }),
       },
       {
         type: "DBSubnetGroup",
         filterLive: () => pick(["DBSubnetGroupDescription"]),
         dependencies: () => ({
-          subnets: { type: "Subnet", group: "ec2" },
+          subnets: { type: "Subnet", group: "EC2", list: true },
         }),
       },
     ],
@@ -1224,7 +1246,7 @@ const downloadAsset = ({ url, assetPath }) =>
 const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
   pipe([
     () => lives,
-    filter(eq(get("groupType"), "s3::Object")),
+    filter(eq(get("groupType"), "S3::Object")),
     pluck("live"),
     tap((params) => {
       assert(true);
@@ -1254,7 +1276,7 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
 const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
   pipe([
     () => lives,
-    filter(eq(get("groupType"), "s3::Bucket")),
+    filter(eq(get("groupType"), "S3::Bucket")),
     map((live) =>
       pipe([
         tap(() => {

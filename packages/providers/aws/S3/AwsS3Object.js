@@ -32,6 +32,8 @@ const {
   findNamespaceInTags,
 } = require("../AwsCommon");
 
+const { AwsClient } = require("../AwsClient");
+
 const { tos } = require("@grucloud/core/tos");
 const {
   convertError,
@@ -69,7 +71,7 @@ exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
-  assert(config);
+  const client = AwsClient({ spec, config });
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
   const s3 = S3New(config);
@@ -82,7 +84,7 @@ exports.AwsS3Object = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Bucket",
-      group: "s3",
+      group: "S3",
       ids: pipe([() => live, get("Bucket"), (bucket) => [bucket]])(),
     },
   ];
@@ -110,7 +112,7 @@ exports.AwsS3Object = ({ spec, config }) => {
       () =>
         lives.getByType({
           type: "Bucket",
-          group: "s3",
+          group: "S3",
           providerName: config.providerName,
         }),
       map.pool(mapPoolSize, (bucket) =>

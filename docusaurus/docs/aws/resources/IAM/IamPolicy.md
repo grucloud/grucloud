@@ -12,7 +12,7 @@ The examples below create or reference a policy, and add it to a role, a user or
 Let's create a policy and a user, the policy is attached to the user via the _dependencies_ field:
 
 ```js
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -30,7 +30,7 @@ const iamPolicy = provider.iam.makePolicy({
   }),
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "my-role",
   dependencies: { policies: [iamPolicy] },
 
@@ -57,14 +57,14 @@ const iamRole = provider.iam.makeRole({
 A policy can be referenced by its _Arn_, invoke _usePolicy_ instead of _makePolicy_:
 
 ```js
-const iamPolicyEKSCluster = provider.iam.usePolicy({
+const iamPolicyEKSCluster = provider.IAM.usePolicy({
   name: "AmazonEKSClusterPolicy",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   }),
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "my-role",
   dependencies: { policies: [iamPolicyEKSCluster] },
 
@@ -91,7 +91,7 @@ const iamRole = provider.iam.makeRole({
 Let's create a policy and attach it to the user:
 
 ```js
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -109,7 +109,7 @@ const iamPolicy = provider.iam.makePolicy({
   }),
 });
 
-const iamUser = provider.iam.makeUser({
+const iamUser = provider.IAM.makeUser({
   name: "Alice",
   dependencies: { policies: [iamPolicy] },
   properties: () => ({}),
@@ -121,7 +121,7 @@ const iamUser = provider.iam.makeUser({
 Let's create a policy and attach it to the group:
 
 ```js
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "policy-ec2-describe",
   properties: () => ({
     PolicyDocument: {
@@ -138,7 +138,7 @@ const iamPolicy = provider.iam.makePolicy({
   }),
 });
 
-const iamGroup = provider.iam.makeGroup({
+const iamGroup = provider.IAM.makeGroup({
   name: "Admin",
   dependencies: { policies: [iamPolicy] },
   properties: () => ({}),

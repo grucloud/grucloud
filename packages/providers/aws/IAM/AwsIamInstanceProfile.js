@@ -45,10 +45,11 @@ const {
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 
+const { AwsClient } = require("../AwsClient");
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
 
   const iam = IAMNew(config);
 
@@ -63,7 +64,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () =>
         lives.getByType({
           type: "LaunchTemplate",
-          group: "ec2",
+          group: "EC2",
           providerName: config.providerName,
         }),
       find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
@@ -97,7 +98,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Role",
-      group: "iam",
+      group: "IAM",
       ids: pipe([() => live, get("Roles"), pluck("Arn")])(),
     },
   ];
@@ -273,7 +274,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
               lives.getByName({
                 name: RoleName,
                 type: "Role",
-                group: "iam",
+                group: "IAM",
                 providerName: config.providerName,
               }),
             findNamespaceInTags(config),

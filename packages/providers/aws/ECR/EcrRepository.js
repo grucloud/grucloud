@@ -21,6 +21,7 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.repositoryName");
 const findId = get("live.repositoryArn");

@@ -35,6 +35,7 @@ const logger = require("@grucloud/core/logger")({
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const {
   createEndpoint,
@@ -49,6 +50,7 @@ const findName = get("live.LayerName");
 const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 
 exports.Layer = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
 
   const listLayers = ({ params } = {}) =>

@@ -10,21 +10,21 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ### Create a Node Group
 
 ```js
-const iamPolicyEKSWorkerNode = provider.iam.usePolicy({
+const iamPolicyEKSWorkerNode = provider.IAM.usePolicy({
   name: "AmazonEKSWorkerNodePolicy",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
   }),
 });
 
-const iamPolicyEC2ContainerRegistryReadOnly = provider.iam.usePolicy({
+const iamPolicyEC2ContainerRegistryReadOnly = provider.IAM.usePolicy({
   name: "AmazonEC2ContainerRegistryReadOnly",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
   }),
 });
 
-const roleNodeGroup = provider.iam.makeRole({
+const roleNodeGroup = provider.IAM.makeRole({
   name: "role-node-group",
   dependencies: {
     policies: [iamPolicyEKSWorkerNode, iamPolicyEC2ContainerRegistryReadOnly],
@@ -48,7 +48,7 @@ const roleNodeGroup = provider.iam.makeRole({
 const cluster = {}; //See demo
 const subnetPrivate = {}; //See demo
 
-const nodeGroup = provider.eks.makeNodeGroup({
+const nodeGroup = provider.EKS.makeNodeGroup({
   name: "node-group",
   dependencies: {
     subnets: [subnetPrivate],

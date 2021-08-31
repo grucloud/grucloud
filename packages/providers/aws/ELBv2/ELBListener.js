@@ -27,6 +27,7 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ListenerArn");
 const findName = findNameInTagsOrId({ findId });
@@ -34,6 +35,7 @@ const findName = findNameInTagsOrId({ findId });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
 exports.ELBListener = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
   const { providerName } = config;
 
@@ -42,7 +44,7 @@ exports.ELBListener = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "LoadBalancer",
-          group: "elb",
+          group: "ELBv2",
           providerName,
           id: live.LoadBalancerArn,
         }),
@@ -54,7 +56,7 @@ exports.ELBListener = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "LoadBalancer",
-          group: "elb",
+          group: "ELBv2",
           providerName,
           id: live.LoadBalancerArn,
         }),
@@ -76,12 +78,12 @@ exports.ELBListener = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "LoadBalancer",
-      group: "elb",
+      group: "ELBv2",
       ids: [live.LoadBalancerArn],
     },
     {
       type: "TargetGroup",
-      group: "elb",
+      group: "ELBv2",
       ids: pipe([
         () => live,
         get("DefaultActions"),
@@ -91,7 +93,7 @@ exports.ELBListener = ({ spec, config }) => {
     },
     {
       type: "Certificate",
-      group: "acm",
+      group: "ACM",
       ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
     },
   ];

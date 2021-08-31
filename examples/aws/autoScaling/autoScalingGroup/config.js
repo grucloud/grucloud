@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-autoscaling-group",
-  iam: {
+  IAM: {
     Role: {
       roleEcs: {
         name: "role-ecs",
@@ -28,7 +28,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ec2: {
+  EC2: {
     Vpc: {
       vpc: {
         name: "Vpc",
@@ -103,7 +103,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  autoscaling: {
+  AutoScaling: {
     AutoScalingGroup: {
       asg: {
         name: "asg",

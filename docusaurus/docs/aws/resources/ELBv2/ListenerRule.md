@@ -12,7 +12,7 @@ Manage an [ELB Listener Rule](https://docs.aws.amazon.com/elasticloadbalancing/l
 Provide a rule to redirect HTTP traffic to HTTPS.
 
 ```js
-const ruleHttp2Https = provider.elb.makeRule({
+const ruleHttp2Https = provider.ELBv2.makeRule({
   name: "rule-httt2https",
   dependencies: {
     listener: listenerHttp,
@@ -48,7 +48,7 @@ const ruleHttp2Https = provider.elb.makeRule({
 Forward traffic matching _/api/_ to the target group running the REST server.
 
 ```js
-const ruleHttps = provider.elb.makeRule({
+const ruleHttps = provider.ELBv2.makeRule({
   name: "rule-httt2https",
   dependencies: {
     listener: listeners.https,
@@ -68,7 +68,7 @@ const ruleHttps = provider.elb.makeRule({
 
 ## Properties
 
-- [ELBV2 createRule](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property)
+- [ELBv2 createRule](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property)
 
 ## Source Code
 

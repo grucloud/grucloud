@@ -16,7 +16,7 @@ describe("ECSService", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    service = ECSService({ config: provider.config });
+    service = provider.getClient({ groupType: "ECS::Service" });
     await provider.start();
   });
   it(

@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-ec2-launch-template",
-  iam: {
+  IAM: {
     Role: {
       roleEcs: {
         name: "role-ecs",
@@ -28,7 +28,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ec2: {
+  EC2: {
     Vpc: {
       vpc: {
         name: "Vpc",

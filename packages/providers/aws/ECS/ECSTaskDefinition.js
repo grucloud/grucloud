@@ -27,6 +27,7 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
@@ -34,6 +35,7 @@ const findName = get("live.family");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSTaskDefinition = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live }) => [
@@ -41,7 +43,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     // fsxWindowsFileServerVolumeConfiguration
     {
       type: "Role",
-      group: "iam",
+      group: "IAM",
       ids: [live.taskRoleArn, live.executionRoleArn],
     },
   ];

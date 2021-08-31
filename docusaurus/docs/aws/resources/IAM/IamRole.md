@@ -6,7 +6,7 @@ title: Iam Role
 Provides an Iam Role.
 
 ```js
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "my-role",
   properties: () => ({
     AssumeRolePolicyDocument: {
@@ -29,7 +29,7 @@ const iamRole = provider.iam.makeRole({
 ### Add a policy to a role
 
 ```js
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -47,7 +47,7 @@ const iamPolicy = provider.iam.makePolicy({
   }),
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "my-role",
   dependencies: { policies: [iamPolicy] },
 
@@ -72,7 +72,7 @@ const iamRole = provider.iam.makeRole({
 ### Add a role to an instance profile
 
 ```js
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "my-role",
   properties: () => ({
     AssumeRolePolicyDocument: {
@@ -91,7 +91,7 @@ const iamRole = provider.iam.makeRole({
   }),
 });
 
-const iamInstanceProfile = provider.iam.makeInstanceProfile({
+const iamInstanceProfile = provider.IAM.makeInstanceProfile({
   name: "my-instance-profile",
   dependencies: { iamRoles: [iamRole] },
   properties: () => ({}),
@@ -106,12 +106,12 @@ The **AssumeRolePolicyDocument** will be filled with the **openIdConnectProvider
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 
-const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
+const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
   name: "oidc",
   dependencies: { cluster },
 });
 
-const iamLoadBalancerPolicy = provider.iam.makePolicy({
+const iamLoadBalancerPolicy = provider.IAM.makePolicy({
   name: "AWSLoadBalancerControllerIAMPolicy",
   properties: () => ({
     PolicyDocument: loadBalancerPolicy,
@@ -119,7 +119,7 @@ const iamLoadBalancerPolicy = provider.iam.makePolicy({
   }),
 });
 
-const roleLoadBalancer = provider.iam.makeRole({
+const roleLoadBalancer = provider.IAM.makeRole({
   name: "roleLoadBalancer"
   dependencies: {
     openIdConnectProvider: iamOpenIdConnectProvider,

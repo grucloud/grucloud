@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-s3-multiple",
-  s3: {
+  S3: {
     Bucket: {
       grucloudBucket_0: {
         name: "grucloud-bucket-0",

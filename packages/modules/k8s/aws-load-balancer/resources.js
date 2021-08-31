@@ -552,8 +552,8 @@ exports.createResources = async ({ provider, resources }) => {
       },
     }),
   });
-  assert(provider.dependencies.aws.config.eks);
-  const clusterName = provider.dependencies.aws.config.eks.cluster.name;
+  assert(provider.dependencies.aws.config.EKS);
+  const clusterName = provider.dependencies.aws.config.EKS.cluster.name;
   assert(clusterName);
 
   const kubeSystemawsLoadBalancerControllerDeployment = provider.makeDeployment(

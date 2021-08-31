@@ -3,7 +3,7 @@ title Resources for project RDS Postgres
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ SecurityGroup (1)
@@ -11,7 +11,7 @@ skinparam monochrome true
 ++++ Subnet (2)
 ++++ RouteTable (1)
 ++++ Route (1)
-+++ rds
++++ RDS
 ++++ DBSubnetGroup (1)
 ++++ DBInstance (1)
 @endmindmap

@@ -28,16 +28,16 @@ exports.createResources = async ({
   //TODO
   //assert(autoScalingGroup)
   const { config } = provider;
-  assert(config.elb);
-  assert(config.elb.loadBalancer);
-  assert(config.elb.targetGroups);
-  assert(config.elb.listeners);
-  assert(config.elb.rules);
-  assert(config.elb.listeners.https.name);
+  assert(config.ELBv2);
+  assert(config.ELBv2.loadBalancer);
+  assert(config.ELBv2.targetGroups);
+  assert(config.ELBv2.listeners);
+  assert(config.ELBv2.rules);
+  assert(config.ELBv2.listeners.https.name);
 
   // Load Balancer Security Group,
   // HTTP and HTTPS Ingress rule
-  const securityGroupLoadBalancer = provider.ec2.makeSecurityGroup({
+  const securityGroupLoadBalancer = provider.EC2.makeSecurityGroup({
     name: "security-group-load-balancer",
     namespace,
     dependencies: { vpc },
@@ -46,7 +46,7 @@ exports.createResources = async ({
     }),
   });
 
-  const sgRuleIngressHttp = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressHttp = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-lb-http",
     namespace,
     dependencies: {
@@ -70,7 +70,7 @@ exports.createResources = async ({
       },
     }),
   });
-  const sgRuleIngressHttps = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressHttps = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-lb-https",
     namespace,
     dependencies: {
@@ -96,8 +96,8 @@ exports.createResources = async ({
   });
 
   // The Load Balancer
-  const loadBalancer = provider.elb.makeLoadBalancer({
-    name: config.elb.loadBalancer.name,
+  const loadBalancer = provider.ELBv2.makeLoadBalancer({
+    name: config.ELBv2.loadBalancer.name,
     namespace,
     dependencies: {
       subnets,
@@ -108,32 +108,32 @@ exports.createResources = async ({
 
   // Web and REST API target group
   const targetGroups = {
-    web: provider.elb.makeTargetGroup({
-      name: config.elb.targetGroups.web.name,
+    web: provider.ELBv2.makeTargetGroup({
+      name: config.ELBv2.targetGroups.web.name,
       namespace,
       dependencies: {
         vpc,
         autoScalingGroup,
         nodeGroup,
       },
-      properties: () => config.elb.targetGroups.web.properties,
+      properties: () => config.ELBv2.targetGroups.web.properties,
     }),
-    rest: provider.elb.makeTargetGroup({
-      name: config.elb.targetGroups.rest.name,
+    rest: provider.ELBv2.makeTargetGroup({
+      name: config.ELBv2.targetGroups.rest.name,
       namespace,
       dependencies: {
         autoScalingGroup,
         nodeGroup,
         vpc,
       },
-      properties: () => config.elb.targetGroups.rest.properties,
+      properties: () => config.ELBv2.targetGroups.rest.properties,
     }),
   };
 
   // HTTP and HTTPS Listeners
   const listeners = {
-    http: provider.elb.makeListener({
-      name: config.elb.listeners.http.name,
+    http: provider.ELBv2.makeListener({
+      name: config.ELBv2.listeners.http.name,
       namespace,
       dependencies: {
         loadBalancer,
@@ -144,8 +144,8 @@ exports.createResources = async ({
         Protocol: "HTTP",
       }),
     }),
-    https: provider.elb.makeListener({
-      name: config.elb.listeners.https.name,
+    https: provider.ELBv2.makeListener({
+      name: config.ELBv2.listeners.https.name,
       namespace,
       dependencies: {
         loadBalancer,
@@ -160,17 +160,17 @@ exports.createResources = async ({
   };
   // Listener Rules
   const rules = {
-    http2https: provider.elb.makeRule({
-      name: config.elb.rules.http2https.name,
+    http2https: provider.ELBv2.makeRule({
+      name: config.ELBv2.rules.http2https.name,
       namespace,
       dependencies: {
         listener: listeners.http,
       },
-      properties: () => config.elb.rules.http2https.properties,
+      properties: () => config.ELBv2.rules.http2https.properties,
     }),
     https: {
-      web: provider.elb.makeRule({
-        name: config.elb.rules.https.web.name,
+      web: provider.ELBv2.makeRule({
+        name: config.ELBv2.rules.https.web.name,
         namespace,
         dependencies: {
           listener: listeners.https,
@@ -184,10 +184,10 @@ exports.createResources = async ({
                 Type: "forward",
               },
             ],
-          })(config.elb.rules.https.web.properties),
+          })(config.ELBv2.rules.https.web.properties),
       }),
-      rest: provider.elb.makeRule({
-        name: config.elb.rules.https.rest.name,
+      rest: provider.ELBv2.makeRule({
+        name: config.ELBv2.rules.https.rest.name,
         namespace,
         dependencies: {
           listener: listeners.https,
@@ -201,13 +201,13 @@ exports.createResources = async ({
                 Type: "forward",
               },
             ],
-          })(config.elb.rules.https.rest.properties),
+          })(config.ELBv2.rules.https.rest.properties),
       }),
     },
   };
 
   // The load balancer DNS record
-  const loadBalancerDnsRecord = provider.route53.makeRecord({
+  const loadBalancerDnsRecord = provider.Route53.makeRecord({
     name: `load-balancer-dns-record-alias-${hostedZone.name}`,
     namespace,
     dependencies: { hostedZone, loadBalancer },
