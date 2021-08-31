@@ -179,9 +179,9 @@ const findNamespace = ({ type, id, resources }) =>
     get("namespace"),
     formatNamespace,
     tap((namespace) => {
-      logger.debug(
-        `findNamespace type: ${type}, id: ${id}, namespace: ${namespace}`
-      );
+      // logger.debug(
+      //   `findNamespace type: ${type}, id: ${id}, namespace: ${namespace}`
+      // );
     }),
   ])();
 
@@ -211,6 +211,16 @@ const associationIdString = ({
       assert(idTo);
       assert(nameFrom);
       assert(nameTo);
+      logger.debug(
+        `associationIdString ${JSON.stringify({
+          nameFrom,
+          nameTo,
+          type,
+          namespaceFrom,
+          idFrom,
+          idTo,
+        })}`
+      );
     }),
     () => resources,
     switchCase([
@@ -301,9 +311,9 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
         pipe([
           tap(() => {
             logger.debug(
-              `buildGraphAssociationLive ${providerName}, type ${type}, id, ${id}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
+              `buildGraphAssociationLive ${providerName}, type ${type}, name: ${name}, namespace: ${namespace}, #dependencies ${size(
                 dependencies
-              )}`
+              )}, id, ${id}`
             );
             assert(id);
             assert(name);
@@ -325,7 +335,9 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                   })}`
                 );
                 logger.debug(
-                  `type ${dependency.type}, #ids ${size(dependency.ids)}`
+                  `dependency type ${dependency.type}, #ids ${size(
+                    dependency.ids
+                  )}`
                 );
               }),
               () => dependency.ids,
