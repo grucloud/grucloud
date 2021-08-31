@@ -12,6 +12,7 @@ const {
   pick,
   tryCatch,
   assign,
+  reduce,
 } = require("rubico");
 const {
   find,
