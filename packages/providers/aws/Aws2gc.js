@@ -318,6 +318,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "MapPublicIpOnLaunch",
           ]),
         dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
@@ -369,6 +370,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "InternetGateway",
         filterLive: () => pick([]),
         dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
@@ -378,11 +380,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           subnet: { type: "Subnet", group: "EC2" },
           eip: { type: "ElasticIpAddress", group: "EC2" },
         }),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
       },
       {
         type: "RouteTable",
         filterLive: () => pick([]),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
         dependencies: () => ({
           vpc: { type: "Vpc", group: "EC2" },
@@ -392,6 +396,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Route",
         filterLive: () => pick(["DestinationCidrBlock"]),
+        //TODO remove ?
         ignoreResource: () => get("isDefault"),
         dependencies: () => ({
           routeTable: { type: "RouteTable", group: "EC2" },
@@ -849,6 +854,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Repository",
+
         filterLive: () =>
           pick([
             "imageTagMutability",
@@ -860,6 +866,18 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Registry",
+        ignoreResource: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            get("live"),
+            not(and([get("policyText"), get("replicationConfiguration")])),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+
         filterLive: () =>
           pipe([pick(["policyText", "replicationConfiguration"])]),
       },
@@ -966,6 +984,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           distribution: { type: "Distribution", group: "CloudFront" },
           apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
         }),
+        //TODO remove ?
         ignoreResource: () => get("cannotBeDeleted"),
       },
     ],

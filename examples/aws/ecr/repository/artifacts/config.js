@@ -53,10 +53,5 @@ module.exports = ({ stage }) => ({
         },
       },
     },
-    Registry: {
-      default: {
-        name: "default",
-      },
-    },
   },
 });

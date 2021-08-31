@@ -7,10 +7,6 @@ const createResources = ({ provider }) => {
     name: get("config.ECR.Repository.starhackitLb.name"),
     properties: get("config.ECR.Repository.starhackitLb.properties"),
   });
-
-  provider.ECR.makeRegistry({
-    name: get("config.ECR.Registry.default.name"),
-  });
 };
 
 exports.createResources = createResources;
