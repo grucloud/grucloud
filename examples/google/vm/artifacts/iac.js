@@ -32,7 +32,7 @@ const createResources = ({ provider }) => {
     name: get("config.compute.VmInstance.webserver.name"),
     properties: get("config.compute.VmInstance.webserver.properties"),
     dependencies: ({ resources }) => ({
-      address: [resources.compute.Address.ipWebserver],
+      address: resources.compute.Address.ipWebserver,
       disks: [resources.compute.Disk.disk],
     }),
   });
