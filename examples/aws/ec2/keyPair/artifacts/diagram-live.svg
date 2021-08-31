@@ -14,20 +14,20 @@
 <text text-anchor="start" x="12" y="-167.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Live Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
-<polygon fill="#f5f5f5" stroke="#f5f5f5" points="14.5,-8 14.5,-145 167.5,-145 167.5,-8 14.5,-8"/>
+<polygon fill="#f5f5f5" stroke="#f5f5f5" points="12.5,-8 12.5,-145 169.5,-145 169.5,-8 12.5,-8"/>
 <text text-anchor="start" x="29" y="-23" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider aws</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="22.5,-54 22.5,-137 159.5,-137 159.5,-54 22.5,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="20.5,-54 20.5,-137 161.5,-137 161.5,-54 20.5,-54"/>
 <text text-anchor="start" x="90.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- KeyPair::::kp -->
 <g id="node1" class="node">
 <title>KeyPair::::kp</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="151.5,-129 30.5,-129 30.5,-71 151.5,-71 151.5,-129"/>
-<text text-anchor="start" x="43" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ec2::KeyPair</text>
-<text text-anchor="start" x="43" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kp</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="153.5,-129 28.5,-129 28.5,-71 153.5,-71 153.5,-129"/>
+<text text-anchor="start" x="41" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::KeyPair</text>
+<text text-anchor="start" x="41" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kp</text>
 </g>
 </g>
 </svg>
