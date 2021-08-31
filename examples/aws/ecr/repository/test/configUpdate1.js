@@ -1,6 +1,6 @@
 module.exports = (config) => ({
   projectName: "aws-ecr-repository",
-  ecr: {
+  ECR: {
     Repository: {
       starhackitLb: {
         name: "starhackit/lb",

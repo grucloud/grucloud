@@ -3,6 +3,6 @@ title Resources for project symmetric
 skinparam monochrome true
 + Infra
 ++ aws
-+++ kms
++++ KMS
 ++++ Key (1)
 @endmindmap

@@ -7,7 +7,7 @@ Provide a reference to an SSH key pair, used to connect to EC2 instances.
 See the [AWS documentation for ec2 key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) to create a new one.
 
 ```js
-const keyPair = provider.ec2.useKeyPair({
+const keyPair = provider.EC2.useKeyPair({
   name: "kp",
 });
 ```

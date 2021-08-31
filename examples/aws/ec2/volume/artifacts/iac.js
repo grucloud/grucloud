@@ -3,16 +3,16 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeVolume({
-    name: get("config.ec2.Volume.volumeTestVolume.name"),
-    properties: get("config.ec2.Volume.volumeTestVolume.properties"),
+  provider.EC2.makeVolume({
+    name: get("config.EC2.Volume.volumeTestVolume.name"),
+    properties: get("config.EC2.Volume.volumeTestVolume.properties"),
   });
 
-  provider.ec2.makeInstance({
-    name: get("config.ec2.Instance.server_4TestVolume.name"),
-    properties: get("config.ec2.Instance.server_4TestVolume.properties"),
+  provider.EC2.makeInstance({
+    name: get("config.EC2.Instance.server_4TestVolume.name"),
+    properties: get("config.EC2.Instance.server_4TestVolume.properties"),
     dependencies: ({ resources }) => ({
-      volumes: [resources.ec2.Volume.volumeTestVolume],
+      volumes: [resources.EC2.Volume.volumeTestVolume],
     }),
   });
 };

@@ -16,7 +16,7 @@ describe("Api Gateway Integration", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    integration = Integration({ config: provider.config });
+    integration = provider.getClient({ groupType: "APIGateway::Integration" });
     await provider.start();
   });
   after(async () => {});

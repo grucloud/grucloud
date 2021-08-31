@@ -24,17 +24,17 @@ const createAwsStack = async ({ createProvider }) => {
   });
 
   const { config } = provider;
-  const { eks } = config;
+  const { EKS } = config;
   assert(config.certificate);
   const { domainName, rootDomainName } = config.certificate;
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = provider.route53Domain.useDomain({
+  const domain = provider.Route53Domains.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = provider.route53.makeHostedZone({
+  const hostedZone = provider.Route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });
@@ -57,12 +57,12 @@ const createAwsStack = async ({ createProvider }) => {
       vpc: resourcesVpc.vpc,
       hostedZone,
       subnets: resourcesVpc.subnetsPublic,
-      nodeGroup: resourcesEks.nodeGroupsPrivate[0],
+      nodeGroup: resourcesEks.nodeGroupPrivate,
     },
   });
 
   // Use the security group created by EKS
-  const securityGroupEKSCluster = provider.ec2.useSecurityGroup({
+  const securityGroupEKSCluster = provider.EC2.useSecurityGroup({
     name: "sg-eks-cluster",
     namespace: "EKS",
     filterLives: ({ resources }) =>
@@ -77,7 +77,7 @@ const createAwsStack = async ({ createProvider }) => {
             find(
               and([
                 eq(get("Key"), "aws:eks:cluster-name"),
-                eq(get("Value"), eks.cluster.name),
+                eq(get("Value"), EKS.cluster.name),
               ])
             ),
           ])
@@ -89,7 +89,7 @@ const createAwsStack = async ({ createProvider }) => {
   });
 
   // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
-  const sgRuleIngressEks = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressEks = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingres-eks-cluster-from-load-balancer",
     namespace: "EKS",
     dependencies: {

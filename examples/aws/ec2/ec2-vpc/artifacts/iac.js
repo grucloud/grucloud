@@ -3,93 +3,93 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ec2.makeVpc({
-    name: get("config.ec2.Vpc.vpcEc2Example.name"),
-    properties: get("config.ec2.Vpc.vpcEc2Example.properties"),
+  provider.EC2.makeVpc({
+    name: get("config.EC2.Vpc.vpcEc2Example.name"),
+    properties: get("config.EC2.Vpc.vpcEc2Example.properties"),
   });
 
-  provider.ec2.makeSubnet({
-    name: get("config.ec2.Subnet.subnet.name"),
-    properties: get("config.ec2.Subnet.subnet.properties"),
+  provider.EC2.makeSubnet({
+    name: get("config.EC2.Subnet.subnet.name"),
+    properties: get("config.EC2.Subnet.subnet.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcEc2Example,
+      vpc: resources.EC2.Vpc.vpcEc2Example,
     }),
   });
 
-  provider.ec2.makeKeyPair({
-    name: get("config.ec2.KeyPair.kpEc2Vpc.name"),
+  provider.EC2.makeKeyPair({
+    name: get("config.EC2.KeyPair.kpEc2Vpc.name"),
   });
 
-  provider.ec2.makeVolume({
-    name: get("config.ec2.Volume.volume.name"),
-    properties: get("config.ec2.Volume.volume.properties"),
+  provider.EC2.makeVolume({
+    name: get("config.EC2.Volume.volume.name"),
+    properties: get("config.EC2.Volume.volume.properties"),
   });
 
-  provider.ec2.makeElasticIpAddress({
-    name: get("config.ec2.ElasticIpAddress.myip.name"),
+  provider.EC2.makeElasticIpAddress({
+    name: get("config.EC2.ElasticIpAddress.myip.name"),
   });
 
-  provider.ec2.makeInternetGateway({
-    name: get("config.ec2.InternetGateway.ig.name"),
+  provider.EC2.makeInternetGateway({
+    name: get("config.EC2.InternetGateway.ig.name"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcEc2Example,
+      vpc: resources.EC2.Vpc.vpcEc2Example,
     }),
   });
 
-  provider.ec2.makeRouteTable({
-    name: get("config.ec2.RouteTable.routeTable.name"),
+  provider.EC2.makeRouteTable({
+    name: get("config.EC2.RouteTable.routeTable.name"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcEc2Example,
-      subnets: [resources.ec2.Subnet.subnet],
+      vpc: resources.EC2.Vpc.vpcEc2Example,
+      subnets: [resources.EC2.Subnet.subnet],
     }),
   });
 
-  provider.ec2.makeRoute({
-    name: get("config.ec2.Route.routeIg.name"),
-    properties: get("config.ec2.Route.routeIg.properties"),
+  provider.EC2.makeRoute({
+    name: get("config.EC2.Route.routeIg.name"),
+    properties: get("config.EC2.Route.routeIg.properties"),
     dependencies: ({ resources }) => ({
-      routeTable: resources.ec2.RouteTable.routeTable,
-      ig: resources.ec2.InternetGateway.ig,
+      routeTable: resources.EC2.RouteTable.routeTable,
+      ig: resources.EC2.InternetGateway.ig,
     }),
   });
 
-  provider.ec2.makeSecurityGroup({
-    name: get("config.ec2.SecurityGroup.securityGroup.name"),
-    properties: get("config.ec2.SecurityGroup.securityGroup.properties"),
+  provider.EC2.makeSecurityGroup({
+    name: get("config.EC2.SecurityGroup.securityGroup.name"),
+    properties: get("config.EC2.SecurityGroup.securityGroup.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpcEc2Example,
+      vpc: resources.EC2.Vpc.vpcEc2Example,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.name"),
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: get("config.EC2.SecurityGroupRuleIngress.sgRuleIngressIcmp.name"),
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleIngressIcmp.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+      securityGroup: resources.EC2.SecurityGroup.securityGroup,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
-    name: get("config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.name"),
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: get("config.EC2.SecurityGroupRuleIngress.sgRuleIngressSsh.name"),
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.properties"
+      "config.EC2.SecurityGroupRuleIngress.sgRuleIngressSsh.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.securityGroup,
+      securityGroup: resources.EC2.SecurityGroup.securityGroup,
     }),
   });
 
-  provider.ec2.makeInstance({
-    name: get("config.ec2.Instance.webServerEc2Vpc.name"),
-    properties: get("config.ec2.Instance.webServerEc2Vpc.properties"),
+  provider.EC2.makeInstance({
+    name: get("config.EC2.Instance.webServerEc2Vpc.name"),
+    properties: get("config.EC2.Instance.webServerEc2Vpc.properties"),
     dependencies: ({ resources }) => ({
-      subnet: resources.ec2.Subnet.subnet,
-      keyPair: resources.ec2.KeyPair.kpEc2Vpc,
-      eip: resources.ec2.ElasticIpAddress.myip,
-      securityGroups: [resources.ec2.SecurityGroup.securityGroup],
-      volumes: [resources.ec2.Volume.volume],
+      subnet: resources.EC2.Subnet.subnet,
+      keyPair: resources.EC2.KeyPair.kpEc2Vpc,
+      eip: resources.EC2.ElasticIpAddress.myip,
+      securityGroups: [resources.EC2.SecurityGroup.securityGroup],
+      volumes: [resources.EC2.Volume.volume],
     }),
   });
 };

@@ -5,7 +5,7 @@ const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { isOurMinion } = require("../AwsCommon");
 
-const GROUP = "s3";
+const GROUP = "S3";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -19,7 +19,7 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependsOn: ["s3::Bucket"],
+      dependsOn: ["S3::Bucket"],
       Client: AwsS3Object,
       compare: compareS3Object,
       isOurMinion,

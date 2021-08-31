@@ -27,18 +27,24 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../AutoScaling/AutoScalingAutoScalingGroup");
+const { AwsClient } = require("../AwsClient");
+
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSCapacityProvider = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
-  const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
+  const autoScalingGroup = AutoScalingAutoScalingGroup({
+    spec: { type: "AutoScalingGroup", group: "AutoScaling" },
+    config,
+  });
   const findDependencies = ({ live }) => [
     {
       type: "AutoScalingGroup",
-      group: "autoscaling",
+      group: "AutoScaling",
       ids: [
         pipe([
           () => live,
@@ -146,7 +152,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
           id,
           providerName: config.providerName,
           type: "AutoScalingGroup",
-          group: "autoscaling",
+          group: "AutoScaling",
         }),
       get("name"),
       unless(

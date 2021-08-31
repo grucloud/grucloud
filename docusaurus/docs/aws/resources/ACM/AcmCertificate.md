@@ -14,20 +14,20 @@ Provides an SSL certificate.
 ```js
 const domainName = "your.domain.name.com";
 
-const certificate = provider.acm.makeCertificate({
+const certificate = provider.ACM.makeCertificate({
   name: domainName,
   properties: () => ({}),
 });
 
-const domain = provider.route53Domain.useDomain({
+const domain = provider.Route53Domain.useDomain({
   name: domainName,
 });
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
 });
 
-const recordValidation = provider.route53.makeRecord({
+const recordValidation = provider.Route53.makeRecord({
   name: `certificate-validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {
@@ -59,7 +59,7 @@ const recordValidation = provider.route53.makeRecord({
 ## Source Code Examples
 
 - [module-aws-certificate](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/certificate/iac.js#L26)
-- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
+- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
 
 ## Properties
 
@@ -67,8 +67,10 @@ const recordValidation = provider.route53.makeRecord({
 
 ## UsedBy
 
-- [HostedZone](../Route53/Route53HostedZone)
-- [CloudFrontDistribution](../CloudFront/CloudFrontDistribution)
+- [Rotue53 Hosted Zone](../Route53/Route53HostedZone)
+- [CloudFront Distribution](../CloudFront/CloudFrontDistribution)
+- [APIGateway Domain Name](../APIGateway/DomainName)
+- [ApiGatewayV2 Domain Name](../ApiGatewayV2/DomainName)
 
 ## List
 

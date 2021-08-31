@@ -13,18 +13,18 @@ Provides an [Lambda Layer](https://console.aws.amazon.com/lambda/home?/layers)
 const lambdaPolicy = require("./lambdaPolicy.json");
 const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 
-const iamPolicy = provider.iam.makePolicy({
+const iamPolicy = provider.IAM.makePolicy({
   name: "lambda-policy",
   properties: () => lambdaPolicy,
 });
 
-const iamRole = provider.iam.makeRole({
+const iamRole = provider.IAM.makeRole({
   name: "lambda-role",
   dependencies: { policies: [iamPolicy] },
   properties: () => lambdaAssumePolicy,
 });
 
-const layer = provider.lambda.makeLayer({
+const layer = provider.Lambda.makeLayer({
   name: "lambda-layer",
   dependencies: { role: iamRole },
   properties: () => ({
@@ -33,7 +33,7 @@ const layer = provider.lambda.makeLayer({
   }),
 });
 
-const lambda = provider.lambda.makeFunction({
+const lambda = provider.Lambda.makeFunction({
   name: "lambda-hello-world",
   dependencies: { role: iamRole, layers: [layer] },
   properties: () => ({

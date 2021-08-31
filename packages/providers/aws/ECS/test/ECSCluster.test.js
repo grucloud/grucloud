@@ -16,14 +16,14 @@ describe("ECSCluster", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    cluster = ECSCluster({ config: provider.config });
+    cluster = provider.getClient({ groupType: "ECS::Cluster" });
     await provider.start();
   });
   it(
     "list",
     pipe([
       () => cluster.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

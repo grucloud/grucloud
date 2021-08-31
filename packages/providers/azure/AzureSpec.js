@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, assign, map, not, omit } = require("rubico");
+const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
 
 const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
 
@@ -7,7 +7,7 @@ const AzClient = require("./AzClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const AzTag = require("./AzTag");
 const { getField, notAvailable } = require("@grucloud/core/ProviderCommon");
-const { isUpByIdCore, compare } = require("@grucloud/core/Common");
+const { isUpByIdCore, compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 
 exports.fnSpecs = (config) => {
@@ -55,6 +55,7 @@ exports.fnSpecs = (config) => {
         // LIST   https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01
         group: "resourceManagement",
         type: "ResourceGroup",
+        filterLive: () => pipe([pick(["tags"])]),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -70,7 +71,7 @@ exports.fnSpecs = (config) => {
                 tags: buildTags(config),
               })(properties),
             isDefault: isDefaultResourceGroup,
-            managedByOhter: isDefaultResourceGroup,
+            managedByOther: isDefaultResourceGroup,
             cannotBeDeleted: isDefaultResourceGroup,
           }),
       },
@@ -87,6 +88,16 @@ exports.fnSpecs = (config) => {
             group: "resourceManagement",
           },
         }),
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick(["addressSpace", "enableDdosProtection"]),
+              ]),
+            }),
+          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -124,10 +135,41 @@ exports.fnSpecs = (config) => {
             group: "resourceManagement",
           },
         }),
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick(["securityRules"]),
+                assign({
+                  securityRules: pipe([
+                    get("securityRules"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState"]),
+                            omitIfEmpty([
+                              "destinationAddressPrefixes",
+                              "destinationPortRanges",
+                              "sourceAddressPrefixes",
+                              "sourcePortRanges",
+                            ]),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
-
             pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
@@ -162,6 +204,20 @@ exports.fnSpecs = (config) => {
             group: "resourceManagement",
           },
         }),
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick([
+                  "publicIPAddressVersion",
+                  "publicIPAllocationMethod",
+                  "idleTimeoutInMinutes",
+                ]),
+              ]),
+            }),
+          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -200,6 +256,32 @@ exports.fnSpecs = (config) => {
           "virtualNetworks::SecurityGroup",
           "virtualNetworks::PublicIpAddress",
         ],
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick(["ipConfigurations"]),
+                assign({
+                  ipConfigurations: pipe([
+                    get("ipConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["privateIPAllocationMethod"]),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -364,6 +446,27 @@ exports.fnSpecs = (config) => {
             group: "virtualNetworks",
           },
         }),
+        environmentVariables: () => [
+          {
+            path: "properties.osProfile.adminPassword",
+            suffix: "ADMIN_PASSWORD",
+          },
+        ],
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick([
+                  "hardwareProfile",
+                  "storageProfile.imageReference",
+                  "osProfile",
+                ]),
+                omitIfEmpty(["osProfile.secrets"]),
+              ]),
+            }),
+          ]),
         compare: compare({
           filterTarget: pipe([
             tap((params) => {

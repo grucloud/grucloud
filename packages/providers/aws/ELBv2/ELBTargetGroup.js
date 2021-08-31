@@ -28,12 +28,15 @@ const {
   hasKeyInTags,
 } = require("../AwsCommon");
 
+const { AwsClient } = require("../AwsClient");
+
 const findName = get("live.TargetGroupName");
 const findId = get("live.TargetGroupArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
 exports.ELBTargetGroup = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
   const autoScaling = AutoScalingNew(config);
 
@@ -43,8 +46,8 @@ exports.ELBTargetGroup = ({ spec, config }) => {
 
   // TODO findDependencies
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
-    { type: "LoadBalancer", group: "elb", ids: live.LoadBalancerArns },
+    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
+    { type: "LoadBalancer", group: "ELBv2", ids: live.LoadBalancerArns },
     // TODO eks.NodeGroup
   ];
 

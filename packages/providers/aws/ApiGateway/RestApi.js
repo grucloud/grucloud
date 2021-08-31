@@ -30,6 +30,7 @@ const logger = require("@grucloud/core/logger")({
 //const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 //const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -37,6 +38,7 @@ const findId = get("live.id");
 const findName = get("live.name");
 
 exports.RestApi = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 

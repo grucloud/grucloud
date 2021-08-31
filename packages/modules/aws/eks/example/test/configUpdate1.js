@@ -1,5 +1,5 @@
 module.exports = ({}) => ({
-  eks: {
+  EKS: {
     cluster: {
       properties: {
         resourcesVpcConfig: {

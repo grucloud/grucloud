@@ -1,5 +1,5 @@
 module.exports = ({ stage }) => ({
-  ssm: {
+  SSM: {
     Parameter: {
       textParam: {
         name: "text-param",

@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "rds-postgres-stateless",
-  ec2: {
+  EC2: {
     Vpc: {
       vpc: {
         name: "vpc",
@@ -169,7 +169,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  rds: {
+  RDS: {
     DBCluster: {
       clusterPostgresStateless: {
         name: "cluster-postgres-stateless",

@@ -5,7 +5,7 @@ const { compare } = require("@grucloud/core/Common");
 
 const { SSMParameter } = require("./SSMParameter");
 
-const GROUP = "ssm";
+const GROUP = "SSM";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

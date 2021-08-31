@@ -30,14 +30,14 @@ describe.skip("AwsRouteTable", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = provider.ec2.makeVpc({
+    vpc = provider.EC2.makeVpc({
       name: buildName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    subnet = provider.ec2.makeSubnet({
+    subnet = provider.EC2.makeSubnet({
       name: buildName("subnet"),
       dependencies: { vpc },
       properties: () => ({
@@ -45,17 +45,17 @@ describe.skip("AwsRouteTable", async function () {
       }),
     });
 
-    ig = provider.ec2.makeInternetGateway({
+    ig = provider.EC2.makeInternetGateway({
       name: buildName("ig"),
       dependencies: { vpc },
     });
 
-    routeTable = provider.ec2.makeRouteTable({
+    routeTable = provider.EC2.makeRouteTable({
       name: buildName(resourceName),
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = provider.ec2.makeRoute({
+    routeIg = provider.EC2.makeRoute({
       name: buildName("route-ig"),
       dependencies: { routeTable, ig },
     });

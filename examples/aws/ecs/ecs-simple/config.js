@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-ecs-simple",
-  iam: {
+  IAM: {
     Policy: {
       serviceRoleAmazonEc2ContainerServiceforEc2Role: {
         name: "service-role/AmazonEC2ContainerServiceforEC2Role",
@@ -37,7 +37,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ec2: {
+  EC2: {
     Vpc: {
       vpc: {
         name: "Vpc",
@@ -112,7 +112,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  autoscaling: {
+  AutoScaling: {
     AutoScalingGroup: {
       ecsInstanceAsg: {
         name: "EcsInstanceAsg",
@@ -151,7 +151,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ecs: {
+  ECS: {
     Cluster: {
       cluster: {
         name: "cluster",

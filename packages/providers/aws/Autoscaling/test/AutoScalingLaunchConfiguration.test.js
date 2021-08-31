@@ -1,10 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
-const {
-  AutoScalingLaunchConfiguration,
-} = require("../AutoScalingLaunchConfiguration");
 
 describe("AutoScalingLaunchConfiguration", async function () {
   let config;
@@ -12,14 +8,9 @@ describe("AutoScalingLaunchConfiguration", async function () {
   let launchconfiguration;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
-    launchconfiguration = AutoScalingLaunchConfiguration({
-      config: provider.config,
+    launchconfiguration = provider.getClient({
+      groupType: "AutoScaling::LaunchConfiguration",
     });
     await provider.start();
   });
@@ -27,7 +18,7 @@ describe("AutoScalingLaunchConfiguration", async function () {
     "list",
     pipe([
       () => launchconfiguration.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

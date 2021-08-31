@@ -16,7 +16,7 @@ describe("Api Gateway Stage", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    stage = Stage({ config: provider.config });
+    stage = provider.getClient({ groupType: "APIGateway::Stage" });
     await provider.start();
   });
   after(async () => {});

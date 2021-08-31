@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-ec2-security-group",
-  ec2: {
+  EC2: {
     Vpc: {
       vpcTestSg: {
         name: "vpc-test-sg",

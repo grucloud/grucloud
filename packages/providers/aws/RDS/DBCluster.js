@@ -16,17 +16,17 @@ const findName = findId;
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
 exports.DBCluster = ({ spec, config }) => {
-  const client = AwsClient({ type: spec.type, config, endpointName: "RDS" });
+  const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "DBSubnetGroup",
-      group: "rds",
+      group: "RDS",
       ids: [get("DBSubnetGroup")(live)],
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("VpcSecurityGroups"),
@@ -35,7 +35,7 @@ exports.DBCluster = ({ spec, config }) => {
     },
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [get("KmsKeyId")(live)],
     },
   ];

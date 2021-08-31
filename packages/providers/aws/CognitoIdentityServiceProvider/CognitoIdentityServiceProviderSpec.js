@@ -9,7 +9,7 @@ const {
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
-const GROUP = "cognitoIdentityServiceProvider";
+const GROUP = "CognitoIdentityServiceProvider";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -22,7 +22,7 @@ module.exports = () =>
     },
     {
       type: "IdentityProvider",
-      dependsOn: ["cognitoIdentityServiceProvider::UserPool"],
+      dependsOn: ["CognitoIdentityServiceProvider::UserPool"],
       Client: IdentityProvider,
       isOurMinion,
       compareIdentity: compareIdentityProvider,

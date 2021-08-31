@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "example-grucloud-autoscaling-group",
-  autoscaling: {
+  AutoScaling: {
     AutoScalingGroup: {
       asg: {
         name: "asg",

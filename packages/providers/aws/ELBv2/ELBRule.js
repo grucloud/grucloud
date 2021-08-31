@@ -37,10 +37,12 @@ const {
 } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
+const { AwsClient } = require("../AwsClient");
 
 const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
   const elbListener = ELBListener({ spec, config });
   const { providerName } = config;
@@ -58,7 +60,7 @@ exports.ELBRule = ({ spec, config }) => {
           () =>
             lives.getById({
               type: "Listener",
-              group: "elb",
+              group: "ELBv2",
               id: live.ListenerArn,
               providerName,
             }),
@@ -69,7 +71,7 @@ exports.ELBRule = ({ spec, config }) => {
           tap((listenerName) => {
             assert(listenerName);
           }),
-          prepend("rule-default-")
+          prepend("rule-default-"),
         ]),
         findNameInTagsOrId({ findId }),
       ]),
@@ -95,7 +97,7 @@ exports.ELBRule = ({ spec, config }) => {
           () =>
             lives.getById({
               type: "Listener",
-              group: "elb",
+              group: "ELBv2",
               providerName,
               id: live.ListenerArn,
             }),
@@ -109,7 +111,7 @@ exports.ELBRule = ({ spec, config }) => {
           (LoadBalancerArn) =>
             lives.getById({
               type: "LoadBalancer",
-              group: "elb",
+              group: "ELBv2",
               providerName,
               id: LoadBalancerArn,
             }),
@@ -122,10 +124,10 @@ exports.ELBRule = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live }) => [
-    { type: "Listener", group: "elb", ids: [live.ListenerArn] },
+    { type: "Listener", group: "ELBv2", ids: [live.ListenerArn] },
     {
       type: "TargetGroup",
-      group: "elb",
+      group: "ELBv2",
       ids: pipe([
         () => live,
         get("Actions"),
@@ -145,7 +147,7 @@ exports.ELBRule = ({ spec, config }) => {
           lives.getById({
             providerName: config.providerName,
             type: "Listener",
-            group: "elb",
+            group: "ELBv2",
             id: ListenerArn,
           }),
         tap((listener) => {

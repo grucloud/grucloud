@@ -1,7 +1,7 @@
 const pkg = require("./package.json");
 
 module.exports = ({ stage }) => ({
-  elb: {
+  ELBv2: {
     loadBalancer: { name: `load-balancer` },
     targetGroups: {
       web: {

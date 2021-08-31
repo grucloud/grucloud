@@ -3,7 +3,7 @@ title Resources for project s3-simple
 skinparam monochrome true
 + Infra
 ++ aws
-+++ s3
++++ S3
 ++++ Bucket (1)
 ++++ Object (1)
 @endmindmap

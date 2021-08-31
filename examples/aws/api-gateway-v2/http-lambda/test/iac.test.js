@@ -1,14 +1,15 @@
 const assert = require("assert");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
-const { createStack } = require("../iac");
 const path = require("path");
+const { testEnd2End } = require("@grucloud/core/qa");
+const { createStack } = require("../iac");
+const config = require("../config");
 
 describe("Http ApiGateway Lambda", async function () {
   before(async function () {});
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-
-    await testEnd2End({ cli });
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      steps: [{ createStack, configs: [config] }],
+    });
   });
 });

@@ -17,6 +17,7 @@ const {
   omit,
 } = require("rubico");
 const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -36,14 +37,15 @@ const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSNodeGroup = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const eks = EKSNew(config);
 
   const findDependencies = ({ live, lives }) => [
-    { type: "Cluster", group: "eks", ids: [live.clusterName] },
-    { type: "Subnet", group: "ec2", ids: live.subnets },
+    { type: "Cluster", group: "EKS", ids: [live.clusterName] },
+    { type: "Subnet", group: "EC2", ids: live.subnets },
     {
       type: "AutoScalingGroup",
-      group: "autoscaling",
+      group: "AutoScaling",
       ids: pipe([
         () => live,
         get("resources.autoScalingGroups"),
@@ -53,7 +55,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "AutoScalingGroup",
-                group: "autoscaling",
+                group: "AutoScaling",
                 providerName: config.providerName,
               }),
             find(eq(get("live.AutoScalingGroupName"), name)),
@@ -62,7 +64,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         ),
       ])(),
     },
-    { type: "Role", group: "iam", ids: [live.nodeRole] },
+    { type: "Role", group: "IAM", ids: [live.nodeRole] },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property

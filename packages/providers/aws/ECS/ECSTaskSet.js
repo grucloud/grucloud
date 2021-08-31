@@ -25,6 +25,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.taskSetArn");
 const findName = get("live.taskDefinition");
@@ -32,17 +33,18 @@ const findName = get("live.taskDefinition");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSTaskSet = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Cluster",
-      group: "ecs",
+      group: "ECS",
       ids: [pipe([() => live, get("clusterArn")])()],
     },
     {
       type: "Service",
-      group: "ecs",
+      group: "ECS",
       ids: [pipe([() => live, get("serviceArn")])()],
     },
   ];
@@ -86,7 +88,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Service",
-          group: "ecs",
+          group: "ECS",
         }),
       flatMap(
         pipe([

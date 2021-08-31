@@ -24,8 +24,9 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.AuthorizerId");
 const findName = get("live.Name");
@@ -37,13 +38,14 @@ const apiArn = ({ config, ApiId }) =>
   `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
 
 exports.Authorizer = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.ApiId],
     },
   ];
@@ -59,7 +61,7 @@ exports.Authorizer = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apiGatewayV2",
+          group: "ApiGatewayV2",
         }),
       pluck("id"),
       flatMap((ApiId) =>

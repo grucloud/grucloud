@@ -16,7 +16,7 @@ describe("Api Gateway Authorizer V2", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    autorizer = Authorizer({ config: provider.config });
+    autorizer = provider.getClient({ groupType: "ApiGatewayV2::Authorizer" });
     await provider.start();
   });
   after(async () => {});

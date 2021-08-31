@@ -31,10 +31,11 @@ const {
   isDownByIdCore,
 } = require("@grucloud/core/Common");
 
+const { AwsClient } = require("../AwsClient");
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
 
   const iam = IAMNew(config);
 
@@ -44,12 +45,12 @@ exports.AwsIamUser = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Policy",
-      group: "iam",
+      group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
     {
       type: "Group",
-      group: "iam",
+      group: "IAM",
       ids: pipe([() => live, get("Groups"), pluck("GroupName")])(),
     },
   ];

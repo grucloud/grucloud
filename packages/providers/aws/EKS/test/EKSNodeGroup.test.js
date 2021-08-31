@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { EKSNodeGroup } = require("../EKSNodeGroup");
 
 describe("EKSNodeGroup", async function () {
   let config;
@@ -14,7 +13,7 @@ describe("EKSNodeGroup", async function () {
   });
   after(async () => {});
   it.skip("getById invalid clusterName", async function () {
-    const nodeGroup = EKSNodeGroup({ config });
+    const nodeGroup = provider.getClient({ groupType: "EKS::NodeGroup" });
     const result = await nodeGroup.getById({
       clusterName: "aaa",
       nodegroupName: "xxx",

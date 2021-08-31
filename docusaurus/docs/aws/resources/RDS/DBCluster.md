@@ -10,7 +10,7 @@ Manages a [DB Cluster](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/We
 ```js
 const region = "eu-west-2";
 
-const dbCluster = provider.rds.makeDBCluster({
+const dbCluster = provider.RDS.makeDBCluster({
   name: "cluster",
   dependencies: { dbSubnetGroup },
   properties: () => ({

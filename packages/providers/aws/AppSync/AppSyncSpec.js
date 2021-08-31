@@ -5,7 +5,7 @@ const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncApiKey } = require("./AppSyncApiKey");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
 
-const GROUP = "appSync";
+const GROUP = "AppSync";
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
@@ -19,13 +19,13 @@ module.exports = () =>
     },
     {
       type: "ApiKey",
-      dependsOn: ["appSync::GraphqlApi"],
+      dependsOn: ["AppSync::GraphqlApi"],
       Client: AppSyncApiKey,
       isOurMinion,
     },
     {
       type: "DataSource",
-      dependsOn: ["appSync::GraphqlApi"],
+      dependsOn: ["AppSync::GraphqlApi"],
       Client: AppSyncDataSource,
       isOurMinion,
     },

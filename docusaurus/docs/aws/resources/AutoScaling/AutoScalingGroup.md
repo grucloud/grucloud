@@ -10,7 +10,7 @@ Manages an [AWS Auto Scaling group](https://console.aws.amazon.com/ec2autoscalin
 Create an AutoScaling Group given 2 subnets and a launch template:
 
 ```js
-provider.autoscaling.makeAutoScalingGroup({
+provider.AutoScaling.makeAutoScalingGroup({
   name: "asg",
   properties: () => ({
     MinSize: 1,
@@ -22,15 +22,15 @@ provider.autoscaling.makeAutoScalingGroup({
   }),
   dependencies: ({ resources }) => ({
     subnets: [
-      resources.ec2.Subnet.pubSubnetAz1,
-      resources.ec2.Subnet.pubSubnetAz2,
+      resources.EC2.Subnet.pubSubnetAz1,
+      resources.EC2.Subnet.pubSubnetAz2,
     ],
-    launchTemplate: resources.ec2.LaunchTemplate.ltEc2Micro,
+    launchTemplate: resources.EC2.LaunchTemplate.ltEc2Micro,
   }),
 });
 ```
 
-## Properties
+## Properties
 
 - [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property)
 
@@ -40,7 +40,7 @@ provider.autoscaling.makeAutoScalingGroup({
 - [Launch Configuration](./LaunchConfiguration) or [Launch Template](./EC2/LaunchTemplate)
 - [ELB Target Groups](../ELBv2/TargetGroup.md)
 
-  ## Full Examples
+  ## Full Examples
 
 - [AutoScaling Group example](https://github.com/grucloud/grucloud/tree/main/examples/aws/autoScaling/autoScalingGroup)
 - [AutoScaling Group in ECS with Launch Configuration](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)

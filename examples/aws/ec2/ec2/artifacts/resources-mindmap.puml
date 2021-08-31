@@ -3,7 +3,7 @@ title Resources for project ec2
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ KeyPair (1)
 ++++ ElasticIpAddress (1)
 ++++ Image (1)

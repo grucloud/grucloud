@@ -41,8 +41,10 @@ const {
 } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const { managedByDescription, providerName } = config;
   assert(managedByDescription);
   assert(providerName);
@@ -63,7 +65,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             lives.getById({
               id: live.VpcId,
               type: "Vpc",
-              group: "ec2",
+              group: "EC2",
               providerName,
             }),
           tap((vpc) => {
@@ -93,10 +95,10 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const findId = get("live.GroupId");
 
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
+    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("IpPermissions"),

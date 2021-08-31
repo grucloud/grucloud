@@ -56,7 +56,7 @@ const fnSpecs = (config) =>
       assert(config);
     }),
     () => [
-      //...ApiGateway(),
+      ...ApiGateway(),
       ...ApiGatewayV2(),
       ...AppSync(),
       ...AutoScaling(),

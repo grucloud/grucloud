@@ -7,13 +7,13 @@ const { DBCluster } = require("./DBCluster");
 const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
 
-const GROUP = "rds";
+const GROUP = "RDS";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DBSubnetGroup",
-      dependsOn: ["ec2::Subnet"],
+      dependsOn: ["EC2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
       compare: compare({
@@ -22,7 +22,7 @@ module.exports = () =>
     },
     {
       type: "DBCluster",
-      dependsOn: ["rds::DBSubnetGroup", "ec2::SecurityGroup", "kms::Key"],
+      dependsOn: ["RDS::DBSubnetGroup", "EC2::SecurityGroup", "KMS::Key"],
       Client: DBCluster,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compare({
@@ -43,11 +43,11 @@ module.exports = () =>
     {
       type: "DBInstance",
       dependsOn: [
-        "rds::DBSubnetGroup",
-        "rds::DBCluster",
-        "ec2::InternetGateway",
-        "ec2::SecurityGroup",
-        "ec2:NetworkInterface",
+        "RDS::DBSubnetGroup",
+        "RDS::DBCluster",
+        "EC2::InternetGateway",
+        "EC2::SecurityGroup",
+        "EC2::NetworkInterface",
       ],
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),

@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-module-aws-load-balancer",
-  ec2: {
+  EC2: {
     Vpc: {
       vpcModuleLoadBalancer: {
         name: "vpc-module-load-balancer",
@@ -100,7 +100,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  acm: {
+  ACM: {
     Certificate: {
       modAwsLoadBalancerGrucloudOrg: {
         name: "mod-aws-load-balancer.grucloud.org",
@@ -110,7 +110,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  elb: {
+  ELBv2: {
     LoadBalancer: {
       loadBalancer: {
         name: "load-balancer",
@@ -230,14 +230,14 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  route53Domain: {
+  Route53Domains: {
     Domain: {
       grucloudOrg: {
         name: "grucloud.org",
       },
     },
   },
-  route53: {
+  Route53: {
     HostedZone: {
       modAwsLoadBalancerGrucloudOrg: {
         name: "mod-aws-load-balancer.grucloud.org.",

@@ -7,6 +7,7 @@ const prettier = require("prettier");
 const {
   pipe,
   tap,
+  set,
   get,
   eq,
   map,
@@ -52,19 +53,8 @@ const ResourceVarNameDefault = pipe([
 
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
-const omitPathIfEmpty = (path) => (obj) =>
-  pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
-
-exports.omitIfEmpty = (paths) => (obj) =>
-  pipe([
-    () => paths,
-    reduce((acc, path) => pipe([() => acc, omitPathIfEmpty(path)])(), obj),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
 const findDependencyNames = ({
+  list,
   type,
   group,
   providerName,
@@ -92,14 +82,12 @@ const findDependencyNames = ({
       ({ group = "compute", type, name }) =>
         `resources.${group}.${type}.${ResourceVarNameDefault(name)}`
     ),
-    tap((xxx) => {
-      assert(true);
-    }),
+    (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
-const envVarName = ({ resource, envVar }) =>
+const envVarName = ({ resource, suffix }) =>
   `${snakeCase(resource.name).toUpperCase()}_${snakeCase(
-    envVar
+    suffix
   ).toUpperCase()}`;
 
 const isNotOurTagKey = not(
@@ -152,10 +140,14 @@ const buildProperties = ({
     (props) =>
       pipe([
         () => environmentVariables,
-        reduce((acc, envVar) => {
-          acc[envVar] = () => `process.env.${envVarName({ resource, envVar })}`;
-          return acc;
-        }, props),
+        reduce(
+          (acc, { path, suffix }) =>
+            set(
+              path,
+              () => `process.env.${envVarName({ resource, suffix })}`
+            )(acc),
+          props
+        ),
       ])(),
   ])();
 
@@ -238,7 +230,7 @@ exports.hasDependency = ({ type, group }) =>
 const envTpl = ({ resource, environmentVariables }) =>
   pipe([
     () => environmentVariables,
-    map((envVar) => `${envVarName({ resource, envVar })}=\n`),
+    map(({ suffix }) => `${envVarName({ resource, suffix })}=\n`),
     callProp("join", ""),
   ])();
 
@@ -267,18 +259,24 @@ const configTpl = ({
     }),
   ])();
 
-const dependencyValue = ({ key, value }) =>
+const dependencyValue = ({ key, list, resource }) =>
   pipe([
-    tap(() => {
-      assert(Array.isArray(value));
+    tap((dependencyVarNames) => {
+      assert(Array.isArray(dependencyVarNames));
+      if (!list) {
+        if (size(dependencyVarNames) > 1) {
+          assert(key);
+          assert(resource);
+          assert(false);
+        }
+      }
     }),
-    () => value,
     callProp("sort"),
     when(
-      () => key.endsWith("s"),
-      (value) => `[${value}]`
+      () => list,
+      (values) => `[${values}]`
     ),
-  ])();
+  ]);
 
 const buildDependencies = ({
   providerName,
@@ -304,14 +302,21 @@ const buildDependencies = ({
         }),
         ({ findDependencyNames }) =>
           findDependencyNames({ providerName, resource, lives, ...dependency }),
+        tap((params) => {
+          assert(true);
+        }),
       ])(),
     ]),
     tap((params) => {
       assert(true);
     }),
-    map.entries(([key, value]) => [
+    filter(not(isEmpty)),
+    map.entries(([key, { list, dependencyVarNames }]) => [
       key,
-      !isEmpty(value) && `${key}: ${dependencyValue({ key, value })}`,
+      !isEmpty(dependencyVarNames) &&
+        `${key}: ${dependencyValue({ key, list, resource })(
+          dependencyVarNames
+        )}`,
     ]),
     values,
     filter(identity),

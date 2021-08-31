@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "ec2-simple",
-  ec2: {
+  EC2: {
     Instance: {
       webServerEc2Simple: {
         name: "web-server-ec2-simple",

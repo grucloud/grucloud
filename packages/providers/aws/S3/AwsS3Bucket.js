@@ -24,6 +24,8 @@ const {
   when,
 } = require("rubico/x");
 
+const { AwsClient } = require("../AwsClient");
+
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
@@ -38,8 +40,7 @@ const {
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
   const s3 = S3New(config);

@@ -31,10 +31,10 @@ const {
   findNamespaceInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsRouteTable = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const ec2 = Ec2New(config);
   const findId = get("live.RouteTableId");
@@ -59,7 +59,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "Vpc",
-          group: "ec2",
+          group: "EC2",
           providerName,
           id: live.VpcId,
         }),
@@ -80,10 +80,10 @@ exports.AwsRouteTable = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
+    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("Associations"),

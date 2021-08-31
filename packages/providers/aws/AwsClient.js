@@ -16,12 +16,12 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { createEndpoint } = require("./AwsCommon");
 
-exports.AwsClient = ({ type, endpointName, config }) => {
+exports.AwsClient = ({ spec: { type, group }, config }) => {
   assert(type);
-  assert(endpointName);
+  assert(group);
   assert(config);
 
-  const endpoint = () => createEndpoint({ endpointName })(config);
+  const endpoint = () => createEndpoint({ endpointName: group })(config);
 
   const getById =
     ({
@@ -138,7 +138,14 @@ exports.AwsClient = ({ type, endpointName, config }) => {
       ])();
 
   const update =
-    ({ method, config, pickId, extraParam = {}, isUpdatedById }) =>
+    ({
+      method,
+      config,
+      pickId = () => ({}),
+      extraParam = {},
+      filterParams = identity,
+      isUpdatedById,
+    }) =>
     ({ name, payload, diff, live }) =>
       pipe([
         tap(() => {
@@ -156,6 +163,7 @@ exports.AwsClient = ({ type, endpointName, config }) => {
         get("liveDiff.updated"),
         defaultsDeep(pickId(live)),
         defaultsDeep(extraParam),
+        filterParams,
         tap((params) => {
           assert(params);
           logger.debug(

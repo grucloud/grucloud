@@ -10,15 +10,15 @@ Manage an [ELB Listener](https://docs.aws.amazon.com/elasticloadbalancing/latest
 ### Http listener
 
 ```js
-const vpc = provider.ec2.makeVpc({
+const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const listenerHttp = provider.elb.makeListener({
-  name: config.elb.listeners.http.name,
+const listenerHttp = provider.ELBv2.makeListener({
+  name: config.ELBv2.listeners.http.name,
   dependencies: {
     loadBalancer,
     targetGroup: targetGroups.web,

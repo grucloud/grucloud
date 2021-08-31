@@ -3,108 +3,108 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.lambdaPolicy.name"),
-    properties: get("config.iam.Policy.lambdaPolicy.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.lambdaPolicy.name"),
+    properties: get("config.IAM.Policy.lambdaPolicy.properties"),
   });
 
-  provider.iam.makeRole({
-    name: get("config.iam.Role.lambdaRole.name"),
-    properties: get("config.iam.Role.lambdaRole.properties"),
+  provider.IAM.makeRole({
+    name: get("config.IAM.Role.lambdaRole.name"),
+    properties: get("config.IAM.Role.lambdaRole.properties"),
     dependencies: ({ resources }) => ({
-      policies: [resources.iam.Policy.lambdaPolicy],
+      policies: [resources.IAM.Policy.lambdaPolicy],
     }),
   });
 
-  provider.acm.makeCertificate({
-    name: get("config.acm.Certificate.grucloudOrg.name"),
-    properties: get("config.acm.Certificate.grucloudOrg.properties"),
+  provider.ACM.makeCertificate({
+    name: get("config.ACM.Certificate.grucloudOrg.name"),
+    properties: get("config.ACM.Certificate.grucloudOrg.properties"),
   });
 
-  provider.route53Domain.useDomain({
-    name: get("config.route53Domain.Domain.grucloudOrg.name"),
+  provider.Route53Domains.useDomain({
+    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
   });
 
-  provider.route53.makeHostedZone({
-    name: get("config.route53.HostedZone.grucloudOrg.name"),
+  provider.Route53.makeHostedZone({
+    name: get("config.Route53.HostedZone.grucloudOrg.name"),
     dependencies: ({ resources }) => ({
-      domain: resources.route53Domain.Domain.grucloudOrg,
+      domain: resources.Route53Domains.Domain.grucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
-    name: get("config.route53.Record.apiGatewayAliasRecord.name"),
+  provider.Route53.makeRecord({
+    name: get("config.Route53.Record.apiGatewayAliasRecord.name"),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.grucloudOrg,
-      apiGatewayV2DomainName: resources.apiGatewayV2.DomainName.grucloudOrg,
+      hostedZone: resources.Route53.HostedZone.grucloudOrg,
+      apiGatewayV2DomainName: resources.ApiGatewayV2.DomainName.grucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
-    name: get("config.route53.Record.certificateValidationGrucloudOrg.name"),
+  provider.Route53.makeRecord({
+    name: get("config.Route53.Record.certificateValidationGrucloudOrg.name"),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.route53.HostedZone.grucloudOrg,
-      certificate: resources.acm.Certificate.grucloudOrg,
+      hostedZone: resources.Route53.HostedZone.grucloudOrg,
+      certificate: resources.ACM.Certificate.grucloudOrg,
     }),
   });
 
-  provider.lambda.makeFunction({
-    name: get("config.lambda.Function.myFunction.name"),
-    properties: get("config.lambda.Function.myFunction.properties"),
+  provider.Lambda.makeFunction({
+    name: get("config.Lambda.Function.myFunction.name"),
+    properties: get("config.Lambda.Function.myFunction.properties"),
     dependencies: ({ resources }) => ({
-      role: resources.iam.Role.lambdaRole,
+      role: resources.IAM.Role.lambdaRole,
     }),
   });
 
-  provider.apiGatewayV2.makeApi({
-    name: get("config.apiGatewayV2.Api.myApi.name"),
-    properties: get("config.apiGatewayV2.Api.myApi.properties"),
+  provider.ApiGatewayV2.makeApi({
+    name: get("config.ApiGatewayV2.Api.myApi.name"),
+    properties: get("config.ApiGatewayV2.Api.myApi.properties"),
   });
 
-  provider.apiGatewayV2.makeIntegration({
-    name: get("config.apiGatewayV2.Integration.integrationLambda.name"),
+  provider.ApiGatewayV2.makeIntegration({
+    name: get("config.ApiGatewayV2.Integration.integrationLambda.name"),
     properties: get(
-      "config.apiGatewayV2.Integration.integrationLambda.properties"
+      "config.ApiGatewayV2.Integration.integrationLambda.properties"
     ),
     dependencies: ({ resources }) => ({
-      api: resources.apiGatewayV2.Api.myApi,
-      lambdaFunction: resources.lambda.Function.myFunction,
+      api: resources.ApiGatewayV2.Api.myApi,
+      lambdaFunction: resources.Lambda.Function.myFunction,
     }),
   });
 
-  provider.apiGatewayV2.makeRoute({
-    name: get("config.apiGatewayV2.Route.anyMyFunction.name"),
-    properties: get("config.apiGatewayV2.Route.anyMyFunction.properties"),
+  provider.ApiGatewayV2.makeRoute({
+    name: get("config.ApiGatewayV2.Route.anyMyFunction.name"),
+    properties: get("config.ApiGatewayV2.Route.anyMyFunction.properties"),
     dependencies: ({ resources }) => ({
-      api: resources.apiGatewayV2.Api.myApi,
-      integration: resources.apiGatewayV2.Integration.integrationLambda,
+      api: resources.ApiGatewayV2.Api.myApi,
+      integration: resources.ApiGatewayV2.Integration.integrationLambda,
     }),
   });
 
-  provider.apiGatewayV2.makeStage({
-    name: get("config.apiGatewayV2.Stage.myApiStageDev.name"),
-    properties: get("config.apiGatewayV2.Stage.myApiStageDev.properties"),
+  provider.ApiGatewayV2.makeStage({
+    name: get("config.ApiGatewayV2.Stage.myApiStageDev.name"),
+    properties: get("config.ApiGatewayV2.Stage.myApiStageDev.properties"),
     dependencies: ({ resources }) => ({
-      api: resources.apiGatewayV2.Api.myApi,
+      api: resources.ApiGatewayV2.Api.myApi,
     }),
   });
 
-  provider.apiGatewayV2.makeDeployment({
-    name: get("config.apiGatewayV2.Deployment.myApiDeployment.name"),
+  provider.ApiGatewayV2.makeDeployment({
+    name: get("config.ApiGatewayV2.Deployment.myApiDeployment.name"),
     properties: get(
-      "config.apiGatewayV2.Deployment.myApiDeployment.properties"
+      "config.ApiGatewayV2.Deployment.myApiDeployment.properties"
     ),
     dependencies: ({ resources }) => ({
-      api: resources.apiGatewayV2.Api.myApi,
-      stage: resources.apiGatewayV2.Stage.myApiStageDev,
+      api: resources.ApiGatewayV2.Api.myApi,
+      stage: resources.ApiGatewayV2.Stage.myApiStageDev,
     }),
   });
 
-  provider.apiGatewayV2.makeDomainName({
-    name: get("config.apiGatewayV2.DomainName.grucloudOrg.name"),
-    properties: get("config.apiGatewayV2.DomainName.grucloudOrg.properties"),
+  provider.ApiGatewayV2.makeDomainName({
+    name: get("config.ApiGatewayV2.DomainName.grucloudOrg.name"),
+    properties: get("config.ApiGatewayV2.DomainName.grucloudOrg.properties"),
     dependencies: ({ resources }) => ({
-      certificate: resources.acm.Certificate.grucloudOrg,
+      certificate: resources.ACM.Certificate.grucloudOrg,
     }),
   });
 };

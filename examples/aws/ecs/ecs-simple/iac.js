@@ -3,156 +3,156 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.iam.usePolicy({
+  provider.IAM.usePolicy({
     name: get(
-      "config.iam.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role.name"
+      "config.IAM.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role.name"
     ),
     properties: get(
-      "config.iam.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role.properties"
+      "config.IAM.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role.properties"
     ),
   });
 
-  provider.iam.makeRole({
-    name: get("config.iam.Role.ecsInstanceRole.name"),
-    properties: get("config.iam.Role.ecsInstanceRole.properties"),
+  provider.IAM.makeRole({
+    name: get("config.IAM.Role.ecsInstanceRole.name"),
+    properties: get("config.IAM.Role.ecsInstanceRole.properties"),
     dependencies: ({ resources }) => ({
       policies: [
-        resources.iam.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role,
+        resources.IAM.Policy.serviceRoleAmazonEc2ContainerServiceforEc2Role,
       ],
     }),
   });
 
-  provider.iam.makeInstanceProfile({
-    name: get("config.iam.InstanceProfile.ecsInstanceRole.name"),
+  provider.IAM.makeInstanceProfile({
+    name: get("config.IAM.InstanceProfile.ecsInstanceRole.name"),
     dependencies: ({ resources }) => ({
-      roles: [resources.iam.Role.ecsInstanceRole],
+      roles: [resources.IAM.Role.ecsInstanceRole],
     }),
   });
 
-  provider.ec2.makeVpc({
-    name: get("config.ec2.Vpc.vpc.name"),
-    properties: get("config.ec2.Vpc.vpc.properties"),
+  provider.EC2.makeVpc({
+    name: get("config.EC2.Vpc.vpc.name"),
+    properties: get("config.EC2.Vpc.vpc.properties"),
   });
 
-  provider.ec2.makeSubnet({
-    name: get("config.ec2.Subnet.pubSubnetAz1.name"),
-    properties: get("config.ec2.Subnet.pubSubnetAz1.properties"),
+  provider.EC2.makeSubnet({
+    name: get("config.EC2.Subnet.pubSubnetAz1.name"),
+    properties: get("config.EC2.Subnet.pubSubnetAz1.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
+      vpc: resources.EC2.Vpc.vpc,
     }),
   });
 
-  provider.ec2.makeSubnet({
-    name: get("config.ec2.Subnet.pubSubnetAz2.name"),
-    properties: get("config.ec2.Subnet.pubSubnetAz2.properties"),
+  provider.EC2.makeSubnet({
+    name: get("config.EC2.Subnet.pubSubnetAz2.name"),
+    properties: get("config.EC2.Subnet.pubSubnetAz2.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
+      vpc: resources.EC2.Vpc.vpc,
     }),
   });
 
-  provider.ec2.makeInternetGateway({
-    name: get("config.ec2.InternetGateway.internetGateway.name"),
+  provider.EC2.makeInternetGateway({
+    name: get("config.EC2.InternetGateway.internetGateway.name"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
+      vpc: resources.EC2.Vpc.vpc,
     }),
   });
 
-  provider.ec2.makeRouteTable({
-    name: get("config.ec2.RouteTable.routeViaIgw.name"),
+  provider.EC2.makeRouteTable({
+    name: get("config.EC2.RouteTable.routeViaIgw.name"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
+      vpc: resources.EC2.Vpc.vpc,
       subnets: [
-        resources.ec2.Subnet.pubSubnetAz1,
-        resources.ec2.Subnet.pubSubnetAz2,
+        resources.EC2.Subnet.pubSubnetAz1,
+        resources.EC2.Subnet.pubSubnetAz2,
       ],
     }),
   });
 
-  provider.ec2.makeRoute({
-    name: get("config.ec2.Route.routeViaIgwIgw.name"),
-    properties: get("config.ec2.Route.routeViaIgwIgw.properties"),
+  provider.EC2.makeRoute({
+    name: get("config.EC2.Route.routeViaIgwIgw.name"),
+    properties: get("config.EC2.Route.routeViaIgwIgw.properties"),
     dependencies: ({ resources }) => ({
-      routeTable: resources.ec2.RouteTable.routeViaIgw,
-      ig: resources.ec2.InternetGateway.internetGateway,
+      routeTable: resources.EC2.RouteTable.routeViaIgw,
+      ig: resources.EC2.InternetGateway.internetGateway,
     }),
   });
 
-  provider.ec2.makeSecurityGroup({
-    name: get("config.ec2.SecurityGroup.ecsSecurityGroup.name"),
-    properties: get("config.ec2.SecurityGroup.ecsSecurityGroup.properties"),
+  provider.EC2.makeSecurityGroup({
+    name: get("config.EC2.SecurityGroup.ecsSecurityGroup.name"),
+    properties: get("config.EC2.SecurityGroup.ecsSecurityGroup.properties"),
     dependencies: ({ resources }) => ({
-      vpc: resources.ec2.Vpc.vpc,
+      vpc: resources.EC2.Vpc.vpc,
     }),
   });
 
-  provider.ec2.makeSecurityGroupRuleIngress({
+  provider.EC2.makeSecurityGroupRuleIngress({
     name: get(
-      "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.name"
+      "config.EC2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.name"
     ),
     properties: get(
-      "config.ec2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.properties"
+      "config.EC2.SecurityGroupRuleIngress.ecsSecurityGroupRuleIngressTcp_80V4.properties"
     ),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.ec2.SecurityGroup.ecsSecurityGroup,
+      securityGroup: resources.EC2.SecurityGroup.ecsSecurityGroup,
     }),
   });
 
-  provider.autoscaling.makeAutoScalingGroup({
-    name: get("config.autoscaling.AutoScalingGroup.ecsInstanceAsg.name"),
+  provider.AutoScaling.makeAutoScalingGroup({
+    name: get("config.AutoScaling.AutoScalingGroup.ecsInstanceAsg.name"),
     properties: get(
-      "config.autoscaling.AutoScalingGroup.ecsInstanceAsg.properties"
+      "config.AutoScaling.AutoScalingGroup.ecsInstanceAsg.properties"
     ),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.ec2.Subnet.pubSubnetAz1,
-        resources.ec2.Subnet.pubSubnetAz2,
+        resources.EC2.Subnet.pubSubnetAz1,
+        resources.EC2.Subnet.pubSubnetAz2,
       ],
       launchConfiguration:
-        resources.autoscaling.LaunchConfiguration
+        resources.AutoScaling.LaunchConfiguration
           .ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj,
     }),
   });
 
-  provider.autoscaling.makeLaunchConfiguration({
+  provider.AutoScaling.makeLaunchConfiguration({
     name: get(
-      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.name"
+      "config.AutoScaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.name"
     ),
     properties: get(
-      "config.autoscaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.properties"
+      "config.AutoScaling.LaunchConfiguration.ec2ContainerServiceClusterEcsInstanceLcCoyk3Cqz0Qrj.properties"
     ),
     dependencies: ({ resources }) => ({
-      instanceProfile: resources.iam.InstanceProfile.ecsInstanceRole,
-      securityGroups: [resources.ec2.SecurityGroup.ecsSecurityGroup],
+      instanceProfile: resources.IAM.InstanceProfile.ecsInstanceRole,
+      securityGroups: [resources.EC2.SecurityGroup.ecsSecurityGroup],
     }),
   });
 
-  provider.ecs.makeCluster({
-    name: get("config.ecs.Cluster.cluster.name"),
-    properties: get("config.ecs.Cluster.cluster.properties"),
+  provider.ECS.makeCluster({
+    name: get("config.ECS.Cluster.cluster.name"),
+    properties: get("config.ECS.Cluster.cluster.properties"),
     dependencies: ({ resources }) => ({
-      capacityProviders: [resources.ecs.CapacityProvider.cp],
+      capacityProviders: [resources.ECS.CapacityProvider.cp],
     }),
   });
 
-  provider.ecs.makeCapacityProvider({
-    name: get("config.ecs.CapacityProvider.cp.name"),
-    properties: get("config.ecs.CapacityProvider.cp.properties"),
+  provider.ECS.makeCapacityProvider({
+    name: get("config.ECS.CapacityProvider.cp.name"),
+    properties: get("config.ECS.CapacityProvider.cp.properties"),
     dependencies: ({ resources }) => ({
-      autoScalingGroup: resources.autoscaling.AutoScalingGroup.ecsInstanceAsg,
+      autoScalingGroup: resources.AutoScaling.AutoScalingGroup.ecsInstanceAsg,
     }),
   });
 
-  provider.ecs.makeTaskDefinition({
-    name: get("config.ecs.TaskDefinition.nginx.name"),
-    properties: get("config.ecs.TaskDefinition.nginx.properties"),
+  provider.ECS.makeTaskDefinition({
+    name: get("config.ECS.TaskDefinition.nginx.name"),
+    properties: get("config.ECS.TaskDefinition.nginx.properties"),
   });
 
-  provider.ecs.makeService({
-    name: get("config.ecs.Service.serviceNginx.name"),
-    properties: get("config.ecs.Service.serviceNginx.properties"),
+  provider.ECS.makeService({
+    name: get("config.ECS.Service.serviceNginx.name"),
+    properties: get("config.ECS.Service.serviceNginx.properties"),
     dependencies: ({ resources }) => ({
-      cluster: resources.ecs.Cluster.cluster,
-      taskDefinition: resources.ecs.TaskDefinition.nginx,
+      cluster: resources.ECS.Cluster.cluster,
+      taskDefinition: resources.ECS.TaskDefinition.nginx,
     }),
   });
 };

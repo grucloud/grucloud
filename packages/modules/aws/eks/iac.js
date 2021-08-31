@@ -27,10 +27,10 @@ const createResources = async ({
 }) => {
   const { config } = provider;
   const formatName = config.formatName || identity;
-  assert(config.eks);
-  assert(config.eks.cluster);
-  assert(config.eks.roleCluster);
-  //assert(config.eks.nodeGroupsPrivate);
+  assert(config.EKS);
+  assert(config.EKS.cluster);
+  assert(config.EKS.roleCluster);
+  //assert(config.EKS.nodeGroupsPrivate);
 
   assert(config.vpc);
   assert(resources);
@@ -38,10 +38,10 @@ const createResources = async ({
   const { vpc, subnetsPublic, privates } = resources;
   assert(vpc);
   assert(subnetsPublic);
-  const clusterName = config.eks.cluster.name;
+  const clusterName = config.EKS.cluster.name;
   assert(clusterName);
 
-  const iamPolicyEKSCluster = provider.iam.usePolicy({
+  const iamPolicyEKSCluster = provider.IAM.usePolicy({
     name: "AmazonEKSClusterPolicy",
     namespace,
     properties: () => ({
@@ -49,7 +49,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSVPCResourceController = provider.iam.usePolicy({
+  const iamPolicyEKSVPCResourceController = provider.IAM.usePolicy({
     name: "AmazonEKSVPCResourceController",
     namespace,
     properties: () => ({
@@ -57,8 +57,8 @@ const createResources = async ({
     }),
   });
 
-  const roleCluster = provider.iam.makeRole({
-    name: formatName(config.eks.roleCluster.name, config),
+  const roleCluster = provider.IAM.makeRole({
+    name: formatName(config.EKS.roleCluster.name, config),
     namespace,
     dependencies: {
       policies: [iamPolicyEKSCluster, iamPolicyEKSVPCResourceController],
@@ -79,7 +79,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSWorkerNode = provider.iam.usePolicy({
+  const iamPolicyEKSWorkerNode = provider.IAM.usePolicy({
     name: "AmazonEKSWorkerNodePolicy",
     namespace,
     properties: () => ({
@@ -87,7 +87,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEC2ContainerRegistryReadOnly = provider.iam.usePolicy({
+  const iamPolicyEC2ContainerRegistryReadOnly = provider.IAM.usePolicy({
     name: "AmazonEC2ContainerRegistryReadOnly",
     namespace,
     properties: () => ({
@@ -95,7 +95,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKS_CNI = provider.iam.usePolicy({
+  const iamPolicyEKS_CNI = provider.IAM.usePolicy({
     name: "AmazonEKS_CNI_Policy",
     namespace,
     properties: () => ({
@@ -103,8 +103,8 @@ const createResources = async ({
     }),
   });
 
-  const roleNodeGroup = provider.iam.makeRole({
-    name: formatName(config.eks.roleNodeGroup.name, config),
+  const roleNodeGroup = provider.IAM.makeRole({
+    name: formatName(config.EKS.roleNodeGroup.name, config),
     namespace,
     dependencies: {
       policies: [
@@ -129,8 +129,8 @@ const createResources = async ({
     }),
   });
 
-  const securityGroupCluster = provider.ec2.makeSecurityGroup({
-    name: formatName(config.eks.securityGroupCluster.name, config),
+  const securityGroupCluster = provider.EC2.makeSecurityGroup({
+    name: formatName(config.EKS.securityGroupCluster.name, config),
     namespace,
     dependencies: { vpc },
     properties: () => ({
@@ -139,7 +139,7 @@ const createResources = async ({
     }),
   });
 
-  const sgClusterRuleIngressHttps = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgClusterRuleIngressHttps = provider.EC2.makeSecurityGroupRuleIngress({
     name: formatName("sg-cluster-rule-ingress-https", config),
     namespace,
     dependencies: {
@@ -163,7 +163,7 @@ const createResources = async ({
       },
     }),
   });
-  const sgClusterRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
+  const sgClusterRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
     name: formatName("sg-cluster-rule-egress", config),
     namespace,
     dependencies: {
@@ -188,8 +188,8 @@ const createResources = async ({
     }),
   });
 
-  const securityGroupNodes = provider.ec2.makeSecurityGroup({
-    name: formatName(config.eks.securityGroupNode.name, config),
+  const securityGroupNodes = provider.EC2.makeSecurityGroup({
+    name: formatName(config.EKS.securityGroupNode.name, config),
     namespace,
     dependencies: { vpc },
     properties: () => ({
@@ -200,7 +200,7 @@ const createResources = async ({
     }),
   });
 
-  const sgNodesRuleIngressCluster = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgNodesRuleIngressCluster = provider.EC2.makeSecurityGroupRuleIngress({
     name: formatName("sg-rule-node-group-ingress-cluster", config),
     namespace,
     dependencies: {
@@ -227,13 +227,13 @@ const createResources = async ({
   });
 
   // Asymmetric Key
-  const key = provider.kms.makeKey({
-    name: formatName(config.eks.key.name, config),
+  const key = provider.KMS.makeKey({
+    name: formatName(config.EKS.key.name, config),
     properties: () => ({}),
   });
 
   // define the EKS cluster
-  const cluster = provider.eks.makeCluster({
+  const cluster = provider.EKS.makeCluster({
     name: formatName(clusterName, config),
     namespace,
     dependencies: {
@@ -242,14 +242,14 @@ const createResources = async ({
       role: roleCluster,
       key,
     },
-    properties: ({ config }) => config.eks.cluster.properties,
+    properties: ({ config }) => config.EKS.cluster.properties,
   });
 
   // Create a node group on private subnets
-  const nodeGroupPrivate = provider.eks.makeNodeGroup({
-    name: get("config.eks.NodeGroup.nodeGroupPrivateCluster.name"),
+  const nodeGroupPrivate = provider.EKS.makeNodeGroup({
+    name: get("config.EKS.NodeGroup.nodeGroupPrivateCluster.name"),
     namespace: "EKS",
-    properties: get("config.eks.NodeGroup.nodeGroupPrivateCluster.properties"),
+    properties: get("config.EKS.NodeGroup.nodeGroupPrivateCluster.properties"),
     dependencies: {
       subnets: pluck("subnet")(privates),
       cluster,

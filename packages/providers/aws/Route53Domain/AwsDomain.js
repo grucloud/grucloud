@@ -22,14 +22,14 @@ const logger = require("@grucloud/core/logger")({ prefix: "Domain" });
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore } = require("@grucloud/core/Common");
 const { Route53DomainsNew } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
+
 const findName = get("live.DomainName");
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsDomain = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const route53domains = Route53DomainsNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listDomains-property

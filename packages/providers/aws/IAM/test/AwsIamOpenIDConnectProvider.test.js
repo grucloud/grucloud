@@ -27,7 +27,7 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
+    iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
       name: iamOpenIdConnectProviderName,
       properties: () => ({
         Url: oidcUrl,

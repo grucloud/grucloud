@@ -10,7 +10,7 @@ Manages a [Docker Registry](https://console.aws.amazon.com/ecr/home)
 The following code describes a repository with a policy and a replication configuration:
 
 ```js
-provider.ecr.makeRepository({
+provider.ECR.makeRepository({
   name: "my-registry",
   properties: ({ config }) => ({
     policyText: {

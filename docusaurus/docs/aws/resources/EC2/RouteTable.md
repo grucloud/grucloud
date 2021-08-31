@@ -10,14 +10,14 @@ Provides a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Ro
 ### Route Table associated with a subnet
 
 ```js
-const vpc = provider.ec2.makeVpc({
+const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnet = provider.ec2.makeSubnet({
+const subnet = provider.EC2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
   properties: () => ({
@@ -25,7 +25,7 @@ const subnet = provider.ec2.makeSubnet({
   }),
 });
 
-const routeTable = provider.ec2.makeRouteTable({
+const routeTable = provider.EC2.makeRouteTable({
   name: "rt",
   dependencies: { vpc, subnets: [subnet] },
 });

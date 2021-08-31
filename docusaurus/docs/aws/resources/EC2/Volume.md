@@ -13,7 +13,7 @@ const deviceMounted = "/dev/xvdf";
 const mountPoint = "/data";
 const AvailabilityZone = "us-east-1a";
 
-const volume = provider.ec2.makeVolume({
+const volume = provider.EC2.makeVolume({
   name: "volume",
   properties: () => ({
     Size: 5,
@@ -23,7 +23,7 @@ const volume = provider.ec2.makeVolume({
   }),
 });
 
-const server = provider.ec2.makeInstance({
+const server = provider.EC2.makeInstance({
   name: "server",
   dependencies: { volumes: [volume] },
   properties: () => ({

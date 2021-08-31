@@ -3,39 +3,39 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.acm.makeCertificate({
+  provider.ACM.makeCertificate({
     name: get(
-      "config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.name"
+      "config.ACM.Certificate.exampleModuleAwsCertificateGrucloudOrg.name"
     ),
     namespace: "Certificate",
     properties: get(
-      "config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.properties"
+      "config.ACM.Certificate.exampleModuleAwsCertificateGrucloudOrg.properties"
     ),
   });
 
-  provider.route53Domain.useDomain({
-    name: get("config.route53Domain.Domain.grucloudOrg.name"),
+  provider.Route53Domains.useDomain({
+    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
   });
 
-  provider.route53.makeHostedZone({
+  provider.Route53.makeHostedZone({
     name: get(
-      "config.route53.HostedZone.exampleModuleAwsCertificateGrucloudOrg.name"
+      "config.Route53.HostedZone.exampleModuleAwsCertificateGrucloudOrg.name"
     ),
     dependencies: ({ resources }) => ({
-      domain: resources.route53Domain.Domain.grucloudOrg,
+      domain: resources.Route53Domains.Domain.grucloudOrg,
     }),
   });
 
-  provider.route53.makeRecord({
+  provider.Route53.makeRecord({
     name: get(
-      "config.route53.Record.certificateValidationExampleModuleAwsCertificateGrucloudOrg.name"
+      "config.Route53.Record.certificateValidationExampleModuleAwsCertificateGrucloudOrg.name"
     ),
     namespace: "Certificate",
     dependencies: ({ resources }) => ({
       hostedZone:
-        resources.route53.HostedZone.exampleModuleAwsCertificateGrucloudOrg,
+        resources.Route53.HostedZone.exampleModuleAwsCertificateGrucloudOrg,
       certificate:
-        resources.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg,
+        resources.ACM.Certificate.exampleModuleAwsCertificateGrucloudOrg,
     }),
   });
 };

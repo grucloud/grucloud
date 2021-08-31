@@ -16,7 +16,7 @@ describe("AppSyncDataSource", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    dataSource = AppSyncDataSource({ config: provider.config });
+    dataSource = provider.getClient({ groupType: "AppSync::DataSource" });
     await provider.start();
   });
   it(

@@ -14,6 +14,7 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -23,17 +24,18 @@ const findName = findNameInTagsOrId({ findId });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSContainerInstance = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Cluster",
-      group: "ecs",
+      group: "ECS",
       ids: [live.clusterArn],
     },
     {
       type: "Instance",
-      group: "ec2",
+      group: "EC2",
       ids: [live.ec2InstanceId],
     },
   ];
@@ -61,7 +63,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Cluster",
-          group: "ecs",
+          group: "ECS",
         }),
       flatMap(
         pipe([

@@ -24,15 +24,14 @@ const {
   shouldRetryOnException,
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("ProviderName");
 const findName = get("ProviderName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.IdentityProvider = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const cognitoIdentityServiceProvider = () =>
     createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
 
@@ -47,7 +46,7 @@ exports.IdentityProvider = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "UserPool",
-          group: "apiGatewayV2",
+          group: "ApiGatewayV2",
         }),
       flatMap(({ live }) =>
         tryCatch(

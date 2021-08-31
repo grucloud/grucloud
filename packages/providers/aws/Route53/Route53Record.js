@@ -35,6 +35,7 @@ const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
@@ -96,16 +97,15 @@ const removeLastCharacter = callProp("slice", 0, -1);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const route53 = Route53New(config);
 
   const findDependencies = ({ live, lives }) => [
-    { type: "HostedZone", group: "route53", ids: [live.HostedZoneId] },
+    { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
     {
       type: "LoadBalancer",
-      group: "elb",
+      group: "ELBv2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -115,7 +115,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "LoadBalancer",
-                group: "elb",
+                group: "ELBv2",
                 providerName,
               }),
             filter(eq(get("live.DNSName"), DNSName)),
@@ -125,7 +125,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "DomainName",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -135,7 +135,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "DomainName",
-                group: "apiGatewayV2",
+                group: "ApiGatewayV2",
                 providerName,
               }),
             filter(
@@ -150,7 +150,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "Distribution",
-      group: "cloudFront",
+      group: "CloudFront",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -160,7 +160,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "Distribution",
-                group: "cloudFront",
+                group: "CloudFront",
                 providerName,
               }),
             filter(eq(get("live.DomainName"), DNSName)),
@@ -170,10 +170,10 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "Certificate",
-      group: "acm",
+      group: "ACM",
       ids: pipe([
         () =>
-          lives.getByType({ type: "Certificate", group: "acm", providerName }),
+          lives.getByType({ type: "Certificate", group: "ACM", providerName }),
         filter(
           and([
             eq(
@@ -250,7 +250,7 @@ exports.Route53Record = ({ spec, config }) => {
         assert(lives);
       }),
       () =>
-        lives.getByType({ providerName, type: "HostedZone", group: "route53" }),
+        lives.getByType({ providerName, type: "HostedZone", group: "Route53" }),
       flatMap((hostedZone) =>
         pipe([
           () => hostedZone,

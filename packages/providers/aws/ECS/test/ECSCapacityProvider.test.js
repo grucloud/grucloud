@@ -16,14 +16,16 @@ describe("ECSCapacityProvider", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    capacityprovider = ECSCapacityProvider({ config: provider.config });
+    capacityprovider = provider.getClient({
+      groupType: "ECS::CapacityProvider",
+    });
     await provider.start();
   });
   it(
     "list",
     pipe([
       () => capacityprovider.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

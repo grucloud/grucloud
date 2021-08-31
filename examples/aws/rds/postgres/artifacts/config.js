@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "rds-postgres",
-  ec2: {
+  EC2: {
     Vpc: {
       vpcPostgres: {
         name: "vpc-postgres",
@@ -80,7 +80,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  rds: {
+  RDS: {
     DBInstance: {
       dbInstance: {
         name: "db-instance",

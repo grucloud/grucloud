@@ -20,6 +20,7 @@ const logger = require("@grucloud/core/logger")({
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
 
 const {
   createEndpoint,
@@ -35,27 +36,28 @@ const findName = findNameInTagsOrId({ findId });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSTask = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Cluster",
-      group: "ecs",
+      group: "ECS",
       ids: [live.clusterArn],
     },
     {
       type: "TaskDefinition",
-      group: "ecs",
+      group: "ECS",
       ids: [live.taskDefinitionArn],
     },
     {
       type: "ContainerInstance",
-      group: "ecs",
+      group: "ECS",
       ids: [live.containerInstanceArn],
     },
     {
       type: "Service",
-      group: "ecs",
+      group: "ECS",
       ids: [
         pipe([
           () => live,
@@ -74,7 +76,7 @@ exports.ECSTask = ({ spec, config }) => {
                 lives.getByName({
                   name,
                   type: "Service",
-                  group: "ecs",
+                  group: "ECS",
                   providerName: config.providerName,
                 }),
               get("id"),
@@ -123,7 +125,7 @@ exports.ECSTask = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Cluster",
-          group: "ecs",
+          group: "ECS",
         }),
       flatMap(
         pipe([

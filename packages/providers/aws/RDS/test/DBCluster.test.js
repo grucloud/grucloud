@@ -16,14 +16,14 @@ describe("DBCluster", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    cluster = DBCluster({ config: provider.config });
+    cluster = provider.getClient({ groupType: "RDS::DBCluster" });
     await provider.start();
   });
   it(
     "list",
     pipe([
       () => cluster.getList(),
-      tap((items) => {
+      tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])

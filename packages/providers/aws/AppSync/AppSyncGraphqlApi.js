@@ -17,6 +17,7 @@ const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.name");
 const findId = get("live.apiId");
@@ -24,6 +25,7 @@ const pickParam = pick(["apiId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
   const findDependencies = ({ live }) => [];

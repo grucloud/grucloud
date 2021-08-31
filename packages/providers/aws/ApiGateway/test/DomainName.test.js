@@ -16,7 +16,7 @@ describe("Api Gateway DomainName", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    domainName = DomainName({ config: provider.config });
+    domainName = provider.getClient({ groupType: "APIGateway::DomainName" });
     await provider.start();
   });
   after(async () => {});

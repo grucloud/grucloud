@@ -22,7 +22,7 @@ const createResources = async ({ provider }) => {
     ],
   };
 
-  const iamPolicyToUser = provider.iam.makePolicy({
+  const iamPolicyToUser = provider.IAM.makePolicy({
     name: policyNameToUser,
     properties: () => ({
       PolicyDocument,
@@ -30,7 +30,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const iamPolicyToRole = provider.iam.makePolicy({
+  const iamPolicyToRole = provider.IAM.makePolicy({
     name: policyNameToRole,
     properties: () => ({
       PolicyDocument,
@@ -38,7 +38,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const iamPolicyToGroup = provider.iam.makePolicy({
+  const iamPolicyToGroup = provider.IAM.makePolicy({
     name: policyNameToGroup,
     properties: () => ({
       PolicyDocument,
@@ -46,26 +46,26 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const iamPolicyEKSWorkerNode = provider.iam.usePolicy({
+  const iamPolicyEKSWorkerNode = provider.IAM.usePolicy({
     name: "AmazonEKSWorkerNodePolicy",
     properties: () => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
   });
 
-  const iamGroup = provider.iam.makeGroup({
+  const iamGroup = provider.IAM.makeGroup({
     name: groupName,
     dependencies: { policies: [iamPolicyToGroup] },
     properties: () => ({}),
   });
 
-  const iamUser = provider.iam.makeUser({
+  const iamUser = provider.IAM.makeUser({
     name: userName,
     dependencies: { iamGroups: [iamGroup], policies: [iamPolicyToUser] },
     properties: () => ({}),
   });
 
-  const iamRole = provider.iam.makeRole({
+  const iamRole = provider.IAM.makeRole({
     name: roleName,
     dependencies: { policies: [iamPolicyToRole, iamPolicyEKSWorkerNode] },
     properties: () => ({
@@ -86,13 +86,13 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const iamInstanceProfile = provider.iam.makeInstanceProfile({
+  const iamInstanceProfile = provider.IAM.makeInstanceProfile({
     name: iamInstanceProfileName,
     dependencies: { roles: [iamRole] },
     properties: () => ({}),
   });
 
-  const image = provider.ec2.useImage({
+  const image = provider.EC2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -112,7 +112,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const server = provider.ec2.makeInstance({
+  const server = provider.EC2.makeInstance({
     name: "web-iam",
     dependencies: { image, iamInstanceProfile },
     properties: () => ({

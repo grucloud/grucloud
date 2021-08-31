@@ -3,12 +3,12 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudBucket_0.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudBucket_0.name"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudBucket_1.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudBucket_1.name"),
   });
 };
 

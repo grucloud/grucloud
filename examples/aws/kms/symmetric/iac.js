@@ -4,7 +4,7 @@ exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, { config: require("./config") });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
-  const cmk = provider.kms.makeKey({
+  const cmk = provider.KMS.makeKey({
     name: "secret-key-test",
     properties: () => ({}),
   });

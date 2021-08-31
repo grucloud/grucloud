@@ -2,7 +2,7 @@ const { pipe, assign, map } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { AwsDomain } = require("./AwsDomain");
 
-const GROUP = "route53Domain";
+const GROUP = "Route53Domains";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

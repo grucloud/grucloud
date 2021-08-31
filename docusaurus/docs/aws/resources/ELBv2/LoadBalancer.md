@@ -10,14 +10,14 @@ Manage an AWS Load Balancer.
 ### Load Balancer in a VPC
 
 ```js
-const vpc = provider.ec2.makeVpc({
+const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnetA = provider.ec2.makeSubnet({
+const subnetA = provider.EC2.makeSubnet({
   name: "subnetA",
   dependencies: { vpc },
   properties: () => ({
@@ -25,7 +25,7 @@ const subnetA = provider.ec2.makeSubnet({
   }),
 });
 
-const subnetB = provider.ec2.makeSubnet({
+const subnetB = provider.EC2.makeSubnet({
   name: "subnetB",
   dependencies: { vpc },
   properties: () => ({
@@ -33,7 +33,7 @@ const subnetB = provider.ec2.makeSubnet({
   }),
 });
 
-const securityGroup = provider.ec2.makeSecurityGroup({
+const securityGroup = provider.EC2.makeSecurityGroup({
   name: "security-group-balancer",
   dependencies: { vpc },
   properties: () => ({
@@ -60,7 +60,7 @@ const securityGroup = provider.ec2.makeSecurityGroup({
   }),
 });
 
-const loadBalancer = provider.elb.makeLoadBalancer({
+const loadBalancer = provider.ELBv2.makeLoadBalancer({
   name: "load-balancer",
   dependencies: {
     subnets: [subnetA, subnetA],
@@ -77,7 +77,7 @@ When using the _AWS Load Balancer Controller_ to create the load balancer & asso
 const clusterName = "cluster";
 const domainName = "test-load-balancer.grucloud.org";
 
-const loadBalancer = provider.elb.useLoadBalancer({
+const loadBalancer = provider.ELBv2.useLoadBalancer({
   name: "load-balancer",
   filterLives: ({ resources }) =>
     pipe([
@@ -99,11 +99,11 @@ const loadBalancer = provider.elb.useLoadBalancer({
     ])(),
 });
 
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
 });
 
-const loadBalancerRecord = provider.route53.makeRecord({
+const loadBalancerRecord = provider.Route53.makeRecord({
   name: `dns-record-alias-load-balancer-${hostedZoneName}`,
   dependencies: { hostedZone, loadBalancer },
   properties: ({ dependencies }) => {

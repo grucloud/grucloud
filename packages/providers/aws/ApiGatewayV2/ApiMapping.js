@@ -23,12 +23,13 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   createEndpoint,
   shouldRetryOnException,
   findNameInTagsOrId,
 } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ApiMappingId");
 const findName = findNameInTagsOrId({ findId });
@@ -39,23 +40,24 @@ const domainNameArn = ({ config, DomainName }) =>
 const buildTagKey = ({ ApiMappingId }) => `gc-api-mapping-${ApiMappingId}`;
 
 exports.ApiMapping = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.ApiId],
     },
     {
       type: "DomainName",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.DomainName],
     },
     {
       type: "Stage",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.Stage],
     },
   ];
@@ -71,7 +73,7 @@ exports.ApiMapping = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "DomainName",
-          group: "apiGatewayV2",
+          group: "ApiGatewayV2",
         }),
       flatMap(({ live }) =>
         tryCatch(

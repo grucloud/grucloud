@@ -21,6 +21,7 @@ const {
   shouldRetryOnException,
   buildTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
@@ -28,12 +29,13 @@ const pickParam = pick(["TableName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
 exports.DynamoDBTable = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const dynamoDB = () => createEndpoint({ endpointName: "DynamoDB" })(config);
 
   const findDependencies = ({ live }) => [
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [get("SSEDescription.KMSMasterKeyArn")(live)],
     },
   ];

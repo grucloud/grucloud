@@ -24,7 +24,7 @@ describe("AwsKeyPair", async function () {
   });
   after(async () => {});
   it.skip("keyPair create", async function () {
-    const keyPair = provider.ec2.makeKeyPair({
+    const keyPair = provider.EC2.makeKeyPair({
       name: "kp-test",
     });
     try {
@@ -37,7 +37,7 @@ describe("AwsKeyPair", async function () {
     }
   });
   it.skip("keyPair name not found on server", async function () {
-    provider.ec2.useKeyPair({
+    provider.EC2.useKeyPair({
       name: "idonotexist",
     });
     try {

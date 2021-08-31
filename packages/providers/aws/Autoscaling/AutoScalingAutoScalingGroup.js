@@ -1,34 +1,16 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  or,
-  pick,
-  not,
-  switchCase,
-  omit,
-  assign,
-} = require("rubico");
+const { map, pipe, tap, get, or, pick, not, assign } = require("rubico");
 const {
   defaultsDeep,
   pluck,
   isEmpty,
-  first,
   includes,
   callProp,
   unless,
   prepend,
 } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
-const { retryCall } = require("@grucloud/core/Retry");
-
-const { tos } = require("@grucloud/core/tos");
 const {
-  AutoScalingNew,
   shouldRetryOnException,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
@@ -62,13 +44,7 @@ const findName = (params) => {
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
-  const autoScaling = AutoScalingNew(config);
-
-  const client = AwsClient({
-    type: spec.type,
-    config,
-    endpointName: "AutoScaling",
-  });
+  const client = AwsClient({ spec, config });
 
   const managedByOther = or([
     hasKeyInTags({
@@ -79,7 +55,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "LaunchConfiguration",
-      group: "autoscaling",
+      group: "AutoScaling",
       ids: [
         pipe([
           () => live,
@@ -92,7 +68,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
               name,
               providerName: config.providerName,
               type: "LaunchConfiguration",
-              group: "autoscaling",
+              group: "AutoScaling",
             }),
           get("id"),
         ])(),
@@ -100,7 +76,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     },
     {
       type: "LaunchTemplate",
-      group: "ec2",
+      group: "EC2",
       ids: [
         pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
         pipe([
@@ -111,22 +87,22 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
       ],
     },
-    { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },
+    { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
     {
       type: "Instance",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
     },
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("VPCZoneIdentifier"),
         callProp("split", ","),
       ])(),
     },
-    { type: "Role", group: "iam", ids: [live.ServiceLinkedRoleARN] },
+    { type: "Role", group: "IAM", ids: [live.ServiceLinkedRoleARN] },
   ];
 
   const findNamespace = pipe([
@@ -163,7 +139,10 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     getField: "AutoScalingGroups",
   });
 
-  const getByName = ({ name }) => getById({ AutoScalingGroupName: name });
+  const getByName = pipe([
+    ({ name }) => ({ AutoScalingGroupName: name }),
+    getById,
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({
@@ -174,16 +153,11 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`updateAutoScalingGroup: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      omit(["TargetGroupARNs", "Tags"]),
-      autoScaling().updateAutoScalingGroup,
-    ])();
+  const update = client.update({
+    pickId,
+    method: "updateAutoScalingGroup",
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = client.destroy({

@@ -16,16 +16,16 @@ const createResources = async ({
   namespace = NamespaceDefault,
 }) => {
   const { config } = provider;
-  const { awsLoadBalancerController, eks } = config;
+  const { awsLoadBalancerController, EKS } = config;
   assert(awsLoadBalancerController);
-  assert(eks);
-  const clusterName = eks.cluster.name;
+  assert(EKS);
+  const clusterName = EKS.cluster.name;
   assert(clusterName);
 
   const { cluster } = resources;
   assert(cluster);
 
-  const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
+  const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
     name: formatName(
       awsLoadBalancerController.iamOpenIdConnectProvider.name,
       config
@@ -34,7 +34,7 @@ const createResources = async ({
     dependencies: { cluster },
   });
 
-  const iamLoadBalancerPolicy = provider.iam.makePolicy({
+  const iamLoadBalancerPolicy = provider.IAM.makePolicy({
     name: "AWSLoadBalancerControllerIAMPolicy",
     namespace,
     properties: () => ({
@@ -43,7 +43,7 @@ const createResources = async ({
     }),
   });
 
-  const roleLoadBalancer = provider.iam.makeRole({
+  const roleLoadBalancer = provider.IAM.makeRole({
     name: formatName(awsLoadBalancerController.role.name, config),
     namespace,
     dependencies: {

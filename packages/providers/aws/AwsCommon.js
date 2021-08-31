@@ -206,7 +206,7 @@ const findEksCluster =
       () =>
         lives.getByType({
           type: "Cluster",
-          group: "eks",
+          group: "EKS",
           providerName: config.providerName,
         }),
       find(eq(get("name"), findValueInTags({ key })(live))),

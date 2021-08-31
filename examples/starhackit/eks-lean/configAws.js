@@ -5,8 +5,8 @@ module.exports = ({ stage }) => ({
     rootDomainName: "grucloud.org",
     domainName: "starhackit-eks-lean.grucloud.org",
   },
-  eks: { cluster: { name: `cluster` } },
-  elb: {
+  EKS: { cluster: { name: `cluster` } },
+  ELBv2: {
     loadBalancer: { name: `load-balancer` },
     targetGroups: {
       web: {

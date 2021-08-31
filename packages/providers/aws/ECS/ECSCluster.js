@@ -34,6 +34,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../AutoScaling/AutoScalingAutoScalingGroup");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -41,13 +42,14 @@ const findId = get("live.clusterArn");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSCluster = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
   const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "CapacityProvider",
-      group: "ecs",
+      group: "ECS",
       ids: pipe([
         () => live,
         get("capacityProviders"),
@@ -57,7 +59,7 @@ exports.ECSCluster = ({ spec, config }) => {
               lives.getByName({
                 name,
                 type: "CapacityProvider",
-                group: "ecs",
+                group: "ECS",
                 providerName: config.providerName,
               }),
             get("id"),
@@ -67,7 +69,7 @@ exports.ECSCluster = ({ spec, config }) => {
     },
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [
         pipe([
           () => live,
@@ -158,7 +160,7 @@ exports.ECSCluster = ({ spec, config }) => {
             lives.getByName({
               name,
               type: "CapacityProvider",
-              group: "ecs",
+              group: "ECS",
               providerName: config.providerName,
             }),
           tap((params) => {
@@ -170,7 +172,7 @@ exports.ECSCluster = ({ spec, config }) => {
               id,
               providerName: config.providerName,
               type: "AutoScalingGroup",
-              group: "autoscaling",
+              group: "AutoScaling",
             }),
           get("name"),
           unless(

@@ -9,13 +9,13 @@ const { DomainName, compareDomainName } = require("./DomainName");
 const { ApiMapping, compareApiMapping } = require("./ApiMapping");
 const { Authorizer, compareAuthorizer } = require("./Authorizer");
 
-const GROUP = "apiGatewayV2";
+const GROUP = "ApiGatewayV2";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DomainName",
-      dependsOn: ["acm::Certificate"],
+      dependsOn: ["ACM::Certificate"],
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -31,7 +31,7 @@ module.exports = () =>
 
     {
       type: "Stage",
-      dependsOn: ["apiGatewayV2::Api"],
+      dependsOn: ["ApiGatewayV2::Api"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -39,7 +39,7 @@ module.exports = () =>
     },
     {
       type: "Authorizer",
-      dependsOn: ["apiGatewayV2::Api"],
+      dependsOn: ["ApiGatewayV2::Api"],
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -48,9 +48,9 @@ module.exports = () =>
     {
       type: "ApiMapping",
       dependsOn: [
-        "apiGatewayV2::Api",
-        "apiGatewayV2::Stage",
-        "apiGatewayV2::DomainName",
+        "ApiGatewayV2::Api",
+        "ApiGatewayV2::Stage",
+        "ApiGatewayV2::DomainName",
       ],
       Client: ApiMapping,
       isOurMinion: ({ live, config }) =>
@@ -59,7 +59,7 @@ module.exports = () =>
     },
     {
       type: "Integration",
-      dependsOn: ["apiGatewayV2::Api", "lambda::Function"],
+      dependsOn: ["ApiGatewayV2::Api", "Lambda::Function"],
       Client: Integration,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -67,7 +67,7 @@ module.exports = () =>
     },
     {
       type: "Route",
-      dependsOn: ["apiGatewayV2::Api", "apiGatewayV2::Integration"],
+      dependsOn: ["ApiGatewayV2::Api", "ApiGatewayV2::Integration"],
       Client: Route,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -76,10 +76,10 @@ module.exports = () =>
     {
       type: "Deployment",
       dependsOn: [
-        "apiGatewayV2::Api",
-        "apiGatewayV2::Route",
-        "apiGatewayV2::Stage",
-        "apiGatewayV2::Integration",
+        "ApiGatewayV2::Api",
+        "ApiGatewayV2::Route",
+        "ApiGatewayV2::Stage",
+        "ApiGatewayV2::Integration",
       ],
       Client: Deployment,
       isOurMinion: ({ live, config }) =>

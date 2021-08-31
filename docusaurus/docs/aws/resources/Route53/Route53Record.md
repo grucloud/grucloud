@@ -14,18 +14,18 @@ Add an A record to the hosted zone:
 ```js
 const domainName = "your.domain.name.com";
 
-const domain = provider.route53Domain.useDomain({
+const domain = provider.Route53Domain.useDomain({
   name: domainName,
 });
 
 const hostedZoneName = `${domainName}.`;
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: hostedZoneName,
   dependencies: { domain },
   properties: ({}) => ({}),
 });
 
-const recordA = provider.route53.makeRecord({
+const recordA = provider.Route53.makeRecord({
   name: `${hostedZoneName}-ipv4`,
   dependencies: { hostedZone, eip },
   properties: ({ dependencies: { eip } }) => {
@@ -50,17 +50,17 @@ Verify a certificate with DNS validation by adding a CNAME record.
 ```js
 const domainName = "your.domain.name.com";
 
-const domain = provider.route53Domain.useDomain({
+const domain = provider.Route53Domain.useDomain({
   name: domainName,
 });
 
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
   properties: ({}) => ({}),
 });
 
-const recordValidation = provider.route53.makeRecord({
+const recordValidation = provider.Route53.makeRecord({
   name: `validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
 });
@@ -73,7 +73,7 @@ Add an alias entry to the the CloudFront distribution domain name
 ```js
 const domainName = "your.domain.name.com";
 
-const distribution = provider.cloudFront.makeDistribution({
+const distribution = provider.CloudFront.makeDistribution({
   name: `distribution-${bucketName}`,
   dependencies: { websiteBucket, certificate },
   properties: ({}) => {
@@ -81,12 +81,12 @@ const distribution = provider.cloudFront.makeDistribution({
   },
 });
 
-const hostedZone = provider.route53.makeHostedZone({
+const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
 });
 
-const recordCloudFront = provider.route53.makeRecord({
+const recordCloudFront = provider.Route53.makeRecord({
   name: `distribution-alias-${domainName}`,
   dependencies: { hostedZone, distribution },
 });

@@ -4,41 +4,41 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   const { config } = provider;
 
-  provider.iam.makePolicy({
-    name: config.iam.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name,
+  provider.IAM.makePolicy({
+    name: config.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name,
     properties: () =>
-      config.iam.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties,
+      config.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties,
   });
 
-  provider.iam.makeRole({
-    name: config.iam.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name,
+  provider.IAM.makeRole({
+    name: config.IAM.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name,
     dependencies: ({ resources }) => ({
-      policies: [resources.iam.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable],
+      policies: [resources.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable],
     }),
     properties: () =>
-      config.iam.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties,
+      config.IAM.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties,
   });
 
-  provider.appSync.makeGraphqlApi({
-    name: config.appSync.GraphqlApi.myAppSyncApp.name,
-    properties: () => config.appSync.GraphqlApi.myAppSyncApp.properties,
+  provider.AppSync.makeGraphqlApi({
+    name: config.AppSync.GraphqlApi.myAppSyncApp.name,
+    properties: () => config.AppSync.GraphqlApi.myAppSyncApp.properties,
   });
 
-  provider.appSync.makeApiKey({
-    name: config.appSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.name,
+  provider.AppSync.makeApiKey({
+    name: config.AppSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.name,
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.appSync.GraphqlApi.myAppSyncApp,
+      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
     }),
     properties: () =>
-      config.appSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.properties,
+      config.AppSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.properties,
   });
 
-  provider.appSync.makeDataSource({
-    name: config.appSync.DataSource.datasource.name,
+  provider.AppSync.makeDataSource({
+    name: config.AppSync.DataSource.datasource.name,
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.appSync.GraphqlApi.myAppSyncApp,
+      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
     }),
-    properties: () => config.appSync.DataSource.datasource.properties,
+    properties: () => config.AppSync.DataSource.datasource.properties,
   });
 };
 

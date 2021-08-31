@@ -3,23 +3,23 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.iam.usePolicy({
-    name: get("config.iam.Policy.amazonEksWorkerNodePolicy.name"),
-    properties: get("config.iam.Policy.amazonEksWorkerNodePolicy.properties"),
+  provider.IAM.usePolicy({
+    name: get("config.IAM.Policy.amazonEksWorkerNodePolicy.name"),
+    properties: get("config.IAM.Policy.amazonEksWorkerNodePolicy.properties"),
   });
 
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.policyAllowEc2.name"),
-    properties: get("config.iam.Policy.policyAllowEc2.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.policyAllowEc2.name"),
+    properties: get("config.IAM.Policy.policyAllowEc2.properties"),
   });
 
-  provider.iam.makeRole({
-    name: get("config.iam.Role.role_4Policies.name"),
-    properties: get("config.iam.Role.role_4Policies.properties"),
+  provider.IAM.makeRole({
+    name: get("config.IAM.Role.role_4Policies.name"),
+    properties: get("config.IAM.Role.role_4Policies.properties"),
     dependencies: ({ resources }) => ({
       policies: [
-        resources.iam.Policy.amazonEksWorkerNodePolicy,
-        resources.iam.Policy.policyAllowEc2,
+        resources.IAM.Policy.amazonEksWorkerNodePolicy,
+        resources.IAM.Policy.policyAllowEc2,
       ],
     }),
   });

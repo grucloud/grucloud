@@ -5,7 +5,7 @@ const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
 const { EcrRegistry, compareRegistry } = require("./EcrRegistry");
 
-const GROUP = "ecr";
+const GROUP = "ECR";
 
 const isOurMinion = isOurMinionFactory({ tags: "tags" });
 

@@ -14,18 +14,17 @@ const { buildTagsS3Object } = require("../AwsS3Object");
 
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["Bucket", "Object"];
-const { AwsS3Object } = require("../AwsS3Object");
 const createStack = async ({ config }) => {
   const provider = AwsProvider({
     config: () => ({ projectName: "gru-test" }),
   });
 
-  const s3Bucket = provider.s3.makeBucket({
+  const s3Bucket = provider.S3.makeBucket({
     name: bucketName,
     properties: () => ({}),
   });
 
-  const s3Object = provider.s3.makeObject({
+  const s3Object = provider.S3.makeObject({
     name: `file-test`,
     dependencies: { bucket: s3Bucket },
     properties: () => ({
@@ -43,12 +42,12 @@ const createStackNext = async ({ config }) => {
     config: () => ({ projectName: "gru-test" }),
   });
 
-  const s3Bucket = provider.s3.makeBucket({
+  const s3Bucket = provider.S3.makeBucket({
     name: bucketName,
     properties: () => ({}),
   });
 
-  const s3Object = provider.s3.makeObject({
+  const s3Object = provider.S3.makeObject({
     name: `file-test`,
     dependencies: { bucket: s3Bucket },
     properties: () => ({
@@ -72,9 +71,11 @@ describe("AwsS3Object", async function () {
   });
   it("destroy NoSuchBucket", async function () {
     await pipe([
-      () => createStack({ config }),
-      get("config"),
-      (config) => AwsS3Object({ config }),
+      () =>
+        AwsProvider({
+          config: () => ({ projectName: "gru-test" }),
+        }),
+      (provider) => provider.getClient({ groupType: "S3::Object" }),
       tryCatch(
         (s3Object) =>
           s3Object.destroy({
@@ -138,7 +139,7 @@ describe("AwsS3Object", async function () {
     await testPlanDeploy({ provider, types });
 
     await pipe([
-      () => AwsS3Object({ config: provider.config }),
+      () => provider.getClient({ groupType: "S3::Object" }),
       tryCatch(
         (s3Object) =>
           s3Object.destroy({

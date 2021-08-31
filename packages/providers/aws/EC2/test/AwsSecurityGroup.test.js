@@ -41,13 +41,13 @@ describe("AwsSecurityGroup", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = provider.ec2.makeVpc({
+    vpc = provider.EC2.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
-    sg = provider.ec2.makeSecurityGroup({
+    sg = provider.EC2.makeSecurityGroup({
       name: "security-group-test",
       dependencies: { vpc },
       properties: () => ({
@@ -55,7 +55,7 @@ describe("AwsSecurityGroup", async function () {
         Description: "Security Group Description",
       }),
     });
-    sgRuleIngress = provider.ec2.makeSecurityGroupRuleIngress({
+    sgRuleIngress = provider.EC2.makeSecurityGroupRuleIngress({
       name: "sg-rule-ingress-port-22",
       dependencies: { securityGroup: sg },
       properties: () => ({
@@ -76,7 +76,7 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
-    sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
+    sgRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
       name: "sg-rule-egress-all",
       dependencies: { securityGroup: sg },
       properties: () => ({

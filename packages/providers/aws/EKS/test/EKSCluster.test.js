@@ -14,7 +14,7 @@ describe("EKSCluster", async function () {
       name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });
-    cluster = EKSCluster({ config: provider.config });
+    cluster = provider.getClient({ groupType: "EKS::Cluster" });
 
     await provider.start();
   });

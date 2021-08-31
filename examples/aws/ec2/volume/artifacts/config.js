@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-volume",
-  ec2: {
+  EC2: {
     Volume: {
       volumeTestVolume: {
         name: "volume-test-volume",

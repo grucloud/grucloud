@@ -26,7 +26,10 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
+const { AwsClient } = require("../AwsClient");
+
 exports.AwsVpc = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const isDefault = get("live.IsDefault");

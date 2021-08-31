@@ -16,7 +16,9 @@ describe("ECSContainerInstance", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    containerinstance = ECSContainerInstance({ config: provider.config });
+    containerinstance = provider.getClient({
+      groupType: "ECS::ContainerInstance",
+    });
     await provider.start();
   });
 });

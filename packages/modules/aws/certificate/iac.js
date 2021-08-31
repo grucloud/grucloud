@@ -21,12 +21,12 @@ const createResources = async ({
 
   const { domainName } = config.certificate;
 
-  const certificate = provider.acm.makeCertificate({
+  const certificate = provider.ACM.makeCertificate({
     name: domainName,
     namespace,
   });
 
-  const certificateRecordValidation = provider.route53.makeRecord({
+  const certificateRecordValidation = provider.Route53.makeRecord({
     name: `certificate-validation-${domainName}.`,
     namespace,
     dependencies: { hostedZone, certificate },

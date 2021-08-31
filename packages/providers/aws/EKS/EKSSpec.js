@@ -7,17 +7,17 @@ const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
-const GROUP = "eks";
+const GROUP = "EKS";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Cluster",
       dependsOn: [
-        "ec2::SecurityGroup",
-        "ec2::Subnet",
-        "ec2::InternetGateway",
-        "kms::Key",
+        "EC2::SecurityGroup",
+        "EC2::Subnet",
+        "EC2::InternetGateway",
+        "KMS::Key",
       ],
       Client: EKSCluster,
       isOurMinion,
@@ -25,11 +25,11 @@ module.exports = () =>
     {
       type: "NodeGroup",
       dependsOn: [
-        "eks::Cluster",
-        "ec2::Subnet",
-        "iam::Role",
-        "autoscaling::AutoScalingGroup",
-        "ec2::Instance",
+        "EKS::Cluster",
+        "EC2::Subnet",
+        "IAM::Role",
+        "AutoScaling::AutoScalingGroup",
+        "EC2::Instance",
       ],
       Client: EKSNodeGroup,
       isOurMinion,

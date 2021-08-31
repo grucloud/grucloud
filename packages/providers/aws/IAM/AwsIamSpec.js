@@ -15,7 +15,7 @@ const { compare } = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
 
-const GROUP = "iam";
+const GROUP = "IAM";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -34,19 +34,19 @@ module.exports = () =>
     },
     {
       type: "User",
-      dependsOn: ["iam::Policy", "iam::Group"],
+      dependsOn: ["IAM::Policy", "IAM::Group"],
       Client: AwsIamUser,
       isOurMinion,
     },
     {
       type: "Group",
-      dependsOn: ["iam::Policy"],
+      dependsOn: ["IAM::Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
     },
     {
       type: "Role",
-      dependsOn: ["iam::Policy"],
+      dependsOn: ["IAM::Policy"],
       Client: AwsIamRole,
       isOurMinion,
       transformDependencies: ({ provider }) =>
@@ -56,7 +56,7 @@ module.exports = () =>
               get("policies", []),
               map(
                 when(isString, (name) =>
-                  provider.iam.usePolicy({
+                  provider.IAM.usePolicy({
                     name: name.replace("arn:aws:iam::aws:policy/", ""),
                     properties: () => ({
                       Arn: name,
@@ -78,7 +78,7 @@ module.exports = () =>
     },
     {
       type: "InstanceProfile",
-      dependsOn: ["iam::Role"],
+      dependsOn: ["IAM::Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion,
     },

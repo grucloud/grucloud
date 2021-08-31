@@ -30,8 +30,8 @@ provider.autoscaling.makeLaunchConfiguration({
     EbsOptimized: false,
   }),
   dependencies: ({ resources }) => ({
-    instanceProfile: resources.iam.InstanceProfile.ecsInstanceRole,
-    securityGroups: [resources.ec2.SecurityGroup.ecsSecurityGroup],
+    instanceProfile: resources.IAM.InstanceProfile.ecsInstanceRole,
+    securityGroups: [resources.EC2.SecurityGroup.ecsSecurityGroup],
   }),
 });
 ```

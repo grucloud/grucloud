@@ -2,7 +2,7 @@ const { pipe, assign, map } = require("rubico");
 const { isOurMinionFactory } = require("../AwsCommon");
 const { KmsKey, compareKmsKey } = require("./KmsKey");
 
-const GROUP = "kms";
+const GROUP = "KMS";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

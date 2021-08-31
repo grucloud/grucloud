@@ -43,11 +43,11 @@ const {
   isDownByIdCore,
 } = require("@grucloud/core/Common");
 
+const { AwsClient } = require("../AwsClient");
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+  const client = AwsClient({ spec, config });
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");

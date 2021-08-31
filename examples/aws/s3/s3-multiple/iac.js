@@ -12,7 +12,7 @@ const createResources = async ({ provider }) => {
         .map((value, index) => `grucloud-bucket-${index}`),
 
     map((bucket) =>
-      provider.s3.makeBucket({
+      provider.S3.makeBucket({
         name: bucket,
         properties: () => ({}),
       })

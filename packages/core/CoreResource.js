@@ -82,7 +82,7 @@ exports.ResourceMaker = ({
     (dep) => () => spec.transformDependencies({ provider })(dep()),
   ]);
 
-  const getClient = () => provider.clientByType(spec);
+  const getClient = () => provider.getClient(spec);
 
   const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([

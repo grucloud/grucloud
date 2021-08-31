@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-iam",
-  iam: {
+  IAM: {
     Policy: {
       amazonEksWorkerNodePolicy: {
         name: "AmazonEKSWorkerNodePolicy",
@@ -109,7 +109,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  ec2: {
+  EC2: {
     Instance: {
       webIam: {
         name: "web-iam",

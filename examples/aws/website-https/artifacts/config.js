@@ -1,6 +1,6 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-website-https",
-  s3: {
+  S3: {
     Bucket: {
       cloudfrontAwsTestGrucloudOrgDev: {
         name: "cloudfront.aws.test.grucloud.org-dev",
@@ -56,7 +56,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  cloudFront: {
+  CloudFront: {
     Distribution: {
       distributionCloudfrontAwsTestGrucloudOrgDev: {
         name: "distribution-cloudfront.aws.test.grucloud.org-dev",
@@ -158,7 +158,7 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  acm: {
+  ACM: {
     Certificate: {
       devCloudfrontAwsTestGrucloudOrg: {
         name: "dev.cloudfront.aws.test.grucloud.org",
@@ -186,14 +186,14 @@ module.exports = ({ stage }) => ({
       },
     },
   },
-  route53Domain: {
+  Route53Domains: {
     Domain: {
       grucloudOrg: {
         name: "grucloud.org",
       },
     },
   },
-  route53: {
+  Route53: {
     HostedZone: {
       devCloudfrontAwsTestGrucloudOrg: {
         name: "dev.cloudfront.aws.test.grucloud.org.",

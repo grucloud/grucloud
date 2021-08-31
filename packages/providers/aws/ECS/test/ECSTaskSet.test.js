@@ -16,7 +16,7 @@ describe("ECSTaskSet", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    taskset = ECSTaskSet({ config: provider.config });
+    taskset = provider.getClient({ groupType: "ECS::TaskSet" });
     await provider.start();
   });
   it(

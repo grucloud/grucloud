@@ -29,7 +29,7 @@ const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
 
-const GROUP = "ec2";
+const GROUP = "EC2";
 
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = pipe([omit(["Tags"])]);
@@ -59,13 +59,13 @@ module.exports = () =>
     },
     {
       type: "Vpc",
-      dependsOn: ["iam::User", "iam::Group"],
+      dependsOn: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
     },
     {
       type: "InternetGateway",
-      dependsOn: ["ec2::Vpc"],
+      dependsOn: ["EC2::Vpc"],
       Client: AwsInternetGateway,
       isOurMinion,
       compare: compare({
@@ -75,7 +75,7 @@ module.exports = () =>
     },
     {
       type: "NatGateway",
-      dependsOn: ["ec2::ElasticIpAddress", "ec2::Subnet"],
+      dependsOn: ["EC2::ElasticIpAddress", "EC2::Subnet"],
       Client: AwsNatGateway,
       isOurMinion,
       compare: compare({
@@ -85,7 +85,7 @@ module.exports = () =>
     },
     {
       type: "Subnet",
-      dependsOn: ["ec2::Vpc", "ec2::InternetGateway"],
+      dependsOn: ["EC2::Vpc", "EC2::InternetGateway"],
       Client: AwsSubnet,
       isOurMinion,
       compare: compare({
@@ -95,7 +95,7 @@ module.exports = () =>
     },
     {
       type: "RouteTable",
-      dependsOn: ["ec2::Vpc", "ec2::Subnet"],
+      dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsRouteTable,
       isOurMinion,
       compare: compare({
@@ -105,13 +105,13 @@ module.exports = () =>
     },
     {
       type: "Route",
-      dependsOn: ["ec2::RouteTable", "ec2::InternetGateway", "ec2::NatGateway"],
+      dependsOn: ["EC2::RouteTable", "EC2::InternetGateway", "EC2::NatGateway"],
       Client: EC2Route,
       isOurMinion,
     },
     {
       type: "SecurityGroup",
-      dependsOn: ["ec2::Vpc", "ec2::Subnet"],
+      dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
       compare: compare({
@@ -121,35 +121,35 @@ module.exports = () =>
     },
     {
       type: "SecurityGroupRuleIngress",
-      dependsOn: ["ec2::SecurityGroup"],
+      dependsOn: ["EC2::SecurityGroup"],
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       isOurMinion,
     },
     {
       type: "SecurityGroupRuleEgress",
-      dependsOn: ["ec2::SecurityGroup"],
+      dependsOn: ["EC2::SecurityGroup"],
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
       isOurMinion,
     },
     {
       type: "ElasticIpAddress",
-      dependsOn: ["ec2::InternetGateway", "ec2::NetworkInterface"],
+      dependsOn: ["EC2::InternetGateway", "EC2::NetworkInterface"],
       Client: AwsElasticIpAddress,
       isOurMinion,
     },
     {
       type: "Instance",
       dependsOn: [
-        "ec2::KeyPair",
-        "ec2::SecurityGroup",
-        "ec2::Subnet",
-        "ec2::ElasticIpAddress",
-        "ec2::Volume",
-        "ec2::NetworkInterface",
-        "ec2::InternetGateway",
-        "iam::InstanceProfile",
+        "EC2::KeyPair",
+        "EC2::SecurityGroup",
+        "EC2::Subnet",
+        "EC2::ElasticIpAddress",
+        "EC2::Volume",
+        "EC2::NetworkInterface",
+        "EC2::InternetGateway",
+        "IAM::InstanceProfile",
       ],
       Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
@@ -164,10 +164,10 @@ module.exports = () =>
     {
       type: "LaunchTemplate",
       dependsOn: [
-        "ec2::KeyPair",
-        "ec2::SecurityGroup",
-        "iam::Role",
-        "iam::InstanceProfile",
+        "EC2::KeyPair",
+        "EC2::SecurityGroup",
+        "IAM::Role",
+        "IAM::InstanceProfile",
       ],
       Client: EC2LaunchTemplate,
       isOurMinion,
@@ -182,7 +182,7 @@ module.exports = () =>
 
     {
       type: "NetworkInterface",
-      dependsOn: ["ec2::Subnet", "ec2::SecurityGroup"],
+      dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
       Client: AwsNetworkInterface,
       isOurMinion,
     },

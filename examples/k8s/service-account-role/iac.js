@@ -10,7 +10,7 @@ const podPolicy = require("./pod-policy.json");
 const createAwsStack = async ({ createProvider, config }) => {
   const provider = createProvider(AwsProvider, { config });
 
-  const iamPodPolicy = provider.iam.makePolicy({
+  const iamPodPolicy = provider.IAM.makePolicy({
     name: "PodPolicy",
     properties: () => ({
       PolicyDocument: podPolicy,
@@ -18,7 +18,7 @@ const createAwsStack = async ({ createProvider, config }) => {
     }),
   });
 
-  const rolePod = provider.iam.makeRole({
+  const rolePod = provider.IAM.makeRole({
     name: "role-pod",
     dependencies: { policies: [iamPodPolicy] },
     properties: () => ({
@@ -135,12 +135,12 @@ exports.createStack = async ({ createProvider }) => {
   const { domainName } = k8sStack.provider.config;
   assert(domainName);
 
-  const hostedZone = await awsStack.provider.route53.makeHostedZone({
+  const hostedZone = await awsStack.provider.Route53.makeHostedZone({
     name: `${domainName}.`,
   });
   const { ingress } = k8sStack.resources;
 
-  const loadBalancerRecord = await awsStack.provider.route53.makeRecord({
+  const loadBalancerRecord = await awsStack.provider.Route53.makeRecord({
     name: `record-alias-load-balancer-${domainName}.`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies: { ingress } }) => {

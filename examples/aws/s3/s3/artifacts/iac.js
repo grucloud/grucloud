@@ -3,66 +3,66 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudAcceleration.name"),
-    properties: get("config.s3.Bucket.grucloudAcceleration.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudAcceleration.name"),
+    properties: get("config.S3.Bucket.grucloudAcceleration.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudCors.name"),
-    properties: get("config.s3.Bucket.grucloudCors.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudCors.name"),
+    properties: get("config.S3.Bucket.grucloudCors.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudEncryption.name"),
-    properties: get("config.s3.Bucket.grucloudEncryption.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudEncryption.name"),
+    properties: get("config.S3.Bucket.grucloudEncryption.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudLifecycleconfiguration.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudLifecycleconfiguration.name"),
     properties: get(
-      "config.s3.Bucket.grucloudLifecycleconfiguration.properties"
+      "config.S3.Bucket.grucloudLifecycleconfiguration.properties"
     ),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudLogDestination.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudLogDestination.name"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudPolicy.name"),
-    properties: get("config.s3.Bucket.grucloudPolicy.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudPolicy.name"),
+    properties: get("config.S3.Bucket.grucloudPolicy.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudRequestPayment.name"),
-    properties: get("config.s3.Bucket.grucloudRequestPayment.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudRequestPayment.name"),
+    properties: get("config.S3.Bucket.grucloudRequestPayment.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudTag.name"),
-    properties: get("config.s3.Bucket.grucloudTag.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudTag.name"),
+    properties: get("config.S3.Bucket.grucloudTag.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudTestBasic.name"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudTestBasic.name"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudVersioning.name"),
-    properties: get("config.s3.Bucket.grucloudVersioning.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudVersioning.name"),
+    properties: get("config.S3.Bucket.grucloudVersioning.properties"),
   });
 
-  provider.s3.makeBucket({
-    name: get("config.s3.Bucket.grucloudWebsite.name"),
-    properties: get("config.s3.Bucket.grucloudWebsite.properties"),
+  provider.S3.makeBucket({
+    name: get("config.S3.Bucket.grucloudWebsite.name"),
+    properties: get("config.S3.Bucket.grucloudWebsite.properties"),
   });
 
-  provider.s3.makeObject({
-    name: get("config.s3.Object.fileTest.name"),
-    properties: get("config.s3.Object.fileTest.properties"),
+  provider.S3.makeObject({
+    name: get("config.S3.Object.fileTest.name"),
+    properties: get("config.S3.Object.fileTest.properties"),
     dependencies: ({ resources }) => ({
-      bucket: resources.s3.Bucket.grucloudTestBasic,
+      bucket: resources.S3.Bucket.grucloudTestBasic,
     }),
   });
 };

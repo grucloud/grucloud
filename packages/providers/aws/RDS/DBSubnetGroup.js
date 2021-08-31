@@ -26,17 +26,19 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.DBSubnetGroupName");
 const findName = findId;
 
 exports.DBSubnetGroup = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const rds = () => createEndpoint({ endpointName: "RDS" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("Subnets"), pluck("SubnetIdentifier")])(),
     },
   ];

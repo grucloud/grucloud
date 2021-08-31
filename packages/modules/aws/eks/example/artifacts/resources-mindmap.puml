@@ -3,7 +3,7 @@ title Resources for project EKS Module
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ Subnet (4)
@@ -14,12 +14,12 @@ skinparam monochrome true
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
-+++ iam
++++ IAM
 ++++ Policy (5)
 ++++ Role (2)
-+++ kms
++++ KMS
 ++++ Key (1)
-+++ eks
++++ EKS
 ++++ Cluster (1)
 ++++ NodeGroup (1)
 @endmindmap

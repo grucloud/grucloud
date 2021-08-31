@@ -3,7 +3,7 @@ title Resources for project iam-policy
 skinparam monochrome true
 + Infra
 ++ aws
-+++ iam
++++ IAM
 ++++ Policy (2)
 ++++ Role (1)
 @endmindmap

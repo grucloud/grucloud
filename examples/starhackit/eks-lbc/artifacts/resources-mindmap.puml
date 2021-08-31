@@ -3,14 +3,14 @@ title Resources for project eks-lbc
 skinparam monochrome true
 + Infra
 ++ aws
-+++ route53Domain
++++ Route53Domains
 ++++ Domain (1)
-+++ route53
++++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ acm
++++ ACM
 ++++ Certificate (1)
-+++ ec2
++++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ Subnet (4)
@@ -21,16 +21,16 @@ skinparam monochrome true
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
-+++ iam
++++ IAM
 ++++ Policy (6)
 ++++ Role (3)
 ++++ OpenIDConnectProvider (1)
-+++ kms
++++ KMS
 ++++ Key (1)
-+++ eks
++++ EKS
 ++++ Cluster (1)
 ++++ NodeGroup (1)
-+++ elb
++++ ELBv2
 ++++ LoadBalancer (1)
 -- k8s
 --- CustomResourceDefinition (7)

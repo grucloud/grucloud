@@ -43,6 +43,7 @@ const {
   findNamespaceInTags,
   findNameInTags,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findProperty = (property) =>
   pipe([
@@ -147,7 +148,7 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
         id: GroupId,
         providerName: config.providerName,
         type: "SecurityGroup",
-        group: "ec2",
+        group: "EC2",
       }),
     get("name"),
   ])();
@@ -174,7 +175,7 @@ const fromSecurityGroup = ({ UserIdGroupPairs, lives, config }) =>
         () =>
           lives.getByType({
             type: "SecurityGroup",
-            group: "ec2",
+            group: "EC2",
             providerName: config.providerName,
           }),
         find(eq(get("id"), GroupId)),
@@ -237,7 +238,7 @@ const findName =
 const findDependencies = ({ live }) => [
   {
     type: "SecurityGroup",
-    group: "ec2",
+    group: "EC2",
     ids: pipe([
       () => [get("GroupId"), get("IpPermission.UserIdGroupPairs[0].GroupId")],
       map((fn) => fn(live)),
@@ -264,7 +265,7 @@ const SecurityGroupRuleBase = ({ config }) => {
               () =>
                 lives.getById({
                   type: "SecurityGroup",
-                  group: "ec2",
+                  group: "EC2",
                   providerName: config.providerName,
                   id: live.GroupId,
                 }),
@@ -349,7 +350,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         lives.getById({
           id: live.GroupId,
           type: "SecurityGroup",
-          group: "ec2",
+          group: "EC2",
           providerName: config.providerName,
         }),
       get("namespace"),

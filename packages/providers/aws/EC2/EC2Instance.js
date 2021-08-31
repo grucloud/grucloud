@@ -25,6 +25,7 @@ const {
   includes,
   when,
 } = require("rubico/x");
+const { AwsClient } = require("../AwsClient");
 
 const { detailedDiff } = require("deep-object-diff");
 
@@ -118,8 +119,8 @@ const configDefault =
 exports.configDefault = configDefault;
 
 exports.EC2Instance = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+  const client = AwsClient({ spec, config });
+
   const { providerName } = config;
   assert(providerName);
   const clientConfig = {
@@ -143,23 +144,23 @@ exports.EC2Instance = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Image",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
-        () => lives.getByType({ type: "Image", group: "ec2", providerName }),
+        () => lives.getByType({ type: "Image", group: "EC2", providerName }),
         filter(eq(get("id"), live.ImageId)),
         pluck("id"),
       ])(),
     },
     {
       type: "KeyPair",
-      group: "ec2",
+      group: "EC2",
       ids: [live.KeyName],
     },
-    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
-    { type: "Subnet", group: "ec2", ids: [live.SubnetId] },
+    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
+    { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {
       type: "Volume",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("BlockDeviceMappings"),
@@ -168,7 +169,7 @@ exports.EC2Instance = ({ spec, config }) => {
     },
     {
       type: "NetworkInterface",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("NetworkInterfaces"),
@@ -177,7 +178,7 @@ exports.EC2Instance = ({ spec, config }) => {
     },
     {
       type: "ElasticIpAddress",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("PublicIpAddress"),
@@ -186,7 +187,7 @@ exports.EC2Instance = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "ElasticIpAddress",
-                group: "ec2",
+                group: "EC2",
                 providerName,
               }),
             filter(eq(get("live.PublicIp"), PublicIpAddress)),
@@ -196,12 +197,12 @@ exports.EC2Instance = ({ spec, config }) => {
     },
     {
       type: "SecurityGroup",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
     },
     {
       type: "InstanceProfile",
-      group: "iam",
+      group: "IAM",
       ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
     },
   ];

@@ -24,12 +24,14 @@ const {
   findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.DomainName");
 const findId = get("live.CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const acm = ACMNew(config);
 
   const findDependencies = ({ live, lives }) => [];

@@ -7,17 +7,17 @@ const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
 const { compare } = require("@grucloud/core/Common");
 
-const GROUP = "elb";
+const GROUP = "ELBv2";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "LoadBalancer",
       dependsOn: [
-        "ec2::Subnet",
-        "ec2::InternetGateway",
-        "ec2::NetworkInterface",
-        "ec2::SecurityGroup",
+        "EC2::Subnet",
+        "EC2::InternetGateway",
+        "EC2::NetworkInterface",
+        "EC2::SecurityGroup",
       ],
       Client: ELBLoadBalancerV2,
       isOurMinion,
@@ -27,7 +27,7 @@ module.exports = () =>
     },
     {
       type: "TargetGroup",
-      dependsOn: ["ec2::Vpc"],
+      dependsOn: ["EC2::Vpc"],
       Client: ELBTargetGroup,
       isOurMinion,
       compare: compare({
@@ -36,13 +36,17 @@ module.exports = () =>
     },
     {
       type: "Listener",
-      dependsOn: ["elb::LoadBalancer", "elb::TargetGroup", "acm::Certificate"],
+      dependsOn: [
+        "ELBv2::LoadBalancer",
+        "ELBv2::TargetGroup",
+        "ACM::Certificate",
+      ],
       Client: ELBListener,
       isOurMinion,
     },
     {
       type: "Rule",
-      dependsOn: ["elb::Listener", "elb::TargetGroup"],
+      dependsOn: ["ELBv2::Listener", "ELBv2::TargetGroup"],
       Client: ELBRule,
       isOurMinion,
       compare: compare({

@@ -1,7 +1,7 @@
 const clusterName = "cluster";
 
 module.exports = ({}) => ({
-  eks: {
+  EKS: {
     cluster: {
       name: clusterName,
       properties: {

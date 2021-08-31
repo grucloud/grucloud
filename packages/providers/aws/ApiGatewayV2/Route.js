@@ -25,23 +25,25 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.RouteId");
 const findName = get("live.RouteKey");
 
 exports.Route = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
       type: "Api",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: [live.ApiId],
     },
     {
       type: "Integration",
-      group: "apiGatewayV2",
+      group: "ApiGatewayV2",
       ids: pipe([
         () => live,
         get("Target", ""),
@@ -63,7 +65,7 @@ exports.Route = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: "Api",
-          group: "apiGatewayV2",
+          group: "ApiGatewayV2",
         }),
       flatMap(({ id: ApiId, live }) =>
         tryCatch(

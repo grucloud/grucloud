@@ -30,8 +30,10 @@ const {
   findNamespaceInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsNatGateway = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = get("live.NatGatewayId");
@@ -41,12 +43,12 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
-      group: "ec2",
+      group: "EC2",
       ids: [live.SubnetId],
     },
     {
       type: "NetworkInterface",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("NatGatewayAddresses"),
@@ -55,7 +57,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
     },
     {
       type: "ElasticIpAddress",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("NatGatewayAddresses"),
@@ -66,7 +68,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
               () =>
                 lives.getByType({
                   type: "ElasticIpAddress",
-                  group: "ec2",
+                  group: "EC2",
                   providerName: config.providerName,
                 }),
               find(eq(get("live.AllocationId"), AllocationId)),

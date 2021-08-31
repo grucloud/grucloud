@@ -3,30 +3,30 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.iam.makePolicy({
-    name: get("config.iam.Policy.lambdaPolicy.name"),
-    properties: get("config.iam.Policy.lambdaPolicy.properties"),
+  provider.IAM.makePolicy({
+    name: get("config.IAM.Policy.lambdaPolicy.name"),
+    properties: get("config.IAM.Policy.lambdaPolicy.properties"),
   });
 
-  provider.iam.makeRole({
-    name: get("config.iam.Role.lambdaRole.name"),
-    properties: get("config.iam.Role.lambdaRole.properties"),
+  provider.IAM.makeRole({
+    name: get("config.IAM.Role.lambdaRole.name"),
+    properties: get("config.IAM.Role.lambdaRole.properties"),
     dependencies: ({ resources }) => ({
-      policies: [resources.iam.Policy.lambdaPolicy],
+      policies: [resources.IAM.Policy.lambdaPolicy],
     }),
   });
 
-  provider.lambda.makeLayer({
-    name: get("config.lambda.Layer.lambdaLayer.name"),
-    properties: get("config.lambda.Layer.lambdaLayer.properties"),
+  provider.Lambda.makeLayer({
+    name: get("config.Lambda.Layer.lambdaLayer.name"),
+    properties: get("config.Lambda.Layer.lambdaLayer.properties"),
   });
 
-  provider.lambda.makeFunction({
-    name: get("config.lambda.Function.lambdaHelloWorld.name"),
-    properties: get("config.lambda.Function.lambdaHelloWorld.properties"),
+  provider.Lambda.makeFunction({
+    name: get("config.Lambda.Function.lambdaHelloWorld.name"),
+    properties: get("config.Lambda.Function.lambdaHelloWorld.properties"),
     dependencies: ({ resources }) => ({
-      layers: [resources.lambda.Layer.lambdaLayer],
-      role: resources.iam.Role.lambdaRole,
+      layers: [resources.Lambda.Layer.lambdaLayer],
+      role: resources.IAM.Role.lambdaRole,
     }),
   });
 };

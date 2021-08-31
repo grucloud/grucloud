@@ -55,7 +55,7 @@ const sshConnect = async ({ host, username = "ec2-user", keyName }) =>
 
 module.exports = ({
   resources: {
-    rds: { dbCluster },
+    RDS: { dbCluster },
     bastion: { ec2Instance },
   },
   provider,

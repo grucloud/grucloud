@@ -4,15 +4,15 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 exports.config = require("./config");
 
 const createResources = async ({ provider, resources: {} }) => {
-  const vpcDefault = provider.ec2.useDefaultVpc({
+  const vpcDefault = provider.EC2.useDefaultVpc({
     name: "vpc-default",
   });
 
-  const securityGroup = provider.ec2.useDefaultSecurityGroup({
+  const securityGroup = provider.EC2.useDefaultSecurityGroup({
     name: "sgCluster-test",
   });
 
-  const sgRuleIngress = provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngress = provider.EC2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-test",
     dependencies: { securityGroup },
     properties: () => ({
@@ -33,7 +33,7 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
-  const sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
+  const sgRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
     name: "sg-rule-egress-test",
     dependencies: { securityGroup },
     properties: () => ({

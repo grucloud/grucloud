@@ -17,8 +17,10 @@ const {
   findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
 
 exports.AwsElasticIpAddress = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
   const findId = get("live.AllocationId");
@@ -29,7 +31,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "NetworkInterface",
-      group: "ec2",
+      group: "EC2",
       ids: pipe([
         () => live,
         get("NetworkInterfaceId"),

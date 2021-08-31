@@ -8,7 +8,7 @@ Manages an EC2 [Launch Template](https://console.aws.amazon.com/ec2/v2/home?regi
 ## Example Code
 
 ```js
-provider.ec2.makeLaunchTemplate({
+provider.EC2.makeLaunchTemplate({
   name: "lt-ecs",
   properties: ({ config }) => ({
     LaunchTemplateData: {
@@ -40,9 +40,9 @@ provider.ec2.makeLaunchTemplate({
     ],
   }),
   dependencies: ({ resources }) => ({
-    keyPair: resources.ec2.KeyPair.kpEcs,
-    iamInstanceProfile: resources.iam.InstanceProfile.roleEcs,
-    securityGroups: [resources.ec2.SecurityGroup.ecsSecurityGroup],
+    keyPair: resources.EC2.KeyPair.kpEcs,
+    iamInstanceProfile: resources.IAM.InstanceProfile.roleEcs,
+    securityGroups: [resources.EC2.SecurityGroup.ecsSecurityGroup],
   }),
 });
 ```

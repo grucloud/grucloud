@@ -16,7 +16,7 @@ describe("AppSyncApiKey", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    apiKey = AppSyncApiKey({ config: provider.config });
+    apiKey = provider.getClient({ groupType: "AppSync::ApiKey" });
     await provider.start();
   });
   it(

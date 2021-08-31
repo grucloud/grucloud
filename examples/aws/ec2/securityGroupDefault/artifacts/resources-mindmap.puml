@@ -3,7 +3,7 @@ title Resources for project securityGroupDefault
 skinparam monochrome true
 + Infra
 ++ aws
-+++ ec2
++++ EC2
 ++++ Vpc (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)

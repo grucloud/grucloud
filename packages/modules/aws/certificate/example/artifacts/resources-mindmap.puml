@@ -3,11 +3,11 @@ title Resources for project Certificate Module
 skinparam monochrome true
 + Infra
 ++ aws
-+++ route53Domain
++++ Route53Domains
 ++++ Domain (1)
-+++ route53
++++ Route53
 ++++ HostedZone (1)
 ++++ Record (1)
-+++ acm
++++ ACM
 ++++ Certificate (1)
 @endmindmap
