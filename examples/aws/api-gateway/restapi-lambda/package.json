@@ -1,6 +1,6 @@
 {
   "name": "api-gateway-restapi-lambda",
-  "version": "1.40.0",
+  "version": "2.0.0",
   "description": "AWS Rest Api Gateway with Lambda function",
   "private": true,
   "main": "iac.js",
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.39.0",
-    "@grucloud/provider-aws": "^1.40.0",
+    "@grucloud/core": "^2.0.0",
+    "@grucloud/provider-aws": "^2.0.0",
     "rubico": "^1.6.26"
   },
   "devDependencies": {
