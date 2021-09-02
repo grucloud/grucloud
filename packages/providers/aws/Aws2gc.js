@@ -778,6 +778,22 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "CloudWatchEvents",
+    types: [
+      {
+        type: "EventBus",
+        filterLive: () => pipe([pick([])]),
+      },
+      {
+        type: "Rule",
+        filterLive: () => pipe([omit(["Name", "Arn", "EventBusName"])]),
+        dependencies: () => ({
+          eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+        }),
+      },
+    ],
+  },
+  {
     group: "DynamoDB",
     types: [
       {

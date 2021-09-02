@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, get, map, not } = require("rubico");
 const {
+  pipe,
+  tryCatch,
+  tap,
+  switchCase,
+  get,
+  map,
+  not,
+  flatMap,
+} = require("rubico");
+const {
+  pluck,
   isFunction,
   defaultsDeep,
   size,
@@ -35,7 +45,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pipe([
         tap(() => {
           assert(method);
-          assert(getField);
           logger.info(`getById ${type} ${JSON.stringify(params)}`);
         }),
         tryCatch(
@@ -43,7 +52,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             () => params,
             pickId,
             endpoint()[method],
-            get(getField),
+            tap((params) => {
+              assert(true);
+            }),
+            when(() => getField, get(getField)),
             when(Array.isArray, first),
             unless(isEmpty, decorate),
           ]),
@@ -84,6 +96,54 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tap((items) => {
           assert(Array.isArray(items));
           logger.debug(`getList ${type} #items ${size(items)}`);
+        }),
+      ])();
+
+  const getListWithParent =
+    ({
+      parent: { type, group },
+      pickKey,
+      method,
+      getParam,
+      decorate = identity,
+      config,
+    }) =>
+    ({ lives }) =>
+      pipe([
+        tap(() => {
+          logger.debug(`getListWithParent ${type}`);
+          assert(method);
+          assert(getParam);
+          assert(isFunction(endpoint()[method]));
+          assert(lives);
+          assert(config);
+        }),
+        () =>
+          lives.getByType({ providerName: config.providerName, type, group }),
+        tap((parents) => {
+          logger.debug(`getListWithParent ${type} #parents: ${size(parents)}`);
+        }),
+        pluck("live"),
+        flatMap(
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pickKey,
+            tap((params) => {
+              assert(true);
+            }),
+            endpoint()[method],
+            tap((params) => {
+              assert(true);
+            }),
+            get(getParam),
+            map(decorate),
+          ])
+        ),
+
+        tap((items) => {
+          logger.debug(`getListWithParent ${type} #items ${size(items)}`);
         }),
       ])();
 
@@ -206,6 +266,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
 
   const destroy =
     ({
+      preDestroy = () => {},
       pickId,
       extraParam = {},
       method,
@@ -223,6 +284,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(config);
         }),
         () => live,
+        tap(preDestroy),
         pickId,
         (params) =>
           pipe([
@@ -285,6 +347,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   return {
     getById,
     getList,
+    getListWithParent,
     create,
     update,
     destroy,

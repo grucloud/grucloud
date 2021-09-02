@@ -56,16 +56,6 @@ exports.ResourceMaker = ({
   const { type, group, groupType } = spec;
   assert(groupType);
   assert(resourceName, `missing 'name' property for type: ${type}`);
-  logger.debug(
-    `ResourceMaker: ${JSON.stringify({
-      type,
-      group,
-      resourceName,
-      namespace,
-      meta,
-      programOptions,
-    })}`
-  );
 
   const getResourceName = pipe([
     () => resourceName,
@@ -74,6 +64,17 @@ exports.ResourceMaker = ({
       assert(name, `resource name is empty for ${groupType}`);
     }),
   ]);
+
+  logger.debug(
+    `ResourceMaker: ${JSON.stringify({
+      type,
+      group,
+      resourceName: getResourceName(),
+      namespace,
+      meta,
+      programOptions,
+    })}`
+  );
 
   const getDependencies = pipe([
     () => dependencies,
@@ -656,7 +657,7 @@ exports.ResourceMaker = ({
         () => getClient().isInstanceUp(live),
         tap((isUp) => {
           logger.debug(
-            `isUp ${type}/${resourceName}: ${!!isUp}, hasLive: ${!!live}`
+            `isUp ${type}/${getResourceName()}: ${!!isUp}, hasLive: ${!!live}`
           );
         }),
       ])(),

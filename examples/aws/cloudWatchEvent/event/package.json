@@ -1,0 +1,21 @@
+{
+  "name": "aws-example-cloudwatchevent",
+  "version": "2.0.0",
+  "description": "Cloud Watch Event GruCloud example",
+  "private": true,
+  "main": "iac.js",
+  "scripts": {
+    "test": "mocha",
+    "list": "gc list -t  -g --json artifacts/inventory.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^2.0.0",
+    "@grucloud/provider-aws": "^2.0.0",
+    "rubico": "^1.6.26"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
+  }
+}
