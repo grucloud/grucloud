@@ -688,12 +688,20 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Cluster",
-        filterLive: () => pick(["settings", "defaultCapacityProviderStrategy"]),
+        filterLive: () =>
+          pipe([
+            pick(["settings", "defaultCapacityProviderStrategy"]),
+            omitIfEmpty(["defaultCapacityProviderStrategy"]),
+          ]),
         dependencies: () => ({
           capacityProviders: {
             type: "CapacityProvider",
             group: "ECS",
             list: true,
+          },
+          kmsKey: {
+            type: "Key",
+            group: "KMS",
           },
         }),
       },
