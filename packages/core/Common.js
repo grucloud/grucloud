@@ -61,7 +61,7 @@ exports.HookType = {
 const omitPathIfEmpty = (path) => (obj) =>
   pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
 
-exports.omitIfEmpty = (paths) => (obj) =>
+const omitIfEmpty = (paths) => (obj) =>
   pipe([
     () => paths,
     reduce((acc, path) => pipe([() => acc, omitPathIfEmpty(path)])(), obj),
@@ -69,6 +69,7 @@ exports.omitIfEmpty = (paths) => (obj) =>
       assert(true);
     }),
   ])();
+exports.omitIfEmpty = omitIfEmpty;
 
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;
@@ -353,6 +354,7 @@ exports.compare = ({
       targetDiff: pipe([
         () => detailedDiff(target, live),
         omit(["added"]),
+        omitIfEmpty(["deleted", "updated"]),
         tap((params) => {
           assert(true);
         }),
@@ -360,6 +362,7 @@ exports.compare = ({
       liveDiff: pipe([
         () => detailedDiff(live, target),
         omit(["deleted"]),
+        omitIfEmpty(["added", "updated"]),
         tap((params) => {
           assert(true);
         }),

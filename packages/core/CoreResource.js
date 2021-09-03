@@ -537,6 +537,7 @@ exports.ResourceMaker = ({
                   lives: provider.lives,
                   id: client.findId({ live }),
                   programOptions,
+                  compare: spec.compare,
                 }),
             ]),
             (error) => {

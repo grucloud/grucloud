@@ -63,10 +63,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             unless(isEmpty, decorate),
           ]),
           switchCase([
-            ({ code, message }) =>
+            ({ code }) =>
               pipe([
                 tap(() => {
-                  assert(message);
+                  assert(code);
                 }),
                 () => ignoreErrorCodes,
                 includes(code),
