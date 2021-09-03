@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project event
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (2)
+@endmindmap

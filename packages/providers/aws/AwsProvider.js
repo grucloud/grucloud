@@ -34,6 +34,7 @@ const AppSync = require("./AppSync");
 const AutoScaling = require("./AutoScaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
+const CloudWatchEvent = require("./CloudWatchEvent");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const EC2 = require("./EC2");
 const DynamoDB = require("./DynamoDB");
@@ -62,6 +63,7 @@ const fnSpecs = (config) =>
       ...AutoScaling(),
       ...AwsCertificateManager(),
       ...AwsCloudFront(),
+      ...CloudWatchEvent(),
       ...CognitoIdentityServiceProvider(),
       ...DynamoDB(),
       ...EC2(),
@@ -126,6 +128,7 @@ exports.AwsProvider = ({
     appsync: "2017-07-25",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    cloudwatchevents: "2015-10-07",
     cloudwatch: "2010-08-01",
     cognitoidentityserviceprovider: "2016-04-18",
     dynamodb: "2012-08-10",
