@@ -65,6 +65,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     get("message"),
     "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
   );
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
   const describeCapacityProviders = (params = {}) =>
     pipe([
@@ -77,28 +78,15 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ capacityProviders: [name] }),
-        describeCapacityProviders,
-        first,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      switchCase([
-        notFound,
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
+  const getById = client.getById({
+    pickId: ({ name }) => ({ capacityProviders: [name] }),
+    extraParams: { include: ["TAGS"] },
+    method: "describeCapacityProviders",
+    getField: "capacityProviders",
+  });
+
+  const getByName = getById;
 
   const getList = () => pipe([describeCapacityProviders])();
 
@@ -132,13 +120,13 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
-  const update = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      pick(["name", "autoScalingGroupProvider"]),
-      omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
-      ecs().updateCapacityProvider,
-    ])();
+  const update = client.update({
+    pickId: pick(["name", "autoScalingGroupProvider"]),
+    filterParams: omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
+    method: "updateCapacityProvider",
+    config,
+    getById,
+  });
 
   const deleteAutoScalingGroup = ({ live, lives }) =>
     pipe([

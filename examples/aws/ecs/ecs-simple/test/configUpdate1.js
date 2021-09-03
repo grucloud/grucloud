@@ -22,7 +22,7 @@ module.exports = ({ stage }) => ({
           autoScalingGroupProvider: {
             managedScaling: {
               status: "ENABLED",
-              targetCapacity: 100,
+              targetCapacity: 80,
               minimumScalingStepSize: 1,
               maximumScalingStepSize: 10000,
               instanceWarmupPeriod: 300,

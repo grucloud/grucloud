@@ -65,6 +65,7 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
+    getById,
     config: { ...config, retryCount: 100 },
   });
 

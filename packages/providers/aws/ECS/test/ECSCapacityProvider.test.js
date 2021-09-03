@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { ECSCapacityProvider } = require("../ECSCapacityProvider");
+const { pipe, tap } = require("rubico");
 
 describe("ECSCapacityProvider", async function () {
   let config;
@@ -30,15 +29,16 @@ describe("ECSCapacityProvider", async function () {
       }),
     ])
   );
-  // it(
-  //   "delete with invalid id",
-  //   pipe([
-  //     () =>
-  //       capacityprovider.destroy({
-  //         live: { name: "12345" },
-  //       }),
-  //   ])
-  // );
+  it(
+    "delete with invalid id",
+    pipe([
+      () =>
+        capacityprovider.destroy({
+          live: { name: "12345" },
+          lives: provider.lives,
+        }),
+    ])
+  );
   it(
     "getByName with invalid id",
     pipe([

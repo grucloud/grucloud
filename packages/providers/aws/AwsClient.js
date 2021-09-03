@@ -7,6 +7,7 @@ const {
   get,
   map,
   not,
+  and,
   flatMap,
 } = require("rubico");
 const {
@@ -37,6 +38,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({
       method,
       pickId = identity,
+      extraParams = {},
       getField,
       decorate = identity,
       ignoreErrorCodes = [],
@@ -51,6 +53,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           pipe([
             () => params,
             pickId,
+            defaultsDeep(extraParams),
             endpoint()[method],
             tap((params) => {
               assert(true);
@@ -60,7 +63,14 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             unless(isEmpty, decorate),
           ]),
           switchCase([
-            ({ code }) => pipe([() => ignoreErrorCodes, includes(code)])(),
+            ({ code, message }) =>
+              pipe([
+                tap(() => {
+                  assert(message);
+                }),
+                () => ignoreErrorCodes,
+                includes(code),
+              ])(),
             () => undefined,
             (error) => {
               logger.error(`getById ${type} ${JSON.stringify(error)}`);
@@ -204,13 +214,15 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pickId = () => ({}),
       extraParam = {},
       filterParams = identity,
-      isUpdatedById,
+      getById,
     }) =>
-    ({ name, payload, diff, live }) =>
+    ({ name, payload, diff, live, compare }) =>
       pipe([
         tap(() => {
           assert(method);
           assert(pickId);
+          assert(compare);
+          assert(getById);
           logger.debug(
             `update ${type}, ${name}, ${JSON.stringify({
               payload,
@@ -233,19 +245,31 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tryCatch(
           pipe([
             endpoint()[method],
-            tap.if(
-              () => isUpdatedById,
-              pipe([
-                () => live,
-                pickId,
-                (params) =>
-                  retryCall({
-                    name: `isUpById: ${name}`,
-                    fn: () => isUpdatedById(params),
-                    config,
+            () => live,
+            pickId,
+            (params) =>
+              retryCall({
+                name: `isUpById: ${name}`,
+                fn: pipe([
+                  () => params,
+                  getById,
+                  tap((params) => {
+                    assert(true);
                   }),
-              ])
-            ),
+                  (live) => compare({ live, target: payload }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  and([
+                    pipe([get("liveDiff"), isEmpty]),
+                    pipe([get("targetDiff"), isEmpty]),
+                  ]),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+                config,
+              }),
           ]),
           (error, params) =>
             pipe([

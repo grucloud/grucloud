@@ -156,6 +156,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateAutoScalingGroup",
+    getById,
     config,
   });
 

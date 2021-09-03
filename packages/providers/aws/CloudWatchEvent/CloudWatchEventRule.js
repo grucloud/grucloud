@@ -118,6 +118,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
       omit(["Tags"]),
     ]),
     method: "putRule",
+    getById,
     config,
   });
 
