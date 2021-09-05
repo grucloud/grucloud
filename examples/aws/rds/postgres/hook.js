@@ -1,6 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const { Client } = require("pg");
+const { retryCall } = require("@grucloud/core").Retry;
 
 // psql postgresql://postgres:peggywenttothemarket@db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com:5432
 
@@ -19,8 +20,16 @@ module.exports = ({ resources: { dbInstance }, provider }) => {
           password: process.env.MASTER_USER_PASSWORD,
           port: dbInstanceLive.Endpoint.Port,
         });
+        await retryCall({
+          name: `postgres connect`,
+          fn: async () => {
+            await client.connect();
+            return true;
+          },
+          shouldRetryOnException: () => true,
+          config: { retryCount: 40, retryDelay: 5e3 },
+        });
 
-        await client.connect();
         return {
           client,
           dbInstanceLive,
