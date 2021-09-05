@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project ec2-simple
+title Resources for project EC2 simple instance
 skinparam monochrome true
 + Infra
 ++ aws

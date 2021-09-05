@@ -23,7 +23,7 @@ const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { Ec2New, sortTags } = require("./AwsCommon");
+const { Ec2New, assignTags } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
 const { generateCode } = require("./Aws2gc");
@@ -49,6 +49,7 @@ const RDS = require("./RDS");
 const Route53 = require("./Route53");
 const Route53Domain = require("./Route53Domain");
 const S3 = require("./S3");
+const SQS = require("./SQS");
 const SSM = require("./SSM");
 
 const fnSpecs = (config) =>
@@ -78,6 +79,7 @@ const fnSpecs = (config) =>
       ...Route53(),
       ...Route53Domain(),
       ...S3(),
+      ...SQS(),
       ...SSM(),
     ],
   ])();
@@ -146,6 +148,7 @@ exports.AwsProvider = ({
     route53: "2013-04-01",
     route53domains: "2014-05-15",
     s3: "2006-03-01",
+    sqs: "2012-11-05",
     ssm: "2014-11-06",
   };
 
@@ -199,14 +202,6 @@ exports.AwsProvider = ({
     zone,
     config: omit(["accountId", "zone"])(makeConfig()),
   });
-
-  const assignTags = switchCase([
-    pipe([get("Tags"), Array.isArray]),
-    assign({ Tags: pipe([get("Tags"), sortTags()]) }),
-    pipe([get("tags"), Array.isArray]),
-    assign({ tags: pipe([get("tags"), sortTags()]) }),
-    identity,
-  ]);
 
   const getListHof = ({ getList, spec }) =>
     tryCatch(

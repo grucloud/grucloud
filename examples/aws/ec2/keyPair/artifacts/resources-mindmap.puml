@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project keyPair
+title Resources for project EC2 KeyPair
 skinparam monochrome true
 + Infra
 ++ aws

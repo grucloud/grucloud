@@ -25,7 +25,7 @@ const {
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { createEndpoint } = require("./AwsCommon");
+const { createEndpoint, assignTags } = require("./AwsCommon");
 
 exports.AwsClient = ({ spec: { type, group }, config }) => {
   assert(type);
@@ -60,7 +60,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             }),
             when(() => getField, get(getField)),
             when(Array.isArray, first),
-            unless(isEmpty, decorate),
+            unless(isEmpty, pipe([decorate, assignTags])),
           ]),
           switchCase([
             ({ code }) =>
@@ -82,7 +82,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.debug(
             `getById ${type}, ${JSON.stringify(
               params
-            )} result: ${JSON.stringify(result)}`
+            )} result: ${JSON.stringify(result, null, 4)}`
           );
         }),
       ])();
@@ -101,8 +101,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tap((params) => {
           assert(true);
         }),
-        get(getParam),
+        get(getParam, []),
         map(decorate),
+        tap((params) => {
+          assert(true);
+        }),
+        map(assignTags),
         tap((items) => {
           assert(Array.isArray(items));
           logger.debug(`getList ${type} #items ${size(items)}`);
@@ -233,6 +237,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         () => diff,
         get("liveDiff.updated"),
+        defaultsDeep(get("liveDiff.added", {})(diff)),
         defaultsDeep(pickId(live)),
         defaultsDeep(extraParam),
         filterParams,

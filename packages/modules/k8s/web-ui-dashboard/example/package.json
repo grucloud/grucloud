@@ -7,7 +7,8 @@
   "scripts": {
     "graph-target": "gc graph --title Dashboard",
     "graph-live": "gc list --graph",
-    "key": "kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/dashboard-admin-user -o jsonpath='{.secrets[0].name}') -o go-template='{{.data.token | base64decode}}'"
+    "key": "kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/dashboard-admin-user -o jsonpath='{.secrets[0].name}') -o go-template='{{.data.token | base64decode}}'",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,8 @@
     "@grucloud/core": "^2.0.0",
     "@grucloud/module-k8s-web-ui-dashboard": "^2.0.0",
     "@grucloud/provider-k8s": "^2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.1"
   }
 }

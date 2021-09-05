@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project tuto1
+title Resources for project K8s Tuto
 skinparam monochrome true
 + Infra
 ++ k8s

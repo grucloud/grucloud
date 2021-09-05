@@ -3,6 +3,7 @@ module.exports = ({ stage, region }) => ({
     instance: {
       name: "db-instance",
       properties: {
+        ApplyImmediately: true,
         DBInstanceClass: "db.t3.micro",
         Engine: "postgres",
         EngineVersion: "12.5",

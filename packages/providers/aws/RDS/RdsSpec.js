@@ -54,6 +54,9 @@ module.exports = () =>
       compare: compare({
         filterAll: omit(["Tags"]),
         filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
           omit([
             "VpcSecurityGroupIds",
             "MasterUserPassword",

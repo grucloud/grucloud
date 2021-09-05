@@ -8,6 +8,14 @@ const createResource = async ({ provider }) => {
     name: config.namespace,
   });
 
+  const mySecret = provider.makeSecret({
+    name: "my-secret",
+    properties: () => ({
+      type: "Opaque",
+      data: { dbUrl: Buffer.from(process.env.DB_URL).toString("base64") },
+    }),
+  });
+
   const service = provider.makeService({
     name: config.service.name,
     dependencies: { namespace },

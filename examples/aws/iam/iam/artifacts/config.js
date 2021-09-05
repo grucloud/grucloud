@@ -115,7 +115,7 @@ module.exports = ({ stage }) => ({
         name: "web-iam",
         properties: {
           InstanceType: "t2.micro",
-          ImageId: "ami-084a1f89b0bb0f729",
+          ImageId: "ami-056bfe7d8a7bdb9d0",
         },
       },
     },

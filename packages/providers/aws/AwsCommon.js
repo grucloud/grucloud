@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
+  assign,
   pipe,
   tryCatch,
   tap,
@@ -305,6 +306,16 @@ const sortTags = () =>
   );
 
 exports.sortTags = sortTags;
+
+const assignTags = switchCase([
+  pipe([get("Tags"), Array.isArray]),
+  assign({ Tags: pipe([get("Tags"), sortTags()]) }),
+  pipe([get("tags"), Array.isArray]),
+  assign({ tags: pipe([get("tags"), sortTags()]) }),
+  identity,
+]);
+
+exports.assignTags = assignTags;
 
 exports.buildTags = ({
   name,

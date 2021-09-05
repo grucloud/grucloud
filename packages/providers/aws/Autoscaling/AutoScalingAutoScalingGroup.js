@@ -137,6 +137,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     }),
     method: "describeAutoScalingGroups",
     getField: "AutoScalingGroups",
+    decorate,
   });
 
   const getByName = pipe([
