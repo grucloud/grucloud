@@ -76,7 +76,7 @@
 <text text-anchor="start" x="604.5" y="-290.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;1</text>
 </g>
 <!-- RouteTable::::route&#45;table&#45;public&#45;&gt;Subnet::::subnet&#45;1 -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>RouteTable::::route&#45;table&#45;public&#45;&gt;Subnet::::subnet&#45;1</title>
 <path fill="none" stroke="#707070" d="M498.56,-366.9C525.56,-356.16 556.04,-344.02 582.64,-333.42"/>
 <polygon fill="#707070" stroke="#707070" points="584.26,-336.54 592.26,-329.59 581.67,-330.04 584.26,-336.54"/>
@@ -89,7 +89,7 @@
 <text text-anchor="start" x="604.5" y="-366.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;2</text>
 </g>
 <!-- RouteTable::::route&#45;table&#45;public&#45;&gt;Subnet::::subnet&#45;2 -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>RouteTable::::route&#45;table&#45;public&#45;&gt;Subnet::::subnet&#45;2</title>
 <path fill="none" stroke="#707070" d="M500.13,-391.38C526.57,-389.74 556.2,-387.9 582.19,-386.29"/>
 <polygon fill="#707070" stroke="#707070" points="582.56,-389.78 592.33,-385.67 582.13,-382.79 582.56,-389.78"/>

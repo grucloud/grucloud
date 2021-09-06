@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 349)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-349 631,-349 631,4 -4,4"/>
-<text text-anchor="start" x="229.5" y="-320.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project example</text>
+<text text-anchor="start" x="160.5" y="-320.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project K8S Postgres Module</text>
 <text text-anchor="start" x="309.5" y="-304.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="229.5" y="-283.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="160.5" y="-283.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_k8s</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-261 619,-261 619,-8 8,-8"/>
