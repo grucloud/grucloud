@@ -20,10 +20,10 @@ const restApi = provider.ApiGatewayV2.makeApi({
 
 ## Used By
 
-- [Authorizer](./Authorizer)
-- [Deployment](./Deployment)
-- [ApiMapping](./ApiMapping)
-- [Stage](./Stage)
+- [Authorizer](./ApiGatewayV2Authorizer)
+- [Deployment](./ApiGatewayV2Deployment)
+- [ApiMapping](./ApiGatewayV2ApiMapping)
+- [Stage](./ApiGatewayV2Stage)
 
 ## Full Examples
 

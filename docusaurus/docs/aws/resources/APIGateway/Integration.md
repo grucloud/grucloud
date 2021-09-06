@@ -33,9 +33,9 @@ const integration = provider.APIGateway.makeIntegration({
 
 ## Dependencies
 
-- [RestAPI](./RestAPI)
-- [Resource](./Resource)
-- [Lambda Function](../Lambda/Function)
+- [RestAPI](./APIGatewayRestApi)
+- [Resource](./APIGatewayResource)
+- [Lambda Function](../Lambda/LambdaFunction)
 
 ## Full Examples
 

@@ -49,8 +49,8 @@ provider.ECS.makeService({
 
 ## Dependencies
 
-- [Cluster](./Cluster.md)
-- [TaskDefinition](./TaskDefinition.md)
+- [Cluster](./ECSCluster)
+- [TaskDefinition](./ECSTaskDefinition)
 
 ## Full Examples
 

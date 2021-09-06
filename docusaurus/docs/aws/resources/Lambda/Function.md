@@ -51,7 +51,7 @@ const lambda = provider.Lambda.makeFunction({
 
 ## UsedBy
 
-- [ApiGateway Integration](../ApiGateway/Integration.md)
+- [ApiGateway Integration](../ApiGatewayV2/Integration.md)
 
 ## List
 

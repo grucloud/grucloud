@@ -20,10 +20,10 @@ const restApi = provider.APIGateway.makeRestApi({
 
 ## Used By
 
-- [Authorizer](./Authorizer)
-- [Deployment](./Deployment)
-- [Resource](./Resource)
-- [Stage](./Stage)
+- [Authorizer](./APIGatewayAuthorizer)
+- [Deployment](./APIGatewayDeployment)
+- [Resource](./APIGatewayResource)
+- [Stage](./APIGatewayStage)
 
 ## Full Examples
 

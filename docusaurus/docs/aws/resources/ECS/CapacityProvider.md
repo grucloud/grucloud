@@ -34,11 +34,11 @@ provider.ECS.makeCapacityProvider({
 
 ## Dependencies
 
-- [AutoScalingGroup](./AutoScaling/AutoScalingGroup.md)
+- [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
 
 ## Used By
 
-- [ECS Cluster](./Cluster)
+- [ECS Cluster](./ECSCluster)
 
 ## Full Examples
 

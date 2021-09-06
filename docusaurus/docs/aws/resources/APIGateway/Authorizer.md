@@ -26,7 +26,7 @@ const authorizer = provider.APIGateway.makeAuthorizer({
 
 ## Dependencies
 
-- [RestAPI](./RestAPI)
+- [RestAPI](./APIGatewayRestApi)
 
 ## Full Examples
 

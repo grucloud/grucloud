@@ -26,7 +26,7 @@ const stage = provider.APIGateway.makeStage({
 
 ## Dependencies
 
-- [RestAPI](./RestAPI)
+- [RestAPI](./APIGatewayRestApi)
 
 ## Full Examples
 

@@ -26,12 +26,12 @@ const stage = provider.ApiGatewayV2.makeStage({
 
 ## Dependencies
 
-- [API](./API)
+- [API](./ApiGatewayV2Api)
 
 ## Used By
 
-- [ApiMapping](./ApiMapping)
-- [Deployment](./Deployment)
+- [ApiMapping](./ApiGatewayV2ApiMapping)
+- [Deployment](./ApiGatewayV2Deployment)
 
 ## Full Examples
 

@@ -32,8 +32,8 @@ const deployment = provider.APIGateway.makeDeployment({
 
 ## Dependencies
 
-- [RestAPI](./RestAPI)
-- [Stage](./Stage)
+- [RestAPI](./APIGatewayRestApi)
+- [Stage](./APIGatewayStage)
 
 ## Full Examples
 

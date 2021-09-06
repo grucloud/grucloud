@@ -30,12 +30,11 @@ const integration = provider.ApiGatewayV2.makeIntegration({
 
 ## Dependencies
 
-- [API](./API)
-- [Integration](./Integration)
+- [API](./ApiGatewayV2Api)
 
 ## Used By
 
-- [Route](./Route)
+- [Route](./ApiGatewayV2Route)
 
 ## Full Examples
 

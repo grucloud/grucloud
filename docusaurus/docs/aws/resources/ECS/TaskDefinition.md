@@ -42,7 +42,7 @@ provider.ECS.makeTaskDefinition({
 
 ## Used By
 
-- [Service](./Service.md)
+- [Service](./ECSService)
 
 ## Full Examples
 
