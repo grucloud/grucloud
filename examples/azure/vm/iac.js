@@ -15,14 +15,6 @@ const createResources = async ({ provider }) => {
     properties: () => ({
       properties: {
         addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
-        subnets: [
-          {
-            name: `subnet`,
-            properties: {
-              addressPrefix: "10.0.0.0/24",
-            },
-          },
-        ],
       },
     }),
   });
@@ -77,6 +69,20 @@ const createResources = async ({ provider }) => {
       },
     }),
   });
+
+  const subnet = provider.virtualNetworks.makeSubnet({
+    name: `subnet`,
+    dependencies: {
+      resourceGroup: rg,
+      virtualNetwork: vnet,
+    },
+    properties: () => ({
+      properties: {
+        addressPrefix: "10.0.0.0/24",
+      },
+    }),
+  });
+
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
   const networkInterface = provider.virtualNetworks.makeNetworkInterface({
     name: `network-interface`,
@@ -84,7 +90,7 @@ const createResources = async ({ provider }) => {
       resourceGroup: rg,
       virtualNetwork: vnet,
       securityGroup: sg,
-      subnet: `subnet`,
+      subnet: subnet,
       publicIpAddress,
     },
     properties: () => ({

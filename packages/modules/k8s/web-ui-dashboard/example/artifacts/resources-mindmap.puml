@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project K8S WebUiDashboard Module
+skinparam monochrome true
++ Infra
+++ k8s
++++ ServiceAccount (2)
++++ ClusterRoleBinding (2)
++++ Namespace (1)
++++ Service (2)
++++ Secret (3)
++++ ConfigMap (1)
++++ Role (1)
++++ ClusterRole (1)
++++ RoleBinding (1)
++++ Deployment (2)
+@endmindmap

@@ -31,24 +31,7 @@ module.exports = ({ stage }) => ({
       subnet_subnetworkDev: {
         name: "subnet-subnetworkDev",
         properties: {
-          id: "3045242780851906125",
-          creationTimestamp: "2021-08-30T19:49:06.565-07:00",
-          name: "subnetwork-dev",
-          description: "Managed By GruCloud",
-          network:
-            "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/vpc-dev",
           ipCidrRange: "10.164.0.0/20",
-          gatewayAddress: "10.164.0.1",
-          region:
-            "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4",
-          selfLink:
-            "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/europe-west4/subnetworks/subnetwork-dev",
-          privateIpGoogleAccess: false,
-          fingerprint: "Cnm6AOo-oRE=",
-          privateIpv6GoogleAccess: "DISABLE_GOOGLE_ACCESS",
-          purpose: "PRIVATE",
-          stackType: "IPV4_ONLY",
-          kind: "compute#subnetwork",
         },
       },
     },

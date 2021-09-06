@@ -159,7 +159,7 @@ module.exports = ({ stage }) => ({
           settings: [
             {
               name: "containerInsights",
-              value: "disabled",
+              value: "enabled",
             },
           ],
           defaultCapacityProviderStrategy: [],

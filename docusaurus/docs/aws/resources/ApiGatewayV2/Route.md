@@ -36,8 +36,8 @@ provider.ApiGatewayV2.makeRoute({
 
 ## Dependencies
 
-- [API](./API)
-- [Integration](./Integration)
+- [API](./ApiGatewayV2Api)
+- [Integration](./ApiGatewayV2Integration)
 
 ## Full Examples
 

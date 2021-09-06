@@ -69,8 +69,8 @@ const recordValidation = provider.Route53.makeRecord({
 
 - [Rotue53 Hosted Zone](../Route53/Route53HostedZone)
 - [CloudFront Distribution](../CloudFront/CloudFrontDistribution)
-- [APIGateway Domain Name](../APIGateway/DomainName)
-- [ApiGatewayV2 Domain Name](../ApiGatewayV2/DomainName)
+- [APIGateway Domain Name](../APIGateway/APIGatewayDomainName)
+- [ApiGatewayV2 Domain Name](../ApiGatewayV2/ApiGatewayV2DomainName)
 
 ## List
 

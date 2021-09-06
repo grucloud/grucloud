@@ -1,4 +1,5 @@
-const { pipe, assign, map, omit } = require("rubico");
+const assert = require("assert");
+const { tap, pipe, assign, map, omit } = require("rubico");
 const { compare } = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
@@ -14,7 +15,18 @@ module.exports = () =>
       Client: AwsS3Bucket,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Bucket"])]),
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["Bucket", "ACL", "Tags"]),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["Tags"]),
+        ]),
       }),
     },
     {

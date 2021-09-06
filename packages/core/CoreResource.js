@@ -537,6 +537,7 @@ exports.ResourceMaker = ({
                   lives: provider.lives,
                   id: client.findId({ live }),
                   programOptions,
+                  compare: spec.compare,
                 }),
             ]),
             (error) => {
@@ -599,6 +600,7 @@ exports.ResourceMaker = ({
   const toJSON = pipe([
     () => ({
       providerName: provider.name,
+      groupType,
       type,
       group,
       namespace: getClient().findNamespaceFromTarget({ namespace, properties }),

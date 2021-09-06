@@ -1,0 +1,157 @@
+---
+id: ECSService
+title: Service
+---
+
+Manages an [ECS Service](https://console.aws.amazon.com/ecs/home?#/clusters).
+
+## Sample code
+
+```js
+provider.ECS.makeService({
+  name: "my-service"
+  properties: () => ({
+    launchType: "EC2",
+    desiredCount: 1,
+    deploymentConfiguration: {
+      deploymentCircuitBreaker: {
+        enable: false,
+        rollback: false,
+      },
+      maximumPercent: 200,
+      minimumHealthyPercent: 100,
+    },
+    placementConstraints: [],
+    placementStrategy: [
+      {
+        type: "spread",
+        field: "attribute:ecs.availability-zone",
+      },
+      {
+        type: "spread",
+        field: "instanceId",
+      },
+    ],
+    schedulingStrategy: "REPLICA",
+    enableECSManagedTags: true,
+    enableExecuteCommand: false,
+  }),
+  dependencies: ({ resources }) => ({
+    cluster: resources.ECS.Cluster.cluster,
+    taskDefinition: resources.ECS.TaskDefinition.nginx,
+  }),
+});
+```
+
+## Properties
+
+- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property)
+
+## Dependencies
+
+- [Cluster](./ECSCluster)
+- [TaskDefinition](./ECSTaskDefinition)
+
+## Full Examples
+
+- [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)
+
+## List
+
+The ECS services can be filtered with the _Service_ type:
+
+```sh
+gc l -t Service
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 25/25
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ 1 ECS::Service from aws                                                       │
+├───────────────────────────────────────────────────────────────────────────────┤
+│ name: service-nginx                                                           │
+│ managedByUs: Yes                                                              │
+│ live:                                                                         │
+│   serviceArn: arn:aws:ecs:eu-west-2:840541460064:service/cluster/service-ngi… │
+│   serviceName: service-nginx                                                  │
+│   clusterArn: arn:aws:ecs:eu-west-2:840541460064:cluster/cluster              │
+│   loadBalancers: []                                                           │
+│   serviceRegistries: []                                                       │
+│   status: ACTIVE                                                              │
+│   desiredCount: 1                                                             │
+│   runningCount: 1                                                             │
+│   pendingCount: 0                                                             │
+│   launchType: EC2                                                             │
+│   taskDefinition: arn:aws:ecs:eu-west-2:840541460064:task-definition/nginx:47 │
+│   deploymentConfiguration:                                                    │
+│     deploymentCircuitBreaker:                                                 │
+│       enable: false                                                           │
+│       rollback: false                                                         │
+│     maximumPercent: 200                                                       │
+│     minimumHealthyPercent: 100                                                │
+│   deployments:                                                                │
+│     - id: ecs-svc/7147023744074056707                                         │
+│       status: PRIMARY                                                         │
+│       taskDefinition: arn:aws:ecs:eu-west-2:840541460064:task-definition/ngi… │
+│       desiredCount: 1                                                         │
+│       pendingCount: 0                                                         │
+│       runningCount: 1                                                         │
+│       failedTasks: 0                                                          │
+│       createdAt: 2021-09-03T13:41:13.681Z                                     │
+│       updatedAt: 2021-09-03T13:42:33.232Z                                     │
+│       launchType: EC2                                                         │
+│       rolloutState: COMPLETED                                                 │
+│       rolloutStateReason: ECS deployment ecs-svc/7147023744074056707 complet… │
+│   events:                                                                     │
+│     - id: 8d36c860-4f52-43e1-bf3a-5f47bbef71d4                                │
+│       createdAt: 2021-09-03T13:42:33.240Z                                     │
+│       message: (service service-nginx) has reached a steady state.            │
+│     - id: b05415fd-18e6-484c-bf97-342f1259e925                                │
+│       createdAt: 2021-09-03T13:42:33.239Z                                     │
+│       message: (service service-nginx) (deployment ecs-svc/71470237440740567… │
+│     - id: 17ca843b-e785-43c3-a4af-9b147f78dfa9                                │
+│       createdAt: 2021-09-03T13:42:22.559Z                                     │
+│       message: (service service-nginx) has started 1 tasks: (task c6cf491773… │
+│     - id: 59a6478b-ca2f-4b1f-acf8-3ca8ceb1eaa5                                │
+│       createdAt: 2021-09-03T13:41:21.065Z                                     │
+│       message: (service service-nginx) was unable to place a task because no… │
+│   createdAt: 2021-09-03T13:41:13.681Z                                         │
+│   placementConstraints: []                                                    │
+│   placementStrategy:                                                          │
+│     - type: spread                                                            │
+│       field: attribute:ecs.availability-zone                                  │
+│     - type: spread                                                            │
+│       field: instanceId                                                       │
+│   schedulingStrategy: REPLICA                                                 │
+│   tags:                                                                       │
+│     - key: gc-created-by-provider                                             │
+│       value: aws                                                              │
+│     - key: gc-managed-by                                                      │
+│       value: grucloud                                                         │
+│     - key: gc-project-name                                                    │
+│       value: example-grucloud-ecs-simple                                      │
+│     - key: gc-stage                                                           │
+│       value: dev                                                              │
+│     - key: Name                                                               │
+│       value: service-nginx                                                    │
+│   createdBy: arn:aws:iam::840541460064:root                                   │
+│   enableECSManagedTags: true                                                  │
+│   propagateTags: NONE                                                         │
+│   enableExecuteCommand: false                                                 │
+│                                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├────────────────────────────────┬─────────────────────────────────────────┤
+│ ECS::Service                   │ service-nginx                           │
+└────────────────────────────────┴─────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Service" executed in 15s
+```

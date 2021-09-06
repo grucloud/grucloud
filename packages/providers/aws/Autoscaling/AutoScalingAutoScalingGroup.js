@@ -137,6 +137,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     }),
     method: "describeAutoScalingGroups",
     getField: "AutoScalingGroups",
+    decorate,
   });
 
   const getByName = pipe([
@@ -156,6 +157,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateAutoScalingGroup",
+    getById,
     config,
   });
 

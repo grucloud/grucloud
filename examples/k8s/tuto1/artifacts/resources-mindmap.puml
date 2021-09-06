@@ -1,9 +1,10 @@
 @startmindmap
-title Resources for project tuto1
+title Resources for project K8s Tuto
 skinparam monochrome true
 + Infra
 ++ k8s
 +++ Namespace (1)
++++ Secret (1)
 +++ Service (1)
 +++ Deployment (1)
 @endmindmap

@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project helloworld
+title Resources for project Lambda Hello
 skinparam monochrome true
 + Infra
 ++ aws

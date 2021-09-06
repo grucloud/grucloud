@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { map, pipe, tap, get, eq, pick, assign } = require("rubico");
 const { first, defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
@@ -65,6 +65,8 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
+    filterParams: assign({ ApplyImmediately: () => true }),
+    getById,
     config: { ...config, retryCount: 100 },
   });
 

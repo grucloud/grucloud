@@ -26,6 +26,9 @@ module.exports = () =>
       dependsOn: ["AutoScaling::AutoScalingGroup"],
       Client: ECSCapacityProvider,
       isOurMinion,
+      compare: compare({
+        filterAll: pipe([omit(["tags"])]),
+      }),
     },
     {
       type: "Cluster",

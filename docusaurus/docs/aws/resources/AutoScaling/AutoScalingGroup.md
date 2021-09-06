@@ -37,7 +37,7 @@ provider.AutoScaling.makeAutoScalingGroup({
 ## Dependencies
 
 - [Subnet](../EC2/Subnet)
-- [Launch Configuration](./LaunchConfiguration) or [Launch Template](./EC2/LaunchTemplate)
+- [Launch Configuration](./LaunchConfiguration) or [Launch Template](../EC2/LaunchTemplate)
 - [ELB Target Groups](../ELBv2/TargetGroup.md)
 
   ## Full Examples

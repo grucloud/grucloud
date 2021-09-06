@@ -32,8 +32,8 @@ provider.ApiGatewayV2.makeDeployment({
 
 ## Dependencies
 
-- [API](./API)
-- [Stage](./Stage)
+- [API](./ApiGatewayV2Api)
+- [Stage](./ApiGatewayV2Stage)
 
 ## Full Examples
 

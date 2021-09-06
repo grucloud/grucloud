@@ -13,7 +13,7 @@ module.exports = ({ stage }) => ({
           EventPattern:
             '{"source":["aws.ec2"],"detail-type":["EC2 Instance State-change Notification"]}',
           State: "ENABLED",
-          Description: "testing rule updated",
+          Description: "testing rule",
         },
       },
       ruleTestEc2: {

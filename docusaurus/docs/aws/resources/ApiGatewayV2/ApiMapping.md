@@ -38,9 +38,9 @@ provider.ApiGatewayV2.makeApiMapping({
 
 ## Dependencies
 
-- [API](./API)
-- [Stage](./Stage)
-- [DomainName](./DomainName)
+- [API](./ApiGatewayV2Api)
+- [Stage](./ApiGatewayV2Stage)
+- [DomainName](./ApiGatewayV2DomainName)
 
 ## Full Examples
 

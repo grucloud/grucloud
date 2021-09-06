@@ -68,6 +68,7 @@ exports.DBCluster = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBCluster",
+    getById,
     config,
   });
 

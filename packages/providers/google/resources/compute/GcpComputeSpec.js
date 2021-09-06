@@ -90,6 +90,13 @@ module.exports = () => {
     {
       type: "SubNetwork",
       dependsOn: ["compute::Network"],
+      filterLive: () =>
+        pipe([
+          pick(["ipCidrRange"]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
       Client: GcpSubNetwork,
       dependencies: () => ({
         network: { type: "Network", group: "compute" },

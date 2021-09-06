@@ -1,17 +1,16 @@
-const assert = require("assert");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
-const { createStack } = require("../iac");
 const path = require("path");
+const { testEnd2End } = require("@grucloud/core/qa");
+const { createStack } = require("../iac");
+const config = require("../config");
 
-describe("KMS Symmetric key", async function () {
-  before(async function () {});
+const title = "KMS Symmetric key";
+
+describe(title, async function () {
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-
     await testEnd2End({
-      cli,
-      listOptions: { types: ["Key"] },
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      title,
+      steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(15 * 60e3);
+  }).timeout(10 * 60e3);
 });

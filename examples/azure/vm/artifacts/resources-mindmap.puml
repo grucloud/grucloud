@@ -9,6 +9,7 @@ skinparam monochrome true
 ++++ VirtualNetwork (1)
 ++++ SecurityGroup (1)
 ++++ PublicIpAddress (1)
+++++ Subnet (1)
 ++++ NetworkInterface (1)
 +++ compute
 ++++ VirtualMachine (1)

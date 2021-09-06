@@ -57,6 +57,7 @@ exports.displayListSummary = pipe([
         new Table({
           colWidths: tableSummaryDefs.colWidths({
             columns: process.stdout.columns || 80,
+            results,
           }),
           style: { head: [], border: [] },
         }),
@@ -165,6 +166,7 @@ exports.displayPlanSummary = pipe([
         new Table({
           colWidths: tableSummaryDefs.colWidths({
             columns: process.stdout.columns || 80,
+            results: pluck("resource")([...resultCreate, ...resultDestroy]),
           }),
           wordWrap: true,
           style: { head: [], border: [] },
@@ -211,6 +213,7 @@ exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
       new Table({
         colWidths: tableSummaryDefs.colWidths({
           columns: process.stdout.columns || 80,
+          results: pluck("resource")(plans),
         }),
         wordWrap: true,
         style: { head: [], border: [] },
@@ -268,11 +271,16 @@ const groupByType = (init = {}) =>
     }),
   ]);
 
+const maxGroupTypeLength = pipe([
+  pluck("groupType"),
+  reduce((max, item) => Math.max(max, size(item)), 0),
+]);
+
 const tableSummaryDefs = {
   columns: ["Type", "Resources"],
-  colWidths: ({ columns }) => {
-    const typeLength = 32;
-    const resourceLength = columns - typeLength - 10;
+  colWidths: ({ columns, results }) => {
+    const typeLength = maxGroupTypeLength(results) + 2;
+    const resourceLength = columns - typeLength - 6;
     return [typeLength, resourceLength];
   },
   fields: [
@@ -395,7 +403,6 @@ const displayPlanItemUpdate =
     pipe([
       tap(() => {
         assert(diff.targetDiff);
-        assert(diff.targetDiff.updated);
       }),
       () => diff,
       tap(() =>
@@ -426,7 +433,7 @@ const displayPlanItemUpdate =
             },
           ])
       ),
-      () => diff.targetDiff.updated,
+      () => diff.liveDiff.updated,
       tap.if(
         not(isEmpty),
         map.entries(([key, value]) => {
@@ -438,18 +445,39 @@ const displayPlanItemUpdate =
           ]);
           tableItem.push([
             {
-              content: colors.red(`- ${YAML.stringify(value)}`),
+              content: colors.red(
+                `- ${YAML.stringify(diff.targetDiff.updated[key])}`
+              ),
             },
             {
-              content: colors.green(
-                `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
-              ),
+              content: colors.green(`+ ${YAML.stringify(value)}`),
             },
           ]);
           return [key, value];
         })
       ),
-      () => diff.liveDiff.deleted,
+      () => diff.liveDiff.added,
+      tap.if(
+        not(isEmpty),
+        map.entries(([key, value]) => {
+          tableItem.push([
+            {
+              colSpan: 2,
+              content: colors.yellow(`Key: ${key}`),
+            },
+          ]);
+          tableItem.push([
+            {
+              content: colors.red(``),
+            },
+            {
+              content: colors.green(`+ ${YAML.stringify(value)}`),
+            },
+          ]);
+          return [key, value];
+        })
+      ),
+      () => diff.targetDiff.added,
       tap.if(
         not(isEmpty),
         map.entries(([key, value]) => {
@@ -472,7 +500,7 @@ const displayPlanItemUpdate =
           return [key, value];
         })
       ),
-      () => diff.liveDiff.added,
+      () => diff.targetDiff.deleted,
       tap.if(
         not(isEmpty),
         map.entries(([key, value]) => {

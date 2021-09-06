@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 254)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-254 478,-254 478,4 -4,4"/>
-<text text-anchor="start" x="147" y="-225.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project s3&#45;simple</text>
-<text text-anchor="start" x="233.5" y="-209.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="147" y="-188.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="144" y="-225.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project S3 Simple</text>
+<text text-anchor="start" x="233" y="-209.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="144" y="-188.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-166 466,-166 466,-8 8,-8"/>

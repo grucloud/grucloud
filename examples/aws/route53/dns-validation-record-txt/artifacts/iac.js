@@ -3,8 +3,15 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.Route53Domains.useDomain({
+    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
+  });
+
   provider.Route53.makeHostedZone({
     name: get("config.Route53.HostedZone.grucloudOrg.name"),
+    dependencies: ({ resources }) => ({
+      domain: resources.Route53Domains.Domain.grucloudOrg,
+    }),
   });
 
   provider.Route53.makeRecord({

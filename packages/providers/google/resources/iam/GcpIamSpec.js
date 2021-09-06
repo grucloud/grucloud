@@ -55,6 +55,7 @@ module.exports = () =>
       Client: GcpIamPolicy,
       isOurMinion: () => true,
       compare: compareIamPolicy,
+      filterLive: () => pipe([pick(["bindings"])]),
     },
     {
       type: "Binding",

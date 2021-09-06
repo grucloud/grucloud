@@ -7,6 +7,7 @@ const {
   get,
   map,
   not,
+  and,
   flatMap,
 } = require("rubico");
 const {
@@ -24,7 +25,7 @@ const {
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { createEndpoint } = require("./AwsCommon");
+const { createEndpoint, assignTags } = require("./AwsCommon");
 
 exports.AwsClient = ({ spec: { type, group }, config }) => {
   assert(type);
@@ -37,6 +38,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({
       method,
       pickId = identity,
+      extraParams = {},
       getField,
       decorate = identity,
       ignoreErrorCodes = [],
@@ -51,16 +53,24 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           pipe([
             () => params,
             pickId,
+            defaultsDeep(extraParams),
             endpoint()[method],
             tap((params) => {
               assert(true);
             }),
             when(() => getField, get(getField)),
             when(Array.isArray, first),
-            unless(isEmpty, decorate),
+            unless(isEmpty, pipe([decorate, assignTags])),
           ]),
           switchCase([
-            ({ code }) => pipe([() => ignoreErrorCodes, includes(code)])(),
+            ({ code }) =>
+              pipe([
+                tap(() => {
+                  assert(code);
+                }),
+                () => ignoreErrorCodes,
+                includes(code),
+              ])(),
             () => undefined,
             (error) => {
               logger.error(`getById ${type} ${JSON.stringify(error)}`);
@@ -72,7 +82,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.debug(
             `getById ${type}, ${JSON.stringify(
               params
-            )} result: ${JSON.stringify(result)}`
+            )} result: ${JSON.stringify(result, null, 4)}`
           );
         }),
       ])();
@@ -91,8 +101,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tap((params) => {
           assert(true);
         }),
-        get(getParam),
+        get(getParam, []),
         map(decorate),
+        tap((params) => {
+          assert(true);
+        }),
+        map(assignTags),
         tap((items) => {
           assert(Array.isArray(items));
           logger.debug(`getList ${type} #items ${size(items)}`);
@@ -204,13 +218,15 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pickId = () => ({}),
       extraParam = {},
       filterParams = identity,
-      isUpdatedById,
+      getById,
     }) =>
-    ({ name, payload, diff, live }) =>
+    ({ name, payload, diff, live, compare }) =>
       pipe([
         tap(() => {
           assert(method);
           assert(pickId);
+          assert(compare);
+          assert(getById);
           logger.debug(
             `update ${type}, ${name}, ${JSON.stringify({
               payload,
@@ -221,6 +237,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         () => diff,
         get("liveDiff.updated"),
+        defaultsDeep(get("liveDiff.added", {})(diff)),
         defaultsDeep(pickId(live)),
         defaultsDeep(extraParam),
         filterParams,
@@ -233,19 +250,31 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tryCatch(
           pipe([
             endpoint()[method],
-            tap.if(
-              () => isUpdatedById,
-              pipe([
-                () => live,
-                pickId,
-                (params) =>
-                  retryCall({
-                    name: `isUpById: ${name}`,
-                    fn: () => isUpdatedById(params),
-                    config,
+            () => live,
+            pickId,
+            (params) =>
+              retryCall({
+                name: `isUpById: ${name}`,
+                fn: pipe([
+                  () => params,
+                  getById,
+                  tap((params) => {
+                    assert(true);
                   }),
-              ])
-            ),
+                  (live) => compare({ live, target: payload }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  and([
+                    pipe([get("liveDiff"), isEmpty]),
+                    pipe([get("targetDiff"), isEmpty]),
+                  ]),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+                config,
+              }),
           ]),
           (error, params) =>
             pipe([

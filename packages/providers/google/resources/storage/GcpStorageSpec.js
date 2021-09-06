@@ -1,4 +1,4 @@
-const { pipe, assign, map, get } = require("rubico");
+const { pipe, assign, map, get, pick } = require("rubico");
 const { callProp } = require("rubico/x");
 
 const assert = require("assert");
@@ -17,6 +17,11 @@ module.exports = () =>
       type: "Bucket",
       Client: GcpBucket,
       isOurMinion: GoogleTag.isOurMinion,
+      filterLive: () =>
+        pipe([
+          pick(["storageClass", "iamConfiguration", "iam"]),
+          assign({ iam: pipe([get("iam"), pick(["bindings"])]) }),
+        ]),
       compare: compare({
         filterTarget: pipe([
           assign({
@@ -28,7 +33,11 @@ module.exports = () =>
     {
       type: "Object",
       dependsOn: ["storage::Bucket"],
+      dependencies: () => ({
+        bucket: { type: "Bucket", group: "storage" },
+      }),
       Client: GcpObject,
+      filterLive: () => pipe([pick(["contentType", "storageClass"])]),
       compare: async ({ target, live }) => {
         logger.debug(`compare object`);
         assert(live.md5Hash);

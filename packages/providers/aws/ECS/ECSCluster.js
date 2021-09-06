@@ -90,7 +90,15 @@ exports.ECSCluster = ({ spec, config }) => {
   const describeClusters = (params = {}) =>
     pipe([
       () => params,
-      defaultsDeep({ include: ["TAGS"] }),
+      defaultsDeep({
+        include: [
+          "CONFIGURATIONS",
+          "ATTACHMENTS",
+          "STATISTICS",
+          "SETTINGS",
+          "TAGS",
+        ],
+      }),
       ecs().describeClusters,
       get("clusters"),
       tap((clusters) => {

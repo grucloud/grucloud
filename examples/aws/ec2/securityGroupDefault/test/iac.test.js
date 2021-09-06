@@ -1,13 +1,16 @@
-const assert = require("assert");
 const path = require("path");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
+const config = require("../config");
 
-describe("SecurityGroupDefault", async function () {
-  before(async function () {});
+const title = "SecurityGroupDefault";
+
+describe(title, async function () {
   it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
-    await testEnd2End({ cli });
-  });
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      title,
+      steps: [{ createStack, configs: [config] }],
+    });
+  }).timeout(10 * 60e3);
 });

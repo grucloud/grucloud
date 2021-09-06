@@ -1,14 +1,15 @@
-const assert = require("assert");
 const path = require("path");
-const { Cli, testEnd2End } = require("@grucloud/core/cli/cliCommands");
+const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 
-describe.skip("K8s Service Account Aws Role", async function () {
-  before(async function () {});
-  it("run", async function () {
-    const programOptions = { workingDirectory: path.resolve(__dirname, "../") };
-    const cli = await Cli({ programOptions, createStack });
+const title = "K8s Service Account Aws Role";
 
-    await testEnd2End({ cli });
-  });
+describe.skip(title, async function () {
+  it("run", async function () {
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      title,
+      steps: [{ createStack, configs: [] }],
+    });
+  }).timeout(10 * 60e3);
 });

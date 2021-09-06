@@ -79,6 +79,7 @@ exports.SSMParameter = ({ spec, config }) => {
     method: "putParameter",
     extraParam: { Overwrite: true },
     config,
+    getById,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#deleteParameter-property

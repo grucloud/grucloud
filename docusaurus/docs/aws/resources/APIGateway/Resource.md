@@ -26,11 +26,11 @@ const resourceGet = provider.APIGateway.makeResource({
 
 ## Dependencies
 
-- [RestAPI](./RestAPI)
+- [RestAPI](./APIGatewayRestApi)
 
 ## Used By
 
-- [Integration](./Integration)
+- [Integration](./APIGatewayIntegration)
 
 ## Full Examples
 
