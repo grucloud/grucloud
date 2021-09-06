@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project website-https
+title Resources for project CloudFront WebSite HTTPS
 skinparam monochrome true
 + Infra
 ++ aws

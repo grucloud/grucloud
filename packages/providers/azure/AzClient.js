@@ -14,6 +14,7 @@ module.exports = AzClient = ({
   pathBase,
   pathSuffix,
   pathSuffixList,
+  queryParametersCreate = () => undefined,
   queryParameters,
   isUpByIdFactory,
   isInstanceUp,
@@ -22,6 +23,8 @@ module.exports = AzClient = ({
   isDefault,
   cannotBeDeleted,
   findDependencies,
+  getList = () => undefined,
+  getByName = () => undefined,
 }) => {
   assert(pathBase);
   assert(spec);
@@ -34,15 +37,23 @@ module.exports = AzClient = ({
     path.join(
       pathBase,
       pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
-      queryParameters()
+      queryParametersCreate() || queryParameters()
     );
   const pathDelete = ({ id }) => path.join(`/${id}`, queryParameters());
+
   const pathList = () =>
     path.join(
       pathBase,
       pathSuffixList ? pathSuffixList() : "",
       queryParameters()
     );
+
+  const axios = AxiosMaker({
+    baseURL: BASE_URL,
+    onHeaders: () => ({
+      Authorization: `Bearer ${config.bearerToken()}`,
+    }),
+  });
 
   const core = CoreClient({
     type: "azure",
@@ -60,12 +71,9 @@ module.exports = AzClient = ({
     isInstanceUp,
     isDefault,
     cannotBeDeleted,
-    axios: AxiosMaker({
-      baseURL: BASE_URL,
-      onHeaders: () => ({
-        Authorization: `Bearer ${config.bearerToken()}`,
-      }),
-    }),
+    axios,
+    getList: getList({ axios }),
+    getByName: getByName({ axios }),
   });
 
   return core;

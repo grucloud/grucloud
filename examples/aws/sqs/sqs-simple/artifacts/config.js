@@ -1,3 +1,3 @@
 module.exports = ({ stage }) => ({
-  projectName: "example-grucloud-infra-aws",
+  projectName: "example-grucloud-sqs-queue",
 });

@@ -600,6 +600,7 @@ exports.ResourceMaker = ({
   const toJSON = pipe([
     () => ({
       providerName: provider.name,
+      groupType,
       type,
       group,
       namespace: getClient().findNamespaceFromTarget({ namespace, properties }),

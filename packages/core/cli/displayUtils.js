@@ -166,6 +166,7 @@ exports.displayPlanSummary = pipe([
         new Table({
           colWidths: tableSummaryDefs.colWidths({
             columns: process.stdout.columns || 80,
+            results: pluck("resource")([...resultCreate, ...resultDestroy]),
           }),
           wordWrap: true,
           style: { head: [], border: [] },
@@ -212,6 +213,7 @@ exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
       new Table({
         colWidths: tableSummaryDefs.colWidths({
           columns: process.stdout.columns || 80,
+          results: pluck("resource")(plans),
         }),
         wordWrap: true,
         style: { head: [], border: [] },

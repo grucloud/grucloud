@@ -1,7 +1,7 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
+const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 
-const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
+const { defaultsDeep, pluck, flatten, find } = require("rubico/x");
 
 const AzClient = require("./AzClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
@@ -9,6 +9,7 @@ const AzTag = require("./AzTag");
 const { getField, notAvailable } = require("@grucloud/core/ProviderCommon");
 const { isUpByIdCore, compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
+const { retryCallOnError } = require("@grucloud/core/Retry");
 
 exports.fnSpecs = (config) => {
   const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
@@ -87,6 +88,11 @@ exports.fnSpecs = (config) => {
             type: "ResourceGroup",
             group: "resourceManagement",
           },
+          subnets: {
+            type: "Subnet",
+            group: "virtualNetworks",
+            list: true,
+          },
         }),
         filterLive: () =>
           pipe([
@@ -113,6 +119,15 @@ exports.fnSpecs = (config) => {
             isInstanceUp,
             findDependencies: ({ live }) => [
               findDependenciesResourceGroup({ live }),
+              {
+                type: "Subnet",
+                group: "virtualNetworks",
+                ids: pipe([
+                  () => live,
+                  get("properties.subnets"),
+                  pluck("id"),
+                ])(),
+              },
             ],
             config,
             configDefault: ({ properties }) =>
@@ -354,6 +369,17 @@ exports.fnSpecs = (config) => {
                 group: "virtualNetworks",
                 ids: [get("properties.networkSecurityGroup.id")(live)],
               },
+              {
+                type: "Subnet",
+                group: "virtualNetworks",
+                ids: pipe([
+                  () => live,
+                  get("properties.ipConfigurations"),
+                  pluck("properties"),
+                  pluck("subnet"),
+                  pluck("id"),
+                ])(),
+              },
             ],
             config,
             configDefault: async ({ properties, dependencies }) => {
@@ -373,31 +399,6 @@ exports.fnSpecs = (config) => {
                 })}`
               );
 
-              const findSubnetId = (subnetName, vnetLive) => {
-                if (!vnetLive) {
-                  logger.debug(`findSubnetId no id yet`);
-                  return notAvailable(subnetName, "id");
-                }
-                assert(
-                  vnetLive.properties.subnets,
-                  "virtual network is missing subnets"
-                );
-                const subnet = vnetLive.properties.subnets.find(
-                  (item) => item.name === subnetName
-                );
-                if (!subnet) {
-                  const message = `cannot find subnet ${subnetName} in the virtual network subnet: ${tos(
-                    { subnet: vnetLive.properties.subnet }
-                  )}`;
-                  logger.error(msg);
-                  throw { code: 422, message };
-                }
-                logger.debug(
-                  `findSubnetId ${tos({ subnetName, id: subnet.id })}`
-                );
-
-                return subnet.id;
-              };
               return defaultsDeep({
                 location,
                 tags: buildTags(config),
@@ -411,7 +412,7 @@ exports.fnSpecs = (config) => {
                     {
                       properties: {
                         subnet: {
-                          id: findSubnetId(subnet, virtualNetwork.live),
+                          id: getField(subnet, "id"),
                         },
                         ...(publicIpAddress && {
                           publicIPAddress: {
@@ -422,6 +423,101 @@ exports.fnSpecs = (config) => {
                     },
                   ],
                 },
+              })(properties);
+            },
+          }),
+      },
+      // GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets?api-version=2021-02-01
+      // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}?api-version=2021-04-01
+      {
+        group: "virtualNetworks",
+        type: "Subnet",
+        dependsOn: ["virtualNetworks::VirtualNetwork"],
+        isOurMinion: ({ live, lives }) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "VirtualNetwork",
+                group: "virtualNetworks",
+              }),
+            find(
+              pipe([
+                get("live.properties.subnets"),
+                any(eq(get("id"), live.id)),
+              ])
+            ),
+            get("managedByUs"),
+          ])(),
+        filterLive: () =>
+          pipe([
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick([
+                  "addressPrefix",
+                ]),
+              ]),
+            }),
+          ]),
+        Client: ({ spec, config }) =>
+          AzClient({
+            getList: ({ axios }) =>
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+                ({ lives }) =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "VirtualNetwork",
+                    group: "virtualNetworks",
+                  }),
+                pluck("live"),
+                pluck("properties"),
+                pluck("subnets"),
+                flatten,
+              ]),
+            getByName:
+              ({ axios }) =>
+              ({ name, dependencies }) =>
+                pipe([
+                  dependencies,
+                  tap(({ resourceGroup, virtualNetwork }) => {
+                    assert(resourceGroup);
+                    assert(virtualNetwork);
+                  }),
+                  ({ resourceGroup, virtualNetwork }) =>
+                    `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${virtualNetwork.name}/subnets/${name}?api-version=2021-02-01`,
+                  (path) =>
+                    retryCallOnError({
+                      name: `getByName subnet ${path}`,
+                      fn: () => axios.get(path),
+                      config,
+                    }),
+                  get("data"),
+                  tap((data) => {
+                    logger.debug(`getByName subnet ${tos(data)}`);
+                  }),
+                ])(),
+            spec,
+            pathBase: `/subscriptions/${subscriptionId}`,
+            pathSuffix: ({
+              dependencies: { resourceGroup, virtualNetwork },
+            }) => {
+              assert(resourceGroup, "missing resourceGroup dependency");
+              assert(virtualNetwork, "missing virtualNetwork dependency");
+              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${virtualNetwork.name}/subnets`;
+            },
+            queryParametersCreate: () => "?api-version=2021-02-01",
+            queryParameters: () => "?api-version=2021-02-01",
+            isUpByIdFactory,
+            isInstanceUp,
+            config,
+            configDefault: ({ properties, dependencies }) => {
+              return defaultsDeep({
+                properties: {},
               })(properties);
             },
           }),

@@ -14,6 +14,7 @@ const createResources = ({ provider }) => {
     ),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.resourceManagement.ResourceGroup.resourceGroup,
+      subnets: [resources.virtualNetworks.Subnet.subnet],
     }),
   });
 
@@ -46,6 +47,11 @@ const createResources = ({ provider }) => {
       publicIpAddress: resources.virtualNetworks.PublicIpAddress.ip,
       securityGroup: resources.virtualNetworks.SecurityGroup.securityGroup,
     }),
+  });
+
+  provider.virtualNetworks.makeSubnet({
+    name: get("config.virtualNetworks.Subnet.subnet.name"),
+    properties: get("config.virtualNetworks.Subnet.subnet.properties"),
   });
 
   provider.compute.makeVirtualMachine({

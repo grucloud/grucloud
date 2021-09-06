@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project dns-validation-record-txt
+title Resources for project Route53 validation record
 skinparam monochrome true
 + Infra
 ++ aws

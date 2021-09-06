@@ -1,5 +1,12 @@
 module.exports = ({ stage }) => ({
   projectName: "@grucloud/example-aws-route53-dns-validation-record-txt",
+  Route53Domains: {
+    Domain: {
+      grucloudOrg: {
+        name: "grucloud.org",
+      },
+    },
+  },
   Route53: {
     HostedZone: {
       grucloudOrg: {

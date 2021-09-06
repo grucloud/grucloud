@@ -87,6 +87,16 @@ module.exports = ({ stage }) => ({
         },
       },
     },
+    Subnet: {
+      subnet: {
+        name: "subnet",
+        properties: {
+          properties: {
+            addressPrefix: "10.0.0.0/24",
+          },
+        },
+      },
+    },
   },
   compute: {
     VirtualMachine: {
