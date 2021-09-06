@@ -20,6 +20,7 @@ module.exports = ({ resources: { dbInstance }, provider }) => {
           password: process.env.MASTER_USER_PASSWORD,
           port: dbInstanceLive.Endpoint.Port,
         });
+        client.on("error", console.error);
         await retryCall({
           name: `postgres connect`,
           fn: async () => {
