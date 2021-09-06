@@ -57,6 +57,7 @@ exports.displayListSummary = pipe([
         new Table({
           colWidths: tableSummaryDefs.colWidths({
             columns: process.stdout.columns || 80,
+            results,
           }),
           style: { head: [], border: [] },
         }),
@@ -268,11 +269,16 @@ const groupByType = (init = {}) =>
     }),
   ]);
 
+const maxGroupTypeLength = pipe([
+  pluck("groupType"),
+  reduce((max, item) => Math.max(max, size(item)), 0),
+]);
+
 const tableSummaryDefs = {
   columns: ["Type", "Resources"],
-  colWidths: ({ columns }) => {
-    const typeLength = 32;
-    const resourceLength = columns - typeLength - 10;
+  colWidths: ({ columns, results }) => {
+    const typeLength = maxGroupTypeLength(results) + 2;
+    const resourceLength = columns - typeLength - 6;
     return [typeLength, resourceLength];
   },
   fields: [
@@ -437,12 +443,12 @@ const displayPlanItemUpdate =
           ]);
           tableItem.push([
             {
-              content: colors.red(`- ${YAML.stringify(value)}`),
+              content: colors.red(
+                `- ${YAML.stringify(diff.targetDiff.updated[key])}`
+              ),
             },
             {
-              content: colors.green(
-                `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
-              ),
+              content: colors.green(`+ ${YAML.stringify(value)}`),
             },
           ]);
           return [key, value];
