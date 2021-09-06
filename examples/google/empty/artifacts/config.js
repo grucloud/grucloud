@@ -6,8 +6,6 @@ module.exports = ({ stage }) => ({
       policy: {
         name: "policy",
         properties: {
-          version: 1,
-          etag: "BwXK0ethvto=",
           bindings: [
             {
               role: "roles/compute.admin",

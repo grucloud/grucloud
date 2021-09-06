@@ -11,6 +11,9 @@ const createResources = ({ provider }) => {
   provider.storage.makeObject({
     name: get("config.storage.Object.myfile.name"),
     properties: get("config.storage.Object.myfile.properties"),
+    dependencies: ({ resources }) => ({
+      bucket: resources.storage.Bucket.grucloudTest,
+    }),
   });
 };
 
