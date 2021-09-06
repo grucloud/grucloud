@@ -79,7 +79,7 @@ const {
   providerRunning,
 } = require("./ProviderCommon");
 
-const { createClient, decorateLive } = require("./Client");
+const { createClient, decorateLive, buildGroupType } = require("./Client");
 const { createLives } = require("./Lives");
 
 const groupName = switchCase([isEmpty, () => "", pipe([append(".")])]);
@@ -777,6 +777,8 @@ function CoreProvider({
         group: groupFromResources(resources),
         resources: map(callProp("toJSON"))(resources),
       })),
+      map(assign({ groupType: buildGroupType })),
+      callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
       tap((xxx) => {
         assert(true);
       }),
@@ -1426,6 +1428,9 @@ function CoreProvider({
       tap((result) => {
         logger.info(`planUpsert done`);
       }),
+      callProp("sort", (a, b) =>
+        a.resource.groupType.localeCompare(b.resource.groupType)
+      ),
     ])();
 
   const planQuery = ({ onStateChange = identity, commandOptions = {} } = {}) =>
