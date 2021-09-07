@@ -19,15 +19,15 @@ const {
 const {
   isEmpty,
   isString,
-  callProp,
+  isObject,
   defaultsDeep,
   size,
   includes,
+  isFunction,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");
-const { displayType } = require("./ProviderCommon");
 
 const showLive =
   ({ options = {} } = {}) =>
@@ -75,7 +75,10 @@ const decorateLive =
         assert(client);
         assert(client.spec);
         assert(lives);
-        assert(live);
+        assert(isObject(live));
+        if (isFunction(live)) {
+          assert(true);
+        }
         assert(config);
       }),
       () => ({

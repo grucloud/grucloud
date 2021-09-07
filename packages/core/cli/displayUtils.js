@@ -500,29 +500,6 @@ const displayPlanItemUpdate =
           return [key, value];
         })
       ),
-      () => diff.targetDiff.deleted,
-      tap.if(
-        not(isEmpty),
-        map.entries(([key, value]) => {
-          tableItem.push([
-            {
-              colSpan: 2,
-              content: colors.yellow(`Key: ${key}`),
-            },
-          ]);
-          tableItem.push([
-            {
-              content: colors.red(
-                `- ${YAML.stringify(diff.targetDiff.deleted[key])}`
-              ),
-            },
-            {
-              content: colors.green(`+ ${YAML.stringify(value)}`),
-            },
-          ]);
-          return [key, value];
-        })
-      ),
     ])();
 
 const displayPlanItemCreate =

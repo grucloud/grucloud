@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph --json artifacts/inventory.json"
+    "list": "gc list --graph --json artifacts/inventory.json -t SQS::Queue"
   },
   "author": "",
   "license": "ISC",

@@ -26,20 +26,21 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [];
 
-  const decorate = pipe([
-    assign({
-      Tags: pipe([
-        buildArn({ config }),
-        (ResourceARN) => ({ ResourceARN }),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
-        cloudWatchEvents().listTagsForResource,
-        get("Tags"),
-      ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const decorate = () =>
+    pipe([
+      assign({
+        Tags: pipe([
+          buildArn({ config }),
+          (ResourceARN) => ({ ResourceARN }),
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
+          cloudWatchEvents().listTagsForResource,
+          get("Tags"),
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listEventBuses-property
   const getList = client.getList({

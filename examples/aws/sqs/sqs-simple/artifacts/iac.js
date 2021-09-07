@@ -2,7 +2,12 @@
 const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-const createResources = ({ provider }) => {};
+const createResources = ({ provider }) => {
+  provider.SQS.makeQueue({
+    name: get("config.SQS.Queue.myQueue.name"),
+    properties: get("config.SQS.Queue.myQueue.properties"),
+  });
+};
 
 exports.createResources = createResources;
 

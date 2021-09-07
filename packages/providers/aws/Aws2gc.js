@@ -34,7 +34,7 @@ const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, removeOurTagObject } = require("@grucloud/core/Common");
 
 const {
   generatorMain,
@@ -786,6 +786,38 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "SQS",
+    types: [
+      {
+        type: "Queue",
+        filterLive: () =>
+          pipe([
+            omit(["QueueUrl"]),
+            assign({
+              Attributes: pipe([
+                get("Attributes"),
+                omit([
+                  "QueueArn",
+                  "ApproximateNumberOfMessages",
+                  "ApproximateNumberOfMessagesNotVisible",
+                  "ApproximateNumberOfMessagesDelayed",
+                  "CreatedTimestamp",
+                  "LastModifiedTimestamp",
+                ]),
+                when(
+                  eq(get("Policy.Id"), "__default_policy_ID"),
+                  omit(["Policy"])
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+            }),
+          ]),
+      },
+    ],
+  },
+  {
     group: "CloudWatchEvents",
     types: [
       {
@@ -1342,26 +1374,31 @@ const filterModel = pipe([
     assign({
       live: pipe([
         get("live"),
-        assign({
-          Tags: pipe([
-            get("Tags"),
-            filter(
-              and([
-                pipe([
-                  get("Key"),
-                  when(isEmpty, get("key")),
-                  when(isEmpty, get("TagKey")),
-                  switchCase([
-                    isEmpty,
-                    () => true,
-                    not(callProp("startsWith", "aws")),
+        removeOurTagObject,
+        //TODO create removeOurTagArray
+        when(
+          get("Tags"),
+          assign({
+            Tags: pipe([
+              get("Tags"),
+              filter(
+                and([
+                  pipe([
+                    get("Key"),
+                    when(isEmpty, get("key")),
+                    when(isEmpty, get("TagKey")),
+                    switchCase([
+                      isEmpty,
+                      () => true,
+                      not(callProp("startsWith", "aws")),
+                    ]),
                   ]),
-                ]),
-                not(get("ResourceId")),
-              ])
-            ),
-          ]),
-        }),
+                  not(get("ResourceId")),
+                ])
+              ),
+            ]),
+          })
+        ),
       ]),
     })
   ),

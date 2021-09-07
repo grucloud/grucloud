@@ -51,29 +51,30 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     },
   ];
 
-  const decorate = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      Targets: pipe([
-        ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
-        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
-        cloudWatchEvents().listTargetsByRule,
-        get("Targets"),
-      ]),
-      Tags: pipe([
-        buildArn({ config }),
-        (ResourceARN) => ({ ResourceARN }),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
-        cloudWatchEvents().listTagsForResource,
-        get("Tags"),
-      ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const decorate = () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        Targets: pipe([
+          ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
+          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
+          cloudWatchEvents().listTargetsByRule,
+          get("Targets"),
+        ]),
+        Tags: pipe([
+          buildArn({ config }),
+          (ResourceARN) => ({ ResourceARN }),
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
+          cloudWatchEvents().listTagsForResource,
+          get("Tags"),
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listRules-property
   const getList = client.getListWithParent({

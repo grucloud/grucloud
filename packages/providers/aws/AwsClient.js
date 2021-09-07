@@ -9,6 +9,7 @@ const {
   not,
   and,
   flatMap,
+  filter,
 } = require("rubico");
 const {
   pluck,
@@ -40,7 +41,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pickId = identity,
       extraParams = {},
       getField,
-      decorate = identity,
+      decorate = () => identity,
       ignoreErrorCodes = [],
     }) =>
     (params) =>
@@ -60,13 +61,13 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             }),
             when(() => getField, get(getField)),
             when(Array.isArray, first),
-            unless(isEmpty, pipe([decorate, assignTags])),
+            unless(isEmpty, pipe([decorate(), assignTags])),
           ]),
           switchCase([
             ({ code }) =>
               pipe([
                 tap(() => {
-                  assert(code);
+                  //assert(code);
                 }),
                 () => ignoreErrorCodes,
                 includes(code),
@@ -88,10 +89,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       ])();
 
   const getList =
-    ({ method, getParam, decorate = identity }) =>
+    ({ method, getParam, decorate = () => identity }) =>
     () =>
       pipe([
-        tap(() => {
+        tap((params) => {
           logger.debug(`getList ${type}`);
           assert(method);
           assert(getParam);
@@ -102,7 +103,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(true);
         }),
         get(getParam, []),
-        map(decorate),
+        map(decorate()),
         tap((params) => {
           assert(true);
         }),
@@ -111,6 +112,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(Array.isArray(items));
           logger.debug(`getList ${type} #items ${size(items)}`);
         }),
+        filter(not(isEmpty)),
       ])();
 
   const getListWithParent =
@@ -119,7 +121,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pickKey,
       method,
       getParam,
-      decorate = identity,
+      decorate = () => identity,
       config,
     }) =>
     ({ lives }) =>
@@ -152,10 +154,9 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               assert(true);
             }),
             get(getParam),
-            map(decorate),
+            map(decorate()),
           ])
         ),
-
         tap((items) => {
           logger.debug(`getListWithParent ${type} #items ${size(items)}`);
         }),
@@ -165,10 +166,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({
       method,
       config,
+      configIsUp,
       pickCreated,
       getById,
       isInstanceUp = not(isEmpty),
       shouldRetryOnException = () => false,
+      postCreate = () => identity,
     }) =>
     ({ name, payload }) =>
       pipe([
@@ -203,9 +206,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           retryCall({
             name: `isUpById: ${name}`,
             fn: pipe([() => params, getById, isInstanceUp]),
-            config,
+            config: configIsUp,
           })
         ),
+        postCreate({ name, payload }),
         tap(() => {
           logger.debug(`created ${type}, ${name}`);
         }),
@@ -236,7 +240,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           );
         }),
         () => diff,
-        get("liveDiff.updated"),
+        get("liveDiff.updated", {}),
         defaultsDeep(get("liveDiff.added", {})(diff)),
         defaultsDeep(pickId(live)),
         defaultsDeep(extraParam),

@@ -8,8 +8,18 @@ const {
   pick,
   switchCase,
   tryCatch,
+  set,
+  not,
 } = require("rubico");
-const { defaultsDeep, last, callProp, includes } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  last,
+  callProp,
+  includes,
+  when,
+  first,
+} = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
@@ -19,6 +29,9 @@ const findId = get("live.QueueUrl");
 const pickId = pick(["QueueUrl"]);
 const findName = pipe([
   get("live.QueueUrl"),
+  tap((QueueUrl) => {
+    assert(QueueUrl);
+  }),
   callProp("split", "/"),
   last,
   tap((name) => {
@@ -34,33 +47,40 @@ exports.SQSQueue = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [];
 
-  const decorate = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    (QueueUrl) => ({ QueueUrl }),
+  const assignTags = pipe([
     assign({
-      tags: pipe([sqs().listQueueTags, get("Tags")]),
-    }),
-    tap((params) => {
-      assert(true);
+      tags: pipe([pickId, sqs().listQueueTags, get("Tags")]),
     }),
   ]);
+
+  const decorate = (params) =>
+    pipe([
+      tap((input) => {}),
+      when(
+        get("Policy"),
+        assign({
+          Policy: pipe([get("Policy"), JSON.parse]),
+        })
+      ),
+      (Attributes) => ({ ...params, Attributes }),
+      assignTags,
+    ]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueAttributes-property
+  const getById = client.getById({
+    pickId,
+    extraParams: { AttributeNames: ["All"] },
+    method: "getQueueAttributes",
+    getField: "Attributes",
+    decorate,
+    ignoreErrorCodes,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#listQueues-property
   const getList = client.getList({
     method: "listQueues",
     getParam: "QueueUrls",
-    decorate,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueAttributes-property
-  const getById = client.getById({
-    pickId,
-    method: "getQueueAttributes",
-    getField: "Attributes",
-    decorate,
-    ignoreErrorCodes,
+    decorate: pipe([(QueueUrl) => ({ QueueUrl }), getById]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
@@ -91,17 +111,53 @@ exports.SQSQueue = ({ spec, config }) => {
     ),
   ]);
 
+  //Retry on AWS.SimpleQueueService.QueueDeletedRecently
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   const create = client.create({
     pickCreated: () => pick(["QueueUrl"]),
     method: "createQueue",
+    shouldRetryOnException: eq(
+      get("error.code"),
+      "AWS.SimpleQueueService.QueueDeletedRecently"
+    ),
     getById,
+    isInstanceUp: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      (live) => ({ live }),
+      findName,
+      (QueueNamePrefix) =>
+        pipe([
+          () => ({ QueueNamePrefix }),
+          sqs().listQueues,
+          tap((params) => {
+            assert(true);
+            console.log("q", params);
+          }),
+          get("QueueUrls"),
+          first,
+          not(isEmpty),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+    ]),
     config: { ...config, retryCount: 100 },
+    configIsUp: { repeatCount: 5, repeatDelay: 2 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property
   const update = client.update({
     pickId,
+    filterParams: (params) =>
+      pipe([
+        () => params,
+        set("Attributes.Policy", JSON.stringify(params.Attributes.Policy)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     method: "setQueueAttributes",
     getById,
     config,
@@ -119,14 +175,14 @@ exports.SQSQueue = ({ spec, config }) => {
   const configDefault = async ({
     name,
     namespace,
-    properties,
+    properties: { tags, ...otherProps },
     dependencies: {},
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         QueueName: name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
 
@@ -138,6 +194,7 @@ exports.SQSQueue = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,
