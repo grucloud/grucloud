@@ -61,7 +61,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             }),
             when(() => getField, get(getField)),
             when(Array.isArray, first),
-            unless(isEmpty, pipe([decorate(), assignTags])),
+            unless(isEmpty, pipe([decorate(params), assignTags])),
           ]),
           switchCase([
             ({ code }) =>

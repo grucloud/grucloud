@@ -48,6 +48,9 @@ exports.SQSQueue = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [];
 
   const assignTags = pipe([
+    tap((params) => {
+      assert(true);
+    }),
     assign({
       tags: pipe([pickId, sqs().listQueueTags, get("Tags")]),
     }),
@@ -55,7 +58,10 @@ exports.SQSQueue = ({ spec, config }) => {
 
   const decorate = (params) =>
     pipe([
-      tap((input) => {}),
+      tap((input) => {
+        assert(input);
+        assert(params);
+      }),
       when(
         get("Policy"),
         assign({
@@ -80,7 +86,14 @@ exports.SQSQueue = ({ spec, config }) => {
   const getList = client.getList({
     method: "listQueues",
     getParam: "QueueUrls",
-    decorate: pipe([(QueueUrl) => ({ QueueUrl }), getById]),
+    decorate: () =>
+      pipe([
+        tap((QueueUrl) => {
+          assert(QueueUrl);
+        }),
+        (QueueUrl) => ({ QueueUrl }),
+        getById,
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
@@ -114,7 +127,7 @@ exports.SQSQueue = ({ spec, config }) => {
   //Retry on AWS.SimpleQueueService.QueueDeletedRecently
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   const create = client.create({
-    pickCreated: () => pick(["QueueUrl"]),
+    pickCreated: () => pickId,
     method: "createQueue",
     shouldRetryOnException: eq(
       get("error.code"),
@@ -133,7 +146,6 @@ exports.SQSQueue = ({ spec, config }) => {
           sqs().listQueues,
           tap((params) => {
             assert(true);
-            console.log("q", params);
           }),
           get("QueueUrls"),
           first,
