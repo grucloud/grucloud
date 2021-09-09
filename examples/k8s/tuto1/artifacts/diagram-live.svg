@@ -24,7 +24,7 @@
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_k8s_myapp</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="76,-318 76,-574 258,-574 258,-318 76,-318"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="75.5,-318 75.5,-574 258.5,-574 258.5,-318 75.5,-318"/>
 <text text-anchor="start" x="134.5" y="-329" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">myapp</text>
 </g>
 <g id="clust4" class="cluster">
@@ -88,12 +88,12 @@
 <text text-anchor="start" x="103" y="-546.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Deployment</text>
 <text text-anchor="start" x="103" y="-521.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">nginx&#45;deployment</text>
 </g>
-<!-- Secret::myapp::default&#45;token&#45;wkqfd -->
+<!-- Secret::myapp::default&#45;token&#45;c7hns -->
 <g id="node9" class="node">
-<title>Secret::myapp::default&#45;token&#45;wkqfd</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="250,-490 84,-490 84,-432 250,-432 250,-490"/>
+<title>Secret::myapp::default&#45;token&#45;c7hns</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="250.5,-490 83.5,-490 83.5,-432 250.5,-432 250.5,-490"/>
 <text text-anchor="start" x="96" y="-470.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">::Secret</text>
-<text text-anchor="start" x="96" y="-445.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;wkqfd</text>
+<text text-anchor="start" x="96" y="-445.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default&#45;token&#45;c7hns</text>
 </g>
 <!-- Service::myapp::nginx&#45;service -->
 <g id="node10" class="node">
