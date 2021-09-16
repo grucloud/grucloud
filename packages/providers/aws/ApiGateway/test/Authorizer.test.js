@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { tryCatch, pipe, tap } = require("rubico");
+const { pipe, tap } = require("rubico");
 
 describe("Api Gateway Authorizer", async function () {
   let config;
@@ -23,11 +23,12 @@ describe("Api Gateway Authorizer", async function () {
     ])
   );
   it(
-    "getByLive with invalid id",
+    "getById with invalid id",
     pipe([
       () =>
-        autorizer.getByLive({
-          live: { restApiId: "12345", id: "12345" },
+        autorizer.getById({
+          restApiId: "12345",
+          id: "12345",
         }),
     ])
   );

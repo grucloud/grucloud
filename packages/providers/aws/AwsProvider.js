@@ -8,17 +8,11 @@ const {
   tap,
   tryCatch,
   assign,
-  switchCase,
+  filter,
+  not,
   map,
 } = require("rubico");
-const {
-  first,
-  pluck,
-  isFunction,
-  size,
-  identity,
-  callProp,
-} = require("rubico/x");
+const { first, pluck, isFunction, size } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -214,6 +208,7 @@ exports.AwsProvider = ({
           Array.isArray(items);
         }),
         map(assignTags),
+        filter(not(isEmpty)),
         (items) => ({ items, total: size(items) }),
         tap(({ total, items }) => {
           logger.debug(`getList ${spec.groupType} total: ${total}`);

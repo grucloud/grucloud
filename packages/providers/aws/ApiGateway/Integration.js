@@ -5,17 +5,12 @@ const {
   tap,
   get,
   eq,
-  not,
   assign,
-  filter,
-  omit,
   tryCatch,
   switchCase,
-  pick,
   flatMap,
 } = require("rubico");
-const { pluck, defaultsDeep, size, when, isEmpty } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { pluck, defaultsDeep, when } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Integration",
 });
@@ -37,8 +32,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
 
-//TODO
-const pickParam = ({ restApiId, resourceId, httpMethod }) => ({
+const pickId = ({ restApiId, resourceId, httpMethod }) => ({
   restApiId,
   resourceId,
   httpMethod,
@@ -55,6 +49,12 @@ exports.Integration = ({ spec, config }) => {
       group: "APIGateway",
       ids: [live.restApiId],
     },
+    //TODO
+    // {
+    //   type: "Resource",
+    //   group: "APIGateway",
+    //   ids: [live.restApiId],
+    // },
     {
       type: "Function",
       group: "Lambda",
@@ -70,7 +70,14 @@ exports.Integration = ({ spec, config }) => {
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegrations-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
+  const getById = client.getById({
+    pickId,
+    method: "getIntegration",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -80,16 +87,29 @@ exports.Integration = ({ spec, config }) => {
       () =>
         lives.getByType({
           providerName: config.providerName,
-          type: "RestApi",
+          type: "Method",
           group: "APIGateway",
         }),
-      pluck("id"),
-      flatMap((restApiId) =>
+      pluck("live"),
+      flatMap((method) =>
         tryCatch(
           pipe([
-            () => apiGateway().getIntegrations({ restApiId }),
+            tap((params) => {
+              assert(true);
+            }),
+            () =>
+              apiGateway().getIntegration({
+                restApiId: method.restApiId,
+                resourceId: method.resourceId,
+                httpMethod: method.httpMethod,
+              }),
             get("items"),
-            map(defaultsDeep({ restApiId })),
+            map(
+              defaultsDeep({
+                restApiId: resource.restApiId,
+                resourceId: resource.id,
+              })
+            ),
             map(
               assign({
                 tags: tagsExtractFromDescription,
@@ -110,7 +130,6 @@ exports.Integration = ({ spec, config }) => {
       ),
     ])();
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property
@@ -198,7 +217,7 @@ exports.Integration = ({ spec, config }) => {
       }),
       () => lambdaRemovePermission({ live }),
       () => live,
-      pickParam,
+      pickId,
       tap((params) => {
         logger.info(`destroy integration ${JSON.stringify({ params })}`);
         assert(params.restApiId);
@@ -231,17 +250,17 @@ exports.Integration = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { restApi, resource, lambdaFunction },
+    dependencies: { method, lambdaFunction },
   }) =>
     pipe([
       tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-        assert(resource, "missing 'resource' dependency");
+        assert(method, "missing 'method' dependency");
       }),
       () => otherProps,
       defaultsDeep({
-        restApiId: getField(restApi, "id"),
-        resource: getField(resource, "id"),
+        httpMethod: getField(method, "httpMethod"),
+        restApiId: getField(method, "restApiId"),
+        resource: getField(method, "resourceId"),
         ...(lambdaFunction && {
           integrationUri: getField(lambdaFunction, "FunctionArn"),
         }),
@@ -253,6 +272,7 @@ exports.Integration = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,
@@ -263,32 +283,3 @@ exports.Integration = ({ spec, config }) => {
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareIntegration = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareIntegration ${tos(diff)}`);
-  }),
-]);

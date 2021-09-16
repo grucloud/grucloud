@@ -29,4 +29,14 @@ describe("Api Gateway Resource", async function () {
         }),
     ])
   );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        resource.getById({
+          restApiId: "12345",
+          id: "12345",
+        }),
+    ])
+  );
 });

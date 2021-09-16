@@ -61,30 +61,57 @@ const createResources = ({ provider }) => {
     properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
   });
 
-  // const resourceGet = provider.APIGateway.makeResource({
-  //   name: "resource-get",
-  //   dependencies: { restApi },
-  //   properties: () => ({ pathPart: "/customers" }),
-  // });
+  const modelPet = provider.APIGateway.makeModel({
+    name: "modelPet",
+    dependencies: { restApi },
+    properties: () => ({
+      type: "object",
+      properties: {
+        id: {
+          type: "integer",
+        },
+        type: {
+          type: "string",
+        },
+        price: {
+          type: "number",
+        },
+      },
+    }),
+  });
 
-  // const integration = provider.APIGateway.makeIntegration({
-  //   name: "integration-lambda",
-  //   dependencies: {
-  //     restApi,
-  //     resource: resourceGet,
-  //     lambdaFunction: lambdaFunction,
-  //   },
+  const stage = provider.APIGateway.makeStage({
+    name: "my-api-stage-dev",
+    dependencies: { restApi },
+    properties: () => ({}),
+  });
+
+  const resourceGet = provider.APIGateway.makeResource({
+    name: "resource-get",
+    dependencies: { restApi },
+    properties: () => ({ pathPart: "/customers" }),
+  });
+
+  // const authorizer = provider.APIGateway.makeAuthorizer({
+  //   name: "my-authorizer",
+  //   dependencies: { restApi },
   //   properties: () => ({
-  //     httpMethod: "GET",
-  //     type: "AWS_PROXY",
+  //     type: "TOKEN",
   //   }),
   // });
 
-  // const stage = provider.APIGateway.makeStage({
-  //   name: "my-api-stage-dev",
-  //   dependencies: { restApi },
-  //   properties: () => ({}),
-  // });
+  const methodGet = provider.APIGateway.makeMethod({
+    name: "method-get",
+    dependencies: {
+      resource: resourceGet,
+      //authorizer,
+    },
+    properties: () => ({
+      httpMethod: "GET",
+      authorizationType: "NONE",
+      type: "AWS_PROXY",
+    }),
+  });
 
   // const authorizer = provider.APIGateway.makeAuthorizer({
   //   name: "my-authorizer-stage-dev",

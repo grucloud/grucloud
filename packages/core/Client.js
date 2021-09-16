@@ -14,6 +14,7 @@ const {
   pick,
   fork,
   any,
+  or,
 } = require("rubico");
 
 const {
@@ -24,6 +25,7 @@ const {
   size,
   includes,
   isFunction,
+  unless,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "Client" });
@@ -75,7 +77,10 @@ const decorateLive =
         assert(client);
         assert(client.spec);
         assert(lives);
-        assert(isObject(live));
+        assert(
+          isObject(live),
+          `live is not an object, groupType: ${client.spec.groupType}`
+        );
         if (isFunction(live)) {
           assert(true);
         }
@@ -219,8 +224,12 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
       assert(config);
     }),
     get("items", []), // remove
-    filter(not(get("error"))),
-    map(decorateLive({ client, config, options, readOnly, lives })),
+    map(
+      unless(
+        or([get("error"), get("errors")]),
+        decorateLive({ client, config, options, readOnly, lives })
+      )
+    ),
     tap((results) => {
       assert(Array.isArray(results));
     }),
@@ -317,6 +326,9 @@ const createClient = ({
                     deep: true,
                     resources: getResourcesByType(client.spec),
                   }),
+                tap((params) => {
+                  assert(true);
+                }),
                 decorateLives({
                   client,
                   config,

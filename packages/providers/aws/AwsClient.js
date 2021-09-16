@@ -191,7 +191,9 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               }),
               endpoint()[method],
               tap((params) => {
-                assert(true);
+                logger.debug(
+                  `create ${name}, response: ${JSON.stringify(params)}`
+                );
               }),
             ]),
             config,
@@ -200,7 +202,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         pickCreated(payload),
         tap((params) => {
           assert(isObject(params));
-          logger.debug(`isUpById: ${name}, ${JSON.stringify(params)}`);
+          logger.debug(`create isUpById: ${name}, ${JSON.stringify(params)}`);
         }),
         tap((params) =>
           retryCall({
@@ -318,60 +320,57 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         () => live,
         tap(preDestroy),
-        pickId,
-        (params) =>
+        tryCatch(
           pipe([
-            tryCatch(
-              pipe([
-                tap(() => {
-                  logger.debug(
-                    `destroy ${type}, ${name} ${JSON.stringify(params)}`
-                  );
-                }),
-                () => params,
-                defaultsDeep(extraParam),
-                tap((params) => {
-                  assert(true);
-                }),
-                endpoint()[method],
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-              (error, params) =>
-                pipe([
-                  tap(() => {
-                    logger.error(
-                      `error destroying ${type} ${name}, ${JSON.stringify({
-                        params,
-                        error,
-                      })}`
-                    );
-                    logger.error(error.stack);
-                  }),
-                  () => error,
-                  switchCase([
-                    ignoreError,
-                    () => undefined,
-                    () => {
-                      throw error;
-                    },
-                  ]),
-                ])()
-            ),
-            tap(() => {
-              assert(params);
+            pickId,
+            tap((params) => {
+              logger.debug(
+                `destroy ${type}, ${name} ${JSON.stringify(params)}`
+              );
             }),
-            tap.if(
-              () => getById,
-              () =>
-                retryCall({
-                  name: `isDestroyed ${type}`,
-                  fn: pipe([() => params, getById, isInstanceDown]),
-                  config,
-                })
-            ),
-          ])(),
+
+            defaultsDeep(extraParam),
+            tap((params) => {
+              assert(true);
+            }),
+            endpoint()[method],
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+          (error, params) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error destroying ${type} ${name}, ${JSON.stringify({
+                    params,
+                    error,
+                  })}`
+                );
+              }),
+              () => error,
+              switchCase([
+                ignoreError,
+                () => undefined,
+                () => {
+                  logger.error(error.stack);
+                  throw error;
+                },
+              ]),
+            ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        tap.if(
+          () => getById,
+          () =>
+            retryCall({
+              name: `isDestroyed ${type}`,
+              fn: pipe([() => live, getById, isInstanceDown]),
+              config,
+            })
+        ),
         tap(() => {
           logger.debug(`destroy ${type} ${name} done`);
         }),

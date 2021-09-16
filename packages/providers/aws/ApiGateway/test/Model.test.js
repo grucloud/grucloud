@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { pipe, tap } = require("rubico");
+const { pipe } = require("rubico");
 
-describe("Api Gateway Stage", async function () {
+describe("Api Gateway Model", async function () {
   let config;
   let provider;
-  let stage;
+  let model;
 
   before(async function () {
     try {
@@ -15,7 +15,7 @@ describe("Api Gateway Stage", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    stage = provider.getClient({ groupType: "APIGateway::Stage" });
+    model = provider.getClient({ groupType: "APIGateway::Model" });
     await provider.start();
   });
   after(async () => {});
@@ -23,8 +23,8 @@ describe("Api Gateway Stage", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        stage.destroy({
-          live: { restApiId: "12345", stageName: "12345" },
+        model.destroy({
+          live: { restApiId: "12345", name: "12345" },
         }),
     ])
   );
@@ -32,9 +32,9 @@ describe("Api Gateway Stage", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        stage.getById({
+        model.getById({
           restApiId: "12345",
-          stageName: "12345",
+          name: "12345",
         }),
     ])
   );

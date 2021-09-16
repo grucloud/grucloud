@@ -28,4 +28,14 @@ describe("Api Gateway Deployment", async function () {
         }),
     ])
   );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        deployment.getById({
+          restApiId: "12345",
+          id: "12345",
+        }),
+    ])
+  );
 });

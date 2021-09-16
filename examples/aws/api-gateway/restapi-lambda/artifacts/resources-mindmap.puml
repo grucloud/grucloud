@@ -18,4 +18,9 @@ skinparam monochrome true
 +++ APIGateway
 ++++ DomainName (1)
 ++++ RestApi (1)
+++++ Model (1)
+++++ Stage (1)
+++++ Resource (1)
+++++ Authorizer (1)
+++++ Method (1)
 @endmindmap

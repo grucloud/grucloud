@@ -3,56 +3,123 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makePolicy({
-    name: get("config.IAM.Policy.lambdaPolicy.name"),
-    properties: get("config.IAM.Policy.lambdaPolicy.properties"),
+  provider.APIGateway.makeRestApi({
+    name: get("config.APIGateway.RestApi.petStore.name"),
+    properties: get("config.APIGateway.RestApi.petStore.properties"),
   });
 
-  provider.IAM.makeRole({
-    name: get("config.IAM.Role.lambdaRole.name"),
-    properties: get("config.IAM.Role.lambdaRole.properties"),
+  provider.APIGateway.makeAuthorizer({
+    name: get("config.APIGateway.Authorizer.myAuthorizer.name"),
     dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy.lambdaPolicy],
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 
-  provider.ACM.makeCertificate({
-    name: get("config.ACM.Certificate.grucloudOrg.name"),
-    properties: get("config.ACM.Certificate.grucloudOrg.properties"),
-  });
-
-  provider.Route53Domains.useDomain({
-    name: get("config.Route53Domains.Domain.grucloudOrg.name"),
-  });
-
-  provider.Route53.makeHostedZone({
-    name: get("config.Route53.HostedZone.grucloudOrg.name"),
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.empty.name"),
+    properties: get("config.APIGateway.Model.empty.properties"),
     dependencies: ({ resources }) => ({
-      domain: resources.Route53Domains.Domain.grucloudOrg,
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 
-  provider.Route53.makeRecord({
-    name: get("config.Route53.Record.apiGatewayAliasRecord.name"),
-    properties: get("config.Route53.Record.apiGatewayAliasRecord.properties"),
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.newPet.name"),
+    properties: get("config.APIGateway.Model.newPet.properties"),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.Route53.HostedZone.grucloudOrg,
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 
-  provider.Route53.makeRecord({
-    name: get("config.Route53.Record.certificateValidationGrucloudOrg.name"),
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.newPetResponse.name"),
+    properties: get("config.APIGateway.Model.newPetResponse.properties"),
     dependencies: ({ resources }) => ({
-      hostedZone: resources.Route53.HostedZone.grucloudOrg,
-      certificate: resources.ACM.Certificate.grucloudOrg,
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 
-  provider.Lambda.makeFunction({
-    name: get("config.Lambda.Function.myFunction.name"),
-    properties: get("config.Lambda.Function.myFunction.properties"),
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.pet.name"),
+    properties: get("config.APIGateway.Model.pet.properties"),
     dependencies: ({ resources }) => ({
-      role: resources.IAM.Role.lambdaRole,
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.pets.name"),
+    properties: get("config.APIGateway.Model.pets.properties"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeModel({
+    name: get("config.APIGateway.Model.petType.name"),
+    properties: get("config.APIGateway.Model.petType.properties"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeResource({
+    name: get("config.APIGateway.Resource.petStore.name"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeResource({
+    name: get("config.APIGateway.Resource.petStorePets.name"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeResource({
+    name: get("config.APIGateway.Resource.petStorePetsPetId.name"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeMethod({
+    name: get("config.APIGateway.Method.createPet.name"),
+    properties: get("config.APIGateway.Method.createPet.properties"),
+    dependencies: ({ resources }) => ({
+      resource: resources.APIGateway.Resource.petStorePets,
+    }),
+  });
+
+  provider.APIGateway.makeMethod({
+    name: get("config.APIGateway.Method.getPet.name"),
+    properties: get("config.APIGateway.Method.getPet.properties"),
+    dependencies: ({ resources }) => ({
+      resource: resources.APIGateway.Resource.petStorePetsPetId,
+    }),
+  });
+
+  provider.APIGateway.makeMethod({
+    name: get("config.APIGateway.Method.petStoreGet.name"),
+    properties: get("config.APIGateway.Method.petStoreGet.properties"),
+    dependencies: ({ resources }) => ({
+      resource: resources.APIGateway.Resource.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeMethod({
+    name: get("config.APIGateway.Method.petStorePetsGet.name"),
+    properties: get("config.APIGateway.Method.petStorePetsGet.properties"),
+    dependencies: ({ resources }) => ({
+      resource: resources.APIGateway.Resource.petStorePets,
+    }),
+  });
+
+  provider.APIGateway.makeStage({
+    name: get("config.APIGateway.Stage.dev.name"),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 };

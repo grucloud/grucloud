@@ -1030,6 +1030,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
               hasDependency({ type: "Certificate", group: "ACM" }),
               hasDependency({ type: "Distribution", group: "CloudFront" }),
+              hasDependency({ type: "DomainName", group: "APIGateway" }),
               hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
             ]),
           ])(),
@@ -1039,6 +1040,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           certificate: { type: "Certificate", group: "ACM" },
           distribution: { type: "Distribution", group: "CloudFront" },
           apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
+          apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
         }),
         //TODO remove ?
         ignoreResource: () => get("cannotBeDeleted"),
@@ -1121,6 +1123,145 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         dependencies: () => ({
           layers: { type: "Layer", group: "Lambda", list: true },
           role: { type: "Role", group: "IAM" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "APIGateway",
+    types: [
+      {
+        type: "RestApi",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([
+              "description",
+              "apiKeySource",
+              "endpointConfiguration",
+              "disableExecuteApiEndpoint",
+            ]),
+          ]),
+      },
+      {
+        type: "Authorizer",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            //TODO
+            pick([]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Model",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["schema", "contentType"]),
+            assign({ schema: pipe([get("schema"), JSON.parse]) }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Resource",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Method",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([
+              "httpMethod",
+              "authorizationType",
+              "apiKeyRequired",
+              "methodResponses",
+              "methodIntegration",
+              "description",
+            ]),
+            omit(["methodIntegration.uri", "methodIntegration.cacheNamespace"]),
+          ]),
+        dependencies: () => ({
+          resource: { type: "Resource", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Stage",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["StageName", "StageVariables"]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Integration",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([""]),
+          ]),
+        dependencies: () => ({
+          method: { type: "Method", group: "APIGateway" },
+          lambdaFunction: { type: "Function", group: "Lambda" },
+        }),
+      },
+      {
+        type: "Deployment",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["Description"]),
+          ]),
+        dependencies: () => ({
+          //api: { type: "Api", group: "APIGateway" },
+          stage: { type: "Stage", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "DomainName",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["DomainName"]),
+          ]),
+        dependencies: () => ({
+          certificate: { type: "Certificate", group: "ACM" },
         }),
       },
     ],

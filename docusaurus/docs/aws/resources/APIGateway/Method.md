@@ -1,9 +1,9 @@
 ---
-id: APIGatewayIntegration
+id: APIGatewayMethod
 title: Integration
 ---
 
-Manages an [API Gateway Integration](https://console.aws.amazon.com/apigateway/main/apis).
+Manages an [API Gateway Method](https://console.aws.amazon.com/apigateway/main/apis).
 
 ## Sample code
 
@@ -19,25 +19,21 @@ const resourceGet = provider.APIGateway.makeResource({
   properties: () => ({ pathPart: "/customers" }),
 });
 
+const authorizer = provider.APIGateway.makeAuthorizer({
+  name: "my-authorizer-stage-dev",
+  dependencies: { restApi },
+  properties: () => ({}),
+});
+
 const methodGet = provider.APIGateway.makeMethod({
   name: "method-get",
   dependencies: {
-    restApi,
     resource: resourceGet,
+    authorizer,
   },
   properties: () => ({
     httpMethod: "GET",
-    type: "AWS_PROXY",
-  }),
-});
-
-const integration = provider.APIGateway.makeIntegration({
-  name: "integration-lambda",
-  dependencies: {
-    method: methodGet,
-    lambdaFunction: lambdaFunction,
-  },
-  properties: () => ({
+    authorizationType: "NONE",
     type: "AWS_PROXY",
   }),
 });
@@ -45,14 +41,12 @@ const integration = provider.APIGateway.makeIntegration({
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property)
+- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putMethod-property)
 
 ## Dependencies
 
 - [RestAPI](./APIGatewayRestApi)
 - [Resource](./APIGatewayResource)
-- [Method](./APIGatewayMethod)
-- [Lambda Function](../Lambda/LambdaFunction)
 
 ## Full Examples
 
@@ -63,7 +57,7 @@ const integration = provider.APIGateway.makeIntegration({
 The Integrations can be filtered with the _Integration_ type:
 
 ```sh
-gc l -t Integration
+gc l -t Method
 ```
 
 ```txt

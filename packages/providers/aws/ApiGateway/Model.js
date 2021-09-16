@@ -1,48 +1,26 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, tryCatch, flatMap } = require("rubico");
-const { pluck, defaultsDeep, size, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, eq, tryCatch, pick, flatMap } = require("rubico");
+const { pluck, defaultsDeep } = require("rubico/x");
+
 const logger = require("@grucloud/core/logger")({
-  prefix: "Resource",
+  prefix: "Model",
 });
 
+const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const pickId = ({ restApiId, id }) => ({
-  restApiId,
-  resourceId: id,
-});
+const findId = get("live.id");
+const findName = get("live.name");
 
-exports.Resource = ({ spec, config }) => {
+const pickId = ({ restApiId, name }) => ({ restApiId, modelName: name });
+
+exports.Model = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
-
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(true);
-      }),
-      () =>
-        lives.getById({
-          id: live.restApiId,
-          type: "RestApi",
-          group: "APIGateway",
-          providerName: config.providerName,
-        }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      (restApiName) => `${restApiName}_${live.path}`,
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
-  const findId = get("live.id");
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -51,28 +29,17 @@ exports.Resource = ({ spec, config }) => {
       ids: [live.restApiId],
     },
   ];
-  const cannotBeDeleted = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("live.parentId"),
-    isEmpty,
-  ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getModel-property
   const getById = client.getById({
     pickId,
-    method: "getResource",
+    method: "getModel",
     ignoreErrorCodes: ["NotFoundException"],
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResources-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getModels-property
   const getList = ({ lives }) =>
     pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList resource`);
-      }),
       () =>
         lives.getByType({
           providerName: config.providerName,
@@ -83,7 +50,7 @@ exports.Resource = ({ spec, config }) => {
       flatMap(({ id: restApiId, tags }) =>
         tryCatch(
           pipe([
-            () => apiGateway().getResources({ restApiId }),
+            () => apiGateway().getModels({ restApiId }),
             get("items"),
             map(defaultsDeep({ restApiId, tags })),
           ]),
@@ -102,27 +69,27 @@ exports.Resource = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createModel-property
   const create = client.create({
     pickCreated: (payload) => () => pipe([() => payload, pickId])(),
-    method: "createResource",
+    method: "createModel",
     getById,
     config,
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateModel-property
   const update = client.update({
     pickId,
-    method: "updateResource",
+    method: "updateModel",
     //TODO filterParams
     getById,
     config,
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteModel-property
   const destroy = client.destroy({
     pickId,
-    method: "deleteResource",
+    method: "deleteModel",
     getById,
     ignoreError: eq(get("code"), "NotFoundException"),
     config,
@@ -131,17 +98,19 @@ exports.Resource = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { schema, ...otherProps },
     dependencies: { restApi },
   }) =>
     pipe([
       tap(() => {
         assert(restApi, "missing 'restApi' dependency");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
-        pathPart: name,
+        name,
         restApiId: getField(restApi, "id"),
+        contentType: "application/json",
+        schema: JSON.stringify(schema),
       }),
     ])();
 
@@ -158,6 +127,5 @@ exports.Resource = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     findDependencies,
-    cannotBeDeleted,
   };
 };

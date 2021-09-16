@@ -5,7 +5,8 @@
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "list": "gc list --graph --json artifacts/inventory.json"
   },
   "author": "",
   "license": "ISC",
