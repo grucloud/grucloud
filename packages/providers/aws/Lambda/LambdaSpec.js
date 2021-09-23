@@ -1,7 +1,11 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, omit } = require("rubico");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
+
 const { Function, compareFunction } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
+const { EventSourceMapping } = require("./EventSourceMapping");
+const { defaultsDeep } = require("rubico/x");
 
 const GROUP = "Lambda";
 
@@ -22,5 +26,41 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareFunction,
+    },
+    {
+      type: "EventSourceMapping",
+      dependsOn: ["Lambda::Function", "SQS::Queue"],
+      Client: EventSourceMapping,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compare({
+        filterTarget: pipe([
+          defaultsDeep({
+            BatchSize: 10,
+            MaximumBatchingWindowInSeconds: 0,
+          }),
+          omit(["FunctionName", "Tags"]),
+        ]),
+        filterLive: pipe([
+          omit([
+            "UUID",
+            "FunctionArn",
+            "LastModified",
+            "LastProcessingResult",
+            "StateTransitionReason",
+            "MaximumRecordAgeInSeconds",
+            "Tags",
+            "State",
+          ]),
+          omitIfEmpty([
+            "StartingPosition",
+            "StartingPositionTimestamp",
+            "ParallelizationFactor",
+            "BisectBatchOnFunctionError",
+            "MaximumRetryAttempts",
+            "TumblingWindowInSeconds",
+          ]),
+        ]), //TODO
+      }),
     },
   ]);

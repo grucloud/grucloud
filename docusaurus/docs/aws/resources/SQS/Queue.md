@@ -1,6 +1,6 @@
 ---
 id: SQSQueue
-title: Queue
+title: SQS Queue
 ---
 
 Manages an [SQS Queue](https://console.aws.amazon.com/sqs/v2/home?#/).
@@ -8,7 +8,21 @@ Manages an [SQS Queue](https://console.aws.amazon.com/sqs/v2/home?#/).
 ## Sample code
 
 ```js
-
+provider.SQS.makeQueue({
+  name: "my-queue",
+  properties: () => ({
+    Attributes: {
+      VisibilityTimeout: "30",
+      MaximumMessageSize: "262144",
+      MessageRetentionPeriod: "345600",
+      DelaySeconds: "0",
+      ReceiveMessageWaitTimeSeconds: "0",
+    },
+    tags: {
+      "my-tag": "my-value",
+    },
+  }),
+});
 ```
 
 ## Properties
@@ -28,5 +42,47 @@ gc l -t Queue
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 1/1
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1 SQS::Queue from aws                                                        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ name: my-queue                                                               │
+│ managedByUs: Yes                                                             │
+│ live:                                                                        │
+│   QueueUrl: https://sqs.eu-west-2.amazonaws.com/840541460064/my-queue        │
+│   Attributes:                                                                │
+│     QueueArn: arn:aws:sqs:eu-west-2:840541460064:my-queue                    │
+│     ApproximateNumberOfMessages: 0                                           │
+│     ApproximateNumberOfMessagesNotVisible: 0                                 │
+│     ApproximateNumberOfMessagesDelayed: 0                                    │
+│     CreatedTimestamp: 1632404531                                             │
+│     LastModifiedTimestamp: 1632404531                                        │
+│     VisibilityTimeout: 30                                                    │
+│     MaximumMessageSize: 262144                                               │
+│     MessageRetentionPeriod: 345600                                           │
+│     DelaySeconds: 0                                                          │
+│     ReceiveMessageWaitTimeSeconds: 0                                         │
+│   tags:                                                                      │
+│     gc-managed-by: grucloud                                                  │
+│     gc-project-name: lambda-sqs-nodejs                                       │
+│     gc-stage: dev                                                            │
+│     my-tag: my-value                                                         │
+│     gc-created-by-provider: aws                                              │
+│     Name: my-queue                                                           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                         │
+├────────────┬────────────────────────────────────────────────────────────────┤
+│ SQS::Queue │ my-queue                                                       │
+└────────────┴────────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Queue" executed in 4s
 ```

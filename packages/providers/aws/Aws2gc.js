@@ -1137,6 +1137,36 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           role: { type: "Role", group: "IAM" },
         }),
       },
+      {
+        type: "EventSourceMapping",
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {}),
+              () => live,
+              pick([
+                "StartingPosition",
+                "StartingPositionTimestamp",
+                "BatchSize",
+                "MaximumBatchingWindowInSeconds",
+                "ParallelizationFactor",
+                "DestinationConfig",
+                "Topics",
+                "Queues",
+                "MaximumRecordAgeInSeconds",
+                "BisectBatchOnFunctionError",
+                "MaximumRetryAttempts",
+                "TumblingWindowInSeconds",
+                "FunctionResponseTypes",
+              ]),
+            ])(),
+        dependencies: () => ({
+          lambdaFunction: { type: "Function", group: "Lambda" },
+          sqsQueue: { type: "Queue", group: "SQS" },
+          //TODO other event source
+        }),
+      },
     ],
   },
   {

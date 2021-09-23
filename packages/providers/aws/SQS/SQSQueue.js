@@ -25,7 +25,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const findId = get("live.QueueUrl");
+const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
 const findName = pipe([
   get("live.QueueUrl"),
@@ -156,7 +156,7 @@ exports.SQSQueue = ({ spec, config }) => {
         ])(),
     ]),
     config: { ...config, retryCount: 100 },
-    configIsUp: { repeatCount: 5, repeatDelay: 2 },
+    configIsUp: { repeatCount: 5, repeatDelay: 3 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property

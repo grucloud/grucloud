@@ -90,7 +90,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
 
   const getList =
     ({ method, getParam, decorate = () => identity }) =>
-    () =>
+    ({ lives }) =>
       pipe([
         tap((params) => {
           logger.debug(`getList ${type}`);
@@ -103,7 +103,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(true);
         }),
         get(getParam, []),
-        map(decorate()),
+        map(decorate({ lives })),
         tap((params) => {
           assert(true);
         }),

@@ -6,6 +6,7 @@ const { isOurMinionObject } = require("../AwsCommon");
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncApiKey } = require("./AppSyncApiKey");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
+//const { AppSyncResolver } = require("./AppSyncResolver");
 
 const GROUP = "AppSync";
 
