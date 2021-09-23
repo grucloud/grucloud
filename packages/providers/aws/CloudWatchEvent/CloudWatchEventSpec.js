@@ -1,4 +1,6 @@
 const { pipe, assign, map, omit, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+
 const { isOurMinion } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
@@ -8,6 +10,9 @@ const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
 
+const filterTargetDefault = pipe([omit(["Tags"])]);
+const filterLiveDefault = pipe([omit(["Tags"])]);
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -15,7 +20,8 @@ module.exports = () =>
       Client: CloudWatchEventBus,
       isOurMinion,
       compare: compare({
-        filterAll: pipe([omit(["Tags"])]),
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: pipe([omit(["Arn"]), filterLiveDefault]),
       }),
     },
     {
@@ -24,7 +30,14 @@ module.exports = () =>
       Client: CloudWatchEventRule,
       isOurMinion,
       compare: compare({
-        filterAll: pipe([omit(["Tags"])]),
+        filterTarget: pipe([
+          defaultsDeep({ EventBusName: "default" }),
+          filterTargetDefault,
+        ]),
+        filterLive: pipe([
+          omit(["Arn", "CreatedBy", "Targets"]),
+          filterLiveDefault,
+        ]),
       }),
     },
   ]);

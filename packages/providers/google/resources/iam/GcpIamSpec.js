@@ -3,7 +3,7 @@ const { pipe, assign, map, tap, pick } = require("rubico");
 const { prepend } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 const { camelCase } = require("change-case");
-const { compare } = require("@grucloud/core/Common");
+const { compare } = require("../../GoogleCommon");
 
 const {
   GcpServiceAccount,

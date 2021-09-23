@@ -10,14 +10,14 @@ const {
   eq,
   filter,
 } = require("rubico");
-const { prepend, callProp, find } = require("rubico/x");
+const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
 const { camelCase } = require("change-case");
 
-const { compare } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpComputeSpec" });
 
-const { tos } = require("@grucloud/core/tos");
 const GoogleTag = require("../../GoogleTag");
+const { compare } = require("../../GoogleCommon");
+
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
 const { GcpNetwork } = require("./GcpNetwork");
@@ -38,19 +38,15 @@ const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
 const ResourceNameSubnet = (name) =>
   ResourceVarNameSubnet(name).replace(/_/g, "-");
 
-module.exports = () => {
-  const isOurMinion = GoogleTag.isOurMinion;
-
-  return map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "SslCertificate",
       Client: GcpSslCertificate,
-      isOurMinion,
     },
     {
       type: "BackendBucket",
       Client: GcpBackendBucket,
-      isOurMinion,
     },
     {
       type: "UrlMap",
@@ -59,7 +55,6 @@ module.exports = () => {
         backendBucket: { type: "BackendBucket", group: "compute" },
       }),
       Client: GcpUrlMap,
-      isOurMinion,
     },
     {
       type: "HttpsTargetProxy",
@@ -69,7 +64,6 @@ module.exports = () => {
         certificate: { type: "SslCertificate", group: "compute" },
       }),
       Client: GcpHttpsTargetProxy,
-      isOurMinion,
     },
     {
       type: "GlobalForwardingRule",
@@ -78,12 +72,10 @@ module.exports = () => {
         httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
       }),
       Client: GcpGlobalForwardingRule,
-      isOurMinion,
     },
     {
       type: "Network",
       Client: GcpNetwork,
-      isOurMinion,
       filterLive: () =>
         pick(["description", "autoCreateSubnetworks", "routingConfig"]),
     },
@@ -101,7 +93,6 @@ module.exports = () => {
       dependencies: () => ({
         network: { type: "Network", group: "compute" },
       }),
-      isOurMinion,
       resourceVarName: ResourceVarNameSubnet,
       resourceName: ResourceNameSubnet,
     },
@@ -109,7 +100,6 @@ module.exports = () => {
       type: "Firewall",
       dependsOn: ["compute::Network"],
       Client: GcpFirewall,
-      isOurMinion,
       dependencies: () => ({
         network: { type: "Network", group: "compute" },
       }),
@@ -144,13 +134,11 @@ module.exports = () => {
     {
       type: "Address",
       Client: GcpAddress,
-      isOurMinion,
       filterLive: () => pick(["description"]),
     },
     {
       type: "Disk",
       Client: GcpDisk,
-      isOurMinion,
       filterLive: ({ providerConfig }) =>
         pipe([
           pick(["sizeGb", "type"]),
@@ -183,7 +171,6 @@ module.exports = () => {
         sourceImage:
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
-      isOurMinion,
       compare: compareVmInstance,
       dependencies: () => ({
         address: { type: "Address", group: "compute" },
@@ -244,5 +231,11 @@ module.exports = () => {
           }),
         ]),
     },
-  ]);
-};
+  ],
+  map(
+    pipe([
+      assign({ group: () => GROUP }),
+      defaultsDeep({ isOurMinion: GoogleTag.isOurMinion, compare }),
+    ])
+  ),
+]);

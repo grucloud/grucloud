@@ -7,9 +7,10 @@ const AzClient = require("./AzClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const AzTag = require("./AzTag");
 const { getField, notAvailable } = require("@grucloud/core/ProviderCommon");
-const { isUpByIdCore, compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { isUpByIdCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 const { retryCallOnError } = require("@grucloud/core/Retry");
+const { compare } = require("./AzureCommon");
 
 exports.fnSpecs = (config) => {
   const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
@@ -453,12 +454,7 @@ exports.fnSpecs = (config) => {
           pipe([
             pick(["properties"]),
             assign({
-              properties: pipe([
-                get("properties"),
-                pick([
-                  "addressPrefix",
-                ]),
-              ]),
+              properties: pipe([get("properties"), pick(["addressPrefix"])]),
             }),
           ]),
         Client: ({ spec, config }) =>
@@ -636,6 +632,6 @@ exports.fnSpecs = (config) => {
           }),
       },
     ],
-    map(defaultsDeep({ isOurMinion })),
+    map(defaultsDeep({ isOurMinion, compare })),
   ])();
 };

@@ -2,9 +2,10 @@ const { pipe, assign, map, get, pick } = require("rubico");
 const { callProp } = require("rubico/x");
 
 const assert = require("assert");
-const { md5FileBase64, compare } = require("@grucloud/core/Common");
+const { md5FileBase64 } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpStorageSpec" });
+const { compare } = require("../../GoogleCommon");
 
 const { GcpBucket } = require("./GcpBucket");
 const { GcpObject, isGcpObjectOurMinion } = require("./GcpObject");

@@ -25,6 +25,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          omit(["Version", "LastModifiedDate", "ARN"]),
         ]),
       }),
     },

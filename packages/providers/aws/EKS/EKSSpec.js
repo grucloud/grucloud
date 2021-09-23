@@ -1,4 +1,4 @@
-const { pipe, assign, map, pick } = require("rubico");
+const { pipe, assign, map, pick, omit, tap } = require("rubico");
 const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
@@ -21,6 +21,30 @@ module.exports = () =>
       ],
       Client: EKSCluster,
       isOurMinion,
+      compare: compare({
+        fitterAll: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: omit([
+          "arn",
+          "createdAt",
+          "endpoint",
+          "resourcesVpcConfig.clusterSecurityGroupId",
+          "resourcesVpcConfig.vpcId",
+          "resourcesVpcConfig.publicAccessCidrs",
+          "kubernetesNetworkConfig",
+          "identity",
+          "logging",
+          "status",
+          "certificateAuthority",
+          "clientRequestToken",
+          "eks.2",
+          "version",
+          "platformVersion",
+        ]),
+      }),
     },
     {
       type: "NodeGroup",

@@ -229,25 +229,3 @@ const filterTarget = ({ target }) =>
     omit(["Tags"]),
     assign({ Enabled: () => true, KeyState: () => "Enabled" }),
   ])();
-
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareKmsKey = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareKmsKey ${tos(diff)}`);
-  }),
-]);

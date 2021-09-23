@@ -76,7 +76,7 @@ exports.compareK8s = ({
           "added.spec.template.spec.containers[0].env",
           "added.metadata.annotations",
         ]),
-        omitIfEmpty(["added", "updated"]),
+        omitIfEmpty(["added", "updated", "updated.data"]),
         tap((params) => {
           assert(true);
         }),

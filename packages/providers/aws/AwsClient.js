@@ -165,6 +165,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   const create =
     ({
       method,
+      filterPayload = identity,
       config,
       configIsUp,
       pickCreated,
@@ -186,6 +187,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             name: `create ${type} ${name}`,
             fn: pipe([
               () => payload,
+              filterPayload,
               tap((params) => {
                 assert(true);
               }),
@@ -351,7 +353,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               () => error,
               switchCase([
                 ignoreError,
-                () => undefined,
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () => undefined,
+                ]),
                 () => {
                   logger.error(error.stack);
                   throw error;

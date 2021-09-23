@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap } = require("rubico");
+const { pipe, assign, map, omit, tap, get } = require("rubico");
+const { defaultsDeep, unless } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
 const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "ELBv2";
 
@@ -23,6 +24,19 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["Name", "Subnets"])]),
+        filterLive: pipe([
+          omit([
+            "LoadBalancerArn",
+            "DNSName",
+            "CanonicalHostedZoneId",
+            "CreatedTime",
+            "LoadBalancerName",
+            "VpcId",
+            "State",
+            "AvailabilityZones",
+            "IpAddressType",
+          ]),
+        ]),
       }),
     },
     {
@@ -31,7 +45,29 @@ module.exports = () =>
       Client: ELBTargetGroup,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Name"])]),
+        filterTarget: pipe([
+          omit(["Name"]),
+          defaultsDeep({
+            HealthCheckPath: "/",
+            HealthCheckPort: "traffic-port",
+            HealthCheckEnabled: true,
+            HealthCheckIntervalSeconds: 30,
+            HealthCheckTimeoutSeconds: 5,
+            HealthyThresholdCount: 5,
+            UnhealthyThresholdCount: 2,
+            Matcher: { HttpCode: "200" },
+            TargetType: "instance",
+            ProtocolVersion: "HTTP1",
+          }),
+        ]),
+        filterLive: pipe([
+          omit([
+            "TargetGroupArn",
+            "TargetGroupName",
+            "HealthCheckProtocol",
+            "LoadBalancerArns",
+          ]),
+        ]),
       }),
     },
     {
@@ -43,6 +79,12 @@ module.exports = () =>
       ],
       Client: ELBListener,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([
+          omit(["ListenerArn", "SslPolicy"]),
+          omitIfEmpty(["AlpnPolicy", "Certificates"]),
+        ]),
+      }),
     },
     {
       type: "Rule",
@@ -51,13 +93,33 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
-          tap((params) => {
-            assert(true);
+          defaultsDeep({
+            IsDefault: false,
           }),
+          unless(
+            get("Conditions[0].Values"),
+            assign({
+              Conditions: () => [
+                {
+                  Field: "path-pattern",
+                  Values: ["/*"],
+                },
+              ],
+            })
+          ),
         ]),
         filterLive: pipe([
-          tap((params) => {
-            assert(true);
+          omit([
+            "RuleArn",
+            "TargetGroupName",
+            "HealthCheckProtocol",
+            "LoadBalancerArns",
+          ]),
+          assign({
+            Conditions: pipe([
+              get("Conditions"),
+              map(omit(["PathPatternConfig"])),
+            ]),
           }),
         ]),
       }),

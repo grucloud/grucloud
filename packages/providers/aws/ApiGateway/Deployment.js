@@ -102,7 +102,7 @@ exports.Deployment = ({ spec, config }) => {
     config,
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateModel-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateDeployment-property
   const update = client.update({
     pickId,
     method: "updateDeployment",
@@ -111,7 +111,7 @@ exports.Deployment = ({ spec, config }) => {
     config,
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteAuthorizer-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteDeployment-property
   const destroy = client.destroy({
     pickId,
     method: "deleteDeployment",

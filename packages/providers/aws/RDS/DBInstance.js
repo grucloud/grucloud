@@ -58,6 +58,7 @@ exports.DBInstance = ({ spec, config }) => {
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },
+    configIsUp: { ...config, retryCount: 500 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBInstance-property
@@ -67,7 +68,7 @@ exports.DBInstance = ({ spec, config }) => {
     method: "modifyDBInstance",
     filterParams: assign({ ApplyImmediately: () => true }),
     getById,
-    config: { ...config, retryCount: 100 },
+    config: { ...config, retryDelay: 10e3, retryCount: 200 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBInstance-property

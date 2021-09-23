@@ -494,7 +494,7 @@ const displayPlanItemUpdate =
               ),
             },
             {
-              content: colors.green(`+ ${YAML.stringify(value)}`),
+              content: "",
             },
           ]);
           return [key, value];

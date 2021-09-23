@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 
 const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
@@ -17,7 +18,11 @@ module.exports = () =>
       Client: DBSubnetGroup,
       isOurMinion,
       compare: compare({
-        filterAll: pipe([omit(["SubnetIds", "Tags"])]),
+        filterAll: pipe([omit(["Tags"])]),
+        filterTarget: pipe([omit(["SubnetIds"])]),
+        filterLive: pipe([
+          omit(["VpcId", "SubnetGroupStatus", "Subnets", "DBSubnetGroupArn"]),
+        ]),
       }),
     },
     {
@@ -33,10 +38,53 @@ module.exports = () =>
             "MasterUserPassword",
             "DBSubnetGroupName",
           ]),
+          defaultsDeep({
+            AllocatedStorage: 1,
+            BackupRetentionPeriod: 1,
+            MultiAZ: false,
+            Port: 5432,
+            StorageEncrypted: true,
+            IAMDatabaseAuthenticationEnabled: false,
+            DeletionProtection: false,
+            HttpEndpointEnabled: false,
+            CopyTagsToSnapshot: false,
+            CrossAccountClone: false,
+            ScalingConfiguration: {
+              AutoPause: true,
+              SecondsUntilAutoPause: 300,
+              TimeoutAction: "RollbackCapacityChange",
+            },
+          }),
         ]),
         filterLive: pipe([
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
-          omit(["ScalingConfigurationInfo"]),
+          omit([
+            "TagList",
+            "Capacity",
+            "ScalingConfigurationInfo",
+            "AvailabilityZones",
+            "DBClusterParameterGroup",
+            "DBSubnetGroup",
+            "Status",
+            "EarliestRestorableTime",
+            "Endpoint",
+            "CustomEndpoints",
+            "LatestRestorableTime",
+            "DBClusterOptionGroupMemberships",
+            "ReadReplicaIdentifiers",
+            "DBClusterMembers",
+            "VpcSecurityGroups",
+            "HostedZoneId",
+            "KmsKeyId",
+            "DbClusterResourceId",
+            "DBClusterArn",
+            "AssociatedRoles",
+            "ClusterCreateTime",
+            "EnabledCloudwatchLogsExports",
+            "ActivityStreamStatus",
+            "DomainMemberships",
+            "TagList",
+          ]),
         ]),
       }),
     },
@@ -52,15 +100,63 @@ module.exports = () =>
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compare({
-        filterAll: omit(["Tags"]),
+        filterAll: omit(["TagList"]),
         filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep({
+            BackupRetentionPeriod: 1,
+            DBSecurityGroups: [],
+            MultiAZ: false,
+            AutoMinorVersionUpgrade: true,
+            StorageType: "gp2",
+            DbInstancePort: 0,
+            StorageEncrypted: false,
+            DomainMemberships: [],
+            CopyTagsToSnapshot: false,
+            MonitoringInterval: 0,
+            IAMDatabaseAuthenticationEnabled: false,
+            PerformanceInsightsEnabled: false,
+            EnabledCloudwatchLogsExports: [],
+            ProcessorFeatures: [],
+            DeletionProtection: false,
+            AssociatedRoles: [],
+            DBInstanceAutomatedBackupsReplications: [],
+            CustomerOwnedIpEnabled: false,
+          }),
+          omit([
+            "MasterUserPassword",
+            "VpcSecurityGroupIds",
+            "DBSubnetGroupName", //TODO
+            "Tags",
+          ]),
+        ]),
+        filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
           omit([
             "VpcSecurityGroupIds",
-            "MasterUserPassword",
-            "DBSubnetGroupName",
+            "VpcSecurityGroups",
+            "DBSubnetGroupName", //TODO
+            "DBInstanceStatus",
+            "Endpoint",
+            "InstanceCreateTime",
+            "DBParameterGroups",
+            "AvailabilityZone",
+            "DBSubnetGroup",
+            "PendingModifiedValues",
+            "LatestRestorableTime",
+            "ReadReplicaDBInstanceIdentifiers",
+            "ReadReplicaDBClusterIdentifiers",
+            "LicenseModel",
+            "OptionGroupMemberships",
+            "StatusInfos",
+            "DbiResourceId",
+            "CACertificateIdentifier",
+            "DBInstanceArn",
+            "ActivityStreamStatus",
           ]),
         ]),
       }),

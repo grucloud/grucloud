@@ -165,7 +165,10 @@ exports.SQSQueue = ({ spec, config }) => {
     filterParams: (params) =>
       pipe([
         () => params,
-        set("Attributes.Policy", JSON.stringify(params.Attributes.Policy)),
+        when(
+          get("Attributes.Policy"),
+          set("Attributes.Policy", JSON.stringify(params.Attributes.Policy))
+        ),
         tap((params) => {
           assert(true);
         }),

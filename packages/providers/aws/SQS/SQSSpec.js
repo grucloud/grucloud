@@ -25,6 +25,17 @@ module.exports = () =>
           }),
           omit(["QueueName"]),
         ]),
+        filterLive: pipe([
+          omit([
+            "QueueUrl",
+            "Attributes.QueueArn",
+            "Attributes.ApproximateNumberOfMessages",
+            "Attributes.ApproximateNumberOfMessagesNotVisible",
+            "Attributes.ApproximateNumberOfMessagesDelayed",
+            "Attributes.CreatedTimestamp",
+            "Attributes.LastModifiedTimestamp",
+          ]),
+        ]),
       }),
     },
   ]);

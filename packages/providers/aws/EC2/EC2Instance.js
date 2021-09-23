@@ -26,6 +26,7 @@ const {
   when,
 } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { detailedDiff } = require("deep-object-diff");
 
@@ -243,6 +244,16 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
+  const decorate = pipe([
+    assign({
+      UserData: pipe([
+        ({ InstanceId }) => ({ Attribute: "userData", InstanceId }),
+        ec2().describeInstanceAttribute,
+        get("UserData.Value"),
+      ]),
+    }),
+  ]);
+
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
@@ -253,6 +264,7 @@ exports.EC2Instance = ({ spec, config }) => {
       pluck("Instances"),
       flatten,
       filter(not(isInstanceTerminated)),
+      map(decorate),
     ])();
 
   const getByName = getByNameCore({ getList, findName });
@@ -609,11 +621,47 @@ const filterTarget = ({ target }) =>
     omit(["NetworkInterfaces", "TagSpecifications", "MinCount", "MaxCount"]),
   ])();
 
-const filterLive = ({ live }) =>
-  pipe([
-    () => live, //
-    omit(["NetworkInterfaces"]),
-  ])();
+const filterLive = pipe([
+  omit([
+    "EnclaveOptions",
+    "MetadataOptions",
+    "Licenses",
+    "HibernationOptions",
+    "CapacityReservationSpecification",
+    "CpuOptions",
+    "VirtualizationType",
+    "SourceDestCheck",
+    "SecurityGroups",
+    "RootDeviceType",
+    "RootDeviceName",
+    "NetworkInterfaces",
+    "ElasticInferenceAcceleratorAssociations",
+    "ElasticGpuAssociations",
+    "Hypervisor",
+    "EnaSupport",
+    "EbsOptimized",
+    "ClientToken",
+    "BlockDeviceMappings",
+    "Architecture",
+    "VpcId",
+    "SubnetId",
+    "StateTransitionReason",
+    "State",
+    "PublicIpAddress",
+    "PublicDnsName",
+    "ProductCodes",
+    "PrivateIpAddress",
+    "PrivateDnsName",
+    "Monitoring",
+    "LaunchTime",
+    "InstanceId",
+    "AmiLaunchIndex",
+    "Placement",
+    "IamInstanceProfile.Id",
+    "Tags",
+  ]),
+  omitIfEmpty(["UserData"]),
+]);
 
 exports.compareEC2Instance = pipe([
   tap((xxx) => {

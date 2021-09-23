@@ -28,6 +28,7 @@ const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "EC2";
 
@@ -40,8 +41,14 @@ module.exports = () =>
       type: "KeyPair",
       Client: AwsClientKeyPair,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: pipe([
+          filterLiveDefault,
+          omit(["KeyPairId", "KeyFingerprint"]),
+        ]),
+      }),
     },
-
     {
       type: "Image",
       Client: AwsImage,
@@ -54,7 +61,18 @@ module.exports = () =>
       setupEbsVolume,
       compare: compare({
         filterTarget: pipe([omit(["Device"]), filterTargetDefault]),
-        filterLive: filterLiveDefault,
+        filterLive: pipe([
+          omit([
+            "Attachments",
+            "CreateTime",
+            "Encrypted",
+            "SnapshotId",
+            "State",
+            "VolumeId",
+            "MultiAttachEnabled",
+          ]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -62,6 +80,28 @@ module.exports = () =>
       dependsOn: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([
+          defaultsDeep({ DnsSupport: true, DnsHostnames: false }),
+          filterTargetDefault,
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          filterLiveDefault,
+          omit([
+            "DhcpOptionsId",
+            "State",
+            "OwnerId",
+            "InstanceTenancy",
+            "Ipv6CidrBlockAssociationSet",
+            "CidrBlockAssociationSet",
+            "IsDefault",
+            "VpcId",
+          ]),
+        ]),
+      }),
     },
     {
       type: "InternetGateway",
@@ -69,8 +109,11 @@ module.exports = () =>
       Client: AwsInternetGateway,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["AllocationId"]), filterTargetDefault]),
-        filterLive: filterLiveDefault,
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: pipe([
+          omit(["Attachments", "InternetGatewayId", "OwnerId"]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -80,7 +123,17 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["AllocationId"]), filterTargetDefault]),
-        filterLive: filterLiveDefault,
+        filterLive: pipe([
+          omit([
+            "CreateTime",
+            "NatGatewayAddresses",
+            "NatGatewayId",
+            "State",
+            "VpcId",
+            "ConnectivityType",
+          ]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -89,8 +142,28 @@ module.exports = () =>
       Client: AwsSubnet,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["VpcId"]), filterTargetDefault]),
-        filterLive: pipe([omit(["VpcId"]), filterLiveDefault]),
+        filterAll: pipe([omit(["VpcId"])]),
+        filterTarget: pipe([
+          defaultsDeep({
+            MapPublicIpOnLaunch: false,
+            MapCustomerOwnedIpOnLaunch: false,
+          }),
+          filterTargetDefault,
+        ]),
+        filterLive: pipe([
+          omit([
+            "AvailabilityZoneId",
+            "AvailableIpAddressCount",
+            "DefaultForAz",
+            "State",
+            "SubnetId",
+            "OwnerId",
+            "AssignIpv6AddressOnCreation",
+            "Ipv6CidrBlockAssociationSet",
+            "SubnetArn",
+          ]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -99,8 +172,18 @@ module.exports = () =>
       Client: AwsRouteTable,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["VpcId"]), filterTargetDefault]),
-        filterLive: pipe([omit(["VpcId"]), filterLiveDefault]),
+        filterAll: pipe([omit(["VpcId"])]),
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: pipe([
+          omit([
+            "Associations",
+            "PropagatingVgws",
+            "RouteTableId",
+            "OwnerId",
+            "Routes",
+          ]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -108,6 +191,20 @@ module.exports = () =>
       dependsOn: ["EC2::RouteTable", "EC2::InternetGateway", "EC2::NatGateway"],
       Client: EC2Route,
       isOurMinion,
+      compare: compare({
+        filterTarget: filterTargetDefault,
+        filterLive: pipe([
+          omit([
+            "GatewayId",
+            "NatGatewayId",
+            "Origin",
+            "State",
+            "name",
+            "RouteTableId",
+          ]),
+          filterLiveDefault,
+        ]),
+      }),
     },
     {
       type: "SecurityGroup",
@@ -138,6 +235,23 @@ module.exports = () =>
       dependsOn: ["EC2::InternetGateway", "EC2::NetworkInterface"],
       Client: AwsElasticIpAddress,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterLive: pipe([
+          omit([
+            "InstanceId",
+            "PublicIp",
+            "AllocationId",
+            "AssociationId",
+            "NetworkInterfaceId",
+            "NetworkInterfaceOwnerId",
+            "PrivateIpAddress",
+            "PublicIpv4Pool",
+            "NetworkBorderGroup",
+          ]),
+          filterLiveDefault,
+        ]),
+      }),
     },
     {
       type: "Instance",
@@ -172,11 +286,20 @@ module.exports = () =>
       Client: EC2LaunchTemplate,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          omit(["LaunchTemplateData", "TagSpecifications"]),
-          filterTargetDefault,
+        filterTarget: pipe([omit(["LaunchTemplateData"]), filterTargetDefault]),
+        filterLive: pipe([
+          omit([
+            "LaunchTemplateId",
+            "VersionNumber",
+            "CreateTime",
+            "CreatedBy",
+            "DefaultVersion",
+            "DefaultVersionNumber",
+            "LatestVersionNumber",
+            "LaunchTemplateData", //TODO
+          ]),
+          filterLiveDefault,
         ]),
-        filterLive: filterLiveDefault,
       }),
     },
 
@@ -185,6 +308,10 @@ module.exports = () =>
       dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
       Client: AwsNetworkInterface,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([filterTargetDefault]),
+        filterLive: pipe([filterLiveDefault]),
+      }),
     },
     {
       type: "NetworkAcl",

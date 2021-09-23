@@ -10,6 +10,7 @@ const {
   tryCatch,
   or,
   omit,
+  pick,
 } = require("rubico");
 const { find, first, defaultsDeep, isEmpty, size, pluck } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
@@ -19,7 +20,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
+const { isUpByIdCore } = require("@grucloud/core/Common");
 const {
   createEndpoint,
   buildTags,
@@ -30,6 +31,7 @@ const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.DBSubnetGroupName");
 const findName = findId;
+const pickId = pick(["DBSubnetGroupName"]);
 
 exports.DBSubnetGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -62,18 +64,12 @@ exports.DBSubnetGroup = ({ spec, config }) => {
       ),
     ])();
 
-  const getById = ({ id }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getById ${id}`);
-      }),
-      () => rds().describeDBSubnetGroups({ DBSubnetGroupName: id }),
-      get("DBSubnetGroups"),
-      first,
-      tap((result) => {
-        logger.debug(`getById result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "describeDBSubnetGroups",
+    getField: "DBSubnetGroups",
+    ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
+  });
 
   const getByName = ({ name }) => getById({ id: name });
 
@@ -101,35 +97,22 @@ exports.DBSubnetGroup = ({ spec, config }) => {
       }),
     ])();
 
-  //TODO
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => live,
-      tap(() => {
-        logger.info(`updated`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBSubnetGroup-property
+  const update = client.update({
+    pickId,
+    method: "modifyDBSubnetGroup",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBSubnetGroup-property
-
-  const destroy = ({ live }) =>
-    pipe([
-      () => ({ id: findId({ live }) }),
-      ({ id }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy ${JSON.stringify({ id })}`);
-          }),
-          () => rds().deleteDBSubnetGroup({ DBSubnetGroupName: id }),
-          tap(() => {
-            logger.info(`destroyed ${JSON.stringify({ id })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteDBSubnetGroup",
+    getById,
+    ignoreError: eq(get("code"), "DBSubnetGroupNotFoundFault"),
+    config,
+  });
 
   const configDefault = ({
     name,

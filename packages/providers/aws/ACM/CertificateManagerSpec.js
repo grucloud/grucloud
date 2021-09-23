@@ -1,4 +1,4 @@
-const { pipe, assign, map, omit } = require("rubico");
+const { pipe, assign, map, omit, pick } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
@@ -14,6 +14,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["ValidationMethod", "Tags"])]),
+        filterLive: pipe([pick(["DomainName"])]),
       }),
     },
   ]);

@@ -834,6 +834,18 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "CloudWatchLogs",
+    types: [
+      {
+        type: "LogGroup",
+        filterLive: () => pipe([pick(["retentionInDays"])]),
+        dependencies: () => ({
+          kmsKey: { type: "Key", group: "kms" },
+        }),
+      },
+    ],
+  },
+  {
     group: "DynamoDB",
     types: [
       {
