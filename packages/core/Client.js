@@ -65,6 +65,7 @@ const buildGroupType = switchCase([
   ({ group, type }) => `${group}::${type}`,
   ({ type }) => type,
 ]);
+exports.buildGroupType = buildGroupType;
 
 const decorateLive =
   ({ client, options, lives, config }) =>
