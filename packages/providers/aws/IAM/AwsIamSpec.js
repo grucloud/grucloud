@@ -103,7 +103,13 @@ module.exports = () =>
       Client: AwsIamPolicy,
       isOurMinion: isOurMinionIamPolicy,
       compare: compare({
-        filterAll: pipe([pick(["PolicyDocument"])]),
+        filterAll: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          //TODO description
+          pick(["PolicyDocument"]),
+        ]),
       }),
     },
     {

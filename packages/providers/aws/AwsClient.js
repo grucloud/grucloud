@@ -221,6 +221,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
 
   const update =
     ({
+      preUpdate = ({ live }) => identity,
       method,
       config,
       pickId = () => ({}),
@@ -243,9 +244,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             })}`
           );
         }),
-        () => diff,
-        get("liveDiff.updated", {}),
-        defaultsDeep(get("liveDiff.added", {})(diff)),
+        preUpdate({ live, payload }),
+        () => payload,
         defaultsDeep(pickId(live)),
         defaultsDeep(extraParam),
         filterParams,
@@ -259,7 +259,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           pipe([
             endpoint()[method],
             () => live,
-            pickId,
             (params) =>
               retryCall({
                 name: `isUpById: ${name}`,
@@ -270,16 +269,19 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                     assert(true);
                   }),
                   (live) => compare({ live, target: payload }),
-                  tap((params) => {
-                    assert(true);
+                  tap((diff) => {
+                    logger.debug(
+                      `updating ${type}, ${name}, diff: ${JSON.stringify(
+                        diff,
+                        null,
+                        4
+                      )}`
+                    );
                   }),
                   and([
                     pipe([get("liveDiff"), isEmpty]),
                     pipe([get("targetDiff"), isEmpty]),
                   ]),
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ]),
                 config,
               }),
@@ -330,7 +332,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 `destroy ${type}, ${name} ${JSON.stringify(params)}`
               );
             }),
-
             defaultsDeep(extraParam),
             tap((params) => {
               assert(true);
