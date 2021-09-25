@@ -256,7 +256,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const detatchPolicy = ({ PolicyArn }) =>
+  const detatchPolicy = ({ Arn: PolicyArn }) =>
     pipe([
       tap(() => {
         assert(PolicyArn);
@@ -306,10 +306,38 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           ),
         ]),
       }),
-    ]);
+    ])();
+
+  const detatchPolicyVersions = ({ Arn: PolicyArn, Versions }) =>
+    pipe([
+      tap(() => {
+        assert(PolicyArn);
+        assert(Versions);
+      }),
+      () => Versions,
+      filter(not(get("IsDefaultVersion"))),
+      tap((params) => {
+        assert(true);
+      }),
+      map(
+        tryCatch(
+          pipe([
+            ({ VersionId }) => ({ PolicyArn, VersionId }),
+            iam().deletePolicyVersion,
+          ]),
+          (error) =>
+            pipe([
+              () => error,
+              tap((params) => {
+                assert(true);
+              }),
+            ])()
+        )
+      ),
+    ])();
 
   const destroy = client.destroy({
-    preDestroy: detatchPolicy,
+    preDestroy: pipe([tap(detatchPolicy), tap(detatchPolicyVersions)]),
     pickId,
     method: "deletePolicy",
     getById,
