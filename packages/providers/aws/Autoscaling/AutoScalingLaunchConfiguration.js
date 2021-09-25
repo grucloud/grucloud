@@ -1,14 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  not,
-  pick,
-  map,
-} = require("rubico");
+const { pipe, tap, tryCatch, get, switchCase, pick, map } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -34,9 +25,11 @@ const { AwsClient } = require("../AwsClient");
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
+const pickId = pick(["LaunchConfigurationName"]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
+  const client = AwsClient({ spec, config });
   const autoScaling = () =>
     createEndpoint({ endpointName: "AutoScaling" })(config);
 
@@ -152,21 +145,33 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
       ])
     )();
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getById = client.getById({
+    pickId: ({ LaunchConfigurationName }) => ({
+      LaunchConfigurationNames: [LaunchConfigurationName],
+    }),
+    method: "describeLaunchConfigurations",
+    getField: "LaunchConfigurations",
+    ignoreErrorMessages: ["Launch configuration name not found"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createLaunchConfiguration-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      autoScaling().createLaunchConfiguration,
-      // tap(() =>
-      //   retryCall({
-      //     name: `createCluster isUpByName: ${name}`,
-      //     fn: () => isUpByName({ name }),
-      //   })
-      // ),
-    ])();
+  const create = client.create({
+    pickCreated: (payload) => (params) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => payload,
+        pickId,
+      ])(),
+    method: "createLaunchConfiguration",
+    shouldRetryOnException: pipe([
+      get("error.message"),
+      includes("Invalid IamInstanceProfile:"),
+    ]),
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteLaunchConfiguration-property
   const destroy = ({ live }) =>
@@ -227,6 +232,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     findNamespace,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,
