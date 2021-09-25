@@ -10,6 +10,8 @@ const {
   and,
   flatMap,
   filter,
+  any,
+  or,
 } = require("rubico");
 const {
   pluck,
@@ -43,6 +45,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       getField,
       decorate = () => identity,
       ignoreErrorCodes = [],
+      ignoreErrorMessages = [],
     }) =>
     (params) =>
       pipe([
@@ -64,14 +67,19 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             unless(isEmpty, pipe([decorate(params), assignTags])),
           ]),
           switchCase([
-            ({ code }) =>
-              pipe([
-                tap(() => {
-                  //assert(code);
-                }),
-                () => ignoreErrorCodes,
-                includes(code),
-              ])(),
+            or([
+              ({ message }) =>
+                pipe([
+                  () => ignoreErrorMessages,
+                  any((ignoreMessage) =>
+                    pipe([() => message, includes(ignoreMessage)])()
+                  ),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ])(),
+              ({ code }) => pipe([() => ignoreErrorCodes, includes(code)])(),
+            ]),
             () => undefined,
             (error) => {
               logger.error(`getById ${type} ${JSON.stringify(error)}`);

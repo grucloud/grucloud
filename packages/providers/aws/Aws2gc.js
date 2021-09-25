@@ -894,6 +894,23 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         }),
       },
       {
+        type: "Type",
+        filterLive: () => pick(["description", "definition", "format"]),
+        dependencies: () => ({
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        }),
+      },
+      {
+        type: "Resolver",
+        filterLive: () =>
+          pick(["requestMappingTemplate", "responseMappingTemplate", "kind"]),
+        dependencies: () => ({
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+          type: { type: "Type", group: "AppSync" },
+          dynamoDbTable: { type: "Table", group: "DynamoDB" },
+        }),
+      },
+      {
         type: "DataSource",
         filterLive: () =>
           pick([

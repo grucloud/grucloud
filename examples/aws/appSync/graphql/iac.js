@@ -40,6 +40,39 @@ const createResources = ({ provider }) => {
     }),
     properties: () => config.AppSync.DataSource.datasource.properties,
   });
+
+  provider.AppSync.makeType({
+    name: "CreatePostInput",
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
+    }),
+    properties: () => ({
+      definition: {
+        name: "CreatePostInput",
+        kind: "INPUT_OBJECT",
+        inputFields: [
+          {
+            name: "title",
+            type: {
+              kind: "NON_NULL",
+              ofType: {
+                name: "String",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    name: "my-resolver",
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
+      type: resources.AppSync.Type.createPostInput,
+    }),
+    properties: () => ({ fieldName: "Post" }),
+  });
 };
 
 exports.createResources = createResources;

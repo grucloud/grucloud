@@ -6,7 +6,8 @@ const { isOurMinionObject } = require("../AwsCommon");
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncApiKey } = require("./AppSyncApiKey");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
-//const { AppSyncResolver } = require("./AppSyncResolver");
+const { AppSyncType } = require("./AppSyncType");
+const { AppSyncResolver } = require("./AppSyncResolver");
 
 const GROUP = "AppSync";
 
@@ -43,6 +44,39 @@ module.exports = () =>
       compare: compare({
         filterAll: pipe([
           omit(["apiId", "serviceRoleArn", "dataSourceArn", "tags"]),
+        ]),
+      }),
+    },
+    {
+      type: "Type",
+      dependsOn: ["AppSync::GraphqlApi"],
+      Client: AppSyncType,
+      isOurMinion,
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["arn", "name", "tags"]),
+          omitIfEmpty(["description"]),
+        ]),
+      }),
+    },
+    {
+      type: "Resolver",
+      dependsOn: ["AppSync::GraphqlApi", "AppSync::Type", "DynamoDB::Table"],
+      Client: AppSyncResolver,
+      isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit(["tags"])]),
+        filterLive: pipe([
+          omit(["apiId", "arn", "tags"]),
+          omitIfEmpty(["description"]),
         ]),
       }),
     },
