@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, or, pick, not, assign } = require("rubico");
+const { map, pipe, tap, get, or, pick, not, assign, omit } = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -163,6 +163,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
   const update = client.update({
     pickId,
+    filterParams: omit(["TargetGroupARNs", "Tags"]),
     method: "updateAutoScalingGroup",
     getById,
     config,
