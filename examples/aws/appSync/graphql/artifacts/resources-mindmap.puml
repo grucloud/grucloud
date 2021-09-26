@@ -10,4 +10,6 @@ skinparam monochrome true
 ++++ GraphqlApi (1)
 ++++ ApiKey (1)
 ++++ DataSource (1)
+++++ Type (1)
+++++ Resolver (1)
 @endmindmap

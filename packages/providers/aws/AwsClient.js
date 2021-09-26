@@ -234,7 +234,13 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       config,
       pickId = () => ({}),
       extraParam = {},
-      filterParams = identity,
+      filterParams = ({ pickId, payload, diff, live }) =>
+        pipe([
+          () => diff,
+          get("liveDiff.updated", {}),
+          defaultsDeep(get("liveDiff.added", {})(diff)),
+          defaultsDeep(pickId(live)),
+        ])(),
       getById,
     }) =>
     ({ name, payload, diff, live, compare }) =>
@@ -253,14 +259,16 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           );
         }),
         preUpdate({ live, payload }),
-        () => payload,
-        defaultsDeep(pickId(live)),
+        () => filterParams({ pickId, extraParam, payload, diff, live }),
         defaultsDeep(extraParam),
-        filterParams,
         tap((params) => {
           assert(params);
           logger.debug(
-            `update ${type}, ${name}, params: ${JSON.stringify(params)}`
+            `update ${type}, ${name}, params: ${JSON.stringify(
+              params,
+              null,
+              4
+            )}`
           );
         }),
         tryCatch(

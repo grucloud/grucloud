@@ -112,12 +112,15 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const update = client.update({
     pickId: omit(["Arn", "Targets"]),
-    filterParams: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      omit(["Tags"]),
-    ]),
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        omit(["Tags"]),
+        defaultsDeep(pickId(live)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     method: "putRule",
     getById,
     config,

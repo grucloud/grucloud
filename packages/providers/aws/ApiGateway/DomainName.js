@@ -60,7 +60,6 @@ exports.DomainName = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateDomainName",
-    //TODO filterParams
     getById,
     config,
   });

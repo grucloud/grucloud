@@ -246,11 +246,14 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       ]),
     pickId,
     method: "createPolicyVersion",
-    filterParams: pipe([
-      pick(["PolicyArn", "PolicyDocument"]),
-      filterPayload,
-      defaultsDeep({ SetAsDefault: true }),
-    ]),
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        pick(["PolicyDocument"]),
+        filterPayload,
+        defaultsDeep({ SetAsDefault: true }),
+        defaultsDeep(pickId(live)),
+      ])(),
     getById,
     config,
   });

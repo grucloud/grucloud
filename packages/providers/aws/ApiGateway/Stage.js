@@ -88,7 +88,6 @@ exports.Stage = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateStage",
-    //TODO filterParams
     getById,
     config,
   });

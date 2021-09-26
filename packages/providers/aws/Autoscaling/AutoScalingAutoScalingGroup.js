@@ -163,7 +163,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
   const update = client.update({
     pickId,
-    filterParams: omit(["TargetGroupARNs", "Tags"]),
     method: "updateAutoScalingGroup",
     getById,
     config,

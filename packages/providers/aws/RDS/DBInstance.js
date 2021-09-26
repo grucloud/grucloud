@@ -66,10 +66,7 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
-    filterParams: pipe([
-      assign({ ApplyImmediately: () => true }),
-      omit(["Engine", "Tags"]),
-    ]),
+    extraParam: { ApplyImmediately: true },
     getById,
     config: { ...config, retryDelay: 10e3, retryCount: 200 },
   });

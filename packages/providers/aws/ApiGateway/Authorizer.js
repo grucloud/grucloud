@@ -84,7 +84,6 @@ exports.Authorizer = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateAuthorizer",
-    //TODO filterParams
     getById,
     config,
   });

@@ -81,7 +81,6 @@ exports.Model = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateModel",
-    //TODO filterParams
     getById,
     config,
   });

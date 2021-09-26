@@ -114,7 +114,6 @@ exports.Resource = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateResource",
-    //TODO filterParams
     getById,
     config,
   });

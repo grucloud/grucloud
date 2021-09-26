@@ -124,7 +124,6 @@ exports.SQSQueue = ({ spec, config }) => {
     ),
   ]);
 
-  //Retry on AWS.SimpleQueueService.QueueDeletedRecently
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   const create = client.create({
     pickCreated: () => pickId,
@@ -156,19 +155,20 @@ exports.SQSQueue = ({ spec, config }) => {
         ])(),
     ]),
     config: { retryDelay: 65e3, retryCount: 2 },
-    configIsUp: { repeatCount: 5, repeatDelay: 2e3 },
+    configIsUp: { repeatCount: 6, repeatDelay: 2e3 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property
   const update = client.update({
     pickId,
-    filterParams: (params) =>
+    filterParams: ({ payload, live }) =>
       pipe([
-        () => params,
+        () => payload,
         when(
           get("Attributes.Policy"),
-          set("Attributes.Policy", JSON.stringify(params.Attributes.Policy))
+          set("Attributes.Policy", JSON.stringify(payload.Attributes.Policy))
         ),
+        defaultsDeep(pickId(live)),
         tap((params) => {
           assert(true);
         }),

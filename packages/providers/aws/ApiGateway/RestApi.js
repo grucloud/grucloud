@@ -41,7 +41,6 @@ exports.RestApi = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateRestApi",
-    //TODO filterParams
     getById,
     config,
   });

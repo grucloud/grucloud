@@ -122,10 +122,11 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
   const update = client.update({
     pickId: pick(["name", "autoScalingGroupProvider"]),
-    filterParams: omit([
-      "autoScalingGroupProvider.autoScalingGroupArn",
-      "tags",
-    ]),
+    filterParams: ({ payload, diff }) =>
+      pipe([
+        () => payload,
+        omit(["autoScalingGroupProvider.autoScalingGroupArn", "tags"]),
+      ])(),
     method: "updateCapacityProvider",
     config,
     getById,

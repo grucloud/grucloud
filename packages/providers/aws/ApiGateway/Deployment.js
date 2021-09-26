@@ -106,7 +106,6 @@ exports.Deployment = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateDeployment",
-    //TODO filterParams
     getById,
     config,
   });

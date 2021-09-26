@@ -118,7 +118,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "updateEventSourceMapping",
-    //TODO filterParams
     getById,
     config,
   });
