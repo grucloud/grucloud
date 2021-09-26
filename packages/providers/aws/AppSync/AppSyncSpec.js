@@ -38,7 +38,7 @@ module.exports = () =>
     },
     {
       type: "DataSource",
-      dependsOn: ["AppSync::GraphqlApi"],
+      dependsOn: ["AppSync::GraphqlApi", "DynamoDB::Table"],
       Client: AppSyncDataSource,
       isOurMinion,
       compare: compare({
@@ -59,9 +59,6 @@ module.exports = () =>
           }),
         ]),
         filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
           omit(["arn", "name", "tags"]),
           omitIfEmpty(["description"]),
         ]),
@@ -69,13 +66,17 @@ module.exports = () =>
     },
     {
       type: "Resolver",
-      dependsOn: ["AppSync::GraphqlApi", "AppSync::Type", "DynamoDB::Table"],
+      dependsOn: [
+        "AppSync::GraphqlApi",
+        "AppSync::Type",
+        "AppSync::DataSource",
+      ],
       Client: AppSyncResolver,
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["tags"])]),
         filterLive: pipe([
-          omit(["apiId", "arn", "tags"]),
+          omit(["arn", "resolverArn", "tags"]),
           omitIfEmpty(["description"]),
         ]),
       }),

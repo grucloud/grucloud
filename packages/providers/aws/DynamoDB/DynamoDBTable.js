@@ -1,21 +1,7 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-  assign,
-} = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, eq, not, pick, assign } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "DynamoDBTable" });
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -25,7 +11,7 @@ const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
-const pickParam = pick(["TableName"]);
+const pickId = pick(["TableName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
 exports.DynamoDBTable = ({ spec, config }) => {
@@ -52,19 +38,21 @@ exports.DynamoDBTable = ({ spec, config }) => {
       config.region
     }:${config.accountId()}:table/${TableName}`;
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
-  const getByName = ({ name: TableName }) =>
-    tryCatch(
+  const getById = client.getById({
+    pickId,
+    method: "describeTable",
+    getField: "Table",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+    decorate: () =>
       pipe([
-        tap(() => {
-          assert(TableName);
+        tap((params) => {
+          assert(params);
         }),
-        () => ({ TableName }),
-        dynamoDB().describeTable,
-        get("Table"),
         assign({
           Tags: pipe([
-            () => ({ ResourceArn: tableArn({ TableName, config }) }),
+            ({ TableName }) => ({
+              ResourceArn: tableArn({ TableName, config }),
+            }),
             tap((params) => {
               assert(true);
             }),
@@ -73,78 +61,44 @@ exports.DynamoDBTable = ({ spec, config }) => {
           ]),
         }),
       ]),
-      pipe([
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => undefined,
-          (error) => {
-            throw error;
-          },
-        ]),
-      ])
-    )();
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
+  const getByName = ({ name }) => getById({ TableName: name });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#listTables-property
-  const getList = () =>
-    pipe([
-      () => ({}),
-      dynamoDB().listTables,
-      get("TableNames"),
-      map((name) => getByName({ name })),
-    ])();
-
-  const isInstanceUp = eq(get("TableStatus"), "ACTIVE");
-
-  const isUpByName = pipe([getByName, isInstanceUp]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getList = client.getList({
+    method: "listTables",
+    getParam: "TableNames",
+    decorate: () => (TableName) => getById({ TableName }),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#createTable-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      dynamoDB().createTable,
-      tap(() =>
-        retryCall({
-          name: `createDynamoDBTable isUpByName: ${name}`,
-          fn: () => isUpByName({ name }),
-        })
-      ),
-    ])();
+  const create = client.create({
+    method: "createTable",
+    getById,
+    pickId,
+    isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
+    config,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#updateTable-property
+  const update = client.update({
+    pickId,
+    method: "updateTable",
+    config,
+    getById,
+    isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#deleteTable-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.TableName);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(
-        pipe([
-          dynamoDB().deleteTable,
-          () =>
-            retryCall({
-              name: `deleteTable isDownByName: ${live.TableName}`,
-              fn: () => isDownByName({ name: live.TableName }),
-              config,
-            }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(`error deleteTable ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              eq(get("code"), "ResourceNotFoundException"),
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteTable",
+    getById,
+    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -168,6 +122,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

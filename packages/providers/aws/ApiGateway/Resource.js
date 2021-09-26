@@ -104,9 +104,9 @@ exports.Resource = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createResource-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createResource",
     getById,
+    pickId,
     config,
   });
 

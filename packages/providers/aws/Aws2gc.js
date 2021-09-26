@@ -903,10 +903,17 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Resolver",
         filterLive: () =>
-          pick(["requestMappingTemplate", "responseMappingTemplate", "kind"]),
+          pick([
+            "typeName",
+            "fieldName",
+            "requestMappingTemplate",
+            "responseMappingTemplate",
+            "kind",
+          ]),
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
           type: { type: "Type", group: "AppSync" },
+          dataSource: { type: "DataSource", group: "AppSync" },
           dynamoDbTable: { type: "Table", group: "DynamoDB" },
         }),
       },

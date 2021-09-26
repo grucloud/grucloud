@@ -31,9 +31,11 @@ exports.RestApi = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createRestApi-property
   const create = client.create({
-    pickCreated: (payload) => (result) => pipe([() => result])(),
+    //TODO identity ?
+    pickCreated: () => (result) => pipe([() => result])(),
     method: "createRestApi",
     getById,
+    pickId,
     config,
   });
 

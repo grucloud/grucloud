@@ -176,7 +176,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       filterPayload = identity,
       config,
       configIsUp,
-      pickCreated,
+      pickCreated = ({ payload, pickId }) => pipe([() => payload, pickId]),
+      pickId,
       getById,
       isInstanceUp = not(isEmpty),
       shouldRetryOnException = () => false,
@@ -188,6 +189,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.debug(`create ${type}, ${name}`);
           assert(method);
           assert(pickCreated);
+          assert(pickId);
           assert(getById);
         }),
         () =>
@@ -209,7 +211,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             config,
             shouldRetryOnException,
           }),
-        pickCreated(payload),
+        pickCreated({ pickId, payload, name }),
         tap((params) => {
           assert(isObject(params));
           logger.debug(`create isUpById: ${name}, ${JSON.stringify(params)}`);
@@ -242,6 +244,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           defaultsDeep(pickId(live)),
         ])(),
       getById,
+      isInstanceUp = identity,
     }) =>
     ({ name, payload, diff, live, compare }) =>
       pipe([
@@ -284,19 +287,24 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   tap((params) => {
                     assert(true);
                   }),
-                  (live) => compare({ live, target: payload }),
-                  tap((diff) => {
-                    logger.debug(
-                      `updating ${type}, ${name}, diff: ${JSON.stringify(
-                        diff,
-                        null,
-                        4
-                      )}`
-                    );
-                  }),
                   and([
-                    pipe([get("liveDiff"), isEmpty]),
-                    pipe([get("targetDiff"), isEmpty]),
+                    isInstanceUp,
+                    pipe([
+                      (live) => compare({ live, target: payload }),
+                      tap((diff) => {
+                        logger.debug(
+                          `updating ${type}, ${name}, diff: ${JSON.stringify(
+                            diff,
+                            null,
+                            4
+                          )}`
+                        );
+                      }),
+                      and([
+                        pipe([get("liveDiff"), isEmpty]),
+                        pipe([get("targetDiff"), isEmpty]),
+                      ]),
+                    ]),
                   ]),
                 ]),
                 config,

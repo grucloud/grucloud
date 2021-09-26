@@ -44,7 +44,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "GraphqlApi",
       group: "AppSync",
@@ -52,7 +52,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     },
     {
       type: "Role",
-      group: "AppSync",
+      group: "IAM",
       ids: [live.serviceRoleArn],
     },
     {
@@ -71,8 +71,21 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     },
     {
       type: "Table",
-      group: "dynamodb",
-      ids: [get("dynamodbConfig.tableName")(live)],
+      group: "DynamoDB",
+      ids: [
+        pipe([
+          () => live,
+          get("dynamodbConfig.tableName"),
+          (name) =>
+            lives.getByName({
+              name,
+              type: "Table",
+              group: "DynamoDB",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
     },
   ];
 
@@ -210,16 +223,18 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { graphqlApi },
+    dependencies: { graphqlApi, serviceRole },
   }) =>
     pipe([
       tap(() => {
         assert(graphqlApi, "missing 'graphqlApi' dependency");
+        assert(serviceRole, "missing 'serviceRole' dependency");
       }),
       () => properties,
       defaultsDeep({
         name,
         apiId: getField(graphqlApi, "apiId"),
+        serviceRoleArn: getField(serviceRole, "Arn"),
       }),
     ])();
 

@@ -71,9 +71,9 @@ exports.Model = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createModel-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createModel",
     getById,
+    pickId,
     config,
   });
 

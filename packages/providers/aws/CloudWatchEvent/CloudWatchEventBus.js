@@ -60,8 +60,8 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#createEventBus-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createEventBus",
+    pickId,
     getById,
     config,
   });

@@ -154,8 +154,8 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createAutoScalingGroup",
+    pickId,
     getById,
     config,
   });

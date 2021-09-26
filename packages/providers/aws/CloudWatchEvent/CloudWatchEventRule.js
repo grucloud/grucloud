@@ -103,8 +103,8 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "putRule",
+    pickId,
     getById,
     config,
   });

@@ -46,7 +46,7 @@
       "port": 9229
     },
     {
-      "name": "List -g",
+      "name": "List",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",

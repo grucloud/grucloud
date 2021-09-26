@@ -68,8 +68,8 @@ exports.SSMParameter = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#putParameter-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "putParameter",
+    pickId,
     getById,
     config,
   });

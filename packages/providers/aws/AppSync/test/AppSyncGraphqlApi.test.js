@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { AppSyncGraphqlApi } = require("../AppSyncGraphqlApi");
+const { pipe, tap } = require("rubico");
 
-describe("AppSynGraphqlApi", async function () {
+describe.only("AppSynGraphqlApi", async function () {
   let config;
   let provider;
   let graphqlApi;
@@ -19,12 +18,23 @@ describe("AppSynGraphqlApi", async function () {
     graphqlApi = provider.getClient({ groupType: "AppSync::GraphqlApi" });
     await provider.start();
   });
+
+  it("getList", pipe([() => graphqlApi.getList({})]));
   it(
     "delete with invalid id",
     pipe([
       () =>
         graphqlApi.destroy({
           live: { apiId: "12345" },
+        }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        graphqlApi.getById({
+          apiId: "12345",
         }),
     ])
   );

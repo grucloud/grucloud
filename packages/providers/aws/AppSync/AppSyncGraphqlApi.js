@@ -22,6 +22,7 @@ const { AwsClient } = require("../AwsClient");
 const findName = get("live.name");
 const findId = get("live.apiId");
 const pickParam = pick(["apiId"]);
+const pickId = pick(["apiId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
@@ -37,9 +38,17 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     () => "",
   ]);
 
+  const getById = client.getById({
+    pickId,
+    method: "getGraphqlApi",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listGraphqlApis-property
-  const getList = () =>
-    pipe([() => ({}), appSync().listGraphqlApis, get("graphqlApis")])();
+  const getList = client.getList({
+    method: "listGraphqlApis",
+    getParam: "graphqlApis",
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -124,6 +133,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     findNamespace,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,

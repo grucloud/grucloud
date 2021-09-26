@@ -91,8 +91,8 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#createLogGroup-property
   const create = client.create({
     filterPayload: omit(["retentionInDays"]),
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createLogGroup",
+    pickId,
     getById,
     config,
     postCreate: pipe([get("payload"), putRetentionPolicy]),

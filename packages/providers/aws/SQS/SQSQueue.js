@@ -132,6 +132,7 @@ exports.SQSQueue = ({ spec, config }) => {
       get("error.code"),
       "AWS.SimpleQueueService.QueueDeletedRecently"
     ),
+    pickId,
     getById,
     isInstanceUp: pipe([
       tap((params) => {

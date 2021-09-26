@@ -55,6 +55,7 @@ exports.DBInstance = ({ spec, config }) => {
   const create = client.create({
     pickCreated: () => pick(["DBInstance"]),
     method: "createDBInstance",
+    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },

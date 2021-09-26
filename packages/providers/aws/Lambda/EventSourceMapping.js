@@ -108,8 +108,9 @@ exports.EventSourceMapping = ({ spec, config }) => {
   //TODO isInstanceUp
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createEventSourceMapping-property
   const create = client.create({
-    pickCreated: (payload) => pickId,
+    pickCreated: () => pickId,
     method: "createEventSourceMapping",
+    pickId,
     getById,
     config,
   });

@@ -50,9 +50,9 @@ exports.DomainName = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createDomainName-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createDomainName",
     getById,
+    pickId,
     config,
   });
 

@@ -27,8 +27,9 @@ const findName = pipe([
 ]);
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
+  tap(({ apiId, name }) => {
+    assert(apiId);
+    assert(name);
   }),
   ({ apiId, name }) => ({ apiId, typeName: name }),
 ]);
@@ -104,7 +105,7 @@ exports.AppSyncType = ({ spec, config }) => {
     pickId,
     extraParams: { format: "JSON" },
     method: "getType",
-    getField: "resolver",
+    getField: "type",
     ignoreErrorCodes: ["NotFoundException"],
   });
 
@@ -113,8 +114,17 @@ exports.AppSyncType = ({ spec, config }) => {
     filterPayload: assign({
       definition: pipe([get("definition"), JSON.stringify]),
     }),
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
+    pickCreated:
+      ({ payload, name }) =>
+      (result) =>
+        pipe([
+          tap(() => {
+            assert(result);
+          }),
+          () => ({ apiId: payload.apiId, name: result.type.name }),
+        ])(),
     method: "createType",
+    pickId,
     getById,
     config,
   });

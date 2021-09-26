@@ -59,15 +59,15 @@ exports.AppSyncResolver = ({ spec, config }) => {
       ids: [live.typeName],
     },
     {
-      type: "Table",
-      group: "DynamoDB",
+      type: "DataSource",
+      group: "AppSync",
       ids: [
         pipe([
           () =>
             lives.getByName({
               name: live.dataSourceName,
-              type: "Table",
-              group: "DynamoDB",
+              type: "DataSource",
+              group: "AppSync",
               providerName: config.providerName,
             }),
           tap((params) => {
@@ -147,9 +147,9 @@ exports.AppSyncResolver = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createResolver-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createResolver",
     getById,
+    pickId,
     config,
   });
 
@@ -165,19 +165,20 @@ exports.AppSyncResolver = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { fieldName, ...otherProps },
-    dependencies: { graphqlApi, type },
+    properties: { ...otherProps },
+    dependencies: { graphqlApi, dataSource },
   }) =>
     pipe([
       tap(() => {
         assert(graphqlApi, "missing 'graphqlApi' dependency");
-        assert(type, "missing type");
+        assert(dataSource, "missing 'dataSource' dependency");
       }),
       () => otherProps,
       defaultsDeep({
         apiId: getField(graphqlApi, "apiId"),
-        fieldName,
-        typeName: getField(type, "name"),
+        ...(dataSource && {
+          dataSourceName: getField(dataSource, "name"),
+        }),
       }),
     ])();
 
