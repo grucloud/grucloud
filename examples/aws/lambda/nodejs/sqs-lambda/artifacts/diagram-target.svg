@@ -42,12 +42,12 @@
 <path fill="none" stroke="#707070" d="M659.27,-176C667.57,-176 676.24,-176 684.84,-176"/>
 <polygon fill="#707070" stroke="#707070" points="684.89,-179.5 694.89,-176 684.89,-172.5 684.89,-179.5"/>
 </g>
-<!-- Queue::my&#45;queue -->
+<!-- Queue::my&#45;queue&#45;lambda -->
 <g id="node3" class="node">
-<title>Queue::my&#45;queue</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="481,-129 384,-129 384,-71 481,-71 481,-129"/>
-<text text-anchor="start" x="396.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Queue</text>
-<text text-anchor="start" x="396.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;queue</text>
+<title>Queue::my&#45;queue&#45;lambda</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="510,-129 355,-129 355,-71 510,-71 510,-129"/>
+<text text-anchor="start" x="367.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Queue</text>
+<text text-anchor="start" x="367.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;queue&#45;lambda</text>
 </g>
 <!-- Function::lambda&#45;hello&#45;world -->
 <g id="node4" class="node">
@@ -62,22 +62,22 @@
 <path fill="none" stroke="#707070" d="M513.29,-176C521.83,-176 530.45,-176 538.78,-176"/>
 <polygon fill="#707070" stroke="#707070" points="538.78,-179.5 548.78,-176 538.78,-172.5 538.78,-179.5"/>
 </g>
-<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue -->
+<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda -->
 <g id="node5" class="node">
-<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue</title>
+<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="316,-167 24,-167 24,-109 316,-109 316,-167"/>
 <text text-anchor="start" x="36" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventSourceMapping</text>
 <text text-anchor="start" x="36" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;qu...</text>
 </g>
-<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Queue::my&#45;queue -->
+<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Queue::my&#45;queue&#45;lambda -->
 <g id="edge4" class="edge">
-<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Queue::my&#45;queue</title>
-<path fill="none" stroke="#707070" d="M316.1,-116.83C336.51,-113.86 356.43,-110.95 373.82,-108.41"/>
-<polygon fill="#707070" stroke="#707070" points="374.35,-111.87 383.74,-106.97 373.34,-104.95 374.35,-111.87"/>
+<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Queue::my&#45;queue&#45;lambda</title>
+<path fill="none" stroke="#707070" d="M316.1,-116.83C325.88,-115.41 335.55,-114 344.88,-112.64"/>
+<polygon fill="#707070" stroke="#707070" points="345.47,-116.09 354.86,-111.18 344.46,-109.16 345.47,-116.09"/>
 </g>
-<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Function::lambda&#45;hello&#45;world -->
+<!-- EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Function::lambda&#45;hello&#45;world -->
 <g id="edge3" class="edge">
-<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Function::lambda&#45;hello&#45;world</title>
+<title>EventSourceMapping::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Function::lambda&#45;hello&#45;world</title>
 <path fill="none" stroke="#707070" d="M316.1,-159.17C324.82,-160.44 333.46,-161.7 341.84,-162.92"/>
 <polygon fill="#707070" stroke="#707070" points="341.53,-166.41 351.93,-164.39 342.54,-159.49 341.53,-166.41"/>
 </g>

@@ -42,9 +42,9 @@
 <path fill="none" stroke="#707070" d="M662.27,-100C670.57,-100 679.24,-100 687.84,-100"/>
 <polygon fill="#707070" stroke="#707070" points="687.89,-103.5 697.89,-100 687.89,-96.5 687.89,-103.5"/>
 </g>
-<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue -->
+<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda -->
 <g id="node3" class="node">
-<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue</title>
+<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="316,-167 24,-167 24,-109 316,-109 316,-167"/>
 <text text-anchor="start" x="36" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::EventSourceMapping</text>
 <text text-anchor="start" x="36" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;qu...</text>
@@ -56,24 +56,24 @@
 <text text-anchor="start" x="364" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="364" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">lambda&#45;hello&#45;world</text>
 </g>
-<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Function::::lambda&#45;hello&#45;world -->
+<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Function::::lambda&#45;hello&#45;world -->
 <g id="edge2" class="edge">
-<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Function::::lambda&#45;hello&#45;world</title>
+<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Function::::lambda&#45;hello&#45;world</title>
 <path fill="none" stroke="#707070" d="M316.18,-116.94C324.82,-115.69 333.38,-114.45 341.71,-113.24"/>
 <polygon fill="#707070" stroke="#707070" points="342.34,-116.69 351.74,-111.79 341.34,-109.76 342.34,-116.69"/>
 </g>
-<!-- Queue::::my&#45;queue -->
+<!-- Queue::::my&#45;queue&#45;lambda -->
 <g id="node5" class="node">
-<title>Queue::::my&#45;queue</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="493.5,-205 374.5,-205 374.5,-147 493.5,-147 493.5,-205"/>
-<text text-anchor="start" x="387" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SQS::Queue</text>
-<text text-anchor="start" x="387" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;queue</text>
+<title>Queue::::my&#45;queue&#45;lambda</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="511.5,-205 356.5,-205 356.5,-147 511.5,-147 511.5,-205"/>
+<text text-anchor="start" x="369" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SQS::Queue</text>
+<text text-anchor="start" x="369" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;queue&#45;lambda</text>
 </g>
-<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Queue::::my&#45;queue -->
+<!-- EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Queue::::my&#45;queue&#45;lambda -->
 <g id="edge3" class="edge">
-<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;&gt;Queue::::my&#45;queue</title>
-<path fill="none" stroke="#707070" d="M316.18,-159.06C332.87,-161.48 349.25,-163.85 364.22,-166.02"/>
-<polygon fill="#707070" stroke="#707070" points="363.94,-169.52 374.34,-167.49 364.95,-162.59 363.94,-169.52"/>
+<title>EventSourceMapping::::mapping&#45;lambda&#45;hello&#45;world&#45;my&#45;queue&#45;lambda&#45;&gt;Queue::::my&#45;queue&#45;lambda</title>
+<path fill="none" stroke="#707070" d="M316.18,-159.06C326.43,-160.54 336.56,-162.01 346.33,-163.43"/>
+<polygon fill="#707070" stroke="#707070" points="345.96,-166.91 356.35,-164.88 346.96,-159.98 345.96,-166.91"/>
 </g>
 <!-- Function::::lambda&#45;hello&#45;world&#45;&gt;Role::::lambda&#45;role -->
 <g id="edge4" class="edge">

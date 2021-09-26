@@ -20,6 +20,11 @@ module.exports = ({ stage }) => ({
                 Effect: "Allow",
                 Resource: "*",
               },
+              {
+                Action: ["sqs:*"],
+                Effect: "Allow",
+                Resource: "*",
+              },
             ],
           },
           Path: "/",

@@ -4,9 +4,6 @@ module.exports = ({ stage }) => ({
     LogGroup: {
       myLoggroup: {
         name: "my-loggroup",
-        properties: {
-          retentionInDays: 1,
-        },
       },
     },
   },

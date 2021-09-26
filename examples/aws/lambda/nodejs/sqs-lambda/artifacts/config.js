@@ -51,8 +51,8 @@ module.exports = ({ stage }) => ({
   },
   SQS: {
     Queue: {
-      myQueue: {
-        name: "my-queue",
+      myQueueLambda: {
+        name: "my-queue-lambda",
         properties: {
           Attributes: {
             VisibilityTimeout: "30",
@@ -84,8 +84,8 @@ module.exports = ({ stage }) => ({
       },
     },
     EventSourceMapping: {
-      mappingLambdaHelloWorldMyQueue: {
-        name: "mapping-lambda-hello-world-my-queue",
+      mappingLambdaHelloWorldMyQueueLambda: {
+        name: "mapping-lambda-hello-world-my-queue-lambda",
         properties: {
           BatchSize: 10,
           MaximumBatchingWindowInSeconds: 0,

@@ -16,7 +16,7 @@ const createResources = async ({ provider }) => {
   });
 
   const sqsQueue = provider.SQS.makeQueue({
-    name: "my-queue",
+    name: "my-queue-lambda",
     properties: () => ({
       Attributes: {
         VisibilityTimeout: "30",
@@ -42,7 +42,7 @@ const createResources = async ({ provider }) => {
   });
 
   provider.Lambda.makeEventSourceMapping({
-    name: "mapping-lambda-hello-world-my-queue",
+    name: "mapping-lambda-hello-world-my-queue-lambda",
     dependencies: { lambdaFunction, sqsQueue },
     properties: () => ({}),
   });

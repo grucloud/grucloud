@@ -17,8 +17,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.SQS.makeQueue({
-    name: get("config.SQS.Queue.myQueue.name"),
-    properties: get("config.SQS.Queue.myQueue.properties"),
+    name: get("config.SQS.Queue.myQueueLambda.name"),
+    properties: get("config.SQS.Queue.myQueueLambda.properties"),
   });
 
   provider.Lambda.makeFunction({
@@ -31,14 +31,14 @@ const createResources = ({ provider }) => {
 
   provider.Lambda.makeEventSourceMapping({
     name: get(
-      "config.Lambda.EventSourceMapping.mappingLambdaHelloWorldMyQueue.name"
+      "config.Lambda.EventSourceMapping.mappingLambdaHelloWorldMyQueueLambda.name"
     ),
     properties: get(
-      "config.Lambda.EventSourceMapping.mappingLambdaHelloWorldMyQueue.properties"
+      "config.Lambda.EventSourceMapping.mappingLambdaHelloWorldMyQueueLambda.properties"
     ),
     dependencies: ({ resources }) => ({
       lambdaFunction: resources.Lambda.Function.lambdaHelloWorld,
-      sqsQueue: resources.SQS.Queue.myQueue,
+      sqsQueue: resources.SQS.Queue.myQueueLambda,
     }),
   });
 };
