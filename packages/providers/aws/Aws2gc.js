@@ -34,7 +34,7 @@ const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const { omitIfEmpty, removeOurTagObject } = require("@grucloud/core/Common");
+const { omitIfEmpty, removeOurTags } = require("@grucloud/core/Common");
 
 const {
   generatorMain,
@@ -884,7 +884,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "GraphqlApi",
         filterLive: () =>
-          pick(["authenticationType", "xrayEnabled", "wafWebAclArn"]),
+          pick(["authenticationType", "xrayEnabled", "wafWebAclArn", "schema"]),
       },
       {
         type: "ApiKey",
@@ -893,13 +893,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
         }),
       },
-      {
-        type: "Type",
-        filterLive: () => pick(["description", "definition", "format"]),
-        dependencies: () => ({
-          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
-        }),
-      },
+      // {
+      //   type: "Type",
+      //   filterLive: () => pick(["description", "definition", "format"]),
+      //   dependencies: () => ({
+      //     graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+      //   }),
+      // },
       {
         type: "Resolver",
         filterLive: () =>
@@ -920,23 +920,31 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "DataSource",
         filterLive: () =>
-          pick([
-            "description",
-            "type",
-            "dynamodbConfig",
-            "elasticsearchConfig",
-            "httpConfig",
-            "lambdaConfig",
-            "relationalDatabaseConfig",
+          pipe([
+            pick([
+              "description",
+              "type",
+              "dynamodbConfig",
+              "elasticsearchConfig",
+              "httpConfig",
+              "relationalDatabaseConfig",
+            ]),
+            //TODO omit elasticsearchConfig.xxx ?
+            omit([
+              "httpConfig.endpoint",
+              "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier",
+              "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
+              "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
+            ]),
           ]),
         dependencies: () => ({
           serviceRole: { type: "Role", group: "IAM" },
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
           dbCluster: { type: "DBCluster", group: "RDS" },
-          function: { type: "Function", group: "Lambda" },
+          lambdaFunction: { type: "Function", group: "Lambda" },
           //TODO
-          //elasticsearch
-          //dynamodbTable: { type: "Table", group: "dynamodb" },
+          //elasticsearch => opensearch
+          dynamoDbTable: { type: "Table", group: "DynamoDB" },
         }),
       },
     ],
@@ -1581,13 +1589,16 @@ const filterModel = pipe([
     assign({
       live: pipe([
         get("live"),
-        removeOurTagObject,
+        removeOurTags,
         //TODO create removeOurTagArray
         when(
           get("Tags"),
           assign({
             Tags: pipe([
               get("Tags"),
+              tap((params) => {
+                assert(true);
+              }),
               filter(
                 and([
                   pipe([

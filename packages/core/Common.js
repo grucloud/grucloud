@@ -336,25 +336,37 @@ exports.isOurMinionObject = ({ tags, config }) => {
   ])();
 };
 
-const removeOurTagObject = pipe([
-  assign({
-    tags: pipe([
-      get("tags"),
-      unless(
-        or([isEmpty, Array.isArray]),
-        pipe([
-          map.entries(([key, value]) => [
-            key,
-            key.startsWith("gc-") || key == "Name" ? undefined : value,
-          ]),
-          filter(not(isEmpty)),
-        ])
-      ),
-    ]),
-  }),
-  omitIfEmpty(["tags"]),
+const removeOurTagObject = ({ tags = "tags" }) =>
+  pipe([
+    assign({
+      [tags]: pipe([
+        get(tags),
+        unless(
+          or([isEmpty, Array.isArray]),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            map.entries(([key, value]) => [
+              key,
+              key.startsWith("gc-") || key.startsWith("aws:") || key == "Name"
+                ? undefined
+                : value,
+            ]),
+            filter(not(isEmpty)),
+          ])
+        ),
+      ]),
+    }),
+    omitIfEmpty([tags]),
+  ]);
+
+const removeOurTags = pipe([
+  removeOurTagObject({ tags: "tags" }),
+  removeOurTagObject({ tags: "Tags" }),
 ]);
-exports.removeOurTagObject = removeOurTagObject;
+
+exports.removeOurTags = removeOurTags;
 
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = identity;
@@ -369,13 +381,8 @@ exports.compare = ({
       assert(true);
     }),
     assign({
-      target: pipe([
-        get("target", {}),
-        removeOurTagObject,
-        filterTarget,
-        filterAll,
-      ]),
-      live: pipe([get("live"), removeOurTagObject, filterLive, filterAll]),
+      target: pipe([get("target", {}), removeOurTags, filterTarget, filterAll]),
+      live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
     }),
     tap((params) => {
       assert(true);

@@ -3,243 +3,128 @@ const { get } = require("rubico");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makePolicy({
-    name: get("config.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name"),
-    properties: get(
-      "config.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties"
+  provider.IAM.makeRole({
+    name: get(
+      "config.IAM.Role.appsyncCdkAppStackApilambdaDatasourceServiceRole2Spl5Onobew5M.name"
     ),
-  });
-
-  provider.IAM.makePolicy({
-    name: get("config.IAM.Policy.appsyncDsDdbM66htuMyModelTypeTable.name"),
     properties: get(
-      "config.IAM.Policy.appsyncDsDdbM66htuMyModelTypeTable.properties"
+      "config.IAM.Role.appsyncCdkAppStackApilambdaDatasourceServiceRole2Spl5Onobew5M.properties"
     ),
   });
 
   provider.IAM.makeRole({
-    name: get("config.IAM.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.name"),
+    name: get(
+      "config.IAM.Role.appsyncCdkAppStackAppSyncNotesHandlerServiceRole3Ut2Snth19J61.name"
+    ),
     properties: get(
-      "config.IAM.Role.appsyncDsDdbKq4ygeMyModelTypeDemoTable.properties"
+      "config.IAM.Role.appsyncCdkAppStackAppSyncNotesHandlerServiceRole3Ut2Snth19J61.properties"
     ),
     dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy.appsyncDsDdbKq4ygeMyModelTypeDemoTable],
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: get("config.IAM.Role.appsyncDsDdbM66htuMyModelTypeTable.name"),
-    properties: get(
-      "config.IAM.Role.appsyncDsDdbM66htuMyModelTypeTable.properties"
-    ),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy.appsyncDsDdbM66htuMyModelTypeTable],
+      policies: [
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      ],
     }),
   });
 
   provider.DynamoDB.makeTable({
-    name: get("config.DynamoDB.Table.myModelTypeTable.name"),
-    properties: get("config.DynamoDB.Table.myModelTypeTable.properties"),
+    name: get(
+      "config.DynamoDB.Table.appsyncCdkAppStackCdkNotesTable254A7Fd1_1Ju7Cih9Eiq5K.name"
+    ),
+    properties: get(
+      "config.DynamoDB.Table.appsyncCdkAppStackCdkNotesTable254A7Fd1_1Ju7Cih9Eiq5K.properties"
+    ),
+  });
+
+  provider.DynamoDB.makeTable({
+    name: get(
+      "config.DynamoDB.Table.appsyncCdkAppStackCdkNotesTable254A7Fd1C0My46Ehk3Ac.name"
+    ),
+    properties: get(
+      "config.DynamoDB.Table.appsyncCdkAppStackCdkNotesTable254A7Fd1C0My46Ehk3Ac.properties"
+    ),
   });
 
   provider.AppSync.makeGraphqlApi({
-    name: get("config.AppSync.GraphqlApi.myAppSyncApp.name"),
-    properties: get("config.AppSync.GraphqlApi.myAppSyncApp.properties"),
+    name: get("config.AppSync.GraphqlApi.cdkNotesAppsyncApi.name"),
+    properties: get("config.AppSync.GraphqlApi.cdkNotesAppsyncApi.properties"),
   });
 
   provider.AppSync.makeApiKey({
-    name: get("config.AppSync.ApiKey.da2Kyhuzrhyvbcadm6geay6gk7eqm.name"),
+    name: get("config.AppSync.ApiKey.da2Ouijmdxdircnfjbxgbxwtboyfy.name"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeApiKey({
-    name: get("config.AppSync.ApiKey.da2Wbuvlxl5cfapbifytstbzthsxy.name"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.createMyModelTypeInput.name"),
-    properties: get("config.AppSync.Type.createMyModelTypeInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.createPostInput.name"),
-    properties: get("config.AppSync.Type.createPostInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.deleteMyModelTypeInput.name"),
-    properties: get("config.AppSync.Type.deleteMyModelTypeInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.mutation.name"),
-    properties: get("config.AppSync.Type.mutation.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.myModelType.name"),
-    properties: get("config.AppSync.Type.myModelType.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.myModelTypeConnection.name"),
-    properties: get("config.AppSync.Type.myModelTypeConnection.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.query.name"),
-    properties: get("config.AppSync.Type.query.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.subscription.name"),
-    properties: get("config.AppSync.Type.subscription.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableBooleanFilterInput.name"),
-    properties: get("config.AppSync.Type.tableBooleanFilterInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableFloatFilterInput.name"),
-    properties: get("config.AppSync.Type.tableFloatFilterInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableIdFilterInput.name"),
-    properties: get("config.AppSync.Type.tableIdFilterInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableIntFilterInput.name"),
-    properties: get("config.AppSync.Type.tableIntFilterInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableMyModelTypeFilterInput.name"),
-    properties: get(
-      "config.AppSync.Type.tableMyModelTypeFilterInput.properties"
-    ),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.tableStringFilterInput.name"),
-    properties: get("config.AppSync.Type.tableStringFilterInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-    }),
-  });
-
-  provider.AppSync.makeType({
-    name: get("config.AppSync.Type.updateMyModelTypeInput.name"),
-    properties: get("config.AppSync.Type.updateMyModelTypeInput.properties"),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: get("config.AppSync.Resolver.mutationCreateMyModelType.name"),
-    properties: get(
-      "config.AppSync.Resolver.mutationCreateMyModelType.properties"
-    ),
+    name: get("config.AppSync.Resolver.mutationCreateNote.name"),
+    properties: get("config.AppSync.Resolver.mutationCreateNote.properties"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-      dataSource: resources.AppSync.DataSource.myModelTypeTable,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: get("config.AppSync.Resolver.mutationDeleteMyModelType.name"),
-    properties: get(
-      "config.AppSync.Resolver.mutationDeleteMyModelType.properties"
-    ),
+    name: get("config.AppSync.Resolver.mutationDeleteNote.name"),
+    properties: get("config.AppSync.Resolver.mutationDeleteNote.properties"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-      dataSource: resources.AppSync.DataSource.myModelTypeTable,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: get("config.AppSync.Resolver.mutationUpdateMyModelType.name"),
-    properties: get(
-      "config.AppSync.Resolver.mutationUpdateMyModelType.properties"
-    ),
+    name: get("config.AppSync.Resolver.mutationUpdateNote.name"),
+    properties: get("config.AppSync.Resolver.mutationUpdateNote.properties"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-      dataSource: resources.AppSync.DataSource.myModelTypeTable,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: get("config.AppSync.Resolver.queryGetMyModelType.name"),
-    properties: get("config.AppSync.Resolver.queryGetMyModelType.properties"),
+    name: get("config.AppSync.Resolver.queryGetNoteById.name"),
+    properties: get("config.AppSync.Resolver.queryGetNoteById.properties"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-      dataSource: resources.AppSync.DataSource.myModelTypeTable,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: get("config.AppSync.Resolver.queryListMyModelTypes.name"),
-    properties: get("config.AppSync.Resolver.queryListMyModelTypes.properties"),
+    name: get("config.AppSync.Resolver.queryListNotes.name"),
+    properties: get("config.AppSync.Resolver.queryListNotes.properties"),
     dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
-      dataSource: resources.AppSync.DataSource.myModelTypeTable,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
     }),
   });
 
   provider.AppSync.makeDataSource({
-    name: get("config.AppSync.DataSource.myModelTypeTable.name"),
-    properties: get("config.AppSync.DataSource.myModelTypeTable.properties"),
+    name: get("config.AppSync.DataSource.lambdaDatasource.name"),
+    properties: get("config.AppSync.DataSource.lambdaDatasource.properties"),
     dependencies: ({ resources }) => ({
-      serviceRole: resources.IAM.Role.appsyncDsDdbM66htuMyModelTypeTable,
-      graphqlApi: resources.AppSync.GraphqlApi.myAppSyncApp,
+      serviceRole:
+        resources.IAM.Role
+          .appsyncCdkAppStackApilambdaDatasourceServiceRole2Spl5Onobew5M,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      lambdaFunction:
+        resources.Lambda.Function
+          .appsyncCdkAppStackAppSyncNotesHandler4B870A76AaX1nitpx2Y4,
+    }),
+  });
+
+  provider.Lambda.makeFunction({
+    name: get(
+      "config.Lambda.Function.appsyncCdkAppStackAppSyncNotesHandler4B870A76AaX1nitpx2Y4.name"
+    ),
+    properties: get(
+      "config.Lambda.Function.appsyncCdkAppStackAppSyncNotesHandler4B870A76AaX1nitpx2Y4.properties"
+    ),
+    dependencies: ({ resources }) => ({
+      role: resources.IAM.Role
+        .appsyncCdkAppStackAppSyncNotesHandlerServiceRole3Ut2Snth19J61,
     }),
   });
 };
