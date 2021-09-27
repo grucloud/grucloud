@@ -59,6 +59,7 @@ exports.DBCluster = ({ spec, config }) => {
   const create = client.create({
     pickCreated: () => pick(["DBCluster"]),
     method: "createDBCluster",
+    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },

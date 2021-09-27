@@ -133,6 +133,9 @@ const buildProperties = ({
         ]),
       ]),
     }),
+    tap((params) => {
+      assert(true);
+    }),
     when(pipe([get("Tags"), isEmpty]), omit(["Tags"])),
     tap((params) => {
       assert(true);

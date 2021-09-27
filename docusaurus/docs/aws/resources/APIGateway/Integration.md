@@ -13,15 +13,31 @@ const restApi = provider.APIGateway.makeRestApi({
   properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
 });
 
-const integration = provider.APIGateway.makeIntegration({
-  name: "integration-lambda",
+const resourceGet = provider.APIGateway.makeResource({
+  name: "resource-get",
+  dependencies: { restApi },
+  properties: () => ({ pathPart: "/customers" }),
+});
+
+const methodGet = provider.APIGateway.makeMethod({
+  name: "method-get",
   dependencies: {
     restApi,
     resource: resourceGet,
-    lambdaFunction: lambdaFunction,
   },
   properties: () => ({
     httpMethod: "GET",
+    type: "AWS_PROXY",
+  }),
+});
+
+const integration = provider.APIGateway.makeIntegration({
+  name: "integration-lambda",
+  dependencies: {
+    method: methodGet,
+    lambdaFunction: lambdaFunction,
+  },
+  properties: () => ({
     type: "AWS_PROXY",
   }),
 });
@@ -35,6 +51,7 @@ const integration = provider.APIGateway.makeIntegration({
 
 - [RestAPI](./APIGatewayRestApi)
 - [Resource](./APIGatewayResource)
+- [Method](./APIGatewayMethod)
 - [Lambda Function](../Lambda/LambdaFunction)
 
 ## Full Examples

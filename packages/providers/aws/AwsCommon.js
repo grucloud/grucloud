@@ -61,6 +61,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               "UnknownEndpoint",
               "TooManyRequestsException",
               "OperationAborted",
+              "TimeoutError",
             ],
             includes(error.code),
             tap.if(identity, () => {
@@ -137,6 +138,7 @@ exports.shouldRetryOnException = ({ error, name }) =>
 exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
   pipe([
     () => error,
+    //TODO not for IamPolicy
     eq(get("code"), "DeleteConflict"),
     tap((retry) => {
       logger.debug(

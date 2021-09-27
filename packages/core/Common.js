@@ -6,15 +6,18 @@ const {
   omit,
   get,
   map,
-  switchCase,
+  filter,
   and,
   eq,
   pick,
   tryCatch,
   assign,
   reduce,
+  not,
+  or,
 } = require("rubico");
 const {
+  isObject,
   find,
   callProp,
   groupBy,
@@ -25,6 +28,8 @@ const {
   isString,
   when,
   identity,
+  unless,
+  isEmpty,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -331,6 +336,26 @@ exports.isOurMinionObject = ({ tags, config }) => {
   ])();
 };
 
+const removeOurTagObject = pipe([
+  assign({
+    tags: pipe([
+      get("tags"),
+      unless(
+        or([isEmpty, Array.isArray]),
+        pipe([
+          map.entries(([key, value]) => [
+            key,
+            key.startsWith("gc-") || key == "Name" ? undefined : value,
+          ]),
+          filter(not(isEmpty)),
+        ])
+      ),
+    ]),
+  }),
+  omitIfEmpty(["tags"]),
+]);
+exports.removeOurTagObject = removeOurTagObject;
+
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = identity;
 
@@ -344,8 +369,13 @@ exports.compare = ({
       assert(true);
     }),
     assign({
-      target: pipe([get("target", {}), filterTarget, filterAll]),
-      live: pipe([get("live"), filterLive, filterAll]),
+      target: pipe([
+        get("target", {}),
+        removeOurTagObject,
+        filterTarget,
+        filterAll,
+      ]),
+      live: pipe([get("live"), removeOurTagObject, filterLive, filterAll]),
     }),
     tap((params) => {
       assert(true);
@@ -353,16 +383,14 @@ exports.compare = ({
     ({ target, live }) => ({
       targetDiff: pipe([
         () => detailedDiff(target, live),
-        omit(["added"]),
-        omitIfEmpty(["deleted", "updated"]),
+        omitIfEmpty(["deleted", "updated", "added"]),
         tap((params) => {
           assert(true);
         }),
       ])(),
       liveDiff: pipe([
         () => detailedDiff(live, target),
-        omit(["deleted"]),
-        omitIfEmpty(["added", "updated"]),
+        omitIfEmpty(["added", "updated", "deleted"]),
         tap((params) => {
           assert(true);
         }),

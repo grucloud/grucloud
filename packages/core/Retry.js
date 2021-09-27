@@ -35,7 +35,7 @@ const retryCall = async ({
   } = {},
 }) => {
   logger.debug(
-    `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount} `
+    `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount}, repeatDelay ${repeatDelay}`
   );
   return of({})
     .pipe(

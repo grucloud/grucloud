@@ -15,6 +15,11 @@ module.exports = () =>
       type: "Repository",
       Client: EcrRepository,
       isOurMinion,
+      compare: compare({
+        filterLive: pipe([
+          omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
+        ]),
+      }),
     },
     {
       type: "Registry",

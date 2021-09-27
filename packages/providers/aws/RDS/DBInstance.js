@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, assign } = require("rubico");
+const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
 const { first, defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
@@ -55,9 +55,11 @@ exports.DBInstance = ({ spec, config }) => {
   const create = client.create({
     pickCreated: () => pick(["DBInstance"]),
     method: "createDBInstance",
+    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },
+    configIsUp: { ...config, retryCount: 500 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBInstance-property
@@ -65,9 +67,9 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
-    filterParams: assign({ ApplyImmediately: () => true }),
+    extraParam: { ApplyImmediately: true },
     getById,
-    config: { ...config, retryCount: 100 },
+    config: { ...config, retryDelay: 10e3, retryCount: 200 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBInstance-property

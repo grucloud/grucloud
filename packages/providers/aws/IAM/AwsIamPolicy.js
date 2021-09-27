@@ -7,26 +7,27 @@ const {
   tryCatch,
   get,
   filter,
-  switchCase,
   fork,
   eq,
   assign,
   pick,
   or,
+  not,
+  gte,
 } = require("rubico");
 const {
+  find,
   includes,
   defaultsDeep,
   size,
   isEmpty,
-  last,
   first,
+  last,
   keys,
   when,
 } = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
@@ -36,14 +37,15 @@ const {
   shouldRetryOnExceptionDelete,
   isOurMinion,
 } = require("../AwsCommon");
-const {
-  mapPoolSize,
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
+const pickId = pipe([
+  tap(({ Arn }) => {
+    assert(Arn, "Arn");
+  }),
+  ({ Arn }) => ({ PolicyArn: Arn }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {
@@ -93,8 +95,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             ...properties({ config }),
           }),
           assign({
-            PolicyDocument: ({ Arn }) =>
-              fetchPolicyDocument({ PolicyArn: Arn }),
+            PolicyDocument: pipe([
+              assign({ Versions: fetchPolicyVersion }),
+              ({ Arn, Versions }) =>
+                fetchPolicyDocument({ PolicyArn: Arn, Versions }),
+            ]),
           }),
         ])
       ),
@@ -104,17 +109,19 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const fetchPolicyDocument = ({ PolicyArn }) =>
+  const fetchPolicyVersion = pipe([
+    ({ Arn }) => iam().listPolicyVersions({ PolicyArn: Arn }),
+    get("Versions"),
+  ]);
+
+  const fetchPolicyDocument = ({ Versions, PolicyArn }) =>
     pipe([
       tap(() => {
         assert(PolicyArn, "PolicyArn");
+        assert(Versions, "Versions");
       }),
-      () => iam().listPolicyVersions({ PolicyArn }),
-      get("Versions"),
-      tap((params) => {
-        assert(true);
-      }),
-      last,
+      () => Versions,
+      find(get("IsDefaultVersion")),
       ({ VersionId }) =>
         iam().getPolicyVersion({
           PolicyArn,
@@ -146,35 +153,18 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       map.pool(
         mapPoolSize,
-        tryCatch(
-          (policy) =>
-            pipe([
-              () => iam().getPolicy({ PolicyArn: policy.Arn }),
-              get("Policy"),
-              assign({
-                PolicyDocument: () =>
-                  fetchPolicyDocument({ PolicyArn: policy.Arn }),
-                EntitiesForPolicy: pipe([
-                  () =>
-                    iam().listEntitiesForPolicy({
-                      PolicyArn: policy.Arn,
-                    }),
-                  pick(["PolicyGroups", "PolicyUsers", "PolicyRoles"]),
-                ]),
-              }),
-            ])(),
-          (error, policy) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `getList policy error: ${tos({
-                    error,
-                    policy,
-                  })}`
-                );
-              }),
-              () => ({ error, policy }),
-            ])()
+        tryCatch(getById, (error, policy) =>
+          pipe([
+            tap(() => {
+              logger.error(
+                `getList policy error: ${tos({
+                  error,
+                  policy,
+                })}`
+              );
+            }),
+            () => ({ error, policy }),
+          ])()
         )
       ),
       tap((policies) => {
@@ -185,30 +175,33 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.debug(`getById ${id}`);
-    }),
-    tryCatch(
-      ({ id }) => iam().getPolicy({ PolicyArn: id }),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${result}`);
-    }),
-  ]);
+  const getById = client.getById({
+    pickId,
+    method: "getPolicy",
+    getField: "Policy",
+    ignoreErrorCodes: ["NoSuchEntity"],
+    decorate: () =>
+      pipe([
+        assign({
+          Versions: fetchPolicyVersion,
+        }),
+        assign({
+          PolicyDocument: ({ Arn, Versions }) =>
+            fetchPolicyDocument({ PolicyArn: Arn, Versions }),
+          EntitiesForPolicy: pipe([
+            ({ Arn }) =>
+              iam().listEntitiesForPolicy({
+                PolicyArn: Arn,
+              }),
+            pick(["PolicyGroups", "PolicyUsers", "PolicyRoles"]),
+          ]),
+        }),
+      ]),
+  });
 
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const filterPayload = assign({
+    PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property
   const create = ({ name, payload = {} }) =>
@@ -217,11 +210,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         logger.info(`create policy ${name}`);
         logger.debug(`payload: ${tos(payload)}`);
       }),
-      //TODO assign
-      () => ({
-        ...payload,
-        PolicyDocument: JSON.stringify(payload.PolicyDocument),
-      }),
+      () => payload,
+      filterPayload,
       iam().createPolicy,
       get("Policy"),
       tap((Policy) => {
@@ -230,18 +220,56 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicyVersion-property
+  const update = client.update({
+    preUpdate: ({ live: { Arn, Versions } }) =>
+      pipe([
+        () => Versions,
+        filter(not(get("IsDefaultVersion"))),
+        tap.if(
+          gte(size, 4),
+          tryCatch(
+            pipe([
+              last,
+              ({ VersionId }) => ({ PolicyArn: Arn, VersionId }),
+              iam().deletePolicyVersion,
+            ]),
+            (error) =>
+              pipe([
+                () => error,
+                tap((params) => {
+                  assert(true);
+                }),
+              ])()
+          )
+        ),
+      ]),
+    pickId,
+    method: "createPolicyVersion",
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        pick(["PolicyDocument"]),
+        filterPayload,
+        defaultsDeep({ SetAsDefault: true }),
+        defaultsDeep(pickId(live)),
+      ])(),
+    getById,
+    config,
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const destroy = ({ id, name }) =>
+  const detatchPolicy = ({ Arn: PolicyArn }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam policy ${JSON.stringify({ name, id })}`);
+        assert(PolicyArn);
       }),
       () =>
         iam().listEntitiesForPolicy({
-          PolicyArn: id,
+          PolicyArn,
         }),
       tap((result) => {
-        logger.debug(`destroy ${tos(result)}`);
+        logger.debug(`listEntitiesForPolicy ${tos(result)}`);
       }),
       fork({
         PolicyUsers: pipe([
@@ -249,10 +277,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           tap((policyUsers) => {
             logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
           }),
-          map((policyUsers) =>
+          map(({ UserName }) =>
             iam().detachUserPolicy({
-              PolicyArn: id,
-              UserName: policyUsers.UserName,
+              PolicyArn,
+              UserName,
             })
           ),
         ]),
@@ -261,10 +289,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           tap((policyGroups) => {
             logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
           }),
-          map((policyGroup) =>
+          map(({ GroupName }) =>
             iam().detachGroupPolicy({
-              PolicyArn: id,
-              GroupName: policyGroup.GroupName,
+              PolicyArn,
+              GroupName,
             })
           ),
         ]),
@@ -273,28 +301,52 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           tap((policyRoles) => {
             logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
           }),
-          map((policyRole) =>
+          map(({ RoleName }) =>
             iam().detachRolePolicy({
-              PolicyArn: id,
-              RoleName: policyRole.RoleName,
+              PolicyArn,
+              RoleName,
             })
           ),
         ]),
       }),
-      () =>
-        iam().deletePolicy({
-          PolicyArn: id,
-        }),
-      () =>
-        retryCall({
-          name: `iam policy isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        }),
-      tap(() => {
-        logger.info(`destroy iam policy done ${JSON.stringify({ name, id })}`);
-      }),
     ])();
+
+  const detatchPolicyVersions = ({ Arn: PolicyArn, Versions }) =>
+    pipe([
+      tap(() => {
+        assert(PolicyArn);
+        assert(Versions);
+      }),
+      () => Versions,
+      filter(not(get("IsDefaultVersion"))),
+      tap((params) => {
+        assert(true);
+      }),
+      map(
+        tryCatch(
+          pipe([
+            ({ VersionId }) => ({ PolicyArn, VersionId }),
+            iam().deletePolicyVersion,
+          ]),
+          (error) =>
+            pipe([
+              () => error,
+              tap((params) => {
+                assert(true);
+              }),
+            ])()
+        )
+      ),
+    ])();
+
+  const destroy = client.destroy({
+    preDestroy: pipe([tap(detatchPolicy), tap(detatchPolicyVersions)]),
+    pickId,
+    method: "deletePolicy",
+    getById,
+    ignoreError: eq(get("code"), "NoSuchEntity"),
+    config,
+  });
 
   const configDefault = async ({ name, namespace, properties, dependencies }) =>
     defaultsDeep({
@@ -322,6 +374,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

@@ -94,7 +94,7 @@ module.exports = ({ stage }) => ({
             enableConfidentialCompute: false,
           },
           sourceImage:
-            "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210825",
+            "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210908",
         },
       },
     },

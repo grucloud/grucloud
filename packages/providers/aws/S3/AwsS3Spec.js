@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, pipe, assign, map, omit } = require("rubico");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
@@ -19,13 +19,42 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          omit(["Bucket", "ACL", "Tags"]),
+          omit([
+            "Bucket",
+            "ACL", //TODO
+            "Tags",
+          ]),
         ]),
         filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
-          omit(["Tags"]),
+          omit([
+            "Name",
+            "CreationDate",
+            "Tags",
+            "LocationConstraint",
+            "ACL", //TODO
+            "PolicyStatus.IsPublic",
+            "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
+          ]),
+          omitIfEmpty([
+            "AccelerateConfiguration",
+            "ServerSideEncryptionConfiguration",
+            "PolicyStatus",
+            "RequestPaymentConfiguration",
+            "BucketLoggingStatus",
+            "ReplicationConfiguration",
+            "LifecycleConfiguration",
+            "LifecycleConfiguration.Rules[0].NoncurrentVersionTransitions",
+            "CORSConfiguration.CORSRules[0].ExposeHeaders",
+            "CORSConfiguration",
+            "Policy",
+            "WebsiteConfiguration",
+            "WebsiteConfiguration.RoutingRules",
+            "NotificationConfiguration",
+            "VersioningConfiguration",
+          ]),
         ]),
       }),
     },

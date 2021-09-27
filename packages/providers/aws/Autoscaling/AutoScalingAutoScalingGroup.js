@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, or, pick, not, assign } = require("rubico");
+const { map, pipe, tap, get, or, pick, not, assign, omit } = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -28,11 +28,17 @@ const findNameEks = pipe([
     assert(true);
   }),
   get("live"),
+  tap((live) => {
+    assert(live);
+  }),
   findValueInTags({ key: "eks:nodegroup-name" }),
   unless(isEmpty, prepend("asg-")),
 ]);
 
 const findName = (params) => {
+  assert(params.live);
+  assert(params.lives);
+
   const fns = [findNameEks, get("live.AutoScalingGroupName")];
   for (fn of fns) {
     const name = fn(params);
@@ -115,14 +121,15 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     }),
   ]);
 
-  const decorate = assign({
-    VPCZoneIdentifier: pipe([
-      get("VPCZoneIdentifier"),
-      callProp("split", ","),
-      callProp("sort"),
-      callProp("join", ","),
-    ]),
-  });
+  const decorate = () =>
+    assign({
+      VPCZoneIdentifier: pipe([
+        get("VPCZoneIdentifier"),
+        callProp("split", ","),
+        callProp("sort"),
+        callProp("join", ","),
+      ]),
+    });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = client.getList({
@@ -147,8 +154,8 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "createAutoScalingGroup",
+    pickId,
     getById,
     config,
   });

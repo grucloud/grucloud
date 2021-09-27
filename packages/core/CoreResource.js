@@ -224,7 +224,7 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target,
                     live,
-                    id: getClient().findId({ live }),
+                    id: getClient().findId({ live, lives: provider.lives }),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },

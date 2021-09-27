@@ -34,7 +34,7 @@ const mime = require("mime-types");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, removeOurTagObject } = require("@grucloud/core/Common");
 
 const {
   generatorMain,
@@ -786,6 +786,38 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     ],
   },
   {
+    group: "SQS",
+    types: [
+      {
+        type: "Queue",
+        filterLive: () =>
+          pipe([
+            omit(["QueueUrl"]),
+            assign({
+              Attributes: pipe([
+                get("Attributes"),
+                omit([
+                  "QueueArn",
+                  "ApproximateNumberOfMessages",
+                  "ApproximateNumberOfMessagesNotVisible",
+                  "ApproximateNumberOfMessagesDelayed",
+                  "CreatedTimestamp",
+                  "LastModifiedTimestamp",
+                ]),
+                when(
+                  eq(get("Policy.Id"), "__default_policy_ID"),
+                  omit(["Policy"])
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+            }),
+          ]),
+      },
+    ],
+  },
+  {
     group: "CloudWatchEvents",
     types: [
       {
@@ -797,6 +829,18 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () => pipe([omit(["Name", "Arn", "EventBusName"])]),
         dependencies: () => ({
           eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "CloudWatchLogs",
+    types: [
+      {
+        type: "LogGroup",
+        filterLive: () => pipe([pick(["retentionInDays"])]),
+        dependencies: () => ({
+          kmsKey: { type: "Key", group: "kms" },
         }),
       },
     ],
@@ -847,6 +891,30 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        }),
+      },
+      {
+        type: "Type",
+        filterLive: () => pick(["description", "definition", "format"]),
+        dependencies: () => ({
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        }),
+      },
+      {
+        type: "Resolver",
+        filterLive: () =>
+          pick([
+            "typeName",
+            "fieldName",
+            "requestMappingTemplate",
+            "responseMappingTemplate",
+            "kind",
+          ]),
+        dependencies: () => ({
+          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+          type: { type: "Type", group: "AppSync" },
+          dataSource: { type: "DataSource", group: "AppSync" },
+          dynamoDbTable: { type: "Table", group: "DynamoDB" },
         }),
       },
       {
@@ -998,6 +1066,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
               hasDependency({ type: "Certificate", group: "ACM" }),
               hasDependency({ type: "Distribution", group: "CloudFront" }),
+              hasDependency({ type: "DomainName", group: "APIGateway" }),
               hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
             ]),
           ])(),
@@ -1007,6 +1076,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           certificate: { type: "Certificate", group: "ACM" },
           distribution: { type: "Distribution", group: "CloudFront" },
           apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
+          apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
         }),
         //TODO remove ?
         ignoreResource: () => get("cannotBeDeleted"),
@@ -1089,6 +1159,175 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         dependencies: () => ({
           layers: { type: "Layer", group: "Lambda", list: true },
           role: { type: "Role", group: "IAM" },
+        }),
+      },
+      {
+        type: "EventSourceMapping",
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {}),
+              () => live,
+              pick([
+                "StartingPosition",
+                "StartingPositionTimestamp",
+                "BatchSize",
+                "MaximumBatchingWindowInSeconds",
+                "ParallelizationFactor",
+                "DestinationConfig",
+                "Topics",
+                "Queues",
+                "MaximumRecordAgeInSeconds",
+                "BisectBatchOnFunctionError",
+                "MaximumRetryAttempts",
+                "TumblingWindowInSeconds",
+                "FunctionResponseTypes",
+              ]),
+            ])(),
+        dependencies: () => ({
+          lambdaFunction: { type: "Function", group: "Lambda" },
+          sqsQueue: { type: "Queue", group: "SQS" },
+          //TODO other event source
+        }),
+      },
+    ],
+  },
+  {
+    group: "APIGateway",
+    types: [
+      {
+        type: "RestApi",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([
+              "description",
+              "apiKeySource",
+              "endpointConfiguration",
+              "disableExecuteApiEndpoint",
+            ]),
+          ]),
+      },
+      {
+        type: "Authorizer",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            //TODO
+            pick([]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Model",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["schema", "contentType"]),
+            assign({ schema: pipe([get("schema"), JSON.parse]) }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Resource",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Method",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([
+              "httpMethod",
+              "authorizationType",
+              "apiKeyRequired",
+              "methodResponses",
+              "methodIntegration",
+              "description",
+            ]),
+            omit(["methodIntegration.uri", "methodIntegration.cacheNamespace"]),
+          ]),
+        dependencies: () => ({
+          resource: { type: "Resource", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Stage",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["StageName", "StageVariables"]),
+          ]),
+        dependencies: () => ({
+          restApi: { type: "RestApi", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "Integration",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([""]),
+          ]),
+        dependencies: () => ({
+          method: { type: "Method", group: "APIGateway" },
+          lambdaFunction: { type: "Function", group: "Lambda" },
+        }),
+      },
+      {
+        type: "Deployment",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["Description"]),
+          ]),
+        dependencies: () => ({
+          //api: { type: "Api", group: "APIGateway" },
+          stage: { type: "Stage", group: "APIGateway" },
+        }),
+      },
+      {
+        type: "DomainName",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["DomainName"]),
+          ]),
+        dependencies: () => ({
+          certificate: { type: "Certificate", group: "ACM" },
         }),
       },
     ],
@@ -1342,26 +1581,31 @@ const filterModel = pipe([
     assign({
       live: pipe([
         get("live"),
-        assign({
-          Tags: pipe([
-            get("Tags"),
-            filter(
-              and([
-                pipe([
-                  get("Key"),
-                  when(isEmpty, get("key")),
-                  when(isEmpty, get("TagKey")),
-                  switchCase([
-                    isEmpty,
-                    () => true,
-                    not(callProp("startsWith", "aws")),
+        removeOurTagObject,
+        //TODO create removeOurTagArray
+        when(
+          get("Tags"),
+          assign({
+            Tags: pipe([
+              get("Tags"),
+              filter(
+                and([
+                  pipe([
+                    get("Key"),
+                    when(isEmpty, get("key")),
+                    when(isEmpty, get("TagKey")),
+                    switchCase([
+                      isEmpty,
+                      () => true,
+                      not(callProp("startsWith", "aws")),
+                    ]),
                   ]),
-                ]),
-                not(get("ResourceId")),
-              ])
-            ),
-          ]),
-        }),
+                  not(get("ResourceId")),
+                ])
+              ),
+            ]),
+          })
+        ),
       ]),
     })
   ),

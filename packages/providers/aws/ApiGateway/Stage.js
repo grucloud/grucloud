@@ -1,28 +1,10 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-  flatMap,
-} = require("rubico");
+const { map, pipe, tap, get, eq, tryCatch, pick, flatMap } = require("rubico");
 const { pluck, defaultsDeep, size } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
-const { retryCall } = require("@grucloud/core/Retry");
-
 const logger = require("@grucloud/core/logger")({
   prefix: "Stage",
 });
 
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
@@ -31,7 +13,7 @@ const { AwsClient } = require("../AwsClient");
 const findId = get("live.stageName");
 const findName = get("live.stageName");
 
-const pickParam = pick(["restApiId", "stageName"]);
+const pickId = pick(["restApiId", "stageName"]);
 
 exports.Stage = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -46,6 +28,13 @@ exports.Stage = ({ spec, config }) => {
     },
   ];
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property
+  const getById = client.getById({
+    pickId,
+    method: "getStage",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStages-property
   const getList = ({ lives }) =>
     pipe([
@@ -59,13 +48,18 @@ exports.Stage = ({ spec, config }) => {
           type: "RestApi",
           group: "APIGateway",
         }),
-      pluck("id"),
-      flatMap((restApiId) =>
+      pluck("live"),
+      flatMap(({ id: restApiId, tags }) =>
         tryCatch(
           pipe([
-            () => apiGateway().getStages({ restApiId }),
-            get("items"),
-            map(defaultsDeep({ restApiId })),
+            tap(() => {
+              assert(restApiId);
+            }),
+            () => ({ restApiId }),
+            apiGateway().getStages,
+            // All other apis have 'items'
+            get("item"),
+            map(defaultsDeep({ restApiId, tags })),
           ]),
           (error) =>
             pipe([
@@ -80,87 +74,32 @@ exports.Stage = ({ spec, config }) => {
       ),
     ])();
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property
-
-  const getByLive = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    pickParam,
-    tryCatch(apiGateway().getStage, (error) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => undefined,
-      ])()
-    ),
-  ]);
-
-  const isDownByLive = pipe([getByLive, isEmpty]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createStage-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create stage: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().createStage,
-      tap(() => {
-        logger.info(`created stage ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createStage",
+    pickId,
+    getById,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update stage: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateStage,
-      tap(() => {
-        logger.info(`updated stage ${name}`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateStage-property
+  const update = client.update({
+    pickId,
+    method: "updateStage",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteStage-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.restApiId);
-        assert(live.stageName);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(apiGateway().deleteStage, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteStage ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "NotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-      tap(() =>
-        retryCall({
-          name: `stage isDownByLive: ${live.StageName}`,
-          fn: () => isDownByLive(live),
-          config,
-        })
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteStage",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -184,6 +123,7 @@ exports.Stage = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,
@@ -194,32 +134,3 @@ exports.Stage = ({ spec, config }) => {
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareStage = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareStage ${tos(diff)}`);
-  }),
-]);

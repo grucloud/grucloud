@@ -8,17 +8,30 @@ const {
   pick,
   switchCase,
   tryCatch,
+  set,
+  not,
 } = require("rubico");
-const { defaultsDeep, last, callProp, includes } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  last,
+  callProp,
+  includes,
+  when,
+  first,
+} = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const findId = get("live.QueueUrl");
+const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
 const findName = pipe([
   get("live.QueueUrl"),
+  tap((QueueUrl) => {
+    assert(QueueUrl);
+  }),
   callProp("split", "/"),
   last,
   tap((name) => {
@@ -34,33 +47,53 @@ exports.SQSQueue = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [];
 
-  const decorate = pipe([
+  const assignTags = pipe([
     tap((params) => {
       assert(true);
     }),
-    (QueueUrl) => ({ QueueUrl }),
     assign({
-      tags: pipe([sqs().listQueueTags, get("Tags")]),
-    }),
-    tap((params) => {
-      assert(true);
+      tags: pipe([pickId, sqs().listQueueTags, get("Tags")]),
     }),
   ]);
+
+  const decorate = (params) =>
+    pipe([
+      tap((input) => {
+        assert(input);
+        assert(params);
+      }),
+      when(
+        get("Policy"),
+        assign({
+          Policy: pipe([get("Policy"), JSON.parse]),
+        })
+      ),
+      (Attributes) => ({ ...params, Attributes }),
+      assignTags,
+    ]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueAttributes-property
+  const getById = client.getById({
+    pickId,
+    extraParams: { AttributeNames: ["All"] },
+    method: "getQueueAttributes",
+    getField: "Attributes",
+    decorate,
+    ignoreErrorCodes,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#listQueues-property
   const getList = client.getList({
     method: "listQueues",
     getParam: "QueueUrls",
-    decorate,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueAttributes-property
-  const getById = client.getById({
-    pickId,
-    method: "getQueueAttributes",
-    getField: "Attributes",
-    decorate,
-    ignoreErrorCodes,
+    decorate: () =>
+      pipe([
+        tap((QueueUrl) => {
+          assert(QueueUrl);
+        }),
+        (QueueUrl) => ({ QueueUrl }),
+        getById,
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
@@ -93,15 +126,54 @@ exports.SQSQueue = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   const create = client.create({
-    pickCreated: () => pick(["QueueUrl"]),
+    pickCreated: () => pickId,
     method: "createQueue",
+    shouldRetryOnException: eq(
+      get("error.code"),
+      "AWS.SimpleQueueService.QueueDeletedRecently"
+    ),
+    pickId,
     getById,
-    config: { ...config, retryCount: 100 },
+    isInstanceUp: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      (live) => ({ live }),
+      findName,
+      (QueueNamePrefix) =>
+        pipe([
+          () => ({ QueueNamePrefix }),
+          sqs().listQueues,
+          tap((params) => {
+            assert(true);
+          }),
+          get("QueueUrls"),
+          first,
+          not(isEmpty),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+    ]),
+    config: { retryDelay: 65e3, retryCount: 2 },
+    configIsUp: { repeatCount: 6, repeatDelay: 2e3 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property
   const update = client.update({
     pickId,
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        when(
+          get("Attributes.Policy"),
+          set("Attributes.Policy", JSON.stringify(payload.Attributes.Policy))
+        ),
+        defaultsDeep(pickId(live)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     method: "setQueueAttributes",
     getById,
     config,
@@ -119,14 +191,14 @@ exports.SQSQueue = ({ spec, config }) => {
   const configDefault = async ({
     name,
     namespace,
-    properties,
+    properties: { tags, ...otherProps },
     dependencies: {},
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         QueueName: name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
 
@@ -138,6 +210,7 @@ exports.SQSQueue = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,

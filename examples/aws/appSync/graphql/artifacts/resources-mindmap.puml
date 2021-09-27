@@ -4,10 +4,14 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Policy (1)
-++++ Role (1)
+++++ Policy (2)
+++++ Role (2)
++++ DynamoDB
+++++ Table (1)
 +++ AppSync
 ++++ GraphqlApi (1)
-++++ ApiKey (1)
+++++ ApiKey (2)
+++++ Type (15)
+++++ Resolver (5)
 ++++ DataSource (1)
 @endmindmap

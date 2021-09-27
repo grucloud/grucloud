@@ -164,24 +164,6 @@ module.exports = ({ stage }) => ({
         name: "dev.cloudfront.aws.test.grucloud.org",
         properties: {
           DomainName: "dev.cloudfront.aws.test.grucloud.org",
-          Tags: [
-            {
-              Key: "CreatedByProvider",
-              Value: "aws",
-            },
-            {
-              Key: "ManagedBy",
-              Value: "GruCloud",
-            },
-            {
-              Key: "projectName",
-              Value: "@grucloud/example-aws-website-https",
-            },
-            {
-              Key: "stage",
-              Value: "dev",
-            },
-          ],
         },
       },
     },

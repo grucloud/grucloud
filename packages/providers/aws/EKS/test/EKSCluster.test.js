@@ -1,8 +1,7 @@
 const assert = require("assert");
-const { tryCatch, pipe, tap } = require("rubico");
+const { pipe, tap } = require("rubico");
 
 const { AwsProvider } = require("../../AwsProvider");
-const { EKSCluster } = require("../EKSCluster");
 
 describe("EKSCluster", async function () {
   let config;

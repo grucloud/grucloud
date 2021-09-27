@@ -1,0 +1,21 @@
+{
+  "name": "aws-example-cloudwatchlogs",
+  "version": "2.0.1",
+  "description": "Cloud Watch logs GruCloud example",
+  "private": true,
+  "main": "iac.js",
+  "scripts": {
+    "test": "mocha",
+    "list": "gc list -g --json artifacts/inventory.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^2.0.1",
+    "@grucloud/provider-aws": "^2.0.1",
+    "rubico": "^1.6.26"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
+  }
+}

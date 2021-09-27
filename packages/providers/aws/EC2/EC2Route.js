@@ -42,7 +42,8 @@ exports.EC2Route = ({ spec, config }) => {
   const findId = ({ live, lives }) =>
     pipe([
       tap(() => {
-        assert(true);
+        assert(live.RouteTableId);
+        assert(lives);
       }),
       () =>
         lives.getById({

@@ -49,4 +49,18 @@ describe("SQSQueue", async function () {
         }),
     ])
   );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        queue.getById({
+          QueueUrl: `https://sqs.${
+            provider.config.region
+          }.amazonaws.com/${provider.config.accountId()}/MyNewerQueue`,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])
+  );
 });

@@ -1,7 +1,8 @@
 const { assign, map, pipe, get, omit } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinionFactory } = require("../AwsCommon");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
@@ -19,6 +20,9 @@ const isOurMinion = isOurMinionFactory({
   tags: "tags",
 });
 
+const filterTargetDefault = pipe([omit(["tags"])]);
+const filterLiveDefault = pipe([omit(["tags"])]);
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -28,6 +32,10 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["tags"])]),
+        filterLive: pipe([
+          omit(["capacityProviderArn", "status", "updateStatus"]),
+          filterLiveDefault,
+        ]),
       }),
     },
     {
@@ -35,12 +43,44 @@ module.exports = () =>
       dependsOn: ["ECS::CapacityProvider", "EC2::Instance"],
       Client: ECSCluster,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterLive: pipe([
+          omit([
+            "clusterArn",
+            "status",
+            "registeredContainerInstancesCount",
+            "runningTasksCount",
+            "pendingTasksCount",
+            "activeServicesCount",
+            "statistics",
+            "attachments",
+            "attachmentsStatus",
+          ]),
+          filterLiveDefault,
+        ]),
+      }),
     },
     {
       type: "TaskDefinition",
       dependsOn: ["IAM::Role"],
       Client: ECSTaskDefinition,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterLive: pipe([
+          omit([
+            "taskDefinitionArn",
+            "revision",
+            "status",
+            "compatibilities",
+            "registeredAt",
+            "registeredBy",
+          ]),
+          omitIfEmpty(["volumes"]),
+          filterLiveDefault,
+        ]),
+      }),
     },
     {
       type: "Service",
@@ -48,6 +88,10 @@ module.exports = () =>
       Client: ECSService,
       isOurMinion,
       compare: compare({
+        filterTarget: pipe([
+          defaultsDeep({ propagateTags: "NONE" }),
+          filterTargetDefault,
+        ]),
         filterLive: pipe([
           assign({ cluster: get("clusterArn") }),
           omit([
@@ -58,7 +102,11 @@ module.exports = () =>
             "runningCount",
             "pendingCount",
             "status",
+            "serviceArn",
+            "createdBy",
           ]),
+          omitIfEmpty(["loadBalancers", "serviceRegistries"]),
+          filterLiveDefault,
         ]),
       }),
     },
@@ -67,6 +115,10 @@ module.exports = () =>
       dependsOn: ["ECS::Cluster", "ECS::Service"],
       Client: ECSTaskSet,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterLive: pipe([omit([""]), filterLiveDefault]),
+      }),
     },
     {
       type: "Task",
@@ -79,6 +131,10 @@ module.exports = () =>
       ],
       Client: ECSTask,
       isOurMinion,
+      compare: compare({
+        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterLive: pipe([omit([""]), filterLiveDefault]),
+      }),
     },
     {
       type: "ContainerInstance",

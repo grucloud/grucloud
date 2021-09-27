@@ -1,36 +1,16 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-  flatMap,
-} = require("rubico");
+const { map, pipe, tap, get, eq, tryCatch, flatMap } = require("rubico");
 const { pluck, defaultsDeep, size, isEmpty } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
-const { retryCall } = require("@grucloud/core/Retry");
-
 const logger = require("@grucloud/core/logger")({
   prefix: "Resource",
 });
 
-const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const findId = get("live.id");
-const findName = get("live.path");
-const pickParam = ({ restApiId, id }) => ({
+const pickId = ({ restApiId, id }) => ({
   restApiId,
   resourceId: id,
 });
@@ -39,6 +19,30 @@ exports.Resource = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () =>
+        lives.getById({
+          id: live.restApiId,
+          type: "RestApi",
+          group: "APIGateway",
+          providerName: config.providerName,
+        }),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      (restApiName) => `${restApiName}_${live.path}`,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const findId = get("live.id");
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -55,6 +59,13 @@ exports.Resource = ({ spec, config }) => {
     isEmpty,
   ]);
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResource-property
+  const getById = client.getById({
+    pickId,
+    method: "getResource",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResources-property
   const getList = ({ lives }) =>
     pipe([
@@ -68,13 +79,13 @@ exports.Resource = ({ spec, config }) => {
           type: "RestApi",
           group: "APIGateway",
         }),
-      pluck("id"),
-      flatMap((restApiId) =>
+      pluck("live"),
+      flatMap(({ id: restApiId, tags }) =>
         tryCatch(
           pipe([
             () => apiGateway().getResources({ restApiId }),
             get("items"),
-            map(defaultsDeep({ restApiId })),
+            map(defaultsDeep({ restApiId, tags })),
           ]),
           (error) =>
             pipe([
@@ -89,87 +100,32 @@ exports.Resource = ({ spec, config }) => {
       ),
     ])();
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
   const getByName = getByNameCore({ getList, findName });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResource-property
-
-  const getByLive = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    pickParam,
-    tryCatch(apiGateway().getResource, (error) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => undefined,
-      ])()
-    ),
-  ]);
-
-  const isDownByLive = pipe([getByLive, isEmpty]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createResource-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create resource: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().createResource,
-      tap(() => {
-        logger.info(`created resource ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createResource",
+    getById,
+    pickId,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update resource: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateResource,
-      tap(() => {
-        logger.info(`updated resource ${name}`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateResource-property
+  const update = client.update({
+    pickId,
+    method: "updateResource",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteResource-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.restApiId);
-        assert(live.id);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(apiGateway().deleteResource, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteResource ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "NotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-      tap(() =>
-        retryCall({
-          name: `resource isDownByLive: ${live.ResourceName}`,
-          fn: () => isDownByLive(live),
-          config,
-        })
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteResource",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -185,7 +141,6 @@ exports.Resource = ({ spec, config }) => {
       defaultsDeep({
         pathPart: name,
         restApiId: getField(restApi, "id"),
-        tags: buildTagsObject({ config, namespace, name }),
       }),
     ])();
 
@@ -193,6 +148,7 @@ exports.Resource = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,
@@ -204,32 +160,3 @@ exports.Resource = ({ spec, config }) => {
     cannotBeDeleted,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareResource = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareResource ${tos(diff)}`);
-  }),
-]);

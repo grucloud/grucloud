@@ -14,6 +14,11 @@ const createResources = async ({ provider }) => {
         Effect: "Allow",
         Resource: "*",
       },
+      {
+        Action: ["sqs:*"],
+        Effect: "Allow",
+        Resource: "*",
+      },
     ],
   };
 

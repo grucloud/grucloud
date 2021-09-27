@@ -22,6 +22,7 @@ module.exports = CoreClient = ({
   pathGet = ({ id }) => `/${id}`,
   pathCreate = () => `/`,
   pathDelete = ({ id }) => `/${id}`,
+  pathUpdate = ({ id }) => `/${id}`,
   pathList = () => `/`,
   verbGet = "GET",
   verbList = "GET",
@@ -48,6 +49,7 @@ module.exports = CoreClient = ({
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
+  onResponseUpdate = identity,
   cannotBeDeleted = () => false,
   shouldRetryOnException,
   onCreateExpectedException,
@@ -240,6 +242,44 @@ module.exports = CoreClient = ({
             ]),
             (error) => {
               logError(`create ${type}/${name}`, error);
+              throw axiosErrorToJSON(error);
+            }
+          )(),
+      update:
+        ({ isUpById }) =>
+        ({ id, name, payload, dependencies = () => ({}) }) =>
+          tryCatch(
+            pipe([
+              tap(() => {
+                logger.info(`update ${tos({ type, name, id })}`);
+              }),
+              () => ({ id, name, dependencies: dependencies() }),
+              tap((params) => {
+                assert(true);
+              }),
+              pathUpdate,
+              (path) =>
+                retryCallOnError({
+                  name: `update type ${spec.type}, path: ${path}`,
+                  fn: () => axios.patch(path, payload),
+                  isExpectedResult: () => true,
+                  config: { ...config, repeatCount: 0 },
+                }),
+              get("data"),
+              onResponseUpdate,
+              tap(() =>
+                retryCall({
+                  name: `update type: ${spec.type}, name: ${name}, isDownById`,
+                  fn: () => isUpById({ id, name }),
+                  config,
+                })
+              ),
+              tap((data) => {
+                logger.info(`update ${tos({ name, type, id, data })} updated`);
+              }),
+            ]),
+            (error) => {
+              logError(`update ${type}/${name}`, error);
               throw axiosErrorToJSON(error);
             }
           )(),

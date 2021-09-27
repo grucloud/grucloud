@@ -113,7 +113,7 @@ module.exports = ({ stage }) => ({
                 offer: "UbuntuServer",
                 sku: "18.04-LTS",
                 version: "latest",
-                exactVersion: "18.04.202107200",
+                exactVersion: "18.04.202109180",
               },
             },
             osProfile: {

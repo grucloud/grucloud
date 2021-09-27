@@ -14,6 +14,7 @@ const {
   fork,
   assign,
   pick,
+  omit,
 } = require("rubico");
 const {
   callProp,
@@ -570,4 +571,6 @@ exports.compareSecurityGroupRule = compare({
       IpPermission: IpPermissions[0],
     }),
   ]),
+  filterAll: pipe([omit(["SecurityGroupRuleId"])]),
+  filterLive: pipe([omit(["Tags"])]),
 });

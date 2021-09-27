@@ -51,29 +51,30 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     },
   ];
 
-  const decorate = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      Targets: pipe([
-        ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
-        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
-        cloudWatchEvents().listTargetsByRule,
-        get("Targets"),
-      ]),
-      Tags: pipe([
-        buildArn({ config }),
-        (ResourceARN) => ({ ResourceARN }),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
-        cloudWatchEvents().listTagsForResource,
-        get("Tags"),
-      ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const decorate = () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        Targets: pipe([
+          ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
+          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
+          cloudWatchEvents().listTargetsByRule,
+          get("Targets"),
+        ]),
+        Tags: pipe([
+          buildArn({ config }),
+          (ResourceARN) => ({ ResourceARN }),
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTagsForResource-property
+          cloudWatchEvents().listTagsForResource,
+          get("Tags"),
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listRules-property
   const getList = client.getListWithParent({
@@ -102,8 +103,8 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "putRule",
+    pickId,
     getById,
     config,
   });
@@ -111,12 +112,15 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const update = client.update({
     pickId: omit(["Arn", "Targets"]),
-    filterParams: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      omit(["Tags"]),
-    ]),
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        omit(["Tags"]),
+        defaultsDeep(pickId(live)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     method: "putRule",
     getById,
     config,

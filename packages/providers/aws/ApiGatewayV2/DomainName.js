@@ -9,7 +9,7 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { pluck, defaultsDeep, size } = require("rubico/x");
+const { pluck, defaultsDeep, includes } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { retryCall } = require("@grucloud/core/Retry");
 
@@ -105,8 +105,8 @@ exports.DomainName = ({ spec, config }) => {
                   `create domainName isExpectedException ${tos(error)}`
                 );
               }),
-              () => error,
-              eq(get("code"), "UnsupportedCertificate"),
+              () => ["UnsupportedCertificate", "BadRequestException"],
+              includes(error.code),
             ])(),
         }),
 

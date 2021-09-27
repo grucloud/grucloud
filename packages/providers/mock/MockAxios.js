@@ -54,6 +54,20 @@ exports.createAxiosMock = ({ config, url, spec }) => {
       return [500];
     }
   });
+  mock.onPatch().reply((config) => {
+    logger.debug(`mock onPatch: ${tos(config.data)}`);
+    try {
+      //TODO
+      // const data = mockCloud.onCreate({
+      //   type,
+      //   payload: JSON.parse(config.data),
+      // });
+      return [200, {}];
+    } catch (error) {
+      logger.error(`mock onPatch: ${tos(error)}`);
+      return [500];
+    }
+  });
   mock.onDelete(/^\/.+/).reply((config) => {
     const data = mockCloud.onDestroy({
       type,

@@ -8,17 +8,11 @@ const {
   tap,
   tryCatch,
   assign,
-  switchCase,
+  filter,
+  not,
   map,
 } = require("rubico");
-const {
-  first,
-  pluck,
-  isFunction,
-  size,
-  identity,
-  callProp,
-} = require("rubico/x");
+const { first, pluck, isFunction, size } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -35,6 +29,7 @@ const AutoScaling = require("./AutoScaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const CloudWatchEvent = require("./CloudWatchEvent");
+const CloudWatchLogs = require("./CloudWatchLogs");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
 const EC2 = require("./EC2");
 const DynamoDB = require("./DynamoDB");
@@ -65,6 +60,7 @@ const fnSpecs = (config) =>
       ...AwsCertificateManager(),
       ...AwsCloudFront(),
       ...CloudWatchEvent(),
+      ...CloudWatchLogs(),
       ...CognitoIdentityServiceProvider(),
       ...DynamoDB(),
       ...EC2(),
@@ -131,6 +127,7 @@ exports.AwsProvider = ({
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
     cloudwatchevents: "2015-10-07",
+    cloudwatchlogs: "2014-03-28",
     cloudwatch: "2010-08-01",
     cognitoidentityserviceprovider: "2016-04-18",
     dynamodb: "2012-08-10",
@@ -214,6 +211,7 @@ exports.AwsProvider = ({
           Array.isArray(items);
         }),
         map(assignTags),
+        filter(not(isEmpty)),
         (items) => ({ items, total: size(items) }),
         tap(({ total, items }) => {
           logger.debug(`getList ${spec.groupType} total: ${total}`);

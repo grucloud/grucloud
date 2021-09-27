@@ -3,5 +3,6 @@ title Resources for project SQS Queue
 skinparam monochrome true
 + Infra
 ++ aws
-
++++ SQS
+++++ Queue (1)
 @endmindmap

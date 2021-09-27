@@ -92,7 +92,7 @@ describe("GcpIamBinding", async function () {
         const plan = resultQuery.results[0];
         assert.equal(plan.resultDestroy.length, 0);
         assert.equal(plan.resultCreate.length, 2);
-        const planCreate = plan.resultCreate[1];
+        const planCreate = plan.resultCreate[0];
         assert.equal(planCreate.action, "UPDATE");
       }
     }

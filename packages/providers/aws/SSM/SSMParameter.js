@@ -53,7 +53,7 @@ exports.SSMParameter = ({ spec, config }) => {
     pickId,
     method: "getParameter",
     getField: "Parameter",
-    decorate: assignTags,
+    decorate: () => assignTags,
     ignoreErrorCodes: ["ParameterNotFound"],
   });
 
@@ -63,13 +63,13 @@ exports.SSMParameter = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeParameters",
     getParam: "Parameters",
-    decorate: getById,
+    decorate: () => getById,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#putParameter-property
   const create = client.create({
-    pickCreated: (payload) => () => pipe([() => payload, pickId])(),
     method: "putParameter",
+    pickId,
     getById,
     config,
   });

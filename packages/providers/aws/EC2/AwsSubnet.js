@@ -97,8 +97,45 @@ exports.AwsSubnet = ({ spec, config }) => {
   const isUpById = pipe([getById, not(isEmpty)]);
   const isDownById = pipe([getById, isEmpty]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
+  const modifySubnetAttribute = ({ SubnetId }) =>
+    pipe([
+      tap((params) => {
+        assert(SubnetId);
+      }),
+      map.entries(
+        tryCatch(
+          ([key, Value]) =>
+            pipe([
+              () => ({ [key]: { Value }, SubnetId }),
+              tap((params) => {
+                logger.debug(`modifySubnetAttribute ${JSON.stringify(params)}`);
+              }),
+              ec2().modifySubnetAttribute,
+              () => [key, Value],
+            ])(),
+          (error, [key]) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `modifySubnetAttribute ${JSON.stringify({
+                    error,
+                    key,
+                  })}`
+                );
+              }),
+              () => [key, { error: { error } }],
+            ])()
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+      tap.if(any(get("error")), (results) => {
+        throw Error(`modifySubnetAttribute error: ${tos(results)}`);
+      }),
+    ]);
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
   const create = ({ payload, name }) =>
     pipe([
       tap(() => {
@@ -122,45 +159,26 @@ exports.AwsSubnet = ({ spec, config }) => {
           () => payload,
           pick(SubnetAttributes),
           filter(identity),
-          map.entries(
-            tryCatch(
-              ([key, Value]) =>
-                pipe([
-                  () => ({ [key]: { Value }, SubnetId }),
-                  tap((params) => {
-                    logger.debug(
-                      `modifySubnetAttribute ${JSON.stringify(params)}`
-                    );
-                  }),
-                  ec2().modifySubnetAttribute,
-                  () => [key, Value],
-                ])(),
-              (error, [key]) =>
-                pipe([
-                  tap(() => {
-                    logger.error(
-                      `modifySubnetAttribute ${JSON.stringify({
-                        error,
-                        key,
-                      })}`
-                    );
-                  }),
-                  () => [key, { error: { error } }],
-                ])()
-            )
-          ),
-          tap((xxx) => {
-            logger.debug(``);
-          }),
-          tap.if(any(get("error")), (results) => {
-            throw Error(`modifySubnetAttribute error: ${tos(results)}`);
-          }),
+          modifySubnetAttribute({ SubnetId }),
         ])()
       ),
       tap((SubnetId) => {
         logger.info(`created subnet ${JSON.stringify({ name, SubnetId })}`);
       }),
       (id) => ({ id }),
+    ])();
+
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update subnet: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => diff.liveDiff.updated,
+      modifySubnetAttribute({ SubnetId: live.SubnetId }),
+      tap(() => {
+        logger.info(`updated subnet ${name}`);
+      }),
     ])();
 
   const destroy = ({ id, name }) =>
@@ -224,6 +242,7 @@ exports.AwsSubnet = ({ spec, config }) => {
     getByName,
     getList,
     create,
+    update,
     destroy,
     configDefault,
     shouldRetryOnException,
