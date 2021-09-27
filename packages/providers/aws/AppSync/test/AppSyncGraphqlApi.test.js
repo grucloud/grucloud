@@ -3,7 +3,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
 
-describe.only("AppSynGraphqlApi", async function () {
+describe("AppSynGraphqlApi", async function () {
   let config;
   let provider;
   let graphqlApi;

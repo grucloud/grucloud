@@ -98,7 +98,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
 
   const getList =
     ({ method, getParam, decorate = () => identity }) =>
-    ({ lives }) =>
+    ({ lives } = {}) =>
       pipe([
         tap((params) => {
           logger.debug(`getList ${type}`);

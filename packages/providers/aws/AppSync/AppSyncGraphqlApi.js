@@ -1,27 +1,13 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-} = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { assign, pipe, tap, get, eq, pick, omit } = require("rubico");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "GraphqlApi" });
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.name");
 const findId = get("live.apiId");
-const pickParam = pick(["apiId"]);
 const pickId = pick(["apiId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
@@ -41,82 +27,88 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getGraphqlApi",
+    getField: "graphqlApi",
     ignoreErrorCodes: ["NotFoundException"],
+    decorate: () =>
+      pipe([
+        assign({
+          schema: pipe([
+            pick(["apiId"]),
+            defaultsDeep({ format: "SDL", includeDirectives: true }),
+            appSync().getIntrospectionSchema,
+            get("schema"),
+            callProp("toString"),
+          ]),
+        }),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listGraphqlApis-property
   const getList = client.getList({
     method: "listGraphqlApis",
     getParam: "graphqlApis",
+    decorate: () => getById,
   });
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getByLive = pipe([
-    tap((live) => {
-      assert(live.apiId);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
+  const create = client.create({
+    method: "createGraphqlApi",
+    pickCreated: () => pipe([get("graphqlApi"), pickId]),
+    pickId,
+    getById,
+    config,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#updateGraphqlApi-property
+  const update = pipe([
+    tap((params) => {
+      assert(true);
     }),
-    pickParam,
-    tryCatch(appSync().getGraphqlApi, (error, params) =>
+    tap.if(
+      get("diff.liveDiff.updated.schema"),
       pipe([
-        tap(() => {
-          logger.error(`error getGraphqlApi ${tos({ params, error })}`);
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#startSchemaCreation-property
+        ({ id, diff }) => ({
+          apiId: id,
+          definition: diff.liveDiff.updated.schema,
         }),
-      ])()
+        appSync().startSchemaCreation,
+        tap((params) => {
+          assert(true);
+        }),
+      ])
     ),
+    client.update({
+      pickId,
+      filterParams: ({ pickId, payload, diff, live }) =>
+        pipe([
+          tap((params) => {
+            assert(payload);
+            assert(live);
+          }),
+          () => payload,
+          omit(["schema", "tags"]),
+          defaultsDeep(pick(["apiId", "name"])(live)),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      method: "updateGraphqlApi",
+      getById,
+      config,
+    }),
   ]);
 
-  const isUpByLive = pipe([getByLive, not(isEmpty)]);
-  const isDownByLive = pipe([getByLive, isEmpty]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
-  const create = ({ payload, name }) =>
-    pipe([
-      () => payload,
-      appSync().createGraphqlApi,
-      get("graphqlApi"),
-      tap(({ apiId }) =>
-        retryCall({
-          name: `createGraphqlApi isUpByLive: ${name}`,
-          fn: () => isUpByLive({ apiId }),
-        })
-      ),
-    ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteGraphqlApi-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.apiId);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(
-        pipe([
-          appSync().deleteGraphqlApi,
-          () =>
-            retryCall({
-              name: `deleteGraphqlApi isDownByLive: ${live.name}`,
-              fn: () => isDownByLive(live),
-              config,
-            }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(`error deleteGraphqlApi ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              eq(get("code"), "NotFoundException"),
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteGraphqlApi",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
     pipe([
@@ -136,6 +128,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     getById,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

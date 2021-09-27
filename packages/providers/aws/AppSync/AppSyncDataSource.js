@@ -223,7 +223,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { graphqlApi, serviceRole },
+    dependencies: { graphqlApi, serviceRole, lambdaFunction },
   }) =>
     pipe([
       tap(() => {
@@ -235,6 +235,11 @@ exports.AppSyncDataSource = ({ spec, config }) => {
         name,
         apiId: getField(graphqlApi, "apiId"),
         serviceRoleArn: getField(serviceRole, "Arn"),
+        ...(lambdaFunction && {
+          lambdaConfig: {
+            lambdaFunctionArn: getField(lambdaFunction, "FunctionArn"),
+          },
+        }),
       }),
     ])();
 
