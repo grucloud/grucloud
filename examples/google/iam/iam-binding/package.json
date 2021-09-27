@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-iac-binding",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^2.0.1",
-    "@grucloud/provider-google": "^2.0.1"
+    "@grucloud/core": "^2.0.2",
+    "@grucloud/provider-google": "^2.0.2"
   },
   "devDependencies": {
     "mocha": "^9.0.3"

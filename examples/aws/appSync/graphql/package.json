@@ -1,6 +1,6 @@
 {
   "name": "aws-appsync-graphql",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "AWS AppSync Graphql example",
   "private": true,
   "main": "iac.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^2.0.1",
-    "@grucloud/provider-aws": "^2.0.1",
+    "@grucloud/core": "^2.0.2",
+    "@grucloud/provider-aws": "^2.0.2",
     "rubico": "^1.6.26"
   },
   "devDependencies": {
