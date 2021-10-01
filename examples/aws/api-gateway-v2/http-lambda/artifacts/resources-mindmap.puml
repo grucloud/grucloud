@@ -3,24 +3,23 @@ title Resources for project http-lambda
 skinparam monochrome true
 + Infra
 ++ aws
++++ IAM
+++++ Policy (1)
+++++ Role (1)
++++ ACM
+++++ Certificate (1)
 +++ Route53Domains
 ++++ Domain (1)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ ACM
-++++ Certificate (1)
-+++ IAM
-++++ Policy (1)
-++++ Role (1)
 +++ Lambda
 ++++ Function (1)
 +++ ApiGatewayV2
 ++++ Api (1)
-++++ DomainName (1)
 ++++ Integration (1)
 ++++ Route (1)
 ++++ Stage (1)
-++++ ApiMapping (1)
 ++++ Deployment (1)
+++++ DomainName (1)
 @endmindmap

@@ -11,6 +11,7 @@
     "bootstrap": "lerna bootstrap",
     "test:gcp": "cd packages/providers/google && npm test",
     "test:aws": "cd packages/providers/aws && npm test",
+    "gencode": "lerna run  --scope @grucloud/example-* --stream  gencode",
     "test:aws:lerna": "lerna run  --scope @grucloud/provider-aws --stream  test",
     "test:azure": "cd packages/providers/azure && npm test",
     "test:k8s": "lerna run --concurrency 1 --scope @grucloud/provider-k8s --scope @grucloud/example-module-k8s* test",

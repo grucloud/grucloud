@@ -9,7 +9,7 @@ module.exports = ({ stage }) => ({
     Object: {
       grucloudSimpleFileTest: {
         name: "grucloud-simple-file-test",
-        properties: {
+        properties: () => ({
           ContentType: "text/plain",
           ServerSideEncryption: "AES256",
           source: "s3/grucloud-simple-bucket/grucloud-simple-file-test.txt",
@@ -23,7 +23,7 @@ module.exports = ({ stage }) => ({
               Value: "Value2",
             },
           ],
-        },
+        }),
       },
     },
   },

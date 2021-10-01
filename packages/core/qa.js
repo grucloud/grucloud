@@ -24,7 +24,8 @@ exports.testEnd2End = ({
     tap((step) => {
       assert(step, `missing first step`);
     }),
-    ({ createStack, configs }) => Cli({ programOptions, createStack, configs }),
+    ({ createStack, createResources, configs }) =>
+      Cli({ programOptions, createStack, createResources, configs }),
     (cli) =>
       pipe([
         () => cli.info({}),
@@ -64,8 +65,6 @@ exports.testEnd2End = ({
               noOpen: true,
             },
             commandOptions: {
-              graph: true,
-              defaultExclude: true,
               typesExclude: ["EC2::NetworkInterface"],
               ...listOptions,
             },
@@ -76,14 +75,27 @@ exports.testEnd2End = ({
               input: "artifacts/inventory.json",
             },
           }),
+        () =>
+          cli.list({
+            programOptions: {
+              json: "artifacts/inventory.json",
+              noOpen: true,
+            },
+            commandOptions: {
+              graph: true,
+              defaultExclude: true,
+              typesExclude: ["EC2::NetworkInterface"],
+              ...listOptions,
+            },
+          }),
         () => steps,
         callProp("splice", 1),
         tap((params) => {
           assert(true);
         }),
-        map.series(({ createStack, configs }) =>
+        map.series(({ createStack, createResources, configs }) =>
           pipe([
-            () => Cli({ programOptions, createStack, configs }),
+            () => Cli({ programOptions, createStack, createResources, configs }),
             (cliNext) =>
               pipe([
                 () => cliNext.info({}),

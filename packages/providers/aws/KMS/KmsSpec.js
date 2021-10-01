@@ -16,10 +16,9 @@ module.exports = () =>
       isOurMinion: isOurMinionFactory({ key: "TagKey", value: "TagValue" }),
       compare: compare({
         filterTarget: pipe([
-          omit(["Tags"]),
+          omit(["Tags", "KeyState"]),
           defaultsDeep({
             Enabled: true,
-            KeyState: "Enabled",
             KeyManager: "CUSTOMER",
             CustomerMasterKeySpec: "SYMMETRIC_DEFAULT",
             MultiRegion: false,
@@ -36,6 +35,8 @@ module.exports = () =>
             "Arn",
             "Alias",
             "CreationDate",
+            "DeletionDate",
+            "KeyState",
             "Tags",
           ]),
         ]),

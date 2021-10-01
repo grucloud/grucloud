@@ -156,7 +156,7 @@ exports.SQSQueue = ({ spec, config }) => {
         ])(),
     ]),
     config: { retryDelay: 65e3, retryCount: 2 },
-    configIsUp: { repeatCount: 6, repeatDelay: 2e3 },
+    configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property

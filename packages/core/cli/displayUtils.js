@@ -373,7 +373,7 @@ const tablePerTypeDefault = {
       fork({
         name: get("displayName"),
         managedByUs: displayManagedByUs,
-        live: get("live"),
+        live: pipe([({ displayResource, live }) => displayResource({ live })]),
       }),
       stringifyLimit,
     ]),

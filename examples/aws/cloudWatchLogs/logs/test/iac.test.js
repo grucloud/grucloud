@@ -11,8 +11,16 @@ describe("CloudWatchLogs", async function () {
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       steps: [
         { createStack, configs: [config] },
-        { createStack, configs: [require("./configUpdate1.js")] },
-        { createStack, configs: [require("./configUpdate2.js")] },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate1").createResources,
+          configs: [config],
+        },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate2").createResources,
+          configs: [config],
+        },
         { createStack, configs: [config] },
       ],
     });

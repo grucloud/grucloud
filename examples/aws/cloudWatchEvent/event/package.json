@@ -1,12 +1,13 @@
 {
-  "name": "aws-example-cloudwatchevent",
+  "name": "@grucloud/example-aws-cloudwatchevent",
   "version": "2.0.2",
   "description": "Cloud Watch Event GruCloud example",
   "private": true,
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
-    "list": "gc list  -g --json artifacts/inventory.json"
+    "list": "gc list  -g --json artifacts/inventory.json",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

@@ -1,11 +1,12 @@
 {
-  "name": "aws-ecr-repository",
+  "name": "@grucloud/example-aws-ecr-repository",
   "version": "2.0.2",
   "description": "AWS ECR Repository",
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

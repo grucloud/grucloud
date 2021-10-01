@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/example-module-aws-load-balancer-controller",
+  "name": "@grucloud/example-aws-module-load-balancer-controller",
   "version": "2.0.2",
   "description": "The example tthe AWS Load Balancer Controller GruCloud Module",
   "main": "iac.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Controller Module'",
     "list": "gc list --graph --title 'Load Balancer Controller Module' --json artifacts/inventory.json --default-exclude -e NetworkInterface -e Key",
-    "test": "mocha"
+    "test": "mocha",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

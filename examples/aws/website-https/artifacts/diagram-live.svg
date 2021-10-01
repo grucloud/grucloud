@@ -29,15 +29,8 @@
 <text text-anchor="start" x="646.5" y="-499.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ACM::Certificate</text>
 <text text-anchor="start" x="646.5" y="-474.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">dev.cloudfront.aws.test.grucloud...</text>
 </g>
-<!-- Certificate::::grucloud.org -->
-<g id="node2" class="node">
-<title>Certificate::::grucloud.org</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="233,-605 84,-605 84,-547 233,-547 233,-605"/>
-<text text-anchor="start" x="96.5" y="-585.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ACM::Certificate</text>
-<text text-anchor="start" x="96.5" y="-560.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud.org</text>
-</g>
 <!-- Distribution::::distribution&#45;cloudfront.aws.test.grucloud.org&#45;dev -->
-<g id="node3" class="node">
+<g id="node2" class="node">
 <title>Distribution::::distribution&#45;cloudfront.aws.test.grucloud.org&#45;dev</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="592,-509 335,-509 335,-451 592,-451 592,-509"/>
 <text text-anchor="start" x="347.5" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudFront::Distribution</text>
@@ -50,7 +43,7 @@
 <polygon fill="#707070" stroke="#707070" points="623.59,-488.75 633.7,-485.58 623.82,-481.76 623.59,-488.75"/>
 </g>
 <!-- Bucket::::cloudfront.aws.test.grucloud.org&#45;dev -->
-<g id="node10" class="node">
+<g id="node9" class="node">
 <title>Bucket::::cloudfront.aws.test.grucloud.org&#45;dev</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="902.5,-319 634.5,-319 634.5,-261 902.5,-261 902.5,-319"/>
 <text text-anchor="start" x="646.5" y="-299.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
@@ -63,14 +56,14 @@
 <polygon fill="#707070" stroke="#707070" points="738.49,-329.01 742.61,-319.25 733.31,-324.31 738.49,-329.01"/>
 </g>
 <!-- HostedZone::::dev.cloudfront.aws.test.grucloud.org. -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>HostedZone::::dev.cloudfront.aws.test.grucloud.org.</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="598,-605 329,-605 329,-547 598,-547 598,-605"/>
 <text text-anchor="start" x="341.5" y="-585.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::HostedZone</text>
 <text text-anchor="start" x="341.5" y="-560.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">dev.cloudfront.aws.test.grucloud...</text>
 </g>
 <!-- Domain::::grucloud.org -->
-<g id="node9" class="node">
+<g id="node8" class="node">
 <title>Domain::::grucloud.org</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="880.5,-605 656.5,-605 656.5,-547 880.5,-547 880.5,-605"/>
 <text text-anchor="start" x="668.5" y="-585.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53Domains::Domain</text>
@@ -83,20 +76,20 @@
 <polygon fill="#707070" stroke="#707070" points="646.19,-579.5 656.19,-576 646.19,-572.5 646.19,-579.5"/>
 </g>
 <!-- Record::::dev.cloudfront.aws.test.grucloud.org.::NS -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>Record::::dev.cloudfront.aws.test.grucloud.org.::NS</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="293,-453 24,-453 24,-395 293,-395 293,-453"/>
-<text text-anchor="start" x="36.5" y="-433.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="36.5" y="-408.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">dev.cloudfront.aws.test.grucloud...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="293,-605 24,-605 24,-547 293,-547 293,-605"/>
+<text text-anchor="start" x="36.5" y="-585.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
+<text text-anchor="start" x="36.5" y="-560.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">dev.cloudfront.aws.test.grucloud...</text>
 </g>
 <!-- Record::::dev.cloudfront.aws.test.grucloud.org.::NS&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org. -->
 <g id="edge4" class="edge">
 <title>Record::::dev.cloudfront.aws.test.grucloud.org.::NS&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org.</title>
-<path fill="none" stroke="#707070" d="M280.58,-453.14C284.93,-455.83 289.1,-458.78 293,-462 320.3,-484.5 302.09,-510.03 329,-533 332.53,-536.02 336.28,-538.82 340.19,-541.43"/>
-<polygon fill="#707070" stroke="#707070" points="338.64,-544.59 349,-546.83 342.3,-538.62 338.64,-544.59"/>
+<path fill="none" stroke="#707070" d="M293.28,-576C301.62,-576 310.04,-576 318.42,-576"/>
+<polygon fill="#707070" stroke="#707070" points="318.62,-579.5 328.62,-576 318.62,-572.5 318.62,-579.5"/>
 </g>
 <!-- Record::::dev.cloudfront.aws.test.grucloud.org.::SOA -->
-<g id="node6" class="node">
+<g id="node5" class="node">
 <title>Record::::dev.cloudfront.aws.test.grucloud.org.::SOA</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="293,-529 24,-529 24,-471 293,-471 293,-529"/>
 <text text-anchor="start" x="36.5" y="-509.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
@@ -109,45 +102,45 @@
 <polygon fill="#707070" stroke="#707070" points="336.16,-547.92 346.72,-546.96 337.87,-541.13 336.16,-547.92"/>
 </g>
 <!-- Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org -->
-<g id="node7" class="node">
+<g id="node6" class="node">
 <title>Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="287,-301 30,-301 30,-243 287,-243 287,-301"/>
-<text text-anchor="start" x="42.5" y="-281.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="42.5" y="-256.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">distribution&#45;alias&#45;dev.cloudfron...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="287,-377 30,-377 30,-319 287,-319 287,-377"/>
+<text text-anchor="start" x="42.5" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
+<text text-anchor="start" x="42.5" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">distribution&#45;alias&#45;dev.cloudfron...</text>
 </g>
 <!-- Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org&#45;&gt;Distribution::::distribution&#45;cloudfront.aws.test.grucloud.org&#45;dev -->
 <g id="edge7" class="edge">
 <title>Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org&#45;&gt;Distribution::::distribution&#45;cloudfront.aws.test.grucloud.org&#45;dev</title>
-<path fill="none" stroke="#707070" d="M282.62,-301.03C286.3,-303.76 289.78,-306.74 293,-310 335.76,-353.24 286.24,-398.76 329,-442 329.8,-442.81 330.63,-443.61 331.46,-444.39"/>
-<polygon fill="#707070" stroke="#707070" points="329.45,-447.27 339.38,-450.97 333.92,-441.88 329.45,-447.27"/>
+<path fill="none" stroke="#707070" d="M279.22,-377.11C284.03,-379.81 288.65,-382.77 293,-386 316.76,-403.63 305.24,-424.37 329,-442 330.63,-443.21 332.3,-444.38 334.01,-445.52"/>
+<polygon fill="#707070" stroke="#707070" points="332.42,-448.66 342.78,-450.89 336.08,-442.69 332.42,-448.66"/>
 </g>
 <!-- Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org. -->
 <g id="edge6" class="edge">
 <title>Record::::distribution&#45;alias&#45;dev.cloudfront.aws.test.grucloud.org&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org.</title>
-<path fill="none" stroke="#707070" d="M283.59,-301.1C286.95,-303.82 290.1,-306.77 293,-310 355.73,-379.76 271.02,-444.24 329,-518 336.19,-527.14 345.1,-534.87 354.9,-541.4"/>
-<polygon fill="#707070" stroke="#707070" points="353.36,-544.57 363.71,-546.84 357.03,-538.61 353.36,-544.57"/>
+<path fill="none" stroke="#707070" d="M282.62,-377.03C286.3,-379.76 289.78,-382.74 293,-386 335.76,-429.24 289.2,-472.03 329,-518 337.09,-527.35 346.97,-535.24 357.65,-541.89"/>
+<polygon fill="#707070" stroke="#707070" points="355.96,-544.96 366.37,-546.96 359.48,-538.91 355.96,-544.96"/>
 </g>
 <!-- Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org. -->
-<g id="node8" class="node">
+<g id="node7" class="node">
 <title>Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org.</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="290.5,-377 26.5,-377 26.5,-319 290.5,-319 290.5,-377"/>
-<text text-anchor="start" x="38.5" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="38.5" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">validation&#45;dev.cloudfront.aws.te...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="290.5,-453 26.5,-453 26.5,-395 290.5,-395 290.5,-453"/>
+<text text-anchor="start" x="38.5" y="-433.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
+<text text-anchor="start" x="38.5" y="-408.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">validation&#45;dev.cloudfront.aws.te...</text>
 </g>
 <!-- Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org.&#45;&gt;Certificate::::dev.cloudfront.aws.test.grucloud.org -->
 <g id="edge9" class="edge">
 <title>Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org.&#45;&gt;Certificate::::dev.cloudfront.aws.test.grucloud.org</title>
-<path fill="none" stroke="#707070" d="M282.62,-377.03C286.3,-379.76 289.78,-382.74 293,-386 335.76,-429.24 280.67,-481.09 329,-518 376.51,-554.28 538.42,-522.89 598,-518 606.33,-517.32 614.87,-516.45 623.47,-515.44"/>
-<polygon fill="#707070" stroke="#707070" points="624.09,-518.89 633.59,-514.2 623.24,-511.94 624.09,-518.89"/>
+<path fill="none" stroke="#707070" d="M279.22,-453.11C284.03,-455.81 288.65,-458.77 293,-462 316.76,-479.63 303.03,-503.82 329,-518 378.26,-544.9 515.78,-531.62 623.82,-515.47"/>
+<polygon fill="#707070" stroke="#707070" points="624.48,-518.91 633.85,-513.95 623.43,-511.98 624.48,-518.91"/>
 </g>
 <!-- Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org.&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org. -->
 <g id="edge8" class="edge">
 <title>Record::::validation&#45;dev.cloudfront.aws.test.grucloud.org.&#45;&gt;HostedZone::::dev.cloudfront.aws.test.grucloud.org.</title>
-<path fill="none" stroke="#707070" d="M283.02,-377.14C286.56,-379.84 289.91,-382.79 293,-386 339.67,-434.44 283.17,-483.77 329,-533 331.6,-535.79 334.38,-538.41 337.31,-540.85"/>
-<polygon fill="#707070" stroke="#707070" points="335.31,-543.72 345.4,-546.93 339.51,-538.12 335.31,-543.72"/>
+<path fill="none" stroke="#707070" d="M280.58,-453.14C284.93,-455.83 289.1,-458.78 293,-462 320.3,-484.5 302.09,-510.03 329,-533 332.53,-536.02 336.28,-538.82 340.19,-541.43"/>
+<polygon fill="#707070" stroke="#707070" points="338.64,-544.59 349,-546.83 342.3,-538.62 338.64,-544.59"/>
 </g>
 <!-- Object::::build/bundle.css -->
-<g id="node11" class="node">
+<g id="node10" class="node">
 <title>Object::::build/bundle.css</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="534.5,-433 392.5,-433 392.5,-375 534.5,-375 534.5,-433"/>
 <text text-anchor="start" x="404.5" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Object</text>
@@ -160,7 +153,7 @@
 <polygon fill="#707070" stroke="#707070" points="700.78,-326.45 708.36,-319.05 697.82,-320.11 700.78,-326.45"/>
 </g>
 <!-- Object::::build/bundle.js -->
-<g id="node12" class="node">
+<g id="node11" class="node">
 <title>Object::::build/bundle.js</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="528,-357 399,-357 399,-299 528,-299 528,-357"/>
 <text text-anchor="start" x="411.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Object</text>
@@ -173,7 +166,7 @@
 <polygon fill="#707070" stroke="#707070" points="624.99,-311.4 634.47,-306.68 624.12,-304.45 624.99,-311.4"/>
 </g>
 <!-- Object::::favicon.png -->
-<g id="node13" class="node">
+<g id="node12" class="node">
 <title>Object::::favicon.png</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="517.5,-281 409.5,-281 409.5,-223 517.5,-223 517.5,-281"/>
 <text text-anchor="start" x="421.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Object</text>
@@ -186,7 +179,7 @@
 <polygon fill="#707070" stroke="#707070" points="623.87,-275.51 634.23,-273.29 624.74,-268.57 623.87,-275.51"/>
 </g>
 <!-- Object::::global.css -->
-<g id="node14" class="node">
+<g id="node13" class="node">
 <title>Object::::global.css</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="516,-205 411,-205 411,-147 516,-147 516,-205"/>
 <text text-anchor="start" x="423.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Object</text>
@@ -199,7 +192,7 @@
 <polygon fill="#707070" stroke="#707070" points="697.82,-259.89 708.36,-260.95 700.78,-253.55 697.82,-259.89"/>
 </g>
 <!-- Object::::index.html -->
-<g id="node15" class="node">
+<g id="node14" class="node">
 <title>Object::::index.html</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="516,-129 411,-129 411,-71 516,-71 516,-129"/>
 <text text-anchor="start" x="423.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Object</text>

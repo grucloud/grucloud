@@ -68,9 +68,22 @@ const requireConfig = ({ fileName, stage }) => {
   return config;
 };
 
+const requireResources = ({ fileName }) => {
+  if (!fileName) {
+    return;
+  }
+  checkFileExist({ fileName });
+
+  const resourceNameFull = path.resolve(process.cwd(), fileName);
+  checkFileExist({ fileName: resourceNameFull });
+  const resources = require(resourceNameFull);
+  assert(resources.createResources);
+  return resources.createResources;
+};
 exports.createInfra =
   ({ commandOptions, programOptions }) =>
   async ({ infraFileName, configFileName, stage = "dev" }) => {
+    assert(programOptions);
     const infraFileNameFull = resolveFilename({
       fileName: infraFileName,
       defaultName: "iac.js",
@@ -78,10 +91,10 @@ exports.createInfra =
     checkFileExist({ fileName: infraFileNameFull });
 
     const config = requireConfig({ fileName: configFileName, stage });
-    //assert(isFunction(config));
     return {
       config,
       stage,
+      createResources: requireResources({ fileName: programOptions.resource }),
       createStack: createStackFromFile({ infraFileName: infraFileNameFull }),
     };
   };

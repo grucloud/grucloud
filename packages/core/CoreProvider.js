@@ -14,11 +14,8 @@ const {
   assign,
   any,
   reduce,
-  fork,
   eq,
   not,
-  and,
-  or,
   pick,
   omit,
 } = require("rubico");
@@ -41,7 +38,6 @@ const {
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
-const { checkConfig, checkEnv } = require("./Utils");
 const { createSpec } = require("./SpecDefault");
 const { retryCall } = require("./Retry");
 const {
@@ -271,10 +267,7 @@ function CoreProvider({
       if (spec.listOnly) {
         return;
       }
-      throw {
-        code: 400,
-        message: `resource '${resourceKey}' already exists`,
-      };
+      logger.debug(`resource '${resourceKey}' already exists`);
     }
 
     const resourceVarName = camelCase(name);
@@ -284,10 +277,14 @@ function CoreProvider({
     )(resourcesObj);
 
     mapNameToResource.set(resourceKey, resource);
-
+    const resourcesByType = getResourcesByType(resource);
+    assert(resourcesByType);
     mapTypeToResources.set(
       JSON.stringify({ type: resource.type, group: resource.group }),
-      [...getResourcesByType(resource), resource]
+      [
+        ...filter(not(eq(get("name"), resource.name)))(resourcesByType),
+        resource,
+      ]
     );
 
     tap.if(get("hook"), (client) =>
@@ -1315,7 +1312,7 @@ function CoreProvider({
               map((resource) => ({
                 resource: omit(["live"])(resource),
                 action: "DESTROY",
-                live: resource.live,
+                live: client.spec.displayResource()(resource.live),
                 providerName: resource.providerName,
               })),
             ])(),

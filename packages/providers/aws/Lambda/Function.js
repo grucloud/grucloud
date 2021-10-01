@@ -191,10 +191,7 @@ exports.Function = ({ spec, config }) => {
                 );
               }),
               () => error,
-              get("message"),
-              includes(
-                "The role defined for the function cannot be assumed by Lambda"
-              ),
+              eq(get("code"), "InvalidParameterValueException"),
             ])(),
         }),
       get("Function"),

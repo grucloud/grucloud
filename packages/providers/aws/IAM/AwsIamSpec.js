@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, tap, get, pick, omit } = require("rubico");
-const { when, isString, prepend } = require("rubico/x");
+const { when, isString, prepend, callProp, last } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 
 const { AwsIamUser } = require("./AwsIamUser");
@@ -87,9 +87,17 @@ module.exports = () =>
               map(
                 when(isString, (name) =>
                   provider.IAM.usePolicy({
-                    name: name.replace("arn:aws:iam::aws:policy/", ""),
+                    name: pipe([callProp("split", "/"), last])(name),
                     properties: () => ({
                       Arn: name,
+                      Path: pipe([
+                        () => name,
+                        callProp("replace", "arn:aws:iam::aws:policy/", ""),
+                        callProp("split", "/"),
+                        callProp("slice", 0, -1),
+                        callProp("join", "/"),
+                        prepend("/"),
+                      ])(),
                     }),
                   })
                 )

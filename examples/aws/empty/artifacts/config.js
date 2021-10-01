@@ -1,5 +1,5 @@
 module.exports = ({ stage }) => ({
-  projectName: "example-grucloud-infra-aws",
+  projectName: "@grucloud/example-aws-template",
   CloudWatchLogs: {
     LogGroup: {
       myLoggroup: {

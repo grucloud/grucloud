@@ -1,5 +1,5 @@
 {
-  "name": "example-grucloud-dynamodb-table",
+  "name": "@grucloud/example-aws-dynamodb-table",
   "version": "2.0.2",
   "private": true,
   "description": "",
@@ -8,7 +8,7 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

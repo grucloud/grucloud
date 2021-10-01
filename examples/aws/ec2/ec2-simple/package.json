@@ -1,5 +1,5 @@
 {
-  "name": "ec2-simple",
+  "name": "@grucloud/example-aws-ec2-simple",
   "version": "2.0.2",
   "description": "Simple EC2 Instance with GruCloud",
   "main": "index.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "list": "gc list --graph --json artifacts/inventory.json -e NetworkInterface"
+    "list": "gc list --graph --json artifacts/inventory.json -e NetworkInterface",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

@@ -622,6 +622,7 @@ const filterTarget = ({ target }) =>
   ])();
 
 const filterLive = pipe([
+  get("live"),
   omit([
     "EnclaveOptions",
     "MetadataOptions",

@@ -1,6 +1,5 @@
 ## Bugs
 
-- examples mock with createProvider
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -53,7 +52,10 @@
 
 ## Aws
 
-- examples ecr use accountId from config in configUpdate1
+- Optional name
+
+- Lambda env var dependencies with DynamoDB table
+- Policy dependencies with other resources: DynamoDB table
 
 - gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
@@ -61,7 +63,6 @@
   4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
-- document apigateway
 - throw error => throw Error(error.message);
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
@@ -115,6 +116,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
 ## TODO Mock
+
+- examples mock with createProvider
 
 ## Nice to have
 

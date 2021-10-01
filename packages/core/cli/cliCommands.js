@@ -1442,7 +1442,11 @@ const genCode = ({ infra, commandOptions = {}, programOptions }) =>
       () => infra,
       setupProviders({ commandOptions }),
       ({ providerGru }) =>
-        providerGru.generateCode({ commandOptions, programOptions }),
+        providerGru.runCommand({
+          functionName: "generateCode",
+          commandOptions,
+          programOptions,
+        }),
     ]),
     DisplayAndThrow({ name: "genCode" })
   )();
@@ -1484,6 +1488,7 @@ const projectIdDefault = ({ programOptions, stage }) =>
 exports.Cli = ({
   programOptions = {},
   createStack,
+  createResources,
   config,
   configs = [],
   stage,
@@ -1504,15 +1509,18 @@ exports.Cli = ({
       envLoader({ configDir: programOptions.workingDirectory });
     }),
     assign({
-      infra: ({ programOptions }) =>
-        createStack({
-          createProvider: createProviderMaker({
-            programOptions,
-            config,
-            configs,
-            stage,
+      infra: pipe([
+        ({ programOptions }) =>
+          createStack({
+            createProvider: createProviderMaker({
+              programOptions,
+              config,
+              configs,
+              stage,
+            }),
           }),
-        }),
+        tap.if(() => createResources, createResources),
+      ]),
     }),
     tap.if(not(get("infra")), () => {
       throw Error("no infra provided in createStack");
