@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ec2-launch-template",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^2.0.2",
-    "@grucloud/provider-aws": "^2.0.2",
+    "@grucloud/core": "^2.1.0",
+    "@grucloud/provider-aws": "^2.1.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {
