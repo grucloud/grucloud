@@ -5,23 +5,16 @@ const {
   tap,
   tryCatch,
   get,
-  switchCase,
   eq,
-  not,
   pick,
   flatMap,
   assign,
-  omit,
 } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, prepend } = require("rubico/x");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
 const { tos } = require("@grucloud/core/tos");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
@@ -70,13 +63,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
               group: "AppSync",
               providerName: config.providerName,
             }),
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       ],
     },
@@ -95,30 +82,34 @@ exports.AppSyncResolver = ({ spec, config }) => {
       () =>
         lives.getByType({
           providerName: config.providerName,
-          type: "Type",
+          type: "GraphqlApi",
           group: "AppSync",
         }),
       pluck("live"),
-      flatMap(({ apiId, name, tags }) =>
+      flatMap(({ apiId, tags }) =>
         tryCatch(
           pipe([
-            tap((params) => {
-              assert(tags);
+            tap(() => {
+              assert(apiId);
             }),
-            () => ({ apiId, typeName: name }),
-            appSync().listResolvers,
-            get("resolvers"),
-            map(
+            () => ({ apiId, format: "SDL" }),
+            appSync().listTypes,
+            get("types"),
+            flatMap(({ name }) =>
               pipe([
-                defaultsDeep({ apiId }),
-                assign({
-                  tags: () => tags,
-                }),
-              ])
+                () => ({ apiId, typeName: name }),
+                appSync().listResolvers,
+                get("resolvers"),
+                map(
+                  pipe([
+                    defaultsDeep({ apiId }),
+                    assign({
+                      tags: () => tags,
+                    }),
+                  ])
+                ),
+              ])()
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
           (error) =>
             pipe([
@@ -151,6 +142,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     getById,
     pickId,
     config,
+    shouldRetryOnException: eq(get("code"), "ConcurrentModificationException"),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteResolver-property

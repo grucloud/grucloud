@@ -11,7 +11,11 @@ describe("DynamoDb", async function () {
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       steps: [
         { createStack, configs: [config] },
-        { createStack, configs: [require("./configUpdate1"), config] },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate1").createResources,
+          configs: [config],
+        },
       ],
     });
   });

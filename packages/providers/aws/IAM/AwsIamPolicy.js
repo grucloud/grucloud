@@ -14,6 +14,7 @@ const {
   or,
   not,
   gte,
+  any,
 } = require("rubico");
 const {
   find,
@@ -311,11 +312,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const detatchPolicyVersions = ({ Arn: PolicyArn, Versions }) =>
+  const detatchPolicyVersions = ({ Arn: PolicyArn, Versions = [] }) =>
     pipe([
       tap(() => {
         assert(PolicyArn);
-        assert(Versions);
       }),
       () => Versions,
       filter(not(get("IsDefaultVersion"))),
@@ -364,7 +364,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       tap((name) => {
         //assert(name);
       }),
-      includes("Amazon"),
+      (name) =>
+        pipe([
+          () => ["Amazon", "AWS"],
+          any((prefix) => includes(prefix)(name)),
+        ])(),
     ])();
 
   return {

@@ -489,7 +489,8 @@ exports.ProviderGru = ({
   //TODO do not use lister
   const runCommand = ({
     onStateChange = identity,
-    options,
+    commandOptions,
+    programOptions,
     functionName,
   } = {}) =>
     pipe([
@@ -512,7 +513,8 @@ exports.ProviderGru = ({
             () =>
               provider[functionName]({
                 onStateChange,
-                options,
+                commandOptions,
+                programOptions,
               }),
             assign({ providerName: () => provider.name }),
             tap((xxx) => {

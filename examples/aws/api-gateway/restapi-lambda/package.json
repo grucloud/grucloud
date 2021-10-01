@@ -1,12 +1,13 @@
 {
-  "name": "api-gateway-restapi-lambda",
+  "name": "@grucloud/example-aws-api-gateway-restapi-lambda",
   "version": "2.0.2",
   "description": "AWS Rest Api Gateway with Lambda function",
   "private": true,
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
-    "list": "gc list --graph --json artifacts/inventory.json"
+    "list": "gc list --graph --json artifacts/inventory.json",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

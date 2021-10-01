@@ -3,9 +3,7 @@
   "version": "2.0.2",
   "description": "AWS resources to support the Load Balancer Controller running on Kubernetes",
   "main": "iac.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [
     "AWS",
     "Load",

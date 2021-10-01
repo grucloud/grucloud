@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/example-azure",
+  "name": "@grucloud/example-azure-vm",
   "version": "2.0.2",
   "private": true,
   "description": "",
@@ -8,7 +8,7 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l"
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

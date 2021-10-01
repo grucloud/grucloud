@@ -4,7 +4,7 @@ module.exports = ({ stage }) => ({
     Bucket: {
       cloudfrontAwsTestGrucloudOrgDev: {
         name: "cloudfront.aws.test.grucloud.org-dev",
-        properties: {
+        properties: () => ({
           ACL: "public-read",
           WebsiteConfiguration: {
             IndexDocument: {
@@ -14,45 +14,45 @@ module.exports = ({ stage }) => ({
               Key: "error.html",
             },
           },
-        },
+        }),
       },
     },
     Object: {
       buildBundleCss: {
         name: "build/bundle.css",
-        properties: {
+        properties: () => ({
           ContentType: "text/css",
           source:
             "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.css.css",
-        },
+        }),
       },
       buildBundleJs: {
         name: "build/bundle.js",
-        properties: {
+        properties: () => ({
           ContentType: "application/javascript",
           source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.js.js",
-        },
+        }),
       },
       faviconPng: {
         name: "favicon.png",
-        properties: {
+        properties: () => ({
           ContentType: "image/png",
           source: "s3/cloudfront.aws.test.grucloud.org-dev/favicon.png.png",
-        },
+        }),
       },
       globalCss: {
         name: "global.css",
-        properties: {
+        properties: () => ({
           ContentType: "text/css",
           source: "s3/cloudfront.aws.test.grucloud.org-dev/global.css.css",
-        },
+        }),
       },
       indexHtml: {
         name: "index.html",
-        properties: {
+        properties: () => ({
           ContentType: "text/html",
           source: "s3/cloudfront.aws.test.grucloud.org-dev/index.html.html",
-        },
+        }),
       },
     },
   },
@@ -60,7 +60,7 @@ module.exports = ({ stage }) => ({
     Distribution: {
       distributionCloudfrontAwsTestGrucloudOrgDev: {
         name: "distribution-cloudfront.aws.test.grucloud.org-dev",
-        properties: {
+        properties: () => ({
           PriceClass: "PriceClass_100",
           Aliases: {
             Quantity: 1,
@@ -154,7 +154,7 @@ module.exports = ({ stage }) => ({
             Bucket: "",
             Prefix: "",
           },
-        },
+        }),
       },
     },
   },
@@ -162,9 +162,9 @@ module.exports = ({ stage }) => ({
     Certificate: {
       devCloudfrontAwsTestGrucloudOrg: {
         name: "dev.cloudfront.aws.test.grucloud.org",
-        properties: {
+        properties: () => ({
           DomainName: "dev.cloudfront.aws.test.grucloud.org",
-        },
+        }),
       },
     },
   },

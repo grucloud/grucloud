@@ -3,6 +3,7 @@ const {
   pipe,
   tap,
   get,
+  set,
   eq,
   pick,
   switchCase,
@@ -15,6 +16,7 @@ const {
   any,
   fork,
   filter,
+  tryCatch,
 } = require("rubico");
 const Axios = require("axios");
 const {
@@ -131,7 +133,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pipe([
             pick([
-              "LocationConstraint",
               "AccelerateConfiguration",
               "ACL",
               "CORSConfiguration",
@@ -454,10 +455,30 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
           securityGroup: { type: "SecurityGroup", group: "EC2" },
         }),
       },
-
       {
         type: "Instance",
-        filterLive: () => pick(["InstanceType", "ImageId"]),
+        filterLive: () =>
+          pipe([
+            pick(["InstanceType", "ImageId", "UserData"]),
+            tap((params) => {
+              assert(true);
+            }),
+            when(
+              get("UserData"),
+              assign({
+                UserData: pipe([
+                  get("UserData"),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  (UserData) => Buffer.from(UserData, "base64").toString(),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+              })
+            ),
+          ]),
         dependencies: ec2InstanceDependencies,
       },
       {
@@ -679,7 +700,13 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Key",
         filterLive: () => pick([""]),
-        ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+        ignoreResource: ({ lives }) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            not(get("live.Enabled")),
+          ]),
       },
     ],
   },
@@ -826,7 +853,11 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Rule",
-        filterLive: () => pipe([omit(["Name", "Arn", "EventBusName"])]),
+        filterLive: () =>
+          pipe([
+            omit(["Name", "Arn", "EventBusName"]),
+            omitIfEmpty(["Targets"]),
+          ]),
         dependencies: () => ({
           eventBus: { type: "EventBus", group: "CloudWatchEvents" },
         }),
@@ -954,14 +985,40 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "Repository",
-
-        filterLive: () =>
-          pick([
-            "imageTagMutability",
-            "imageScanningConfiguration",
-            "encryptionConfiguration",
-            "policyText",
-            "lifecyclePolicyText",
+        filterLive: ({ providerConfig }) =>
+          pipe([
+            pick([
+              "imageTagMutability",
+              "imageScanningConfiguration",
+              "encryptionConfiguration",
+              "policyText",
+              "lifecyclePolicyText",
+            ]),
+            assign({
+              policyText: pipe([
+                get("policyText"),
+                assign({
+                  Statement: pipe([
+                    get("Statement"),
+                    map(
+                      assign({
+                        Principal: pipe([
+                          get("Principal.AWS"),
+                          callProp(
+                            "replace",
+                            providerConfig.accountId(),
+                            "${config.accountId()}"
+                          ),
+                          (principal) => ({
+                            AWS: () => "`" + principal + "`",
+                          }),
+                        ]),
+                      })
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
           ]),
       },
       {
@@ -1141,7 +1198,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               }),
               () => live,
               pick([
-                "FunctionName",
                 "Handler",
                 "PackageType",
                 "Runtime",
@@ -1149,6 +1205,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                 "LicenseInfo",
                 "Timeout",
                 "MemorySize",
+                "Environment",
               ]),
               tap(
                 pipe([
@@ -1463,6 +1520,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "MaxAllocatedStorage",
             "PubliclyAccessible",
             "PreferredBackupWindow",
+            "PreferredMaintenanceWindow",
             "BackupRetentionPeriod",
           ]),
         environmentVariables: () => [
@@ -1494,24 +1552,32 @@ const downloadAsset = ({ url, assetPath }) =>
     tap(pipe([path.dirname, (dir) => fs.mkdir(dir, { recursive: true })])),
     Fs.createWriteStream,
     (writer) =>
-      pipe([
-        () =>
-          Axios({
-            url,
-            method: "GET",
-            responseType: "stream",
+      tryCatch(
+        pipe([
+          () =>
+            Axios({
+              url,
+              method: "GET",
+              responseType: "stream",
+            }),
+          get("data"),
+          callProp("pipe", writer),
+          () =>
+            new Promise((resolve, reject) => {
+              writer.on("finish", resolve);
+              writer.on("error", reject);
+            }),
+          tap((params) => {
+            assert(true);
           }),
-        get("data"),
-        callProp("pipe", writer),
-        () =>
-          new Promise((resolve, reject) => {
-            writer.on("finish", resolve);
-            writer.on("error", reject);
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+        ]),
+        (error) =>
+          pipe([
+            tap((params) => {
+              throw Error(error.message);
+            }),
+          ])()
+      )(),
   ])();
 
 const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
@@ -1624,7 +1690,7 @@ const filterModel = pipe([
     assert(true);
   }),
 ]);
-exports.generateCode = ({ commandOptions, programOptions }) =>
+exports.generateCode = ({ providerConfig, commandOptions, programOptions }) =>
   pipe([
     () => WritersSpec({ commandOptions, programOptions }),
     (writersSpec) =>
@@ -1634,17 +1700,21 @@ exports.generateCode = ({ commandOptions, programOptions }) =>
             name: "aws2gc",
             providerType: "aws",
             writersSpec,
+            providerConfig,
             commandOptions,
             programOptions,
             iacTpl,
             configTpl,
             filterModel,
           }),
-        () =>
-          downloadAssets({
-            writersSpec,
-            commandOptions,
-            programOptions,
-          }),
+        tap.if(
+          () => commandOptions.download,
+          () =>
+            downloadAssets({
+              writersSpec,
+              commandOptions,
+              programOptions,
+            })
+        ),
       ])(),
   ])();

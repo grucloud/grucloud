@@ -126,6 +126,9 @@ const decorateLive =
         get namespace() {
           return client.findNamespace({ live, lives, config });
         },
+        displayResource() {
+          return client.spec.displayResource({ lives, config })(live);
+        },
         get dependencies() {
           return pipe([
             () =>
@@ -269,6 +272,7 @@ const createClient = ({
         }),
         get("name"),
       ]),
+
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",

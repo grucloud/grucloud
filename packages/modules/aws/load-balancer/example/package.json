@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/example-module-aws-load-balancer",
+  "name": "@grucloud/example-aws-module-load-balancer",
   "version": "2.0.2",
   "description": "An example of the GruCloud Module to manage load balancer, target groups and rules",
   "main": "iac.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Module'",
     "list": "gc list --graph --json artifacts/inventory.json  --title 'Load Balancer Module' --default-exclude --types-exclude NetworkInterface",
-    "test": "mocha"
+    "test": "mocha",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

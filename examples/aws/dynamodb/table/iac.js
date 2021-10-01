@@ -2,11 +2,32 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  const { config } = provider;
-
   provider.DynamoDB.makeTable({
-    name: config.DynamoDB.Table.myTable.name,
-    properties: () => config.DynamoDB.Table.myTable.properties,
+    name: "myTable",
+    properties: () => ({
+      AttributeDefinitions: [
+        {
+          AttributeName: "Id",
+          AttributeType: "S",
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: "Id",
+          KeyType: "HASH",
+        },
+      ],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 5,
+        WriteCapacityUnits: 5,
+      },
+      Tags: [
+        {
+          Key: "TOTOKEY",
+          Value: "TOTO",
+        },
+      ],
+    }),
   });
 };
 

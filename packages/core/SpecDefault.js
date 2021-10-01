@@ -90,6 +90,7 @@ const SpecDefault = ({ providerName }) => ({
   propertiesDefault: {},
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
+  displayResource: () => identity,
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>

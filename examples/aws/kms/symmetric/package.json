@@ -1,12 +1,12 @@
 {
-  "name": "kms-symmetric",
+  "name": "@grucloud/example-aws-kms-symmetric",
   "version": "2.0.2",
   "private": true,
   "description": "",
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

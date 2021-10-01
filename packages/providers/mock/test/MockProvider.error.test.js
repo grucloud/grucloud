@@ -31,13 +31,8 @@ describe("MockProvider errors", async function () {
     });
 
     // Ip
-    try {
-      const ip = provider.makeIp({ name: "myip" });
-      const ip2 = provider.makeIp({ name: "myip" });
-      assert(false);
-    } catch (error) {
-      assert.equal(error.code, 400);
-    }
+    const ip = provider.makeIp({ name: "myip" });
+    const ip2 = provider.makeIp({ name: "myip" });
   });
   //TODO should not throw an error
   it("create 2 providers with the same resource name", async function () {

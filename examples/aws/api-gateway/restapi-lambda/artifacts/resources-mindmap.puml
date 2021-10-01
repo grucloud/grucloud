@@ -3,24 +3,11 @@ title Resources for project RestApiGateway Lambda
 skinparam monochrome true
 + Infra
 ++ aws
-+++ Route53Domains
-++++ Domain (1)
-+++ Route53
-++++ HostedZone (1)
-++++ Record (2)
-+++ ACM
-++++ Certificate (1)
-+++ IAM
-++++ Policy (1)
-++++ Role (1)
-+++ Lambda
-++++ Function (1)
 +++ APIGateway
-++++ DomainName (1)
 ++++ RestApi (1)
-++++ Model (1)
-++++ Stage (1)
-++++ Resource (1)
 ++++ Authorizer (1)
-++++ Method (1)
+++++ Model (6)
+++++ Resource (3)
+++++ Method (4)
+++++ Stage (1)
 @endmindmap

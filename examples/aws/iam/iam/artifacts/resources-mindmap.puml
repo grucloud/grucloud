@@ -5,11 +5,10 @@ skinparam monochrome true
 ++ aws
 +++ IAM
 ++++ Policy (4)
-++++ Group (1)
 ++++ User (1)
+++++ Group (1)
 ++++ Role (1)
 ++++ InstanceProfile (1)
 +++ EC2
-++++ Image (1)
 ++++ Instance (1)
 @endmindmap

@@ -16,7 +16,7 @@ module.exports = ({ stage }) => ({
     Record: {
       txtGrucloudOrg: {
         name: "txt.grucloud.org.",
-        properties: {
+        properties: () => ({
           Name: "grucloud.org.",
           Type: "TXT",
           TTL: 60,
@@ -26,7 +26,7 @@ module.exports = ({ stage }) => ({
                 '"google-site-verification=q_tZuuK8OFGzYbrhd_VXoqtOTtruiAmH811iULb-m30"',
             },
           ],
-        },
+        }),
       },
     },
   },

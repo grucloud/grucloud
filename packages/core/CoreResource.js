@@ -222,8 +222,8 @@ exports.ResourceMaker = ({
                   {
                     action: "UPDATE",
                     resource: resource.toJSON(),
-                    target,
-                    live,
+                    target: resource.spec.displayResource()(target),
+                    live: resource.spec.displayResource()(live),
                     id: getClient().findId({ live, lives: provider.lives }),
                     diff,
                     providerName: resource.toJSON().providerName,
@@ -577,8 +577,8 @@ exports.ResourceMaker = ({
           {
             action: "CREATE",
             resource: resource.toJSON(),
-            target,
-            live,
+            target: resource.spec.displayResource()(target),
+            live: resource.spec.displayResource()(live),
             providerName: resource.toJSON().providerName,
           },
         ],

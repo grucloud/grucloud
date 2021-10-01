@@ -176,7 +176,6 @@ module.exports = () =>
       type: "Deployment",
       dependsOn: [
         "APIGateway::RestApi",
-        "APIGateway::Stage",
         "APIGateway::Resource",
         "APIGateway::Integration",
       ],

@@ -264,22 +264,30 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     properties,
     dependencies: { cluster, role, subnets },
   }) =>
-    defaultsDeep({
-      subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-      nodeRole: getField(role, "Arn"),
-      clusterName: cluster.config.name,
-      nodegroupName: name,
-      amiType: "AL2_x86_64",
-      capacityType: "ON_DEMAND",
-      diskSize: 20,
-      instanceTypes: ["t2.medium"], // See https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
-      scalingConfig: {
-        minSize: 1,
-        maxSize: 1,
-        desiredSize: 1,
-      },
-      tags: buildTagsObject({ config, namespace, name }),
-    })(properties);
+    pipe([
+      () => properties,
+      tap((params) => {
+        assert(cluster, "missing 'cluster' dependency");
+        assert(role, "missing 'role' dependency");
+        assert(subnets, "missing 'subnets' dependency");
+      }),
+      defaultsDeep({
+        subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+        nodeRole: getField(role, "Arn"),
+        clusterName: cluster.config.name,
+        nodegroupName: name,
+        amiType: "AL2_x86_64",
+        capacityType: "ON_DEMAND",
+        diskSize: 20,
+        instanceTypes: ["t2.medium"], // See https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
+        scalingConfig: {
+          minSize: 1,
+          maxSize: 1,
+          desiredSize: 1,
+        },
+        tags: buildTagsObject({ config, namespace, name }),
+      }),
+    ])();
 
   return {
     spec,

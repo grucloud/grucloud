@@ -1,4 +1,5 @@
-const { pipe, assign, map, omit } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, omit, tap } = require("rubico");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 
@@ -18,6 +19,7 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareLayer,
+      displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
     },
     {
       type: "Function",
@@ -26,6 +28,7 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareFunction,
+      displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
     },
     {
       type: "EventSourceMapping",

@@ -12,7 +12,11 @@ describe("EC2 Instance", async function () {
       createStack,
       steps: [
         { createStack, configs: [config] },
-        { createStack, configs: [require("./configUpdate1.js"), config] },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate1").createResources,
+          configs: [config],
+        },
       ],
     });
   });

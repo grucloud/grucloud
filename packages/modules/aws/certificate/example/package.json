@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/example-module-aws-certificate",
+  "name": "@grucloud/example-aws-module-certificate",
   "version": "2.0.2",
   "description": "Example deploy a certificate with DNS validation",
   "main": "iac.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "graph-target": "gc graph --title 'Certificate Module'",
     "graph-live": "gc list --graph --title 'Certificate Module'",
-    "test": "mocha --exit"
+    "test": "mocha --exit",
+    "gencode": "gc gencode"
   },
   "keywords": [
     "SSL",

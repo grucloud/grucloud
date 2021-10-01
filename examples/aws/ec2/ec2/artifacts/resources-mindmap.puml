@@ -6,6 +6,5 @@ skinparam monochrome true
 +++ EC2
 ++++ KeyPair (1)
 ++++ ElasticIpAddress (1)
-++++ Image (1)
 ++++ Instance (1)
 @endmindmap

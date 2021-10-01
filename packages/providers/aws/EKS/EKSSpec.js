@@ -27,12 +27,22 @@ module.exports = () =>
             assert(true);
           }),
         ]),
+        filterTarget: omit([
+          "resourcesVpcConfig.clusterSecurityGroupId",
+          "resourcesVpcConfig.vpcId",
+          "resourcesVpcConfig.subnetIds",
+          "resourcesVpcConfig.publicAccessCidrs",
+          "version",
+          "encryptionConfig",
+        ]),
         filterLive: omit([
           "arn",
+          "encryptionConfig",
           "createdAt",
           "endpoint",
           "resourcesVpcConfig.clusterSecurityGroupId",
           "resourcesVpcConfig.vpcId",
+          "resourcesVpcConfig.subnetIds",
           "resourcesVpcConfig.publicAccessCidrs",
           "kubernetesNetworkConfig",
           "identity",

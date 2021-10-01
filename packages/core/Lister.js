@@ -148,6 +148,8 @@ exports.Lister =
           (results) => ({ error: any(get("error"))(results), results }),
           tap(({ error, results }) => {
             logger.info(`Lister ${error && "error"}`);
+            error.stack && logger.error(error.stack);
+
             //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
           }),
         ])(),

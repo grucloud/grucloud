@@ -67,6 +67,7 @@ exports.createProgram = () => {
   program.version(pkg.version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
   program.option("-c, --config <file>", "config file, default is config.js");
+  program.option("-r, --resource <file>", "additional resource file");
   program.option("-j, --json <file>", "write result to a file in json format");
   program.option("-d, --workingDirectory <file>", "The working directory.");
   program.option("--noOpen", "Do not open diagram");
@@ -87,13 +88,14 @@ exports.createProgram = () => {
             pipe([
               () => programOptions,
               infraOptions,
-              createInfra({ commandOptions }),
+              createInfra({ commandOptions, programOptions }),
               tap((params) => {
                 assert(true);
               }),
-              ({ createStack, config, stage }) =>
+              ({ createStack, createResources, config, stage }) =>
                 Cli({
                   createStack,
+                  createResources,
                   config,
                   stage,
                   programOptions,
@@ -250,12 +252,8 @@ exports.createProgram = () => {
     .option("--projectName <value>", "The project name")
     .option("--projectId <value>", "The project id")
     .option("--input <file>", "lives resources", "artifacts/inventory.json")
+    .option("--no-download", "do not download assets")
     .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
-    .option(
-      "-c, --outputConfig <file>",
-      "config.js output",
-      "artifacts/config.js"
-    )
     .option(
       "--outputEnv <file>",
       "default.env environment variables",

@@ -1,5 +1,5 @@
 {
-  "name": "@grucloud/create-aws-kops",
+  "name": "@grucloud/example-aws-kops",
   "version": "2.0.2",
   "description": "Provision users, groups, S3 bucket, route53 records for kops",
   "main": "iac,js",

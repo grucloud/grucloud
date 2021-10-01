@@ -1,11 +1,12 @@
 {
-  "name": "rds-postgres",
+  "name": "@grucloud/example-aws-rds-postgres",
   "version": "2.0.2",
   "description": "",
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha --exit"
+    "test": "mocha --exit",
+    "gencode": "gc gencode"
   },
   "author": "",
   "license": "ISC",

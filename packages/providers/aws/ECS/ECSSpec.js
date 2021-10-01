@@ -44,7 +44,10 @@ module.exports = () =>
       Client: ECSCluster,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit([""]), filterTargetDefault]),
+        filterTarget: pipe([
+          defaultsDeep({ defaultCapacityProviderStrategy: [] }),
+          filterTargetDefault,
+        ]),
         filterLive: pipe([
           omit([
             "clusterArn",
@@ -90,11 +93,13 @@ module.exports = () =>
       compare: compare({
         filterTarget: pipe([
           defaultsDeep({ propagateTags: "NONE" }),
+          omit(["taskDefinition"]),
           filterTargetDefault,
         ]),
         filterLive: pipe([
           assign({ cluster: get("clusterArn") }),
           omit([
+            "taskDefinition",
             "clusterArn",
             "createdAt",
             "events",
