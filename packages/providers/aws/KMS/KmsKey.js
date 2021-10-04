@@ -222,10 +222,3 @@ exports.KmsKey = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
-
-const filterTarget = ({ target }) =>
-  pipe([
-    () => target,
-    omit(["Tags"]),
-    assign({ Enabled: () => true, KeyState: () => "Enabled" }),
-  ])();

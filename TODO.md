@@ -1,5 +1,6 @@
 ## Bugs
 
+- resource schema
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -66,7 +67,7 @@
 - throw error => throw Error(error.message);
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
-- ec2 update: handle UserData
+- UserData: ec2 update and displayResource
 - Resource pages
 
 - aws_route53_delegation_set
