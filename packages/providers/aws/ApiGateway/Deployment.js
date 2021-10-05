@@ -123,7 +123,7 @@ exports.Deployment = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { restApi, stage },
+    dependencies: { restApi },
   }) =>
     pipe([
       tap(() => {
@@ -132,7 +132,7 @@ exports.Deployment = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         restApiId: getField(restApi, "id"),
-        stageName: getField(stage, "name"),
+        //stageName: getField(stage, "name"),
       }),
     ])();
 

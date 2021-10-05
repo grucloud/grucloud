@@ -184,7 +184,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       shouldRetryOnException = () => false,
       postCreate = () => identity,
     }) =>
-    ({ name, payload }) =>
+    ({ name, payload, programOptions }) =>
       pipe([
         tap(() => {
           logger.debug(`create ${type}, ${name}`);
@@ -224,7 +224,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             config: configIsUp,
           })
         ),
-        postCreate({ name, payload }),
+        postCreate({ name, payload, programOptions }),
         tap(() => {
           logger.debug(`created ${type}, ${name}`);
         }),

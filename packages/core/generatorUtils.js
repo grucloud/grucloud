@@ -827,8 +827,7 @@ const writeResource =
             resourceVarName: () => resourceVarName(resource.name),
             resourceName: () => resourceName(resource.name),
             properties: pipe([
-              () => properties({ resource, mapping }),
-              defaultsDeep(
+              () =>
                 buildProperties({
                   providerConfig,
                   lives,
@@ -836,8 +835,12 @@ const writeResource =
                   filterLive,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
-                })
-              ),
+                }),
+              (props) =>
+                pipe([
+                  () => properties({ resource, mapping }),
+                  defaultsDeep(props),
+                ])(),
             ]),
           }),
           tap((params) => {
@@ -910,34 +913,40 @@ const writeResources =
         console.log(`Resources ${group}::${type} #${size(resources)}`);
       }),
       map(
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          (resource) =>
-            writeResource({
-              providerConfig,
-              environmentVariables,
-              options,
-              type,
-              typeTarget,
-              group,
-              providerName,
-              properties,
-              filterLive,
-              dependencies,
-              ignoreResource,
-              resourceVarName,
-              resourceName,
-              codeBuildProperties,
-              configBuildProperties,
-              hasNoProperty,
-            })({
-              resource,
-              lives,
-              mapping,
+        tryCatch(
+          pipe([
+            tap((params) => {
+              assert(true);
             }),
-        ])
+            (resource) =>
+              writeResource({
+                providerConfig,
+                environmentVariables,
+                options,
+                type,
+                typeTarget,
+                group,
+                providerName,
+                properties,
+                filterLive,
+                dependencies,
+                ignoreResource,
+                resourceVarName,
+                resourceName,
+                codeBuildProperties,
+                configBuildProperties,
+                hasNoProperty,
+              })({
+                resource,
+                lives,
+                mapping,
+              }),
+          ]),
+          (error) => {
+            console.error("Error ", error);
+            throw error;
+          }
+        )
       ),
     ])();
 

@@ -5,12 +5,11 @@ const {
   tap,
   get,
   eq,
-  assign,
   tryCatch,
   switchCase,
-  flatMap,
+  and,
 } = require("rubico");
-const { pluck, defaultsDeep, when } = require("rubico/x");
+const { pluck, defaultsDeep, when, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Integration",
 });
@@ -29,8 +28,17 @@ const {
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.id");
-const findName = findNameInTagsOrId({ findId });
+const findName = pipe([
+  get("live"),
+  ({ restApiName, path, httpMethod }) =>
+    `integration::${restApiName}::${path}::${httpMethod}`,
+]);
+
+const findId = pipe([
+  get("live"),
+  ({ restApiId, path, httpMethod }) =>
+    `integration::${restApiId}::${path}::${httpMethod}`,
+]);
 
 const pickId = ({ restApiId, resourceId, httpMethod }) => ({
   restApiId,
@@ -45,26 +53,44 @@ exports.Integration = ({ spec, config }) => {
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
   const findDependencies = ({ live, lives }) => [
     {
-      type: "RestApi",
+      type: "Method",
       group: "APIGateway",
-      ids: [live.restApiId],
+      ids: [
+        pipe([
+          tap(() => {
+            assert(live);
+          }),
+          () =>
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Method",
+              group: "APIGateway",
+            }),
+          find(
+            and([
+              eq(get("live.restApiId"), live.restApiId),
+              eq(get("live.resourceId"), live.resourceId),
+              eq(get("live.httpMethod"), live.httpMethod),
+            ])
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+          get("id"),
+        ])(),
+      ],
     },
-    //TODO
-    // {
-    //   type: "Resource",
-    //   group: "APIGateway",
-    //   ids: [live.restApiId],
-    // },
     {
       type: "Function",
       group: "Lambda",
       ids: pipe([
         () => live,
         //TODO
-        when(
+        switchCase([
           eq(get("integrationType"), "AWS_PROXY"),
-          () => live.integrationUri
-        ),
+          () => live.integrationUri,
+          () => undefined,
+        ]),
         (id) => [id],
       ])(),
     },
@@ -75,6 +101,22 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "getIntegration",
     ignoreErrorCodes: ["NotFoundException"],
+    decorate: (method) =>
+      pipe([
+        tap((params) => {
+          assert(method);
+        }),
+        defaultsDeep({
+          restApiId: method.restApiId,
+          restApiName: method.restApiName,
+          resourceId: method.resourceId,
+          path: method.path,
+          httpMethod: method.httpMethod,
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
@@ -91,43 +133,10 @@ exports.Integration = ({ spec, config }) => {
           group: "APIGateway",
         }),
       pluck("live"),
-      flatMap((method) =>
-        tryCatch(
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () =>
-              apiGateway().getIntegration({
-                restApiId: method.restApiId,
-                resourceId: method.resourceId,
-                httpMethod: method.httpMethod,
-              }),
-            get("items"),
-            map(
-              defaultsDeep({
-                restApiId: resource.restApiId,
-                resourceId: resource.id,
-              })
-            ),
-            map(
-              assign({
-                tags: tagsExtractFromDescription,
-                description: tagsRemoveFromDescription,
-              })
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
+      map(getById),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });

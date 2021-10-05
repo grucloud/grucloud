@@ -1,6 +1,9 @@
 const assert = require("assert");
-const { pipe, assign, map, tap } = require("rubico");
-const { compare } = require("@grucloud/core/Common");
+const { paramCase } = require("change-case");
+const path = require("path");
+const { pipe, assign, map, tap, omit } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
@@ -11,6 +14,7 @@ const { Authorizer } = require("./Authorizer");
 const { Model } = require("./Model");
 const { Resource } = require("./Resource");
 const { Method } = require("./Method");
+const { ApiKey } = require("./ApiKey");
 
 const GROUP = "APIGateway";
 
@@ -36,8 +40,8 @@ module.exports = () =>
       }),
     },
     {
-      type: "RestApi",
-      Client: RestApi,
+      type: "ApiKey",
+      Client: ApiKey,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
@@ -50,8 +54,50 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
         ]),
       }),
+    },
+    {
+      type: "RestApi",
+      Client: RestApi,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.tags, config }),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["schemaFile"]),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["id", "createdDate"]),
+        ]),
+      }),
+      addDependencies: ({ provider, resourceName, properties }) =>
+        pipe([
+          tap((params) => {
+            assert(provider);
+            assert(properties);
+            assert(resourceName);
+          }),
+          () =>
+            provider.S3.makeBucket({
+              name: `gc-${paramCase(provider.getConfig().projectName)}`,
+            }),
+          (bucket) =>
+            provider.S3.makeObject({
+              name: `${resourceName}.swagger.json`,
+              dependencies: () => ({ bucket }),
+              properties: () => ({
+                ContentType: "application/json",
+                source: path.resolve(`${resourceName}.swagger.json`),
+              }),
+            }),
+        ])(),
     },
     {
       type: "Model",
@@ -83,11 +129,20 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
         ]),
         filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
+          omit([
+            "deploymentId",
+            "clientCertificateId",
+            "createdDate",
+            "lastUpdatedDate",
+            "cacheClusterStatus",
+          ]),
+          omitIfEmpty(["methodSettings"]),
         ]),
       }),
     },
@@ -131,7 +186,11 @@ module.exports = () =>
     },
     {
       type: "Method",
-      dependsOn: ["APIGateway::RestApi", "APIGateway::Resource"],
+      dependsOn: [
+        "APIGateway::RestApi",
+        "APIGateway::Resource",
+        "APIGateway::Model",
+      ],
       Client: Method,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -177,6 +236,8 @@ module.exports = () =>
       dependsOn: [
         "APIGateway::RestApi",
         "APIGateway::Resource",
+        "APIGateway::Model",
+        "APIGateway::Method",
         "APIGateway::Integration",
       ],
       Client: Deployment,

@@ -27,6 +27,16 @@ exports.Authorizer = ({ spec, config }) => {
       group: "APIGateway",
       ids: [live.restApiId],
     },
+    // {
+    //   type: "Function",
+    //   group: "Lambda",
+    //   ids: [live.providerARNs],
+    // },
+    {
+      type: "UserPool",
+      group: "Cognito",
+      ids: [live.providerARNs],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizer-property

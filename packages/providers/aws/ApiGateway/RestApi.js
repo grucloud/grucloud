@@ -1,10 +1,12 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq } = require("rubico");
+const fs = require("fs").promises;
+const path = require("path");
+const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 
 const findId = get("live.id");
 const findName = get("live.name");
@@ -13,6 +15,8 @@ const pickId = ({ id }) => ({ restApiId: id });
 
 exports.RestApi = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
+  const apiGateway = () =>
+    createEndpoint({ endpointName: "APIGateway" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApi-property
   const getById = client.getById({
@@ -33,10 +37,43 @@ exports.RestApi = ({ spec, config }) => {
   const create = client.create({
     //TODO identity ?
     pickCreated: () => (result) => pipe([() => result])(),
+    filterPayload: pipe([
+      omit(["schemaFile"]),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
     method: "createRestApi",
     getById,
     pickId,
     config,
+    postCreate:
+      ({ name, payload, programOptions }) =>
+      ({ id }) =>
+        pipe([
+          tap((params) => {
+            assert(id);
+            assert(programOptions);
+          }),
+          () => payload,
+          get("schemaFile"),
+          tap((schemaFile) => {
+            assert(schemaFile);
+          }),
+          (schemaFile) =>
+            fs.readFile(
+              path.resolve(programOptions.workingDirectory, schemaFile),
+              "utf-8"
+            ),
+          (body) => ({ body, restApiId: id, mode: "overwrite" }),
+          tap((params) => {
+            assert(true);
+          }),
+          apiGateway().putRestApi,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateRestApi-property
@@ -59,13 +96,17 @@ exports.RestApi = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { tags, ...otherProps },
+    properties: { tags, schemaFile, ...otherProps },
     dependencies: {},
   }) =>
     pipe([
+      tap(() => {
+        assert(schemaFile, "missing 'schemaFile' property");
+      }),
       () => otherProps,
       defaultsDeep({
         name,
+        schemaFile,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
