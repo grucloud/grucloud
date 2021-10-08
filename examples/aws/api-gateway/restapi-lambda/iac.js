@@ -2,54 +2,90 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.APIGateway.makeApiKey({
-    name: "api-key",
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "restapi",
+  });
+
+  provider.IAM.makeRole({
+    name: "roleApiGatewayCloudWatch",
+    dependencies: {
+      policies: [
+        "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+      ],
+    },
     properties: () => ({
-      description: "Api Key",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.APIGateway.makeAccount({
+    name: "default",
+    properties: ({ config }) => ({}),
+    dependencies: ({ resources }) => ({
+      cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
     }),
   });
 
   provider.APIGateway.makeRestApi({
-    name: "AnimalStore",
-    properties: () => ({
-      description:
-        "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
+    name: "PetStore",
+    properties: ({ config }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
       },
-      disableExecuteApiEndpoint: false,
-      schemaFile: "AnimalStore.swagger.json",
-    }),
-  });
-
-  provider.APIGateway.makeAuthorizer({
-    name: "my-authorizer",
-    properties: ({ config }) => ({
-      type: "COGNITO_USER_POOLS",
-      authType: "cognito_user_pools",
-      identitySource: "method.request.header.Authorization",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeDeployment({
-    name: "deployment-dev",
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-    properties: () => ({
-      description: "deployment",
+      schemaFile: "PetStore.swagger.json",
+      deployment: {
+        stageName: "dev",
+      },
     }),
   });
 
   provider.APIGateway.makeStage({
     name: "dev",
+    properties: ({ config }) => ({
+      description: "dev",
+      methodSettings: {
+        "*/*": {
+          metricsEnabled: false,
+          dataTraceEnabled: false,
+          throttlingBurstLimit: 5000,
+          throttlingRateLimit: 10000,
+          cachingEnabled: false,
+          cacheTtlInSeconds: 300,
+          cacheDataEncrypted: false,
+          requireAuthorizationForCacheControl: true,
+          unauthorizedCacheControlHeaderStrategy:
+            "SUCCEED_WITH_RESPONSE_HEADER",
+        },
+      },
+      cacheClusterEnabled: false,
+      cacheClusterSize: "0.5",
+      tracingEnabled: false,
+    }),
     dependencies: ({ resources }) => ({
       restApi: resources.APIGateway.RestApi.petStore,
-      deployment: resources.APIGateway.Deployment.deploymentDev,
+    }),
+  });
+
+  provider.APIGateway.makeStage({
+    name: "prod",
+    properties: ({ config }) => ({
+      description: "prod",
+    }),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 };

@@ -36,6 +36,8 @@ const {
   prepend,
   defaultsDeep,
 } = require("rubico/x");
+const prettier = require("prettier");
+
 const AdmZip = require("adm-zip");
 const path = require("path");
 const mime = require("mime-types");
@@ -137,74 +139,6 @@ const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
     `${resource.name}.swagger.json`
   );
 
-const updateObject = (update) =>
-  pipe([
-    switchCase([
-      isObject,
-      map.entries(([key, value]) => [
-        key,
-        pipe([
-          () => value,
-          switchCase([
-            Array.isArray,
-            identity,
-            isObject,
-            updateObject(update),
-            () => update(key, value),
-          ]),
-        ])(),
-      ]),
-      identity,
-    ]),
-  ]);
-
-const buildRequestParameters = ({ requestParameters, extra }) =>
-  pipe([
-    () => requestParameters,
-    map.entries(([key, value]) => [
-      key,
-      {
-        name: pipe([() => key, callProp("split", "."), last])(),
-        in: pipe([
-          () => key,
-          callProp("replace", "method.request.", ""),
-          callProp("split", "."),
-          first,
-          callProp("replace", "querystring", "query"),
-        ])(),
-        required: value,
-        type: "string",
-      },
-    ]),
-    values,
-  ])();
-
-const buildIntegrationRequestParameters = ({ requestParameters, extra }) =>
-  pipe([
-    () => requestParameters,
-    map.entries(([key, value]) => [
-      key,
-      {
-        name: pipe([() => key, callProp("split", "."), last])(),
-        in: pipe([
-          () => key,
-          callProp("replace", "integration.request.", ""),
-          callProp("split", "."),
-          first,
-          callProp("replace", "querystring", "query"),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-        required: true,
-        schema: {
-          type: "string",
-        },
-      },
-    ]),
-    values,
-  ])();
-
 const writeRestApiSchema =
   ({ programOptions, commandOptions }) =>
   ({ lives, resource }) =>
@@ -214,216 +148,10 @@ const writeRestApiSchema =
         assert(lives);
         assert(resource);
       }),
-      () => ({
-        swagger: "2.0",
-        info: {
-          description: resource.live.description,
-          title: resource.name,
-        },
-        schemes: ["https"],
-        paths: pipe([
-          () => lives,
-          filter(
-            and([
-              eq(get("type"), "Resource"),
-              eq(get("live.restApiId"), resource.id),
-            ])
-          ),
-          reduce(
-            (acc, resource) =>
-              set(
-                resource.live.path,
-                pipe([
-                  () => lives,
-                  filter(
-                    and([
-                      eq(get("type"), "Method"),
-                      eq(get("live.resourceId"), resource.live.id),
-                    ])
-                  ),
-                  reduce(
-                    (acc, { live }) =>
-                      set(
-                        live.httpMethod.toLowerCase(),
-                        pipe([
-                          () => ({
-                            operationId: live.operationName,
-                            consumes: ["application/json"],
-                            produces: pipe([
-                              () => live,
-                              get("methodIntegration.integrationResponses", {}),
-                              values,
-                              pluck("responseParameters"),
-                              filter(not(isEmpty)),
-                              map(
-                                (param) =>
-                                  param["method.response.header.Content-Type"]
-                              ),
-                              filter(not(isEmpty)),
-                              map(callProp("replace", /'/g, "")),
-                              when(isEmpty, () => ["application/json"]),
-                            ])(),
-                            ...(live.requestModels && {
-                              parameters: [
-                                {
-                                  in: "body",
-                                  name: live.requestModels["application/json"],
-                                  required: true,
-                                  schema: {
-                                    $ref: `#/definitions/${live.requestModels["application/json"]}`,
-                                  },
-                                },
-                              ],
-                            }),
-                            ...(live.requestParameters && {
-                              parameters: buildRequestParameters({
-                                requestParameters: live.requestParameters,
-                              }),
-                            }),
-                            ...(get("methodIntegration.requestParameters")(
-                              live
-                            ) && {
-                              parameters: buildIntegrationRequestParameters({
-                                requestParameters:
-                                  live.methodIntegration.requestParameters,
-                              }),
-                            }),
-                            responses: pipe([
-                              () => live,
-                              get("methodResponses", {}),
-                              map.entries(
-                                ([
-                                  key,
-                                  {
-                                    statusCode,
-                                    responseParameters,
-                                    responseModels,
-                                  },
-                                ]) => [
-                                  key,
-                                  {
-                                    description: `${statusCode} response`,
-                                    headers: {
-                                      "Access-Control-Allow-Origin": {
-                                        type: "string",
-                                      },
-                                      "Access-Control-Allow-Methods": {
-                                        type: "string",
-                                      },
-                                      "Access-Control-Allow-Headers": {
-                                        type: "string",
-                                      },
-                                    },
-                                    ...(responseModels && {
-                                      schema: {
-                                        $ref: `#/definitions/${responseModels["application/json"]}`,
-                                      },
-                                    }),
-                                    ...(responseParameters && {
-                                      headers: pipe([
-                                        () => responseParameters,
-                                        map.entries(([key, value]) => [
-                                          pipe([
-                                            () => key,
-                                            callProp("split", "."),
-                                            last,
-                                          ])(),
-                                          { type: "string" },
-                                        ]),
-                                      ])(),
-                                    }),
-                                  },
-                                ]
-                              ),
-                            ])(),
-                            ...(live.methodIntegration && {
-                              ["x-amazon-apigateway-integration"]: pipe([
-                                () => live,
-                                get("methodIntegration", {}),
-                                omit([
-                                  "timeoutInMillis",
-                                  "cacheNamespace",
-                                  "cacheKeyParameters",
-                                ]),
-                                ({
-                                  type,
-                                  httpMethod,
-                                  uri,
-                                  requestTemplates,
-                                  requestParameters,
-                                  passthroughBehavior,
-                                  integrationResponses,
-                                }) => ({
-                                  type,
-                                  httpMethod,
-                                  uri,
-                                  ...(integrationResponses && {
-                                    responses: {
-                                      default: pipe([
-                                        () => integrationResponses,
-                                        values,
-                                        first,
-                                      ])(),
-                                    },
-                                  }),
-                                  requestTemplates,
-                                  requestParameters,
-                                  passthroughBehavior,
-                                }),
-                              ])(),
-                            }),
-                          }),
-                        ])()
-                      )(acc),
-                    {}
-                  ),
-                ])()
-              )(acc),
-            {}
-          ),
-        ])(),
-        definitions: pipe([
-          () => lives,
-          filter(
-            and([
-              eq(get("type"), "Model"),
-              eq(get("live.restApiId"), resource.id),
-            ])
-          ),
-          reduce(
-            (acc, model) =>
-              set(
-                model.name,
-                pipe([
-                  () => model.live.schema,
-                  JSON.parse,
-                  (schema) =>
-                    pipe([
-                      () => schema,
-                      updateObject((key, value) =>
-                        pipe([
-                          () => value,
-                          when(
-                            eq(key, "$ref"),
-                            pipe([
-                              callProp("split", "/"),
-                              last,
-                              prepend("#/definitions/"),
-                            ])
-                          ),
-                        ])()
-                      ),
-                    ])(),
-                ])()
-              )(acc),
-            {}
-          ),
-        ])(),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
+      () => resource,
+      get("live.schema"),
       (json) => JSON.stringify(json, null, 4),
+      (content) => prettier.format(content, { parser: "json" }),
       (content) =>
         tryCatch(
           pipe([
@@ -463,7 +191,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LifecycleConfiguration",
               "WebsiteConfiguration",
             ]),
-            //TODO omitIfEmpty(["LocationConstraint"])
+            //TODO REMOVE omitIfEmpty(["LocationConstraint"])
             when(
               pipe([get("LocationConstraint"), isEmpty]),
               omit(["LocationConstraint"])
@@ -1579,25 +1307,57 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "RestApi",
-        filterLive: (input) => (params) =>
+        filterLive: (input) => (live) =>
           pipe([
             tap(() => {
               assert(input);
             }),
             () => input,
             tap(writeRestApiSchema({ programOptions })),
-            () => params,
-            pick([
-              "description",
-              "apiKeySource",
-              "endpointConfiguration",
-              "disableExecuteApiEndpoint",
-            ]),
+            () => live,
+            pick(["apiKeySource", "endpointConfiguration"]),
             tap(() => {
               assert(true);
             }),
-            defaultsDeep({ schemaFile: `${params.name}.swagger.json` }),
+            assign({
+              schemaFile: () => `${live.name}.swagger.json`,
+              deployment: pipe([
+                () => live,
+                get("deployments"),
+                first,
+                get("id"),
+                (deploymentId) =>
+                  pipe([
+                    () => input.lives,
+                    find(
+                      and([
+                        eq(get("groupType"), "APIGateway::Stage"),
+                        eq(get("live.deploymentId"), deploymentId),
+                      ])
+                    ),
+                    get("name"),
+                  ])(),
+                (stageName) => ({
+                  stageName,
+                }),
+              ]),
+            }),
           ])(),
+      },
+      {
+        type: "Account",
+        filterLive: () =>
+          pipe([
+            omit([
+              "apiKeyVersion",
+              "throttleSettings",
+              "features",
+              "cloudwatchRoleArn",
+            ]),
+          ]),
+        dependencies: () => ({
+          cloudwatchRole: { type: "Role", group: "IAM" },
+        }),
       },
       {
         type: "Authorizer",
@@ -1621,7 +1381,21 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
-            pick(["StageName", "StageVariables"]),
+            pick([
+              "name",
+              "description",
+              "StageName",
+              "StageVariables",
+              "methodSettings",
+              "accessLogSettings",
+              "cacheClusterEnabled",
+              "cacheClusterSize",
+              "tracingEnabled",
+            ]),
+            omitIfEmpty(["methodSettings"]),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
         dependencies: () => ({
           restApi: { type: "RestApi", group: "APIGateway" },

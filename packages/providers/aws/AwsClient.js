@@ -182,9 +182,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       getById,
       isInstanceUp = not(isEmpty),
       shouldRetryOnException = () => false,
+      isExpectedException = () => false,
       postCreate = () => identity,
     }) =>
-    ({ name, payload, programOptions }) =>
+    ({ name, payload, programOptions, resolvedDependencies }) =>
       pipe([
         tap(() => {
           logger.debug(`create ${type}, ${name}`);
@@ -210,9 +211,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               }),
             ]),
             config,
+            isExpectedException,
             shouldRetryOnException,
           }),
-        pickCreated({ pickId, payload, name }),
+        pickCreated({ pickId, payload, name, resolvedDependencies }),
         tap((params) => {
           assert(isObject(params));
           logger.debug(`create isUpById: ${name}, ${JSON.stringify(params)}`);
@@ -233,6 +235,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   const update =
     ({
       preUpdate = ({ live }) => identity,
+      postUpdate = ({ live }) => identity,
+
       method,
       config,
       pickId = () => ({}),
@@ -246,8 +250,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ])(),
       getById,
       isInstanceUp = identity,
+      shouldRetryOnException = () => false,
+      isExpectedException = () => false,
     }) =>
-    ({ name, payload, diff, live, compare }) =>
+    ({ name, payload, diff, live, compare, programOptions }) =>
       pipe([
         tap(() => {
           assert(method);
@@ -262,11 +268,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             })}`
           );
         }),
-        preUpdate({ live, payload }),
+        preUpdate({ name, live, payload, diff, programOptions }),
         () => filterParams({ pickId, extraParam, payload, diff, live }),
         defaultsDeep(extraParam),
         tap((params) => {
-          assert(params);
           logger.debug(
             `update ${type}, ${name}, params: ${JSON.stringify(
               params,
@@ -277,7 +282,24 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         tryCatch(
           pipe([
-            endpoint()[method],
+            (payload) =>
+              retryCall({
+                name: `update ${type} ${name}`,
+                fn: pipe([
+                  () => payload,
+                  endpoint()[method],
+                  tap((results) => {
+                    logger.debug(
+                      `updated ${type} ${name}, response: ${JSON.stringify(
+                        results
+                      )}`
+                    );
+                  }),
+                ]),
+                config,
+                isExpectedException,
+                shouldRetryOnException,
+              }),
             () => live,
             (params) =>
               retryCall({
@@ -323,6 +345,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               },
             ])()
         ),
+        postUpdate({ name, live, payload, diff, programOptions }),
         tap(() => {
           logger.debug(`updated ${type}, ${name}`);
         }),

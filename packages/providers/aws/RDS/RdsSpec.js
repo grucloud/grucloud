@@ -52,6 +52,7 @@ module.exports = () =>
             ScalingConfiguration: {
               AutoPause: true,
               SecondsUntilAutoPause: 300,
+              SecondsBeforeTimeout: 300,
               TimeoutAction: "RollbackCapacityChange",
             },
           }),

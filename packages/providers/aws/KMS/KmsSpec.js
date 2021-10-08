@@ -20,6 +20,7 @@ module.exports = () =>
           defaultsDeep({
             Enabled: true,
             KeyManager: "CUSTOMER",
+            KeySpec: "SYMMETRIC_DEFAULT",
             CustomerMasterKeySpec: "SYMMETRIC_DEFAULT",
             MultiRegion: false,
             Origin: "AWS_KMS",

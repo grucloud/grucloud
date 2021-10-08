@@ -8,21 +8,50 @@ Manages an [API Gateway Stage](https://console.aws.amazon.com/apigateway/main/ap
 ## Sample code
 
 ```js
-const restApi = provider.APIGateway.makeRestApi({
-  name: "myRestApi",
-  properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
+provider.APIGateway.makeRestApi({
+  name: "PetStore",
+  properties: ({ config }) => ({
+    apiKeySource: "HEADER",
+    endpointConfiguration: {
+      types: ["REGIONAL"],
+    },
+    schemaFile: "PetStore.swagger.json",
+    deployment: {
+      stageName: "dev",
+    },
+  }),
 });
 
-const stage = provider.APIGateway.makeStage({
-  name: "my-api-stage-dev",
-  dependencies: { restApi },
-  properties: () => ({}),
+provider.APIGateway.makeStage({
+  name: "dev",
+  properties: ({ config }) => ({
+    description: "dev",
+    methodSettings: {
+      "*/*": {
+        metricsEnabled: false,
+        dataTraceEnabled: false,
+        throttlingBurstLimit: 5000,
+        throttlingRateLimit: 10000,
+        cachingEnabled: false,
+        cacheTtlInSeconds: 300,
+        cacheDataEncrypted: false,
+        requireAuthorizationForCacheControl: true,
+        unauthorizedCacheControlHeaderStrategy: "SUCCEED_WITH_RESPONSE_HEADER",
+      },
+    },
+    cacheClusterEnabled: false,
+    cacheClusterSize: "0.5",
+    tracingEnabled: false,
+  }),
+  dependencies: ({ resources }) => ({
+    restApi: resources.APIGateway.RestApi.petStore,
+  }),
 });
 ```
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createStage-property)
+- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/modules/createstagerequest.html)
 
 ## Dependencies
 

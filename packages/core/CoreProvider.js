@@ -1587,7 +1587,7 @@ function CoreProvider({
               engine.update({
                 payload: input,
                 live,
-                diff,
+                diff: engine.spec.compare({ live, target: input }),
                 resolvedDependencies,
                 lives: getLives(),
               }),

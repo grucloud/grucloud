@@ -121,7 +121,6 @@ exports.Method = ({ spec, config }) => {
                     httpMethod,
                   }),
                   apiGateway().getMethod,
-
                   defaultsDeep({ path }),
                   tap((params) => {
                     assert(true);
