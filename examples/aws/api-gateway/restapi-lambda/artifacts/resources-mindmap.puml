@@ -11,5 +11,5 @@ skinparam monochrome true
 +++ APIGateway
 ++++ Account (1)
 ++++ RestApi (1)
-++++ Stage (1)
+++++ Stage (2)
 @endmindmap

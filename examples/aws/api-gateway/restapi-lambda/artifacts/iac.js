@@ -2,24 +2,98 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.APIGateway.makeRestApi({
-    name: "AnimalStore",
+  provider.IAM.usePolicy({
+    name: "AmazonAPIGatewayPushToCloudWatchLogs",
     properties: ({ config }) => ({
-      description:
-        "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "roleApiGatewayCloudWatch",
+    properties: ({ config }) => ({
+      RoleName: "roleApiGatewayCloudWatch",
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [resources.IAM.Policy.amazonApiGatewayPushToCloudWatchLogs],
+    }),
+  });
+
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "restapi",
+  });
+
+  provider.APIGateway.makeRestApi({
+    name: "PetStore",
+    properties: ({ config }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
       },
-      disableExecuteApiEndpoint: false,
-      schemaFile: "AnimalStore.swagger.json",
+      schemaFile: "PetStore.oas30.json",
+      deployment: {
+        stageName: "dev",
+      },
+    }),
+  });
+
+  provider.APIGateway.makeAccount({
+    name: "default",
+    dependencies: ({ resources }) => ({
+      cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
     }),
   });
 
   provider.APIGateway.makeStage({
     name: "dev",
+    properties: ({ config }) => ({
+      description: "dev",
+      methodSettings: {
+        "*/*": {
+          metricsEnabled: false,
+          dataTraceEnabled: false,
+          throttlingBurstLimit: 5000,
+          throttlingRateLimit: 10000,
+          cachingEnabled: false,
+          cacheTtlInSeconds: 300,
+          cacheDataEncrypted: false,
+          requireAuthorizationForCacheControl: true,
+          unauthorizedCacheControlHeaderStrategy:
+            "SUCCEED_WITH_RESPONSE_HEADER",
+        },
+      },
+      cacheClusterEnabled: false,
+      cacheClusterSize: "0.5",
+      tracingEnabled: false,
+    }),
     dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.animalStore,
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeStage({
+    name: "prod",
+    properties: ({ config }) => ({
+      description: "prod",
+      cacheClusterEnabled: false,
+      tracingEnabled: false,
+    }),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
     }),
   });
 };

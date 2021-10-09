@@ -345,7 +345,7 @@ const tablePerTypeDefinitions = [
   },
 ];
 
-const MaxLine = 300;
+const MaxLine = 400;
 
 const stringifyLimit = tryCatch(
   pipe([

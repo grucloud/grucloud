@@ -354,6 +354,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   const destroy =
     ({
       preDestroy = () => {},
+      postDestroy = () => {},
       pickId,
       extraParam = {},
       method,
@@ -370,10 +371,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(ignoreError);
           assert(config);
         }),
-        () => live,
-        tap(preDestroy),
         tryCatch(
           pipe([
+            () => live,
+            tap(preDestroy),
             pickId,
             tap((params) => {
               logger.debug(
@@ -388,6 +389,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             tap((params) => {
               assert(true);
             }),
+            () => live,
+            tap(postDestroy),
           ]),
           (error, params) =>
             pipe([

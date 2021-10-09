@@ -134,10 +134,7 @@ const ec2InstanceDependencies = () => ({
 });
 
 const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
-  path.resolve(
-    programOptions.workingDirectory,
-    `${resource.name}.swagger.json`
-  );
+  path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
 
 const writeRestApiSchema =
   ({ programOptions, commandOptions }) =>
@@ -1320,7 +1317,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               assert(true);
             }),
             assign({
-              schemaFile: () => `${live.name}.swagger.json`,
+              schemaFile: () => `${live.name}.oas30.json`,
               deployment: pipe([
                 () => live,
                 get("deployments"),

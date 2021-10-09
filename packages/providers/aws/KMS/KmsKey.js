@@ -6,10 +6,11 @@ const {
   get,
   eq,
   not,
+  and,
   assign,
   tryCatch,
   or,
-  omit,
+  pick,
 } = require("rubico");
 const {
   find,
@@ -19,25 +20,27 @@ const {
   size,
   callProp,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
-
 const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Arn");
+const pickId = pick(["KeyId"]);
 
 const findNameInTags = pipe([
   get("live.Tags"),
   find(eq(get("TagKey"), configProviderDefault.nameKey)),
   get("TagValue"),
+  tap((params) => {
+    assert(true);
+  }),
 ]);
 
 const findNames = [findNameInTags, get("live.Alias"), findId];
@@ -49,89 +52,88 @@ exports.KmsKey = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const kms = KmsNew(config);
 
-  const getList = ({ params } = {}) =>
+  const decorate = () =>
     pipe([
-      tap(() => {
-        logger.info(`getList ${tos(params)}`);
+      tap((params) => {
+        assert(true);
       }),
-      () => kms().listKeys(params),
-      get("Keys"),
-      map(
-        tryCatch(
-          pipe([
-            ({ KeyId }) => kms().describeKey({ KeyId }),
-            get("KeyMetadata"),
+      tryCatch(
+        assign({
+          Tags: pipe([pickId, kms().listResourceTags, get("Tags")]),
+        }),
+        (error, item) => item
+      ),
+      tryCatch(
+        assign({
+          Alias: pipe([
+            pickId,
+            kms().listAliases,
+            get("Aliases"),
+            first,
+            get("AliasName"),
           ]),
-          (error, item) => item
-        )
+        }),
+        (error, item) => item
       ),
-      map(
-        tryCatch(
-          assign({
-            Tags: pipe([
-              ({ KeyId }) => kms().listResourceTags({ KeyId }),
-              get("Tags"),
-            ]),
-          }),
-          (error, item) => item
-        )
-      ),
-      map(
-        tryCatch(
-          assign({
-            Alias: pipe([
-              ({ KeyId }) => kms().listAliases({ KeyId }),
-              get("Aliases"),
-              first,
-              get("AliasName"),
-            ]),
-          }),
-          (error, item) => item
-        )
-      ),
-    ])();
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
+
+  const getById = client.getById({
+    pickId,
+    method: "describeKey",
+    getField: "KeyMetadata",
+    ignoreErrorCodes: ["NotFoundException"],
+    decorate,
+  });
+
+  const getList = client.getList({
+    method: "listKeys",
+    getParam: "Keys",
+    decorate: () => getById,
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = ({ id }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getById ${id}`);
-      }),
-      () => ({ KeyId: id }),
-      kms().describeKey,
-      get("KeyMetadata"),
-      tap((result) => {
-        logger.debug(`getById result: ${tos(result)}`);
-      }),
-    ])();
+  const isInstanceUp = and([
+    eq(get("KeyState"), "Enabled"),
+    eq(get("Enabled"), true),
+  ]);
 
-  const isInstanceUp = eq(get("Enabled"), true);
+  const isInstanceDisabled = and([
+    eq(get("KeyState"), "Disabled"),
+    eq(get("Enabled"), false),
+  ]);
 
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
+  const isInstanceDown = eq(get("KeyState"), "PendingDeletion");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => kms().createKey(payload),
-      get("KeyMetadata"),
-      tap(({ KeyId }) =>
-        retryCall({
-          name: `key isUpById: ${name} id: ${KeyId}`,
-          fn: () => isUpById({ name, id: KeyId }),
-          config,
-        })
-      ),
-      ({ KeyId }) => ({ AliasName: `alias/${name}`, TargetKeyId: KeyId }),
-      kms().createAlias,
-      tap(() => {
-        logger.info(`created`);
-      }),
-    ])();
+
+  const create = client.create({
+    isInstanceUp,
+    method: "createKey",
+    pickCreated: () => (result) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => result,
+        get("KeyMetadata"),
+      ])(),
+    pickId,
+    getById,
+    config,
+    postCreate: ({ name }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        pickId,
+        ({ KeyId }) => ({ AliasName: `alias/${name}`, TargetKeyId: KeyId }),
+        kms().createAlias,
+      ]),
+  });
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -140,18 +142,35 @@ exports.KmsKey = ({ spec, config }) => {
         logger.debug(tos({ payload, diff, live }));
       }),
       () => live,
+      tap.if(isInstanceDown, pipe([pickId, kms().cancelKeyDeletion])),
       tap.if(
-        eq(get("KeyState"), "PendingDeletion"),
-        pipe([() => kms().cancelKeyDeletion({ KeyId: live.KeyId })])
-      ),
-      tap.if(
-        eq(get("Enabled"), false),
+        () => get("liveDiff.updated.Enabled")(diff),
         pipe([
-          tap(() => kms().enableKey({ KeyId: live.KeyId })),
+          tap((params) => {
+            assert(true);
+          }),
+          pickId,
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#enableKey-property
+          tap(kms().enableKey),
           tap(({ KeyId }) =>
             retryCall({
               name: `key isUpById: ${name} id: ${KeyId}`,
-              fn: () => isUpById({ name, id: KeyId }),
+              fn: pipe([() => getById({ KeyId }), isInstanceUp]),
+              config,
+            })
+          ),
+        ])
+      ),
+      tap.if(
+        () => eq(get("liveDiff.updated.Enabled"), false)(diff),
+        pipe([
+          pickId,
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#disableKey-property
+          tap(kms().disableKey),
+          tap(({ KeyId }) =>
+            retryCall({
+              name: `key isUpById: ${name} id: ${KeyId}`,
+              fn: pipe([() => getById({ KeyId }), isInstanceDisabled]),
               config,
             })
           ),
@@ -162,25 +181,22 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = ({ live }) =>
-    pipe([
-      () => ({ KeyId: findId({ live }), name: findName({ live }) }),
-      ({ KeyId, name }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy key ${JSON.stringify({ KeyId, name })}`);
-          }),
-          () => kms().disableKey({ KeyId }),
-          () =>
-            kms().scheduleKeyDeletion({
-              KeyId,
-              PendingWindowInDays: 7,
-            }),
-          tap(() => {
-            logger.info(`destroyed ${JSON.stringify({ KeyId, name })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    postDestroy: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      pickId,
+      defaultsDeep({ PendingWindowInDays: 7 }),
+      kms().scheduleKeyDeletion,
+    ]),
+    pickId,
+    method: "disableKey",
+    getById,
+    isInstanceDown,
+    config,
+    ignoreError: eq(get("code"), "NotFoundException"),
+  });
 
   const configDefault = ({ name, namespace, properties }) =>
     pipe([
@@ -210,6 +226,7 @@ exports.KmsKey = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,

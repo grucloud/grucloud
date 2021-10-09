@@ -51,7 +51,7 @@ exports.RestApi = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
-  const buildRequestParameters = ({ requestParameters }) =>
+  const buildRequestParameters = ({ requestParameters, extra }) =>
     pipe([
       () => requestParameters,
       map.entries(([key, value]) => [
@@ -66,13 +66,15 @@ exports.RestApi = ({ spec, config }) => {
             callProp("replace", "querystring", "query"),
           ])(),
           required: value,
-          type: "string",
+          ...extra,
+          //type: "string", //Swagger 2.0
+          schema: { type: "string" },
         },
       ]),
       values,
     ])();
 
-  const buildIntegrationRequestParameters = ({ requestParameters, extra }) =>
+  const buildIntegrationRequestParameters = ({ requestParameters }) =>
     pipe([
       () => requestParameters,
       map.entries(([key, value]) => [
@@ -98,6 +100,20 @@ exports.RestApi = ({ spec, config }) => {
       values,
     ])();
 
+  // const buildSwaggerRequestModelParameters = ({ requestModels }) =>
+  //   pipe([
+  //     () => [
+  //       {
+  //         in: "body",
+  //         name: requestModels["application/json"],
+  //         required: true,
+  //         schema: {
+  //           $ref: `#/definitions/${requestModels["application/json"]}`,
+  //         },
+  //       },
+  //     ],
+  //   ])();
+
   const updateObject = (update) =>
     pipe([
       switchCase([
@@ -119,7 +135,323 @@ exports.RestApi = ({ spec, config }) => {
       ]),
     ]);
 
-  const generateSwagger2Schema =
+  const assignMethodIntegration = ({ method }) =>
+    when(
+      () => method.methodIntegration,
+      assign({
+        ["x-amazon-apigateway-integration"]: pipe([
+          () => method,
+          tap((params) => {
+            assert(true);
+          }),
+          get("methodIntegration", {}),
+          omit([
+            "timeoutInMillis",
+            "cacheNamespace",
+            "cacheKeyParameters",
+            "connectionType",
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+          ({ integrationResponses, ...otherProps }) => ({
+            ...otherProps,
+            ...(integrationResponses && {
+              responses: {
+                default: pipe([() => integrationResponses, values, first])(),
+              },
+            }),
+          }),
+        ]),
+      })
+    );
+
+  // const methodProduces = ({ method }) =>
+  //   pipe([
+  //     () => method,
+  //     get("methodIntegration.integrationResponses", {}),
+  //     values,
+  //     pluck("responseParameters"),
+  //     filter(not(isEmpty)),
+  //     map((param) => param["method.response.header.Content-Type"]),
+  //     filter(not(isEmpty)),
+  //     map(callProp("replace", /'/g, "")),
+  //     when(isEmpty, () => ["application/json"]),
+  //   ])();
+
+  // const buildSwaggerMethodResponses = ({ method }) =>
+  //   pipe([
+  //     () => method,
+  //     get("methodResponses", {}),
+  //     map.entries(
+  //       ([key, { statusCode, responseParameters, responseModels }]) => [
+  //         key,
+  //         {
+  //           description: `${statusCode} response`,
+  //           ...(responseModels && {
+  //             schema: {
+  //               $ref: `#/definitions/${responseModels["application/json"]}`,
+  //             },
+  //           }),
+  //           ...(responseParameters && {
+  //             headers: pipe([
+  //               () => responseParameters,
+  //               map.entries(([key, value]) => [
+  //                 pipe([() => key, callProp("split", "."), last])(),
+  //                 { type: "string" },
+  //               ]),
+  //             ])(),
+  //           }),
+  //         },
+  //       ]
+  //     ),
+  //   ])();
+
+  const buildOpenApiMethodResponses = ({ method }) =>
+    pipe([
+      () => method,
+      get("methodResponses", {}),
+      tap((params) => {
+        assert(true);
+      }),
+      map.entries(
+        ([key, { statusCode, responseParameters, responseModels }]) => [
+          key,
+          {
+            description: `${statusCode} response`,
+            ...(responseParameters && {
+              headers: pipe([
+                () => responseParameters,
+                map.entries(([key, value]) => [
+                  pipe([() => key, callProp("split", "."), last])(),
+                  { schema: { type: "string" } },
+                ]),
+              ])(),
+            }),
+            ...(responseModels && {
+              content: pipe([
+                () => responseModels,
+                map.entries(([key, value]) => [
+                  key,
+                  {
+                    schema: {
+                      $ref: `#/components/schemas/${value}`,
+                    },
+                  },
+                ]),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+            }),
+          },
+        ]
+      ),
+    ])();
+
+  // const swaggerPath = ({ resources }) =>
+  //   pipe([
+  //     () => resources,
+  //     reduce(
+  //       (acc, resource) =>
+  //         set(
+  //           resource.path,
+  //           pipe([
+  //             () => resource.methods,
+  //             reduce(
+  //               (acc, method) =>
+  //                 set(
+  //                   method.httpMethod.toLowerCase(),
+  //                   pipe([
+  //                     () => ({}),
+  //                     when(
+  //                       () => method.operationName,
+  //                       assign({ operationId: () => method.operationName })
+  //                     ),
+  //                     assign({ consumes: () => ["application/json"] }),
+  //                     assign({ produces: () => methodProduces({ method }) }),
+  //                     when(
+  //                       () => method.requestModels,
+  //                       assign({
+  //                         parameters: () =>
+  //                           buildSwaggerRequestModelParameters(method),
+  //                       })
+  //                     ),
+  //                     when(
+  //                       () => method.requestParameters,
+  //                       assign({
+  //                         parameters: () => buildRequestParameters(method),
+  //                       })
+  //                     ),
+  //                     when(
+  //                       () =>
+  //                         get("methodIntegration.requestParameters")(method),
+  //                       assign({
+  //                         parameters: () =>
+  //                           buildIntegrationRequestParameters({
+  //                             requestParameters:
+  //                               method.methodIntegration.requestParameters,
+  //                           }),
+  //                       })
+  //                     ),
+  //                     assign({
+  //                       responses: () =>
+  //                         buildSwaggerMethodResponses({ method }),
+  //                     }),
+  //                     assignMethodIntegration({ method }),
+  //                   ])()
+  //                 )(acc),
+  //               {}
+  //             ),
+  //           ])()
+  //         )(acc),
+  //       {}
+  //     ),
+  //   ])();
+
+  const buildOpenApiRequestBody = ({ requestModels }) =>
+    pipe([
+      when(
+        () => requestModels,
+        assign({
+          requestBody: pipe([
+            () => requestModels,
+            map.entries(([contentType, type]) => [
+              contentType,
+              {
+                content: {
+                  [contentType]: {
+                    schema: {
+                      $ref: `#/components/schemas/${type}`,
+                    },
+                  },
+                },
+                required: true,
+              },
+            ]),
+            values,
+            first,
+          ]),
+        })
+      ),
+    ]);
+
+  const buildOpenApiPath = ({ resources }) =>
+    pipe([
+      () => resources,
+      reduce(
+        (acc, resource) =>
+          set(
+            resource.path,
+            pipe([
+              () => resource.methods,
+              reduce(
+                (acc, method) =>
+                  set(
+                    method.httpMethod.toLowerCase(),
+                    pipe([
+                      () => ({}),
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      when(
+                        () => method.operationName,
+                        assign({ operationId: () => method.operationName })
+                      ),
+                      buildOpenApiRequestBody(method),
+                      when(
+                        () => method.requestParameters,
+                        assign({
+                          parameters: () => buildRequestParameters(method),
+                        })
+                      ),
+                      when(
+                        () =>
+                          get("methodIntegration.requestParameters")(method),
+                        assign({
+                          parameters: () =>
+                            buildIntegrationRequestParameters({
+                              requestParameters:
+                                method.methodIntegration.requestParameters,
+                            }),
+                        })
+                      ),
+                      assign({
+                        responses: () =>
+                          buildOpenApiMethodResponses({ method }),
+                      }),
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      assignMethodIntegration({ method }),
+                    ])()
+                  )(acc),
+                {}
+              ),
+            ])()
+          )(acc),
+        {}
+      ),
+    ])();
+
+  const buildModelSchema = ({ models, refPrefix }) =>
+    pipe([
+      () => models,
+      reduce(
+        (acc, model) =>
+          set(
+            model.name,
+            pipe([
+              () => model.schema,
+              JSON.parse,
+              (schema) =>
+                pipe([
+                  () => schema,
+                  updateObject((key, value) =>
+                    pipe([
+                      () => value,
+                      when(
+                        eq(key, "$ref"),
+                        pipe([
+                          callProp("split", "/"),
+                          last,
+                          prepend(`#/${refPrefix}/`),
+                        ])
+                      ),
+                    ])()
+                  ),
+                ])(),
+            ])()
+          )(acc),
+        {}
+      ),
+    ])();
+
+  // const generateSwagger2Schema =
+  //   ({ name, description }) =>
+  //   ({ resources, models }) =>
+  //     pipe([
+  //       tap(() => {
+  //         assert(resources);
+  //         assert(models);
+  //         assert(name);
+  //       }),
+  //       () => ({
+  //         swagger: "2.0",
+  //         info: {
+  //           description,
+  //           title: name,
+  //         },
+  //         schemes: ["https"],
+  //         paths: swaggerPath({ resources }),
+  //         definitions: buildModelSchema({ models, refPrefix: "definitions" }),
+  //       }),
+  //       tap((params) => {
+  //         assert(true);
+  //       }),
+  //     ])();
+
+  const generateOpenApi2Schema =
     ({ name, description }) =>
     ({ resources, models }) =>
       pipe([
@@ -129,185 +461,19 @@ exports.RestApi = ({ spec, config }) => {
           assert(name);
         }),
         () => ({
-          swagger: "2.0",
+          openapi: "3.0.1",
           info: {
             description,
             title: name,
+            version: "1",
           },
-          schemes: ["https"],
-          paths: pipe([
-            () => resources,
-            tap((params) => {
-              assert(true);
+          paths: buildOpenApiPath({ resources }),
+          components: {
+            schemas: buildModelSchema({
+              models,
+              refPrefix: "components/schemas",
             }),
-            reduce(
-              (acc, resource) =>
-                set(
-                  resource.path,
-                  pipe([
-                    () => resource.methods,
-                    reduce(
-                      (acc, method) =>
-                        set(
-                          method.httpMethod.toLowerCase(),
-                          pipe([
-                            () => ({
-                              ...(method.operationName && {
-                                operationId: method.operationName,
-                              }),
-                              consumes: ["application/json"],
-                              produces: pipe([
-                                () => method,
-                                get(
-                                  "methodIntegration.integrationResponses",
-                                  {}
-                                ),
-                                values,
-                                pluck("responseParameters"),
-                                filter(not(isEmpty)),
-                                map(
-                                  (param) =>
-                                    param["method.response.header.Content-Type"]
-                                ),
-                                filter(not(isEmpty)),
-                                map(callProp("replace", /'/g, "")),
-                                when(isEmpty, () => ["application/json"]),
-                              ])(),
-                              ...(method.requestModels && {
-                                parameters: [
-                                  {
-                                    in: "body",
-                                    name: method.requestModels[
-                                      "application/json"
-                                    ],
-                                    required: true,
-                                    schema: {
-                                      $ref: `#/definitions/${method.requestModels["application/json"]}`,
-                                    },
-                                  },
-                                ],
-                              }),
-                              ...(method.requestParameters && {
-                                parameters: buildRequestParameters({
-                                  requestParameters: method.requestParameters,
-                                }),
-                              }),
-                              ...(get("methodIntegration.requestParameters")(
-                                method
-                              ) && {
-                                parameters: buildIntegrationRequestParameters({
-                                  requestParameters:
-                                    method.methodIntegration.requestParameters,
-                                }),
-                              }),
-                              responses: pipe([
-                                () => method,
-                                get("methodResponses", {}),
-                                map.entries(
-                                  ([
-                                    key,
-                                    {
-                                      statusCode,
-                                      responseParameters,
-                                      responseModels,
-                                    },
-                                  ]) => [
-                                    key,
-                                    {
-                                      description: `${statusCode} response`,
-                                      ...(responseModels && {
-                                        schema: {
-                                          $ref: `#/definitions/${responseModels["application/json"]}`,
-                                        },
-                                      }),
-                                      ...(responseParameters && {
-                                        headers: pipe([
-                                          () => responseParameters,
-                                          map.entries(([key, value]) => [
-                                            pipe([
-                                              () => key,
-                                              callProp("split", "."),
-                                              last,
-                                            ])(),
-                                            { type: "string" },
-                                          ]),
-                                        ])(),
-                                      }),
-                                    },
-                                  ]
-                                ),
-                              ])(),
-                              ...(method.methodIntegration && {
-                                ["x-amazon-apigateway-integration"]: pipe([
-                                  () => method,
-                                  get("methodIntegration", {}),
-                                  omit([
-                                    "timeoutInMillis",
-                                    "cacheNamespace",
-                                    "cacheKeyParameters",
-                                    "connectionType",
-                                  ]),
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
-                                  ({
-                                    integrationResponses,
-                                    ...otherProps
-                                  }) => ({
-                                    ...otherProps,
-                                    ...(integrationResponses && {
-                                      responses: {
-                                        default: pipe([
-                                          () => integrationResponses,
-                                          values,
-                                          first,
-                                        ])(),
-                                      },
-                                    }),
-                                  }),
-                                ])(),
-                              }),
-                            }),
-                          ])()
-                        )(acc),
-                      {}
-                    ),
-                  ])()
-                )(acc),
-              {}
-            ),
-          ])(),
-          definitions: pipe([
-            () => models,
-            reduce(
-              (acc, model) =>
-                set(
-                  model.name,
-                  pipe([
-                    () => model.schema,
-                    JSON.parse,
-                    (schema) =>
-                      pipe([
-                        () => schema,
-                        updateObject((key, value) =>
-                          pipe([
-                            () => value,
-                            when(
-                              eq(key, "$ref"),
-                              pipe([
-                                callProp("split", "/"),
-                                last,
-                                prepend("#/definitions/"),
-                              ])
-                            ),
-                          ])()
-                        ),
-                      ])(),
-                  ])()
-                )(acc),
-              {}
-            ),
-          ])(),
+          },
         }),
         tap((params) => {
           assert(true);
@@ -379,6 +545,18 @@ exports.RestApi = ({ spec, config }) => {
               logger.debug(`restApi #deployments ${size(deployments)}`);
             }),
           ])(),
+        // schemaSwagger: ({ id: restApiId, name, description }) =>
+        //   pipe([
+        //     () => ({ restApiId }),
+        //     fetchRestApiChilds,
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //     generateSwagger2Schema({ name, description }),
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //   ])(),
         schema: ({ id: restApiId, name, description }) =>
           pipe([
             () => ({ restApiId }),
@@ -386,7 +564,7 @@ exports.RestApi = ({ spec, config }) => {
             tap((params) => {
               assert(true);
             }),
-            generateSwagger2Schema({ name, description }),
+            generateOpenApi2Schema({ name, description }),
             tap((params) => {
               assert(true);
             }),
@@ -401,6 +579,7 @@ exports.RestApi = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     decorate,
   });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApis-property
   const getList = client.getList({
     method: "getRestApis",
@@ -591,22 +770,6 @@ exports.RestApi = ({ spec, config }) => {
         description: pipe([get("schema.info.description", description)]),
       }),
     ])();
-
-  // const onDeployed = ({ resultCreate, lives }) =>
-  //   pipe([
-  //     tap(() => {
-  //       logger.info(`onDeployed restApi`);
-  //       logger.debug(`onDeployed ${JSON.stringify({ resultCreate }, null, 4)}`);
-  //       assert(resultCreate);
-  //       assert(lives);
-  //     }),
-  //     () => resultCreate.results,
-  //     pluck("output"),
-  //     filter(eq(get("groupType"), "APIGateway::RestApi")),
-  //     tap((params) => {
-  //       assert(true);
-  //     }),
-  //   ])();
 
   return {
     spec,

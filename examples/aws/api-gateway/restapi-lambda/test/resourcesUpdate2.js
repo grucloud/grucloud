@@ -6,7 +6,7 @@ const createResources = ({ provider }) => {
       endpointConfiguration: {
         types: ["REGIONAL"],
       },
-      schemaFile: "test/PetStore2.swagger.json",
+      schemaFile: "test/PetStore2.oas30.json",
     }),
   });
 };

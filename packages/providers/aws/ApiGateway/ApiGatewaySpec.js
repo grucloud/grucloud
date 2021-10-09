@@ -93,7 +93,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          omit(["id", "createdDate", "deployments"]),
+          omit(["id", "createdDate", "deployments", "version"]),
         ]),
       }),
     },
