@@ -73,8 +73,7 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       authenticationType: "API_KEY",
       xrayEnabled: true,
-      schema:
-        'schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\n\ntype Mutation {\n  createNote(note: NoteInput!): Note\n  deleteNote(noteId: String!): String\n  updateNote(note: UpdateNoteInput!): Note\n}\n\ntype Note {\n  completed: Boolean!\n  id: ID!\n  name: String!\n  title: String\n}\n\ntype Query {\n  getNoteById(noteId: String!): Note\n  listNotes: [Note]\n}\n\ntype Subscription {\n  onCreateNote: Note @aws_subscribe(mutations : ["createNote"])\n  onDeleteNote: String @aws_subscribe(mutations : ["deleteNote"])\n  onUpdateNote: Note @aws_subscribe(mutations : ["updateNote"])\n}\n\ninput NoteInput {\n  completed: Boolean!\n  id: ID!\n  name: String!\n}\n\ninput UpdateNoteInput {\n  completed: Boolean\n  id: ID!\n  name: String\n}\n',
+      schemaFile: "cdk-notes-appsync-api.graphql",
     }),
   });
 

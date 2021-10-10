@@ -165,6 +165,41 @@ const writeRestApiSchema =
         )(),
     ])();
 
+const graphqlSchemaFilePath = ({ programOptions, commandOptions, resource }) =>
+  path.resolve(programOptions.workingDirectory, `${resource.name}.graphql`);
+
+const writeGraphqlSchema =
+  ({ programOptions, commandOptions }) =>
+  ({ lives, resource }) =>
+    pipe([
+      tap((params) => {
+        assert(programOptions);
+        assert(lives);
+        assert(resource);
+      }),
+      () => resource,
+      get("live.schema"),
+      (content) =>
+        tryCatch(
+          pipe([
+            () =>
+              graphqlSchemaFilePath({
+                programOptions,
+                commandOptions,
+                resource,
+              }),
+            tap((filePath) => {
+              console.log("Writing graphql schema:", filePath);
+            }),
+            (filePath) => fs.writeFile(filePath, content),
+          ]),
+          (error) => {
+            console.error("Error writing graphql schema", error);
+            throw error;
+          }
+        )(),
+    ])();
+
 const WritersSpec = ({ commandOptions, programOptions }) => [
   {
     group: "S3",
@@ -955,8 +990,27 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "GraphqlApi",
-        filterLive: () =>
-          pick(["authenticationType", "xrayEnabled", "wafWebAclArn", "schema"]),
+        filterLive: (input) => (live) =>
+          pipe([
+            tap(() => {
+              assert(input);
+            }),
+            () => input,
+            tap(writeGraphqlSchema({ programOptions })),
+            () => live,
+            pick([
+              "authenticationType",
+              "xrayEnabled",
+              "wafWebAclArn",
+              "schema",
+            ]),
+            tap(() => {
+              assert(true);
+            }),
+            assign({
+              schemaFile: () => `${live.name}.graphql`,
+            }),
+          ])(),
       },
       {
         type: "ApiKey",

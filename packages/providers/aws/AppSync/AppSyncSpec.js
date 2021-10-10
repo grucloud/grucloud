@@ -21,6 +21,7 @@ module.exports = () =>
       Client: AppSyncGraphqlApi,
       isOurMinion,
       compare: compare({
+        filterTarget: pipe([omit(["schemaFile"])]),
         filterLive: pipe([omit(["apiId", "arn", "uris", "wafWebAclArn"])]),
       }),
     },

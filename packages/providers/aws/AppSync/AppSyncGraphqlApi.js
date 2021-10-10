@@ -1,4 +1,6 @@
 const assert = require("assert");
+const fs = require("fs").promises;
+const path = require("path");
 const { assign, pipe, tap, get, eq, pick, omit, tryCatch } = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 
@@ -10,6 +12,15 @@ const { AwsClient } = require("../AwsClient");
 const findName = get("live.name");
 const findId = get("live.apiId");
 const pickId = pick(["apiId"]);
+
+const resolveSchemaFile = ({ programOptions, schemaFile }) =>
+  pipe([
+    tap(() => {
+      assert(schemaFile);
+      assert(programOptions.workingDirectory);
+    }),
+    () => path.resolve(programOptions.workingDirectory, schemaFile),
+  ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
@@ -24,6 +35,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     }),
     () => "",
   ]);
+
   const getIntrospectionSchema = tryCatch(
     pipe([
       pick(["apiId"]),
@@ -36,6 +48,9 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       pipe([
         tap((params) => {
           assert(true);
+        }),
+        () => ({
+          error,
         }),
       ])()
   );
@@ -62,38 +77,44 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const updateSchema = ({ apiId, definition }) =>
-    pipe([
-      tap((params) => {
-        assert(apiId);
-        assert(definition);
-      }),
-      () => ({ apiId, definition }),
-      appSync().startSchemaCreation,
-      tap((params) => {
-        assert(true);
-      }),
-      () =>
-        retryCall({
-          name: `getSchemaCreationStatus: ${apiId}`,
-          fn: pipe([() => ({ apiId }), appSync().getSchemaCreationStatus]),
-          isExpectedResult: eq(get("status"), "SUCCESS"),
-          config,
+  const updateSchema =
+    ({ programOptions, payload }) =>
+    ({ apiId, definition }) =>
+      pipe([
+        tap(() => {
+          assert(apiId);
+          assert(definition);
         }),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+        () => ({ apiId, definition }),
+        appSync().startSchemaCreation,
+        () =>
+          retryCall({
+            name: `getSchemaCreationStatus: ${apiId}`,
+            fn: pipe([() => ({ apiId }), appSync().getSchemaCreationStatus]),
+            isExpectedResult: eq(get("status"), "SUCCESS"),
+            config,
+          }),
+        () => ({ apiId }),
+        getIntrospectionSchema,
+        (content) =>
+          fs.writeFile(
+            resolveSchemaFile({
+              programOptions,
+              schemaFile: payload.schemaFile,
+            }),
+            content
+          ),
+      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
   const create = client.create({
     method: "createGraphqlApi",
-    filterPayload: pipe([omit(["schema"])]),
+    filterPayload: pipe([omit(["schema", "schemaFile"])]),
     pickCreated: () => pipe([get("graphqlApi"), pickId]),
     pickId,
     getById,
     config,
-    postCreate: ({ name, payload }) =>
+    postCreate: ({ name, payload, programOptions }) =>
       tap.if(
         () => payload.schema,
         pipe([
@@ -101,7 +122,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             assert(apiId);
           }),
           ({ apiId }) => ({ apiId, definition: payload.schema }),
-          updateSchema,
+          updateSchema({ payload, programOptions }),
         ])
       ),
   });
@@ -113,17 +134,15 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     }),
     tap.if(
       get("diff.liveDiff.updated.schema"),
-      pipe([
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#startSchemaCreation-property
-        ({ id, diff }) => ({
-          apiId: id,
-          definition: diff.liveDiff.updated.schema,
-        }),
-        updateSchema,
-        tap((params) => {
-          assert(true);
-        }),
-      ])
+      ({ id, diff, payload, programOptions }) =>
+        pipe([
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#startSchemaCreation-property
+          () => ({
+            apiId: id,
+            definition: diff.liveDiff.updated.schema,
+          }),
+          updateSchema({ programOptions, payload }),
+        ])()
     ),
     client.update({
       pickId,
@@ -134,13 +153,14 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             assert(live);
           }),
           () => payload,
-          omit(["schema", "tags"]),
+          omit(["schema", "schemaFile", "tags"]),
           defaultsDeep(pick(["apiId", "name"])(live)),
           tap((params) => {
             assert(true);
           }),
         ])(),
       method: "updateGraphqlApi",
+      filterLive: omit(["schema"]),
       getById,
       config,
     }),
@@ -155,12 +175,39 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { tags, schemaFile, ...otherProps },
+    dependencies: {},
+    programOptions,
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
+        schemaFile,
+      }),
+      assign({
+        schema: pipe([
+          () =>
+            resolveSchemaFile({
+              programOptions,
+              schemaFile,
+            }),
+          (schemaFileFull) =>
+            tryCatch(
+              pipe([() => fs.readFile(schemaFileFull, "utf-8")]),
+              (error) => {
+                console.error(
+                  `Problem reading or parsing ${schemaFileFull}, error:`,
+                  error
+                );
+                throw error;
+              }
+            )(),
+        ]),
       }),
     ])();
 

@@ -8,6 +8,7 @@ const {
   omit,
   tryCatch,
   switchCase,
+  pick,
 } = require("rubico");
 const { pluck, defaultsDeep, includes } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
@@ -25,6 +26,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
+const pickId = pick(["DomainName"]);
 
 exports.DomainName = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -86,6 +88,13 @@ exports.DomainName = ({ spec, config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainName-property
+  const getById = client.getById({
+    pickId,
+    method: "getDomainName",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
   const create = ({ name, payload }) =>
     pipe([
@@ -129,17 +138,13 @@ exports.DomainName = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => ({ DomainName: findName({ live }) }),
-      tap((params) => {
-        logger.info(`destroy domainName ${JSON.stringify(params)}`);
-      }),
-      tap(apiGateway().deleteDomainName),
-      tap((params) => {
-        logger.debug(`destroyed domainName ${JSON.stringify(params)}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteDomainName",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,

@@ -100,5 +100,6 @@ exports.createStack = async ({ createProvider }) => {
 
   return {
     provider,
+    hooks: [require("./hook")],
   };
 };
