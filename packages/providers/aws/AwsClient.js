@@ -250,6 +250,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ])(),
       getById,
       isInstanceUp = identity,
+      filterLive = identity,
       shouldRetryOnException = () => false,
       isExpectedException = () => false,
     }) =>
@@ -310,6 +311,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   tap((params) => {
                     assert(true);
                   }),
+                  filterLive,
                   and([
                     isInstanceUp,
                     pipe([
@@ -391,6 +393,15 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             }),
             () => live,
             tap(postDestroy),
+            tap.if(
+              () => getById,
+              () =>
+                retryCall({
+                  name: `isDestroyed ${type}`,
+                  fn: pipe([() => live, getById, isInstanceDown]),
+                  config,
+                })
+            ),
           ]),
           (error, params) =>
             pipe([
@@ -417,18 +428,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 },
               ]),
             ])()
-        ),
-        tap((params) => {
-          assert(true);
-        }),
-        tap.if(
-          () => getById,
-          () =>
-            retryCall({
-              name: `isDestroyed ${type}`,
-              fn: pipe([() => live, getById, isInstanceDown]),
-              config,
-            })
         ),
         tap(() => {
           logger.debug(`destroy ${type} ${name} done`);

@@ -65,12 +65,6 @@ exports.ResourceMaker = ({
     }),
   ]);
 
-  spec.addDependencies({
-    provider,
-    properties: properties({ config }),
-    resourceName: getResourceName(),
-  });
-
   logger.debug(
     `ResourceMaker: ${JSON.stringify({
       type,
