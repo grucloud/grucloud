@@ -250,7 +250,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ])(),
       getById,
       isInstanceUp = identity,
-      filterLive = identity,
+      filterAll = identity,
       shouldRetryOnException = () => false,
       isExpectedException = () => false,
     }) =>
@@ -311,11 +311,11 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   tap((params) => {
                     assert(true);
                   }),
-                  filterLive,
+                  filterAll,
                   and([
                     isInstanceUp,
                     pipe([
-                      (live) => compare({ live, target: payload }),
+                      (live) => compare({ live, target: filterAll(payload) }),
                       tap((diff) => {
                         logger.debug(
                           `updating ${type}, ${name}, diff: ${JSON.stringify(

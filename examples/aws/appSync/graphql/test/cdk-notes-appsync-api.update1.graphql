@@ -1,0 +1,42 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Mutation {
+  createNote(note: NoteInput!): Note
+  deleteNote(noteId: String!): String
+  updateNote(note: UpdateNoteInput!): Note
+}
+
+type Note {
+  completed: Boolean!
+  id: ID!
+  name: String!
+  title: String
+}
+
+type Query {
+  getNoteById(noteId: String!): Note
+  listNotes: [Note]
+}
+
+type Subscription {
+  onCreateNote: Note @aws_subscribe(mutations : ["createNote"])
+  onDeleteNote: String @aws_subscribe(mutations : ["deleteNote"])
+  onUpdateNote: Note @aws_subscribe(mutations : ["updateNote"])
+}
+
+input NoteInput {
+  completed: Boolean!
+  id: ID!
+  name: String!
+}
+
+input UpdateNoteInput {
+  completed: Boolean
+  id: ID!
+  name: String
+  title: String
+}

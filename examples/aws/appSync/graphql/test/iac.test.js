@@ -9,7 +9,14 @@ describe("AppSync Graphql", async function () {
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
-      steps: [{ createStack, configs: [config] }],
+      steps: [
+        { createStack, configs: [config] },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate1").createResources,
+          configs: [config],
+        },
+      ],
     });
   });
 });
