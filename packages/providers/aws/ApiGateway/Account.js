@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, fork, tap, get, map, eq } = require("rubico");
+const { pipe, fork, tap, get, map, not } = require("rubico");
 const { defaultsDeep, flatten, values, includes } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -19,7 +19,7 @@ exports.Account = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     { type: "Role", group: "IAM", ids: [live.cloudwatchRoleArn] },
   ];
-
+  const isDefault = pipe([not(get("live.cloudwatchRoleArn"))]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAccount-property
   const getAccount = () => pipe([() => ({}), apiGateway().getAccount])();
 
@@ -122,5 +122,7 @@ exports.Account = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    isDefault,
+    managedByOther: isDefault,
   };
 };

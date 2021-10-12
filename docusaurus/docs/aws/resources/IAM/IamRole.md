@@ -26,7 +26,7 @@ const iamRole = provider.IAM.makeRole({
 });
 ```
 
-### Add a policy to a role
+### Attach a policy to a role
 
 ```js
 const iamPolicy = provider.IAM.makePolicy({
@@ -65,6 +65,46 @@ const iamRole = provider.IAM.makeRole({
         },
       ],
     },
+  }),
+});
+```
+
+### Add an inline policy to a role
+
+```js
+const iamRole = provider.IAM.makeRole({
+  name: "my-role",
+  properties: () => ({
+    AssumeRolePolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "sts:AssumeRole",
+          Principal: {
+            Service: "ec2.amazonaws.com",
+          },
+          Effect: "Allow",
+          Sid: "",
+        },
+      ],
+    },
+    Policies: [
+      {
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: "dynamodb:*",
+              Resource: [
+                "arn:aws:dynamodb:eu-west-2:1234567890:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-3MPG6DUNDCO9",
+              ],
+              Effect: "Allow",
+            },
+          ],
+        },
+        PolicyName: "AppSyncNotesHandlerServiceRoleDefaultPolicy12C70C4F",
+      },
+    ],
   }),
 });
 ```

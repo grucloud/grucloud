@@ -6,6 +6,7 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -27,7 +28,13 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
-  const findDependencies = ({ live }) => [];
+  const findDependencies = ({ live }) => [
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [pipe([() => live, get("logConfig.cloudWatchLogsRoleArn")])()],
+    },
+  ];
 
   const findNamespace = pipe([
     tap((params) => {
@@ -179,11 +186,22 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, schemaFile, ...otherProps },
-    dependencies: {},
+    dependencies: { cloudWatchLogsRole },
     programOptions,
   }) =>
     pipe([
-      () => otherProps,
+      () => ({}),
+      defaultsDeep(otherProps),
+      when(
+        () => cloudWatchLogsRole,
+        assign({
+          logConfig: () => ({
+            fieldLogLevel: "NONE",
+            excludeVerboseContent: true,
+            cloudWatchLogsRoleArn: getField(cloudWatchLogsRole, "Arn"),
+          }),
+        })
+      ),
       defaultsDeep({
         name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
@@ -208,6 +226,9 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
               }
             )(),
         ]),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

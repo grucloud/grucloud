@@ -200,6 +200,13 @@ const writeGraphqlSchema =
         )(),
     ])();
 
+const replaceAccountAndRegion = ({ providerConfig }) =>
+  pipe([
+    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
+    callProp("replace", providerConfig.region, "${config.region}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
 const WritersSpec = ({ commandOptions, programOptions }) => [
   {
     group: "S3",
@@ -302,8 +309,47 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Role",
-        filterLive: () =>
-          pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
+        filterLive: ({ providerConfig }) =>
+          pipe([
+            pick([
+              "Description",
+              "Path",
+              "AssumeRolePolicyDocument",
+              "Policies",
+            ]),
+            omitIfEmpty(["Description"]),
+            assign({
+              Policies: pipe([
+                get("Policies"),
+                map(
+                  assign({
+                    PolicyDocument: pipe([
+                      get("PolicyDocument"),
+                      assign({
+                        Statement: pipe([
+                          get("Statement"),
+                          map(
+                            assign({
+                              Resource: pipe([
+                                get("Resource"),
+                                switchCase([
+                                  Array.isArray,
+                                  map(
+                                    replaceAccountAndRegion({ providerConfig })
+                                  ),
+                                  replaceAccountAndRegion({ providerConfig }),
+                                ]),
+                              ]),
+                            })
+                          ),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
         includeDefaultDependencies: true,
         dependencies: () => ({
           policies: {
@@ -1002,8 +1048,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "authenticationType",
               "xrayEnabled",
               "wafWebAclArn",
-              "schema",
+              "logConfig",
             ]),
+            omit(["logConfig.cloudWatchLogsRoleArn"]),
             tap(() => {
               assert(true);
             }),
@@ -1011,6 +1058,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               schemaFile: () => `${live.name}.graphql`,
             }),
           ])(),
+        dependencies: () => ({
+          cloudWatchLogsRole: { type: "Role", group: "IAM" },
+        }),
       },
       {
         type: "ApiKey",
@@ -1848,30 +1898,39 @@ const filterModel = pipe([
   }),
 ]);
 exports.generateCode = ({ providerConfig, commandOptions, programOptions }) =>
-  pipe([
-    () => WritersSpec({ commandOptions, programOptions }),
-    (writersSpec) =>
-      pipe([
-        () =>
-          generatorMain({
-            name: "aws2gc",
-            providerType: "aws",
-            writersSpec,
-            providerConfig,
-            commandOptions,
-            programOptions,
-            iacTpl,
-            configTpl,
-            filterModel,
-          }),
-        tap.if(
-          () => commandOptions.download,
+  tryCatch(
+    pipe([
+      () => WritersSpec({ commandOptions, programOptions }),
+      (writersSpec) =>
+        pipe([
           () =>
-            downloadAssets({
+            generatorMain({
+              name: "aws2gc",
+              providerType: "aws",
               writersSpec,
+              providerConfig,
               commandOptions,
               programOptions,
-            })
-        ),
-      ])(),
-  ])();
+              iacTpl,
+              configTpl,
+              filterModel,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          tap.if(
+            () => commandOptions.download,
+            () =>
+              downloadAssets({
+                writersSpec,
+                commandOptions,
+                programOptions,
+              })
+          ),
+        ])(),
+    ]),
+    (error) => {
+      console.error(error);
+      throw error;
+    }
+  )();
