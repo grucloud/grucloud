@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { detailedDiff } = require("deep-object-diff");
 
 const {
   map,

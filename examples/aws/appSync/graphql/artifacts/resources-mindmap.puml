@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Policy (2)
-++++ Role (3)
+++++ Policy (1)
+++++ Role (2)
 +++ DynamoDB
 ++++ Table (1)
 +++ AppSync

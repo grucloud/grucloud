@@ -24,7 +24,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makeRole({
     name: "lambda-role",
     properties: ({ config }) => ({
-      RoleName: "lambda-role",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

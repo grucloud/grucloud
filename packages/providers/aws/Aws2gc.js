@@ -317,10 +317,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "AssumeRolePolicyDocument",
               "Policies",
             ]),
-            omitIfEmpty(["Description"]),
             assign({
               Policies: pipe([
-                get("Policies"),
+                get("Policies", []),
                 map(
                   assign({
                     PolicyDocument: pipe([
@@ -349,6 +348,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                 ),
               ]),
             }),
+            omitIfEmpty(["Description", "Policies"]),
           ]),
         includeDefaultDependencies: true,
         dependencies: () => ({

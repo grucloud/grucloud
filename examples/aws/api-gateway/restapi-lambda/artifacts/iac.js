@@ -12,7 +12,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makeRole({
     name: "roleApiGatewayCloudWatch",
     properties: ({ config }) => ({
-      RoleName: "roleApiGatewayCloudWatch",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

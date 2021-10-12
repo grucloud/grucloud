@@ -12,7 +12,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makeRole({
     name: "ecsInstanceRole",
     properties: ({ config }) => ({
-      RoleName: "ecsInstanceRole",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
