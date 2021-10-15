@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  eq,
-  pick,
-  flatMap,
-  assign,
-} = require("rubico");
+const { map, pipe, tap, tryCatch, get, eq, pick, flatMap } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
@@ -20,20 +10,16 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.resolverArn");
-const findName = ({ live, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => `${live.typeName}-${live.fieldName}`,
-  ])();
 
-const pickId = pipe([
+const findName = pipe([
+  get("live"),
+  ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
   tap((params) => {
     assert(true);
   }),
-  pick(["apiId", "fieldName", "typeName"]),
 ]);
+
+const pickId = pick(["apiId", "fieldName", "typeName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncResolver = ({ spec, config }) => {
@@ -100,14 +86,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
                 () => ({ apiId, typeName: name }),
                 appSync().listResolvers,
                 get("resolvers"),
-                map(
-                  pipe([
-                    defaultsDeep({ apiId }),
-                    assign({
-                      tags: () => tags,
-                    }),
-                  ])
-                ),
+                map(pipe([defaultsDeep({ apiId, tags })])),
               ])()
             ),
           ]),
@@ -142,7 +121,12 @@ exports.AppSyncResolver = ({ spec, config }) => {
     getById,
     pickId,
     config,
-    shouldRetryOnException: eq(get("code"), "ConcurrentModificationException"),
+    shouldRetryOnException: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      eq(get("error.code"), "ConcurrentModificationException"),
+    ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteResolver-property

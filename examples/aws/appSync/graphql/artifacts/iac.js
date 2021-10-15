@@ -122,7 +122,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-createNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "createNote",
@@ -135,7 +134,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-deleteNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "deleteNote",
@@ -148,7 +146,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-updateNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "updateNote",
@@ -161,7 +158,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Query-getNoteById",
     properties: ({ config }) => ({
       typeName: "Query",
       fieldName: "getNoteById",
@@ -174,7 +170,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Query-listNotes",
     properties: ({ config }) => ({
       typeName: "Query",
       fieldName: "listNotes",

@@ -74,6 +74,17 @@ module.exports = () =>
         "AppSync::DataSource",
       ],
       Client: AppSyncResolver,
+      inferName: ({ properties }) =>
+        pipe([
+          tap((params) => {
+            assert(properties.typeName);
+            assert(properties.fieldName);
+          }),
+          () => `resolver::${properties.typeName}::${properties.fieldName}`,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["tags"])]),

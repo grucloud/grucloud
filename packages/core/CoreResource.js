@@ -73,10 +73,11 @@ exports.ResourceMaker = ({
         }),
         () => ({
           properties: properties({ config }),
-          dependencies: dependencies({
-            resources: provider.resources(),
-            config,
-          }),
+          dependencies: () =>
+            dependencies({
+              resources: provider.resources(),
+              config,
+            }),
         }),
         tap((params) => {
           assert(true);
@@ -104,7 +105,7 @@ exports.ResourceMaker = ({
     `ResourceMaker: ${JSON.stringify({
       type,
       group,
-      resourceName: getResourceName(),
+      //resourceName: getResourceName(),
       namespace,
       meta,
       programOptions,

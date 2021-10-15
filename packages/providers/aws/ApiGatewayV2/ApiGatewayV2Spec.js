@@ -64,7 +64,6 @@ module.exports = () =>
         ]),
       }),
     },
-
     {
       type: "Stage",
       dependsOn: ["ApiGatewayV2::Api", "CloudWatchLogs::LogGroup"],
@@ -130,8 +129,9 @@ module.exports = () =>
             assert(dependencies);
             assert(properties);
           }),
-          () =>
-            `apimapping::${dependencies.domainName.name}::${dependencies.api.name}::${dependencies.stage.name}::${properties.ApiMappingKey}`,
+          dependencies,
+          ({ domainName, api, stage }) =>
+            `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
           tap((params) => {
             assert(true);
           }),
@@ -167,8 +167,9 @@ module.exports = () =>
             assert(properties);
           }),
           //TODO other target
-          () =>
-            `integration::${dependencies.api.name}::${dependencies.lambdaFunction.name}`,
+          dependencies,
+          ({ api, lambdaFunction }) =>
+            `integration::${api.name}::${lambdaFunction.name}`,
           tap((params) => {
             assert(true);
           }),
@@ -213,7 +214,8 @@ module.exports = () =>
             assert(dependencies);
             assert(properties);
           }),
-          () => `route::${dependencies.api.name}::${properties.RouteKey}`,
+          dependencies,
+          ({ api }) => `route::${api.name}::${properties.RouteKey}`,
           tap((params) => {
             assert(true);
           }),
@@ -251,7 +253,8 @@ module.exports = () =>
             assert(dependencies);
             assert(properties);
           }),
-          () => `deployment::${dependencies.api.name}`,
+          dependencies,
+          ({ api }) => `deployment::${api.name}`,
           tap((params) => {
             assert(true);
           }),

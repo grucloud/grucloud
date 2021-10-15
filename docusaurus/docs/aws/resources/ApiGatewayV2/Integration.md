@@ -22,7 +22,7 @@ provider.ApiGatewayV2.makeIntegration({
 });
 ```
 
-## Properties sdsdsd
+## Properties
 
 - [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property)
 

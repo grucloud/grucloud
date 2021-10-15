@@ -1065,6 +1065,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "ApiKey",
+        //TODO
+        //        inferName: true,
+
         filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
@@ -1087,6 +1090,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "responseMappingTemplate",
             "kind",
           ]),
+        inferName: true,
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
           type: { type: "Type", group: "AppSync" },
