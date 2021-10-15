@@ -318,11 +318,15 @@ const buildPrefix = switchCase([
   () => "make",
 ]);
 
+const buildName = ({ inferName, resourceName }) =>
+  switchCase([() => inferName, () => "", () => `name: "${resourceName}",`])();
+
 const codeTpl = ({
   providerName,
   group,
   type,
   resourceVarName,
+  inferName,
   resourceName,
   dependencies,
   resource,
@@ -331,7 +335,7 @@ const codeTpl = ({
   hasNoProperty,
 }) => `
   provider.${group}.${buildPrefix(resource)}${type}({
-    name: "${resourceName}",${configBuildPropertiesDefault({
+    ${buildName({ inferName, resourceName })}${configBuildPropertiesDefault({
   resource,
   properties,
   hasNoProperty: hasNoProperty({ resource }),
@@ -802,6 +806,7 @@ const writeResource =
     filterLive,
     codeBuildProperties,
     hasNoProperty,
+    inferName,
     properties = always({}),
     dependencies = always({}),
     environmentVariables = always([]),
@@ -860,6 +865,7 @@ const writeResource =
               resource,
               resourceVarName,
               resourceName,
+              inferName,
               dependencies: dependencies(),
               lives,
               hasNoProperty,
@@ -887,6 +893,7 @@ const writeResources =
     dependencies,
     environmentVariables,
     ignoreResource,
+    inferName,
     resourceVarName,
     resourceName,
     codeBuildProperties,
@@ -929,6 +936,7 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
+                inferName,
                 dependencies,
                 ignoreResource,
                 resourceVarName,

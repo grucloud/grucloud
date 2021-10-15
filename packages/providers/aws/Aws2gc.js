@@ -289,12 +289,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: switchCase([
           get("resource.cannotBeDeleted"),
           () => pick(["Arn"]),
-          () => pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
+          () => pick(["PolicyDocument", "Path", "Description"]),
         ]),
       },
       {
         type: "User",
-        filterLive: () => pick(["UserName", "Path"]),
+        filterLive: () => pick(["Path"]),
         dependencies: () => ({
           iamGroups: { type: "Group", group: "IAM", list: true },
           policies: { type: "Policy", group: "IAM", list: true },
@@ -302,7 +302,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Group",
-        filterLive: () => pick(["GroupName", "Path"]),
+        filterLive: () => pick(["Path"]),
         dependencies: () => ({
           policies: { type: "Policy", group: "IAM", list: true },
         }),
@@ -643,6 +643,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                 ])(),
               omit(["SubjectAlternativeNames"])
             ),
+            omit(["DomainName"]),
           ]),
       },
     ],
@@ -1483,7 +1484,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               assert(true);
             }),
             pick([
-              "name",
               "description",
               "StageName",
               "StageVariables",
@@ -1523,7 +1523,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
-            pick(["DomainName"]),
+            omit(["DomainName"]),
           ]),
         dependencies: () => ({
           certificate: { type: "Certificate", group: "ACM" },
@@ -1610,12 +1610,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Api",
         filterLive: () =>
-          pick([
-            "Name",
-            "ProtocolType",
-            "ApiKeySelectionExpression",
-            "DisableExecuteApiEndpoint",
-            "RouteSelectionExpression",
+          pipe([
+            pick([
+              "ProtocolType",
+              "ApiKeySelectionExpression",
+              "DisableExecuteApiEndpoint",
+              "RouteSelectionExpression",
+              "AccessLogSettings",
+            ]),
+            omit(["AccessLogSettings.DestinationArn"]),
           ]),
       },
       {
@@ -1623,12 +1626,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pick([
             "AuthorizerType",
-            "Name",
             "IdentitySource",
-            "AuthorizerCredentialsArn",
             "AuthorizerPayloadFormatVersion",
             "AuthorizerResultTtlInSeconds",
-            "AuthorizerUri",
             "EnableSimpleResponses",
             "IdentityValidationExpression",
             "JwtConfiguration",
@@ -1644,6 +1644,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "IntegrationType",
             "PayloadFormatVersion",
           ]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           lambdaFunction: { type: "Function", group: "Lambda" },
@@ -1653,21 +1654,30 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Route",
         filterLive: () =>
           pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           integration: { type: "Integration", group: "ApiGatewayV2" },
+          authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
         }),
       },
       {
         type: "Stage",
-        filterLive: () => pick(["StageName", "StageVariables"]),
+        filterLive: () =>
+          pipe([
+            pick(["AccessLogSettings", "StageVariables"]),
+            omitIfEmpty(["StageVariables"]),
+            omit(["AccessLogSettings.DestinationArn"]),
+          ]),
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
+          logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         }),
       },
       {
         type: "Deployment",
         filterLive: () => pick(["Description"]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           stage: { type: "Stage", group: "ApiGatewayV2" },
@@ -1675,9 +1685,26 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "DomainName",
-        filterLive: () => pick(["DomainName"]),
+        filterLive: () =>
+          pipe([
+            omit(["DomainName", "DomainNameConfigurations"]),
+            when(
+              eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
+              omit(["ApiMappingSelectionExpression"])
+            ),
+          ]),
         dependencies: () => ({
           certificate: { type: "Certificate", group: "ACM" },
+        }),
+      },
+      {
+        type: "ApiMapping",
+        inferName: true,
+        filterLive: () => pipe([pick(["ApiMappingKey"])]),
+        dependencies: () => ({
+          api: { type: "Api", group: "ApiGatewayV2" },
+          domainName: { type: "DomainName", group: "ApiGatewayV2" },
+          stage: { type: "Stage", group: "ApiGatewayV2" },
         }),
       },
     ],

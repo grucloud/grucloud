@@ -1,6 +1,4 @@
 const assert = require("assert");
-const { paramCase } = require("change-case");
-const path = require("path");
 const { pipe, assign, map, tap, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");

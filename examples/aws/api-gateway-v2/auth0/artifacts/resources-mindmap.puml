@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project http-lambda
+title Resources for project ApiGateway Auth0 Autorizer
 skinparam monochrome true
 + Infra
 ++ aws
@@ -19,6 +19,7 @@ skinparam monochrome true
 ++++ Function (1)
 +++ ApiGatewayV2
 ++++ Api (1)
+++++ Authorizer (1)
 ++++ Integration (1)
 ++++ Route (1)
 ++++ Stage (1)

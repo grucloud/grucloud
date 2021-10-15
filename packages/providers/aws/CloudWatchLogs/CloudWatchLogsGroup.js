@@ -1,6 +1,5 @@
 const assert = require("assert");
 const {
-  assign,
   pipe,
   tap,
   get,
@@ -9,13 +8,14 @@ const {
   any,
   omit,
   switchCase,
+  assign,
 } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp } = require("rubico/x");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
-const findId = get("live.arn");
+const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
 const findName = get("live.logGroupName");
 
@@ -47,18 +47,14 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     }),
   ]);
 
-  // const decorate = () =>
-  //   pipe([
-  //     tap((params) => {
-  //       assert(true);
-  //     }),
-  //   ]);
+  const decorate = () =>
+    pipe([assign({ arn: pipe([get("arn"), callProp("replace", ":*", "")]) })]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#describeLogGroups-property
   const getList = client.getList({
     method: "describeLogGroups",
     getParam: "logGroups",
-    //decorate,
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#describeLogGroups-property
@@ -66,6 +62,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     pickId: ({ logGroupName }) => ({ logGroupNamePrefix: logGroupName }),
     method: "describeLogGroups",
     getField: "logGroups",
+    decorate,
   });
 
   const getByName = pipe([

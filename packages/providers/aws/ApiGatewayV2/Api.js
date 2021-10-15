@@ -1,41 +1,18 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  set,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-} = require("rubico");
-const {
-  pluck,
-  first,
-  identity,
-  defaultsDeep,
-  isEmpty,
-  size,
-} = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { map, pipe, tap, get, eq, assign, omit, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "Api",
+  prefix: "ApiGatewayV2::Api",
 });
-//const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
+
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
-//const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.ApiId");
 const findName = get("live.Name");
+const pickId = pick(["ApiId"]);
 
 exports.Api = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -43,71 +20,54 @@ exports.Api = ({ spec, config }) => {
     createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList apis`);
-      }),
-      apiGateway().getApis,
-      get("Items"),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "getApi",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
+  const getList = client.getList({
+    method: "getApis",
+    getParam: "Items",
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApi-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create api: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => apiGateway().createApi(payload),
-      tap(() => {
-        logger.info(`created api ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createApi",
+    pickCreated: () => (result) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => result,
+      ])(),
+    pickId,
+    getById,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update api: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateApi,
-      tap(() => {
-        logger.info(`updated api ${name}`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApi-property
+  const update = client.update({
+    pickId,
+    method: "updateApi",
+    getById,
+    config,
+  });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteApi-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.ApiId);
-      }),
-      () => live,
-      pick(["ApiId"]),
-      tryCatch(pipe([apiGateway().deleteApi]), (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteApi ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "NotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApi-property
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteApi",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
     pipe([
-      tap(() => {}),
       () => properties,
       defaultsDeep({
         Name: name,
@@ -120,6 +80,7 @@ exports.Api = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,
@@ -127,35 +88,5 @@ exports.Api = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
-    //findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareApi = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareApi ${tos(diff)}`);
-  }),
-]);

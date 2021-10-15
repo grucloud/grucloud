@@ -55,11 +55,46 @@ exports.ResourceMaker = ({
 }) => {
   const { type, group, groupType } = spec;
   assert(groupType);
-  assert(resourceName, `missing 'name' property for type: ${type}`);
 
   const getResourceName = pipe([
     () => resourceName,
-    when(isFunction, () => resourceName({ config: provider.getConfig() })),
+    switchCase([
+      isFunction,
+      () => resourceName({ config: provider.getConfig() }),
+      isString,
+      identity,
+      isEmpty,
+      pipe([
+        tap((params) => {
+          assert(
+            spec.inferName,
+            `resource without name must implement 'inferName'`
+          );
+        }),
+        () => ({
+          properties: properties({ config }),
+          dependencies: dependencies({
+            resources: provider.resources(),
+            config,
+          }),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        spec.inferName,
+        tap((name) => {
+          assert(name);
+          assert(isString(name));
+        }),
+      ]),
+      (resourceName) => {
+        throw Error(
+          `resource name ${JSON.stringify(
+            resourceName
+          )} is neither empty, nor a string, nor a function`
+        );
+      },
+    ]),
     tap((name) => {
       assert(name, `resource name is empty for ${groupType}`);
     }),

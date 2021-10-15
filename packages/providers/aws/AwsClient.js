@@ -149,11 +149,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.debug(`getListWithParent ${type} #parents: ${size(parents)}`);
         }),
         pluck("live"),
-        flatMap(
+        flatMap((live) =>
           pipe([
             tap((params) => {
               assert(true);
             }),
+            () => live,
             pickKey,
             tap((params) => {
               assert(true);
@@ -163,8 +164,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               assert(true);
             }),
             get(getParam),
-            map(decorate()),
-          ])
+            map(decorate({ parent: live, lives })),
+          ])()
         ),
         tap((items) => {
           logger.debug(`getListWithParent ${type} #items ${size(items)}`);
@@ -226,7 +227,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             config: configIsUp,
           })
         ),
-        postCreate({ name, payload, programOptions }),
+        postCreate({ name, payload, programOptions, resolvedDependencies }),
         tap(() => {
           logger.debug(`created ${type}, ${name}`);
         }),
@@ -236,7 +237,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({
       preUpdate = ({ live }) => identity,
       postUpdate = ({ live }) => identity,
-
       method,
       config,
       pickId = () => ({}),

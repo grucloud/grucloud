@@ -111,7 +111,10 @@ const decorateLive =
             () => client.findId({ live, lives, config }),
             tap((id) => {
               if (!isString(id)) {
-                assert(isString(id));
+                assert(
+                  isString(id),
+                  `no id in live: ${JSON.stringify(live, null, 4)}`
+                );
               }
             }),
           ])();

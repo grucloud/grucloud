@@ -103,6 +103,18 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.ApiGatewayV2.makeAuthorizer({
+    name: "authorizer-auth0",
+    properties: ({ config }) => ({
+      AuthorizerType: "JWT",
+      IdentitySource: ["$request.header.Authorization"],
+      JwtConfiguration: {
+        Audience: ["https://api.grucloud.org"],
+        Issuer: "https://dev-zojrhsju.us.auth0.com/",
+      },
+    }),
+  });
+
   provider.ApiGatewayV2.makeIntegration({
     properties: ({ config }) => ({
       ConnectionType: "INTERNET",
@@ -119,13 +131,14 @@ const createResources = ({ provider }) => {
   provider.ApiGatewayV2.makeRoute({
     properties: ({ config }) => ({
       ApiKeyRequired: false,
-      AuthorizationType: "NONE",
+      AuthorizationType: "JWT",
       RouteKey: "ANY /my-function",
     }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
       integration:
         resources.ApiGatewayV2.Integration.integrationMyApiMyFunction,
+      authorizer: resources.ApiGatewayV2.Authorizer.authorizerAuth0,
     }),
   });
 
@@ -179,6 +192,5 @@ exports.createStack = async ({ createProvider }) => {
 
   return {
     provider,
-    hooks: [require("./hook")],
   };
 };

@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { pipe, tap } = require("rubico");
+const { pipe } = require("rubico");
 
-describe("Api Gateway Authorizer V2", async function () {
+describe("Api Gateway V2 Deployment", async function () {
   let config;
   let provider;
-  let autorizer;
+  let deployment;
 
   before(async function () {
     try {
@@ -15,7 +15,7 @@ describe("Api Gateway Authorizer V2", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    autorizer = provider.getClient({ groupType: "ApiGatewayV2::Authorizer" });
+    deployment = provider.getClient({ groupType: "ApiGatewayV2::Deployment" });
     await provider.start();
   });
   after(async () => {});
@@ -23,18 +23,18 @@ describe("Api Gateway Authorizer V2", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        autorizer.destroy({
-          live: { ApiId: "12345", AuthorizerId: "12345" },
+        deployment.destroy({
+          live: { ApiId: "12345", DeploymentId: "12345" },
         }),
     ])
   );
   it(
-    "getByLive with invalid id",
+    "getById with invalid id",
     pipe([
       () =>
-        autorizer.getById({
+        deployment.getById({
           ApiId: "12345",
-          AuthorizerId: "12345",
+          DeploymentId: "12345",
         }),
     ])
   );
