@@ -1050,13 +1050,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "xrayEnabled",
               "wafWebAclArn",
               "logConfig",
+              "apiKeys",
             ]),
             omit(["logConfig.cloudWatchLogsRoleArn"]),
-            tap(() => {
-              assert(true);
-            }),
             assign({
               schemaFile: () => `${live.name}.graphql`,
+              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
             }),
           ])(),
         dependencies: () => ({

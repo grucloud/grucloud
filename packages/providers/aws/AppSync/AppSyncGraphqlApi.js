@@ -1,7 +1,17 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
-const { assign, pipe, tap, get, eq, pick, omit, tryCatch } = require("rubico");
+const {
+  map,
+  assign,
+  pipe,
+  tap,
+  get,
+  eq,
+  pick,
+  omit,
+  tryCatch,
+} = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
@@ -56,9 +66,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
         tap((params) => {
           assert(true);
         }),
-        () => ({
-          error,
-        }),
+        () => "",
       ])()
   );
 
@@ -71,6 +79,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       pipe([
         assign({
           schema: getIntrospectionSchema,
+          apiKeys: pipe([pickId, appSync().listApiKeys, get("apiKeys")]),
         }),
       ]),
   });
@@ -113,25 +122,39 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
           ),
       ])();
 
+  const createApiKeys = ({ apiId, apiKeys = [] }) =>
+    pipe([
+      () => apiKeys,
+      map(
+        tryCatch(
+          pipe([defaultsDeep({ apiId }), appSync().createApiKey]),
+          (error) => {
+            throw error;
+          }
+        )
+      ),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
   const create = client.create({
     method: "createGraphqlApi",
-    filterPayload: pipe([omit(["schema", "schemaFile"])]),
+    filterPayload: pipe([omit(["schema", "schemaFile", "apiKeys"])]),
     pickCreated: () => pipe([get("graphqlApi"), pickId]),
     pickId,
     getById,
     config,
-    postCreate: ({ name, payload, programOptions }) =>
-      tap.if(
-        () => payload.schema,
+    postCreate:
+      ({ name, payload, programOptions }) =>
+      ({ apiId }) =>
         pipe([
-          tap(({ apiId }) => {
+          tap(() => {
             assert(apiId);
+            assert(payload.schema);
           }),
-          ({ apiId }) => ({ apiId, definition: payload.schema }),
+          () => createApiKeys({ apiId, apiKeys: payload.apiKeys }),
+          () => ({ apiId, definition: payload.schema }),
           updateSchema({ payload, programOptions }),
-        ])
-      ),
+        ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#updateGraphqlApi-property
@@ -160,7 +183,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             assert(live);
           }),
           () => payload,
-          omit(["schema", "schemaFile", "tags"]),
+          omit(["schema", "schemaFile", "tags", "apiKeys"]),
           defaultsDeep(pick(["apiId", "name"])(live)),
           tap((params) => {
             assert(true);

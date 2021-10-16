@@ -111,13 +111,7 @@ const createResources = ({ provider }) => {
       authenticationType: "API_KEY",
       xrayEnabled: true,
       schemaFile: "cdk-notes-appsync-api.graphql",
-    }),
-  });
-
-  provider.AppSync.makeApiKey({
-    name: "da2-ox7s347pm5fopeyrnnvx7vyox4",
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      apiKeys: [{ description: "Graphql Api Keys" }],
     }),
   });
 

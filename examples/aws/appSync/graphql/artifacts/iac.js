@@ -114,13 +114,6 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.AppSync.makeApiKey({
-    name: "da2-ox7s347pm5fopeyrnnvx7vyox4",
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-    }),
-  });
-
   provider.AppSync.makeResolver({
     properties: ({ config }) => ({
       typeName: "Mutation",

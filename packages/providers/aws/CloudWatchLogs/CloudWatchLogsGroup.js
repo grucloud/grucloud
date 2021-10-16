@@ -13,7 +13,7 @@ const {
 const { defaultsDeep, callProp } = require("rubico/x");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 
 const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
@@ -48,7 +48,17 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
   ]);
 
   const decorate = () =>
-    pipe([assign({ arn: pipe([get("arn"), callProp("replace", ":*", "")]) })]);
+    pipe([
+      assign({
+        tags: pipe([
+          pick(["logGroupName"]),
+          cloudWatchLogs().listTagsLogGroup,
+          get("tags"),
+        ]),
+        arn: pipe([get("arn"), callProp("replace", ":*", "")]),
+      }),
+      omitIfEmpty(["Tags"]),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#describeLogGroups-property
   const getList = client.getList({
@@ -65,10 +75,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     decorate,
   });
 
-  const getByName = pipe([
-    ({ name }) => ({ logGroupNamePrefix: name }),
-    getById,
-  ]);
+  const getByName = pipe([({ name }) => ({ logGroupName: name }), getById]);
 
   const putRetentionPolicy = pipe([
     tap.if(

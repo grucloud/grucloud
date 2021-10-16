@@ -1,12 +1,15 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, pick } = require("rubico");
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinionObject } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
 const { CloudWatchLogsGroup } = require("./CloudWatchLogsGroup");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
 const GROUP = "CloudWatchLogs";
+
+const isOurMinion = ({ live, config }) =>
+  isOurMinionObject({ tags: live.tags, config });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

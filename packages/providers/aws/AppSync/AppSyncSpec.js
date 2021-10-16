@@ -1,10 +1,9 @@
 const assert = require("assert");
-const { assign, map, pick, pipe, tap, omit } = require("rubico");
+const { assign, map, pick, pipe, tap, omit, get } = require("rubico");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
-const { AppSyncApiKey } = require("./AppSyncApiKey");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
 const { AppSyncType } = require("./AppSyncType");
 const { AppSyncResolver } = require("./AppSyncResolver");
@@ -20,20 +19,25 @@ module.exports = () =>
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
       isOurMinion,
+      // TODO apiKeys
       compare: compare({
-        filterTarget: pipe([omit(["schemaFile"])]),
-        filterLive: pipe([omit(["apiId", "arn", "uris", "wafWebAclArn"])]),
-      }),
-    },
-    {
-      type: "ApiKey",
-      dependsOn: ["AppSync::GraphqlApi"],
-      Client: AppSyncApiKey,
-      isOurMinion,
-      compare: compare({
-        filterAll: pipe([
-          omit(["apiId", "id", "expires", "deletes"]),
-          omitIfEmpty(["description"]),
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["schemaFile"]),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["apiId", "arn", "uris", "wafWebAclArn"]),
+          assign({
+            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
       }),
     },

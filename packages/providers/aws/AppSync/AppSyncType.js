@@ -67,7 +67,7 @@ exports.AppSyncType = ({ spec, config }) => {
       flatMap(({ apiId, tags }) =>
         tryCatch(
           pipe([
-            () => ({ apiId, format: "JSON" }),
+            () => ({ apiId, format: "SDL" }),
             appSync().listTypes,
             get("types"),
             map(

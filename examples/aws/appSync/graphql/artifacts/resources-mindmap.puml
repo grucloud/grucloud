@@ -10,7 +10,6 @@ skinparam monochrome true
 ++++ Table (1)
 +++ AppSync
 ++++ GraphqlApi (1)
-++++ ApiKey (1)
 ++++ Resolver (5)
 ++++ DataSource (1)
 +++ Lambda

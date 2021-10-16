@@ -4,7 +4,7 @@ const { find, first } = require("rubico/x");
 const Axios = require("axios");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
-const getGraphqlUrl = ({ provider }) =>
+const getGraphqlApi = ({ provider }) =>
   pipe([
     () => ({ options: { types: ["AppSync::GraphqlApi"] } }),
     provider.listLives,
@@ -12,34 +12,26 @@ const getGraphqlUrl = ({ provider }) =>
     find(eq(get("groupType"), "AppSync::GraphqlApi")),
     get("resources"),
     first,
-    get("live.uris.GRAPHQL"),
-    tap((GRAPHQL) => {
-      assert(GRAPHQL);
-    }),
-  ]);
-
-const getApiKey = ({ provider }) =>
-  pipe([
-    () => ({ options: { types: ["AppSync::ApiKey"] } }),
-    provider.listLives,
-    get("results"),
-    find(eq(get("groupType"), "AppSync::ApiKey")),
-    get("resources"),
-    first,
-    get("id"),
-    tap((apiKey) => {
-      assert(apiKey);
-    }),
-  ]);
+    get("live"),
+  ])();
 
 module.exports = ({ provider }) => {
   return {
     name: "GraphqlApi",
     onDeployed: {
       init: pipe([
+        () => ({ provider }),
+        getGraphqlApi,
+        tap((params) => {
+          assert(true);
+        }),
         fork({
-          graphqlUrl: getGraphqlUrl({ provider }),
-          apiKey: getApiKey({ provider }),
+          graphqlUrl: get("uris.GRAPHQL"),
+          apiKey: pipe([get("apiKeys"), first, get("id")]),
+        }),
+        tap(({ graphqlUrl, apiKey }) => {
+          assert(graphqlUrl);
+          assert(apiKey);
         }),
         ({ graphqlUrl, apiKey }) => ({
           axios: Axios.create({

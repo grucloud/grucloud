@@ -5,6 +5,7 @@ const createResources = ({ provider }) => {
       authenticationType: "API_KEY",
       xrayEnabled: true,
       schemaFile: "test/cdk-notes-appsync-api.update1.graphql",
+      apiKeys: [{ description: "Graphql Api Keys" }],
     }),
   });
 };
