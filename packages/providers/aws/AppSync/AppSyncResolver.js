@@ -63,6 +63,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
+
   const getList = ({ lives }) =>
     pipe([
       () =>

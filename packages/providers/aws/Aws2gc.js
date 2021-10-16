@@ -1063,23 +1063,6 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         }),
       },
       {
-        type: "ApiKey",
-        //TODO
-        //        inferName: true,
-
-        filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
-        dependencies: () => ({
-          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
-        }),
-      },
-      // {
-      //   type: "Type",
-      //   filterLive: () => pick(["description", "definition", "format"]),
-      //   dependencies: () => ({
-      //     graphqlApi: { type: "GraphqlApi", group: "AppSync" },
-      //   }),
-      // },
-      {
         type: "Resolver",
         filterLive: () =>
           pick([
