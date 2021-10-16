@@ -14,7 +14,7 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { pluck, defaultsDeep, size, when, isEmpty } = require("rubico/x");
+const { pluck, defaultsDeep, size, append, isEmpty } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Method",
 });
@@ -52,7 +52,7 @@ exports.Method = ({ spec, config }) => {
       tap((name) => {
         assert(name);
       }),
-      (resourceName) => `${resourceName}_${live.httpMethod}`,
+      append(`_${live.httpMethod}`),
       tap((params) => {
         assert(true);
       }),
@@ -102,26 +102,32 @@ exports.Method = ({ spec, config }) => {
           group: "APIGateway",
         }),
       pluck("live"),
-      flatMap(({ restApiId, id }) =>
+      tap((params) => {
+        assert(true);
+      }),
+      flatMap(({ restApiId, restApiName, id, path }) =>
         tryCatch(
           pipe([
             tap((params) => {
               assert(true);
             }),
-            () => ["GET", "POST", "PUT", "PATCH", "DELETE"],
-            map(
+            () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            map((httpMethod) =>
               tryCatch(
-                (httpMethod) =>
-                  apiGateway().getMethod({
+                pipe([
+                  () => ({
                     restApiId,
                     resourceId: id,
                     httpMethod,
                   }),
-                (error, httpMethod) =>
+                  apiGateway().getMethod,
+                  defaultsDeep({ path }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+                (error) =>
                   pipe([
-                    tap(() => {
-                      assert(httpMethod);
-                    }),
                     () => error,
                     switchCase([
                       eq(get("code"), "NotFoundException"),
@@ -131,7 +137,7 @@ exports.Method = ({ spec, config }) => {
                       },
                     ]),
                   ])()
-              )
+              )()
             ),
             filter(not(isEmpty)),
             tap((params) => {
@@ -140,6 +146,7 @@ exports.Method = ({ spec, config }) => {
             map(
               defaultsDeep({
                 restApiId,
+                restApiName,
                 resourceId: id,
               })
             ),

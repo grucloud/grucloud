@@ -2,11 +2,16 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
-    name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-16MFRGNSNCKYY",
+  provider.IAM.usePolicy({
+    name: "AWSLambdaBasicExecutionRole",
     properties: ({ config }) => ({
-      RoleName:
-        "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-16MFRGNSNCKYY",
+      Arn: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
+    properties: ({ config }) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -20,14 +25,29 @@ const createResources = ({ provider }) => {
           },
         ],
       },
+      Policies: [
+        {
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Action: "lambda:InvokeFunction",
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:lambda-fns`,
+                Effect: "Allow",
+              },
+            ],
+          },
+          PolicyName: "ApilambdaDatasourceServiceRoleDefaultPolicy3A97E34D",
+        },
+      ],
     }),
   });
 
   provider.IAM.makeRole({
-    name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-ME4D96ZFJKTZ",
+    name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     properties: ({ config }) => ({
-      RoleName:
-        "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-ME4D96ZFJKTZ",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -41,16 +61,33 @@ const createResources = ({ provider }) => {
           },
         ],
       },
+      Policies: [
+        {
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Action: "dynamodb:*",
+                Resource: [
+                  `arn:aws:dynamodb:${
+                    config.region
+                  }:${config.accountId()}:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
+                ],
+                Effect: "Allow",
+              },
+            ],
+          },
+          PolicyName: "AppSyncNotesHandlerServiceRoleDefaultPolicy12C70C4F",
+        },
+      ],
     }),
     dependencies: ({ resources }) => ({
-      policies: [
-        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-      ],
+      policies: [resources.IAM.Policy.awsLambdaBasicExecutionRole],
     }),
   });
 
   provider.DynamoDB.makeTable({
-    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1V7H2BG60AFJ1",
+    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     properties: ({ config }) => ({
       AttributeDefinitions: [
         {
@@ -73,20 +110,12 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       authenticationType: "API_KEY",
       xrayEnabled: true,
-      schema:
-        'schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\n\ntype Mutation {\n  createNote(note: NoteInput!): Note\n  deleteNote(noteId: String!): String\n  updateNote(note: UpdateNoteInput!): Note\n}\n\ntype Note {\n  completed: Boolean!\n  id: ID!\n  name: String!\n  title: String\n}\n\ntype Query {\n  getNoteById(noteId: String!): Note\n  listNotes: [Note]\n}\n\ntype Subscription {\n  onCreateNote: Note @aws_subscribe(mutations : ["createNote"])\n  onDeleteNote: String @aws_subscribe(mutations : ["deleteNote"])\n  onUpdateNote: Note @aws_subscribe(mutations : ["updateNote"])\n}\n\ninput NoteInput {\n  completed: Boolean!\n  id: ID!\n  name: String!\n}\n\ninput UpdateNoteInput {\n  completed: Boolean\n  id: ID!\n  name: String\n}\n',
-    }),
-  });
-
-  provider.AppSync.makeApiKey({
-    name: "da2-7kltivga3rbmzhpv6gdnjpmd7u",
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      schemaFile: "cdk-notes-appsync-api.graphql",
+      apiKeys: [{ description: "Graphql Api Keys" }],
     }),
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-createNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "createNote",
@@ -99,7 +128,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-deleteNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "deleteNote",
@@ -112,7 +140,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Mutation-updateNote",
     properties: ({ config }) => ({
       typeName: "Mutation",
       fieldName: "updateNote",
@@ -125,7 +152,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Query-getNoteById",
     properties: ({ config }) => ({
       typeName: "Query",
       fieldName: "getNoteById",
@@ -138,7 +164,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.AppSync.makeResolver({
-    name: "Query-listNotes",
     properties: ({ config }) => ({
       typeName: "Query",
       fieldName: "listNotes",
@@ -158,7 +183,7 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       serviceRole:
         resources.IAM.Role
-          .appsyncCdkAppStackApilambdaDatasourceServiceRole2_16Mfrgnsnckyy,
+          .appsyncCdkAppStackApilambdaDatasourceServiceRole2_1Bx1Mto4H3Kag,
       graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
       lambdaFunction: resources.Lambda.Function.lambdaFns,
     }),
@@ -175,13 +200,13 @@ const createResources = ({ provider }) => {
       MemorySize: 1024,
       Environment: {
         Variables: {
-          NOTES_TABLE: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1V7H2BG60AFJ1",
+          NOTES_TABLE: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
         },
       },
     }),
     dependencies: ({ resources }) => ({
       role: resources.IAM.Role
-        .appsyncCdkAppStackAppSyncNotesHandlerServiceRole3Me4D96Zfjktz,
+        .appsyncCdkAppStackAppSyncNotesHandlerServiceRole3V8Hwdriu57Tv,
     }),
   });
 };
@@ -196,5 +221,6 @@ exports.createStack = async ({ createProvider }) => {
 
   return {
     provider,
+    hooks: [require("./hook")],
   };
 };

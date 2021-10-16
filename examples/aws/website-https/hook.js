@@ -116,21 +116,21 @@ module.exports = ({ resources, provider }) => {
             });
           },
         },
-        {
-          name: `dig nameservers from RecordSet ${domainName}`,
-          command: async ({ hostedZoneLive }) => {
-            const nameServer = pipe([
-              find((record) => record.Type === "NS"),
-              get("ResourceRecords"),
-              first,
-              get("Value"),
-            ])(hostedZoneLive.RecordSet);
-            await checkDig({
-              nameServer,
-              domain: domainName,
-            });
-          },
-        },
+        // {
+        //   name: `dig nameservers from RecordSet ${domainName}`,
+        //   command: async ({ hostedZoneLive }) => {
+        //     const nameServer = pipe([
+        //       find((record) => record.Type === "NS"),
+        //       get("ResourceRecords"),
+        //       first,
+        //       get("Value"),
+        //     ])(hostedZoneLive.RecordSet);
+        //     await checkDig({
+        //       nameServer,
+        //       domain: domainName,
+        //     });
+        //   },
+        // },
         // {
         //   name: `dig default nameserver ${domainName}`,
         //   command: async ({}) => {

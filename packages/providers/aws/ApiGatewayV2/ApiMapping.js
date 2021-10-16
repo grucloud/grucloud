@@ -1,21 +1,6 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-  flatMap,
-} = require("rubico");
-const { isEmpty, callProp, defaultsDeep, size } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { map, pipe, tap, get, eq, not, assign, omit, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ApiMapping",
@@ -24,20 +9,22 @@ const logger = require("@grucloud/core/logger")({
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ApiMappingId");
-const findName = findNameInTagsOrId({ findId });
-
-const domainNameArn = ({ config, DomainName }) =>
-  `arn:aws:apigateway:${config.region}::/domainnames/${DomainName}`;
-
-const buildTagKey = ({ ApiMappingId }) => `gc-api-mapping-${ApiMappingId}`;
+const findName = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live"),
+  ({ ApiName, DomainName, Stage, ApiMappingKey }) =>
+    `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
+  tap((params) => {
+    assert(true);
+  }),
+]);
+const pickId = pick(["ApiMappingId", "DomainName"]);
 
 exports.ApiMapping = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -62,120 +49,88 @@ exports.ApiMapping = ({ spec, config }) => {
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMappings-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList apiMapping`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "DomainName",
-          group: "ApiGatewayV2",
-        }),
-      flatMap(({ live }) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getApiMappings({ DomainName: live.DomainName }),
-            get("Items"),
-            map(defaultsDeep({ DomainName: live.DomainName })),
-            map(
-              assign({
-                Tags: ({ ApiMappingId }) =>
-                  pipe([
-                    () =>
-                      apiGateway().getTags({
-                        ResourceArn: domainNameArn({
-                          config,
-                          DomainName: live.DomainName,
-                        }),
-                      }),
-                    get("Tags"),
-                    assign({ Name: get(buildTagKey({ ApiMappingId })) }),
-                    omit([buildTagKey({ ApiMappingId })]),
-                  ])(),
-              })
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `error getList api mapping: ${tos({ live, error })}`
-                );
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMapping-property
+  const getById = client.getById({
+    pickId,
+    method: "getApiMapping",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMappings-property
+  const getList = client.getListWithParent({
+    parent: { type: "DomainName", group: "ApiGatewayV2" },
+    pickKey: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      pick(["DomainName"]),
+    ]),
+    method: "getApiMappings",
+    getParam: "Items",
+    config,
+    decorate:
+      ({ lives, parent: { DomainName, Tags } }) =>
+      (live) =>
+        pipe([
+          () => live,
+          tap((params) => {
+            assert(lives);
+          }),
+          defaultsDeep({ DomainName }),
+          assign({
+            ApiName: pipe([
+              ({ ApiId }) =>
+                lives.getById({
+                  id: ApiId,
+                  providerName: config.providerName,
+                  type: "Api",
+                  group: "ApiGatewayV2",
+                }),
+              get("name"),
+            ]),
+          }),
+          assign({
+            Tags: pipe([() => Tags, omit(["Name"])]),
+          }),
+        ])(),
+  });
+
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApiMapping-property
-  const create = ({
-    name,
-    payload,
-    resolvedDependencies: { api, domainName },
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create apiMapping: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().createApiMapping,
-      tap((result) => {
-        logger.info(`created apiMapping ${name}`);
-      }),
-      pipe([
-        ({ ApiMappingId }) => ({
-          ResourceArn: domainNameArn({
-            config,
-            DomainName: domainName.live.DomainName,
+  const create = client.create({
+    method: "createApiMapping",
+    pickCreated:
+      ({ payload }) =>
+      (result) =>
+        pipe([
+          tap((params) => {
+            assert(true);
           }),
-          Tags: { ...api.live.Tags, [buildTagKey({ ApiMappingId })]: name },
-        }),
-        apiGateway().tagResource,
-      ]),
-    ])();
+          () => result,
+          defaultsDeep({ DomainName: payload.DomainName }),
+        ])(),
+    pickId,
+    getById,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update apiMapping: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      defaultsDeep(pick(["ApiId", "ApiMappingId", "DomainName"])(live)),
-      apiGateway().updateApiMapping,
-      tap(() => {
-        logger.info(`updated apiMapping ${name}`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApiMapping-property
+  const update = client.update({
+    pickId,
+    method: "updateApiMapping",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApiMapping-property
-
-  //TODO untag resources
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["ApiMappingId", "DomainName"]),
-      tap((params) => {
-        logger.info(`destroy apiMapping ${JSON.stringify(params)}`);
-        assert(live.ApiMappingId);
-        assert(live.DomainName);
-      }),
-      tap(apiGateway().deleteApiMapping),
-      tap((params) => {
-        logger.debug(`destroyed apiMapping ${JSON.stringify(params)}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteApiMapping",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -205,38 +160,10 @@ exports.ApiMapping = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareApiMapping = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareApiMapping ${tos(diff)}`);
-  }),
-]);

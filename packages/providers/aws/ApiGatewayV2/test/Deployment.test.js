@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { pipe, tap } = require("rubico");
+const { pipe } = require("rubico");
 
-describe("AppSyncType", async function () {
+describe("Api Gateway V2 Deployment", async function () {
   let config;
   let provider;
-  let type;
+  let deployment;
 
   before(async function () {
     try {
@@ -15,18 +15,26 @@ describe("AppSyncType", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    type = provider.getClient({ groupType: "AppSync::Type" });
+    deployment = provider.getClient({ groupType: "ApiGatewayV2::Deployment" });
     await provider.start();
   });
+  after(async () => {});
   it(
     "delete with invalid id",
     pipe([
       () =>
-        type.destroy({
-          live: {
-            name: "typeName-no-exist",
-            apiId: "12345",
-          },
+        deployment.destroy({
+          live: { ApiId: "12345", DeploymentId: "12345" },
+        }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        deployment.getById({
+          ApiId: "12345",
+          DeploymentId: "12345",
         }),
     ])
   );

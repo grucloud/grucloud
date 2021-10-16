@@ -1,13 +1,12 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { Deployment } = require("../Deployment");
+const { pipe, tap } = require("rubico");
 
-describe("Api Gateway Deployment", async function () {
+describe("KMSKey", async function () {
   let config;
   let provider;
-  let deployment;
+  let key;
 
   before(async function () {
     try {
@@ -16,15 +15,24 @@ describe("Api Gateway Deployment", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    deployment = provider.getClient({ groupType: "APIGateway::Deployment" });
+    key = provider.getClient({ groupType: "KMS::Key" });
     await provider.start();
   });
+  it(
+    "list",
+    pipe([
+      () => key.getList(),
+      tap(({ items }) => {
+        assert(Array.isArray(items));
+      }),
+    ])
+  );
   it(
     "delete with invalid id",
     pipe([
       () =>
-        deployment.destroy({
-          live: { restApiId: "12345", id: "12345" },
+        key.destroy({
+          live: { KeyId: "12345" },
         }),
     ])
   );
@@ -32,9 +40,17 @@ describe("Api Gateway Deployment", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        deployment.getById({
-          restApiId: "12345",
-          id: "12345",
+        key.getById({
+          KeyId: "124",
+        }),
+    ])
+  );
+  it(
+    "getByName with invalid id",
+    pipe([
+      () =>
+        key.getByName({
+          name: "124",
         }),
     ])
   );

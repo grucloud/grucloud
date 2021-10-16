@@ -8,15 +8,18 @@ Manages an [Api Gateway V2 Stage](https://console.aws.amazon.com/apigateway/main
 ## Sample code
 
 ```js
-const api = provider.ApiGatewayV2.makeApi({
-  name: "my-api",
-  properties: () => ({}),
-});
-
-const stage = provider.ApiGatewayV2.makeStage({
+provider.ApiGatewayV2.makeStage({
   name: "my-api-stage-dev",
-  dependencies: { api },
-  properties: () => ({}),
+  properties: ({ config }) => ({
+    AccessLogSettings: {
+      Format:
+        '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    api: resources.ApiGatewayV2.Api.myApi,
+    logGroup: resources.CloudWatchLogs.LogGroup.lgHttpTest,
+  }),
 });
 ```
 
@@ -27,10 +30,10 @@ const stage = provider.ApiGatewayV2.makeStage({
 ## Dependencies
 
 - [API](./ApiGatewayV2Api)
+- [CloudWatch LogGroup](../CloudWatchLogs/CloudWatchLogGroup.md)
 
 ## Used By
 
-- [ApiMapping](./ApiGatewayV2ApiMapping)
 - [Deployment](./ApiGatewayV2Deployment)
 
 ## Full Examples
@@ -39,12 +42,52 @@ const stage = provider.ApiGatewayV2.makeStage({
 
 ## List
 
-The Stages can be filtered with the _Stage_ type:
+The Stages can be filtered with the _ApiGatewayV2::Stage_ type:
 
 ```sh
-gc l -t Stage
+gc l -t ApiGatewayV2::Stage
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 3/3
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 ApiGatewayV2::Stage from aws                                                     │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│ name: my-api-stage-dev                                                             │
+│ managedByUs: Yes                                                                   │
+│ live:                                                                              │
+│   AccessLogSettings:                                                               │
+│     DestinationArn: arn:aws:logs:eu-west-2:840541460064:log-group:lg-http-test     │
+│     Format: $context.identity.sourceIp - - [$context.requestTime] "$context.httpM… │
+│   CreatedDate: 2021-10-14T17:37:16.000Z                                            │
+│   DefaultRouteSettings:                                                            │
+│     DetailedMetricsEnabled: false                                                  │
+│   DeploymentId: icit03                                                             │
+│   LastUpdatedDate: 2021-10-14T17:37:41.000Z                                        │
+│   RouteSettings:                                                                   │
+│   StageName: my-api-stage-dev                                                      │
+│   StageVariables:                                                                  │
+│   Tags:                                                                            │
+│     gc-managed-by: grucloud                                                        │
+│     gc-project-name: @grucloud/example-aws-api-gateway-lambda                      │
+│     gc-stage: dev                                                                  │
+│     gc-created-by-provider: aws                                                    │
+│     Name: my-api-stage-dev                                                         │
+│   ApiId: 7a38wlw431                                                                │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                               │
+├─────────────────────┬─────────────────────────────────────────────────────────────┤
+│ ApiGatewayV2::Stage │ my-api-stage-dev                                            │
+└─────────────────────┴─────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ApiGatewayV2::Stage" executed in 6s
 ```

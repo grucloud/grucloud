@@ -98,14 +98,15 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
 
   const getList =
     ({ method, getParam, decorate = () => identity }) =>
-    ({ lives } = {}) =>
+    ({ lives, params } = {}) =>
       pipe([
-        tap((params) => {
+        tap(() => {
           logger.debug(`getList ${type}`);
           assert(method);
           assert(getParam);
           assert(isFunction(endpoint()[method]));
         }),
+        () => params,
         endpoint()[method],
         tap((params) => {
           assert(true);
@@ -148,11 +149,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.debug(`getListWithParent ${type} #parents: ${size(parents)}`);
         }),
         pluck("live"),
-        flatMap(
+        flatMap((live) =>
           pipe([
             tap((params) => {
               assert(true);
             }),
+            () => live,
             pickKey,
             tap((params) => {
               assert(true);
@@ -162,8 +164,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               assert(true);
             }),
             get(getParam),
-            map(decorate()),
-          ])
+            map(decorate({ parent: live, lives })),
+          ])()
         ),
         tap((items) => {
           logger.debug(`getListWithParent ${type} #items ${size(items)}`);
@@ -181,9 +183,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       getById,
       isInstanceUp = not(isEmpty),
       shouldRetryOnException = () => false,
+      isExpectedException = () => false,
       postCreate = () => identity,
     }) =>
-    ({ name, payload }) =>
+    ({ name, payload, programOptions, resolvedDependencies }) =>
       pipe([
         tap(() => {
           logger.debug(`create ${type}, ${name}`);
@@ -209,9 +212,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               }),
             ]),
             config,
+            isExpectedException,
             shouldRetryOnException,
           }),
-        pickCreated({ pickId, payload, name }),
+        pickCreated({ pickId, payload, name, resolvedDependencies }),
         tap((params) => {
           assert(isObject(params));
           logger.debug(`create isUpById: ${name}, ${JSON.stringify(params)}`);
@@ -223,7 +227,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             config: configIsUp,
           })
         ),
-        postCreate({ name, payload }),
+        postCreate({ name, payload, programOptions, resolvedDependencies }),
         tap(() => {
           logger.debug(`created ${type}, ${name}`);
         }),
@@ -232,6 +236,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   const update =
     ({
       preUpdate = ({ live }) => identity,
+      postUpdate = ({ live }) => identity,
       method,
       config,
       pickId = () => ({}),
@@ -245,8 +250,11 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ])(),
       getById,
       isInstanceUp = identity,
+      filterAll = identity,
+      shouldRetryOnException = () => false,
+      isExpectedException = () => false,
     }) =>
-    ({ name, payload, diff, live, compare }) =>
+    ({ name, payload, diff, live, compare, programOptions }) =>
       pipe([
         tap(() => {
           assert(method);
@@ -261,11 +269,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             })}`
           );
         }),
-        preUpdate({ live, payload }),
+        preUpdate({ name, live, payload, diff, programOptions }),
         () => filterParams({ pickId, extraParam, payload, diff, live }),
         defaultsDeep(extraParam),
         tap((params) => {
-          assert(params);
           logger.debug(
             `update ${type}, ${name}, params: ${JSON.stringify(
               params,
@@ -276,7 +283,24 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         tryCatch(
           pipe([
-            endpoint()[method],
+            (payload) =>
+              retryCall({
+                name: `update ${type} ${name}`,
+                fn: pipe([
+                  () => payload,
+                  endpoint()[method],
+                  tap((results) => {
+                    logger.debug(
+                      `updated ${type} ${name}, response: ${JSON.stringify(
+                        results
+                      )}`
+                    );
+                  }),
+                ]),
+                config,
+                isExpectedException,
+                shouldRetryOnException,
+              }),
             () => live,
             (params) =>
               retryCall({
@@ -287,10 +311,11 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   tap((params) => {
                     assert(true);
                   }),
+                  filterAll,
                   and([
                     isInstanceUp,
                     pipe([
-                      (live) => compare({ live, target: payload }),
+                      (live) => compare({ live, target: filterAll(payload) }),
                       tap((diff) => {
                         logger.debug(
                           `updating ${type}, ${name}, diff: ${JSON.stringify(
@@ -322,6 +347,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               },
             ])()
         ),
+        postUpdate({ name, live, payload, diff, programOptions }),
         tap(() => {
           logger.debug(`updated ${type}, ${name}`);
         }),
@@ -330,12 +356,14 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
   const destroy =
     ({
       preDestroy = () => {},
+      postDestroy = () => {},
       pickId,
       extraParam = {},
       method,
       getById,
       isInstanceDown = isEmpty,
-      ignoreError,
+      ignoreError = () => false,
+      ignoreErrorCodes = [],
       config,
     }) =>
     ({ name, live, lives }) =>
@@ -346,10 +374,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(ignoreError);
           assert(config);
         }),
-        () => live,
-        tap(preDestroy),
         tryCatch(
           pipe([
+            () => live,
+            tap(preDestroy),
             pickId,
             tap((params) => {
               logger.debug(
@@ -364,6 +392,17 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             tap((params) => {
               assert(true);
             }),
+            () => live,
+            tap(postDestroy),
+            tap.if(
+              () => getById,
+              () =>
+                retryCall({
+                  name: `isDestroyed ${type}`,
+                  fn: pipe([() => live, getById, isInstanceDown]),
+                  config,
+                })
+            ),
           ]),
           (error, params) =>
             pipe([
@@ -377,7 +416,16 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               }),
               () => error,
               switchCase([
-                ignoreError,
+                or([
+                  ignoreError,
+                  pipe([
+                    () => ignoreErrorCodes,
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    includes(error.code),
+                  ]),
+                ]),
                 pipe([
                   tap((params) => {
                     assert(true);
@@ -390,18 +438,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 },
               ]),
             ])()
-        ),
-        tap((params) => {
-          assert(true);
-        }),
-        tap.if(
-          () => getById,
-          () =>
-            retryCall({
-              name: `isDestroyed ${type}`,
-              fn: pipe([() => live, getById, isInstanceDown]),
-              config,
-            })
         ),
         tap(() => {
           logger.debug(`destroy ${type} ${name} done`);

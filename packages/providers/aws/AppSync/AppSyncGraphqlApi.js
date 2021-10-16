@@ -1,9 +1,22 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, eq, pick, omit, tryCatch } = require("rubico");
+const fs = require("fs").promises;
+const path = require("path");
+const {
+  map,
+  assign,
+  pipe,
+  tap,
+  get,
+  eq,
+  pick,
+  omit,
+  tryCatch,
+} = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -11,12 +24,27 @@ const findName = get("live.name");
 const findId = get("live.apiId");
 const pickId = pick(["apiId"]);
 
+const resolveSchemaFile = ({ programOptions, schemaFile }) =>
+  pipe([
+    tap(() => {
+      assert(schemaFile);
+      assert(programOptions.workingDirectory);
+    }),
+    () => path.resolve(programOptions.workingDirectory, schemaFile),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
-  const findDependencies = ({ live }) => [];
+  const findDependencies = ({ live }) => [
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [pipe([() => live, get("logConfig.cloudWatchLogsRoleArn")])()],
+    },
+  ];
 
   const findNamespace = pipe([
     tap((params) => {
@@ -24,6 +52,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     }),
     () => "",
   ]);
+
   const getIntrospectionSchema = tryCatch(
     pipe([
       pick(["apiId"]),
@@ -37,6 +66,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
         tap((params) => {
           assert(true);
         }),
+        () => "",
       ])()
   );
 
@@ -49,6 +79,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       pipe([
         assign({
           schema: getIntrospectionSchema,
+          apiKeys: pipe([pickId, appSync().listApiKeys, get("apiKeys")]),
         }),
       ]),
   });
@@ -62,48 +93,68 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const updateSchema = ({ apiId, definition }) =>
-    pipe([
-      tap((params) => {
-        assert(apiId);
-        assert(definition);
-      }),
-      () => ({ apiId, definition }),
-      appSync().startSchemaCreation,
-      tap((params) => {
-        assert(true);
-      }),
-      () =>
-        retryCall({
-          name: `getSchemaCreationStatus: ${apiId}`,
-          fn: pipe([() => ({ apiId }), appSync().getSchemaCreationStatus]),
-          isExpectedResult: eq(get("status"), "SUCCESS"),
-          config,
+  const updateSchema =
+    ({ programOptions, payload }) =>
+    ({ apiId, definition }) =>
+      pipe([
+        tap(() => {
+          assert(apiId);
+          assert(definition);
         }),
-      tap((params) => {
-        assert(true);
-      }),
+        () => ({ apiId, definition }),
+        appSync().startSchemaCreation,
+        () =>
+          retryCall({
+            name: `getSchemaCreationStatus: ${apiId}`,
+            fn: pipe([() => ({ apiId }), appSync().getSchemaCreationStatus]),
+            isExpectedResult: eq(get("status"), "SUCCESS"),
+            config,
+          }),
+        () => ({ apiId }),
+        getIntrospectionSchema,
+        (content) =>
+          fs.writeFile(
+            resolveSchemaFile({
+              programOptions,
+              schemaFile: payload.schemaFile,
+            }),
+            content
+          ),
+      ])();
+
+  const createApiKeys = ({ apiId, apiKeys = [] }) =>
+    pipe([
+      () => apiKeys,
+      map(
+        tryCatch(
+          pipe([defaultsDeep({ apiId }), appSync().createApiKey]),
+          (error) => {
+            throw error;
+          }
+        )
+      ),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createGraphqlApi-property
   const create = client.create({
     method: "createGraphqlApi",
-    filterPayload: pipe([omit(["schema"])]),
+    filterPayload: pipe([omit(["schema", "schemaFile", "apiKeys"])]),
     pickCreated: () => pipe([get("graphqlApi"), pickId]),
     pickId,
     getById,
     config,
-    postCreate: ({ name, payload }) =>
-      tap.if(
-        () => payload.schema,
+    postCreate:
+      ({ name, payload, programOptions }) =>
+      ({ apiId }) =>
         pipe([
-          tap(({ apiId }) => {
+          tap(() => {
             assert(apiId);
+            assert(payload.schema);
           }),
-          ({ apiId }) => ({ apiId, definition: payload.schema }),
-          updateSchema,
-        ])
-      ),
+          () => createApiKeys({ apiId, apiKeys: payload.apiKeys }),
+          () => ({ apiId, definition: payload.schema }),
+          updateSchema({ payload, programOptions }),
+        ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#updateGraphqlApi-property
@@ -113,17 +164,15 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     }),
     tap.if(
       get("diff.liveDiff.updated.schema"),
-      pipe([
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#startSchemaCreation-property
-        ({ id, diff }) => ({
-          apiId: id,
-          definition: diff.liveDiff.updated.schema,
-        }),
-        updateSchema,
-        tap((params) => {
-          assert(true);
-        }),
-      ])
+      ({ id, diff, payload, programOptions }) =>
+        pipe([
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#startSchemaCreation-property
+          () => ({
+            apiId: id,
+            definition: diff.liveDiff.updated.schema,
+          }),
+          updateSchema({ programOptions, payload }),
+        ])()
     ),
     client.update({
       pickId,
@@ -134,13 +183,14 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             assert(live);
           }),
           () => payload,
-          omit(["schema", "tags"]),
+          omit(["schema", "schemaFile", "tags", "apiKeys"]),
           defaultsDeep(pick(["apiId", "name"])(live)),
           tap((params) => {
             assert(true);
           }),
         ])(),
       method: "updateGraphqlApi",
+      filterAll: omit(["schema"]),
       getById,
       config,
     }),
@@ -155,12 +205,53 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { tags, schemaFile, ...otherProps },
+    dependencies: { cloudWatchLogsRole },
+    programOptions,
+  }) =>
     pipe([
-      () => properties,
+      () => ({}),
+      defaultsDeep(otherProps),
+      when(
+        () => cloudWatchLogsRole,
+        assign({
+          logConfig: () => ({
+            fieldLogLevel: "NONE",
+            excludeVerboseContent: true,
+            cloudWatchLogsRoleArn: getField(cloudWatchLogsRole, "Arn"),
+          }),
+        })
+      ),
       defaultsDeep({
         name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
+        schemaFile,
+      }),
+      assign({
+        schema: pipe([
+          () =>
+            resolveSchemaFile({
+              programOptions,
+              schemaFile,
+            }),
+          (schemaFileFull) =>
+            tryCatch(
+              pipe([() => fs.readFile(schemaFileFull, "utf-8")]),
+              (error) => {
+                console.error(
+                  `Problem reading or parsing ${schemaFileFull}, error:`,
+                  error
+                );
+                throw error;
+              }
+            )(),
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

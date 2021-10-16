@@ -129,7 +129,7 @@ const createResources = ({ provider }) => {
     name: "web-server-ec2-vpc",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-056bfe7d8a7bdb9d0",
+      ImageId: "ami-07d80543a234df229",
       UserData:
         "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
     }),

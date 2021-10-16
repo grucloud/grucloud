@@ -318,11 +318,15 @@ const buildPrefix = switchCase([
   () => "make",
 ]);
 
+const buildName = ({ inferName, resourceName }) =>
+  switchCase([() => inferName, () => "", () => `name: "${resourceName}",`])();
+
 const codeTpl = ({
   providerName,
   group,
   type,
   resourceVarName,
+  inferName,
   resourceName,
   dependencies,
   resource,
@@ -331,7 +335,7 @@ const codeTpl = ({
   hasNoProperty,
 }) => `
   provider.${group}.${buildPrefix(resource)}${type}({
-    name: "${resourceName}",${configBuildPropertiesDefault({
+    ${buildName({ inferName, resourceName })}${configBuildPropertiesDefault({
   resource,
   properties,
   hasNoProperty: hasNoProperty({ resource }),
@@ -802,6 +806,7 @@ const writeResource =
     filterLive,
     codeBuildProperties,
     hasNoProperty,
+    inferName,
     properties = always({}),
     dependencies = always({}),
     environmentVariables = always([]),
@@ -827,8 +832,7 @@ const writeResource =
             resourceVarName: () => resourceVarName(resource.name),
             resourceName: () => resourceName(resource.name),
             properties: pipe([
-              () => properties({ resource, mapping }),
-              defaultsDeep(
+              () =>
                 buildProperties({
                   providerConfig,
                   lives,
@@ -836,8 +840,12 @@ const writeResource =
                   filterLive,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
-                })
-              ),
+                }),
+              (props) =>
+                pipe([
+                  () => properties({ resource, mapping }),
+                  defaultsDeep(props),
+                ])(),
             ]),
           }),
           tap((params) => {
@@ -857,6 +865,7 @@ const writeResource =
               resource,
               resourceVarName,
               resourceName,
+              inferName,
               dependencies: dependencies(),
               lives,
               hasNoProperty,
@@ -884,6 +893,7 @@ const writeResources =
     dependencies,
     environmentVariables,
     ignoreResource,
+    inferName,
     resourceVarName,
     resourceName,
     codeBuildProperties,
@@ -910,34 +920,41 @@ const writeResources =
         console.log(`Resources ${group}::${type} #${size(resources)}`);
       }),
       map(
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          (resource) =>
-            writeResource({
-              providerConfig,
-              environmentVariables,
-              options,
-              type,
-              typeTarget,
-              group,
-              providerName,
-              properties,
-              filterLive,
-              dependencies,
-              ignoreResource,
-              resourceVarName,
-              resourceName,
-              codeBuildProperties,
-              configBuildProperties,
-              hasNoProperty,
-            })({
-              resource,
-              lives,
-              mapping,
+        tryCatch(
+          pipe([
+            tap((params) => {
+              assert(true);
             }),
-        ])
+            (resource) =>
+              writeResource({
+                providerConfig,
+                environmentVariables,
+                options,
+                type,
+                typeTarget,
+                group,
+                providerName,
+                properties,
+                filterLive,
+                inferName,
+                dependencies,
+                ignoreResource,
+                resourceVarName,
+                resourceName,
+                codeBuildProperties,
+                configBuildProperties,
+                hasNoProperty,
+              })({
+                resource,
+                lives,
+                mapping,
+              }),
+          ]),
+          (error) => {
+            console.error("Error ", error);
+            throw error;
+          }
+        )
       ),
     ])();
 

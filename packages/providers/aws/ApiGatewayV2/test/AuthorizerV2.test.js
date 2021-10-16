@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { Authorizer } = require("../Authorizer");
+const { pipe, tap } = require("rubico");
 
 describe("Api Gateway Authorizer V2", async function () {
   let config;
@@ -33,8 +32,9 @@ describe("Api Gateway Authorizer V2", async function () {
     "getByLive with invalid id",
     pipe([
       () =>
-        autorizer.getByLive({
-          live: { ApiId: "12345", AuthorizerId: "12345" },
+        autorizer.getById({
+          ApiId: "12345",
+          AuthorizerId: "12345",
         }),
     ])
   );

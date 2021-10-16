@@ -14,9 +14,9 @@
   "dependencies": {
     "@grucloud/core": "^2.1.0",
     "@grucloud/provider-aws": "^2.1.0",
-    "rubico": "^1.6.26"
+    "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "mocha": "^9.0.3"
+    "mocha": "^9.1.2"
   }
 }

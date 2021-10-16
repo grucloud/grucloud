@@ -249,6 +249,7 @@ const createResources = ({ provider }) => {
         AutoPause: true,
         SecondsUntilAutoPause: 300,
         TimeoutAction: "RollbackCapacityChange",
+        SecondsBeforeTimeout: 300,
       },
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       MasterUserPassword:

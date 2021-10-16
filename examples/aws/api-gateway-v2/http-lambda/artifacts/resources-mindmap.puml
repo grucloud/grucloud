@@ -8,6 +8,8 @@ skinparam monochrome true
 ++++ Role (1)
 +++ ACM
 ++++ Certificate (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
 +++ Route53Domains
 ++++ Domain (1)
 +++ Route53
@@ -22,4 +24,5 @@ skinparam monochrome true
 ++++ Stage (1)
 ++++ Deployment (1)
 ++++ DomainName (1)
+++++ ApiMapping (1)
 @endmindmap

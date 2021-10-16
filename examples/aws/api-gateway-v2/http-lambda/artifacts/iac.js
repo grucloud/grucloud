@@ -5,7 +5,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makePolicy({
     name: "lambda-policy",
     properties: ({ config }) => ({
-      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -24,7 +23,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makeRole({
     name: "lambda-role",
     properties: ({ config }) => ({
-      RoleName: "lambda-role",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -47,9 +45,10 @@ const createResources = ({ provider }) => {
 
   provider.ACM.makeCertificate({
     name: "grucloud.org",
-    properties: ({ config }) => ({
-      DomainName: "grucloud.org",
-    }),
+  });
+
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "lg-http-test",
   });
 
   provider.Route53Domains.useDomain({
@@ -97,7 +96,6 @@ const createResources = ({ provider }) => {
   provider.ApiGatewayV2.makeApi({
     name: "my-api",
     properties: ({ config }) => ({
-      Name: "my-api",
       ProtocolType: "HTTP",
       ApiKeySelectionExpression: "$request.header.x-api-key",
       DisableExecuteApiEndpoint: false,
@@ -106,10 +104,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.ApiGatewayV2.makeIntegration({
-    name: "integration-lambda",
     properties: ({ config }) => ({
       ConnectionType: "INTERNET",
-      Description: "",
       IntegrationMethod: "POST",
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
@@ -121,7 +117,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.ApiGatewayV2.makeRoute({
-    name: "ANY /my-function",
     properties: ({ config }) => ({
       ApiKeyRequired: false,
       AuthorizationType: "NONE",
@@ -129,26 +124,26 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
-      integration: resources.ApiGatewayV2.Integration.integrationLambda,
+      integration:
+        resources.ApiGatewayV2.Integration.integrationMyApiMyFunction,
     }),
   });
 
   provider.ApiGatewayV2.makeStage({
     name: "my-api-stage-dev",
     properties: ({ config }) => ({
-      StageName: "my-api-stage-dev",
-      StageVariables: {},
+      AccessLogSettings: {
+        Format:
+          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
     }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
+      logGroup: resources.CloudWatchLogs.LogGroup.lgHttpTest,
     }),
   });
 
   provider.ApiGatewayV2.makeDeployment({
-    name: "my-api-deployment",
-    properties: ({ config }) => ({
-      Description: "",
-    }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
       stage: resources.ApiGatewayV2.Stage.myApiStageDev,
@@ -157,11 +152,19 @@ const createResources = ({ provider }) => {
 
   provider.ApiGatewayV2.makeDomainName({
     name: "grucloud.org",
-    properties: ({ config }) => ({
-      DomainName: "grucloud.org",
-    }),
     dependencies: ({ resources }) => ({
       certificate: resources.ACM.Certificate.grucloudOrg,
+    }),
+  });
+
+  provider.ApiGatewayV2.makeApiMapping({
+    properties: ({ config }) => ({
+      ApiMappingKey: "",
+    }),
+    dependencies: ({ resources }) => ({
+      api: resources.ApiGatewayV2.Api.myApi,
+      domainName: resources.ApiGatewayV2.DomainName.grucloudOrg,
+      stage: resources.ApiGatewayV2.Stage.myApiStageDev,
     }),
   });
 };

@@ -1,18 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  assign,
-  omit,
-  tryCatch,
-  switchCase,
-} = require("rubico");
+const { pipe, tap, get, eq, tryCatch, switchCase, pick } = require("rubico");
 const { pluck, defaultsDeep, includes } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
-const { retryCall } = require("@grucloud/core/Retry");
-
 const logger = require("@grucloud/core/logger")({
   prefix: "DomainNameV2",
 });
@@ -25,6 +13,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
+const pickId = pick(["DomainName"]);
 
 exports.DomainName = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -47,99 +36,56 @@ exports.DomainName = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainNames-property
-  const getList = ({ params }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList domainName`);
-      }),
-      () => params,
-      apiGateway().getDomainNames,
-      get("Items"),
-    ])();
+  const getList = client.getList({
+    method: "getDomainNames",
+    getParam: "Items",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainName-property
-  const getByName = ({ name: DomainName }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${DomainName}`);
-      }),
-      tryCatch(
-        pipe([
-          () => apiGateway().getDomainName({ DomainName }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => {
-            logger.debug(`getByName ${DomainName} ResourceNotFoundException`);
-          },
-          (error) => {
-            logger.error(`getByName error: ${tos(error)}`);
-            throw Error(error.message);
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getByName ${DomainName} result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "getDomainName",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
+
+  const getByName = ({ name: DomainName }) => getById({ DomainName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create domainName: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () =>
-        retryCall({
-          name: `createDomainName: ${name}`,
-          fn: () => apiGateway().createDomainName(payload),
-          config: { retryCount: 40 * 10, retryDelay: 10e3 },
-          shouldRetryOnException: ({ error }) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `create domainName isExpectedException ${tos(error)}`
-                );
-              }),
-              () => ["UnsupportedCertificate", "BadRequestException"],
-              includes(error.code),
-            ])(),
+  const create = client.create({
+    method: "createDomainName",
+    shouldRetryOnException: ({ error }) =>
+      pipe([
+        tap(() => {
+          logger.error(`create domainName isExpectedException ${tos(error)}`);
         }),
-
-      tap(() => {
-        logger.info(`created domainName ${name}`);
-      }),
-    ])();
-
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update domainName: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateDomainName,
-      tap(() => {
-        logger.info(`updated domainName ${name}`);
-      }),
-    ])();
+        () => ["UnsupportedCertificate", "BadRequestException"],
+        includes(error.code),
+      ])(),
+    pickCreated:
+      ({ payload }) =>
+      (result) =>
+        pipe([() => result])(),
+    pickId,
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => ({ DomainName: findName({ live }) }),
-      tap((params) => {
-        logger.info(`destroy domainName ${JSON.stringify(params)}`);
-      }),
-      tap(apiGateway().deleteDomainName),
-      tap((params) => {
-        logger.debug(`destroyed domainName ${JSON.stringify(params)}`);
-      }),
-    ])();
+  const update = client.update({
+    pickId,
+    method: "deleteDomainName",
+    getById,
+    config,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteDomainName",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -171,38 +117,10 @@ exports.DomainName = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareDomainName = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareDomainName ${tos(diff)}`);
-  }),
-]);

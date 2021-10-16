@@ -2,6 +2,11 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.ECR.makeRegistry({
+    name: "default",
+    properties: ({ config }) => ({}),
+  });
+
   provider.ECR.makeRepository({
     name: "starhackit/lb",
     properties: ({ config }) => ({

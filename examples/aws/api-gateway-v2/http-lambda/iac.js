@@ -4,8 +4,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = ({ provider }) => {
   provider.IAM.makePolicy({
     name: "lambda-policy",
-    properties: () => ({
-      PolicyName: "lambda-policy",
+    properties: ({ config }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -23,8 +22,7 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeRole({
     name: "lambda-role",
-    properties: () => ({
-      RoleName: "lambda-role",
+    properties: ({ config }) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -47,9 +45,10 @@ const createResources = ({ provider }) => {
 
   provider.ACM.makeCertificate({
     name: "grucloud.org",
-    properties: () => ({
-      DomainName: "grucloud.org",
-    }),
+  });
+
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "lg-http-test",
   });
 
   provider.Route53Domains.useDomain({
@@ -81,8 +80,7 @@ const createResources = ({ provider }) => {
 
   provider.Lambda.makeFunction({
     name: "my-function",
-    properties: () => ({
-      FunctionName: "my-function",
+    properties: ({ config }) => ({
       Handler: "my-function.handler",
       PackageType: "Zip",
       Runtime: "nodejs14.x",
@@ -97,8 +95,7 @@ const createResources = ({ provider }) => {
 
   provider.ApiGatewayV2.makeApi({
     name: "my-api",
-    properties: () => ({
-      Name: "my-api",
+    properties: ({ config }) => ({
       ProtocolType: "HTTP",
       ApiKeySelectionExpression: "$request.header.x-api-key",
       DisableExecuteApiEndpoint: false,
@@ -107,10 +104,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.ApiGatewayV2.makeIntegration({
-    name: "integration-lambda",
-    properties: () => ({
+    properties: ({ config }) => ({
       ConnectionType: "INTERNET",
-      Description: "",
       IntegrationMethod: "POST",
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
@@ -122,34 +117,33 @@ const createResources = ({ provider }) => {
   });
 
   provider.ApiGatewayV2.makeRoute({
-    name: "ANY /my-function",
-    properties: () => ({
+    properties: ({ config }) => ({
       ApiKeyRequired: false,
       AuthorizationType: "NONE",
       RouteKey: "ANY /my-function",
     }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
-      integration: resources.ApiGatewayV2.Integration.integrationLambda,
+      integration:
+        resources.ApiGatewayV2.Integration.integrationMyApiMyFunction,
     }),
   });
 
   provider.ApiGatewayV2.makeStage({
     name: "my-api-stage-dev",
-    properties: () => ({
-      StageName: "my-api-stage-dev",
-      StageVariables: {},
+    properties: ({ config }) => ({
+      AccessLogSettings: {
+        Format:
+          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
     }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
+      logGroup: resources.CloudWatchLogs.LogGroup.lgHttpTest,
     }),
   });
 
   provider.ApiGatewayV2.makeDeployment({
-    name: "my-api-deployment",
-    properties: () => ({
-      Description: "",
-    }),
     dependencies: ({ resources }) => ({
       api: resources.ApiGatewayV2.Api.myApi,
       stage: resources.ApiGatewayV2.Stage.myApiStageDev,
@@ -158,11 +152,19 @@ const createResources = ({ provider }) => {
 
   provider.ApiGatewayV2.makeDomainName({
     name: "grucloud.org",
-    properties: () => ({
-      DomainName: "grucloud.org",
-    }),
     dependencies: ({ resources }) => ({
       certificate: resources.ACM.Certificate.grucloudOrg,
+    }),
+  });
+
+  provider.ApiGatewayV2.makeApiMapping({
+    properties: ({ config }) => ({
+      ApiMappingKey: "",
+    }),
+    dependencies: ({ resources }) => ({
+      api: resources.ApiGatewayV2.Api.myApi,
+      domainName: resources.ApiGatewayV2.DomainName.grucloudOrg,
+      stage: resources.ApiGatewayV2.Stage.myApiStageDev,
     }),
   });
 };
@@ -170,14 +172,13 @@ const createResources = ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, {
-    config: require("./config"),
-  });
+  const provider = createProvider(AwsProvider, { config: require("./config") });
   createResources({
     provider,
   });
 
   return {
     provider,
+    hooks: [require("./hook")],
   };
 };

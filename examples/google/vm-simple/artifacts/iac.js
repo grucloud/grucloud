@@ -122,7 +122,7 @@ const createResources = ({ provider }) => {
         enableConfidentialCompute: false,
       },
       sourceImage:
-        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210908",
+        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
   });
 };

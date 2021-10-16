@@ -3,7 +3,7 @@ const { pipe, map, tap, and, get } = require("rubico");
 const { isEmpty, first, callProp } = require("rubico/x");
 
 const { Cli } = require("./cli/cliCommands");
-
+const { retryCall } = require("./Retry");
 const isEmptyPlan = pipe([
   get("resultQuery.results[0]"),
   and([
@@ -54,10 +54,17 @@ exports.testEnd2End = ({
           cli.planApply({
             commandOptions: { force: true },
           }),
-        () => cli.planQuery({}),
-        tap((result) => {
-          assert(isEmptyPlan(result), "plan should be empty after first apply");
-        }),
+        () =>
+          cli.list({
+            commandOptions: { our: true, canBeDeleted: true },
+          }),
+        () =>
+          retryCall({
+            name: `planQuery`,
+            fn: pipe([() => ({}), cli.planQuery]),
+            config: { repeatCount: 1, retryDelay: 5e3 },
+            isExpectedResult: isEmptyPlan,
+          }),
         () =>
           cli.list({
             programOptions: {
@@ -95,7 +102,8 @@ exports.testEnd2End = ({
         }),
         map.series(({ createStack, createResources, configs }) =>
           pipe([
-            () => Cli({ programOptions, createStack, createResources, configs }),
+            () =>
+              Cli({ programOptions, createStack, createResources, configs }),
             (cliNext) =>
               pipe([
                 () => cliNext.info({}),
@@ -113,14 +121,13 @@ exports.testEnd2End = ({
                       defaultExclude: true,
                     },
                   }),
-                () => cliNext.planQuery({}),
-                tap((result) => {
-                  !noEmptyPlanCheck &&
-                    assert(
-                      isEmptyPlan(result),
-                      "plan should be empty after an update"
-                    );
-                }),
+                () =>
+                  retryCall({
+                    name: `planQuery`,
+                    fn: pipe([() => ({}), cliNext.planQuery]),
+                    config: { repeatCount: 1, retryDelay: 5e3 },
+                    isExpectedResult: isEmptyPlan,
+                  }),
               ])(),
           ])()
         ),

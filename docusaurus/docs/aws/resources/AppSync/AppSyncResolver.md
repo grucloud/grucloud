@@ -8,7 +8,17 @@ Manages an [AppSync Resolver](https://console.aws.amazon.com/appsync/home?#/apis
 ## Sample code
 
 ```js
-
+provider.AppSync.makeResolver({
+  properties: ({ config }) => ({
+    typeName: "Mutation",
+    fieldName: "createNote",
+    kind: "UNIT",
+  }),
+  dependencies: ({ resources }) => ({
+    graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+    dataSource: resources.AppSync.DataSource.lambdaDatasource,
+  }),
+});
 ```
 
 ## Properties

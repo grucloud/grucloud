@@ -17,6 +17,7 @@ const {
   fork,
   filter,
   tryCatch,
+  reduce,
 } = require("rubico");
 const Axios = require("axios");
 const {
@@ -29,7 +30,14 @@ const {
   when,
   callProp,
   isEmpty,
+  isObject,
+  values,
+  last,
+  prepend,
+  defaultsDeep,
 } = require("rubico/x");
+const prettier = require("prettier");
+
 const AdmZip = require("adm-zip");
 const path = require("path");
 const mime = require("mime-types");
@@ -124,6 +132,81 @@ const ec2InstanceDependencies = () => ({
         ])(),
   },
 });
+
+const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
+  path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
+
+const writeRestApiSchema =
+  ({ programOptions, commandOptions }) =>
+  ({ lives, resource }) =>
+    pipe([
+      tap((params) => {
+        assert(programOptions);
+        assert(lives);
+        assert(resource);
+      }),
+      () => resource,
+      get("live.schema"),
+      (json) => JSON.stringify(json, null, 4),
+      (content) => prettier.format(content, { parser: "json" }),
+      (content) =>
+        tryCatch(
+          pipe([
+            () => schemaFilePath({ programOptions, commandOptions, resource }),
+            tap((filePath) => {
+              console.log("Writing rest api schema:", filePath);
+            }),
+            (filePath) => fs.writeFile(filePath, content),
+          ]),
+          (error) => {
+            console.error("Error writing rest api schema", error);
+            throw error;
+          }
+        )(),
+    ])();
+
+const graphqlSchemaFilePath = ({ programOptions, commandOptions, resource }) =>
+  path.resolve(programOptions.workingDirectory, `${resource.name}.graphql`);
+
+const writeGraphqlSchema =
+  ({ programOptions, commandOptions }) =>
+  ({ lives, resource }) =>
+    pipe([
+      tap((params) => {
+        assert(programOptions);
+        assert(lives);
+        assert(resource);
+      }),
+      () => resource,
+      get("live.schema"),
+      (content) =>
+        tryCatch(
+          pipe([
+            () =>
+              graphqlSchemaFilePath({
+                programOptions,
+                commandOptions,
+                resource,
+              }),
+            tap((filePath) => {
+              console.log("Writing graphql schema:", filePath);
+            }),
+            (filePath) => fs.writeFile(filePath, content),
+          ]),
+          (error) => {
+            console.error("Error writing graphql schema", error);
+            throw error;
+          }
+        )(),
+    ])();
+
+const replaceAccountAndRegion = ({ providerConfig }) =>
+  pipe([
+    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
+    callProp("replace", providerConfig.region, "${config.region}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
 const WritersSpec = ({ commandOptions, programOptions }) => [
   {
     group: "S3",
@@ -147,7 +230,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
               "LifecycleConfiguration",
               "WebsiteConfiguration",
             ]),
-            //TODO omitIfEmpty(["LocationConstraint"])
+            //TODO REMOVE omitIfEmpty(["LocationConstraint"])
             when(
               pipe([get("LocationConstraint"), isEmpty]),
               omit(["LocationConstraint"])
@@ -206,12 +289,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: switchCase([
           get("resource.cannotBeDeleted"),
           () => pick(["Arn"]),
-          () => pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
+          () => pick(["PolicyDocument", "Path", "Description"]),
         ]),
       },
       {
         type: "User",
-        filterLive: () => pick(["UserName", "Path"]),
+        filterLive: () => pick(["Path"]),
         dependencies: () => ({
           iamGroups: { type: "Group", group: "IAM", list: true },
           policies: { type: "Policy", group: "IAM", list: true },
@@ -219,15 +302,54 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "Group",
-        filterLive: () => pick(["GroupName", "Path"]),
+        filterLive: () => pick(["Path"]),
         dependencies: () => ({
           policies: { type: "Policy", group: "IAM", list: true },
         }),
       },
       {
         type: "Role",
-        filterLive: () =>
-          pick(["RoleName", "Path", "AssumeRolePolicyDocument"]),
+        filterLive: ({ providerConfig }) =>
+          pipe([
+            pick([
+              "Description",
+              "Path",
+              "AssumeRolePolicyDocument",
+              "Policies",
+            ]),
+            assign({
+              Policies: pipe([
+                get("Policies", []),
+                map(
+                  assign({
+                    PolicyDocument: pipe([
+                      get("PolicyDocument"),
+                      assign({
+                        Statement: pipe([
+                          get("Statement"),
+                          map(
+                            assign({
+                              Resource: pipe([
+                                get("Resource"),
+                                switchCase([
+                                  Array.isArray,
+                                  map(
+                                    replaceAccountAndRegion({ providerConfig })
+                                  ),
+                                  replaceAccountAndRegion({ providerConfig }),
+                                ]),
+                              ]),
+                            })
+                          ),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+            omitIfEmpty(["Description", "Policies"]),
+          ]),
         includeDefaultDependencies: true,
         dependencies: () => ({
           policies: {
@@ -521,6 +643,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
                 ])(),
               omit(["SubjectAlternativeNames"])
             ),
+            omit(["DomainName"]),
           ]),
       },
     ],
@@ -914,23 +1037,31 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "GraphqlApi",
-        filterLive: () =>
-          pick(["authenticationType", "xrayEnabled", "wafWebAclArn", "schema"]),
-      },
-      {
-        type: "ApiKey",
-        filterLive: () => pick(["description", "xrayEnabled", "wafWebAclArn"]),
+        filterLive: (input) => (live) =>
+          pipe([
+            tap(() => {
+              assert(input);
+            }),
+            () => input,
+            tap(writeGraphqlSchema({ programOptions })),
+            () => live,
+            pick([
+              "authenticationType",
+              "xrayEnabled",
+              "wafWebAclArn",
+              "logConfig",
+              "apiKeys",
+            ]),
+            omit(["logConfig.cloudWatchLogsRoleArn"]),
+            assign({
+              schemaFile: () => `${live.name}.graphql`,
+              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+            }),
+          ])(),
         dependencies: () => ({
-          graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+          cloudWatchLogsRole: { type: "Role", group: "IAM" },
         }),
       },
-      // {
-      //   type: "Type",
-      //   filterLive: () => pick(["description", "definition", "format"]),
-      //   dependencies: () => ({
-      //     graphqlApi: { type: "GraphqlApi", group: "AppSync" },
-      //   }),
-      // },
       {
         type: "Resolver",
         filterLive: () =>
@@ -941,6 +1072,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "responseMappingTemplate",
             "kind",
           ]),
+        inferName: true,
         dependencies: () => ({
           graphqlApi: { type: "GraphqlApi", group: "AppSync" },
           type: { type: "Type", group: "AppSync" },
@@ -1263,18 +1395,57 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
     types: [
       {
         type: "RestApi",
-        filterLive: () =>
+        filterLive: (input) => (live) =>
           pipe([
-            tap((params) => {
+            tap(() => {
+              assert(input);
+            }),
+            () => input,
+            tap(writeRestApiSchema({ programOptions })),
+            () => live,
+            pick(["apiKeySource", "endpointConfiguration"]),
+            tap(() => {
               assert(true);
             }),
-            pick([
-              "description",
-              "apiKeySource",
-              "endpointConfiguration",
-              "disableExecuteApiEndpoint",
+            assign({
+              schemaFile: () => `${live.name}.oas30.json`,
+              deployment: pipe([
+                () => live,
+                get("deployments"),
+                first,
+                get("id"),
+                (deploymentId) =>
+                  pipe([
+                    () => input.lives,
+                    find(
+                      and([
+                        eq(get("groupType"), "APIGateway::Stage"),
+                        eq(get("live.deploymentId"), deploymentId),
+                      ])
+                    ),
+                    get("name"),
+                  ])(),
+                (stageName) => ({
+                  stageName,
+                }),
+              ]),
+            }),
+          ])(),
+      },
+      {
+        type: "Account",
+        filterLive: () =>
+          pipe([
+            omit([
+              "apiKeyVersion",
+              "throttleSettings",
+              "features",
+              "cloudwatchRoleArn",
             ]),
           ]),
+        dependencies: () => ({
+          cloudwatchRole: { type: "Role", group: "IAM" },
+        }),
       },
       {
         type: "Authorizer",
@@ -1283,62 +1454,12 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
-            //TODO
-            pick([]),
+            omit(["id", "name", "restApiId", "providerARNs"]),
           ]),
         dependencies: () => ({
           restApi: { type: "RestApi", group: "APIGateway" },
-        }),
-      },
-      {
-        type: "Model",
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["schema", "contentType"]),
-            assign({ schema: pipe([get("schema"), JSON.parse]) }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        dependencies: () => ({
-          restApi: { type: "RestApi", group: "APIGateway" },
-        }),
-      },
-      {
-        type: "Resource",
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick([]),
-          ]),
-        dependencies: () => ({
-          restApi: { type: "RestApi", group: "APIGateway" },
-        }),
-      },
-      {
-        type: "Method",
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick([
-              "httpMethod",
-              "authorizationType",
-              "apiKeyRequired",
-              "methodResponses",
-              "methodIntegration",
-              "description",
-            ]),
-            omit(["methodIntegration.uri", "methodIntegration.cacheNamespace"]),
-          ]),
-        dependencies: () => ({
-          resource: { type: "Resource", group: "APIGateway" },
+          lambdaFunction: { type: "Function", group: "Lambda" },
+          userPool: { type: "UserPool", group: "Cognito" },
         }),
       },
       {
@@ -1348,24 +1469,23 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
-            pick(["StageName", "StageVariables"]),
-          ]),
-        dependencies: () => ({
-          restApi: { type: "RestApi", group: "APIGateway" },
-        }),
-      },
-      {
-        type: "Integration",
-        filterLive: () =>
-          pipe([
+            pick([
+              "description",
+              "StageName",
+              "StageVariables",
+              "methodSettings",
+              "accessLogSettings",
+              "cacheClusterEnabled",
+              "cacheClusterSize",
+              "tracingEnabled",
+            ]),
+            omitIfEmpty(["methodSettings"]),
             tap((params) => {
               assert(true);
             }),
-            pick([""]),
           ]),
         dependencies: () => ({
-          method: { type: "Method", group: "APIGateway" },
-          lambdaFunction: { type: "Function", group: "Lambda" },
+          restApi: { type: "RestApi", group: "APIGateway" },
         }),
       },
       {
@@ -1389,12 +1509,85 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             tap((params) => {
               assert(true);
             }),
-            pick(["DomainName"]),
+            omit(["DomainName"]),
           ]),
         dependencies: () => ({
           certificate: { type: "Certificate", group: "ACM" },
         }),
       },
+      // {
+      //   type: "Model",
+      //   filterLive: () =>
+      //     pipe([
+      //       tap((params) => {
+      //         assert(true);
+      //       }),
+      //       pick(["schema", "contentType"]),
+      //       assign({ schema: pipe([get("schema"), JSON.parse]) }),
+      //       tap((params) => {
+      //         assert(true);
+      //       }),
+      //     ]),
+      //   dependencies: () => ({
+      //     restApi: { type: "RestApi", group: "APIGateway" },
+      //   }),
+      // },
+      // {
+      //   type: "Resource",
+      //   filterLive: () =>
+      //     pipe([
+      //       tap((params) => {
+      //         assert(true);
+      //       }),
+      //       pick([]),
+      //     ]),
+      //   dependencies: () => ({
+      //     restApi: { type: "RestApi", group: "APIGateway" },
+      //   }),
+      // },
+      // {
+      //   type: "Method",
+      //   filterLive: () =>
+      //     pipe([
+      //       tap((params) => {
+      //         assert(true);
+      //       }),
+      //       pick([
+      //         "httpMethod",
+      //         "authorizationType",
+      //         "apiKeyRequired",
+      //         "methodResponses",
+      //         "methodIntegration",
+      //         "description",
+      //       ]),
+      //       omit(["methodIntegration.uri", "methodIntegration.cacheNamespace"]),
+      //     ]),
+      //   dependencies: () => ({
+      //     resource: { type: "Resource", group: "APIGateway" },
+      //   }),
+      // },
+      // {
+      //   type: "Integration",
+      //   filterLive: () =>
+      //     pipe([
+      //       tap((params) => {
+      //         assert(true);
+      //       }),
+      //       omit([
+      //         "restApiId",
+      //         "restApiName",
+      //         "resourceId",
+      //         "path",
+      //         "httpMethod",
+      //         "cacheNamespace",
+      //         "uri",
+      //       ]),
+      //     ]),
+      //   dependencies: () => ({
+      //     method: { type: "Method", group: "APIGateway" },
+      //     lambdaFunction: { type: "Function", group: "Lambda" },
+      //   }),
+      // },
     ],
   },
   {
@@ -1403,12 +1596,15 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       {
         type: "Api",
         filterLive: () =>
-          pick([
-            "Name",
-            "ProtocolType",
-            "ApiKeySelectionExpression",
-            "DisableExecuteApiEndpoint",
-            "RouteSelectionExpression",
+          pipe([
+            pick([
+              "ProtocolType",
+              "ApiKeySelectionExpression",
+              "DisableExecuteApiEndpoint",
+              "RouteSelectionExpression",
+              "AccessLogSettings",
+            ]),
+            omit(["AccessLogSettings.DestinationArn"]),
           ]),
       },
       {
@@ -1416,12 +1612,9 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         filterLive: () =>
           pick([
             "AuthorizerType",
-            "Name",
             "IdentitySource",
-            "AuthorizerCredentialsArn",
             "AuthorizerPayloadFormatVersion",
             "AuthorizerResultTtlInSeconds",
-            "AuthorizerUri",
             "EnableSimpleResponses",
             "IdentityValidationExpression",
             "JwtConfiguration",
@@ -1437,6 +1630,7 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
             "IntegrationType",
             "PayloadFormatVersion",
           ]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           lambdaFunction: { type: "Function", group: "Lambda" },
@@ -1446,21 +1640,30 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
         type: "Route",
         filterLive: () =>
           pick(["ApiKeyRequired", "AuthorizationType", "RouteKey"]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           integration: { type: "Integration", group: "ApiGatewayV2" },
+          authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
         }),
       },
       {
         type: "Stage",
-        filterLive: () => pick(["StageName", "StageVariables"]),
+        filterLive: () =>
+          pipe([
+            pick(["AccessLogSettings", "StageVariables"]),
+            omitIfEmpty(["StageVariables"]),
+            omit(["AccessLogSettings.DestinationArn"]),
+          ]),
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
+          logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         }),
       },
       {
         type: "Deployment",
         filterLive: () => pick(["Description"]),
+        inferName: true,
         dependencies: () => ({
           api: { type: "Api", group: "ApiGatewayV2" },
           stage: { type: "Stage", group: "ApiGatewayV2" },
@@ -1468,9 +1671,26 @@ const WritersSpec = ({ commandOptions, programOptions }) => [
       },
       {
         type: "DomainName",
-        filterLive: () => pick(["DomainName"]),
+        filterLive: () =>
+          pipe([
+            omit(["DomainName", "DomainNameConfigurations"]),
+            when(
+              eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
+              omit(["ApiMappingSelectionExpression"])
+            ),
+          ]),
         dependencies: () => ({
           certificate: { type: "Certificate", group: "ACM" },
+        }),
+      },
+      {
+        type: "ApiMapping",
+        inferName: true,
+        filterLive: () => pipe([pick(["ApiMappingKey"])]),
+        dependencies: () => ({
+          api: { type: "Api", group: "ApiGatewayV2" },
+          domainName: { type: "DomainName", group: "ApiGatewayV2" },
+          stage: { type: "Stage", group: "ApiGatewayV2" },
         }),
       },
     ],
@@ -1691,30 +1911,39 @@ const filterModel = pipe([
   }),
 ]);
 exports.generateCode = ({ providerConfig, commandOptions, programOptions }) =>
-  pipe([
-    () => WritersSpec({ commandOptions, programOptions }),
-    (writersSpec) =>
-      pipe([
-        () =>
-          generatorMain({
-            name: "aws2gc",
-            providerType: "aws",
-            writersSpec,
-            providerConfig,
-            commandOptions,
-            programOptions,
-            iacTpl,
-            configTpl,
-            filterModel,
-          }),
-        tap.if(
-          () => commandOptions.download,
+  tryCatch(
+    pipe([
+      () => WritersSpec({ commandOptions, programOptions }),
+      (writersSpec) =>
+        pipe([
           () =>
-            downloadAssets({
+            generatorMain({
+              name: "aws2gc",
+              providerType: "aws",
               writersSpec,
+              providerConfig,
               commandOptions,
               programOptions,
-            })
-        ),
-      ])(),
-  ])();
+              iacTpl,
+              configTpl,
+              filterModel,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          tap.if(
+            () => commandOptions.download,
+            () =>
+              downloadAssets({
+                writersSpec,
+                commandOptions,
+                programOptions,
+              })
+          ),
+        ])(),
+    ]),
+    (error) => {
+      console.error(error);
+      throw error;
+    }
+  )();

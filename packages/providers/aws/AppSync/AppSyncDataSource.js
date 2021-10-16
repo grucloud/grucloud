@@ -231,6 +231,9 @@ exports.AppSyncDataSource = ({ spec, config }) => {
         assert(serviceRole, "missing 'serviceRole' dependency");
       }),
       () => properties,
+      tap.if(eq(get("type"), "AWS_LAMBDA"), () => {
+        assert(lambdaFunction, "missing 'lambdaFunction'");
+      }),
       defaultsDeep({
         name,
         apiId: getField(graphqlApi, "apiId"),

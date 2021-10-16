@@ -1,16 +1,14 @@
 const assert = require("assert");
-const { pipe, assign, map, tap } = require("rubico");
-const { compare } = require("@grucloud/core/Common");
+const { pipe, assign, map, tap, omit } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
-const { Deployment } = require("./Deployment");
-const { Integration } = require("./Integration");
 const { DomainName } = require("./DomainName");
 const { Authorizer } = require("./Authorizer");
-const { Model } = require("./Model");
-const { Resource } = require("./Resource");
-const { Method } = require("./Method");
+const { ApiKey } = require("./ApiKey");
+const { Account } = require("./Account");
 
 const GROUP = "APIGateway";
 
@@ -36,6 +34,47 @@ module.exports = () =>
       }),
     },
     {
+      type: "Account",
+      dependsOn: ["IAM::Role"],
+      Client: Account,
+      isOurMinion: ({ live, config }) => true,
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep({
+            features: ["UsagePlans"],
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["throttleSettings", "apiKeyVersion"]),
+        ]),
+      }),
+    },
+    {
+      type: "ApiKey",
+      Client: ApiKey,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.tags, config }),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
+        ]),
+      }),
+    },
+    {
       type: "RestApi",
       Client: RestApi,
       isOurMinion: ({ live, config }) =>
@@ -45,30 +84,14 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          omit(["schemaFile", "deployment"]),
+          defaultsDeep({ disableExecuteApiEndpoint: false }),
         ]),
         filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
-        ]),
-      }),
-    },
-    {
-      type: "Model",
-      dependsOn: ["APIGateway::RestApi"],
-      Client: Model,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
+          omit(["id", "createdDate", "deployments", "version"]),
         ]),
       }),
     },
@@ -83,30 +106,21 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
+          omit(["deploymentId"]),
         ]),
         filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
-        ]),
-      }),
-    },
-    {
-      type: "Resource",
-      dependsOn: ["APIGateway::RestApi", "APIGateway:Model"],
-      Client: Resource,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
+          omit([
+            "deploymentId",
+            "clientCertificateId",
+            "createdDate",
+            "lastUpdatedDate",
+            "cacheClusterStatus",
+          ]),
+          omitIfEmpty(["methodSettings"]),
         ]),
       }),
     },
@@ -114,72 +128,6 @@ module.exports = () =>
       type: "Authorizer",
       dependsOn: ["APIGateway::RestApi"],
       Client: Authorizer,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      }),
-    },
-    {
-      type: "Method",
-      dependsOn: ["APIGateway::RestApi", "APIGateway::Resource"],
-      Client: Method,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      }),
-    },
-    {
-      type: "Integration",
-      dependsOn: [
-        "APIGateway::RestApi",
-        "APIGateway::Resource",
-        "APIGateway::Method",
-        "Lambda::Function",
-      ],
-      Client: Integration,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      }),
-    },
-    {
-      type: "Deployment",
-      dependsOn: [
-        "APIGateway::RestApi",
-        "APIGateway::Resource",
-        "APIGateway::Integration",
-      ],
-      Client: Deployment,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({

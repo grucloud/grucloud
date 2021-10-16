@@ -2,329 +2,95 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.IAM.usePolicy({
+    name: "AmazonAPIGatewayPushToCloudWatchLogs",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "roleApiGatewayCloudWatch",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [resources.IAM.Policy.amazonApiGatewayPushToCloudWatchLogs],
+    }),
+  });
+
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "restapi",
+  });
+
   provider.APIGateway.makeRestApi({
     name: "PetStore",
     properties: ({ config }) => ({
-      description:
-        "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
       },
-      disableExecuteApiEndpoint: false,
+      schemaFile: "PetStore.oas30.json",
+      deployment: {
+        stageName: "dev",
+      },
     }),
   });
 
-  provider.APIGateway.makeAuthorizer({
-    name: "my-authorizer",
+  provider.APIGateway.makeAccount({
+    name: "default",
     dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "Empty",
-    properties: ({ config }) => ({
-      schema: {
-        type: "object",
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "NewPet",
-    properties: ({ config }) => ({
-      schema: {
-        type: "object",
-        properties: {
-          type: {
-            $ref: "https://apigateway.amazonaws.com/restapis/ersnowmgbk/models/PetType",
-          },
-          price: {
-            type: "number",
-          },
-        },
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "NewPetResponse",
-    properties: ({ config }) => ({
-      schema: {
-        type: "object",
-        properties: {
-          pet: {
-            $ref: "https://apigateway.amazonaws.com/restapis/ersnowmgbk/models/Pet",
-          },
-          message: {
-            type: "string",
-          },
-        },
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "Pet",
-    properties: ({ config }) => ({
-      schema: {
-        type: "object",
-        properties: {
-          id: {
-            type: "integer",
-          },
-          type: {
-            type: "string",
-          },
-          price: {
-            type: "number",
-          },
-        },
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "Pets",
-    properties: ({ config }) => ({
-      schema: {
-        type: "array",
-        items: {
-          $ref: "https://apigateway.amazonaws.com/restapis/ersnowmgbk/models/Pet",
-        },
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeModel({
-    name: "PetType",
-    properties: ({ config }) => ({
-      schema: {
-        type: "string",
-        enum: ["dog", "cat", "fish", "bird", "gecko"],
-      },
-      contentType: "application/json",
-    }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeResource({
-    name: "PetStore_/",
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeResource({
-    name: "PetStore_/pets",
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeResource({
-    name: "PetStore_/pets/{petId}",
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeMethod({
-    name: "CreatePet",
-    properties: ({ config }) => ({
-      httpMethod: "POST",
-      authorizationType: "NONE",
-      apiKeyRequired: false,
-      methodResponses: {
-        200: {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Access-Control-Allow-Origin": false,
-          },
-          responseModels: {
-            "application/json": "NewPetResponse",
-          },
-        },
-      },
-      methodIntegration: {
-        type: "HTTP",
-        httpMethod: "POST",
-        connectionType: "INTERNET",
-        passthroughBehavior: "WHEN_NO_MATCH",
-        timeoutInMillis: 29000,
-        cacheKeyParameters: [],
-        integrationResponses: {
-          200: {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Access-Control-Allow-Origin": "'*'",
-            },
-          },
-        },
-      },
-      description: "",
-    }),
-    dependencies: ({ resources }) => ({
-      resource: resources.APIGateway.Resource.petStorePets,
-    }),
-  });
-
-  provider.APIGateway.makeMethod({
-    name: "GetPet",
-    properties: ({ config }) => ({
-      httpMethod: "GET",
-      authorizationType: "NONE",
-      apiKeyRequired: false,
-      methodResponses: {
-        200: {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Access-Control-Allow-Origin": false,
-          },
-          responseModels: {
-            "application/json": "Pet",
-          },
-        },
-      },
-      methodIntegration: {
-        type: "HTTP",
-        httpMethod: "GET",
-        connectionType: "INTERNET",
-        requestParameters: {
-          "integration.request.path.petId": "method.request.path.petId",
-        },
-        passthroughBehavior: "WHEN_NO_MATCH",
-        timeoutInMillis: 29000,
-        cacheKeyParameters: [],
-        integrationResponses: {
-          200: {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Access-Control-Allow-Origin": "'*'",
-            },
-          },
-        },
-      },
-      description: "",
-    }),
-    dependencies: ({ resources }) => ({
-      resource: resources.APIGateway.Resource.petStorePetsPetId,
-    }),
-  });
-
-  provider.APIGateway.makeMethod({
-    name: "PetStore_/_GET",
-    properties: ({ config }) => ({
-      httpMethod: "GET",
-      authorizationType: "NONE",
-      apiKeyRequired: false,
-      methodResponses: {
-        200: {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Content-Type": false,
-          },
-        },
-      },
-      methodIntegration: {
-        type: "MOCK",
-        requestTemplates: {
-          "application/json": '{"statusCode": 200}',
-        },
-        passthroughBehavior: "WHEN_NO_MATCH",
-        timeoutInMillis: 29000,
-        cacheKeyParameters: [],
-        integrationResponses: {
-          200: {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Content-Type": "'text/html'",
-            },
-            responseTemplates: {
-              "text/html":
-                '<html>\n    <head>\n        <style>\n        body {\n            color: #333;\n            font-family: Sans-serif;\n            max-width: 800px;\n            margin: auto;\n        }\n        </style>\n    </head>\n    <body>\n        <h1>Welcome to your Pet Store API</h1>\n        <p>\n            You have successfully deployed your first API. You are seeing this HTML page because the <code>GET</code> method to the root resource of your API returns this content as a Mock integration.\n        </p>\n        <p>\n            The Pet Store API contains the <code>/pets</code> and <code>/pets/{petId}</code> resources. By making a <a href="/$context.stage/pets/" target="_blank"><code>GET</code> request</a> to <code>/pets</code> you can retrieve a list of Pets in your API. If you are looking for a specific pet, for example the pet with ID 1, you can make a <a href="/$context.stage/pets/1" target="_blank"><code>GET</code> request</a> to <code>/pets/1</code>.\n        </p>\n        <p>\n            You can use a REST client such as <a href="https://www.getpostman.com/" target="_blank">Postman</a> to test the <code>POST</code> methods in your API to create a new pet. Use the sample body below to send the <code>POST</code> request:\n        </p>\n        <pre>\n{\n    "type" : "cat",\n    "price" : 123.11\n}\n        </pre>\n    </body>\n</html>',
-            },
-          },
-        },
-      },
-      description: "",
-    }),
-    dependencies: ({ resources }) => ({
-      resource: resources.APIGateway.Resource.petStore,
-    }),
-  });
-
-  provider.APIGateway.makeMethod({
-    name: "PetStore_/pets_GET",
-    properties: ({ config }) => ({
-      httpMethod: "GET",
-      authorizationType: "AWS_IAM",
-      apiKeyRequired: false,
-      methodResponses: {
-        200: {
-          statusCode: "200",
-          responseParameters: {
-            "method.response.header.Access-Control-Allow-Origin": false,
-          },
-          responseModels: {
-            "application/json": "Pets",
-          },
-        },
-      },
-      methodIntegration: {
-        type: "HTTP",
-        httpMethod: "GET",
-        connectionType: "INTERNET",
-        requestParameters: {
-          "integration.request.querystring.page":
-            "method.request.querystring.page",
-          "integration.request.querystring.type":
-            "method.request.querystring.type",
-        },
-        passthroughBehavior: "WHEN_NO_MATCH",
-        timeoutInMillis: 29000,
-        cacheKeyParameters: [],
-        integrationResponses: {
-          200: {
-            statusCode: "200",
-            responseParameters: {
-              "method.response.header.Access-Control-Allow-Origin": "'*'",
-            },
-          },
-        },
-      },
-      description: "",
-    }),
-    dependencies: ({ resources }) => ({
-      resource: resources.APIGateway.Resource.petStorePets,
+      cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
     }),
   });
 
   provider.APIGateway.makeStage({
     name: "dev",
+    properties: ({ config }) => ({
+      description: "dev",
+      methodSettings: {
+        "*/*": {
+          metricsEnabled: false,
+          dataTraceEnabled: false,
+          throttlingBurstLimit: 5000,
+          throttlingRateLimit: 10000,
+          cachingEnabled: false,
+          cacheTtlInSeconds: 300,
+          cacheDataEncrypted: false,
+          requireAuthorizationForCacheControl: true,
+          unauthorizedCacheControlHeaderStrategy:
+            "SUCCEED_WITH_RESPONSE_HEADER",
+        },
+      },
+      cacheClusterEnabled: false,
+      cacheClusterSize: "0.5",
+      tracingEnabled: false,
+    }),
+    dependencies: ({ resources }) => ({
+      restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.APIGateway.makeStage({
+    name: "prod",
+    properties: ({ config }) => ({
+      description: "prod",
+      cacheClusterEnabled: false,
+      tracingEnabled: false,
+    }),
     dependencies: ({ resources }) => ({
       restApi: resources.APIGateway.RestApi.petStore,
     }),

@@ -1,39 +1,22 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-  flatMap,
-} = require("rubico");
-const { isEmpty, callProp, defaultsDeep, size } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { pipe, tap, get, eq, not, filter, pick } = require("rubico");
+const { isEmpty, callProp, defaultsDeep, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "Route",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.RouteId");
-const findName = get("live.RouteKey");
+const findName = pipe([
+  get("live"),
+  ({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`,
+]);
+
+const pickId = pick(["ApiId", "RouteId"]);
 
 exports.Route = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -52,95 +35,66 @@ exports.Route = ({ spec, config }) => {
         filter(not(isEmpty)),
       ])(),
     },
+    {
+      type: "Authorizer",
+      group: "ApiGatewayV2",
+      ids: [live.AuthorizerId],
+    },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList route`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Api",
-          group: "ApiGatewayV2",
-        }),
-      flatMap(({ id: ApiId, live }) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getRoutes({ ApiId }),
-            get("Items"),
-            map(defaultsDeep({ ApiId })),
-            //TODO
-            map(assign({ Tags: () => live.Tags })),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "getRoute",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
+  const getList = client.getListWithParent({
+    parent: { type: "Api", group: "ApiGatewayV2" },
+    pickKey: pipe([pick(["ApiId"])]),
+    method: "getRoutes",
+    getParam: "Items",
+    config,
+    decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
+      pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
+  });
+
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create route: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().createRoute,
-      tap(() => {
-        logger.info(`created route ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createRoute",
+    pickCreated:
+      ({ payload }) =>
+      (result) =>
+        pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
+    pickId,
+    getById,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update route: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      defaultsDeep({ RouteId: live.RouteId }),
-      apiGateway().updateRoute,
-      tap(() => {
-        logger.info(`updated route ${name}`);
-      }),
-    ])();
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateRoute-property
+  const update = client.update({
+    pickId,
+    method: "updateRoute",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteRoute-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["ApiId", "RouteId"]),
-      tap((params) => {
-        logger.info(`destroy route ${JSON.stringify(params)}`);
-        assert(live.ApiId);
-        assert(live.RouteId);
-      }),
-      tap(apiGateway().deleteRoute),
-      tap((params) => {
-        logger.debug(`destroyed route ${JSON.stringify(params)}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteRoute",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
     namespace,
     properties,
-    dependencies: { api, integration },
+    dependencies: { api, integration, authorizer },
   }) =>
     pipe([
       tap(() => {
@@ -149,10 +103,13 @@ exports.Route = ({ spec, config }) => {
       }),
       () => properties,
       defaultsDeep({
-        RouteKey: name,
         ApiId: getField(api, "ApiId"),
         Target: `integrations/${getField(integration, "IntegrationId")}`,
       }),
+      when(
+        () => authorizer,
+        defaultsDeep({ AuthorizerId: getField(authorizer, "AuthorizerId") })
+      ),
     ])();
 
   return {
@@ -162,6 +119,7 @@ exports.Route = ({ spec, config }) => {
     create,
     update,
     destroy,
+    getById,
     getByName,
     getList,
     configDefault,
@@ -169,32 +127,3 @@ exports.Route = ({ spec, config }) => {
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareRoute = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareRoute ${tos(diff)}`);
-  }),
-]);

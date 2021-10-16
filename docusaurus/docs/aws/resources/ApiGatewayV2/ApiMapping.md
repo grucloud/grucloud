@@ -8,27 +8,15 @@ Manages an [Api Gateway V2 ApiMapping](https://console.aws.amazon.com/apigateway
 ## Sample code
 
 ```js
-const apiGatewayDomainName = provider.ApiGatewayV2.makeDomainName({
-  name: config.domainName,
-  dependencies: { certificate },
-  properties: () => ({}),
-});
-
-const api = provider.ApiGatewayV2.makeApi({
-  name: "my-api",
-  properties: () => ({}),
-});
-
-const stage = provider.ApiGatewayV2.makeStage({
-  name: "my-api-stage-dev",
-  dependencies: { api },
-  properties: () => ({}),
-});
-
 provider.ApiGatewayV2.makeApiMapping({
-  name: "api-mapping-dev",
-  dependencies: { api, stage, domainName: apiGatewayDomainName },
-  properties: () => ({ ApiMappingKey: "my-function" }),
+  properties: ({ config }) => ({
+    ApiMappingKey: "",
+  }),
+  dependencies: ({ resources }) => ({
+    api: resources.ApiGatewayV2.Api.myApi,
+    domainName: resources.ApiGatewayV2.DomainName.grucloudOrg,
+    stage: resources.ApiGatewayV2.Stage.myApiStageDev,
+  }),
 });
 ```
 
@@ -48,12 +36,45 @@ provider.ApiGatewayV2.makeApiMapping({
 
 ## List
 
-The ApiMappings can be filtered with the _ApiMapping_ type:
+The ApiMappings can be filtered with the _ApiGatewayV2::ApiMapping_ type:
 
 ```sh
-gc l -t ApiMapping
+gc l -t ApiGatewayV2::ApiMapping
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 6/6
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 ApiGatewayV2::ApiMapping from aws                                                │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│ name: apimapping::grucloud.org::my-api::my-api-stage-dev::                         │
+│ managedByUs: Yes                                                                   │
+│ live:                                                                              │
+│   ApiId: 7a38wlw431                                                                │
+│   ApiMappingId: k2qu32                                                             │
+│   ApiMappingKey:                                                                   │
+│   Stage: my-api-stage-dev                                                          │
+│   DomainName: grucloud.org                                                         │
+│   ApiName: my-api                                                                  │
+│   Tags:                                                                            │
+│     gc-project-name: @grucloud/example-aws-api-gateway-lambda                      │
+│     gc-managed-by: grucloud                                                        │
+│     gc-stage: dev                                                                  │
+│     gc-created-by-provider: aws                                                    │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                               │
+├──────────────────────────┬────────────────────────────────────────────────────────┤
+│ ApiGatewayV2::ApiMapping │ apimapping::grucloud.org::my-api::my-api-stage-dev::   │
+└──────────────────────────┴────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
 
 ```

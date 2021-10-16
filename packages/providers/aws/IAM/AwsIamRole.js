@@ -10,6 +10,7 @@ const {
   not,
   assign,
   pick,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -18,6 +19,8 @@ const {
   pluck,
   find,
   includes,
+  keys,
+  first,
 } = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
@@ -87,6 +90,28 @@ exports.AwsIamRole = ({ spec, config }) => {
       logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
     }),
   ]);
+  const listInlinePolicies = ({ RoleName }) =>
+    pipe([
+      () => ({ RoleName, MaxItems: 1e3 }),
+      iam().listRolePolicies,
+      get("PolicyNames", []),
+      map(
+        pipe([
+          (PolicyName) => ({ RoleName, PolicyName }),
+          iam().getRolePolicy,
+          pick(["PolicyDocument", "PolicyName"]),
+          assign({
+            PolicyDocument: pipe([
+              get("PolicyDocument"),
+              querystring.decode,
+              keys,
+              first,
+              JSON.parse,
+            ]),
+          }),
+        ])
+      ),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = ({ params } = {}) =>
@@ -110,14 +135,7 @@ exports.AwsIamRole = ({ spec, config }) => {
                 querystring.unescape(AssumeRolePolicyDocument),
               JSON.parse,
             ]),
-            Policies: pipe([
-              ({ RoleName }) =>
-                iam().listRolePolicies({
-                  RoleName,
-                  MaxItems: 1e3,
-                }),
-              get("PolicyNames"),
-            ]),
+            Policies: listInlinePolicies,
             AttachedPolicies: listAttachedRolePolicies,
             InstanceProfiles: pipe([
               ({ RoleName }) =>
@@ -182,6 +200,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         logger.info(`create role ${tos({ name, payload })}`);
       }),
       () => payload,
+      omit(["Policies"]),
       assign({
         AssumeRolePolicyDocument: pipe([
           get("AssumeRolePolicyDocument"),
@@ -189,6 +208,20 @@ exports.AwsIamRole = ({ spec, config }) => {
         ]),
       }),
       iam().createRole,
+      pipe([
+        () => payload,
+        get("Policies", []),
+        map(
+          pipe([
+            pick(["PolicyName", "PolicyDocument"]),
+            assign({
+              PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
+            }),
+            defaultsDeep({ RoleName: name }),
+            iam().putRolePolicy,
+          ])
+        ),
+      ]),
       pipe([() => policies, attachRolePolicies({ name })]),
       tap(() => {
         logger.info(`created role ${tos({ name })}`);

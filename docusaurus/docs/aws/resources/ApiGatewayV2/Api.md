@@ -8,9 +8,14 @@ Manages an [Api Gateway V2 API](https://console.aws.amazon.com/apigateway/main/a
 ## Sample code
 
 ```js
-const restApi = provider.ApiGatewayV2.makeApi({
-  name: "myApi",
-  properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
+provider.ApiGatewayV2.makeApi({
+  name: "my-api",
+  properties: ({ config }) => ({
+    ProtocolType: "HTTP",
+    ApiKeySelectionExpression: "$request.header.x-api-key",
+    DisableExecuteApiEndpoint: false,
+    RouteSelectionExpression: "$request.method $request.path",
+  }),
 });
 ```
 
@@ -34,9 +39,45 @@ const restApi = provider.ApiGatewayV2.makeApi({
 The Apis can be filtered with the _Api_ type:
 
 ```sh
-gc l -t Api
+gc l -t ApiGatewayV2::Api
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 ApiGatewayV2::Api from aws                                              │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: my-api                                                              │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   ApiEndpoint: https://7a38wlw431.execute-api.eu-west-2.amazonaws.com     │
+│   ApiId: 7a38wlw431                                                       │
+│   ApiKeySelectionExpression: $request.header.x-api-key                    │
+│   CreatedDate: 2021-10-14T17:37:14.000Z                                   │
+│   DisableExecuteApiEndpoint: false                                        │
+│   Name: my-api                                                            │
+│   ProtocolType: HTTP                                                      │
+│   RouteSelectionExpression: $request.method $request.path                 │
+│   Tags:                                                                   │
+│     gc-managed-by: grucloud                                               │
+│     gc-project-name: @grucloud/example-aws-api-gateway-lambda             │
+│     gc-stage: dev                                                         │
+│     gc-created-by-provider: aws                                           │
+│     Name: my-api                                                          │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├───────────────────┬──────────────────────────────────────────────────────┤
+│ ApiGatewayV2::Api │ my-api                                               │
+└───────────────────┴──────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ApiGatewayV2::Api" executed in 3s
 ```

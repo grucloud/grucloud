@@ -1,46 +1,18 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  filter,
-  omit,
-  tryCatch,
-  switchCase,
-  pick,
-  flatMap,
-} = require("rubico");
-const { pluck, defaultsDeep, size } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
-const { retryCall } = require("@grucloud/core/Retry");
+const { pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "AuthorizerV2",
-});
-
-const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.AuthorizerId");
 const findName = get("live.Name");
-const pickParam = pick(["ApiId", "AuthorizerId"]);
-
-const buildTagKey = ({ AuthorizerId }) => `gc-autorizer-${AuthorizerId}`;
-
-const apiArn = ({ config, ApiId }) =>
-  `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
+const pickId = pick(["ApiId", "AuthorizerId"]);
 
 exports.Authorizer = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -50,163 +22,60 @@ exports.Authorizer = ({ spec, config }) => {
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizers-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList authorizer`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Api",
-          group: "ApiGatewayV2",
-        }),
-      pluck("id"),
-      flatMap((ApiId) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getAuthorizers({ ApiId }),
-            get("Items"),
-            map(defaultsDeep({ ApiId })),
-            map(
-              assign({
-                Tags: ({ AuthorizerId }) =>
-                  pipe([
-                    () =>
-                      apiGateway().getTags({
-                        ResourceArn: apiArn({
-                          config,
-                          ApiId,
-                        }),
-                      }),
-                    get("Tags"),
-                    assign({ Name: get(buildTagKey({ AuthorizerId })) }),
-                    omit([buildTagKey({ AuthorizerId })]),
-                  ])(),
-              })
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap((params) => {
-                logger.error(`error getList authorizer ${tos({ error })}`);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
+  const getById = client.getById({
+    pickId,
+    method: "getAuthorizer",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
 
-  //const isUpByName = pipe([getByName, not(isEmpty)]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizers-property
+  const getList = client.getListWithParent({
+    parent: { type: "Api", group: "ApiGatewayV2" },
+    pickKey: pipe([pick(["ApiId"])]),
+    method: "getAuthorizers",
+    getParam: "Items",
+    config,
+    decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
+      pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
+  });
+
   const getByName = getByNameCore({ getList, findName });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
-
-  const getByLive = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    pickParam,
-    tryCatch(apiGateway().getAuthorizer, (error, params) =>
-      pipe([
-        tap(() => {
-          logger.error(`error getAuthorizer ${tos({ params, error })}`);
-        }),
-      ])()
-    ),
-  ]);
-
-  const isDownByLive = pipe([getByLive, isEmpty]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createAuthorizer-property
-  const create = ({ name, payload, resolvedDependencies: { api } }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create authorizer: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().createAuthorizer,
-      pipe([
-        ({ AuthorizerId }) => ({
-          ResourceArn: apiArn({
-            config,
-            ApiId: api.live.ApiId,
+  const create = client.create({
+    method: "createAuthorizer",
+    pickCreated:
+      ({ payload }) =>
+      (result) =>
+        pipe([
+          tap((params) => {
+            assert(true);
           }),
-          Tags: { ...api.live.Tags, [buildTagKey({ AuthorizerId })]: name },
-        }),
-        apiGateway().tagResource,
-      ]),
-      tap(() => {
-        logger.info(`created authorizer ${name}`);
-      }),
-    ])();
+          () => result,
+          defaultsDeep({ ApiId: payload.ApiId }),
+        ])(),
+    pickId,
+    getById,
+    config,
+  });
 
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update authorizer: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateAuthorizer,
-      tap(() => {
-        logger.info(`updated authorizer ${name}`);
-      }),
-    ])();
-
-  const untagResource = (live) =>
-    pipe([
-      () => ({
-        ResourceArn: apiArn({
-          config,
-          ApiId: live.ApiId,
-        }),
-        TagKeys: [buildTagKey({ AuthorizerId: live.AuthorizerId })],
-      }),
-      apiGateway().untagResource,
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateAuthorizer-property
+  const update = client.update({
+    pickId,
+    method: "updateAuthorizer",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteAuthorizer-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.ApiId);
-        assert(live.AuthorizerId);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(
-        pipe([
-          tap(untagResource),
-          apiGateway().deleteAuthorizer,
-          () =>
-            retryCall({
-              name: `authorizer isDownByLive: ${live.Name}`,
-              fn: () => isDownByLive(live),
-              config,
-            }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(`error deleteAuthorizer ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              eq(get("code"), "NotFoundException"),
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteAuthorizer",
+    getById,
+    ignoreError: eq(get("code"), "NotFoundException"),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -222,7 +91,6 @@ exports.Authorizer = ({ spec, config }) => {
       defaultsDeep({
         Name: name,
         ApiId: getField(api, "ApiId"),
-        //Tags: buildTagsObject({ config, namespace, name }),
       }),
     ])();
 
@@ -234,39 +102,10 @@ exports.Authorizer = ({ spec, config }) => {
     update,
     destroy,
     getByName,
-    getByLive,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,
     findDependencies,
   };
 };
-
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-exports.compareAuthorizer = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareAuthorizer ${tos(diff)}`);
-  }),
-]);

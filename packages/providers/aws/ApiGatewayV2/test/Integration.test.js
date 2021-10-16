@@ -1,13 +1,12 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { AppSyncApiKey } = require("../AppSyncApiKey");
+const { pipe, tap } = require("rubico");
 
-describe("AppSyncApiKey", async function () {
+describe("Api GatewayV2 Integration", async function () {
   let config;
   let provider;
-  let apiKey;
+  let integration;
 
   before(async function () {
     try {
@@ -16,16 +15,25 @@ describe("AppSyncApiKey", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    apiKey = provider.getClient({ groupType: "AppSync::ApiKey" });
+    integration = provider.getClient({
+      groupType: "ApiGatewayV2::Integration",
+    });
     await provider.start();
   });
+  after(async () => {});
   it(
     "delete with invalid id",
     pipe([
       () =>
-        apiKey.destroy({
-          live: { id: "1234", apiId: "12345" },
+        integration.destroy({
+          live: { ApiId: "12345", IntegrationId: "12345" },
         }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () => integration.getById({ ApiId: "12345", IntegrationId: "12345" }),
     ])
   );
 });

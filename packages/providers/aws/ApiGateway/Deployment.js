@@ -26,7 +26,13 @@ const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
-const pickId = ({ restApiId, id }) => ({ restApiId, deploymentId: id });
+const pickId = pipe([
+  tap(({ restApiId, id }) => {
+    assert(restApiId);
+    assert(id);
+  }),
+  ({ restApiId, id }) => ({ restApiId, deploymentId: id }),
+]);
 
 exports.Deployment = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -96,6 +102,21 @@ exports.Deployment = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createDeployment-property
   const create = client.create({
+    pickCreated:
+      ({ resolvedDependencies }) =>
+      (result) =>
+        pipe([
+          tap(() => {
+            assert(resolvedDependencies.restApi);
+          }),
+          () => ({
+            id: result.id,
+            restApiId: resolvedDependencies.restApi.live.id,
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     method: "createDeployment",
     getById,
     pickId,
@@ -123,7 +144,7 @@ exports.Deployment = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { restApi, stage },
+    dependencies: { restApi },
   }) =>
     pipe([
       tap(() => {
@@ -132,7 +153,7 @@ exports.Deployment = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         restApiId: getField(restApi, "id"),
-        stageName: getField(stage, "name"),
+        //stageName: getField(stage, "name"),
       }),
     ])();
 

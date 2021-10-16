@@ -1,6 +1,23 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, tryCatch, pick, flatMap } = require("rubico");
-const { pluck, defaultsDeep, size } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  eq,
+  tryCatch,
+  pick,
+  flatMap,
+  omit,
+} = require("rubico");
+const {
+  pluck,
+  defaultsDeep,
+  values,
+  flatten,
+  when,
+  isEmpty,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Stage",
 });
@@ -14,6 +31,22 @@ const findId = get("live.stageName");
 const findName = get("live.stageName");
 
 const pickId = pick(["restApiId", "stageName"]);
+
+const translatePropertyMap = {
+  metricsEnabled: "metrics/enabled",
+  dataTraceEnabled: "logging/dataTrace",
+  throttlingBurstLimit: "throttling/burstLimit",
+  throttlingRateLimit: "throttling/rateLimit",
+  cachingEnabled: "caching/enabled",
+  cacheTtlInSeconds: "caching/ttlInSeconds",
+  cacheDataEncrypted: "caching/dataEncrypted",
+  requireAuthorizationForCacheControl:
+    "caching/requireAuthorizationForCacheControl",
+  unauthorizedCacheControlHeaderStrategy:
+    "caching/unauthorizedCacheControlHeaderStrategy",
+};
+const translateProperty = (property) =>
+  pipe([() => translatePropertyMap[property], when(isEmpty, () => property)])();
 
 exports.Stage = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -79,9 +112,45 @@ exports.Stage = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createStage-property
   const create = client.create({
     method: "createStage",
+    filterPayload: omit(["methodSettings"]),
     pickId,
     getById,
     config,
+    postCreate:
+      ({ payload, name }) =>
+      ({ restApiId, stageName }) =>
+        pipe([
+          () => payload,
+          get("methodSettings", {}),
+          map.entries(([path, settings]) => [
+            path,
+            pipe([
+              () => settings,
+              map.entries(([key, value]) => [
+                key,
+                pipe([
+                  () => ({
+                    op: "replace",
+                    path: `/${path}/${translateProperty(key)}`,
+                    value: value.toString(),
+                  }),
+                ])(),
+              ]),
+              values,
+            ])(),
+          ]),
+          values,
+          flatten,
+          (patchOperations) => ({
+            restApiId,
+            stageName,
+            patchOperations,
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          apiGateway().updateStage,
+        ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateStage-property
@@ -115,6 +184,7 @@ exports.Stage = ({ spec, config }) => {
       defaultsDeep({
         stageName: name,
         restApiId: getField(restApi, "id"),
+        deploymentId: getField(restApi, "deployments[0].id"),
         tags: buildTagsObject({ config, namespace, name }),
       }),
     ])();

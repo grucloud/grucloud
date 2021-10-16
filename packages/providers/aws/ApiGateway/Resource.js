@@ -79,13 +79,16 @@ exports.Resource = ({ spec, config }) => {
           type: "RestApi",
           group: "APIGateway",
         }),
+      tap((params) => {
+        assert(true);
+      }),
       pluck("live"),
-      flatMap(({ id: restApiId, tags }) =>
+      flatMap(({ id: restApiId, name, tags }) =>
         tryCatch(
           pipe([
             () => apiGateway().getResources({ restApiId }),
             get("items"),
-            map(defaultsDeep({ restApiId, tags })),
+            map(defaultsDeep({ restApiId, restApiName: name, tags })),
           ]),
           (error) =>
             pipe([

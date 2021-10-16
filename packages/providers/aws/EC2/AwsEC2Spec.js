@@ -42,7 +42,10 @@ module.exports = () =>
       Client: AwsClientKeyPair,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
+        filterTarget: pipe([
+          defaultsDeep({ KeyType: "rsa" }),
+          filterTargetDefault,
+        ]),
         filterLive: pipe([
           filterLiveDefault,
           omit(["KeyPairId", "KeyFingerprint"]),

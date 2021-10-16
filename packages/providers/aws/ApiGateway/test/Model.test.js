@@ -3,7 +3,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe } = require("rubico");
 
-describe("Api Gateway Model", async function () {
+describe.skip("Api Gateway Model", async function () {
   let config;
   let provider;
   let model;
