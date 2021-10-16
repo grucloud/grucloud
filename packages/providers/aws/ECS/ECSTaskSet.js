@@ -10,6 +10,7 @@ const {
   not,
   filter,
   flatMap,
+  pick,
 } = require("rubico");
 const { defaultsDeep, isEmpty, first, pluck, when } = require("rubico/x");
 
@@ -29,6 +30,7 @@ const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.taskSetArn");
 const findName = get("live.taskDefinition");
+const pickId = pick(["cluster", "service", "taskSet"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
@@ -56,12 +58,10 @@ exports.ECSTaskSet = ({ spec, config }) => {
     () => "",
   ]);
 
-  const notFound = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    eq(get("code"), "ClusterNotFoundException"),
-  ]);
+  const ignoreErrorCodes = [
+    "ClusterNotFoundException",
+    "InvalidParameterException",
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
   const describeTaskSets = (params = {}) =>
@@ -80,6 +80,14 @@ exports.ECSTaskSet = ({ spec, config }) => {
         assert(true);
       }),
     ])();
+
+  const getById = client.getById({
+    pickId,
+    method: "describeTaskSets",
+    getField: "taskSets",
+    extraParams: { include: ["TAGS"] },
+    ignoreErrorCodes,
+  });
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
   const getList = ({ lives }) =>
@@ -123,30 +131,13 @@ exports.ECSTaskSet = ({ spec, config }) => {
     pipe([() => payload, ecs().createTaskSet])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteTaskSet-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      tap(({ cluster, service, taskSet }) => {
-        assert(cluster);
-        assert(service);
-        assert(taskSet);
-      }),
-      tryCatch(pipe([ecs().deleteTaskSet]), (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteTaskSet ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            notFound,
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteTaskSet",
+    getById,
+    ignoreErrorCodes,
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -181,6 +172,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
     findNamespace,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,

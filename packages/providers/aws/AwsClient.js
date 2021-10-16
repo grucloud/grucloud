@@ -362,7 +362,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       method,
       getById,
       isInstanceDown = isEmpty,
-      ignoreError,
+      ignoreError = () => false,
+      ignoreErrorCodes = [],
       config,
     }) =>
     ({ name, live, lives }) =>
@@ -415,7 +416,16 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               }),
               () => error,
               switchCase([
-                ignoreError,
+                or([
+                  ignoreError,
+                  pipe([
+                    () => ignoreErrorCodes,
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    includes(error.code),
+                  ]),
+                ]),
                 pipe([
                   tap((params) => {
                     assert(true);

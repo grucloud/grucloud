@@ -1,24 +1,11 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-  flatMap,
-  filter,
-} = require("rubico");
+const { map, pipe, tap, get, not, flatMap, filter } = require("rubico");
 const { defaultsDeep, isEmpty, unless, callProp, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSTask",
 });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
@@ -32,6 +19,17 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.taskArn");
 const findName = findNameInTagsOrId({ findId });
+
+const pickId = pipe([
+  tap(({ taskArn, clusterArn }) => {
+    assert(taskArn);
+    assert(clusterArn);
+  }),
+  ({ taskArn, clusterArn }) => ({
+    task: taskArn,
+    cluster: clusterArn,
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
@@ -97,12 +95,10 @@ exports.ECSTask = ({ spec, config }) => {
   const managedByOther = ({ live }) =>
     pipe([() => live, get("group"), callProp("startsWith", "service:")])();
 
-  const isNotFound = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    eq(get("code"), "ClusterNotFoundException"),
-  ]);
+  const ignoreErrorCodes = [
+    "ClusterNotFoundException",
+    "InvalidParameterException",
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTasks-property
   const describeTasks = pipe([
@@ -147,35 +143,26 @@ exports.ECSTask = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
+  const getById = client.getById({
+    pickId,
+    method: "describeTasks",
+    getField: "tasks",
+    extraParams: { include: ["TAGS"] },
+    ignoreErrorCodes,
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#runTask-property
   const create = ({ payload, name, namespace }) =>
     pipe([() => payload, ecs().runTask])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#stopTask-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      ({ taskArn, clusterArn }) => ({ task: taskArn, cluster: clusterArn }),
-      tap(({ task, cluster }) => {
-        assert(task);
-        assert(cluster);
-      }),
-      tryCatch(pipe([ecs().stopTask]), (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error stopTask ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            isNotFound,
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "stopTask",
+    getById,
+    ignoreErrorCodes,
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -224,6 +211,7 @@ exports.ECSTask = ({ spec, config }) => {
     findDependencies,
     managedByOther,
     getByName,
+    getById,
     findName,
     create,
     destroy,
