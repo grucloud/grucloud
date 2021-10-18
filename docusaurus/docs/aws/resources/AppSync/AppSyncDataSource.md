@@ -29,7 +29,7 @@ provider.AppSync.makeDataSource({
 
 ## Dependencies
 
-- [GraphqlApi](./GraphqlApi.md)
+- [GraphqlApi](./AppSyncGraphqlApi.md)
 - [Iam Role](../IAM/IamRole.md)
 - [Lambda Function](../Lambda/Function.md)
 
