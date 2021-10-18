@@ -230,8 +230,6 @@ module.exports = () =>
       }),
       filterLive: () => pick([]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
-      //TODO remove ?
-      ignoreResource: () => get("isDefault"),
     },
     {
       type: "NatGateway",
@@ -323,8 +321,6 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
-      //TODO remove ?
-      ignoreResource: () => get("isDefault"),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -350,8 +346,8 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
-      //TODO remove ?
       ignoreResource: () => get("isDefault"),
+      includeDefaultDependencies: true,
       dependencies: () => ({
         routeTable: { type: "RouteTable", group: "EC2" },
         ig: { type: "InternetGateway", group: "EC2" },
@@ -365,7 +361,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: filterTargetDefault,
-        filterLive: pipe([pick(["Description", "GroupName", "VpcId"])]),
+        filterLive: pipe([pick(["Description", "GroupName"])]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
@@ -553,5 +549,6 @@ module.exports = () =>
       Client: AwsNetworkAcl,
       listOnly: true,
       isOurMinion,
+      ignoreResource: () => pipe([() => true]),
     },
   ]);

@@ -1,7 +1,8 @@
 {
+  "files": ["test/**/*.test.js"],
   "watch-files": ["**/*.js"],
   "extension": ["js"],
-  "exclude": "template/**/*",
+  "exclude": "node_modules",
   "reporter": "spec",
   "timeout": 300e3,
   "ui": "bdd",

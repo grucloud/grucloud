@@ -1,5 +1,6 @@
 ## Bugs
 
+- inferName for SecurityGroup, Route53Record
 - resource schema
 - check stage for all providers
 - compare refactor

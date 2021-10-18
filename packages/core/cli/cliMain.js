@@ -19,7 +19,7 @@ exports.main = async ({ argv, onExit }) => {
     const startDate = new Date();
     const commmand = await program.parseAsync(argv);
     const duration = new Duration(startDate, new Date());
-    if (!["output"].includes(commmand.args[0])) {
+    if (!["output", "new"].includes(commmand.args[0])) {
       console.log(
         `Command "${executableName} ${commmand.args.join(
           " "

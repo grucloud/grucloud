@@ -6,9 +6,10 @@ const { last } = require("rubico/x");
 const os = require("os");
 const pkg = require("../package.json");
 const { Cli } = require("./cliCommands");
-
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
+
+const { createProject } = require("./createProject");
 
 const collect = (value, previous = []) => previous.concat([value]);
 
@@ -121,6 +122,11 @@ exports.createProgram = () => {
     .description("Get Information about the current project")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "info", program }));
+
+  program
+    .command("new")
+    .description("Create a new project")
+    .action(createProject({ programOptions: program.opts() }));
 
   program
     .command("init")

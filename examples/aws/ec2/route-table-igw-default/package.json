@@ -1,13 +1,13 @@
 {
-  "name": "@grucloud/example-aws-empty-template",
+  "name": "@grucloud/example-aws-route-table-igw-default",
   "version": "2.2.0",
   "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
+    "tree": "gc tree",
+    "list": "gc list -g --json artifacts/inventory.json",
     "gencode": "gc gencode"
   },
   "author": "",
