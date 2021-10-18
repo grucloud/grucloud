@@ -1,6 +1,7 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap } = require("rubico");
-const { compare } = require("@grucloud/core/Common");
+const { pipe, assign, map, omit, tap, eq, get, pick } = require("rubico");
+const { when } = require("rubico/x");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
 const { Stage } = require("./Stage");
@@ -42,6 +43,17 @@ module.exports = () =>
           filterLiveDefaut,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          omit(["DomainName", "DomainNameConfigurations"]),
+          when(
+            eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
+            omit(["ApiMappingSelectionExpression"])
+          ),
+        ]),
+      dependencies: () => ({
+        certificate: { type: "Certificate", group: "ACM" },
+      }),
     },
     {
       type: "Api",
@@ -63,6 +75,17 @@ module.exports = () =>
           filterLiveDefaut,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "ProtocolType",
+            "ApiKeySelectionExpression",
+            "DisableExecuteApiEndpoint",
+            "RouteSelectionExpression",
+            "AccessLogSettings",
+          ]),
+          omit(["AccessLogSettings.DestinationArn"]),
+        ]),
     },
     {
       type: "Stage",
@@ -92,6 +115,16 @@ module.exports = () =>
           filterLiveDefaut,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick(["AccessLogSettings", "StageVariables"]),
+          omitIfEmpty(["StageVariables"]),
+          omit(["AccessLogSettings.DestinationArn"]),
+        ]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
+      }),
     },
     {
       type: "Authorizer",
@@ -114,6 +147,16 @@ module.exports = () =>
           filterLiveDefaut,
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "AuthorizerType",
+          "IdentitySource",
+          "AuthorizerPayloadFormatVersion",
+          "AuthorizerResultTtlInSeconds",
+          "EnableSimpleResponses",
+          "IdentityValidationExpression",
+          "JwtConfiguration",
+        ]),
     },
     {
       type: "ApiMapping",
@@ -152,6 +195,12 @@ module.exports = () =>
           omit(["ApiMappingId", "ApiName"]),
           filterLiveDefaut,
         ]),
+      }),
+      filterLive: () => pipe([pick(["ApiMappingKey"])]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        domainName: { type: "DomainName", group: "ApiGatewayV2" },
+        stage: { type: "Stage", group: "ApiGatewayV2" },
       }),
     },
     {
@@ -196,6 +245,18 @@ module.exports = () =>
             assert(true);
           }),
         ]),
+      }),
+      filterLive: () =>
+        pick([
+          "ConnectionType",
+          "Description",
+          "IntegrationMethod",
+          "IntegrationType",
+          "PayloadFormatVersion",
+        ]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        lambdaFunction: { type: "Function", group: "Lambda" },
       }),
     },
     {
@@ -277,6 +338,11 @@ module.exports = () =>
 
           filterLiveDefaut,
         ]),
+      }),
+      filterLive: () => pick(["Description"]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        stage: { type: "Stage", group: "ApiGatewayV2" },
       }),
     },
   ]);

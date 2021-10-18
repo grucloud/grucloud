@@ -1,4 +1,4 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, pick } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { AwsDomain } = require("./AwsDomain");
 
@@ -11,5 +11,6 @@ module.exports = () =>
       Client: AwsDomain,
       listOnly: true,
       isOurMinion,
+      filterLive: () => pick([]),
     },
   ]);

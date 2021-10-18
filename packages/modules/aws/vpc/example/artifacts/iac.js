@@ -11,6 +11,21 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.EC2.makeInternetGateway({
+    name: "internet-gateway",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeNatGateway({
+    name: "nat-gateway",
+    dependencies: ({ resources }) => ({
+      subnet: resources.EC2.Subnet.subnetPublicA,
+      eip: resources.EC2.ElasticIpAddress.iep,
+    }),
+  });
+
   provider.EC2.makeSubnet({
     name: "subnet-private-a",
     properties: ({ config }) => ({
@@ -60,25 +75,6 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "iep",
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeNatGateway({
-    name: "nat-gateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet.subnetPublicA,
-      eip: resources.EC2.ElasticIpAddress.iep,
     }),
   });
 
@@ -140,6 +136,10 @@ const createResources = ({ provider }) => {
       routeTable: resources.EC2.RouteTable.routeTablePublic,
       ig: resources.EC2.InternetGateway.internetGateway,
     }),
+  });
+
+  provider.EC2.makeElasticIpAddress({
+    name: "iep",
   });
 };
 

@@ -2,6 +2,479 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.EC2.makeVpc({
+    name: "vpc",
+    properties: ({ config }) => ({
+      CidrBlock: "192.168.0.0/16",
+      DnsSupport: true,
+      DnsHostnames: true,
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+      ],
+    }),
+  });
+
+  provider.EC2.makeInternetGateway({
+    name: "internet-gateway",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeNatGateway({
+    name: "nat-gateway",
+    dependencies: ({ resources }) => ({
+      subnet: resources.EC2.Subnet.subnetPublicA,
+      eip: resources.EC2.ElasticIpAddress.iep,
+    }),
+  });
+
+  provider.EC2.makeSubnet({
+    name: "subnet-private-a",
+    properties: ({ config }) => ({
+      CidrBlock: "192.168.96.0/19",
+      AvailabilityZone: "eu-west-2a",
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+        {
+          Key: "kubernetes.io/role/internal-elb",
+          Value: "1",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeSubnet({
+    name: "subnet-private-b",
+    properties: ({ config }) => ({
+      CidrBlock: "192.168.128.0/19",
+      AvailabilityZone: "eu-west-2b",
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+        {
+          Key: "kubernetes.io/role/internal-elb",
+          Value: "1",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeSubnet({
+    name: "subnet-public-a",
+    properties: ({ config }) => ({
+      CidrBlock: "192.168.0.0/19",
+      AvailabilityZone: "eu-west-2a",
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+        {
+          Key: "kubernetes.io/role/elb",
+          Value: "1",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeSubnet({
+    name: "subnet-public-b",
+    properties: ({ config }) => ({
+      CidrBlock: "192.168.32.0/19",
+      AvailabilityZone: "eu-west-2b",
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+        {
+          Key: "kubernetes.io/role/elb",
+          Value: "1",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeRouteTable({
+    name: "route-table-private-a",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+      subnets: [resources.EC2.Subnet.subnetPrivateA],
+    }),
+  });
+
+  provider.EC2.makeRouteTable({
+    name: "route-table-private-b",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+      subnets: [resources.EC2.Subnet.subnetPrivateB],
+    }),
+  });
+
+  provider.EC2.makeRouteTable({
+    name: "route-table-public",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+      subnets: [
+        resources.EC2.Subnet.subnetPublicA,
+        resources.EC2.Subnet.subnetPublicB,
+      ],
+    }),
+  });
+
+  provider.EC2.makeRoute({
+    name: "route-private-a",
+    properties: ({ config }) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable.routeTablePrivateA,
+      natGateway: resources.EC2.NatGateway.natGateway,
+    }),
+  });
+
+  provider.EC2.makeRoute({
+    name: "route-private-b",
+    properties: ({ config }) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable.routeTablePrivateB,
+      natGateway: resources.EC2.NatGateway.natGateway,
+    }),
+  });
+
+  provider.EC2.makeRoute({
+    name: "route-public",
+    properties: ({ config }) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable.routeTablePublic,
+      ig: resources.EC2.InternetGateway.internetGateway,
+    }),
+  });
+
+  provider.EC2.makeSecurityGroup({
+    name: "security-group-cluster",
+    properties: ({ config }) => ({
+      Description: "Managed By GruCloud",
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeSecurityGroup({
+    name: "security-group-node",
+    properties: ({ config }) => ({
+      Description: "Managed By GruCloud",
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "owned",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "sg-cluster-rule-ingress-https",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 443,
+        ToPort: 443,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup.securityGroupCluster,
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "sg-rule-node-group-ingress-cluster",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 1025,
+        ToPort: 65535,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup.securityGroupNode,
+      securityGroupFrom: resources.EC2.SecurityGroup.securityGroupCluster,
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleEgress({
+    name: "sg-cluster-rule-egress",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 1024,
+        ToPort: 65535,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup.securityGroupCluster,
+    }),
+  });
+
+  provider.EC2.makeElasticIpAddress({
+    name: "iep",
+  });
+
+  provider.EC2.makeLaunchTemplate({
+    name: "lt-node-group-private-cluster",
+    properties: ({ config }) => ({
+      LaunchTemplateData: {
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/xvda",
+            Ebs: {
+              DeleteOnTermination: true,
+              VolumeSize: 20,
+              VolumeType: "gp2",
+            },
+          },
+        ],
+        ImageId: "ami-07bf8663601a643e9",
+        InstanceType: "t2.small",
+        UserData:
+          "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMVVRWGhOVkVWNVRXcFJlRTB4YjFoRVZFMTRUVlJCZDA5VVJYbE5hbEY0VFRGdmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUVlo2Q2tWNmFHWlhUelF2VHpJeE5HNXRlbEYwUzIwNE15dEhNVWx4YUhkaGJVVnVUamRWYXpSWVVXdG9lbWhXVlhJdlZGZHNjR3RUUjNkb2RIbGlaMHB6TkRRS1lrVkxiMnB0Y21GNGJqUTFhRWxYWldWdGJraHNNV1ZLWm05UlpFTjJWMWg1UlN0ek1HVnJSRWhEWjJsdVJrVXJZbkJuVjJrMmFYbGtSRzF4UjJGbFZ3cFBhR1YxYzB4QlpIRXZTa2M1Y1M4NWFrcG1ZM05YV0dWUVR6ZzRNMGRzU2tjd1RrSk1RbEY0VWxnMmVsTm9lRWRQYms5QmRtUjBPRlJUTDNOd1YwNHdDa0oxVVZoR1VFNU5TVEZLVDJ4d01tdHBUVGtyVFhCb1ExaGxUa2hLZEZoV1lVZGtWWEk1VDNKR1owYzNWVGxJYVV0d2VEUk1UREp3U3pKNFRDOUNhVVFLVW04MmNrcHhibm80ZWtoWVZtdHVTREpCUjJsbGNXSlpaR1ZpYUhGak1IbHhaazlJT0ZweVMyTTNkbUphY0VKNFJEQlVibFJNYkVKb1UyMUlSM05PTVFwTlJXNUlNSGxPYTJGek1tOHZSRWhOVkZaalEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaRk1YTnlMM0pNSzJrd1dsTTBNME5WTVc1T05sUlRMelZWVjFkTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQk5GUXlWbmd2Ukd0VWVHbHRiMWgwVDNST1EwVTRkVGRGVm5GV1dGcDRXalZxTTJOUU0zUm1XbTFRT0ZGNVdpOUlTQXBCUTBoRWMyRkdkemRtTm5veVpGUkhOMFJ6YmpBeFRubGhaelpqU205clpsZDZlVTlNWVdObFltUlBjVWh4YWl0VlprWnRhMVZ6ZVNzMU4yVlNhelpRQ2tWSVJrdFNUSEJYUzNnNVRtNXhkVEI1TUV4RFJXbEJNV0pwZHpSVU5YVk1hRmRYVkVSd2JFVXhWMjFSYkRZcllsRmlPVnBIZVdaaWFGaFJkbTVOZUNzS1kyUjNXbWM0U3l0d01GRk9WM1ZGTTJWU2NqaHFUVkk1TVZBM2RYbHVVMVJKVG5KUGRIUkdaMDgwUjNwbVkxUkhkeXRDV0c4NFR6a3JTbUpKUkcwemNncHdVVkZsUTBvNE5tTnBTbFl3TkRFMVppc3hlVmxNTUhOaU9XUlRTa0ZqVGsxTFIySndRa3AzYVZkcWVIQmFVamgyYm14aVkzYzBSbWdyZVdadVFtaHdDbkZGYlVRck9VSnpiRU5tVXpKdVlrdzVjR2N4Y21JM2FVVkdXR053YUhGSldHVkNlUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vNzZERUMwNzE1RUMzQUIxQTkwNjM3RkNBMzE4MjQzOTguZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIGNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wN2JmODY2MzYwMWE2NDNlOSxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
+        MetadataOptions: {
+          HttpPutResponseHopLimit: 2,
+        },
+      },
+      Tags: [
+        {
+          Key: "eks:cluster-name",
+          Value: "cluster",
+        },
+        {
+          Key: "eks:nodegroup-name",
+          Value: "node-group-private-cluster",
+        },
+      ],
+    }),
+  });
+
+  provider.EKS.makeCluster({
+    name: "cluster",
+    properties: ({ config }) => ({
+      version: "1.21",
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [
+        resources.EC2.Subnet.subnetPrivateA,
+        resources.EC2.Subnet.subnetPrivateB,
+        resources.EC2.Subnet.subnetPublicA,
+        resources.EC2.Subnet.subnetPublicB,
+      ],
+      securityGroups: [
+        resources.EC2.SecurityGroup.securityGroupCluster,
+        resources.EC2.SecurityGroup.securityGroupNode,
+      ],
+      role: resources.IAM.Role.roleCluster,
+    }),
+  });
+
+  provider.EKS.makeNodeGroup({
+    name: "node-group-private-cluster",
+    properties: ({ config }) => ({
+      capacityType: "ON_DEMAND",
+      scalingConfig: {
+        minSize: 1,
+        maxSize: 1,
+        desiredSize: 1,
+      },
+      instanceTypes: ["t2.small"],
+      amiType: "AL2_x86_64",
+      labels: {},
+      diskSize: 20,
+    }),
+    dependencies: ({ resources }) => ({
+      cluster: resources.EKS.Cluster.cluster,
+      subnets: [
+        resources.EC2.Subnet.subnetPrivateA,
+        resources.EC2.Subnet.subnetPrivateB,
+      ],
+      role: resources.IAM.Role.roleNodeGroup,
+    }),
+  });
+
+  provider.IAM.makeOpenIDConnectProvider({
+    name: "oidc-eks",
+    dependencies: ({ resources }) => ({
+      cluster: resources.EKS.Cluster.cluster,
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-16MFRGNSNCKYY",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "appsync.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-ME4D96ZFJKTZ",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      ],
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-cluster",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "eks.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        resources.IAM.Policy.amazonEksClusterPolicy,
+        resources.IAM.Policy.amazonEksvpcResourceController,
+      ],
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-load-balancer",
+    dependencies: ({ resources }) => ({
+      policies: [resources.IAM.Policy.awsLoadBalancerControllerIamPolicy],
+      openIdConnectProvider: resources.IAM.OpenIDConnectProvider.oidcEks,
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-node-group",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        resources.IAM.Policy.amazonEc2ContainerRegistryReadOnly,
+        resources.IAM.Policy.amazonEksCniPolicy,
+        resources.IAM.Policy.amazonEksWorkerNodePolicy,
+      ],
+    }),
+  });
+
   provider.IAM.usePolicy({
     name: "AmazonEC2ContainerRegistryReadOnly",
     properties: ({ config }) => ({
@@ -40,7 +513,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makePolicy({
     name: "AWSLoadBalancerControllerIAMPolicy",
     properties: ({ config }) => ({
-      PolicyName: "AWSLoadBalancerControllerIAMPolicy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -232,440 +704,8 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.IAM.makeRole({
-    name: "role-cluster",
-    properties: ({ config }) => ({
-      RoleName: "role-cluster",
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "eks.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy.amazonEksClusterPolicy,
-        resources.IAM.Policy.amazonEksvpcResourceController,
-      ],
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: "role-load-balancer",
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy.awsLoadBalancerControllerIamPolicy],
-      openIdConnectProvider: resources.IAM.OpenIDConnectProvider.oidcEks,
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: "role-node-group",
-    properties: ({ config }) => ({
-      RoleName: "role-node-group",
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy.amazonEc2ContainerRegistryReadOnly,
-        resources.IAM.Policy.amazonEksCniPolicy,
-        resources.IAM.Policy.amazonEksWorkerNodePolicy,
-      ],
-    }),
-  });
-
-  provider.IAM.makeOpenIDConnectProvider({
-    name: "oidc-eks",
-    dependencies: ({ resources }) => ({
-      cluster: resources.EKS.Cluster.cluster,
-    }),
-  });
-
-  provider.EC2.makeVpc({
-    name: "vpc",
-    properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: true,
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "shared",
-        },
-      ],
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet-private-a",
-    properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
-      AvailabilityZone: "eu-west-2a",
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "shared",
-        },
-        {
-          Key: "kubernetes.io/role/internal-elb",
-          Value: "1",
-        },
-      ],
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet-private-b",
-    properties: ({ config }) => ({
-      CidrBlock: "192.168.128.0/19",
-      AvailabilityZone: "eu-west-2b",
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "shared",
-        },
-        {
-          Key: "kubernetes.io/role/internal-elb",
-          Value: "1",
-        },
-      ],
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet-public-a",
-    properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
-      AvailabilityZone: "eu-west-2a",
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "shared",
-        },
-        {
-          Key: "kubernetes.io/role/elb",
-          Value: "1",
-        },
-      ],
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet-public-b",
-    properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
-      AvailabilityZone: "eu-west-2b",
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "shared",
-        },
-        {
-          Key: "kubernetes.io/role/elb",
-          Value: "1",
-        },
-      ],
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "iep",
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeNatGateway({
-    name: "nat-gateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet.subnetPublicA,
-      eip: resources.EC2.ElasticIpAddress.iep,
-    }),
-  });
-
-  provider.EC2.makeRouteTable({
-    name: "route-table-private-a",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-      subnets: [resources.EC2.Subnet.subnetPrivateA],
-    }),
-  });
-
-  provider.EC2.makeRouteTable({
-    name: "route-table-private-b",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-      subnets: [resources.EC2.Subnet.subnetPrivateB],
-    }),
-  });
-
-  provider.EC2.makeRouteTable({
-    name: "route-table-public",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-      subnets: [
-        resources.EC2.Subnet.subnetPublicA,
-        resources.EC2.Subnet.subnetPublicB,
-      ],
-    }),
-  });
-
-  provider.EC2.makeRoute({
-    name: "route-private-a",
-    properties: ({ config }) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable.routeTablePrivateA,
-      natGateway: resources.EC2.NatGateway.natGateway,
-    }),
-  });
-
-  provider.EC2.makeRoute({
-    name: "route-private-b",
-    properties: ({ config }) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable.routeTablePrivateB,
-      natGateway: resources.EC2.NatGateway.natGateway,
-    }),
-  });
-
-  provider.EC2.makeRoute({
-    name: "route-public",
-    properties: ({ config }) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable.routeTablePublic,
-      ig: resources.EC2.InternetGateway.internetGateway,
-    }),
-  });
-
-  provider.EC2.makeSecurityGroup({
-    name: "security-group-cluster",
-    properties: ({ config }) => ({
-      Description: "Managed By GruCloud",
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeSecurityGroup({
-    name: "security-group-node",
-    properties: ({ config }) => ({
-      Description: "Managed By GruCloud",
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/cluster",
-          Value: "owned",
-        },
-      ],
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
-    name: "sg-cluster-rule-ingress-https",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 443,
-        ToPort: 443,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup.securityGroupCluster,
-    }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
-    name: "sg-rule-node-group-ingress-cluster",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 1025,
-        ToPort: 65535,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup.securityGroupNode,
-      securityGroupFrom: resources.EC2.SecurityGroup.securityGroupCluster,
-    }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleEgress({
-    name: "sg-cluster-rule-egress",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 1024,
-        ToPort: 65535,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup.securityGroupCluster,
-    }),
-  });
-
-  provider.EC2.makeLaunchTemplate({
-    name: "lt-node-group-private-cluster",
-    properties: ({ config }) => ({
-      LaunchTemplateData: {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/xvda",
-            Ebs: {
-              DeleteOnTermination: true,
-              VolumeSize: 20,
-              VolumeType: "gp2",
-            },
-          },
-        ],
-        ImageId: "ami-098803b2ccca37b36",
-        InstanceType: "t2.small",
-        UserData:
-          "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVhM2xOYWtVelRVUlpNRTFzYjFoRVZFMTRUVVJyZVUxRVJUTk5SRmt3VFd4dmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUVXh2Q2t0alpuSjJabFZIY1ZwSEsyUk9SbmRhUkRCRlVWZExVVU00V2xoSWJVUnlURFZoZUdKclVHMW1jamsyTjNsemFDdFBTMjR2UldkTVpERXJSWG95VUhBS1ZHOW1URTA1ZG5OUGJEVkNielJRTW1Ga1ZVeGFWa1ZMYzNsSGQwcEVZWGg1VDNOUVlWSXhRVEJyV21GWGMyUlRjbGxPYVVWUWVDOTFWREJRUzJoSWJRb3JWR1Z6Umxaa1JWRndZMWhWU0dRNGJtcFdWM2xoVVZGSFVDdHBZMFU1U0dsdlIzRnlTVEZGTm5WdVUwMVJTR2hNZVhOcVNtcHpZMEppZGt3eE1GQkdDbkZtVDFOek1GSXpia01yVVROWlVXcG5RWEl2UzNSNlNsVXhOVFJCYm5GblNGcG9TalpsZDNsNFNubG1OM05uWmtSaE9XODBhRmt6VlhFM1dIUnNSVVVLYzBvdlNWVkhSREEwU3pZNE5WRkVRMlpFZGxCV1VXWm5ka295UkhCek9FaDBTR3hwVEhGMEswZENhRnB3WW5kRVZYbzJVRFJyYlZVd01IQnJlRlpIY0FwWWIxbDFOMVZhUlc4NGJ6Um1RMjAxTWtaVlEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaTldqVlVTWHBSVkVOaVVtWmpVbTg0UmtsUUwwUTNUVXBaZUZwTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGRGFsaEtNbXBwUkhrcmJVbDZibVpzZFVVeVpHOXhSMkZzUkRkaVYzUmpWa0ZWSzJ4Qk1HcHBaMm95T0ZGTVlXVnBUQXBQUmtsMVJYbG5Lek56VVVSMlVFUmpSWEJ1V2xRM1oyZ3ljVEUyVG01U2RYSnJVSEpRUlhjeGFVWk1lWHA1VDNGa01UTXlNMmhYUVVGc01XazFWMHRSQ2s1VFpIZHFVRXRqWVZnNFpWTXhXRFUzVG5kYVpVMXlSRVZQY1UwMk9VMTBWakF3ZVU1SFNFd3JiR1pLYW5vdlVuTjNUa2wzUWt0UFZXOUNhSFI0UVVRS1ZWSklNMFl4ZG5OMlNGQmpVelJNYmpWUmNFa3ZNRm81VnpZNWRHSlFSSE5WZVhFNVVXTm9kRU5VUnpoR1ZtczVWM3BYWTBGRFpuRmpWR2RIWTNoa2NBcGtiMHh4U1VkNmJ6VXZUMUZwV2t0S1dXcFpTaXRGYlZaWFNubEtORE1yYm1aNk5tbDJiMEZzUWs5SFZFRkVRMHRyYjJOQmFESktkV2hXTTBFdmJXZDZDbVZTZFUxSllqbGFjV2RIWldSSldVUmxNVXRpVFhwUUsxWlhPRTFLUXpSUlNWaG1VQW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vREM3MUMwQkFCNTJFRTVENTk1QzQxQzUzNjEwNDg5MjkuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIGNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wOTg4MDNiMmNjY2EzN2IzNixla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
-        MetadataOptions: {
-          HttpPutResponseHopLimit: 2,
-        },
-      },
-      Tags: [
-        {
-          Key: "eks:cluster-name",
-          Value: "cluster",
-        },
-        {
-          Key: "eks:nodegroup-name",
-          Value: "node-group-private-cluster",
-        },
-      ],
-    }),
-  });
-
   provider.KMS.makeKey({
     name: "eks-key",
-  });
-
-  provider.EKS.makeCluster({
-    name: "cluster",
-    properties: ({ config }) => ({
-      version: "1.21",
-    }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet.subnetPrivateA,
-        resources.EC2.Subnet.subnetPrivateB,
-        resources.EC2.Subnet.subnetPublicA,
-        resources.EC2.Subnet.subnetPublicB,
-      ],
-      securityGroups: [
-        resources.EC2.SecurityGroup.securityGroupCluster,
-        resources.EC2.SecurityGroup.securityGroupNode,
-      ],
-      role: resources.IAM.Role.roleCluster,
-    }),
-  });
-
-  provider.EKS.makeNodeGroup({
-    name: "node-group-private-cluster",
-    properties: ({ config }) => ({
-      capacityType: "ON_DEMAND",
-      scalingConfig: {
-        minSize: 1,
-        maxSize: 1,
-        desiredSize: 1,
-      },
-      instanceTypes: ["t2.small"],
-      amiType: "AL2_x86_64",
-      labels: {},
-      diskSize: 20,
-    }),
-    dependencies: ({ resources }) => ({
-      cluster: resources.EKS.Cluster.cluster,
-      subnets: [
-        resources.EC2.Subnet.subnetPrivateA,
-        resources.EC2.Subnet.subnetPrivateB,
-      ],
-      role: resources.IAM.Role.roleNodeGroup,
-    }),
   });
 };
 

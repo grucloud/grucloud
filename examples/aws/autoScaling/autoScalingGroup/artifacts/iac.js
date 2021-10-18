@@ -2,30 +2,27 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
-    name: "role-ecs",
+  provider.AutoScaling.makeAutoScalingGroup({
+    name: "asg",
     properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
+      MinSize: 1,
+      MaxSize: 1,
+      DesiredCapacity: 1,
+      DefaultCooldown: 300,
+      HealthCheckType: "EC2",
+      HealthCheckGracePeriod: 300,
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [
+        resources.EC2.Subnet.pubSubnetAz1,
+        resources.EC2.Subnet.pubSubnetAz2,
+      ],
+      launchTemplate: resources.EC2.LaunchTemplate.ltEc2Micro,
     }),
   });
 
-  provider.IAM.makeInstanceProfile({
-    name: "role-ecs",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role.roleEcs],
-    }),
+  provider.EC2.makeKeyPair({
+    name: "kp-ecs",
   });
 
   provider.EC2.makeVpc({
@@ -61,10 +58,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
     }),
-  });
-
-  provider.EC2.makeKeyPair({
-    name: "kp-ecs",
   });
 
   provider.EC2.makeSecurityGroup({
@@ -112,22 +105,29 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.AutoScaling.makeAutoScalingGroup({
-    name: "asg",
+  provider.IAM.makeRole({
+    name: "role-ecs",
     properties: ({ config }) => ({
-      MinSize: 1,
-      MaxSize: 1,
-      DesiredCapacity: 1,
-      DefaultCooldown: 300,
-      HealthCheckType: "EC2",
-      HealthCheckGracePeriod: 300,
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
     }),
+  });
+
+  provider.IAM.makeInstanceProfile({
+    name: "role-ecs",
     dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet.pubSubnetAz1,
-        resources.EC2.Subnet.pubSubnetAz2,
-      ],
-      launchTemplate: resources.EC2.LaunchTemplate.ltEc2Micro,
+      roles: [resources.IAM.Role.roleEcs],
     }),
   });
 };

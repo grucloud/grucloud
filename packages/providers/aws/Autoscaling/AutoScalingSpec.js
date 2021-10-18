@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, assign, map, tap, filter, not, get, omit } = require("rubico");
+const {
+  pipe,
+  assign,
+  map,
+  tap,
+  filter,
+  not,
+  get,
+  omit,
+  pick,
+} = require("rubico");
 const { includes } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
@@ -63,6 +73,24 @@ module.exports = () =>
           }),
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "MinSize",
+          "MaxSize",
+          "DesiredCapacity",
+          "DefaultCooldown",
+          "HealthCheckType",
+          "HealthCheckGracePeriod",
+        ]),
+      dependencies: () => ({
+        targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
+        launchConfiguration: {
+          type: "LaunchConfiguration",
+          group: "AutoScaling",
+        },
+      }),
     },
     {
       type: "LaunchConfiguration",
@@ -86,6 +114,26 @@ module.exports = () =>
             "CreatedTime",
           ]),
         ]),
+      }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "InstanceType",
+            "ImageId",
+            "UserData",
+            "InstanceMonitoring",
+            "KernelId",
+            "RamdiskId",
+            "BlockDeviceMappings",
+            "EbsOptimized",
+          ]),
+          omitIfEmpty(["KernelId", "RamdiskId"]),
+        ]),
+      dependencies: () => ({
+        instanceProfile: { type: "InstanceProfile", group: "IAM" },
+        keyPair: { type: "KeyPair", group: "EC2" },
+        image: { type: "Image", group: "EC2" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       }),
     },
   ]);

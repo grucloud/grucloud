@@ -2,74 +2,20 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.usePolicy({
-    name: "AmazonEKSWorkerNodePolicy",
+  provider.EC2.makeInstance({
+    name: "web-iam",
     properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      InstanceType: "t2.micro",
+      ImageId: "ami-056bfe7d8a7bdb9d0",
     }),
-  });
-
-  provider.IAM.makePolicy({
-    name: "myPolicy-to-group",
-    properties: ({ config }) => ({
-      PolicyName: "myPolicy-to-group",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
-    }),
-  });
-
-  provider.IAM.makePolicy({
-    name: "myPolicy-to-role",
-    properties: ({ config }) => ({
-      PolicyName: "myPolicy-to-role",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
-    }),
-  });
-
-  provider.IAM.makePolicy({
-    name: "myPolicy-to-user",
-    properties: ({ config }) => ({
-      PolicyName: "myPolicy-to-user",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
+    dependencies: ({ resources }) => ({
+      iamInstanceProfile: resources.IAM.InstanceProfile.myProfile,
     }),
   });
 
   provider.IAM.makeUser({
     name: "Alice",
     properties: ({ config }) => ({
-      UserName: "Alice",
       Path: "/",
     }),
     dependencies: ({ resources }) => ({
@@ -81,7 +27,6 @@ const createResources = ({ provider }) => {
   provider.IAM.makeGroup({
     name: "Admin",
     properties: ({ config }) => ({
-      GroupName: "Admin",
       Path: "/",
     }),
     dependencies: ({ resources }) => ({
@@ -115,21 +60,71 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.IAM.usePolicy({
+    name: "AmazonEKSWorkerNodePolicy",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    }),
+  });
+
+  provider.IAM.makePolicy({
+    name: "myPolicy-to-group",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
+  provider.IAM.makePolicy({
+    name: "myPolicy-to-role",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
+  provider.IAM.makePolicy({
+    name: "myPolicy-to-user",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
   provider.IAM.makeInstanceProfile({
     name: "my-profile",
     dependencies: ({ resources }) => ({
       roles: [resources.IAM.Role.roleAllowAssumeRole],
-    }),
-  });
-
-  provider.EC2.makeInstance({
-    name: "web-iam",
-    properties: ({ config }) => ({
-      InstanceType: "t2.micro",
-      ImageId: "ami-056bfe7d8a7bdb9d0",
-    }),
-    dependencies: ({ resources }) => ({
-      iamInstanceProfile: resources.IAM.InstanceProfile.myProfile,
     }),
   });
 };

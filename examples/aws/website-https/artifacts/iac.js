@@ -2,76 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.S3.makeBucket({
-    name: "cloudfront.aws.test.grucloud.org-dev",
-    properties: ({ config }) => ({
-      ACL: "public-read",
-      WebsiteConfiguration: {
-        IndexDocument: {
-          Suffix: "index.html",
-        },
-        ErrorDocument: {
-          Key: "error.html",
-        },
-      },
-    }),
-  });
-
-  provider.S3.makeObject({
-    name: "build/bundle.css",
-    properties: ({ config }) => ({
-      ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.css.css",
-    }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-    }),
-  });
-
-  provider.S3.makeObject({
-    name: "build/bundle.js",
-    properties: ({ config }) => ({
-      ContentType: "application/javascript",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.js.js",
-    }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-    }),
-  });
-
-  provider.S3.makeObject({
-    name: "favicon.png",
-    properties: ({ config }) => ({
-      ContentType: "image/png",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/favicon.png.png",
-    }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-    }),
-  });
-
-  provider.S3.makeObject({
-    name: "global.css",
-    properties: ({ config }) => ({
-      ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/global.css.css",
-    }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-    }),
-  });
-
-  provider.S3.makeObject({
-    name: "index.html",
-    properties: ({ config }) => ({
-      ContentType: "text/html",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/index.html.html",
-    }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
-    }),
-  });
-
   provider.CloudFront.makeDistribution({
     name: "distribution-cloudfront.aws.test.grucloud.org-dev",
     properties: ({ config }) => ({
@@ -174,17 +104,6 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.ACM.makeCertificate({
-    name: "dev.cloudfront.aws.test.grucloud.org",
-    properties: ({ config }) => ({
-      DomainName: "dev.cloudfront.aws.test.grucloud.org",
-    }),
-  });
-
-  provider.Route53Domains.useDomain({
-    name: "grucloud.org",
-  });
-
   provider.Route53.makeHostedZone({
     name: "dev.cloudfront.aws.test.grucloud.org.",
     dependencies: ({ resources }) => ({
@@ -207,6 +126,80 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
       certificate: resources.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg,
+    }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
+  });
+
+  provider.S3.makeBucket({
+    name: "cloudfront.aws.test.grucloud.org-dev",
+    properties: ({ config }) => ({
+      ACL: "public-read",
+      WebsiteConfiguration: {
+        IndexDocument: {
+          Suffix: "index.html",
+        },
+        ErrorDocument: {
+          Key: "error.html",
+        },
+      },
+    }),
+  });
+
+  provider.S3.makeObject({
+    name: "build/bundle.css",
+    properties: ({ config }) => ({
+      ContentType: "text/css",
+      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.css.css",
+    }),
+    dependencies: ({ resources }) => ({
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+    }),
+  });
+
+  provider.S3.makeObject({
+    name: "build/bundle.js",
+    properties: ({ config }) => ({
+      ContentType: "application/javascript",
+      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.js.js",
+    }),
+    dependencies: ({ resources }) => ({
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+    }),
+  });
+
+  provider.S3.makeObject({
+    name: "favicon.png",
+    properties: ({ config }) => ({
+      ContentType: "image/png",
+      source: "s3/cloudfront.aws.test.grucloud.org-dev/favicon.png.png",
+    }),
+    dependencies: ({ resources }) => ({
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+    }),
+  });
+
+  provider.S3.makeObject({
+    name: "global.css",
+    properties: ({ config }) => ({
+      ContentType: "text/css",
+      source: "s3/cloudfront.aws.test.grucloud.org-dev/global.css.css",
+    }),
+    dependencies: ({ resources }) => ({
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
+    }),
+  });
+
+  provider.S3.makeObject({
+    name: "index.html",
+    properties: ({ config }) => ({
+      ContentType: "text/html",
+      source: "s3/cloudfront.aws.test.grucloud.org-dev/index.html.html",
+    }),
+    dependencies: ({ resources }) => ({
+      bucket: resources.S3.Bucket.cloudfrontAwsTestGrucloudOrgDev,
     }),
   });
 };

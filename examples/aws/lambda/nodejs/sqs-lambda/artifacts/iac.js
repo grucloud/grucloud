@@ -2,30 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makePolicy({
-    name: "lambda-policy",
-    properties: ({ config }) => ({
-      PolicyName: "lambda-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["logs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: ["sqs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow logs",
-    }),
-  });
-
   provider.IAM.makeRole({
     name: "lambda-role",
     properties: ({ config }) => ({
@@ -49,19 +25,26 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.SQS.makeQueue({
-    name: "my-queue-lambda",
+  provider.IAM.makePolicy({
+    name: "lambda-policy",
     properties: ({ config }) => ({
-      Attributes: {
-        VisibilityTimeout: "30",
-        MaximumMessageSize: "262144",
-        MessageRetentionPeriod: "345600",
-        DelaySeconds: "0",
-        ReceiveMessageWaitTimeSeconds: "0",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["sqs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
       },
-      tags: {
-        "my-tag": "my-value",
-      },
+      Path: "/",
+      Description: "Allow logs",
     }),
   });
 
@@ -89,6 +72,22 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       lambdaFunction: resources.Lambda.Function.lambdaHelloWorld,
       sqsQueue: resources.SQS.Queue.myQueueLambda,
+    }),
+  });
+
+  provider.SQS.makeQueue({
+    name: "my-queue-lambda",
+    properties: ({ config }) => ({
+      Attributes: {
+        VisibilityTimeout: "30",
+        MaximumMessageSize: "262144",
+        MessageRetentionPeriod: "345600",
+        DelaySeconds: "0",
+        ReceiveMessageWaitTimeSeconds: "0",
+      },
+      tags: {
+        "my-tag": "my-value",
+      },
     }),
   });
 };

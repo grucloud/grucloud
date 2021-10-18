@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { assign, map, omit, pipe, tap } = require("rubico");
+const { assign, map, omit, pipe, tap, pick, eq, get } = require("rubico");
+const { when, defaultsDeep } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { DynamoDBTable } = require("./DynamoDBTable");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "DynamoDB";
 
@@ -54,6 +54,31 @@ module.exports = () =>
             "ProvisionedThroughput.WriteCapacityUnits",
           ]),
         ]),
+      }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "AttributeDefinitions",
+            "KeySchema",
+            "ProvisionedThroughput",
+            "BillingModeSummary",
+            "GlobalSecondaryIndexes",
+            "LocalSecondaryIndexes",
+          ]),
+          omit([
+            "ProvisionedThroughput.NumberOfDecreasesToday",
+            "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+          ]),
+          when(
+            eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
+            pipe([
+              assign({ BillingMode: () => "PAY_PER_REQUEST" }),
+              omit(["ProvisionedThroughput", "BillingModeSummary"]),
+            ])
+          ),
+        ]),
+      dependencies: () => ({
+        kmsKey: { type: "Key", group: "KMS" },
       }),
     },
   ]);

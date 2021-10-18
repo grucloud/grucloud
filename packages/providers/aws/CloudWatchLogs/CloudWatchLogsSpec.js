@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick } = require("rubico");
+const { pipe, assign, map, tap, pick } = require("rubico");
 const { isOurMinionObject } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
@@ -35,6 +35,10 @@ module.exports = () =>
             assert(true);
           }),
         ]),
+      }),
+      filterLive: () => pipe([pick(["retentionInDays"])]),
+      dependencies: () => ({
+        kmsKey: { type: "Key", group: "kms" },
       }),
     },
   ]);

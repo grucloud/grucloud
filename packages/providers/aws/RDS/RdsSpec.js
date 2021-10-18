@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get } = require("rubico");
+const { pipe, assign, map, omit, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 
@@ -23,6 +23,10 @@ module.exports = () =>
         filterLive: pipe([
           omit(["VpcId", "SubnetGroupStatus", "Subnets", "DBSubnetGroupArn"]),
         ]),
+      }),
+      filterLive: () => pick(["DBSubnetGroupDescription"]),
+      dependencies: () => ({
+        subnets: { type: "Subnet", group: "EC2", list: true },
       }),
     },
     {
@@ -87,6 +91,33 @@ module.exports = () =>
             "TagList",
           ]),
         ]),
+      }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "DatabaseName",
+            "Engine",
+            "EngineVersion",
+            "EngineMode",
+            "Port",
+            "ScalingConfigurationInfo",
+            "PreferredBackupWindow",
+            "PreferredMaintenanceWindow",
+          ]),
+          assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
+          omit(["ScalingConfigurationInfo"]),
+        ]),
+      environmentVariables: () => [
+        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+      ],
+      dependencies: () => ({
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        key: {
+          type: "Key",
+          group: "KMS",
+        },
       }),
     },
     {
@@ -160,6 +191,26 @@ module.exports = () =>
             "ActivityStreamStatus",
           ]),
         ]),
+      }),
+      filterLive: () =>
+        pick([
+          "DBInstanceClass",
+          "Engine",
+          "EngineVersion",
+          "AllocatedStorage",
+          "MaxAllocatedStorage",
+          "PubliclyAccessible",
+          "PreferredBackupWindow",
+          "PreferredMaintenanceWindow",
+          "BackupRetentionPeriod",
+        ]),
+      environmentVariables: () => [
+        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+      ],
+      dependencies: () => ({
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       }),
     },
   ]);

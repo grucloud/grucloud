@@ -2,38 +2,11 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.usePolicy({
-    name: "AmazonAPIGatewayPushToCloudWatchLogs",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: "roleApiGatewayCloudWatch",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
+  provider.APIGateway.makeAccount({
+    name: "default",
     dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy.amazonApiGatewayPushToCloudWatchLogs],
+      cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
     }),
-  });
-
-  provider.CloudWatchLogs.makeLogGroup({
-    name: "restapi",
   });
 
   provider.APIGateway.makeRestApi({
@@ -47,13 +20,6 @@ const createResources = ({ provider }) => {
       deployment: {
         stageName: "dev",
       },
-    }),
-  });
-
-  provider.APIGateway.makeAccount({
-    name: "default",
-    dependencies: ({ resources }) => ({
-      cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
     }),
   });
 
@@ -93,6 +59,40 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       restApi: resources.APIGateway.RestApi.petStore,
+    }),
+  });
+
+  provider.CloudWatchLogs.makeLogGroup({
+    name: "restapi",
+  });
+
+  provider.IAM.makeRole({
+    name: "roleApiGatewayCloudWatch",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [resources.IAM.Policy.amazonApiGatewayPushToCloudWatchLogs],
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonAPIGatewayPushToCloudWatchLogs",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
     }),
   });
 };

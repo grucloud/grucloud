@@ -1,4 +1,4 @@
-const { pipe, assign, map, omit, pick } = require("rubico");
+const { pipe, assign, map, omit, pick, get } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
@@ -16,5 +16,19 @@ module.exports = () =>
         filterTarget: pipe([omit(["ValidationMethod", "Tags"])]),
         filterLive: pipe([pick(["DomainName"])]),
       }),
+      ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+      filterLive: () =>
+        pipe([
+          pick(["DomainName", "SubjectAlternativeNames"]),
+          when(
+            ({ DomainName, SubjectAlternativeNames }) =>
+              pipe([
+                () => SubjectAlternativeNames,
+                and([eq(size, 1), pipe([first, eq(identity, DomainName)])]),
+              ])(),
+            omit(["SubjectAlternativeNames"])
+          ),
+          omit(["DomainName"]),
+        ]),
     },
   ]);

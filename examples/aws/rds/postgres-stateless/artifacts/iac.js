@@ -2,12 +2,31 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
+  provider.EC2.makeKeyPair({
+    name: "kp-postgres-stateless",
+  });
+
   provider.EC2.makeVpc({
     name: "vpc",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/16",
       DnsSupport: true,
       DnsHostnames: true,
+    }),
+  });
+
+  provider.EC2.makeInternetGateway({
+    name: "internet-gateway",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeNatGateway({
+    name: "nat-gateway",
+    dependencies: ({ resources }) => ({
+      subnet: resources.EC2.Subnet.subnetPublicA,
+      eip: resources.EC2.ElasticIpAddress.iep,
     }),
   });
 
@@ -60,33 +79,6 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeKeyPair({
-    name: "kp-postgres-stateless",
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "eip-bastion",
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "iep",
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeNatGateway({
-    name: "nat-gateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet.subnetPublicA,
-      eip: resources.EC2.ElasticIpAddress.iep,
     }),
   });
 
@@ -219,6 +211,14 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.EC2.makeElasticIpAddress({
+    name: "eip-bastion",
+  });
+
+  provider.EC2.makeElasticIpAddress({
+    name: "iep",
+  });
+
   provider.EC2.makeInstance({
     name: "bastion",
     properties: ({ config }) => ({
@@ -230,6 +230,19 @@ const createResources = ({ provider }) => {
       keyPair: resources.EC2.KeyPair.kpPostgresStateless,
       eip: resources.EC2.ElasticIpAddress.eipBastion,
       securityGroups: [resources.EC2.SecurityGroup.securityGroupPublic],
+    }),
+  });
+
+  provider.RDS.makeDBSubnetGroup({
+    name: "subnet-group-postgres-stateless",
+    properties: ({ config }) => ({
+      DBSubnetGroupDescription: "db subnet group",
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [
+        resources.EC2.Subnet.subnetPrivateA,
+        resources.EC2.Subnet.subnetPrivateB,
+      ],
     }),
   });
 
@@ -258,19 +271,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       dbSubnetGroup: resources.RDS.DBSubnetGroup.subnetGroupPostgresStateless,
       securityGroups: [resources.EC2.SecurityGroup.securityGroupPostgres],
-    }),
-  });
-
-  provider.RDS.makeDBSubnetGroup({
-    name: "subnet-group-postgres-stateless",
-    properties: ({ config }) => ({
-      DBSubnetGroupDescription: "db subnet group",
-    }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet.subnetPrivateA,
-        resources.EC2.Subnet.subnetPrivateB,
-      ],
     }),
   });
 };

@@ -1,12 +1,22 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get } = require("rubico");
-const { defaultsDeep, unless } = require("rubico/x");
+const {
+  pipe,
+  assign,
+  map,
+  omit,
+  pick,
+  tap,
+  get,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, identity, unless } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
 const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const GROUP = "ELBv2";
 
@@ -37,6 +47,13 @@ module.exports = () =>
             "IpAddressType",
           ]),
         ]),
+      }),
+      filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
+      dependencies: () => ({
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        role: { type: "Role", group: "IAM" },
+        key: { type: "Key", group: "KMS" },
       }),
     },
     {
@@ -69,6 +86,29 @@ module.exports = () =>
           ]),
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "Protocol",
+          "Port",
+          "HealthCheckProtocol",
+          "HealthCheckPort",
+          "HealthCheckEnabled",
+          "HealthCheckIntervalSeconds",
+          "HealthCheckTimeoutSeconds",
+          "HealthyThresholdCount",
+          "HealthCheckPath",
+          "Matcher",
+          "TargetType",
+          "ProtocolVersion",
+        ]),
+      dependencies: () => ({
+        vpc: { type: "Vpc", group: "EC2" },
+        nodeGroup: {
+          type: "NodeGroup",
+          group: "EKS",
+        },
+        //TODO autoScalingGroup
+      }),
     },
     {
       type: "Listener",
@@ -84,6 +124,34 @@ module.exports = () =>
           omit(["ListenerArn", "SslPolicy"]),
           omitIfEmpty(["AlpnPolicy", "Certificates"]),
         ]),
+      }),
+      filterLive: pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ resource }) =>
+          (live) =>
+            pipe([
+              () => live,
+              //TODO when
+              switchCase([
+                () =>
+                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                    resource
+                  ),
+                omit(["DefaultActions"]),
+                identity,
+              ]),
+              tap((params) => {
+                assert(true);
+              }),
+              pick(["Port", "Protocol", "DefaultActions"]),
+            ])(),
+      ]),
+      dependencies: () => ({
+        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+        certificate: { type: "Certificate", group: "ACM" },
       }),
     },
     {
@@ -122,6 +190,49 @@ module.exports = () =>
             ]),
           }),
         ]),
+      }),
+      filterLive: pipe([
+        ({ resource }) =>
+          (live) =>
+            pipe([
+              () => live,
+              //TODO when
+              switchCase([
+                () =>
+                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                    resource
+                  ),
+                omit(["Actions"]),
+                identity,
+              ]),
+              pick(["Priority", "Conditions", "Actions"]),
+              assign({
+                Conditions: pipe([
+                  get("Conditions"),
+                  map(omit(["PathPatternConfig"])),
+                ]),
+              }),
+            ])(),
+      ]),
+      //TODO do we need this ?
+      configBuildProperties: ({ properties, lives }) =>
+        pipe([
+          tap(() => {
+            assert(lives);
+          }),
+          () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+        ])(),
+      codeBuildProperties: ({ group, type, resourceVarName }) =>
+        pipe([
+          tap(() => {
+            assert(true);
+          }),
+          () =>
+            `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
+        ])(),
+      dependencies: () => ({
+        listener: { type: "Listener", group: "ELBv2" },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
       }),
     },
   ]);

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { assign, map, pipe, tap, omit } = require("rubico");
+const { assign, map, pipe, tap, omit, pick } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 
@@ -28,5 +28,14 @@ module.exports = () =>
           omit(["Version", "LastModifiedDate", "ARN"]),
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "Type",
+          "Value",
+          "Description",
+          "Tier",
+          //"Policies",
+          "DataType",
+        ]),
     },
   ]);

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap } = require("rubico");
+const { pipe, assign, map, omit, tap, not, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
@@ -42,5 +42,13 @@ module.exports = () =>
           ]),
         ]),
       }),
+      filterLive: () => pick([""]),
+      ignoreResource: ({ lives }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          not(get("live.Enabled")),
+        ]),
     },
   ]);

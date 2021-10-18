@@ -1,4 +1,4 @@
-const { pipe, assign, map } = require("rubico");
+const { pipe, assign, map, pick } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { AwsDistribution, compareDistribution } = require("./AwsDistribution");
 
@@ -12,5 +12,20 @@ module.exports = () =>
       Client: AwsDistribution,
       isOurMinion,
       compare: compareDistribution,
+      filterLive: () =>
+        pick([
+          "PriceClass",
+          "Aliases",
+          "DefaultRootObject",
+          "DefaultCacheBehavior",
+          "Origins",
+          "Restrictions",
+          "Comment",
+          "Logging",
+        ]),
+      dependencies: () => ({
+        bucket: { type: "Bucket", group: "S3" },
+        certificate: { type: "Certificate", group: "ACM" },
+      }),
     },
   ]);
