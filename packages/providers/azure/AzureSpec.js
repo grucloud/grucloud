@@ -58,6 +58,13 @@ exports.fnSpecs = (config) => {
         group: "resourceManagement",
         type: "ResourceGroup",
         filterLive: () => pipe([pick(["tags"])]),
+        ignoreResource: () =>
+          pipe([
+            tap((params) => {
+              assert(params.name);
+            }),
+            eq(get("name"), "NetworkWatcherRG"),
+          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
