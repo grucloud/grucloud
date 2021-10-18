@@ -173,10 +173,10 @@ exports.EC2Route = ({ spec, config }) => {
       filter(not(isEmpty)),
     ])();
 
-  const getListFromLive = ({ resources, lives }) =>
+  const getListFromLive = ({ lives }) =>
     pipe([
       tap(() => {
-        assert(Array.isArray(resources));
+        logger.debug(`getListFromLive`);
       }),
       () =>
         lives.getByType({
@@ -200,16 +200,12 @@ exports.EC2Route = ({ spec, config }) => {
               () => Routes,
               map(
                 pipe([
-                  //pick(["DestinationCidrBlock", "GatewayId", "NatGatewayId"]),
                   assign({
                     RouteTableId: () => RouteTableId,
                     Tags: () => Tags,
                   }),
                 ])
               ),
-              tap((params) => {
-                assert(true);
-              }),
             ])(),
         ])()
       ),
@@ -359,8 +355,11 @@ exports.EC2Route = ({ spec, config }) => {
           }),
         ])()
       ),
+      tap((RouteTableId) => {
+        logger.info(`Refresh the route table ${RouteTableId}`);
+      }),
       // Refresh the route table
-      () => dependencies().routeTable.getLive({ lives }),
+      tap(() => dependencies().routeTable.getLive({ lives })),
       tap((RouteTableId) => {
         logger.info(`created route ${tos({ name, RouteTableId })}`);
       }),

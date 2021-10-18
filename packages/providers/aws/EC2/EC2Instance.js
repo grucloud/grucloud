@@ -224,14 +224,20 @@ exports.EC2Instance = ({ spec, config }) => {
       ]),
     ])();
 
-  const findName = (item) =>
-    pipe([
-      () => item,
-      findNameInTags(),
-      when(isEmpty, () => findEksName(item.live)),
-    ])();
-
   const findId = get("live.InstanceId");
+
+  const findName = (params) => {
+    assert(params.live);
+    assert(params.lives);
+
+    const fns = [findNameInTags(), ({ live }) => findEksName(live), findId];
+    for (fn of fns) {
+      const name = fn(params);
+      if (!isEmpty(name)) {
+        return name;
+      }
+    }
+  };
 
   const getStateName = get("State.Name");
   const isInstanceUp = eq(getStateName, StateRunning);

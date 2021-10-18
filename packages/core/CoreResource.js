@@ -678,7 +678,7 @@ exports.ResourceMaker = ({
     update,
     planUpsert,
     filterLives,
-    getLive: filterLives ? resolveConfig : getLive,
+    getLive,
     findLive,
     getDependencyList,
     resolveDependencies: ({ dependenciesMustBeUp }) =>
