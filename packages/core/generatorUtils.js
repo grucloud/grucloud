@@ -100,6 +100,8 @@ const buildProperties = ({
   resource,
   dependencies,
   environmentVariables = [],
+  commandOptions,
+  programOptions,
   filterLive = () => identity,
 }) =>
   pipe([
@@ -108,7 +110,14 @@ const buildProperties = ({
     }),
     () => resource,
     get("live"),
-    filterLive({ providerConfig, lives, resource, dependencies }),
+    filterLive({
+      providerConfig,
+      lives,
+      resource,
+      dependencies,
+      programOptions,
+      commandOptions,
+    }),
     tap((params) => {
       assert(true);
     }),
@@ -812,6 +821,8 @@ const writeResource =
     environmentVariables = always([]),
     ignoreResource = () => () => false,
     options,
+    commandOptions,
+    programOptions,
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
@@ -840,6 +851,8 @@ const writeResource =
                   filterLive,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
+                  commandOptions,
+                  programOptions,
                 }),
               (props) =>
                 pipe([
@@ -882,7 +895,8 @@ const writeResource =
 
 const writeResources =
   ({
-    options,
+    commandOptions,
+    programOptions,
     providerConfig,
     type,
     typeTarget,
@@ -929,7 +943,8 @@ const writeResources =
               writeResource({
                 providerConfig,
                 environmentVariables,
-                options,
+                commandOptions,
+                programOptions,
                 type,
                 typeTarget,
                 group,
@@ -1003,6 +1018,7 @@ exports.generatorMain = ({
                   providerConfig,
                   mapping,
                   commandOptions,
+                  programOptions,
                   group,
                   providerName: providerType, //TODO
                   ...spec,

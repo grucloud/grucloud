@@ -11,6 +11,13 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.EC2.makeInternetGateway({
+    name: "internet-gateway",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
+    }),
+  });
+
   provider.EC2.makeSubnet({
     name: "subnet-public-a",
     properties: ({ config }) => ({
@@ -32,13 +39,6 @@ const createResources = ({ provider }) => {
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
-    }),
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "internet-gateway",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpcModuleLoadBalancer,
     }),
@@ -121,13 +121,6 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       securityGroup: resources.EC2.SecurityGroup.securityGroupLoadBalancer,
-    }),
-  });
-
-  provider.ACM.makeCertificate({
-    name: "mod-aws-load-balancer.grucloud.org",
-    properties: ({ config }) => ({
-      DomainName: "mod-aws-load-balancer.grucloud.org",
     }),
   });
 
@@ -282,10 +275,6 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Route53Domains.useDomain({
-    name: "grucloud.org",
-  });
-
   provider.Route53.makeHostedZone({
     name: "mod-aws-load-balancer.grucloud.org.",
     dependencies: ({ resources }) => ({
@@ -307,6 +296,10 @@ const createResources = ({ provider }) => {
       hostedZone: resources.Route53.HostedZone.modAwsLoadBalancerGrucloudOrg,
       loadBalancer: resources.ELBv2.LoadBalancer.loadBalancer,
     }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
   });
 };
 

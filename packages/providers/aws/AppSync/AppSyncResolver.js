@@ -12,6 +12,9 @@ const { AwsClient } = require("../AwsClient");
 const findId = get("live.resolverArn");
 
 const findName = pipe([
+  tap((params) => {
+    assert(true);
+  }),
   get("live"),
   ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
   tap((params) => {

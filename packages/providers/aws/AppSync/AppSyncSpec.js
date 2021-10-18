@@ -1,5 +1,8 @@
 const assert = require("assert");
-const { assign, map, pick, pipe, tap, omit, get } = require("rubico");
+const { assign, map, pick, pipe, tap, omit, get, tryCatch } = require("rubico");
+const fs = require("fs").promises;
+const path = require("path");
+
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 
@@ -11,6 +14,41 @@ const GROUP = "AppSync";
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
+
+const graphqlSchemaFilePath = ({ programOptions, commandOptions, resource }) =>
+  path.resolve(programOptions.workingDirectory, `${resource.name}.graphql`);
+
+const writeGraphqlSchema =
+  ({ programOptions, commandOptions }) =>
+  ({ lives, resource }) =>
+    pipe([
+      tap((params) => {
+        assert(programOptions);
+        assert(lives);
+        assert(resource);
+      }),
+      () => resource,
+      get("live.schema"),
+      (content) =>
+        tryCatch(
+          pipe([
+            () =>
+              graphqlSchemaFilePath({
+                programOptions,
+                commandOptions,
+                resource,
+              }),
+            tap((filePath) => {
+              console.log("Writing graphql schema:", filePath);
+            }),
+            (filePath) => fs.writeFile(filePath, content),
+          ]),
+          (error) => {
+            console.error("Error writing graphql schema", error);
+            throw error;
+          }
+        )(),
+    ])();
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -39,6 +77,30 @@ module.exports = () =>
           }),
         ]),
       }),
+      filterLive: (input) => (live) =>
+        pipe([
+          tap(() => {
+            assert(input);
+          }),
+          () => input,
+          tap(writeGraphqlSchema(input)),
+          () => live,
+          pick([
+            "authenticationType",
+            "xrayEnabled",
+            "wafWebAclArn",
+            "logConfig",
+            "apiKeys",
+          ]),
+          omit(["logConfig.cloudWatchLogsRoleArn"]),
+          assign({
+            schemaFile: () => `${live.name}.graphql`,
+            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+          }),
+        ])(),
+      dependencies: () => ({
+        cloudWatchLogsRole: { type: "Role", group: "IAM" },
+      }),
     },
     {
       type: "DataSource",
@@ -50,6 +112,33 @@ module.exports = () =>
           omit(["apiId", "serviceRoleArn", "dataSourceArn", "tags"]),
           omitIfEmpty(["description"]),
         ]),
+      }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "description",
+            "type",
+            "dynamodbConfig",
+            "elasticsearchConfig",
+            "httpConfig",
+            "relationalDatabaseConfig",
+          ]),
+          //TODO omit elasticsearchConfig.xxx ?
+          omit([
+            "httpConfig.endpoint",
+            "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier",
+            "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
+            "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
+          ]),
+        ]),
+      dependencies: () => ({
+        serviceRole: { type: "Role", group: "IAM" },
+        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        dbCluster: { type: "DBCluster", group: "RDS" },
+        lambdaFunction: { type: "Function", group: "Lambda" },
+        //TODO
+        //elasticsearch => opensearch
+        dynamoDbTable: { type: "Table", group: "DynamoDB" },
       }),
     },
     {
@@ -82,6 +171,20 @@ module.exports = () =>
             "responseMappingTemplate",
           ]),
         ]),
+      }),
+      filterLive: () =>
+        pick([
+          "typeName",
+          "fieldName",
+          "requestMappingTemplate",
+          "responseMappingTemplate",
+          "kind",
+        ]),
+      dependencies: () => ({
+        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        type: { type: "Type", group: "AppSync" },
+        dataSource: { type: "DataSource", group: "AppSync" },
+        dynamoDbTable: { type: "Table", group: "DynamoDB" },
       }),
     },
   ]);

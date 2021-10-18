@@ -2,10 +2,110 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.usePolicy({
-    name: "AWSLambdaBasicExecutionRole",
+  provider.AppSync.makeGraphqlApi({
+    name: "cdk-notes-appsync-api",
     properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      authenticationType: "API_KEY",
+      xrayEnabled: true,
+      apiKeys: [
+        {
+          description: "Graphql Api Keys",
+        },
+      ],
+      schemaFile: "cdk-notes-appsync-api.graphql",
+    }),
+  });
+
+  provider.AppSync.makeDataSource({
+    name: "lambdaDatasource",
+    properties: ({ config }) => ({
+      type: "AWS_LAMBDA",
+    }),
+    dependencies: ({ resources }) => ({
+      serviceRole:
+        resources.IAM.Role
+          .appsyncCdkAppStackApilambdaDatasourceServiceRole2_1Bx1Mto4H3Kag,
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      lambdaFunction: resources.Lambda.Function.lambdaFns,
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    properties: ({ config }) => ({
+      typeName: "Mutation",
+      fieldName: "createNote",
+      kind: "UNIT",
+    }),
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    properties: ({ config }) => ({
+      typeName: "Mutation",
+      fieldName: "deleteNote",
+      kind: "UNIT",
+    }),
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    properties: ({ config }) => ({
+      typeName: "Mutation",
+      fieldName: "updateNote",
+      kind: "UNIT",
+    }),
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    properties: ({ config }) => ({
+      typeName: "Query",
+      fieldName: "getNoteById",
+      kind: "UNIT",
+    }),
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
+    }),
+  });
+
+  provider.AppSync.makeResolver({
+    properties: ({ config }) => ({
+      typeName: "Query",
+      fieldName: "listNotes",
+      kind: "UNIT",
+    }),
+    dependencies: ({ resources }) => ({
+      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
+      dataSource: resources.AppSync.DataSource.lambdaDatasource,
+    }),
+  });
+
+  provider.DynamoDB.makeTable({
+    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+    properties: ({ config }) => ({
+      AttributeDefinitions: [
+        {
+          AttributeName: "id",
+          AttributeType: "S",
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: "id",
+          KeyType: "HASH",
+        },
+      ],
+      BillingMode: "PAY_PER_REQUEST",
     }),
   });
 
@@ -86,110 +186,10 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DynamoDB.makeTable({
-    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+  provider.IAM.usePolicy({
+    name: "AWSLambdaBasicExecutionRole",
     properties: ({ config }) => ({
-      AttributeDefinitions: [
-        {
-          AttributeName: "id",
-          AttributeType: "S",
-        },
-      ],
-      KeySchema: [
-        {
-          AttributeName: "id",
-          KeyType: "HASH",
-        },
-      ],
-      BillingMode: "PAY_PER_REQUEST",
-    }),
-  });
-
-  provider.AppSync.makeGraphqlApi({
-    name: "cdk-notes-appsync-api",
-    properties: ({ config }) => ({
-      authenticationType: "API_KEY",
-      xrayEnabled: true,
-      apiKeys: [
-        {
-          description: "Graphql Api Keys",
-        },
-      ],
-      schemaFile: "cdk-notes-appsync-api.graphql",
-    }),
-  });
-
-  provider.AppSync.makeResolver({
-    properties: ({ config }) => ({
-      typeName: "Mutation",
-      fieldName: "createNote",
-      kind: "UNIT",
-    }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      dataSource: resources.AppSync.DataSource.lambdaDatasource,
-    }),
-  });
-
-  provider.AppSync.makeResolver({
-    properties: ({ config }) => ({
-      typeName: "Mutation",
-      fieldName: "deleteNote",
-      kind: "UNIT",
-    }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      dataSource: resources.AppSync.DataSource.lambdaDatasource,
-    }),
-  });
-
-  provider.AppSync.makeResolver({
-    properties: ({ config }) => ({
-      typeName: "Mutation",
-      fieldName: "updateNote",
-      kind: "UNIT",
-    }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      dataSource: resources.AppSync.DataSource.lambdaDatasource,
-    }),
-  });
-
-  provider.AppSync.makeResolver({
-    properties: ({ config }) => ({
-      typeName: "Query",
-      fieldName: "getNoteById",
-      kind: "UNIT",
-    }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      dataSource: resources.AppSync.DataSource.lambdaDatasource,
-    }),
-  });
-
-  provider.AppSync.makeResolver({
-    properties: ({ config }) => ({
-      typeName: "Query",
-      fieldName: "listNotes",
-      kind: "UNIT",
-    }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      dataSource: resources.AppSync.DataSource.lambdaDatasource,
-    }),
-  });
-
-  provider.AppSync.makeDataSource({
-    name: "lambdaDatasource",
-    properties: ({ config }) => ({
-      type: "AWS_LAMBDA",
-    }),
-    dependencies: ({ resources }) => ({
-      serviceRole:
-        resources.IAM.Role
-          .appsyncCdkAppStackApilambdaDatasourceServiceRole2_1Bx1Mto4H3Kag,
-      graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-      lambdaFunction: resources.Lambda.Function.lambdaFns,
+      Arn: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     }),
   });
 

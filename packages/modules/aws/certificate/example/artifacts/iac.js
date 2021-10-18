@@ -2,17 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.ACM.makeCertificate({
-    name: "example-module-aws-certificate.grucloud.org",
-    properties: ({ config }) => ({
-      DomainName: "example-module-aws-certificate.grucloud.org",
-    }),
-  });
-
-  provider.Route53Domains.useDomain({
-    name: "grucloud.org",
-  });
-
   provider.Route53.makeHostedZone({
     name: "example-module-aws-certificate.grucloud.org.",
     dependencies: ({ resources }) => ({
@@ -28,6 +17,10 @@ const createResources = ({ provider }) => {
       certificate:
         resources.ACM.Certificate.exampleModuleAwsCertificateGrucloudOrg,
     }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
   });
 };
 

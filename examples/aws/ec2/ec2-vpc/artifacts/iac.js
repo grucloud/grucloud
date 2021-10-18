@@ -2,30 +2,46 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
-    name: "vpc-ec2-example",
-    properties: ({ config }) => ({
-      CidrBlock: "10.1.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: false,
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet",
-    properties: ({ config }) => ({
-      CidrBlock: "10.1.0.0/24",
-      AvailabilityZone: "eu-west-2a",
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpcEc2Example,
-    }),
-  });
-
   provider.EC2.makeKeyPair({
     name: "kp-ec2-vpc",
+  });
+
+  provider.EC2.makeImage({
+    name: "Amazon Linux 2",
+    properties: ({ config }) => ({
+      Architecture: "x86_64",
+      CreationDate: "2021-10-05T18:42:35.000Z",
+      ImageId: "ami-07d80543a234df229",
+      ImageLocation: "amazon/amzn2-ami-minimal-hvm-2.0.20211001.1-x86_64-ebs",
+      ImageType: "machine",
+      Public: true,
+      OwnerId: "137112412989",
+      PlatformDetails: "Linux/UNIX",
+      UsageOperation: "RunInstances",
+      ProductCodes: [],
+      State: "available",
+      BlockDeviceMappings: [
+        {
+          DeviceName: "/dev/xvda",
+          Ebs: {
+            DeleteOnTermination: true,
+            SnapshotId: "snap-0e9f243cae5878894",
+            VolumeSize: 2,
+            VolumeType: "standard",
+            Encrypted: false,
+          },
+        },
+      ],
+      Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 Minimal HVM ebs",
+      EnaSupport: true,
+      Hypervisor: "xen",
+      ImageOwnerAlias: "amazon",
+      Name: "amzn2-ami-minimal-hvm-2.0.20211001.1-x86_64-ebs",
+      RootDeviceName: "/dev/xvda",
+      RootDeviceType: "ebs",
+      SriovNetSupport: "simple",
+      VirtualizationType: "hvm",
+    }),
   });
 
   provider.EC2.makeVolume({
@@ -37,12 +53,30 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.EC2.makeElasticIpAddress({
-    name: "myip",
+  provider.EC2.makeVpc({
+    name: "vpc-ec2-example",
+    properties: ({ config }) => ({
+      CidrBlock: "10.1.0.0/16",
+      DnsSupport: true,
+      DnsHostnames: false,
+    }),
   });
 
   provider.EC2.makeInternetGateway({
     name: "ig",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpcEc2Example,
+    }),
+  });
+
+  provider.EC2.makeSubnet({
+    name: "subnet",
+    properties: ({ config }) => ({
+      CidrBlock: "10.1.0.0/24",
+      AvailabilityZone: "eu-west-2a",
+      MapPublicIpOnLaunch: false,
+      MapCustomerOwnedIpOnLaunch: false,
+    }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpcEc2Example,
     }),
@@ -123,6 +157,10 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       securityGroup: resources.EC2.SecurityGroup.securityGroup,
     }),
+  });
+
+  provider.EC2.makeElasticIpAddress({
+    name: "myip",
   });
 
   provider.EC2.makeInstance({

@@ -2,94 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.usePolicy({
-    name: "AmazonEC2ContainerRegistryReadOnly",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    }),
-  });
-
-  provider.IAM.usePolicy({
-    name: "AmazonEKS_CNI_Policy",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    }),
-  });
-
-  provider.IAM.usePolicy({
-    name: "AmazonEKSClusterPolicy",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-    }),
-  });
-
-  provider.IAM.usePolicy({
-    name: "AmazonEKSVPCResourceController",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-    }),
-  });
-
-  provider.IAM.usePolicy({
-    name: "AmazonEKSWorkerNodePolicy",
-    properties: ({ config }) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: "role-cluster",
-    properties: ({ config }) => ({
-      RoleName: "role-cluster",
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "eks.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy.amazonEksClusterPolicy,
-        resources.IAM.Policy.amazonEksvpcResourceController,
-      ],
-    }),
-  });
-
-  provider.IAM.makeRole({
-    name: "role-node-group",
-    properties: ({ config }) => ({
-      RoleName: "role-node-group",
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy.amazonEc2ContainerRegistryReadOnly,
-        resources.IAM.Policy.amazonEksCniPolicy,
-        resources.IAM.Policy.amazonEksWorkerNodePolicy,
-      ],
-    }),
-  });
-
   provider.EC2.makeVpc({
     name: "vpc",
     properties: ({ config }) => ({
@@ -102,6 +14,21 @@ const createResources = ({ provider }) => {
           Value: "shared",
         },
       ],
+    }),
+  });
+
+  provider.EC2.makeInternetGateway({
+    name: "internet-gateway",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpc,
+    }),
+  });
+
+  provider.EC2.makeNatGateway({
+    name: "nat-gateway",
+    dependencies: ({ resources }) => ({
+      subnet: resources.EC2.Subnet.subnetPublicA,
+      eip: resources.EC2.ElasticIpAddress.iep,
     }),
   });
 
@@ -194,25 +121,6 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "iep",
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-    }),
-  });
-
-  provider.EC2.makeNatGateway({
-    name: "nat-gateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet.subnetPublicA,
-      eip: resources.EC2.ElasticIpAddress.iep,
     }),
   });
 
@@ -375,6 +283,10 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.EC2.makeElasticIpAddress({
+    name: "iep",
+  });
+
   provider.EC2.makeLaunchTemplate({
     name: "lt-node-group-private-cluster",
     properties: ({ config }) => ({
@@ -389,10 +301,10 @@ const createResources = ({ provider }) => {
             },
           },
         ],
-        ImageId: "ami-098803b2ccca37b36",
+        ImageId: "ami-07bf8663601a643e9",
         InstanceType: "t2.small",
         UserData:
-          "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMUVhM3BOUkVsNFRsUkJlRTVzYjFoRVZFMTRUVVJyZVU5RVNYaE9WRUY0VG14dmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJTMjFyQ25sQmEyNWtTRlZDYWxsbk9FNTRhVEE1TnpOc00zSnlkamhGY2tWR1dFZFVabFZCUWxkWFJHNWtlWFl4UkhSeFVHaFhWbEZSTkVwa1lVNWpVR0pqYVdzS00wRnFabFZqVEdsbWRsZFBWbXg0V2sxWmNsaGpVamxUZG5jMmVFdFpUV1oxUkd0YWVsb3dZMU5tUWpoelQwTTFObmhPVkZrdmREY3JPVEJ0TmtsS1VRb3lRMFZJZFZoSmNISkxablJyVVRab1JXbEhlaTlZUVdwa1ZXOVJSMHBhTVZFNWFsTkdTa1I0ZEdKd2IwOUxPRkUzU2s5aGQzbHhTSEZhSzBOR1JXVkpDazlVWjJsTU0zQlZlblphZG14clFtVk9kVVoxWlhodFNFTnZiVmg0WjNOUVVHNTBiblZGUzNocVVuVnpaa3RNVUZCMGMyVlZiMVpEY3pkalIydFFRVkVLT1VSMWF6aFFaelZ2TlVwemVHOXBSbWxaTkhJemFWaFNiR2RqU0RWdlVHZzVaa2wyWkZoalNDdHpSM05yZVU5cGNtUTRaR05tTkVGMlNsQjZXRFZFVkFvMlVtUjNTM0FyVERoUFVta3dPRkU0ZUhKclEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaQldXeFNZamQyVVU1TFZEbDFXa3BoT1RkdVlsZHRXR0ZqVVZwTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQlFqSm5iM2xGZEhoTVdHWXJURlJXTVdVMlFXTnJTMVprV0ZoelpVOWtZVnBvU0VSc00xVmhRWGRPYjNJcmRrZHBNd3BuYWxwSFJtbERRMHBUYjA0NWJEUkdla1pGV2tKVllsQlZTMHhvVkZSaE9GVXlSR2xJYW0xaVpqTlVWMlJuWm1oWVduTjFkbVl3U0ZJeGVETk9aa3huQ21SclZXSkpNMU52YlhsVVdVOWpiRU5NVVZSS1NVWnBaVFpJZWtWblprUlNNSGhWWm1wT2QyWldPRlZKU1U5bVNHczBLMUZrUTFvNVRFRnpSWGR2V21ZS1IxUkJkR2g2ZUUxS1FWUm1ZMUJSVW5NdlZ6aE1jRGg2ZW5rd1lWaFVSVTQ1YVZGalMyZHVMMEl6TlN0TFlXRlhaV1pNWTJONE5UZzRWelJwWnpKSmJBcEJjWGw2TW5acVJGWjJkM1ZtY21Od05qSkZSbWRWTVZBME9VSndNRTlSVURZM2RtdGxPRzFoZDNGTWNXeGhOVEF3UjBkYWNVcFZkVVIxWW5RMFMyNTVDbmhFVjBsa1owRnJhMXBKYjFCQ1ZXWnBOM0UxS3pkNmMyRktUa2RaYm1SS1p5OXFhUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vREQyREY0QjFDNUE1RjlBOERDNjVFQzE3MzU0MDI4RjIuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIGNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wOTg4MDNiMmNjY2EzN2IzNixla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
+          "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMVVRWGhOVkVWNFRrUm5lVTFXYjFoRVZFMTRUVlJCZDA5VVJYaE9SR2Q1VFZadmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUSFZLQ2s5SE4wazFiRzlSYkd4S1RFaGxaVlp5T1RsTk9XNW1XVzFNVkVORWQybzFSSHBzYzA5aFVWSm5XR2wwVXpGcU16bEpObGs1TUhZMGVYZDJMMVJWUlRVS1QxcHlWbFpoU1N0elJHTklRVEpuT0c4eVdHdzBObEYyWXpRMGNFRjJhamN4Ymt0NU5EVnhOMmhuV20xaUsySkdPRVZFYjAwMlYyUjRjVkFyTTBkbkt3bzJRM1ZEU1dKYVZGbHBRbWhLZVdVMk1FTmxNbFp3V0ZFelkwSmhOR0p0WmxwTVQxZHJOalptWWxKME1FaENNa28wUmtvdlkybFNZMkY2U1VGeldFUTNDbXRTZGpoR1FWRnFkbXRyV0hkNGVXbDJVSEJtWkUxelJIZHJORk40TW5OdFNFdHBXRWhQWm5oU1dTdFpTelI0ZVdGWlRYWlVTREkyWWlzNGNGbzRLMEVLUkRkelZXMTJibmhtT0hVelkzSkZSRlp6TTNZMmNFMUNZVEZCV1ZKM1dGRkxSazFrUWtOelNWTmpUV2REWXpoSmIzQm9WVE14WWpScWMxVXZVbWN4VXdwSmJEUmFRVEozYlhwVlkzZzNlR0ZFY0ROalEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaS1dYbzVSMms1YkVWblEwTldibFkwVEZabFVUVm5SbWQwZEVsTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGRFJ6TlJPV0ZQUTA5cFJWaGpTMVUzU2k5NmRsSktZMWhuVW5oMWVYY3JLemRCVUN0RVJVUmpSVVZtV0M5M2NtTndOUXBuYkZBMVRqVm5jSHBIUjJSVllYRkxNR1UzWTNSUmRFcFNkV2t3WlRjemFYUlNjWFZNTkVoTVFuaFdiSFEwV1hBd2RUbExTbWRsWVRsTVpWSlFSV3hFQ2t3NFUwOTRiSEZQUjI5VFpFdDFiblV5YjJwVmVHSldkMmRHYTBnd2JXRmFXbFIxY25KS2NERlpXV05KY2twSVExbDBVbUZ5ZEhsVFJFaEZTQ3RGT1RVS2JFUm1WVEpVZERrd1RqUkZSVzRyUjBvMVlYWmhhSEpUVUdaQlRsaGljMHRKU0RFNU1GZzNOblkzWVZKNlZrWkNlU3R5VVM5NWRtZ3lTVU41V0ZSNFVnb3ZOV2hRUkVRdlFqWkxNMU5DTmpKRk9UUTVkRFpMYkZCeVlqazNOR042V1dobFNqSnhPRmxIU2tKNFluVlpTSE5oT0ZnclQzWTRaV2R1ZVU1ek9WVnFDbmhDWjFGUFYwMUtSakEzSzFZeVdtdHVTR1JaVGtFcldESXdNVUZEUzBJME16WlZZUW90TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vQkVBRTFDODcyM0E1NDE1QzNENzU0RjJCMEUyRUFGRjEuZ3I3LmV1LXdlc3QtMi5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIGNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vbm9kZWdyb3VwLWltYWdlPWFtaS0wN2JmODY2MzYwMWE2NDNlOSxla3MuYW1hem9uYXdzLmNvbS9jYXBhY2l0eVR5cGU9T05fREVNQU5ELGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cD1ub2RlLWdyb3VwLXByaXZhdGUtY2x1c3RlcicgLS1iNjQtY2x1c3Rlci1jYSAkQjY0X0NMVVNURVJfQ0EgLS1hcGlzZXJ2ZXItZW5kcG9pbnQgJEFQSV9TRVJWRVJfVVJMIC0tZG5zLWNsdXN0ZXItaXAgJEs4U19DTFVTVEVSX0ROU19JUAoKLS0vLy0t",
         MetadataOptions: {
           HttpPutResponseHopLimit: 2,
         },
@@ -408,10 +320,6 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-
-  provider.KMS.makeKey({
-    name: "eks-key",
   });
 
   provider.EKS.makeCluster({
@@ -456,6 +364,139 @@ const createResources = ({ provider }) => {
       ],
       role: resources.IAM.Role.roleNodeGroup,
     }),
+  });
+
+  provider.IAM.makeRole({
+    name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-16MFRGNSNCKYY",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "appsync.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-ME4D96ZFJKTZ",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      ],
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-cluster",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "eks.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        resources.IAM.Policy.amazonEksClusterPolicy,
+        resources.IAM.Policy.amazonEksvpcResourceController,
+      ],
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-node-group",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      policies: [
+        resources.IAM.Policy.amazonEc2ContainerRegistryReadOnly,
+        resources.IAM.Policy.amazonEksCniPolicy,
+        resources.IAM.Policy.amazonEksWorkerNodePolicy,
+      ],
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonEC2ContainerRegistryReadOnly",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonEKS_CNI_Policy",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonEKSClusterPolicy",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonEKSVPCResourceController",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+    }),
+  });
+
+  provider.IAM.usePolicy({
+    name: "AmazonEKSWorkerNodePolicy",
+    properties: ({ config }) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    }),
+  });
+
+  provider.KMS.makeKey({
+    name: "eks-key",
   });
 };
 

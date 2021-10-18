@@ -2,25 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makePolicy({
-    name: "lambda-policy",
-    properties: ({ config }) => ({
-      PolicyName: "lambda-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["logs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow logs",
-    }),
-  });
-
   provider.IAM.makeRole({
     name: "lambda-role",
     properties: ({ config }) => ({
@@ -41,6 +22,24 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       policies: [resources.IAM.Policy.lambdaPolicy],
+    }),
+  });
+
+  provider.IAM.makePolicy({
+    name: "lambda-policy",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
     }),
   });
 

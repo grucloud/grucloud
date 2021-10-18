@@ -1,4 +1,5 @@
-const { pipe, assign, map, pick, omit, tap } = require("rubico");
+const assert = require("assert");
+const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
 const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
@@ -55,6 +56,30 @@ module.exports = () =>
           "platformVersion",
         ]),
       }),
+      filterLive: () => pick(["version"]),
+      dependencies: () => ({
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap(() => {
+                  assert(dependency);
+                }),
+                () => dependency,
+                not(get("managedByOther")),
+                tap((result) => {
+                  assert(true);
+                }),
+              ])(),
+        },
+        role: { type: "Role", group: "IAM" },
+        key: { type: "Key", group: "KMS" },
+      }),
     },
     {
       type: "NodeGroup",
@@ -75,6 +100,20 @@ module.exports = () =>
           "instanceTypes",
           "scalingConfig",
         ]),
+      }),
+      filterLive: () =>
+        pick([
+          "capacityType",
+          "scalingConfig",
+          "instanceTypes",
+          "amiType",
+          "labels",
+          "diskSize",
+        ]),
+      dependencies: () => ({
+        cluster: { type: "Cluster", group: "EKS" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        role: { type: "Role", group: "IAM" },
       }),
     },
   ]);

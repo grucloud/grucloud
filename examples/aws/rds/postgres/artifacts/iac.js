@@ -2,36 +2,19 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makePolicy({
-    name: "lambda-policy",
-    properties: ({ config }) => ({
-      PolicyName: "lambda-policy",
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["logs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: ["sqs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow logs",
-    }),
-  });
-
   provider.EC2.makeVpc({
     name: "vpc-postgres",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/16",
       DnsSupport: true,
       DnsHostnames: true,
+    }),
+  });
+
+  provider.EC2.makeInternetGateway({
+    name: "ig-postgres",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc.vpcPostgres,
     }),
   });
 
@@ -56,13 +39,6 @@ const createResources = ({ provider }) => {
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpcPostgres,
-    }),
-  });
-
-  provider.EC2.makeInternetGateway({
-    name: "ig-postgres",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpcPostgres,
     }),
@@ -121,8 +97,41 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.IAM.makePolicy({
+    name: "lambda-policy",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["sqs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  });
+
   provider.KMS.makeKey({
     name: "secret-key-test",
+  });
+
+  provider.RDS.makeDBSubnetGroup({
+    name: "subnet-group-postgres",
+    properties: ({ config }) => ({
+      DBSubnetGroupDescription: "db subnet group",
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [resources.EC2.Subnet.subnet_1, resources.EC2.Subnet.subnet_2],
+    }),
   });
 
   provider.RDS.makeDBInstance({
@@ -143,16 +152,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       dbSubnetGroup: resources.RDS.DBSubnetGroup.subnetGroupPostgres,
       securityGroups: [resources.EC2.SecurityGroup.securityGroup],
-    }),
-  });
-
-  provider.RDS.makeDBSubnetGroup({
-    name: "subnet-group-postgres",
-    properties: ({ config }) => ({
-      DBSubnetGroupDescription: "db subnet group",
-    }),
-    dependencies: ({ resources }) => ({
-      subnets: [resources.EC2.Subnet.subnet_1, resources.EC2.Subnet.subnet_2],
     }),
   });
 };

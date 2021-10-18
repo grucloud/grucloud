@@ -1,8 +1,9 @@
+const assert = require("assert");
 const { pipe, assign, map, omit, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinion } = require("../AwsCommon");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
@@ -23,6 +24,7 @@ module.exports = () =>
         filterTarget: pipe([filterTargetDefault]),
         filterLive: pipe([omit(["Arn"]), filterLiveDefault]),
       }),
+      filterLive: () => pipe([pick([])]),
     },
     {
       type: "Rule",
@@ -38,6 +40,11 @@ module.exports = () =>
           omit(["Arn", "CreatedBy", "Targets"]),
           filterLiveDefault,
         ]),
+      }),
+      filterLive: () =>
+        pipe([omit(["Name", "Arn", "EventBusName"]), omitIfEmpty(["Targets"])]),
+      dependencies: () => ({
+        eventBus: { type: "EventBus", group: "CloudWatchEvents" },
       }),
     },
   ]);

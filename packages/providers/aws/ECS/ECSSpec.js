@@ -1,5 +1,5 @@
-const { assign, map, pipe, get, omit } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { assign, map, pipe, get, omit, pick, eq } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { isOurMinionFactory } = require("../AwsCommon");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
@@ -37,6 +37,14 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick(["autoScalingGroupProvider"]),
+          omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
+        ]),
+      dependencies: () => ({
+        autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
+      }),
     },
     {
       type: "Cluster",
@@ -63,6 +71,22 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick(["settings", "defaultCapacityProviderStrategy"]),
+          omitIfEmpty(["defaultCapacityProviderStrategy"]),
+        ]),
+      dependencies: () => ({
+        capacityProviders: {
+          type: "CapacityProvider",
+          group: "ECS",
+          list: true,
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+        },
+      }),
     },
     {
       type: "TaskDefinition",
@@ -84,6 +108,12 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "containerDefinitions",
+          "placementConstraints",
+          "requiresCompatibilities",
+        ]),
     },
     {
       type: "Service",
@@ -114,6 +144,26 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick([
+            "launchType",
+            "desiredCount",
+            "deploymentConfiguration",
+            "placementConstraints",
+            "placementStrategy",
+            "schedulingStrategy",
+            "enableECSManagedTags",
+            "propagateTags",
+            "enableExecuteCommand",
+          ]),
+          when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
+        ]),
+      dependencies: () => ({
+        cluster: { type: "Cluster", group: "ECS" },
+        taskDefinition: { type: "TaskDefinition", group: "ECS" },
+        loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
+      }),
     },
     {
       type: "TaskSet",
@@ -139,6 +189,21 @@ module.exports = () =>
       compare: compare({
         filterTarget: pipe([omit([""]), filterTargetDefault]),
         filterLive: pipe([omit([""]), filterLiveDefault]),
+      }),
+      filterLive: () =>
+        pick([
+          //"cpu",
+          "enableExecuteCommand",
+          //"group",
+          "launchType",
+          //"memory",
+          "overrides",
+        ]),
+      dependencies: () => ({
+        cluster: { type: "Cluster", group: "ECS" },
+        taskDefinition: { type: "TaskDefinition", group: "ECS" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       }),
     },
     {

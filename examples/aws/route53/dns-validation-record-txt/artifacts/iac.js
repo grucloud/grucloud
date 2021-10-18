@@ -2,10 +2,6 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.Route53Domains.useDomain({
-    name: "grucloud.org",
-  });
-
   provider.Route53.makeHostedZone({
     name: "grucloud.org.",
     dependencies: ({ resources }) => ({
@@ -29,6 +25,10 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone.grucloudOrg,
     }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
   });
 };
 

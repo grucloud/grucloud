@@ -1,8 +1,27 @@
 const assert = require("assert");
-const { pipe, get, assign, map, omit, tap, pick } = require("rubico");
-const { compare } = require("@grucloud/core/Common");
+const {
+  pipe,
+  get,
+  assign,
+  map,
+  omit,
+  tap,
+  pick,
+  eq,
+  not,
+  and,
+  or,
+  any,
+  switchCase,
+} = require("rubico");
+const { when, pluck, identity, includes } = require("rubico/x");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
 
+const {
+  hasDependency,
+  findLiveById,
+} = require("@grucloud/core/generatorUtils");
 const {
   EC2Instance,
   isOurMinionEC2Instance,
@@ -35,6 +54,62 @@ const GROUP = "EC2";
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = pipe([omit(["Tags"])]);
 
+const securityGroupRulePickProperties = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  ({ resource }) =>
+    (live) =>
+      pipe([
+        () => live,
+        switchCase([
+          () =>
+            hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
+          omit(["IpPermission.UserIdGroupPairs"]),
+          identity,
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
+        pick(["IpPermission"]),
+      ])(),
+]);
+
+const ec2InstanceDependencies = () => ({
+  subnet: {
+    type: "Subnet",
+    group: "EC2",
+  },
+  keyPair: { type: "KeyPair", group: "EC2" },
+  eip: { type: "ElasticIpAddress", group: "EC2" },
+  iamInstanceProfile: { type: "InstanceProfile", group: "IAM" },
+  securityGroups: {
+    type: "SecurityGroup",
+    group: "EC2",
+    list: true,
+  },
+  volumes: {
+    type: "Volume",
+    group: "EC2",
+    list: true,
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          tap(() => {
+            assert(resource);
+            assert(resource.live);
+            assert(dependency);
+            assert(dependency.live);
+          }),
+          () => dependency,
+          get("live.Attachments"),
+          pluck("Device"),
+          not(includes(resource.live.RootDeviceName)),
+        ])(),
+  },
+});
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -51,6 +126,7 @@ module.exports = () =>
           omit(["KeyPairId", "KeyFingerprint"]),
         ]),
       }),
+      filterLive: () => pick([""]),
     },
     {
       type: "Image",
@@ -77,6 +153,39 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+      //TODO do we need that ?
+      ignoreResource:
+        ({ lives }) =>
+        (resource) =>
+          pipe([
+            () => resource,
+            or([
+              get("managedByOther"),
+              pipe([
+                get("live.Attachments"),
+                tap((params) => {
+                  assert(true);
+                }),
+                any(({ Device, InstanceId }) =>
+                  pipe([
+                    () => InstanceId,
+                    findLiveById({
+                      type: "Instance",
+                      group: "EC2",
+                      lives,
+                      providerName: resource.providerName,
+                    }),
+                    eq(get("live.RootDeviceName"), Device),
+                  ])()
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+            ]),
+          ])(),
     },
     {
       type: "Vpc",
@@ -105,6 +214,7 @@ module.exports = () =>
           ]),
         ]),
       }),
+      filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
     },
     {
       type: "InternetGateway",
@@ -118,6 +228,10 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () => pick([]),
+      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      //TODO remove ?
+      ignoreResource: () => get("isDefault"),
     },
     {
       type: "NatGateway",
@@ -138,6 +252,13 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () => pick([]),
+      dependencies: () => ({
+        subnet: { type: "Subnet", group: "EC2" },
+        eip: { type: "ElasticIpAddress", group: "EC2" },
+      }),
+      //TODO remove ?
+      ignoreResource: () => get("isDefault"),
     },
     {
       type: "Subnet",
@@ -168,6 +289,19 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pick([
+          "CidrBlock",
+          "Ipv6CidrBlock",
+          "AvailabilityZone",
+          "MapPublicIpOnLaunch",
+          "CustomerOwnedIpv4Pool",
+          "MapCustomerOwnedIpOnLaunch",
+          "MapPublicIpOnLaunch",
+        ]),
+      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      //TODO remove ?
+      ignoreResource: () => get("isDefault"),
     },
     {
       type: "RouteTable",
@@ -187,6 +321,13 @@ module.exports = () =>
           ]),
           filterLiveDefault,
         ]),
+      }),
+      filterLive: () => pick([]),
+      //TODO remove ?
+      ignoreResource: () => get("isDefault"),
+      dependencies: () => ({
+        vpc: { type: "Vpc", group: "EC2" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
       }),
     },
     {
@@ -208,6 +349,14 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () => pick(["DestinationCidrBlock"]),
+      //TODO remove ?
+      ignoreResource: () => get("isDefault"),
+      dependencies: () => ({
+        routeTable: { type: "RouteTable", group: "EC2" },
+        ig: { type: "InternetGateway", group: "EC2" },
+        natGateway: { type: "NatGateway", group: "EC2" },
+      }),
     },
     {
       type: "SecurityGroup",
@@ -218,6 +367,8 @@ module.exports = () =>
         filterTarget: filterTargetDefault,
         filterLive: pipe([pick(["Description", "GroupName", "VpcId"])]),
       }),
+      filterLive: () => pick(["Description"]),
+      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
     },
     {
       type: "SecurityGroupRuleIngress",
@@ -225,6 +376,40 @@ module.exports = () =>
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       isOurMinion,
+      filterLive: securityGroupRulePickProperties,
+      includeDefaultDependencies: true,
+      dependencies: () => ({
+        securityGroup: {
+          type: "SecurityGroup",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.GroupId"), dependency.live.GroupId),
+              ])(),
+        },
+        securityGroupFrom: {
+          type: "SecurityGroup",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                tap(() => {
+                  assert(dependency.live.GroupId);
+                  assert(resource.live.GroupId);
+                }),
+                get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
+                and([
+                  eq(identity, dependency.live.GroupId),
+                  not(eq(resource.live.GroupId, dependency.live.GroupId)),
+                ]),
+              ])(),
+        },
+      }),
     },
     {
       type: "SecurityGroupRuleEgress",
@@ -232,6 +417,11 @@ module.exports = () =>
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
       isOurMinion,
+      filterLive: securityGroupRulePickProperties,
+      includeDefaultDependencies: true,
+      dependencies: () => ({
+        securityGroup: { type: "SecurityGroup", group: "EC2" },
+      }),
     },
     {
       type: "ElasticIpAddress",
@@ -255,6 +445,7 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () => pick([]),
     },
     {
       type: "Instance",
@@ -277,6 +468,29 @@ module.exports = () =>
       },
       compare: compareEC2Instance,
       isOurMinion: isOurMinionEC2Instance,
+      filterLive: () =>
+        pipe([
+          pick(["InstanceType", "ImageId", "UserData"]),
+          tap((params) => {
+            assert(true);
+          }),
+          when(
+            get("UserData"),
+            assign({
+              UserData: pipe([
+                get("UserData"),
+                tap((params) => {
+                  assert(true);
+                }),
+                (UserData) => Buffer.from(UserData, "base64").toString(),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+            })
+          ),
+        ]),
+      dependencies: ec2InstanceDependencies,
     },
     {
       type: "LaunchTemplate",
@@ -304,6 +518,24 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          pick(["LaunchTemplateData"]),
+          omitIfEmpty([
+            "LaunchTemplateData.BlockDeviceMappings",
+            "LaunchTemplateData.ElasticGpuSpecifications",
+            "LaunchTemplateData.ElasticInferenceAccelerators",
+            "LaunchTemplateData.SecurityGroups",
+            "LaunchTemplateData.LicenseSpecifications",
+            "LaunchTemplateData.TagSpecifications",
+          ]),
+          omit([
+            "LaunchTemplateData.NetworkInterfaces",
+            "LaunchTemplateData.SecurityGroupIds",
+            "LaunchTemplateData.IamInstanceProfile",
+          ]),
+        ]),
+      dependencies: ec2InstanceDependencies,
     },
 
     {

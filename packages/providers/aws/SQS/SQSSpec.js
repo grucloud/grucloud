@@ -1,5 +1,7 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get } = require("rubico");
+const { pipe, assign, map, omit, tap, get, eq } = require("rubico");
+const { when } = require("rubico/x");
+
 const { compare } = require("@grucloud/core/Common");
 
 const { isOurMinionObject } = require("../AwsCommon");
@@ -37,5 +39,29 @@ module.exports = () =>
           ]),
         ]),
       }),
+      filterLive: () =>
+        pipe([
+          omit(["QueueUrl"]),
+          assign({
+            Attributes: pipe([
+              get("Attributes"),
+              omit([
+                "QueueArn",
+                "ApproximateNumberOfMessages",
+                "ApproximateNumberOfMessagesNotVisible",
+                "ApproximateNumberOfMessagesDelayed",
+                "CreatedTimestamp",
+                "LastModifiedTimestamp",
+              ]),
+              when(
+                eq(get("Policy.Id"), "__default_policy_ID"),
+                omit(["Policy"])
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+          }),
+        ]),
     },
   ]);

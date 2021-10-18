@@ -66,7 +66,10 @@ module.exports = ({ provider }) => {
                   }),
                 isExpectedResult: pipe([
                   tap(({ data }) => {
-                    assert(!data.errors, `errros ${data.errors}`);
+                    assert(
+                      !data.errors,
+                      `error ${JSON.stringify(data.errors, null, 4)}`
+                    );
                   }),
                   eq(get("status"), 200),
                 ]),

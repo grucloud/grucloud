@@ -2,30 +2,8 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
-    name: "role-ecs",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-  });
-
-  provider.IAM.makeInstanceProfile({
-    name: "role-ecs",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role.roleEcs],
-    }),
+  provider.EC2.makeKeyPair({
+    name: "kp-ecs",
   });
 
   provider.EC2.makeVpc({
@@ -61,10 +39,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
     }),
-  });
-
-  provider.EC2.makeKeyPair({
-    name: "kp-ecs",
   });
 
   provider.EC2.makeSecurityGroup({
@@ -109,6 +83,32 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       keyPair: resources.EC2.KeyPair.kpEcs,
       iamInstanceProfile: resources.IAM.InstanceProfile.roleEcs,
+    }),
+  });
+
+  provider.IAM.makeRole({
+    name: "role-ecs",
+    properties: ({ config }) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.IAM.makeInstanceProfile({
+    name: "role-ecs",
+    dependencies: ({ resources }) => ({
+      roles: [resources.IAM.Role.roleEcs],
     }),
   });
 };
