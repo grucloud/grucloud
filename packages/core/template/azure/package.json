@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-azure-template",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^2.2.0",
-    "@grucloud/provider-azure": "^2.2.0",
+    "@grucloud/core": "^2.3.0",
+    "@grucloud/provider-azure": "^2.3.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

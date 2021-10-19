@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-empty-template",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^2.2.0",
-    "@grucloud/provider-aws": "^2.2.0",
+    "@grucloud/core": "^2.3.0",
+    "@grucloud/provider-aws": "^2.3.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {
