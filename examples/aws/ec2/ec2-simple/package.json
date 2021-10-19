@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha",
     "graph-target": "gc graph",
-    "list": "gc list --graph --json artifacts/inventory.json -e NetworkInterface",
+    "list": "gc list --graph -e NetworkInterface",
     "gencode": "gc gencode"
   },
   "author": "",

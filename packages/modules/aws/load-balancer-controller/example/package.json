@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Controller Module'",
-    "list": "gc list --graph --title 'Load Balancer Controller Module' --json artifacts/inventory.json --default-exclude -e NetworkInterface -e Key",
+    "list": "gc list --graph --title 'Load Balancer Controller Module' --default-exclude -e NetworkInterface -e Key",
     "test": "mocha",
     "gencode": "gc gencode"
   },

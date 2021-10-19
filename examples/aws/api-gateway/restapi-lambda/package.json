@@ -6,7 +6,7 @@
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
-    "list": "gc list --graph --json artifacts/inventory.json",
+    "list": "gc list --graph",
     "gencode": "gc gencode"
   },
   "author": "",

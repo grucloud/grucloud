@@ -273,7 +273,7 @@ exports.setupProviders =
 
 exports.saveToJson = ({
   command,
-  commandOptions,
+  commandOptions = {},
   programOptions = {},
   result,
 }) =>
@@ -281,12 +281,12 @@ exports.saveToJson = ({
     tap(() => {
       assert(programOptions.workingDirectory);
     }),
-    () => programOptions.json,
+    () => programOptions,
+    get("json", commandOptions.json),
     when(
       not(isEmpty),
       pipe([
-        () =>
-          path.resolve(programOptions.workingDirectory, programOptions.json),
+        (json) => path.resolve(programOptions.workingDirectory, json),
         tap((fullPath) => {
           logger.debug(`saveToJson: ${fullPath}`);
         }),

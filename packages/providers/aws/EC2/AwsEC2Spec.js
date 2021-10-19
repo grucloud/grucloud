@@ -322,13 +322,8 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
-      ignoreResource: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          and([get("isDefault"), pipe([get("usedBy"), isEmpty])]),
-        ]),
+      ignoreResource: (input) =>
+        pipe([and([get("isDefault"), pipe([get("usedBy"), isEmpty])])]),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
