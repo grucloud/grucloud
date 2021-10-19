@@ -6,6 +6,7 @@
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
+    "list": "gc list",
     "gencode": "gc gencode"
   },
   "author": "",
