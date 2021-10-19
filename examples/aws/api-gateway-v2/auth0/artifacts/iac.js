@@ -73,12 +73,7 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       ApiKeyRequired: false,
       AuthorizationType: "JWT",
-      AuthorizerId: "4wn81c",
-      RouteId: "ybqo7ei",
       RouteKey: "ANY /my-function",
-      Target: "integrations/3hi9ubj",
-      ApiId: "hfjx2wp3jj",
-      ApiName: "my-api",
     }),
   });
 

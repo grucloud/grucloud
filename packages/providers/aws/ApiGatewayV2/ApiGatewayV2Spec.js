@@ -296,6 +296,8 @@ module.exports = () =>
           filterLiveDefaut,
         ]),
       }),
+      filterLive: () =>
+        pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
     },
     {
       type: "Deployment",

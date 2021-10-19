@@ -189,6 +189,11 @@ exports.createProgram = () => {
     .description("List the live resources")
     .alias("l")
     .option(
+      "-j, --json <file>",
+      "write inventory to a file in json format",
+      "artifacts/inventory.json"
+    )
+    .option(
       "-g, --graph",
       "create an SVG representation of the live infrastructure"
     )

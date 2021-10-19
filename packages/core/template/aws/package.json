@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha",
     "tree": "gc tree",
-    "list": "gc list -g --json artifacts/inventory.json",
+    "list": "gc list -g",
     "gencode": "gc gencode"
   },
   "author": "",
@@ -15,9 +15,9 @@
   "dependencies": {
     "@grucloud/core": "^2.2.0",
     "@grucloud/provider-aws": "^2.2.0",
-    "rubico": "^1.6.29"
+    "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "mocha": "^9.0.3"
+    "mocha": "^9.1.3"
   }
 }

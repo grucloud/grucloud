@@ -53,16 +53,8 @@
       "name": "GenCode",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": [
-        "gencode",
-        "--input",
-        "artifacts/inventory.json",
-        "--outputConfig",
-        "config.js",
-        "--outputCode",
-        "iac.js"
-      ],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "gencode"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

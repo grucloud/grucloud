@@ -90,7 +90,7 @@ exports.testEnd2End = ({
             },
             commandOptions: {
               graph: true,
-              defaultExclude: true,
+              //defaultExclude: true,
               typesExclude: ["EC2::NetworkInterface"],
               ...listOptions,
             },
@@ -118,7 +118,7 @@ exports.testEnd2End = ({
                   cli.list({
                     commandOptions: {
                       canBeDeleted: true,
-                      defaultExclude: true,
+                      //defaultExclude: true,
                     },
                   }),
                 () =>
