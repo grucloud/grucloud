@@ -75,9 +75,6 @@ exports.createProject =
   ({ programOptions }) =>
   (commandOptions) =>
     pipe([
-      tap((params) => {
-        assert(programOptions.workingDirectory);
-      }),
       () => ({}),
       assign({
         provider: promptProvider,

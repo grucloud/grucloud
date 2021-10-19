@@ -6,44 +6,6 @@ const createResources = ({ provider }) => {
     name: "kp-ec2-vpc",
   });
 
-  provider.EC2.makeImage({
-    name: "Amazon Linux 2",
-    properties: ({ config }) => ({
-      Architecture: "x86_64",
-      CreationDate: "2021-10-05T18:42:35.000Z",
-      ImageId: "ami-07d80543a234df229",
-      ImageLocation: "amazon/amzn2-ami-minimal-hvm-2.0.20211001.1-x86_64-ebs",
-      ImageType: "machine",
-      Public: true,
-      OwnerId: "137112412989",
-      PlatformDetails: "Linux/UNIX",
-      UsageOperation: "RunInstances",
-      ProductCodes: [],
-      State: "available",
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/xvda",
-          Ebs: {
-            DeleteOnTermination: true,
-            SnapshotId: "snap-0e9f243cae5878894",
-            VolumeSize: 2,
-            VolumeType: "standard",
-            Encrypted: false,
-          },
-        },
-      ],
-      Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 Minimal HVM ebs",
-      EnaSupport: true,
-      Hypervisor: "xen",
-      ImageOwnerAlias: "amazon",
-      Name: "amzn2-ami-minimal-hvm-2.0.20211001.1-x86_64-ebs",
-      RootDeviceName: "/dev/xvda",
-      RootDeviceType: "ebs",
-      SriovNetSupport: "simple",
-      VirtualizationType: "hvm",
-    }),
-  });
-
   provider.EC2.makeVolume({
     name: "volume",
     properties: ({ config }) => ({

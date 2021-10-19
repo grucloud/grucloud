@@ -14,7 +14,7 @@ const {
   any,
   switchCase,
 } = require("rubico");
-const { when, pluck, identity, includes } = require("rubico/x");
+const { when, pluck, identity, includes, isEmpty } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
 
@@ -132,6 +132,7 @@ module.exports = () =>
       type: "Image",
       Client: AwsImage,
       isOurMinion,
+      ignoreResource: () => () => true,
     },
     {
       type: "Volume",
@@ -321,6 +322,13 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
+      ignoreResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          and([get("isDefault"), pipe([get("usedBy"), isEmpty])]),
+        ]),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -346,7 +354,7 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
-      ignoreResource: () => get("isDefault"),
+
       includeDefaultDependencies: true,
       dependencies: () => ({
         routeTable: { type: "RouteTable", group: "EC2" },
@@ -360,8 +368,8 @@ module.exports = () =>
       Client: AwsSecurityGroup,
       isOurMinion,
       compare: compare({
-        filterTarget: filterTargetDefault,
-        filterLive: pipe([pick(["Description", "GroupName"])]),
+        filterTarget: pipe([pick(["Description"]), filterTargetDefault]),
+        filterLive: pipe([pick(["Description"])]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),

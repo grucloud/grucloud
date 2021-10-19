@@ -1,6 +1,5 @@
 node_modules/
-default.env
+.env
 .nyc_output
 coverage
 *.log
-default.env

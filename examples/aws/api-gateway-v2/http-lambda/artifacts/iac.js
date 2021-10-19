@@ -61,11 +61,7 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       ApiKeyRequired: false,
       AuthorizationType: "NONE",
-      RouteId: "mfaooq7",
       RouteKey: "ANY /my-function",
-      Target: "integrations/c1zrvam",
-      ApiId: "0y1xvgkr31",
-      ApiName: "my-api",
     }),
   });
 
