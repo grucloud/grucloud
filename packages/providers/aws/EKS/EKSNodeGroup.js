@@ -277,7 +277,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         nodegroupName: name,
         amiType: "AL2_x86_64",
         capacityType: "ON_DEMAND",
-        diskSize: 20,
+        //diskSize: 20,
         instanceTypes: ["t2.medium"], // See https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
         scalingConfig: {
           minSize: 1,

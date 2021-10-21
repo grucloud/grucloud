@@ -3,24 +3,24 @@ title Resources for project ecs-simple
 skinparam monochrome true
 + Infra
 ++ aws
-+++ IAM
-++++ Policy (1)
-++++ Role (1)
-++++ InstanceProfile (1)
++++ AutoScaling
+++++ AutoScalingGroup (1)
+++++ LaunchConfiguration (1)
 +++ EC2
 ++++ Vpc (1)
-++++ Subnet (2)
 ++++ InternetGateway (1)
+++++ Subnet (2)
 ++++ RouteTable (1)
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
-+++ AutoScaling
-++++ AutoScalingGroup (1)
-++++ LaunchConfiguration (1)
 +++ ECS
-++++ Cluster (1)
 ++++ CapacityProvider (1)
+++++ Cluster (1)
 ++++ TaskDefinition (1)
 ++++ Service (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
+++++ InstanceProfile (1)
 @endmindmap

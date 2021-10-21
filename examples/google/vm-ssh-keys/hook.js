@@ -23,13 +23,15 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
       });
   });
 
-module.exports = ({ resources: { ip, server }, provider }) => {
+module.exports = ({ provider }) => {
   assert(provider);
-  assert(ip);
   return {
     onDeployed: {
       init: async () => {
-        const ipLive = await ip.getLive();
+        const resources = provider.resources();
+        assert(resources);
+        const ipLive =
+          await resources.compute.Address.ipWebserverSshKeys.getLive();
         assert(ipLive);
         const host = ipLive.address;
         return {

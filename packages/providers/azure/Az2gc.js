@@ -3,13 +3,7 @@ const {
   pipe,
   tap,
   get,
-  eq,
-  pick,
-  switchCase,
-  omit,
   not,
-  or,
-  and,
   assign,
   map,
   any,
@@ -18,16 +12,10 @@ const {
 } = require("rubico");
 const { isEmpty, groupBy, values, unless } = require("rubico/x");
 
-// const path = require("path");
-// const mime = require("mime-types");
-// const Fs = require("fs");
-// const fs = require("fs").promises;
-
 const { generatorMain } = require("@grucloud/core/generatorUtils");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { configTpl } = require("./configTpl");
-const { iacTpl } = require("./iacTpl");
 
 const filterModel = pipe([
   map(
@@ -90,7 +78,6 @@ exports.generateCode = ({
             writersSpec,
             commandOptions,
             programOptions,
-            iacTpl,
             configTpl,
             filterModel,
           }),

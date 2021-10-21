@@ -117,6 +117,9 @@ exports.ProviderGru = ({
     () => stacks,
     forEach(({ provider, resources, hooks }) =>
       pipe([
+        tap(() => {
+          assert(provider);
+        }),
         () => provider.register({ resources, hooks }),
         () => provider.setLives(lives),
       ])()

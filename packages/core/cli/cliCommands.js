@@ -1520,6 +1520,9 @@ exports.Cli = ({
             }),
           }),
         tap.if(() => createResources, createResources),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
     }),
     tap.if(not(get("infra")), () => {

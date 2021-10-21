@@ -157,6 +157,9 @@ module.exports = () =>
           "IdentityValidationExpression",
           "JwtConfiguration",
         ]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+      }),
     },
     {
       type: "ApiMapping",
@@ -298,6 +301,11 @@ module.exports = () =>
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        integration: { type: "Integration", group: "ApiGatewayV2" },
+        authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
+      }),
     },
     {
       type: "Deployment",

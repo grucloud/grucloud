@@ -62,6 +62,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               "TooManyRequestsException",
               "OperationAborted",
               "TimeoutError",
+              "ServiceUnavailable",
             ],
             includes(error.code),
             tap.if(identity, () => {

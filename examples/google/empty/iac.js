@@ -1,25 +1,11 @@
-const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/provider-google");
-const hook = require("./hook");
 
-const createResources = async ({ provider, resources: {} }) => {
-  return {};
-};
-exports.createResources = createResources;
+const { createResources } = require("./resources");
 
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(GoogleProvider, {
+exports.createStack = ({ createProvider }) => ({
+  provider: createProvider(GoogleProvider, {
+    createResources,
     config: require("./config"),
-  });
-
-  const resources = await createResources({
-    provider,
-    resources: {},
-  });
-
-  return {
-    provider,
-    resources,
-    hooks: [hook],
-  };
-};
+  }),
+  hooks: [require("./hook")],
+});

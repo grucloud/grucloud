@@ -8,7 +8,7 @@ const {
 } = require("@grucloud/core/E2ETestUtils");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
-describe("Route53HostedZone", async function () {
+describe.skip("Route53HostedZone", async function () {
   let config;
   const types = ["HostedZone"];
   const domainName = "grucloud.org";

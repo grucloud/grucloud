@@ -5,6 +5,7 @@ const { createResources } = require("./MockStack");
 const config404 = require("./config/config.404");
 const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
+const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
 const { tos } = require("@grucloud/core/tos");
 
@@ -13,12 +14,7 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
-
-    const cli = await Cli({
-      createStack: () => ({ provider }),
-    });
+    const provider = createProviderMaker({})(MockProvider, { createResources });
 
     provider.hookAdd({
       name: "mock-test",
@@ -31,7 +27,10 @@ describe("MockProviderHooks", async function () {
         },
       },
     });
-    const infra = { provider };
+
+    const cli = await Cli({
+      createStack: () => ({ provider }),
+    });
 
     await cli.planApply({
       commandOptions: { force: true },
@@ -47,10 +46,10 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const provider = MockProvider({
+    const provider = createProviderMaker({})(MockProvider, {
       config: config404,
+      createResources,
     });
-    const resources = await createResources({ provider });
 
     provider.hookAdd({
       name: "mock-test",
@@ -90,13 +89,12 @@ describe("MockProviderHooks", async function () {
     assert(!onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
+    const provider = createProviderMaker({})(MockProvider, { createResources });
 
     const cli = await Cli({
       createStack: () => ({ provider }),
     });
 
-    const resources = await createResources({ provider });
     provider.hookAdd({
       name: "mock-init-throw",
       hookInstance: {
@@ -141,13 +139,12 @@ describe("MockProviderHooks", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
+    const provider = createProviderMaker({})(MockProvider, { createResources });
 
     const cli = await Cli({
-      createStack: () => ({ provider }),
+      createStack: () => ({ provider, createResources }),
     });
 
-    const resources = await createResources({ provider });
     provider.hookAdd({
       name: "mock-run-ondeployed-init-throw",
       hookInstance: {
@@ -171,13 +168,12 @@ describe("MockProviderHooks", async function () {
   });
 
   it("action throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
+    const provider = createProviderMaker({})(MockProvider, { createResources });
 
     const cli = await Cli({
       createStack: () => ({ provider }),
     });
 
-    const resources = await createResources({ provider });
     const message = "i throw in a command";
     provider.hookAdd({
       name: "mock-action-throw",

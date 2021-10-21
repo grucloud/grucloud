@@ -32,7 +32,7 @@ const {
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { hasKeyInTags } = require("../AwsCommon");
+const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
 
 const {
   getByNameCore,
@@ -94,7 +94,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findId = get("live.GroupId");
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {
       type: "SecurityGroup",
@@ -106,6 +106,17 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         flatten,
         pluck("GroupId"),
       ])(),
+    },
+    {
+      type: "Cluster",
+      group: "EKS",
+      ids: [
+        pipe([
+          () => ({ live, lives }),
+          findEksCluster({ config }),
+          get("id"),
+        ])(),
+      ],
     },
   ];
 
@@ -283,22 +294,25 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies,
-  }) => {
-    const { vpc } = dependencies;
-    //assert(vpc, "missing vpc dependency");
-    return defaultsDeep(otherProps)({
-      GroupName: name,
-      Description: managedByDescription,
-      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-      TagSpecifications: [
-        {
-          ResourceType: "security-group",
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        },
-      ],
-    });
-  };
+    dependencies: { vpc },
+  }) =>
+    pipe([
+      () => ({}),
+      defaultsDeep(otherProps),
+      defaultsDeep({
+        GroupName: name,
+        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        TagSpecifications: [
+          {
+            ResourceType: "security-group",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   return {
     spec,

@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { AwsProvider } = require("@grucloud/provider-aws");
 const hooks = [require("./hook")];
 exports.hooks = hooks;
 
@@ -10,7 +9,7 @@ const makeDomainName = ({ domainName, stage }) =>
 
 exports.makeDomainName = makeDomainName;
 
-const createResources = async ({
+const createResources = ({
   provider,
   resources: { hostedZone },
   namespace = NamespaceDefault,

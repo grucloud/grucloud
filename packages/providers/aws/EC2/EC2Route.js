@@ -53,9 +53,9 @@ exports.EC2Route = ({ spec, config }) => {
           id: live.RouteTableId,
         }),
       tap((routeTable) => {
-        assert(routeTable);
+        //assert(routeTable);
       }),
-      get("name"),
+      get("name", "no-route-table-id"),
       switchCase([
         not(eq(live.GatewayId, "local")),
         append("-igw"),

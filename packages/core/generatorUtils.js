@@ -44,6 +44,8 @@ const {
   when,
 } = require("rubico/x");
 
+const { resourcesTpl } = require("./resourcesTpl");
+
 const ResourceVarNameDefault = pipe([
   tap((name) => {
     assert(name, "missing resource name");
@@ -342,13 +344,14 @@ const codeTpl = ({
   lives,
   properties,
   hasNoProperty,
+  additionalCode = "",
 }) => `
   provider.${group}.${buildPrefix(resource)}${type}({
     ${buildName({ inferName, resourceName })}${configBuildPropertiesDefault({
   resource,
   properties,
   hasNoProperty: hasNoProperty({ resource }),
-})}
+})}${additionalCode}
 ${buildDependencies({
   providerName,
   resource,
@@ -443,7 +446,12 @@ const findDependencySpec =
             ])
           ),
         ]),
-        () => undefined,
+        pipe([
+          tap((params) => {
+            console.error("cannot find dependency: ", resource.id);
+          }),
+          () => [],
+        ]),
       ]),
     ])();
 
@@ -552,6 +560,9 @@ const removeDefaultDependencies =
             ])(),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
       map(
         assign({
           dependencies: (resource) =>
@@ -572,8 +583,9 @@ const removeDefaultDependencies =
                         assert(ids);
                       }),
                       () => ids,
-                      filter(
+                      filter((id) =>
                         pipe([
+                          () => id,
                           tap((id) => {
                             assert(id);
                           }),
@@ -590,22 +602,25 @@ const removeDefaultDependencies =
                               pipe([
                                 () => dependency,
                                 findDependencySpec({ writersSpec, resource }),
-                                any(
-                                  pipe([
-                                    get("filterDependency"),
-                                    switchCase([
-                                      isFunction,
-                                      (filterDependency) =>
-                                        filterDependency({ resource })(
+                                filter(not(isEmpty)),
+                                any((spec) =>
+                                  switchCase([
+                                    () => isFunction(spec.filterDependency),
+                                    pipe([
+                                      () =>
+                                        spec.filterDependency({ resource })(
                                           dependency
                                         ),
-                                      () => true,
                                     ]),
-                                  ])
+                                    () => true,
+                                  ])()
                                 ),
+                                tap.if(isEmpty, () => {
+                                  console.log(`Ignoring dependency ${id}`);
+                                }),
                               ])(),
                           ]),
-                        ])
+                        ])()
                       ),
                     ])(),
                 })
@@ -699,8 +714,8 @@ const readMapping = ({ commandOptions, programOptions }) =>
 
 exports.readMapping = readMapping;
 
-const writeIac =
-  ({ filename, iacTpl }) =>
+const writeResourcesToFile =
+  ({ filename, resourcesTpl }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -716,8 +731,7 @@ const writeIac =
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
-      ({ resourcesVarNames, resourcesCode }) =>
-        iacTpl({ resourcesVarNames, resourcesCode }),
+      ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
       writeToFile({ filename }),
     ])();
 
@@ -799,8 +813,11 @@ const ignoreDefault =
       () => resource,
       and([
         get("managedByOther"),
-        pipe([get("usedBy"), not(find(eq(get("managedByOther"), false)))]),
+        pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
+      tap.if(identity, (xxx) => {
+        console.log("ignoreDefault", resource.name);
+      }),
     ])();
 
 const writeResource =
@@ -818,6 +835,7 @@ const writeResource =
     inferName,
     properties = always({}),
     dependencies = always({}),
+    addCode = always(""),
     environmentVariables = always([]),
     ignoreResource = () => () => false,
     options,
@@ -832,8 +850,9 @@ const writeResource =
       () => resource,
       switchCase([
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
-        () => {
+        (resource) => {
           assert(true);
+          console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
@@ -860,11 +879,12 @@ const writeResource =
                   defaultsDeep(props),
                 ])(),
             ]),
+            additionalCode: () => addCode({ resource, lives }),
           }),
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, resourceName, properties }) => ({
+          ({ resourceVarName, resourceName, properties, additionalCode }) => ({
             resourceVarName,
             env: envTpl({
               options,
@@ -884,6 +904,7 @@ const writeResource =
               hasNoProperty,
               properties,
               codeBuildProperties,
+              additionalCode,
             }),
           }),
           tap((params) => {
@@ -913,6 +934,7 @@ const writeResources =
     codeBuildProperties,
     configBuildProperties,
     hasNoProperty = () => false,
+    addCode,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -959,6 +981,7 @@ const writeResources =
                 codeBuildProperties,
                 configBuildProperties,
                 hasNoProperty,
+                addCode,
               })({
                 resource,
                 lives,
@@ -1032,7 +1055,10 @@ exports.generatorMain = ({
           assert(true);
         }),
         fork({
-          iac: writeIac({ filename: commandOptions.outputCode, iacTpl }),
+          resources: writeResourcesToFile({
+            filename: commandOptions.outputCode,
+            resourcesTpl,
+          }),
           env: writeEnv({
             filename: commandOptions.outputEnv,
             programOptions,

@@ -43,6 +43,7 @@ const {
   buildTags,
   findNamespaceInTags,
   findNameInTags,
+  findEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -236,18 +237,45 @@ const findName =
       }),
     ])();
 
-const findDependencies = ({ live }) => [
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    ids: pipe([
-      () => [get("GroupId"), get("IpPermission.UserIdGroupPairs[0].GroupId")],
-      map((fn) => fn(live)),
-      uniq,
-      filter(not(isEmpty)),
-    ])(),
-  },
-];
+const findDependencies =
+  ({ config }) =>
+  ({ live, lives }) =>
+    [
+      {
+        type: "SecurityGroup",
+        group: "EC2",
+        ids: pipe([
+          () => [
+            get("GroupId"),
+            get("IpPermission.UserIdGroupPairs[0].GroupId"),
+          ],
+          map((fn) => fn(live)),
+          uniq,
+          filter(not(isEmpty)),
+        ])(),
+      },
+      {
+        type: "Cluster",
+        group: "EKS",
+        ids: [
+          pipe([
+            () =>
+              lives.getById({
+                id: live.GroupId,
+                type: "SecurityGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            tap(({ live }) => {
+              assert(live, "cannot find security group in cache");
+            }),
+            ({ live }) => ({ live, lives }),
+            findEksCluster({ config }),
+            get("id"),
+          ])(),
+        ],
+      },
+    ];
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
@@ -294,11 +322,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
-  const managedByOther = ({ IsEgress }) =>
-    or([
-      isDefault({ IsEgress }),
-      pipe([get("resource.name"), callProp("startsWith", "eks-")]),
-    ]);
+  const managedByOther = isDefault;
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -496,7 +520,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     spec,
     findId,
     findName: findName({ kind: "ingress", config }),
-    findDependencies,
+    findDependencies: findDependencies({ config }),
     findNamespace,
     getByName,
     getList: getList({ kind: "ingress", IsEgress: false }),
@@ -538,7 +562,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
 
   return {
     spec,
-    findDependencies,
+    findDependencies: findDependencies({ config }),
     findNamespace,
     findId,
     findName: findName({ kind: "egress", config }),
@@ -571,6 +595,8 @@ exports.compareSecurityGroupRule = compare({
       IpPermission: IpPermissions[0],
     }),
   ]),
-  filterAll: pipe([omit(["SecurityGroupRuleId"])]),
-  filterLive: pipe([omit(["Tags"])]),
+  filterAll: pipe([
+    omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"]),
+  ]),
+  filterLive: pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
 });

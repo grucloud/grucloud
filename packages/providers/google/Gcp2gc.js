@@ -1,47 +1,10 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  pick,
-  switchCase,
-  omit,
-  not,
-  or,
-  and,
-  assign,
-  map,
-  any,
-  fork,
-  filter,
-} = require("rubico");
-const Axios = require("axios");
-const {
-  size,
-  first,
-  find,
-  identity,
-  pluck,
-  includes,
-  when,
-  callProp,
-  isEmpty,
-  groupBy,
-  values,
-} = require("rubico/x");
-
-const path = require("path");
-const mime = require("mime-types");
-const Fs = require("fs");
-const fs = require("fs").promises;
+const { pipe, tap, map } = require("rubico");
+const { groupBy, values } = require("rubico/x");
 
 const { generatorMain } = require("@grucloud/core/generatorUtils");
 
-//const { omitIfEmpty } = require("@grucloud/core/Common");
-
 const { configTpl } = require("./configTpl");
-const { iacTpl } = require("./iacTpl");
 
 const filterModel = pipe([
   tap((params) => {
@@ -82,7 +45,6 @@ exports.generateCode = ({
             writersSpec,
             commandOptions,
             programOptions,
-            iacTpl,
             configTpl,
             filterModel,
           }),

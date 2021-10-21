@@ -264,7 +264,7 @@ exports.createProgram = () => {
     .option("--projectId <value>", "The project id")
     .option("--input <file>", "lives resources", "artifacts/inventory.json")
     .option("--no-download", "do not download assets")
-    .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
+    .option("-o, --outputCode <file>", "resources.js output", "resources.js")
     .option(
       "--outputEnv <file>",
       "default.env environment variables",

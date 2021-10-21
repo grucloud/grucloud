@@ -25,7 +25,6 @@ const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchTemplate",
 });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,

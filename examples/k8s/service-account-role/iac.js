@@ -140,6 +140,7 @@ exports.createStack = async ({ createProvider }) => {
   });
   const { ingress } = k8sStack.resources;
 
+  //TODO no longer need
   const loadBalancerRecord = await awsStack.provider.Route53.makeRecord({
     name: `record-alias-load-balancer-${domainName}.`,
     dependencies: { hostedZone, ingress },

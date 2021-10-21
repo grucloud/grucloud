@@ -1,5 +1,6 @@
 ## Bugs
 
+- gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, Route53Record
 - resource schema
 - check stage for all providers

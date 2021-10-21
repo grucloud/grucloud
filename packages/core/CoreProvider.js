@@ -218,6 +218,7 @@ function CoreProvider({
     ])();
 
   // Target Resources
+  const resourcesSet = new Set();
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
 
@@ -255,7 +256,14 @@ function CoreProvider({
     }),
   ]);
 
-  const targetResourcesAdd = (resource) => {
+  const targetResourcesAdd = (resource) =>
+    pipe([
+      tap(() => {
+        resourcesSet.add(resource);
+      }),
+    ])();
+
+  const targetResourceAddToMap = (resource) => {
     assert(resource.spec.providerName);
     const { type, group, name, spec } = resource;
     assert(name);
@@ -294,6 +302,25 @@ function CoreProvider({
       })
     )(resource.client);
   };
+
+  const targetResourceAdd = (resource) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => targetResourceAddToMap(resource),
+    ])();
+
+  const targetResourcesBuildMap = pipe([
+    () => resourcesSet,
+    forEach(tryCatch(targetResourceAdd, () => undefined)),
+    tap((params) => {
+      assert(true);
+    }),
+    //TODO use dependencies
+    () => resourcesSet,
+    forEach(targetResourceAdd),
+  ]);
 
   const getTargetResources = () => [...mapNameToResource.values()];
 
@@ -1840,6 +1867,7 @@ function CoreProvider({
     getSpecs,
     mapNameToResource,
     generateCode,
+    targetResourcesBuildMap,
   };
 
   return pipe([

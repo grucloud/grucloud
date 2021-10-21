@@ -13,8 +13,18 @@ const {
   or,
   any,
   switchCase,
+  filter,
 } = require("rubico");
-const { when, pluck, identity, includes, isEmpty } = require("rubico/x");
+const {
+  when,
+  first,
+  unless,
+  pluck,
+  identity,
+  includes,
+  isEmpty,
+  find,
+} = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
 
@@ -323,7 +333,19 @@ module.exports = () =>
       }),
       filterLive: () => pick([]),
       ignoreResource: (input) =>
-        pipe([and([get("isDefault"), pipe([get("usedBy"), isEmpty])])]),
+        pipe([
+          and([
+            get("isDefault"),
+            pipe([
+              get("usedBy"),
+              filter(not(get("managedByOther"))),
+              tap((params) => {
+                assert(true);
+              }),
+              isEmpty,
+            ]),
+          ]),
+        ]),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -367,7 +389,47 @@ module.exports = () =>
         filterLive: pipe([pick(["Description"])]),
       }),
       filterLive: () => pick(["Description"]),
-      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      dependencies: () => ({
+        vpc: { type: "Vpc", group: "EC2" },
+        eksCluster: {
+          type: "Cluster",
+          group: "EKS",
+        },
+      }),
+      addCode: ({ resource, lives }) =>
+        pipe([
+          () => resource,
+          get("dependencies"),
+          find(eq(get("type"), "Cluster")),
+          get("ids"),
+          first,
+          unless(isEmpty, (id) =>
+            pipe([
+              () => lives,
+              find(eq(get("id"), id)),
+              get("name"),
+              tap((name) => {
+                assert(name, "cannot found cluster");
+              }),
+              (name) => `
+                filterLives: ({ resources }) =>
+                  pipe([
+                    () => resources,
+                    find(
+                      pipe([
+                        get("live.Tags"),
+                        find(
+                          and([
+                            eq(get("Key"), "aws:eks:cluster-name"),
+                            eq(get("Value"), "${name}"),
+                          ])
+                        ),
+                      ])
+                    ),
+                  ])(),`,
+            ])()
+          ),
+        ])(),
     },
     {
       type: "SecurityGroupRuleIngress",
@@ -378,6 +440,10 @@ module.exports = () =>
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: () => ({
+        eksCluster: {
+          type: "Cluster",
+          group: "EKS",
+        },
         securityGroup: {
           type: "SecurityGroup",
           group: "EC2",
@@ -532,6 +598,7 @@ module.exports = () =>
             "LaunchTemplateData.NetworkInterfaces",
             "LaunchTemplateData.SecurityGroupIds",
             "LaunchTemplateData.IamInstanceProfile",
+            "KeyName",
           ]),
         ]),
       dependencies: ec2InstanceDependencies,

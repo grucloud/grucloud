@@ -1,20 +1,16 @@
 const assert = require("assert");
 const path = require("path");
-
-const ping = require("ping");
+const { pipe, tap, get, eq, fork, or } = require("rubico");
+const { find, first } = require("rubico/x");
 const Client = require("ssh2").Client;
 const { retryCall } = require("@grucloud/core").Retry;
 
-const testPing = ({ host }) =>
-  ping.promise.probe(host, {
-    timeout: 10,
-  });
-
+//TODO keyPairName variable
 const readPrivateKey = () =>
   require("fs").readFileSync(path.resolve(__dirname, "kp-ec2-vpc.pem"));
 
-const testSsh = async ({ host, username = "ec2-user" }) =>
-  await new Promise((resolve, reject) => {
+const testSsh = ({ host, username = "ec2-user" }) =>
+  new Promise((resolve, reject) => {
     const conn = new Client();
     conn
       .on("ready", function () {
@@ -35,28 +31,36 @@ const testSsh = async ({ host, username = "ec2-user" }) =>
       });
   });
 
-module.exports = ({
-  resources: { vpc, ig, subnet, routeTable, sg, eip, server },
-  provider,
-}) => {
+const getIpAddress = ({ provider }) =>
+  pipe([
+    () => ({ options: { types: ["EC2::Instance"] } }),
+    provider.listLives,
+    get("results"),
+    find(eq(get("groupType"), "EC2::Instance")),
+    get("resources"),
+    first,
+    get("live.PublicIpAddress"),
+    tap((PublicIpAddress) => {
+      assert(PublicIpAddress);
+    }),
+  ])();
+
+module.exports = ({ provider }) => {
   return {
     onDeployed: {
-      init: async () => {
-        //console.log("ec2-vpc onDeployed");
-        //Check dependencies
-        const serverLive = await server.getLive();
-
-        return { host: serverLive.PublicIpAddress };
-      },
+      init: pipe([
+        () => getIpAddress({ provider }),
+        (PublicIpAddress) => ({ PublicIpAddress }),
+      ]),
       actions: [
         {
           name: "SSH",
-          command: async ({ host }) => {
-            assert(host);
+          command: async ({ PublicIpAddress }) => {
+            assert(PublicIpAddress);
             await retryCall({
-              name: `ssh ${host}`,
+              name: `ssh ${PublicIpAddress}`,
               fn: async () => {
-                await testSsh({ host });
+                await testSsh({ host: PublicIpAddress });
                 return true;
               },
               shouldRetryOnException: () => true,

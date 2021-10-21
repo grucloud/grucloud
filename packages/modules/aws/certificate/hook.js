@@ -1,22 +1,20 @@
 const assert = require("assert");
 const { retryCall } = require("@grucloud/core").Retry;
 
-module.exports = ({ resources, provider }) => {
+module.exports = ({ provider }) => {
   const { config } = provider;
   assert(config.certificate);
   const { rootDomainName } = config.certificate;
   assert(rootDomainName);
-
-  const { hostedZone, certificate } = resources;
-  assert(hostedZone);
+  const resources = provider.resources();
+  const certificate =
+    resources.ACM.Certificate.exampleModuleAwsCertificateGrucloudOrg;
   assert(certificate);
-  assert(certificate.certificateRecordValidation);
 
   return {
     onDeployed: {
       init: async () => {
-        const hostedZoneLive = await hostedZone.getLive();
-        return { hostedZoneLive };
+        return {};
       },
       actions: [
         {
@@ -24,7 +22,7 @@ module.exports = ({ resources, provider }) => {
           command: async () => {
             await retryCall({
               name: `getting certificate status`,
-              fn: () => certificate.certificate.getLive(),
+              fn: () => certificate.getLive(),
               isExpectedResult: (sslCertificateLive) => {
                 return sslCertificateLive.Status == "ISSUED";
               },

@@ -53,20 +53,16 @@ const sshConnect = async ({ host, username = "ec2-user", keyName }) =>
       });
   });
 
-module.exports = ({
-  resources: {
-    RDS: { dbCluster },
-    bastion: { ec2Instance },
-  },
-  provider,
-}) => {
+module.exports = ({ provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        assert(dbCluster);
-        assert(ec2Instance);
-        const dbClusterLive = await dbCluster.getLive();
-        const ec2InstanceLive = await ec2Instance.getLive();
+        const resources = provider.resources();
+        assert(true);
+        const dbClusterLive =
+          await resources.RDS.DBCluster.clusterPostgresStateless.getLive();
+        assert(dbClusterLive);
+        const ec2InstanceLive = await resources.EC2.Instance.bastion.getLive();
         const connectionString = `postgres://${process.env.MASTER_USERNAME}:${process.env.MASTER_USER_PASSWORD}@${dbClusterLive.Endpoint}`;
         return {
           dbClusterLive,

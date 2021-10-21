@@ -32,15 +32,19 @@ const testSsh = async ({ host, username = "ubuntu", password }) =>
       });
   });
 
-module.exports = ({ resources, config }) => {
+module.exports = ({ provider, config }) => {
   return {
     name: "azure hooks",
     onDeployed: {
       init: async () => {
         //console.log("azure onDeployed");
-        const publicIpAddress = await resources.publicIpAddress.getLive();
-        const networkInterface = await resources.networkInterface.getLive();
-        const vm = await resources.vm.getLive();
+        const resources = provider.resources();
+        console.log("azure onDeployed");
+        const publicIpAddress =
+          await resources.virtualNetworks.PublicIpAddress.ip.getLive();
+        const networkInterface =
+          await resources.virtualNetworks.NetworkInterface.networkInterface.getLive();
+        const vm = await resources.compute.VirtualMachine.vm.getLive();
         assert(vm, "vm not up");
         //Check network interface id of the vm
         assert.equal(

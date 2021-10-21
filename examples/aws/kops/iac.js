@@ -110,15 +110,17 @@ const createS3Resources = async ({ provider }) => {
   return { s3Bucket };
 };
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, { config: require("./config") });
-  const { config } = provider;
-  const iamResources = await createIamResources({ provider });
-  const route53Resources = await createRoute53Resources({ provider });
-  const s3Resources = await createS3Resources({ provider });
+  const provider = createProvider(AwsProvider, {
+    createResources: [
+      createIamResources,
+      createRoute53Resources,
+      createS3Resources,
+    ],
+    config: require("./config"),
+  });
 
   return {
     provider,
-    resources: {},
     hooks: [hook],
   };
 };

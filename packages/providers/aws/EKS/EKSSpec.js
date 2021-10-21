@@ -1,5 +1,7 @@
 const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+
 const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
@@ -28,13 +30,21 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-        filterTarget: omit([
-          "resourcesVpcConfig.clusterSecurityGroupId",
-          "resourcesVpcConfig.vpcId",
-          "resourcesVpcConfig.subnetIds",
-          "resourcesVpcConfig.publicAccessCidrs",
-          "version",
-          "encryptionConfig",
+        filterTarget: pipe([
+          defaultsDeep({
+            resourcesVpcConfig: {
+              endpointPublicAccess: true,
+              endpointPrivateAccess: false,
+            },
+          }),
+          omit([
+            "resourcesVpcConfig.clusterSecurityGroupId",
+            "resourcesVpcConfig.vpcId",
+            "resourcesVpcConfig.subnetIds",
+            "resourcesVpcConfig.publicAccessCidrs",
+            "version",
+            "encryptionConfig",
+          ]),
         ]),
         filterLive: omit([
           "arn",
@@ -93,6 +103,7 @@ module.exports = () =>
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({
+        filterTarget: pipe([defaultsDeep({ diskSize: 20 })]),
         filterAll: pick([
           "amiType",
           "capacityType",
@@ -101,6 +112,7 @@ module.exports = () =>
           "scalingConfig",
         ]),
       }),
+
       filterLive: () =>
         pick([
           "capacityType",

@@ -4,13 +4,11 @@ const ModuleAwsVpc = require("../iac");
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
+    createResources: ModuleAwsVpc.createResources,
     configs: [require("./config"), ModuleAwsVpc.config],
   });
-  const resources = await ModuleAwsVpc.createResources({
-    provider,
-  });
+
   return {
     provider,
-    resources,
   };
 };

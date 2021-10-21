@@ -1,47 +1,17 @@
 const assert = require("assert");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const K8sStackBase = require("../base/k8sStackBase");
-const { createIngress } = require("./ingress");
 const hooks = [require("./hook")];
+const { createResources } = require("./resources");
 
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, {
+  const provider = await createProvider(K8sProvider, {
+    createResources,
     configs: [require("./config"), ...K8sStackBase.configs],
-  });
-
-  const resources = await K8sStackBase.createResources({ provider });
-
-  assert(provider.config.postgres.pvName);
-
-  const persistentVolume = provider.makePersistentVolume({
-    name: provider.config.postgres.pvName,
-    dependencies: { namespace: resources.namespace },
-    properties: () => ({
-      spec: {
-        accessModes: ["ReadWriteOnce"],
-        capacity: {
-          storage: "2Gi",
-        },
-        hostPath: {
-          path: "/data/pv0001/",
-        },
-      },
-    }),
-  });
-
-  const ingress = await createIngress({
-    provider,
-    config: config(),
-    resources: {
-      namespace: resources.namespace,
-      serviceWebServer: resources.webServerResources.service,
-      serviceRestServer: resources.restServerResources.service,
-    },
   });
 
   return {
     provider,
-    resources: { ...resources, ingress },
     hooks: [...K8sStackBase.hooks, ...hooks],
   };
 };

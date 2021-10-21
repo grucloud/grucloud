@@ -3,8 +3,6 @@ title Resources for project vm-network
 skinparam monochrome true
 + Infra
 ++ google
-+++ iam
-++++ ServiceAccount (1)
 +++ compute
 ++++ Network (1)
 ++++ SubNetwork (1)

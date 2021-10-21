@@ -80,14 +80,17 @@ In this section, we'll create the files needed to describe an infrastructure wit
 
 ![grucloud-files](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-files.svg)
 
-- [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
-- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js): the config function.
+- [reosurces.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/resources.js): creates the resources given a provider.
 
-- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other information.
+- [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
 
-- [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/hook.js): optionally provides hook functions called after deployment or destruction.
+- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/config.js): the config function.
 
-> The [source code](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple) for this example in on GitHub.
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/package.json): specifies the npm dependencies and other information.
+
+- [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/hook.js): optionally provides hook functions called after deployment or destruction.
+
+> The [source code](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2/ec2-simple) for this example in on GitHub.
 
 ### Create a new project
 
@@ -114,37 +117,40 @@ npm install @grucloud/core @grucloud/provider-aws
 
 ### config.js
 
-The configuration is a Javascript function located in [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js)
+The configuration is a Javascript function located in [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/config.js)
 
 ```js
 // config.js
 const pkg = require("./package.json");
 module.exports = ({ stage }) => ({
   projectName: pkg.name,
-  ec2Instance: {
-    name: "web-server",
-    properties: {
-      InstanceType: "t2.micro",
-      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
-    },
-  },
 });
 ```
 
-You will have to find out the `ImageId` for your specific region. One way to retrieve to list of images is with the _aws cli_:
+### resources.js
 
-```sh
-aws ec2 describe-images --filters "Name=description,Values=Ubuntu Server 20.04 LTS" "Name=architecture,Values=x86_64"
+This file exports the _createResources_ functions
+
+```js
+const createResources = ({ provider }) => {
+  provider.EC2.makeInstance({
+    name: "web-server-ec2-example",
+    properties: () => ({
+      InstanceType: "t2.micro",
+      ImageId: "ami-056bfe7d8a7bdb9d0",
+    }),
+  });
+};
+
+exports.createResources = createResources;
 ```
-
-> This step will be automated in a future episode with the help of the [Amazon Managed Image](https://www.grucloud.com/docs/aws/resources/EC2/Image) resource.
 
 ### iac.js
 
 Create a file called `iac.js` which stands for _infrastructure as code_.
 We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws)
 
-[iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js) must export the `createStack` function which returns the provider and the resources.
+[iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/iac.js) must export the `createStack` function which returns the provider and the resources.
 
 Then, instantiate _AwsProvider_ by providing the _config_ function.
 
@@ -154,19 +160,15 @@ In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/E
 // iac.js
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, { config: require("./config") });
-  const { config } = provider;
-  const ec2Instance = provider.EC2.makeInstance({
-    name: config.ec2Instance.name,
-    properties: () => config.ec2Instance.properties,
-  });
+const { createResources } = require("./resources");
 
-  return {
-    provider,
-    resources: { ec2Instance },
-  };
-};
+exports.createStack = ({ createProvider }) => ({
+  provider: createProvider(AwsProvider, {
+    createResources,
+    config: require("./config"),
+  }),
+  hooks: [require("./hook")],
+});
 ```
 
 ## GruCloud Workflow

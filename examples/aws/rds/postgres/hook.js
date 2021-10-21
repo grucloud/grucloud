@@ -5,11 +5,13 @@ const { retryCall } = require("@grucloud/core").Retry;
 
 // psql postgresql://postgres:peggywenttothemarket@db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com:5432
 
-module.exports = ({ resources: { dbInstance }, provider }) => {
+module.exports = ({ provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        const dbInstanceLive = await dbInstance.getLive();
+        const resources = provider.resources();
+        const dbInstanceLive =
+          await resources.RDS.DBInstance.dbInstance.getLive();
         assert(dbInstanceLive);
         assert(process.env.MASTER_USER_PASSWORD);
 

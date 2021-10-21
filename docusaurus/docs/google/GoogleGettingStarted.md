@@ -242,13 +242,11 @@ const createResources = async ({ provider }) => {
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(GoogleProvider, {
+    createResources,
     config: require("./config"),
   });
-  const resources = await createResources({ provider });
-
   return {
     provider,
-    resources,
   };
 };
 ```

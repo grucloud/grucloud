@@ -1,12 +1,11 @@
 const assert = require("assert");
-const { K8sProvider } = require("@grucloud/provider-k8s");
 
 exports.hooks = [require("./hook")];
 
 const config = require("./config");
 exports.config = config;
 
-const createResources = async ({ provider, resources: { namespace } }) => {
+const createResources = ({ provider, resources: { namespace } }) => {
   assert(namespace, "This redis module requires a namespace");
 
   const { redis } = provider.config;
@@ -100,25 +99,3 @@ const createResources = async ({ provider, resources: { namespace } }) => {
   };
 };
 exports.createResources = createResources;
-// Only for "gc graph"
-
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, {
-    config: require("./config"),
-  });
-
-  const namespace = provider.makeNamespace({
-    name: "redis",
-  });
-
-  const resources = await createResources({
-    provider,
-    resources: { namespace },
-  });
-
-  return {
-    provider,
-    resources,
-    hooks,
-  };
-};

@@ -11,13 +11,7 @@ const isEmptyPlan = pipe([
     pipe([get("resultDestroy"), isEmpty]),
   ]),
 ]);
-exports.testEnd2End = ({
-  programOptions,
-  title,
-  listOptions,
-  steps = [],
-  noEmptyPlanCheck,
-}) =>
+exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
   pipe([
     () => steps,
     first,
@@ -48,7 +42,11 @@ exports.testEnd2End = ({
           }),
         () =>
           cli.list({
-            commandOptions: { our: true, canBeDeleted: true },
+            commandOptions: {
+              our: true,
+              canBeDeleted: true,
+              json: "artifacts/inventoryAfterDestroy.json",
+            },
           }),
         () =>
           cli.planApply({
@@ -80,6 +78,7 @@ exports.testEnd2End = ({
           cli.genCode({
             commandOptions: {
               input: "artifacts/inventory.json",
+              outputCode: "artifacts/resources.js",
             },
           }),
         () =>
@@ -90,7 +89,6 @@ exports.testEnd2End = ({
             },
             commandOptions: {
               graph: true,
-              //defaultExclude: true,
               typesExclude: ["EC2::NetworkInterface"],
               ...listOptions,
             },
@@ -118,7 +116,7 @@ exports.testEnd2End = ({
                   cli.list({
                     commandOptions: {
                       canBeDeleted: true,
-                      //defaultExclude: true,
+                      json: "artifacts/inventoryAfterUpdate.json",
                     },
                   }),
                 () =>
@@ -138,6 +136,7 @@ exports.testEnd2End = ({
         () =>
           cli.list({
             commandOptions: { canBeDeleted: true, defaultExclude: true },
+            json: "artifacts/inventoryAfterDestroy.json",
           }),
       ])(),
   ])();

@@ -8,14 +8,15 @@
     "graph-target": "gc graph --title 'EKS Module'",
     "list": "gc list --graph --title 'EKS Module' --default-exclude -e Key -e NetworkInterface",
     "test": "mocha",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "eksctl-create-cluster": "eksctl create cluster -f cluster.yaml",
+    "eksctl-create-nodegroup": "eksctl create nodegroup --config-file=cluster.yaml"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^2.3.1",
     "@grucloud/module-aws-eks": "^2.3.1",
-    "@grucloud/module-aws-vpc": "^2.3.1",
     "@grucloud/provider-aws": "^2.3.1",
     "rubico": "^1.6.27"
   },

@@ -43,7 +43,7 @@ const findNameInTags = pipe([
   }),
 ]);
 
-const findNames = [findNameInTags, get("live.Alias"), findId];
+const findNames = [findNameInTags, get("live.Alias"), get("live.KeyId")];
 
 const findName = (item) =>
   pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
@@ -212,9 +212,12 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const isDefault = pipe([
-    get("live.Alias", ""),
-    callProp("startsWith", "alias/aws/"),
+  const isDefault = or([
+    pipe([get("live.Alias", ""), callProp("startsWith", "alias/aws/")]),
+    eq(
+      get("live.Description"),
+      "Default master key that protects my EBS volumes when no other key is defined"
+    ),
   ]);
 
   const cannotBeDeleted = or([

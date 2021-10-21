@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-module.exports = ({ resources: { eip, server }, provider }) => {
+module.exports = ({ provider }) => {
   assert(provider);
   return {
     onDeployed: {

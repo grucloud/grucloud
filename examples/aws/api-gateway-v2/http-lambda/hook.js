@@ -70,7 +70,7 @@ module.exports = ({ provider }) => {
                   }),
                   eq(get("status"), 200),
                 ]),
-                config: { retryCount: 5, retryDelay: 5e3 },
+                config: { retryCount: 50, retryDelay: 5e3 },
               }),
           ]),
         },

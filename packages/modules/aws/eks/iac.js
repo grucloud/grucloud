@@ -20,11 +20,12 @@ exports.isProviderUp = isProviderUp;
 
 const NamespaceDefault = "EKS";
 
-const createResources = async ({
+const createResources = ({
   provider,
   resources,
   namespace = NamespaceDefault,
 }) => {
+  /*
   const { config } = provider;
   const formatName = config.formatName || identity;
   assert(config.EKS);
@@ -264,6 +265,7 @@ const createResources = async ({
     cluster,
     nodeGroupPrivate,
   };
+  */
 };
 
 exports.createResources = createResources;

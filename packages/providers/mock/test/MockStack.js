@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
 
-const createResources = async ({ provider }) => {
+const createResources = ({ provider }) => {
   // Ip
   const ip = provider.makeIp({ name: "myip" });
 
@@ -54,18 +54,15 @@ const createResources = async ({ provider }) => {
       machineType: "f1-micro",
     }),
   });
-
-  return { ip, image, volume, sg, server };
 };
 
 exports.createResources = createResources;
 
 exports.createStack = async ({ name = "mock", createProvider }) => {
-  // Provider
   const provider = createProvider(MockProvider, {
     name,
+    createResources,
     config: require("./config"),
   });
-  const resources = await createResources({ provider });
-  return { provider, resources };
+  return { provider };
 };

@@ -3,15 +3,15 @@ title Resources for project graphql
 skinparam monochrome true
 + Infra
 ++ aws
++++ AppSync
+++++ GraphqlApi (1)
+++++ DataSource (1)
+++++ Resolver (5)
 +++ IAM
 ++++ Policy (1)
 ++++ Role (2)
 +++ DynamoDB
 ++++ Table (1)
-+++ AppSync
-++++ GraphqlApi (1)
-++++ Resolver (5)
-++++ DataSource (1)
 +++ Lambda
 ++++ Function (1)
 @endmindmap

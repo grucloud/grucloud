@@ -2,11 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, {
-    configs: [require("./config"), ModuleAwsCertificate.config],
-  });
-
+const createResources = ({ provider }) => {
   assert(provider.config.certificate);
   const { domainName, rootDomainName } = provider.config.certificate;
   assert(domainName);
@@ -21,14 +17,18 @@ exports.createStack = async ({ createProvider }) => {
     dependencies: { domain },
   });
 
-  const certificateResources = await ModuleAwsCertificate.createResources({
+  const certificateResources = ModuleAwsCertificate.createResources({
     provider,
     resources: { hostedZone },
   });
+};
 
+exports.createStack = async ({ createProvider }) => {
   return {
-    provider,
-    resources: { domain, hostedZone, certificate: certificateResources },
+    provider: createProvider(AwsProvider, {
+      createResources,
+      configs: [require("./config"), ModuleAwsCertificate.config],
+    }),
     hooks: [...ModuleAwsCertificate.hooks],
   };
 };

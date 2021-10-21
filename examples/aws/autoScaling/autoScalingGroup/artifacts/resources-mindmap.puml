@@ -3,16 +3,16 @@ title Resources for project autoScalingGroup
 skinparam monochrome true
 + Infra
 ++ aws
-+++ IAM
-++++ Role (1)
-++++ InstanceProfile (1)
++++ AutoScaling
+++++ AutoScalingGroup (1)
 +++ EC2
+++++ KeyPair (1)
 ++++ Vpc (1)
 ++++ Subnet (2)
-++++ KeyPair (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
 ++++ LaunchTemplate (1)
-+++ AutoScaling
-++++ AutoScalingGroup (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 @endmindmap

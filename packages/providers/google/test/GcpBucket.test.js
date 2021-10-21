@@ -67,7 +67,7 @@ describe("GcpBucket", async function () {
     });
   });
   after(async () => {});
-  it("gcp bucket apply and destroy", async function () {
+  it.skip("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     {
