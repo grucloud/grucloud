@@ -2,10 +2,10 @@ const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
-const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
+const { EKSNodeGroup } = require("./EKSNodeGroup");
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
@@ -103,13 +103,13 @@ module.exports = () =>
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([defaultsDeep({ diskSize: 20 })]),
         filterAll: pick([
           "amiType",
           "capacityType",
           "diskSize",
           "instanceTypes",
           "scalingConfig",
+          "diskSize",
         ]),
       }),
 

@@ -4,40 +4,41 @@ const { eq, get } = require("rubico");
 const { find, groupBy } = require("rubico/x");
 const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
+const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
 describe("MockProviderMulti", async function () {
   const providerName1 = "provider1";
   const providerName2 = "provider2";
 
   let provider1;
-  let volume1;
   let provider2;
-  let volume2;
 
   before(async () => {
-    provider1 = MockProvider({
+    provider1 = createProviderMaker({})(MockProvider, {
       name: providerName1,
       config: () => ({}),
+      createResources: ({ provider }) => {
+        provider.makeVolume({
+          name: "volume1",
+          properties: () => ({
+            size: 10_000_000_000,
+          }),
+        });
+      },
     });
 
-    volume1 = provider1.makeVolume({
-      name: "volume1",
-      properties: () => ({
-        size: 10_000_000_000,
-      }),
-    });
-
-    provider2 = MockProvider({
+    provider2 = createProviderMaker({})(MockProvider, {
       name: providerName2,
       config: () => ({}),
       dependencies: { provider1 },
-    });
-
-    volume2 = provider2.makeVolume({
-      name: "volume2",
-      properties: () => ({
-        size: 10_000_000_000,
-      }),
+      createResources: ({ provider }) => {
+        provider.makeVolume({
+          name: "volume2",
+          properties: () => ({
+            size: 10_000_000_000,
+          }),
+        });
+      },
     });
   });
 

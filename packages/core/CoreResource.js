@@ -310,6 +310,7 @@ exports.ResourceMaker = ({
         // );
       }),
       () => dependencies(),
+      filter(or([isEmpty, not(eq(callProp("toString"), toString))])),
       tap((params) => {
         assert(true);
       }),

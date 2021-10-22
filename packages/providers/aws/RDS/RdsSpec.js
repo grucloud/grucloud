@@ -127,7 +127,7 @@ module.exports = () =>
         "RDS::DBCluster",
         "EC2::InternetGateway",
         "EC2::SecurityGroup",
-        "EC2::NetworkInterface",
+        //"EC2::NetworkInterface",
       ],
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),

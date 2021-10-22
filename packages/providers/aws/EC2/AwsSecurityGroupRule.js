@@ -23,12 +23,12 @@ const {
   defaultsDeep,
   isEmpty,
   find,
-  identity,
   first,
   groupBy,
   values,
   isDeepEqual,
   uniq,
+  when,
 } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
@@ -56,12 +56,15 @@ const findProperty = (property) =>
 
 const mergeSecurityGroupRules = (rules) =>
   pipe([
+    tap((params) => {
+      logger.debug(`mergeSecurityGroupRules #rules: ${size(rules)}`);
+    }),
     () => rules,
     groupBy((rule) =>
       pipe([
         () => rule,
         findValueInTags({ key: "Name" }),
-        switchCase([isEmpty, () => get("SecurityGroupRuleId")(rule), identity]),
+        when(isEmpty, () => get("SecurityGroupRuleId")(rule)),
       ])()
     ),
     values,
@@ -401,6 +404,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroupRules-property
   const getByName = ({ name }) =>
     pipe([
       tap(() => {
@@ -412,6 +416,9 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
       ec2().describeSecurityGroupRules,
       get("SecurityGroupRules"),
+      tap((SecurityGroupRules) => {
+        logger.debug(`getByName ${name} ${tos({ SecurityGroupRules })}`);
+      }),
       mergeSecurityGroupRules,
       first,
       tap((result) => {
@@ -419,6 +426,8 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupEgress-property
   const create =
     ({ kind, authorizeSecurityGroup }) =>
     ({ payload, name, namespace }) =>
@@ -431,8 +440,11 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
         () => payload,
         authorizeSecurityGroup,
+        tap.if(not(get("Return")), () => {
+          throw Error(`cannot create security group rule ${name}`);
+        }),
         tap((result) => {
-          logger.info(`created sg rule ${kind} ${tos({ name })}`);
+          logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
         }),
       ])();
 

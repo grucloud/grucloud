@@ -15,7 +15,7 @@ const createProviderMaker =
   (
     provider,
     {
-      createResources = identity,
+      createResources,
       config: configUser,
       configs: configsUser = [],
       ...otherProps
@@ -24,6 +24,10 @@ const createProviderMaker =
     pipe([
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
+        assert(
+          isFunction(createResources),
+          "createResources must be a function"
+        );
       }),
       () => [configOverride, ...configsOverride, configUser, ...configsUser],
       // IsEmpty does not work with function

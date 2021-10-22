@@ -27,7 +27,7 @@ module.exports = () =>
       dependsOn: [
         "EC2::Subnet",
         "EC2::InternetGateway",
-        "EC2::NetworkInterface",
+        //"EC2::NetworkInterface",
         "EC2::SecurityGroup",
       ],
       Client: ELBLoadBalancerV2,

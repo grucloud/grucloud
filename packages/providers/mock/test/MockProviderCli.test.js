@@ -7,12 +7,15 @@ const sinon = require("sinon");
 
 const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
+const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
 describe("MockProviderCli", async function () {
   before(async () => {});
   it("init and uninit error", async function () {
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
+    const provider = createProviderMaker({})(MockProvider, {
+      config: () => ({}),
+      createResources,
+    });
     const cli = await Cli({
       createStack: () => ({ provider }),
     });
@@ -53,13 +56,15 @@ describe("MockProviderCli", async function () {
     }
   });
   it.skip("start error", async function () {
-    const provider = MockProvider({ config: () => ({}) });
+    const provider = createProviderMaker({})(MockProvider, {
+      config: () => ({}),
+      createResources,
+    });
     const errorMessage = "stub-error";
 
     provider.start = sinon
       .stub()
       .returns(Promise.reject({ message: errorMessage }));
-    const resources = await createResources({ provider });
     const infra = { provider };
 
     await pipe([
@@ -91,9 +96,11 @@ describe("MockProviderCli", async function () {
   });
   //TODO
   it.skip("abort deploy and destroy", async function () {
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
-    const infra = { provider, resources };
+    const provider = createProviderMaker({})(MockProvider, {
+      config: () => ({}),
+      createResources,
+    });
+    const infra = { provider };
 
     {
       const info = await cli.info({

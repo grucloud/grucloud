@@ -253,11 +253,11 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
               plans,
               dependsOnType: dependsOnTypeReverse(dependsOnType),
             }),
-            ...findDependsOnInstance({
-              uri,
-              plans,
-              dependsOnInstance: dependsOnInstanceReverse(dependsOnInstance),
-            }),
+            // ...findDependsOnInstance({
+            //   uri,
+            //   plans,
+            //   dependsOnInstance: dependsOnInstanceReverse(dependsOnInstance),
+            // }),
           ]),
         })),
         tap((graph) => {

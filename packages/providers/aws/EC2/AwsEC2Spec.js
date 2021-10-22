@@ -468,10 +468,7 @@ module.exports = () =>
                   assert(resource.live.GroupId);
                 }),
                 get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
-                and([
-                  eq(identity, dependency.live.GroupId),
-                  not(eq(resource.live.GroupId, dependency.live.GroupId)),
-                ]),
+                eq(identity, dependency.live.GroupId),
               ])(),
         },
       }),
@@ -490,7 +487,7 @@ module.exports = () =>
     },
     {
       type: "ElasticIpAddress",
-      dependsOn: ["EC2::InternetGateway", "EC2::NetworkInterface"],
+      dependsOn: ["EC2::InternetGateway" /*, "EC2::NetworkInterface"*/],
       Client: AwsElasticIpAddress,
       isOurMinion,
       compare: compare({
@@ -520,7 +517,7 @@ module.exports = () =>
         "EC2::Subnet",
         "EC2::ElasticIpAddress",
         "EC2::Volume",
-        "EC2::NetworkInterface",
+        /*"EC2::NetworkInterface",*/
         "EC2::InternetGateway",
         "IAM::InstanceProfile",
       ],
@@ -604,16 +601,16 @@ module.exports = () =>
       dependencies: ec2InstanceDependencies,
     },
 
-    {
-      type: "NetworkInterface",
-      dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
-      Client: AwsNetworkInterface,
-      isOurMinion,
-      compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
-        filterLive: pipe([filterLiveDefault]),
-      }),
-    },
+    // {
+    //   type: "NetworkInterface",
+    //   //dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
+    //   Client: AwsNetworkInterface,
+    //   isOurMinion,
+    //   compare: compare({
+    //     filterTarget: pipe([filterTargetDefault]),
+    //     filterLive: pipe([filterLiveDefault]),
+    //   }),
+    // },
     {
       type: "NetworkAcl",
       Client: AwsNetworkAcl,
