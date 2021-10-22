@@ -200,7 +200,8 @@ module.exports = () =>
     },
     {
       type: "Vpc",
-      dependsOn: ["IAM::User", "IAM::Group"],
+      //TODO only for delete
+      //dependsOn: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
       compare: compare({
@@ -440,10 +441,6 @@ module.exports = () =>
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: () => ({
-        eksCluster: {
-          type: "Cluster",
-          group: "EKS",
-        },
         securityGroup: {
           type: "SecurityGroup",
           group: "EC2",

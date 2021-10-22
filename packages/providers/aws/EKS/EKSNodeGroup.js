@@ -12,10 +12,8 @@ const {
   filter,
   eq,
   not,
-  assign,
-  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, find, when } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
@@ -64,6 +62,11 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       ])(),
     },
     { type: "Role", group: "IAM", ids: [live.nodeRole] },
+    {
+      type: "LaunchTemplate",
+      group: "EC2",
+      ids: [pipe([() => live, get("launchTemplate.id")])()],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
@@ -163,7 +166,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
               clusterName: cluster.resource.name,
               nodegroupName: name,
             }),
-          config: { retryCount: 12 * 15, retryDelay: 5e3 },
+          config: { retryCount: 12 * 25, retryDelay: 5e3 },
         }),
       tap(() => {
         logger.info(` nodeGroup created: ${name}`);
@@ -261,7 +264,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { cluster, role, subnets },
+    dependencies: { cluster, role, subnets, launchTemplate },
   }) =>
     pipe([
       () => properties,
@@ -275,10 +278,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         nodeRole: getField(role, "Arn"),
         clusterName: cluster.config.name,
         nodegroupName: name,
-        amiType: "AL2_x86_64",
         capacityType: "ON_DEMAND",
-        //diskSize: 20,
-        instanceTypes: ["t2.medium"], // See https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
         scalingConfig: {
           minSize: 1,
           maxSize: 1,
@@ -286,6 +286,12 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         },
         tags: buildTagsObject({ config, namespace, name }),
       }),
+      when(
+        () => launchTemplate,
+        defaultsDeep({
+          launchTemplate: { id: getField(launchTemplate, "LaunchTemplateId") },
+        })
+      ),
     ])();
 
   return {

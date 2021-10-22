@@ -211,10 +211,6 @@ const createResources = ({ provider }) => {
           ])
         ),
       ])(),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
-      eksCluster: resources.EKS.Cluster.myCluster,
-    }),
   });
 
   provider.EC2.makeSecurityGroupRuleIngress({
@@ -259,7 +255,6 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      eksCluster: resources.EKS.Cluster.myCluster,
       securityGroup:
         resources.EC2.SecurityGroup.eksClusterSgMyCluster_1909614887,
       securityGroupFrom:
@@ -267,49 +262,8 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.EC2.makeSecurityGroupRuleIngress({
-    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      eksCluster: resources.EKS.Cluster.myCluster,
-      securityGroup:
-        resources.EC2.SecurityGroup.eksClusterSgMyCluster_1909614887,
-      securityGroupFrom:
-        resources.EC2.SecurityGroup.eksClusterSgMyCluster_1909614887,
-    }),
-  });
-
   provider.EC2.makeElasticIpAddress({
     name: "NATIP",
-  });
-
-  provider.EC2.makeLaunchTemplate({
-    name: "eksctl-my-cluster-nodegroup-ng-1",
-    properties: ({ config }) => ({
-      LaunchTemplateData: {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/xvda",
-            Ebs: {
-              Iops: 3000,
-              VolumeSize: 80,
-              VolumeType: "gp3",
-              Throughput: 125,
-            },
-          },
-        ],
-        MetadataOptions: {
-          HttpTokens: "optional",
-          HttpPutResponseHopLimit: 2,
-        },
-      },
-    }),
   });
 
   provider.EC2.makeLaunchTemplate({
@@ -364,8 +318,6 @@ const createResources = ({ provider }) => {
         maxSize: 1,
         desiredSize: 1,
       },
-      instanceTypes: ["m5.large"],
-      amiType: "AL2_x86_64",
       labels: {
         "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
@@ -379,6 +331,7 @@ const createResources = ({ provider }) => {
       ],
       role: resources.IAM.Role
         .eksctlMyClusterNodegroupNg_1NodeInstanceRole_1H4Gn851M2Nx6,
+      launchTemplate: resources.EC2.LaunchTemplate.ltNg_1,
     }),
   });
 

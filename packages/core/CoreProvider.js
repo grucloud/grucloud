@@ -1372,7 +1372,7 @@ function CoreProvider({
       }),
     ])();
 
-  const planUpsert = ({ onStateChange = noop }) =>
+  const planUpsert = ({ onStateChange = noop, lives }) =>
     pipe([
       tap(() => {
         logger.info(`planUpsert`);
@@ -1387,7 +1387,10 @@ function CoreProvider({
         })
       ),
       getTargetResources,
-      filter(not(get("spec.listOnly"))),
+      tap((resources) => {
+        logger.debug(`planUpsert target #resources ${size(resources)}`);
+      }),
+      //filter(not(get("spec.listOnly"))),
       tap(
         map((resource) =>
           onStateChange({
@@ -1410,7 +1413,10 @@ function CoreProvider({
               }),
               nextState: "RUNNING",
             });
-            const actions = await resource.planUpsert({ resource });
+            const actions = await resource.planUpsert({
+              resource,
+              lives: getLives(),
+            });
             onStateChange({
               context: contextFromResource({
                 operation: TitleQuery,
@@ -1627,7 +1633,6 @@ function CoreProvider({
                     resolvedDependencies,
                     lives: getLives(),
                   }),
-
                 tap((live) => {
                   assert(live);
                 }),
@@ -1646,10 +1651,20 @@ function CoreProvider({
                   });
                 }),
               ])(),
-            () => assert("action is not handled"),
+            eq(action, "WAIT_CREATION"),
+            ({ engine, input, resolvedDependencies }) =>
+              pipe([
+                () => ({ lives: getLives() }),
+                engine.waitForResourceUp,
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+            () => {
+              assert(false, "action is not handled");
+            },
           ]),
         }),
-
         pick(["input", "output"]),
         tap((params) => {
           assert(true);

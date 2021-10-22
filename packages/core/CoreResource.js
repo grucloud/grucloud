@@ -592,36 +592,108 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpsert = ({ resource }) =>
+  const planUpsert = ({ resource, lives }) =>
+    pipe([
+      tap((params) => {
+        logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(lives);
+      }),
+      () => resource,
+      get("readOnly"),
+      switchCase([
+        isEmpty,
+        pipe([
+          () => ({}),
+          assign({
+            live: () => resource.findLive({}),
+          }),
+          assign({
+            target: pipe([
+              ({ live }) => resource.resolveConfig({ live, deep: true }),
+            ]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            pipe([get("live"), isEmpty]),
+            ({ target, live }) => [
+              {
+                action: "CREATE",
+                resource: resource.toJSON(),
+                target: resource.spec.displayResource()(target),
+                live: resource.spec.displayResource()(live),
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            ({ live, target }) => planUpdate({ live, target, resource }),
+          ]),
+        ]),
+        // readOnly : true
+        pipe([
+          () => resource.resolveConfig({ deep: true }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            isEmpty,
+            () => [
+              {
+                action: "WAIT_CREATION",
+                resource: resource.toJSON(),
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            () => [],
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      ]),
+    ])();
+
+  const waitForResourceUp = ({ lives }) =>
     pipe([
       tap(() => {
-        logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(filterLives);
       }),
-      assign({
-        live: () => resource.findLive({}),
+      getClient,
+      (client) =>
+        retryCall({
+          name: `waitForResourceUp ${toString()}`,
+          fn: tryCatch(
+            pipe([
+              () => ({ lives }),
+              client.getLives,
+              get("resources"),
+              (resources) =>
+                filterLives({
+                  resources,
+                  lives,
+                }),
+              tap((params) => {
+                logger.error(
+                  `waitForResourceUp: ${toString()}, filterLives: ${tos(
+                    params
+                  )}`
+                );
+              }),
+            ]),
+            (error) => {
+              logger.error(
+                `error waitForResourceUp: ${toString()}, error: ${tos(error)}`
+              );
+              throw error;
+            }
+          ),
+          isExpectedResult: not(isEmpty),
+          config: client.retryConfigs.isUp,
+        }),
+      tap((params) => {
+        logger.error(`waitForResourceUp: ${toString()}, done`);
       }),
-      assign({
-        target: pipe([
-          ({ live }) => resource.resolveConfig({ live, deep: true }),
-        ]),
-      }),
-      tap(({ live, target }) => {
-        assert(true);
-      }),
-      switchCase([
-        pipe([get("live"), isEmpty]),
-        ({ target, live }) => [
-          {
-            action: "CREATE",
-            resource: resource.toJSON(),
-            target: resource.spec.displayResource()(target),
-            live: resource.spec.displayResource()(live),
-            providerName: resource.toJSON().providerName,
-          },
-        ],
-        ({ live, target }) => planUpdate({ live, target, resource }),
-      ]),
-    ])({});
+    ])();
 
   const toString = () =>
     spec.resourceKey({
@@ -678,6 +750,7 @@ exports.ResourceMaker = ({
     create,
     update,
     planUpsert,
+    waitForResourceUp,
     filterLives,
     getLive,
     findLive,

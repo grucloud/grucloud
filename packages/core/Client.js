@@ -263,6 +263,7 @@ const createClient = ({
       assert(client.getList);
     }),
     defaultsDeep({
+      retryConfigs: { isUp: { retryDelay: 10e3, retryCount: 6 * 20 } },
       displayName: pipe([
         tap((xxx) => {
           assert(true);
@@ -349,6 +350,12 @@ const createClient = ({
                     )}`
                   );
                 }),
+                tap((resources) =>
+                  lives.addResources({
+                    ...client.spec,
+                    resources,
+                  })
+                ),
                 (resources) => ({ resources }),
               ])(),
             pipe([

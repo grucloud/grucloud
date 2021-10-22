@@ -182,6 +182,10 @@ const findDependsOnType = ({
           ])
         ),
         pluck("resource"),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(not(get("readOnly"))),
       ])()
     ),
     tap((dependsOn) => {
@@ -409,8 +413,10 @@ exports.Planner = ({
       // Find resources that depends on the one that just ended
       filter(pipe([get("dependsOn"), find(eq(get("uri"), item.resource.uri))])),
       //filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
-      tap((values) => {
-        //logger.debug(`onEnd  ${tos(values)}`);
+      tap((resources) => {
+        logger.debug(
+          `onEnd ${tos(itemToKey(item))}, next #resources ${size(resources)}`
+        );
       }),
       map((entry) =>
         tryCatch(

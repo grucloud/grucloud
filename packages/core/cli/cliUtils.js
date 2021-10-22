@@ -121,7 +121,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
           );
           spinnies.update(uri, {
             text: displayText(spinner.state),
-            color: "greenBright",
+            color: "blue",
             status: "spinning",
           });
         }

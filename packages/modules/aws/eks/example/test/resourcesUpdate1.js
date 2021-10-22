@@ -1,8 +1,8 @@
 const createResources = ({ provider }) => {
   provider.EKS.makeCluster({
-    name: "cluster",
+    name: "my-cluster",
     properties: ({ config }) => ({
-      version: "1.21",
+      version: "1.20",
       resourcesVpcConfig: {
         endpointPublicAccess: false,
         endpointPrivateAccess: true,
@@ -10,21 +10,18 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.EC2.Subnet.subnetPrivateA,
-        resources.EC2.Subnet.subnetPrivateB,
-        resources.EC2.Subnet.subnetPublicA,
-        resources.EC2.Subnet.subnetPublicB,
+        resources.EC2.Subnet.subnetPrivateUseast1C,
+        resources.EC2.Subnet.subnetPrivateUseast1F,
+        resources.EC2.Subnet.subnetPublicUseast1C,
+        resources.EC2.Subnet.subnetPublicUseast1F,
       ],
-      securityGroups: [
-        resources.EC2.SecurityGroup.securityGroupCluster,
-        resources.EC2.SecurityGroup.securityGroupNode,
-      ],
-      role: resources.IAM.Role.roleCluster,
+      securityGroups: [resources.EC2.SecurityGroup.controlPlaneSecurityGroup],
+      role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_1X24Aqf8Lrqdl,
     }),
   });
 
   provider.EKS.makeNodeGroup({
-    name: "node-group-private-cluster",
+    name: "ng-1",
     properties: ({ config }) => ({
       capacityType: "ON_DEMAND",
       scalingConfig: {
@@ -32,18 +29,20 @@ const createResources = ({ provider }) => {
         maxSize: 2,
         desiredSize: 2,
       },
-      instanceTypes: ["t2.small"],
-      amiType: "AL2_x86_64",
-      labels: {},
-      diskSize: 20,
+      labels: {
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
+        "alpha.eksctl.io/cluster-name": "my-cluster",
+      },
     }),
     dependencies: ({ resources }) => ({
-      cluster: resources.EKS.Cluster.cluster,
+      cluster: resources.EKS.Cluster.myCluster,
       subnets: [
-        resources.EC2.Subnet.subnetPrivateA,
-        resources.EC2.Subnet.subnetPrivateB,
+        resources.EC2.Subnet.subnetPublicUseast1C,
+        resources.EC2.Subnet.subnetPublicUseast1F,
       ],
-      role: resources.IAM.Role.roleNodeGroup,
+      role: resources.IAM.Role
+        .eksctlMyClusterNodegroupNg_1NodeInstanceRole_1H4Gn851M2Nx6,
+      launchTemplate: resources.EC2.LaunchTemplate.ltNg_1,
     }),
   });
 };

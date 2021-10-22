@@ -554,6 +554,24 @@ const displayPlanItemDestroy =
         ]),
     ])();
 
+const displayPlanItemWaitAvailability =
+  ({ tableItem }) =>
+  (resource) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.green(
+              `${resource.action}: ${resource.resource.displayName}`
+            ),
+          },
+        ]),
+    ])();
+
 const displayError = switchCase([get("stack"), identity, YAML.stringify]);
 
 const displayPlanItem = ({ table, resource }) => {
@@ -582,6 +600,8 @@ const displayPlanItem = ({ table, resource }) => {
         displayPlanItemCreate({ tableItem }),
         eq(get("action"), "DESTROY"),
         displayPlanItemDestroy({ tableItem }),
+        eq(get("action"), "WAIT_CREATION"),
+        displayPlanItemWaitAvailability({ tableItem }),
         (resource) => {
           throw Error(
             `not a valid action in resource ${JSON.stringify(

@@ -114,18 +114,25 @@ module.exports = () =>
       }),
 
       filterLive: () =>
-        pick([
-          "capacityType",
-          "scalingConfig",
-          "instanceTypes",
-          "amiType",
-          "labels",
-          "diskSize",
+        pipe([
+          pick([
+            "capacityType",
+            "scalingConfig",
+            "instanceTypes",
+            "amiType",
+            "labels",
+            "diskSize",
+          ]),
+          when(
+            get("launchTemplate"),
+            omit(["instanceTypes", "amiType", "diskSize"])
+          ),
         ]),
       dependencies: () => ({
         cluster: { type: "Cluster", group: "EKS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         role: { type: "Role", group: "IAM" },
+        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
       }),
     },
   ]);

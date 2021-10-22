@@ -293,15 +293,23 @@ const SecurityGroupRuleBase = ({ config }) => {
         and([
           or([
             () => IsEgress,
-            pipe([
-              () =>
-                lives.getById({
-                  type: "SecurityGroup",
-                  group: "EC2",
-                  providerName: config.providerName,
-                  id: live.GroupId,
-                }),
-              get("isDefault"),
+            and([
+              pipe([
+                () =>
+                  lives.getById({
+                    type: "SecurityGroup",
+                    group: "EC2",
+                    providerName: config.providerName,
+                    id: live.GroupId,
+                  }),
+                get("managedByOther"),
+              ]),
+              pipe([
+                () => live,
+                get("IpPermission.UserIdGroupPairs"),
+                first,
+                or([isEmpty, eq(get("GroupId"), live.GroupId)]),
+              ]),
             ]),
           ]),
           pipe([
@@ -431,22 +439,31 @@ const SecurityGroupRuleBase = ({ config }) => {
   const create =
     ({ kind, authorizeSecurityGroup }) =>
     ({ payload, name, namespace }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `create sg rule ${JSON.stringify({ kind, name, namespace })}`
-          );
-          logger.debug(`create sg rule: ${tos(payload)}`);
-        }),
-        () => payload,
-        authorizeSecurityGroup,
-        tap.if(not(get("Return")), () => {
-          throw Error(`cannot create security group rule ${name}`);
-        }),
-        tap((result) => {
-          logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
-        }),
-      ])();
+      tryCatch(
+        pipe([
+          tap(() => {
+            logger.info(
+              `create sg rule ${JSON.stringify({ kind, name, namespace })}`
+            );
+            logger.debug(`create sg rule: ${tos(payload)}`);
+          }),
+          () => payload,
+          authorizeSecurityGroup,
+          tap.if(not(get("Return")), (result) => {
+            throw Error(`cannot create security group rule ${name}`);
+          }),
+          tap((result) => {
+            logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
+          }),
+        ]),
+        switchCase([
+          eq(get("code"), "InvalidPermission.Duplicate"),
+          () => {},
+          (error) => {
+            throw error;
+          },
+        ])
+      )();
 
   const destroy =
     ({ kind, revokeSecurityGroup }) =>

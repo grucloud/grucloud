@@ -13,7 +13,7 @@ const {
   filter,
   not,
 } = require("rubico");
-const { defaultsDeep, first, identity, isEmpty } = require("rubico/x");
+const { defaultsDeep, first, identity, isEmpty, prepend } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
@@ -49,7 +49,7 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const findName = switchCase([
     get("live.DefaultForAz"),
-    () => "subnet-default",
+    pipe([get("live.AvailabilityZone", ""), prepend("subnet-default-")]),
     findNameInTagsOrId({ findId }),
   ]);
 

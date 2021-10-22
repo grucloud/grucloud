@@ -273,52 +273,61 @@ const buildDependencies = ({
   lives,
   dependencies = {},
 }) =>
-  pipe([
-    tap(() => {
-      assert(resource);
-      assert(lives);
-    }),
-    () => dependencies,
-    map.entries(([key, dependency]) => [
-      key,
-      pipe([
-        () => dependency,
-        tap((params) => {
-          assert(true);
-        }),
-        defaultsDeep({
-          findDependencyNames,
-        }),
-        ({ findDependencyNames }) =>
-          findDependencyNames({ providerName, resource, lives, ...dependency }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    ]),
-    tap((params) => {
-      assert(true);
-    }),
-    filter(not(isEmpty)),
-    map.entries(([key, { list, dependencyVarNames }]) => [
-      key,
-      !isEmpty(dependencyVarNames) &&
-        `${key}: ${dependencyValue({ key, list, resource })(
-          dependencyVarNames
-        )}`,
-    ]),
-    values,
-    filter(identity),
-    switchCase([
-      isEmpty,
-      () => "",
-      (values) => `dependencies: ({resources}) =>({ 
+  switchCase([
+    () => resource.managedByOther,
+    () => "",
+    pipe([
+      tap(() => {
+        assert(resource);
+        assert(lives);
+      }),
+      () => dependencies,
+      map.entries(([key, dependency]) => [
+        key,
+        pipe([
+          () => dependency,
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep({
+            findDependencyNames,
+          }),
+          ({ findDependencyNames }) =>
+            findDependencyNames({
+              providerName,
+              resource,
+              lives,
+              ...dependency,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
+      map.entries(([key, { list, dependencyVarNames }]) => [
+        key,
+        !isEmpty(dependencyVarNames) &&
+          `${key}: ${dependencyValue({ key, list, resource })(
+            dependencyVarNames
+          )}`,
+      ]),
+      values,
+      filter(identity),
+      switchCase([
+        isEmpty,
+        () => "",
+        (values) => `dependencies: ({resources}) =>({ 
        ${values.join(",\n")}
      }),`,
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const buildPrefix = switchCase([
