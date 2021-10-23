@@ -7,7 +7,7 @@ exports.hooks = [];
 
 const NamespaceDefault = "VPC";
 
-const createResources = async ({ provider, namespace = NamespaceDefault }) => {
+const createResources = ({ provider, namespace = NamespaceDefault }) => {
   const { config } = provider;
   const formatName = config.formatName || identity;
 

@@ -5,12 +5,11 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "graph-target": "gc graph --title 'EKS Module'",
-    "list": "gc list --graph --title 'EKS Module' --default-exclude -e Key -e NetworkInterface",
+    "graph-target": "gc graph --title 'EKS Example'",
+    "list": "gc list --graph --title 'EKS Example' --default-exclude -e Key",
     "test": "mocha",
     "gencode": "gc gencode",
-    "eksctl-create-cluster": "eksctl create cluster -f cluster.yaml",
-    "eksctl-create-nodegroup": "eksctl create nodegroup --config-file=cluster.yaml"
+    "eksctl-create-cluster": "eksctl create cluster -f cluster.yaml"
   },
   "author": "",
   "license": "ISC",
@@ -18,9 +17,9 @@
     "@grucloud/core": "^2.3.1",
     "@grucloud/module-aws-eks": "^2.3.1",
     "@grucloud/provider-aws": "^2.3.1",
-    "rubico": "^1.6.27"
+    "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "mocha": "^8.3.2"
+    "mocha": "^9.1.3"
   }
 }

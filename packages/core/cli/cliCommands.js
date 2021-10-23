@@ -150,7 +150,7 @@ const displayLiveError = (result) =>
 
 const displayPlanQueryErrorResult = pipe([
   tap((result) => {
-    logger.debug(result);
+    //logger.debug(result);
   }),
   filter(get("error")),
   forEach(({ resource, error }) => {
@@ -1513,6 +1513,7 @@ exports.Cli = ({
         ({ programOptions }) =>
           createStack({
             createProvider: createProviderMaker({
+              createResources,
               programOptions,
               config,
               configs,

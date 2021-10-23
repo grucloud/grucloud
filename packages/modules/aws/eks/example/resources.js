@@ -31,7 +31,7 @@ const createResources = ({ provider }) => {
     name: "SubnetPrivateUSEAST1A",
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
-      AvailabilityZone: "us-east-1a",
+      AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -50,7 +50,7 @@ const createResources = ({ provider }) => {
     name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.64.0/19",
-      AvailabilityZone: "us-east-1d",
+      AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -69,7 +69,7 @@ const createResources = ({ provider }) => {
     name: "SubnetPublicUSEAST1A",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
-      AvailabilityZone: "us-east-1a",
+      AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -88,7 +88,7 @@ const createResources = ({ provider }) => {
     name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
-      AvailabilityZone: "us-east-1d",
+      AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: true,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [

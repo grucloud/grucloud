@@ -24,6 +24,7 @@ const {
   includes,
   isEmpty,
   find,
+  last,
 } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
@@ -316,14 +317,29 @@ module.exports = () =>
         ]),
       }),
       filterLive: () =>
-        pick([
-          "CidrBlock",
-          "Ipv6CidrBlock",
-          "AvailabilityZone",
-          "MapPublicIpOnLaunch",
-          "CustomerOwnedIpv4Pool",
-          "MapCustomerOwnedIpOnLaunch",
-          "MapPublicIpOnLaunch",
+        pipe([
+          pick([
+            "CidrBlock",
+            "Ipv6CidrBlock",
+            "AvailabilityZone",
+            "MapPublicIpOnLaunch",
+            "CustomerOwnedIpv4Pool",
+            "MapCustomerOwnedIpOnLaunch",
+            "MapPublicIpOnLaunch",
+          ]),
+          assign({
+            AvailabilityZone: pipe([
+              get("AvailabilityZone"),
+              tap((params) => {
+                assert(true);
+              }),
+              last,
+              (az) => () => "`${config.region}" + az + "`",
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+          }),
         ]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
       //TODO remove ?

@@ -11,6 +11,7 @@ const createProviderMaker =
     stage,
     config: configOverride,
     configs: configsOverride = [],
+    createResources: createResourcesUpdate,
   }) =>
   (
     provider,
@@ -66,7 +67,10 @@ const createProviderMaker =
               );
             },
           ]),
-
+          tap.if(
+            () => createResourcesUpdate,
+            () => createResourcesUpdate({ provider })
+          ),
           provider.targetResourcesBuildMap,
         ])()
       ),

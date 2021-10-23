@@ -103,13 +103,29 @@ module.exports = () =>
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({
-        filterAll: pick([
+        filterTarget: pick([
           "amiType",
           "capacityType",
           "diskSize",
           "instanceTypes",
           "scalingConfig",
           "diskSize",
+        ]),
+        filterLive: pipe([
+          pick([
+            "amiType",
+            "capacityType",
+            "diskSize",
+            "instanceTypes",
+            "scalingConfig",
+            "diskSize",
+            "launchTemplate",
+          ]),
+          when(
+            get("launchTemplate"),
+            omit(["instanceTypes", "amiType", "diskSize"])
+          ),
+          omit(["launchTemplate"]),
         ]),
       }),
       filterLive: () =>

@@ -325,11 +325,11 @@ const SecurityGroupRuleBase = ({ config }) => {
           ]),
         ]),
         tap((result) => {
-          logger.debug(
-            `securityGroupRule IsEgress: ${IsEgress}, ${tos(
-              live
-            )} isDefault ${result}`
-          );
+          // logger.debug(
+          //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
+          //     live
+          //   )} isDefault ${result}`
+          // );
         }),
       ])();
 
