@@ -64,6 +64,22 @@ const GROUP = "EC2";
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = pipe([omit(["Tags"])]);
 
+const DecodeUserData = when(
+  get("UserData"),
+  assign({
+    UserData: pipe([
+      get("UserData"),
+      tap((params) => {
+        assert(true);
+      }),
+      (UserData) => Buffer.from(UserData, "base64").toString(),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+  })
+);
+
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
     assert(true);
@@ -533,21 +549,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          when(
-            get("UserData"),
-            assign({
-              UserData: pipe([
-                get("UserData"),
-                tap((params) => {
-                  assert(true);
-                }),
-                (UserData) => Buffer.from(UserData, "base64").toString(),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-            })
-          ),
+          DecodeUserData,
         ]),
       dependencies: ec2InstanceDependencies,
     },
@@ -560,6 +562,7 @@ module.exports = () =>
         "IAM::InstanceProfile",
       ],
       Client: EC2LaunchTemplate,
+      includeDefaultDependencies: true,
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["LaunchTemplateData"]), filterTargetDefault]),
@@ -580,20 +583,25 @@ module.exports = () =>
       filterLive: () =>
         pipe([
           pick(["LaunchTemplateData"]),
-          omitIfEmpty([
-            "LaunchTemplateData.BlockDeviceMappings",
-            "LaunchTemplateData.ElasticGpuSpecifications",
-            "LaunchTemplateData.ElasticInferenceAccelerators",
-            "LaunchTemplateData.SecurityGroups",
-            "LaunchTemplateData.LicenseSpecifications",
-            "LaunchTemplateData.TagSpecifications",
-          ]),
-          omit([
-            "LaunchTemplateData.NetworkInterfaces",
-            "LaunchTemplateData.SecurityGroupIds",
-            "LaunchTemplateData.IamInstanceProfile",
-            "KeyName",
-          ]),
+          assign({
+            LaunchTemplateData: pipe([
+              get("LaunchTemplateData"),
+              omitIfEmpty([
+                "BlockDeviceMappings",
+                "ElasticGpuSpecifications",
+                "ElasticInferenceAccelerators",
+                "SecurityGroups",
+                "LicenseSpecifications",
+                "TagSpecifications",
+              ]),
+              omit([
+                "NetworkInterfaces",
+                "SecurityGroupIds",
+                "IamInstanceProfile",
+              ]),
+              DecodeUserData,
+            ]),
+          }),
         ]),
       dependencies: ec2InstanceDependencies,
     },

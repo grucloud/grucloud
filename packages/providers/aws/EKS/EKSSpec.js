@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup } = require("./EKSNodeGroup");
@@ -112,7 +112,6 @@ module.exports = () =>
           "diskSize",
         ]),
       }),
-
       filterLive: () =>
         pipe([
           pick([
@@ -122,11 +121,13 @@ module.exports = () =>
             "amiType",
             "labels",
             "diskSize",
+            "launchTemplate",
           ]),
           when(
             get("launchTemplate"),
             omit(["instanceTypes", "amiType", "diskSize"])
           ),
+          omit(["launchTemplate"]),
         ]),
       dependencies: () => ({
         cluster: { type: "Cluster", group: "EKS" },

@@ -19,6 +19,7 @@ const {
   first,
   unless,
   prepend,
+  includes,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -63,6 +64,11 @@ const findName = (params) => {
 exports.EC2LaunchTemplate = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ec2 = () => createEndpoint({ endpointName: "EC2" })(config);
+
+  const managedByOther = pipe([
+    get("live.CreatedBy"),
+    includes("AWSServiceRoleForAmazonEKSNodegroup"),
+  ]);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -278,6 +284,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   return {
     spec,
     findId,
+    managedByOther,
     findNamespace,
     findDependencies,
     getByName,

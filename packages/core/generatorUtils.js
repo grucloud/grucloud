@@ -74,9 +74,18 @@ const findDependencyNames = ({
       assert(Array.isArray(resource.dependencies));
     }),
     () => resource.dependencies,
+    tap((dependencies) => {
+      //console.log(resource.uri, "dependencies ", dependencies);
+    }),
     find(eq(get("groupType"), `${group}::${type}`)),
     get("ids"),
+    tap((ids) => {
+      //console.log(resource.uri, "#ids ", size(ids));
+    }),
     map(findLiveById({ type, group, lives, providerName })),
+    tap((deps) => {
+      //console.log(resource.uri, "#deps ", size(deps));
+    }),
     filter(not(isEmpty)),
     filter(filterDependency({ resource })),
     //TODO openstack should set its group
@@ -280,6 +289,7 @@ const buildDependencies = ({
       tap(() => {
         assert(resource);
         assert(lives);
+        //console.log(`${resource.name} : ${JSON.stringify(dependencies)}`);
       }),
       () => dependencies,
       map.entries(([key, dependency]) => [
@@ -299,8 +309,12 @@ const buildDependencies = ({
               lives,
               ...dependency,
             }),
-          tap((params) => {
-            assert(true);
+          tap((deps) => {
+            // console.log(
+            //   `${resource.name} : ${JSON.stringify(
+            //     dependency
+            //   )}, ${JSON.stringify(deps)}`
+            // );
           }),
         ])(),
       ]),
@@ -325,7 +339,7 @@ const buildDependencies = ({
      }),`,
       ]),
       tap((params) => {
-        assert(true);
+        //console.log(params);
       }),
     ]),
   ])();
@@ -556,6 +570,7 @@ const removeDefaultDependencies =
                                   tap((params) => {
                                     assert(true);
                                   }),
+                                  //TODO isDefault ?
                                   not(get("managedByOther")),
                                 ])
                               ),

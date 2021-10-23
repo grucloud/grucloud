@@ -57,12 +57,12 @@ exports.EC2Route = ({ spec, config }) => {
       }),
       get("name", "no-route-table-id"),
       switchCase([
-        not(eq(live.GatewayId, "local")),
-        append("-igw"),
-        eq(live.GatewayId, "local"),
-        append("-local"),
         () => live.NatGatewayId,
         append("-nat-gateway"),
+        eq(live.GatewayId, "local"),
+        append("-local"),
+        not(eq(live.GatewayId, "local")),
+        append("-igw"),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {

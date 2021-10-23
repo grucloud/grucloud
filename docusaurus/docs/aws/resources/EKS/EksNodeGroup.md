@@ -10,57 +10,31 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ### Create a Node Group
 
 ```js
-const iamPolicyEKSWorkerNode = provider.IAM.usePolicy({
-  name: "AmazonEKSWorkerNodePolicy",
-  properties: () => ({
-    Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-  }),
-});
-
-const iamPolicyEC2ContainerRegistryReadOnly = provider.IAM.usePolicy({
-  name: "AmazonEC2ContainerRegistryReadOnly",
-  properties: () => ({
-    Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-  }),
-});
-
-const roleNodeGroup = provider.IAM.makeRole({
-  name: "role-node-group",
-  dependencies: {
-    policies: [iamPolicyEKSWorkerNode, iamPolicyEC2ContainerRegistryReadOnly],
-  },
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Effect: "Allow",
-          Principal: {
-            Service: "ec2.amazonaws.com",
-          },
-          Action: "sts:AssumeRole",
-        },
-      ],
+provider.EKS.makeNodeGroup({
+  name: "ng-1",
+  properties: ({ config }) => ({
+    capacityType: "ON_DEMAND",
+    scalingConfig: {
+      minSize: 1,
+      maxSize: 1,
+      desiredSize: 1,
     },
   }),
-});
-
-const cluster = {}; //See demo
-const subnetPrivate = {}; //See demo
-
-const nodeGroup = provider.EKS.makeNodeGroup({
-  name: "node-group",
-  dependencies: {
-    subnets: [subnetPrivate],
-    cluster,
-    role: roleNodeGroup,
-  },
+  dependencies: ({ resources }) => ({
+    cluster: resources.EKS.Cluster.myCluster,
+    subnets: [
+      resources.EC2.Subnet.subnetPublicUseast1A,
+      resources.EC2.Subnet.subnetPublicUseast1D,
+    ],
+    role: resources.IAM.Role.eksctlMyClusterNodegroupNg_1NodeInstanceRole,
+    launchTemplate: resources.EC2.LaunchTemplate.eksctlMyClusterNodegroupNg_1,
+  }),
 });
 ```
 
 ## Source Code Examples
 
-- [eks](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+- [eks](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/eks_basic/iac.js)
 
 ## Properties
 
@@ -70,12 +44,13 @@ const nodeGroup = provider.EKS.makeNodeGroup({
 
 - [Cluster](./EksCluster)
 - [Subnet](../EC2/Subnet)
+- [LaunchTemplate](../EC2/LaunchTemplate.md)
 - [Role](../Iam/IamRole)
 
 ## Listing
 
 ```sh
-gc l -t EKSNodeGroup
+gc l -t EKS::NodeGroup
 ```
 
 ```sh

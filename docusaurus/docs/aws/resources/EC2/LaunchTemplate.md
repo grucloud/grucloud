@@ -60,6 +60,11 @@ provider.EC2.makeLaunchTemplate({
 - [Image](./Image)
 - [Instance Profile](../IAM/IamInstanceProfile)
 
+## Used By
+
+- [EKS NodeGroup](../EKS/EksNodeGroup.md)
+- [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+
 ## List
 
 ```sh

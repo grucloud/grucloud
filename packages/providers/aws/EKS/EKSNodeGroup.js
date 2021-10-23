@@ -286,12 +286,19 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         },
         tags: buildTagsObject({ config, namespace, name }),
       }),
-      when(
+      switchCase([
         () => launchTemplate,
         defaultsDeep({
-          launchTemplate: { id: getField(launchTemplate, "LaunchTemplateId") },
-        })
-      ),
+          launchTemplate: {
+            id: getField(launchTemplate, "LaunchTemplateId"),
+          },
+        }),
+        defaultsDeep({
+          amiType: "AL2_x86_64",
+          instanceTypes: ["t3.medium"],
+          diskSize: 20,
+        }),
+      ]),
     ])();
 
   return {

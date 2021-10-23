@@ -22,16 +22,16 @@ const createResources = ({ provider }) => {
   provider.EC2.makeNatGateway({
     name: "NATGateway",
     dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet.subnetPublicUseast1F,
+      subnet: resources.EC2.Subnet.subnetPublicUseast1D,
       eip: resources.EC2.ElasticIpAddress.natip,
     }),
   });
 
   provider.EC2.makeSubnet({
-    name: "SubnetPrivateUSEAST1C",
+    name: "SubnetPrivateUSEAST1A",
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
-      AvailabilityZone: "us-east-1c",
+      AvailabilityZone: "us-east-1a",
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -47,10 +47,10 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeSubnet({
-    name: "SubnetPrivateUSEAST1F",
+    name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.64.0/19",
-      AvailabilityZone: "us-east-1f",
+      AvailabilityZone: "us-east-1d",
       MapPublicIpOnLaunch: false,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -66,10 +66,10 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeSubnet({
-    name: "SubnetPublicUSEAST1C",
+    name: "SubnetPublicUSEAST1A",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
-      AvailabilityZone: "us-east-1c",
+      AvailabilityZone: "us-east-1a",
       MapPublicIpOnLaunch: true,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -85,10 +85,10 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeSubnet({
-    name: "SubnetPublicUSEAST1F",
+    name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
-      AvailabilityZone: "us-east-1f",
+      AvailabilityZone: "us-east-1d",
       MapPublicIpOnLaunch: true,
       MapCustomerOwnedIpOnLaunch: false,
       Tags: [
@@ -104,18 +104,18 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRouteTable({
-    name: "PrivateRouteTableUSEAST1C",
+    name: "PrivateRouteTableUSEAST1A",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
-      subnets: [resources.EC2.Subnet.subnetPrivateUseast1C],
+      subnets: [resources.EC2.Subnet.subnetPrivateUseast1A],
     }),
   });
 
   provider.EC2.makeRouteTable({
-    name: "PrivateRouteTableUSEAST1F",
+    name: "PrivateRouteTableUSEAST1D",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
-      subnets: [resources.EC2.Subnet.subnetPrivateUseast1F],
+      subnets: [resources.EC2.Subnet.subnetPrivateUseast1D],
     }),
   });
 
@@ -124,30 +124,30 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc.vpc,
       subnets: [
-        resources.EC2.Subnet.subnetPublicUseast1C,
-        resources.EC2.Subnet.subnetPublicUseast1F,
+        resources.EC2.Subnet.subnetPublicUseast1A,
+        resources.EC2.Subnet.subnetPublicUseast1D,
       ],
     }),
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1C-igw",
+    name: "PrivateRouteTableUSEAST1A-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable.privateRouteTableUseast1C,
+      routeTable: resources.EC2.RouteTable.privateRouteTableUseast1A,
       natGateway: resources.EC2.NatGateway.natGateway,
     }),
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1F-igw",
+    name: "PrivateRouteTableUSEAST1D-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable.privateRouteTableUseast1F,
+      routeTable: resources.EC2.RouteTable.privateRouteTableUseast1D,
       natGateway: resources.EC2.NatGateway.natGateway,
     }),
   });
@@ -267,7 +267,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeLaunchTemplate({
-    name: "lt-ng-1",
+    name: "eksctl-my-cluster-nodegroup-ng-1",
     properties: ({ config }) => ({
       LaunchTemplateData: {
         BlockDeviceMappings: [
@@ -281,14 +281,16 @@ const createResources = ({ provider }) => {
             },
           },
         ],
-        ImageId: "ami-0ee7f482baec5230f",
-        UserData:
-          "TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSIvLyIKCi0tLy8KQ29udGVudC1UeXBlOiB0ZXh0L3gtc2hlbGxzY3JpcHQ7IGNoYXJzZXQ9InVzLWFzY2lpIgojIS9iaW4vYmFzaApzZXQgLWV4CkI2NF9DTFVTVEVSX0NBPUxTMHRMUzFDUlVkSlRpQkRSVkpVU1VaSlEwRlVSUzB0TFMwdENrMUpTVU0xZWtORFFXTXJaMEYzU1VKQlowbENRVVJCVGtKbmEzRm9hMmxIT1hjd1FrRlJjMFpCUkVGV1RWSk5kMFZSV1VSV1VWRkVSWGR3Y21SWFNtd0tZMjAxYkdSSFZucE5RalJZUkZSSmVFMVVRWGxOVkVsNVRVUkplRTFXYjFoRVZFMTRUVlJCZUU5VVNYbE5SRWw0VFZadmQwWlVSVlJOUWtWSFFURlZSUXBCZUUxTFlUTldhVnBZU25WYVdGSnNZM3BEUTBGVFNYZEVVVmxLUzI5YVNXaDJZMDVCVVVWQ1FsRkJSR2RuUlZCQlJFTkRRVkZ2UTJkblJVSkJUVWd3Q2xsT1dFaGFhMFpEYlVsb2VpOUpTM0JSYVdNNVdFeHpaMmx0V2xacVFqVkxRa0p1U0VwR1lWQmlUM292Y0RCbE5UUkZaRTVqYzBWa1ozZDZTRFprZVZRS1RtNVphMXBEYUdRdk4wRnFSQ3RzZURaaFFXeFVOM1JXVUc1bGEwWnJlazExTVZseVltTmFPV0pvUWxWNFIyWnpjakIyVmt3ek1uQnJhRTlQT0dScE53cG5ObEF3VFhoNVVrMXBNblpsYzJkMVFYQTFSblZSY0hoSmJGcGtTa3hrVldoeUsxVTFVSFp2Tm05dU4wYzROV05OVkdwa2N6TnRSakZNTDNKMFZIRllDa1J6TDBOcEszaHlObmRqTjBvMmJXNXFXbWhPYW5Kdk1VeEVSMVF5YlhCcldsQlhSMHhoTW1ob09IRllRazFVUVdSMWMybE1jRXN6UkUxT00ya3hTbVVLUlhJNFVWZ3pkbTFGSzNsQmJXZFZMMjV5WTB4WllsSkJZVXRTVWpab2NuaHpjekowYVdWM2RUWk1aRWhIUjJ4dVEwSkJlRlprZGpGVFlrTnZWMlFyY1Fwa1ZtSXpabnBJWkU1clQxZERUR3ByVEZoalEwRjNSVUZCWVU1RFRVVkJkMFJuV1VSV1VqQlFRVkZJTDBKQlVVUkJaMHRyVFVFNFIwRXhWV1JGZDBWQ0NpOTNVVVpOUVUxQ1FXWTRkMGhSV1VSV1VqQlBRa0paUlVaUFFVaG9lbTFEUzNsRVpXdGtiR2t6Y1RkeEwxUk9aWEJwYlVaTlFUQkhRMU54UjFOSllqTUtSRkZGUWtOM1ZVRkJORWxDUVZGQ1JVbDZUVE53YUZGVWQwbEdlbVJPVEZVNVVWSk5UVWxCVFRGbWJIaGxiM0JVY1V0d2MzUnpUV2RoTldrNE4wbERTUXBPV1RSMVNFVmpLek0wU2pOSVprVkpLMWhFTkhoQk1VbHlaSGROTDFkMlFqZDFUVXBJTW1SREswZFZNelo1Y2xsV1lWQnVTMVI0UTJ4dmNqaFpiekk1Q2t0T1VUTjRNVUpVVWt0eksyOTBXRFU1ZW1wUWFrSlZRbWN4WlRoaFIxbExhWFJwT0ZwRk16aERaWEZWTVdKWksyVmFRMWN4ZVRRMlJFdzRXakZwSzBVS2JXUlRjWEZQVVVGd05HbHVlSGdyUVRWeFkweHVOMDVJT0dwT2VGUkZhVzkwTjFJeVNtcEZSbnB6Y1ZacmVtcHFWVUkyTW1JMVMwZ3hjM1pMUzFkb2FBcEhlbXc1V1hZMVZ5dGhUV3RXZERGaWNYVXphM0JKUWpoeGFqbHVXazkxTXl0U2IwUmtRa3R2VkRKbk4xZzRjaTlxUXpCc1kwVldZaXR5YjNaeVdTczNDbGxhVDFSQ1ZFMTBSMHhEVFZZcmFEVmhVMUptWTNWT2NFOUNRMjExYUd3M1ZUUlhhd290TFMwdExVVk9SQ0JEUlZKVVNVWkpRMEZVUlMwdExTMHRDZz09CkFQSV9TRVJWRVJfVVJMPWh0dHBzOi8vRjY0RUI0QUI0MDU2NTczMTkyNzQ2RDYyQUU3RDgyNEQuZ3I3LnVzLWVhc3QtMS5la3MuYW1hem9uYXdzLmNvbQpLOFNfQ0xVU1RFUl9ETlNfSVA9MTAuMTAwLjAuMTAKL2V0Yy9la3MvYm9vdHN0cmFwLnNoIG15LWNsdXN0ZXIgLS1rdWJlbGV0LWV4dHJhLWFyZ3MgJy0tbm9kZS1sYWJlbHM9ZWtzLmFtYXpvbmF3cy5jb20vc291cmNlTGF1bmNoVGVtcGxhdGVWZXJzaW9uPTEsYWxwaGEuZWtzY3RsLmlvL2NsdXN0ZXItbmFtZT1teS1jbHVzdGVyLGFscGhhLmVrc2N0bC5pby9ub2RlZ3JvdXAtbmFtZT1uZy0xLGVrcy5hbWF6b25hd3MuY29tL25vZGVncm91cC1pbWFnZT1hbWktMGVlN2Y0ODJiYWVjNTIzMGYsZWtzLmFtYXpvbmF3cy5jb20vY2FwYWNpdHlUeXBlPU9OX0RFTUFORCxla3MuYW1hem9uYXdzLmNvbS9ub2RlZ3JvdXA9bmctMSxla3MuYW1hem9uYXdzLmNvbS9zb3VyY2VMYXVuY2hUZW1wbGF0ZUlkPWx0LTAyZTY4NDNiNWY4MzQ2MjI4JyAtLWI2NC1jbHVzdGVyLWNhICRCNjRfQ0xVU1RFUl9DQSAtLWFwaXNlcnZlci1lbmRwb2ludCAkQVBJX1NFUlZFUl9VUkwgLS1kbnMtY2x1c3Rlci1pcCAkSzhTX0NMVVNURVJfRE5TX0lQCgotLS8vLS0=",
         MetadataOptions: {
           HttpTokens: "optional",
           HttpPutResponseHopLimit: 2,
         },
       },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroups: [
+        resources.EC2.SecurityGroup.eksClusterSgMyCluster_1909614887,
+      ],
     }),
   });
 
@@ -299,13 +301,13 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.EC2.Subnet.subnetPrivateUseast1C,
-        resources.EC2.Subnet.subnetPrivateUseast1F,
-        resources.EC2.Subnet.subnetPublicUseast1C,
-        resources.EC2.Subnet.subnetPublicUseast1F,
+        resources.EC2.Subnet.subnetPrivateUseast1A,
+        resources.EC2.Subnet.subnetPrivateUseast1D,
+        resources.EC2.Subnet.subnetPublicUseast1A,
+        resources.EC2.Subnet.subnetPublicUseast1D,
       ],
       securityGroups: [resources.EC2.SecurityGroup.controlPlaneSecurityGroup],
-      role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_1X24Aqf8Lrqdl,
+      role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_13Ask7Knkkbgb,
     }),
   });
 
@@ -326,17 +328,17 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       cluster: resources.EKS.Cluster.myCluster,
       subnets: [
-        resources.EC2.Subnet.subnetPublicUseast1C,
-        resources.EC2.Subnet.subnetPublicUseast1F,
+        resources.EC2.Subnet.subnetPublicUseast1A,
+        resources.EC2.Subnet.subnetPublicUseast1D,
       ],
       role: resources.IAM.Role
-        .eksctlMyClusterNodegroupNg_1NodeInstanceRole_1H4Gn851M2Nx6,
-      launchTemplate: resources.EC2.LaunchTemplate.ltNg_1,
+        .eksctlMyClusterNodegroupNg_1NodeInstanceRole_148Py79K75A6N,
+      launchTemplate: resources.EC2.LaunchTemplate.eksctlMyClusterNodegroupNg_1,
     }),
   });
 
   provider.IAM.makeRole({
-    name: "eksctl-my-cluster-cluster-ServiceRole-1X24AQF8LRQDL",
+    name: "eksctl-my-cluster-cluster-ServiceRole-13ASK7KNKKBGB",
     properties: ({ config }) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -393,7 +395,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.IAM.makeRole({
-    name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1H4GN851M2NX6",
+    name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-148PY79K75A6N",
     properties: ({ config }) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
