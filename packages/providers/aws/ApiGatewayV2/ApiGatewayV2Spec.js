@@ -176,6 +176,11 @@ module.exports = () =>
             assert(properties);
           }),
           dependencies,
+          tap(({ domainName, api, stage }) => {
+            assert(domainName);
+            assert(api);
+            assert(stage);
+          }),
           ({ domainName, api, stage }) =>
             `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
           tap((params) => {

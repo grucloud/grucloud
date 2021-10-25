@@ -59,12 +59,12 @@
 
 ## Aws
 
-- Optional name
+- Internet gateway getByName with Filter tags
+- EC2 Instance placement
+- Route display internet gateway or nat gateway in configDefault
 
 - Lambda env var dependencies with DynamoDB table
 - Policy dependencies with other resources: DynamoDB table
-
-- gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
 - ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
   4:key/79507edb-c301-43a8-8217-524d24f6daa7

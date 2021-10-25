@@ -252,7 +252,7 @@ const fnSpecs = pipe([
           `/apis/${apiVersion}/namespaces/${namespace}/roles`,
         pathList: ({ apiVersion }) => `/apis/${apiVersion}/roles`,
         configKey: "role",
-        apiVersion: "rbac.authorization.k8s.io/v1beta1",
+        apiVersion: "rbac.authorization.k8s.io/v1",
         kind: "Role",
         cannotBeDeleted: cannotBeDeletedDefault,
       }),
@@ -266,7 +266,7 @@ const fnSpecs = pipe([
           `/apis/${apiVersion}/namespaces/${namespace}/rolebindings`,
         pathList: ({ apiVersion }) => `/apis/${apiVersion}/rolebindings`,
         configKey: "roleBinding",
-        apiVersion: "rbac.authorization.k8s.io/v1beta1",
+        apiVersion: "rbac.authorization.k8s.io/v1",
         kind: "RoleBinding",
         cannotBeDeleted: cannotBeDeletedDefault,
         findDependencies: ({ live }) => [

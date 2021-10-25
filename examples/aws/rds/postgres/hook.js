@@ -10,16 +10,17 @@ module.exports = ({ provider }) => {
     onDeployed: {
       init: async () => {
         const resources = provider.resources();
-        const dbInstanceLive =
-          await resources.RDS.DBInstance.dbInstance.getLive();
+        const dbInstanceLive = await resources.RDS.DBInstance[
+          "db-instance"
+        ].getLive();
         assert(dbInstanceLive);
-        assert(process.env.MASTER_USER_PASSWORD);
+        assert(process.env.DB_INSTANCE_MASTER_USER_PASSWORD);
 
         const client = new Client({
           user: dbInstanceLive.MasterUsername,
           host: dbInstanceLive.Endpoint.Address,
           //database: "dev",
-          password: process.env.MASTER_USER_PASSWORD,
+          password: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
           port: dbInstanceLive.Endpoint.Port,
         });
         client.on("error", console.error);

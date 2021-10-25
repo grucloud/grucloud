@@ -72,6 +72,12 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
+
+  // const getList = client.getList({
+  //   method: "describeInternetGateways",
+  //   getParam: "InternetGateways",
+  // });
+
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {

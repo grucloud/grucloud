@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 
-const { defaultsDeep, pluck, flatten, find } = require("rubico/x");
+const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 
 const AzClient = require("./AzClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
@@ -96,11 +96,6 @@ exports.fnSpecs = (config) => {
             type: "ResourceGroup",
             group: "resourceManagement",
           },
-          subnets: {
-            type: "Subnet",
-            group: "virtualNetworks",
-            list: true,
-          },
         }),
         filterLive: () =>
           pipe([
@@ -127,15 +122,6 @@ exports.fnSpecs = (config) => {
             isInstanceUp,
             findDependencies: ({ live }) => [
               findDependenciesResourceGroup({ live }),
-              {
-                type: "Subnet",
-                group: "virtualNetworks",
-                ids: pipe([
-                  () => live,
-                  get("properties.subnets"),
-                  pluck("id"),
-                ])(),
-              },
             ],
             config,
             configDefault: ({ properties }) =>
@@ -278,6 +264,7 @@ exports.fnSpecs = (config) => {
           "virtualNetworks::VirtualNetwork",
           "virtualNetworks::SecurityGroup",
           "virtualNetworks::PublicIpAddress",
+          "virtualNetworks::Subnet",
         ],
         filterLive: () =>
           pipe([
@@ -319,6 +306,7 @@ exports.fnSpecs = (config) => {
             group: "virtualNetworks",
           },
           securityGroup: { type: "SecurityGroup", group: "virtualNetworks" },
+          subnet: { type: "Subnet", group: "virtualNetworks" },
         }),
         compare: compare({
           filterTarget: pipe([
@@ -441,6 +429,17 @@ exports.fnSpecs = (config) => {
         group: "virtualNetworks",
         type: "Subnet",
         dependsOn: ["virtualNetworks::VirtualNetwork"],
+        dependencies: () => ({
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "resourceManagement",
+          },
+          virtualNetwork: {
+            type: "VirtualNetwork",
+            group: "virtualNetworks",
+          },
+        }),
+
         isOurMinion: ({ live, lives }) =>
           pipe([
             () =>
@@ -457,6 +456,7 @@ exports.fnSpecs = (config) => {
             ),
             get("managedByUs"),
           ])(),
+
         filterLive: () =>
           pipe([
             pick(["properties"]),
@@ -466,6 +466,48 @@ exports.fnSpecs = (config) => {
           ]),
         Client: ({ spec, config }) =>
           AzClient({
+            findDependencies: ({ live, lives }) => [
+              {
+                type: "ResourceGroup",
+                group: "resourceManagement",
+                ids: [
+                  pipe([
+                    () => live,
+                    get("id"),
+                    callProp("split", "/"),
+                    (arr) => arr[4],
+                    (resourceGroup) =>
+                      lives.getByName({
+                        name: resourceGroup,
+                        providerName: config.providerName,
+                        type: "ResourceGroup",
+                        group: "resourceManagement",
+                      }),
+                    get("id"),
+                  ])(),
+                ],
+              },
+              {
+                type: "VirtualNetwork",
+                group: "virtualNetworks",
+                ids: [
+                  pipe([
+                    () => live,
+                    get("id"),
+                    callProp("split", "/"),
+                    (arr) => arr[8],
+                    (virtualNetwork) =>
+                      lives.getByName({
+                        name: virtualNetwork,
+                        providerName: config.providerName,
+                        type: "VirtualNetwork",
+                        group: "virtualNetworks",
+                      }),
+                    get("id"),
+                  ])(),
+                ],
+              },
+            ],
             getList: ({ axios }) =>
               pipe([
                 tap((params) => {
@@ -563,6 +605,7 @@ exports.fnSpecs = (config) => {
                   "osProfile",
                 ]),
                 omitIfEmpty(["osProfile.secrets"]),
+                omit(["osProfile.requireGuestProvisionSignal"]),
               ]),
             }),
           ]),

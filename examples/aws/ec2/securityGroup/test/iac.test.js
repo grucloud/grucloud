@@ -4,7 +4,7 @@ const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-describe("SecurityGroup", async function () {
+describe("SecurityGroup ok", async function () {
   before(async function () {});
   it("run", async function () {
     await testEnd2End({

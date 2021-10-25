@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-module.exports = ({ resources: {}, provider }) => {
+module.exports = ({ provider }) => {
   return {
     onDeployed: {
       init: async () => {

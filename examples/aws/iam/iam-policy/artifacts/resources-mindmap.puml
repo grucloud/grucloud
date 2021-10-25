@@ -4,6 +4,6 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Policy (2)
 ++++ Role (1)
+++++ Policy (2)
 @endmindmap

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs").promises;
-const { camelCase, snakeCase } = require("change-case");
+const { snakeCase } = require("change-case");
 const prettier = require("prettier");
 
 const {
@@ -50,7 +50,7 @@ const ResourceVarNameDefault = pipe([
   tap((name) => {
     assert(name, "missing resource name");
   }),
-  camelCase,
+  identity,
 ]);
 
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
@@ -91,8 +91,11 @@ const findDependencyNames = ({
     //TODO openstack should set its group
     map(
       ({ group = "compute", type, name }) =>
-        `resources.${group}.${type}.${ResourceVarNameDefault(name)}`
+        `resources.${group}.${type}['${name}']`
     ),
+    tap((params) => {
+      assert(true);
+    }),
     (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
@@ -311,7 +314,7 @@ const buildDependencies = ({
             }),
           tap((deps) => {
             // console.log(
-            //   `${resource.name} : ${JSON.stringify(
+            //   `buildDependencies ${resource.name} : ${JSON.stringify(
             //     dependency
             //   )}, ${JSON.stringify(deps)}`
             // );

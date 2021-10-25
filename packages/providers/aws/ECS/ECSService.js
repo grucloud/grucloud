@@ -32,6 +32,12 @@ const { AwsClient } = require("../AwsClient");
 const findId = get("live.serviceArn");
 const findName = get("live.serviceName");
 
+const pickId = ({ serviceName, clusterArn }) => ({
+  service: serviceName,
+  cluster: clusterArn,
+  force: true,
+});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSService = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -82,7 +88,10 @@ exports.ECSService = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
-    eq(get("code"), "ClusterNotFoundException"),
+    or([
+      eq(get("code"), "ClusterNotFoundException"),
+      eq(get("code"), "InvalidParameterException"),
+    ]),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property

@@ -1,25 +1,16 @@
 const assert = require("assert");
 const { AzureProvider } = require("@grucloud/provider-azure");
-const hook = require("./hook");
 
-const createResources = async ({ provider, resources: {} }) => {
-  return {};
-};
-exports.createResources = createResources;
+const { createResources } = require("./resources");
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AzureProvider, {
+    createResources,
     config: require("./config"),
-  });
-
-  const resources = await createResources({
-    provider,
-    resources: {},
   });
 
   return {
     provider,
-    resources,
-    hooks: [hook],
+    hooks: [require("./hook")],
   };
 };

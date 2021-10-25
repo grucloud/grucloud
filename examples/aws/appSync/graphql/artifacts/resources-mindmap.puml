@@ -7,11 +7,11 @@ skinparam monochrome true
 ++++ GraphqlApi (1)
 ++++ DataSource (1)
 ++++ Resolver (5)
-+++ IAM
-++++ Policy (1)
-++++ Role (2)
 +++ DynamoDB
 ++++ Table (1)
++++ IAM
+++++ Role (2)
+++++ Policy (1)
 +++ Lambda
 ++++ Function (1)
 @endmindmap

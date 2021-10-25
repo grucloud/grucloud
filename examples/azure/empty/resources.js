@@ -1,4 +1,4 @@
-const createResources = async ({ provider, resources: {} }) => {
+const createResources = ({ provider }) => {
   return {};
 };
 exports.createResources = createResources;

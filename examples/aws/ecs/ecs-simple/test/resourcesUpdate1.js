@@ -10,7 +10,7 @@ const createResources = ({ provider }) => {
       ],
     }),
     dependencies: ({ resources }) => ({
-      capacityProviders: [resources.ECS.CapacityProvider.cp],
+      capacityProviders: [resources.ECS.CapacityProvider["cp"]],
     }),
   });
 
@@ -29,7 +29,8 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      autoScalingGroup: resources.AutoScaling.AutoScalingGroup.ecsInstanceAsg,
+      autoScalingGroup:
+        resources.AutoScaling.AutoScalingGroup["EcsInstanceAsg"],
     }),
   });
 
@@ -89,8 +90,8 @@ const createResources = ({ provider }) => {
       enableExecuteCommand: false,
     }),
     dependencies: ({ resources }) => ({
-      cluster: resources.ECS.Cluster.cluster,
-      taskDefinition: resources.ECS.TaskDefinition.nginx,
+      cluster: resources.ECS.Cluster["cluster"],
+      taskDefinition: resources.ECS.TaskDefinition["nginx"],
     }),
   });
 };

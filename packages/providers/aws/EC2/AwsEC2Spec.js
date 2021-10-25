@@ -137,6 +137,18 @@ const ec2InstanceDependencies = () => ({
   },
 });
 
+const buildAvailabilityZone = pipe([
+  get("AvailabilityZone"),
+  tap((params) => {
+    assert(true);
+  }),
+  last,
+  (az) => () => "`${config.region}" + az + "`",
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -182,7 +194,12 @@ module.exports = () =>
         ]),
       }),
       filterLive: () =>
-        pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+        pipe([
+          pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+          assign({
+            AvailabilityZone: buildAvailabilityZone,
+          }),
+        ]),
       //TODO do we need that ?
       ignoreResource:
         ({ lives }) =>
@@ -328,17 +345,7 @@ module.exports = () =>
             "MapPublicIpOnLaunch",
           ]),
           assign({
-            AvailabilityZone: pipe([
-              get("AvailabilityZone"),
-              tap((params) => {
-                assert(true);
-              }),
-              last,
-              (az) => () => "`${config.region}" + az + "`",
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
+            AvailabilityZone: buildAvailabilityZone,
           }),
         ]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),

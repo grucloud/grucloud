@@ -4,11 +4,11 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Policy (1)
 ++++ Role (1)
-+++ SQS
-++++ Queue (1)
+++++ Policy (1)
 +++ Lambda
 ++++ Function (1)
 ++++ EventSourceMapping (1)
++++ SQS
+++++ Queue (1)
 @endmindmap

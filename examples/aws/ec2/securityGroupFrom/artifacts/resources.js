@@ -18,7 +18,24 @@ const createResources = ({ provider }) => {
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc.vpc,
+      vpc: resources.EC2.Vpc["VPC"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroup({
+    name: "eks-cluster-sg-my-cluster",
+    properties: ({ config }) => ({
+      Description:
+        "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
+      Tags: [
+        {
+          Key: "kubernetes.io/cluster/my-cluster",
+          Value: "owned",
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["VPC"],
     }),
   });
 
@@ -32,8 +49,9 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup.clusterSharedNode,
-      securityGroupFrom: resources.EC2.SecurityGroup.clusterSharedNode,
+      securityGroup: resources.EC2.SecurityGroup["ClusterSharedNode"],
+      securityGroupFrom:
+        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster"],
     }),
   });
 };

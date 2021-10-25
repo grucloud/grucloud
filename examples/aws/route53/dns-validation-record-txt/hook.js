@@ -3,7 +3,7 @@ const { pipe, get, fork, any, tap } = require("rubico");
 const { first, find, isEmpty } = require("rubico/x");
 const { retryCall } = require("@grucloud/core").Retry;
 
-module.exports = ({ resources, provider }) => {
+module.exports = ({ provider }) => {
   const { config } = provider;
   const { topLevelDomain, subDomainName, recordTxtValue } = config;
   assert(topLevelDomain);
@@ -12,10 +12,6 @@ module.exports = ({ resources, provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        // const hostedZoneLive = await hostedZone.getLive();
-        // assert.equal(hostedZoneLive.ResourceRecordSetCount, 3);
-        // const recordALive = await recordA.getLive();
-        // assert(recordALive);
         // return { hostedZoneLive };
       },
       actions: [

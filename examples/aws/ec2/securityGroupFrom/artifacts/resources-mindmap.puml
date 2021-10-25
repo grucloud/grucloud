@@ -1,10 +1,10 @@
 @startmindmap
-title Resources for project SecurityGroup source from itself
+title Resources for project SecurityGroup source from read only source
 skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
 ++++ Vpc (1)
-++++ SecurityGroup (1)
+++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (1)
 @endmindmap

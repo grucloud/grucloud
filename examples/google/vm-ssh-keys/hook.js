@@ -30,8 +30,9 @@ module.exports = ({ provider }) => {
       init: async () => {
         const resources = provider.resources();
         assert(resources);
-        const ipLive =
-          await resources.compute.Address.ipWebserverSshKeys.getLive();
+        const ipLive = await resources.compute.Address[
+          "ip-webserver-ssh-keys"
+        ].getLive();
         assert(ipLive);
         const host = ipLive.address;
         return {

@@ -99,6 +99,9 @@ const buildSubGraphTargetNodeAssociation = ({ resources, options }) =>
     map((resource) =>
       pipe([
         resource.getDependencyList,
+        tap((deps) => {
+          assert(Array.isArray(deps));
+        }),
         map(buildEdge({ options, resource })),
         callProp("join", "\n"),
       ])()
@@ -147,6 +150,7 @@ const buildGraphTargetAssociation = ({ providers, options }) =>
             options,
           }),
         (error, provider) => {
+          console.error(error);
           return { error, provider: provider.toString() };
         }
       )

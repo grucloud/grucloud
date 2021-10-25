@@ -64,6 +64,9 @@ module.exports = ({ provider }) => {
                       name: "my-note",
                     },
                   }),
+                shouldRetryOnException: or([
+                  eq(get("error.code"), "ENOTFOUND"),
+                ]),
                 isExpectedResult: pipe([
                   tap(({ data }) => {
                     assert(
@@ -95,6 +98,9 @@ module.exports = ({ provider }) => {
                     }
                 `,
                   }),
+                shouldRetryOnException: or([
+                  eq(get("error.code"), "ENOTFOUND"),
+                ]),
                 isExpectedResult: pipe([
                   tap((params) => {
                     assert(true);

@@ -32,19 +32,21 @@ const testSsh = async ({ host, username = "ubuntu", password }) =>
       });
   });
 
-module.exports = ({ provider, config }) => {
+module.exports = ({ provider }) => {
   return {
     name: "azure hooks",
     onDeployed: {
       init: async () => {
         //console.log("azure onDeployed");
         const resources = provider.resources();
-        console.log("azure onDeployed");
-        const publicIpAddress =
-          await resources.virtualNetworks.PublicIpAddress.ip.getLive();
+        const publicIpAddress = await resources.virtualNetworks.PublicIpAddress[
+          "ip"
+        ].getLive();
         const networkInterface =
-          await resources.virtualNetworks.NetworkInterface.networkInterface.getLive();
-        const vm = await resources.compute.VirtualMachine.vm.getLive();
+          await resources.virtualNetworks.NetworkInterface[
+            "network-interface"
+          ].getLive();
+        const vm = await resources.compute.VirtualMachine["vm"].getLive();
         assert(vm, "vm not up");
         //Check network interface id of the vm
         assert.equal(
@@ -93,8 +95,8 @@ module.exports = ({ provider, config }) => {
               fn: async () => {
                 await testSsh({
                   host,
-                  username: process.env.MACHINE_ADMIN_USERNAME,
-                  password: process.env.MACHINE_ADMIN_PASSWORD,
+                  username: process.env.VM_ADMIN_USERNAME,
+                  password: process.env.VM_ADMIN_PASSWORD,
                 });
               },
               isExpectedResult: () => true,

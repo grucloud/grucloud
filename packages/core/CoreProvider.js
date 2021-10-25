@@ -278,9 +278,8 @@ function CoreProvider({
       logger.debug(`resource '${resourceKey}' already exists`);
     }
 
-    const resourceVarName = camelCase(name);
     resourcesObj = set(
-      `${groupName(group)}${type}.${resourceVarName}`,
+      filter(not(isEmpty))([group, type, name]),
       resource
     )(resourcesObj);
 

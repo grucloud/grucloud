@@ -1,9 +1,23 @@
 const assert = require("assert");
-const { pipe, assign, map, tap, pick } = require("rubico");
-const { prepend } = require("rubico/x");
+const {
+  pipe,
+  assign,
+  map,
+  tap,
+  pick,
+  or,
+  get,
+  filter,
+  eq,
+  all,
+  and,
+  switchCase,
+} = require("rubico");
+const { prepend, find, isEmpty, callProp, identity } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 const { camelCase } = require("change-case");
 const { compare } = require("../../GoogleCommon");
+const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const {
   GcpServiceAccount,
@@ -59,8 +73,54 @@ module.exports = () =>
     },
     {
       type: "Binding",
+      dependsOn: ["iam::ServiceAccount"],
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
       compare: compareIamBinding,
+      filterLive: () => pipe([pick(["members"])]),
+      dependencies: () => ({
+        serviceAccounts: { type: "ServiceAccount", group: "iam", list: true },
+      }),
+      ignoreResource:
+        ({ lives }) =>
+        ({ dependencies, live, name }) =>
+          pipe([
+            () => live,
+            or([
+              pipe([and([eq(get("role"), "roles/owner")])]),
+              pipe([
+                get("members"),
+                filter(callProp("startsWith", "serviceAccount:")),
+                all(
+                  pipe([
+                    callProp("replace", "serviceAccount:", ""),
+                    (email) =>
+                      pipe([
+                        () => lives,
+                        find(
+                          and([
+                            eq(get("live.email"), email),
+                            eq(get("groupType"), "iam::ServiceAccount"),
+                          ])
+                        ),
+                        switchCase([
+                          isEmpty,
+                          () => true,
+                          get("managedByOther"),
+                        ]),
+                      ])(),
+                  ])
+                ),
+              ]),
+            ]),
+            tap.if(identity, () => {
+              console.log(`Ignore binding ${name}`);
+            }),
+          ])(),
+      hasNoProperty: ({ lives, resource }) =>
+        pipe([
+          () => resource,
+          or([hasDependency({ type: "ServiceAccount", group: "iam" })]),
+        ])(),
     },
   ]);
