@@ -1075,7 +1075,7 @@ const filterShow = map(
       tap((params) => {
         assert(true);
       }),
-      filter(and([not(get("error")), pipe([get("resources"), not(isEmpty)])])),
+      filter(or([get("error"), pipe([get("resources"), not(isEmpty)])])),
       tap((params) => {
         assert(true);
       }),

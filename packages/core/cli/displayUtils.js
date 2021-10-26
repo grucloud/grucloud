@@ -402,7 +402,7 @@ const displayPlanItemUpdate =
   ({ diff, resource, id, action }) =>
     pipe([
       tap(() => {
-        assert(diff.targetDiff);
+        assert(diff.liveDiff);
       }),
       () => diff,
       tap(() =>

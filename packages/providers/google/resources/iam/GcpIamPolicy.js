@@ -14,7 +14,11 @@ const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("@grucloud/core/tos");
-const { axiosErrorToJSON, logError } = require("@grucloud/core/Common");
+const {
+  axiosErrorToJSON,
+  logError,
+  omitIfEmpty,
+} = require("@grucloud/core/Common");
 const {
   createAxiosMakerGoogle,
   shouldRetryOnException,
@@ -125,9 +129,23 @@ exports.GcpIamPolicy = ({ spec, config }) => {
 
 exports.compareIamPolicy = pipe([
   ({ target, live }) => ({
-    added: differenceWith(isDeepEqual, target.policy.bindings)(live.bindings),
-    deleted: differenceWith(isDeepEqual, live.bindings)(target.policy.bindings),
+    liveDiff: {
+      added: {
+        bindings: differenceWith(
+          isDeepEqual,
+          target.policy.bindings
+        )(live.bindings),
+      },
+      deleted: {
+        bindings: differenceWith(
+          isDeepEqual,
+          live.bindings
+        )(target.policy.bindings),
+      },
+    },
+    targetDiff: {},
   }),
+  omitIfEmpty(["liveDiff.added.bindings", "liveDiff.deleted.bindings"]),
   tap((diff) => {
     logger.debug(`compareIamPolicy ${tos(diff)}`);
   }),

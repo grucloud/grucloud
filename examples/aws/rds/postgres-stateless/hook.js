@@ -59,8 +59,9 @@ module.exports = ({ provider }) => {
       init: async () => {
         const resources = provider.resources();
         assert(true);
-        const dbClusterLive =
-          await resources.RDS.DBCluster.clusterPostgresStateless.getLive();
+        const dbClusterLive = await resources.RDS.DBCluster[
+          "cluster-postgres-stateless"
+        ].getLive();
         assert(dbClusterLive);
         const ec2InstanceLive = await resources.EC2.Instance.bastion.getLive();
         const connectionString = `postgres://${process.env.MASTER_USERNAME}:${process.env.MASTER_USER_PASSWORD}@${dbClusterLive.Endpoint}`;

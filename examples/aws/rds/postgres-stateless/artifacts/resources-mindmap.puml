@@ -4,18 +4,18 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (4)
 ++++ KeyPair (1)
-++++ ElasticIpAddress (2)
+++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ NatGateway (1)
+++++ Subnet (4)
 ++++ RouteTable (3)
 ++++ Route (3)
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)
+++++ ElasticIpAddress (2)
 ++++ Instance (1)
 +++ RDS
-++++ DBCluster (1)
 ++++ DBSubnetGroup (1)
+++++ DBCluster (1)
 @endmindmap
