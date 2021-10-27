@@ -260,6 +260,7 @@ module.exports = () =>
           ]),
         ]),
       }),
+      defaultValue: { DnsSupport: true, DnsHostnames: false },
       filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
     },
     {
@@ -333,6 +334,11 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      defaultValue: {
+        MapPublicIpOnLaunch: false,
+        MapCustomerOwnedIpOnLaunch: false,
+      },
+
       filterLive: () =>
         pipe([
           pick([
