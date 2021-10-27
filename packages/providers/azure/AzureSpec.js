@@ -605,7 +605,10 @@ exports.fnSpecs = (config) => {
                   "osProfile",
                 ]),
                 omitIfEmpty(["osProfile.secrets"]),
-                omit(["osProfile.requireGuestProvisionSignal"]),
+                omit([
+                  "osProfile.requireGuestProvisionSignal",
+                  "storageProfile.imageReference.exactVersion",
+                ]),
               ]),
             }),
           ]),

@@ -31,6 +31,7 @@ const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
 const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 const { GcpDisk } = require("./GcpDisk");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
@@ -212,10 +213,12 @@ module.exports = pipe([
             "lastStartTimestamp",
             "kind",
             "zone",
+            "tags.fingerprint",
+            "metadata.fingerprint",
+            "metadata.kind",
           ]),
-          omit(["tags.fingerprint", "metadata.fingerprint", "metadata.kind"]),
           ///TODO remove our tags in labels
-          //TODO remove tags if empty
+          omitIfEmpty(["tags"]),
           assign({
             machineType: pipe([
               get("machineType"),

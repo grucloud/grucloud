@@ -1060,7 +1060,7 @@ exports.GoogleProvider = ({
       reduce((acc, config) => defaultsDeep(acc)(config(acc)), {
         stage,
         managedByTag: "-managed-by-gru",
-        managedByKey: "managed-by",
+        managedByKey: "gc-managed-by",
         managedByValue: "grucloud",
         ...computeDefault,
         accessToken: () => serviceAccountAccessToken,

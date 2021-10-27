@@ -280,7 +280,7 @@ const displayError = ({ name, error }) => {
   displayErrorResults({ name, results: error.resultDeploy?.results });
   displayErrorResults({ name, results: error.resultDestroy?.results });
   displayErrorHooks({ name, resultsHook: error.resultHook });
-  if (error.lives.error) {
+  if (error.lives?.error) {
     displayListError(error.lives.json);
   }
   const results =

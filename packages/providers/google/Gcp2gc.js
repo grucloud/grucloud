@@ -1,12 +1,36 @@
 const assert = require("assert");
-const { pipe, tap, map } = require("rubico");
-const { groupBy, values } = require("rubico/x");
+const { pipe, tap, map, assign, filter, not, get } = require("rubico");
+const { groupBy, values, unless, isEmpty } = require("rubico/x");
 
 const { generatorMain } = require("@grucloud/core/generatorUtils");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { configTpl } = require("./configTpl");
 
 const filterModel = pipe([
+  map(
+    assign({
+      live: pipe([
+        get("live"),
+        assign({
+          labels: pipe([
+            get("labels"),
+            unless(
+              isEmpty,
+              pipe([
+                map.entries(([key, value]) => [
+                  key,
+                  key.startsWith("gc-") ? undefined : value,
+                ]),
+                filter(not(isEmpty)),
+              ])
+            ),
+          ]),
+        }),
+        omitIfEmpty(["labels"]),
+      ]),
+    })
+  ),
   tap((params) => {
     assert(true);
   }),

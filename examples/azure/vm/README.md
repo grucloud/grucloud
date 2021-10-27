@@ -4,7 +4,7 @@ The purpose of this example is to deploy automatically a virtual machine attache
 
 ![diagram-target](artifacts/diagram-target.svg)
 
-The infrastructure is described in [iac.js](./iac.js), and configured in [config.js](./config.js).
+The infrastructure is described in [resources.js](./resources.js), and configured in [config.js](./config.js).
 
 Hooks are defined in [hook.js](hook.js), it contains a bunch of
 functions which are invoked after resources are created or destroyed. In the case of a virtual machine, we'll ping and connect with SSH programatically thanks to the [ping](https://www.npmjs.com/package/ping) and [ssh2](https://www.npmjs.com/package/ssh2) Javascript library.

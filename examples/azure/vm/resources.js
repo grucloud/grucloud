@@ -131,7 +131,6 @@ const createResources = ({ provider }) => {
             offer: "UbuntuServer",
             sku: "18.04-LTS",
             version: "latest",
-            exactVersion: "18.04.202110120",
           },
         },
         osProfile: {

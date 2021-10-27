@@ -67,7 +67,6 @@ const createResources = ({ provider }) => {
   provider.compute.makeVmInstance({
     name: "webserver",
     properties: ({ config }) => ({
-      tags: {},
       machineType: "f1-micro",
       canIpForward: false,
       metadata: {
@@ -77,10 +76,6 @@ const createResources = ({ provider }) => {
             value: "True",
           },
         ],
-      },
-      labels: {
-        "managed-by": "grucloud",
-        "gc-stage": "dev",
       },
       startRestricted: false,
       deletionProtection: false,

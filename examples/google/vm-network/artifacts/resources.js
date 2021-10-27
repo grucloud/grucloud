@@ -4,7 +4,7 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.compute.makeNetwork({
-    name: "vpc-dev",
+    name: "vpc",
     properties: ({ config }) => ({
       description: "Managed By GruCloud",
       autoCreateSubnetworks: false,
@@ -15,17 +15,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.compute.makeSubNetwork({
-    name: "subnet-subnetworkDev",
+    name: "subnet-subnetwork",
     properties: ({ config }) => ({
       ipCidrRange: "10.164.0.0/20",
     }),
     dependencies: ({ resources }) => ({
-      network: resources.compute.Network["vpc-dev"],
+      network: resources.compute.Network["vpc"],
     }),
   });
 
   provider.compute.makeFirewall({
-    name: "firewall-dev",
+    name: "firewall",
     properties: ({ config }) => ({
       description: "Managed By GruCloud",
       priority: 1000,
@@ -42,12 +42,12 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      network: resources.compute.Network["vpc-dev"],
+      network: resources.compute.Network["vpc"],
     }),
   });
 
   provider.compute.makeVmInstance({
-    name: "db-dev",
+    name: "db",
     properties: ({ config }) => ({
       tags: {},
       machineType: "f1-micro",
@@ -87,7 +87,7 @@ const createResources = ({ provider }) => {
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
     dependencies: ({ resources }) => ({
-      subNetwork: resources.compute.SubNetwork["subnetwork-dev"],
+      subNetwork: resources.compute.SubNetwork["subnetwork"],
     }),
   });
 };
