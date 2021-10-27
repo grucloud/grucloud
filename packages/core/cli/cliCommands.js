@@ -1644,7 +1644,7 @@ exports.Cli = ({
           defaultsDeep({
             outputCode: path.resolve(
               programOptions.workingDirectory,
-              "artifacts/iac.js"
+              "artifacts/resources.js"
             ),
             outputConfig: path.resolve(
               programOptions.workingDirectory,

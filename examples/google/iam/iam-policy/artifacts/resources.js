@@ -18,33 +18,9 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       bindings: [
         {
-          role: "roles/compute.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/compute.serviceAgent",
-          members: [
-            "serviceAccount:service-91170824493@compute-system.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/compute.viewer",
-          members: [
-            "serviceAccount:sa-grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/dns.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
           role: "roles/editor",
           members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
+            "serviceAccount:sa-example-policy@grucloud-test.iam.gserviceaccount.com",
           ],
         },
         {
@@ -59,18 +35,6 @@ const createResources = ({ provider }) => {
         },
         {
           role: "roles/resourcemanager.projectIamAdmin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/storage.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/storage.objectAdmin",
           members: [
             "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
           ],

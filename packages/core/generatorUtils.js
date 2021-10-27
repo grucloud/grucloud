@@ -388,22 +388,29 @@ ${buildDependencies({
 `;
 
 const writeToFile =
-  ({ filename }) =>
+  ({ filename, programOptions }) =>
   (content) =>
     pipe([
       tap(() => {
         assert(filename);
         assert(content);
+        assert(programOptions);
+      }),
+      assign({
+        filenameResolved: () =>
+          path.resolve(programOptions.workingDirectory, filename),
+        contentFormated: () => prettier.format(content, { parser: "babel" }),
       }),
       tryCatch(
         pipe([
-          () => prettier.format(content, { parser: "babel" }),
-          (formatted) => fs.writeFile(filename, formatted),
+          ({ filenameResolved, contentFormated }) =>
+            fs.writeFile(filenameResolved, contentFormated),
         ]),
         (error) =>
           pipe([
             tap(() => {
-              console.error(content);
+              console.error(`Cannot write to file '${filename}`);
+              console.error(error);
             }),
             () => {
               throw error;
@@ -742,7 +749,7 @@ const readMapping = ({ commandOptions, programOptions }) =>
 exports.readMapping = readMapping;
 
 const writeResourcesToFile =
-  ({ filename, resourcesTpl }) =>
+  ({ filename, resourcesTpl, programOptions }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -759,7 +766,7 @@ const writeResourcesToFile =
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
       ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
-      writeToFile({ filename }),
+      writeToFile({ filename, programOptions }),
     ])();
 
 const writeEnv =
@@ -1085,6 +1092,7 @@ exports.generatorMain = ({
           resources: writeResourcesToFile({
             filename: commandOptions.outputCode,
             resourcesTpl,
+            programOptions,
           }),
           env: writeEnv({
             filename: commandOptions.outputEnv,
