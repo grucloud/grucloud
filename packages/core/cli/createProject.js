@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { pipe, get, fork, tap, assign } = require("rubico");
+const { pipe, get, fork, tap, assign, not } = require("rubico");
+const { includes } = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
 const fs = require("fs").promises;
@@ -56,7 +57,12 @@ const writeDirectory =
       tap((params) => {
         assert(true);
       }),
-      tap(({ source, destination }) => fse.copy(source, destination)),
+      tap(({ source, destination }) =>
+        fse.copy(source, destination, {
+          filter: (source, destination) =>
+            pipe([() => source, not(includes("node_modules"))])(),
+        })
+      ),
     ])();
 
 const displayGuide = ({ provider, dirs: { destination } }) =>
