@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const { snakeCase } = require("change-case");
 const prettier = require("prettier");
-
+const { differenceObject } = require("./Common");
 const {
   pipe,
   tap,
@@ -117,6 +117,7 @@ const buildProperties = ({
   commandOptions,
   programOptions,
   filterLive = () => identity,
+  defaultValue = {},
 }) =>
   pipe([
     tap(() => {
@@ -132,6 +133,10 @@ const buildProperties = ({
       programOptions,
       commandOptions,
     }),
+    tap((params) => {
+      assert(true);
+    }),
+    differenceObject(defaultValue),
     tap((params) => {
       assert(true);
     }),
@@ -864,6 +869,7 @@ const writeResource =
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
     filterLive,
+    defaultValue,
     codeBuildProperties,
     hasNoProperty,
     inferName,
@@ -902,6 +908,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
+                  defaultValue,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
                   commandOptions,
@@ -958,6 +965,7 @@ const writeResources =
     group,
     providerName,
     filterLive,
+    defaultValue,
     properties,
     dependencies,
     environmentVariables,
@@ -1007,6 +1015,7 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
+                defaultValue,
                 inferName,
                 dependencies,
                 ignoreResource,

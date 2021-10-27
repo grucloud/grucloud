@@ -13,6 +13,17 @@
       "port": 9229
     },
     {
+      "name": "GenCode",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["gencode"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "List -g",
       "type": "node",
       "request": "launch",

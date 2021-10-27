@@ -222,28 +222,6 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
           aliasIpRanges: [],
         },
       ],
-      displayDevice: {
-        enableDisplay: false,
-      },
-      canIpForward: false,
-      scheduling: {
-        preemptible: false,
-        onHostMaintenance: "MIGRATE",
-        automaticRestart: true,
-        nodeAffinities: [],
-      },
-      deletionProtection: false,
-      reservationAffinity: {
-        consumeReservationType: "ANY_RESERVATION",
-      },
-      shieldedInstanceConfig: {
-        enableSecureBoot: false,
-        enableVtpm: true,
-        enableIntegrityMonitoring: true,
-      },
-      confidentialInstanceConfig: {
-        enableConfidentialCompute: false,
-      },
     })(otherProperties);
     logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;

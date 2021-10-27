@@ -15,6 +15,7 @@ const {
   reduce,
   not,
   or,
+  switchCase,
 } = require("rubico");
 const {
   isObject,
@@ -30,6 +31,7 @@ const {
   identity,
   unless,
   isEmpty,
+  keys,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -75,6 +77,40 @@ const omitIfEmpty = (paths) => (obj) =>
     }),
   ])();
 exports.omitIfEmpty = omitIfEmpty;
+
+const differenceObject = (exclude) => (target) =>
+  pipe([
+    tap(() => {
+      assert(target);
+      assert(exclude);
+    }),
+    () => target,
+    keys,
+    reduce(
+      (acc, key) =>
+        pipe([
+          switchCase([
+            () => exclude.hasOwnProperty(key),
+            switchCase([
+              () => isObject(exclude[key]),
+              pipe([
+                () => differenceObject(exclude[key])(target[key]),
+                switchCase([
+                  isEmpty,
+                  () => acc,
+                  (value) => ({ ...acc, [key]: value }),
+                ]),
+              ]),
+              () => acc,
+            ]),
+            () => ({ ...acc, [key]: target[key] }),
+          ]),
+        ])(),
+      {}
+    ),
+  ])();
+
+exports.differenceObject = differenceObject;
 
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;

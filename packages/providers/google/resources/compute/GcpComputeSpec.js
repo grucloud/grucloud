@@ -180,6 +180,18 @@ module.exports = pipe([
         frewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       }),
+      defaultValue: {
+        startRestricted: false,
+        deletionProtection: false,
+        shieldedInstanceConfig: {
+          enableSecureBoot: false,
+          enableVtpm: true,
+          enableIntegrityMonitoring: true,
+        },
+        shieldedInstanceIntegrityPolicy: {
+          updateAutoLearnPolicy: true,
+        },
+      },
       filterLive: ({ providerConfig, lives }) =>
         pipe([
           assign({
@@ -217,7 +229,6 @@ module.exports = pipe([
             "metadata.fingerprint",
             "metadata.kind",
           ]),
-          ///TODO remove our tags in labels
           omitIfEmpty(["tags"]),
           assign({
             machineType: pipe([

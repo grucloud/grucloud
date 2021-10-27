@@ -7,7 +7,6 @@ const createResources = ({ provider }) => {
     name: "web-server",
     properties: ({ config }) => ({
       machineType: "f1-micro",
-      canIpForward: false,
       metadata: {
         items: [
           {
@@ -15,25 +14,6 @@ const createResources = ({ provider }) => {
             value: "True",
           },
         ],
-      },
-      startRestricted: false,
-      deletionProtection: false,
-      reservationAffinity: {
-        consumeReservationType: "ANY_RESERVATION",
-      },
-      displayDevice: {
-        enableDisplay: false,
-      },
-      shieldedInstanceConfig: {
-        enableSecureBoot: false,
-        enableVtpm: true,
-        enableIntegrityMonitoring: true,
-      },
-      shieldedInstanceIntegrityPolicy: {
-        updateAutoLearnPolicy: true,
-      },
-      confidentialInstanceConfig: {
-        enableConfidentialCompute: false,
       },
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
