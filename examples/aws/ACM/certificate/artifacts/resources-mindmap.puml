@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project AWS Template project
+skinparam monochrome true
++ Infra
+++ aws
++++ ACM
+++++ Certificate (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap
