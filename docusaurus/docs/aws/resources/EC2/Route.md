@@ -19,12 +19,12 @@ const vpc = provider.EC2.makeVpc({
 
 const ig = provider.EC2.makeInternetGateway({
   name: "ig",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
 });
 
 const subnet = provider.EC2.makeSubnet({
   name: "subnet",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
   }),
@@ -32,12 +32,12 @@ const subnet = provider.EC2.makeSubnet({
 
 const routeTable = provider.EC2.makeRouteTable({
   name: "route-table",
-  dependencies: { vpc, subnets: [subnet] },
+  dependencies: () => ({ vpc, subnets: [subnet] }),
 });
 
 const route = provider.EC2.makeRoute({
   name: "route-ig",
-  dependencies: { routeTable, ig },
+  dependencies: () => ({ routeTable, ig }),
 });
 ```
 
@@ -53,7 +53,7 @@ const vpc = provider.EC2.makeVpc({
 
 const subnetPublic = provider.EC2.makeSubnet({
   name: "subnet-public",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
   }),
@@ -65,12 +65,12 @@ const eip = provider.EC2.makeElasticIpAddress({
 
 const natGateway = provider.EC2.makeNatGateway({
   name: "nat-gateway",
-  dependencies: { subnet: subnetPublic, eip },
+  dependencies: () => ({ subnet: subnetPublic, eip }),
 });
 
 const subnetPrivate = provider.EC2.makeSubnet({
   name: "subnet-private",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     CidrBlock: "10.1.1.1/24",
   }),
@@ -78,12 +78,12 @@ const subnetPrivate = provider.EC2.makeSubnet({
 
 const routeTablePrivate = provider.EC2.makeRouteTable({
   name: "route-table-private",
-  dependencies: { vpc, subnets: [subnetPrivate] },
+  dependencies: () => ({ vpc, subnets: [subnetPrivate] }),
 });
 
 const routeNat = provider.EC2.makeRoute({
   name: "route-nat",
-  dependencies: { routeTable: routeTablePrivate, natGateway },
+  dependencies: () => ({ routeTable: routeTablePrivate, natGateway }),
 });
 ```
 

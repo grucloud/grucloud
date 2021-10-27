@@ -21,13 +21,12 @@ const domain = provider.Route53Domain.useDomain({
 const hostedZoneName = `${domainName}.`;
 const hostedZone = provider.Route53.makeHostedZone({
   name: hostedZoneName,
-  dependencies: { domain },
-  properties: ({}) => ({}),
+  dependencies: () => ({ domain }),
 });
 
 const recordA = provider.Route53.makeRecord({
   name: `${hostedZoneName}-ipv4`,
-  dependencies: { hostedZone, eip },
+  dependencies: () => ({ hostedZone, eip }),
   properties: ({ dependencies: { eip } }) => {
     return {
       Name: hostedZoneName,
@@ -54,15 +53,14 @@ const domain = provider.Route53Domain.useDomain({
   name: domainName,
 });
 
+const hostedZoneName = `${domainName}.`;
 const hostedZone = provider.Route53.makeHostedZone({
-  name: `${domainName}.`,
-  dependencies: { domain },
-  properties: ({}) => ({}),
+  name: hostedZoneName,
+  dependencies: () => ({ domain }),
 });
 
 const recordValidation = provider.Route53.makeRecord({
-  name: `validation-${domainName}.`,
-  dependencies: { hostedZone, certificate },
+  dependencies: () => ({ hostedZone, certificate }),
 });
 ```
 
@@ -75,7 +73,7 @@ const domainName = "your.domain.name.com";
 
 const distribution = provider.CloudFront.makeDistribution({
   name: `distribution-${bucketName}`,
-  dependencies: { websiteBucket, certificate },
+  dependencies: () => ({ websiteBucket, certificate }),
   properties: ({}) => {
     // More stuff here
   },
@@ -83,12 +81,11 @@ const distribution = provider.CloudFront.makeDistribution({
 
 const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
-  dependencies: { domain },
+  dependencies: () => ({ domain }),
 });
 
 const recordCloudFront = provider.Route53.makeRecord({
-  name: `distribution-alias-${domainName}`,
-  dependencies: { hostedZone, distribution },
+  dependencies: () => ({ hostedZone, distribution }),
 });
 ```
 
@@ -105,6 +102,11 @@ const recordCloudFront = provider.Route53.makeRecord({
 ## Dependencies
 
 - [Route53 HostedZone](./Route53HostedZone)
+- [LoadBalancer](../ELBv2/ELBLoadBalancer.md)
+- [Certificate](../ACM/AcmCertificate.md)
+- [APIGateway DomainName](../APIGateway/DomainName.md)
+- [ApiGatewayV2 DomainName](../ApiGatewayV2/DomainName.md)
+- [CloudFront Distribution](../CloudFront/CloudFrontDistribution.md)
 
 ## List
 

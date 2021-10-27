@@ -12,13 +12,13 @@ const server = provider.EC2.makeInstance({
     InstanceType: "t2.micro",
     ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
   }),
-  dependencies: {
+  dependencies: () => ({
     keyPair,
     subnet,
     securityGroups: [sg],
     iamInstanceProfile,
     volumes: [volume],
-  },
+  }),
 });
 ```
 

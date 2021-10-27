@@ -442,6 +442,7 @@ const hasResourceInDependency = (resource) =>
       ])
     ),
     get("ids"),
+    map(when(isObject, get("id"))),
     includes(resource.id),
   ]);
 
@@ -812,7 +813,7 @@ const writeEnv =
 
 const isEqualById = ({ type, group, providerName, id }) =>
   and([
-    eq(get("id"), id),
+    or([eq(get("id"), id), eq(get("id"), id?.id)]),
     eq(get("type"), type),
     eq(get("group"), group),
     eq(get("providerName"), providerName),

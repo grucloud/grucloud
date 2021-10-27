@@ -67,7 +67,7 @@ const recordValidation = provider.Route53.makeRecord({
 
 ## UsedBy
 
-- [Rotue53 Hosted Zone](../Route53/Route53HostedZone)
+- [Route53 Hosted Zone](../Route53/Route53HostedZone)
 - [CloudFront Distribution](../CloudFront/CloudFrontDistribution)
 - [APIGateway Domain Name](../APIGateway/APIGatewayDomainName)
 - [ApiGatewayV2 Domain Name](../ApiGatewayV2/ApiGatewayV2DomainName)
@@ -80,72 +80,108 @@ The list of certificates can be displayed and filtered with the type **Certifica
 gc list -t Certificate
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
   ✓ Listing 1/1
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 Certificate from aws                                                                                                                                  │
-├──────────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────┬──────┤
-│ Name                                     │ Data                                                                                                  │ Our  │
-├──────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────┼──────┤
-│ dev.example-module-aws-certificate.gruc… │ CertificateArn: arn:aws:acm:eu-west-2:840541460064:certificate/e7aa0b10-1606-4c90-b9cd-accde2259716   │ Yes  │
-│                                          │ DomainName: dev.example-module-aws-certificate.grucloud.org                                           │      │
-│                                          │ SubjectAlternativeNames:                                                                              │      │
-│                                          │   - "dev.example-module-aws-certificate.grucloud.org"                                                 │      │
-│                                          │ DomainValidationOptions:                                                                              │      │
-│                                          │   - DomainName: dev.example-module-aws-certificate.grucloud.org                                       │      │
-│                                          │     ValidationDomain: dev.example-module-aws-certificate.grucloud.org                                 │      │
-│                                          │     ValidationStatus: SUCCESS                                                                         │      │
-│                                          │     ResourceRecord:                                                                                   │      │
-│                                          │       Name: _b43939171abf0b1c5022e767067716ea.dev.example-module-aws-certificate.grucloud.org.        │      │
-│                                          │       Type: CNAME                                                                                     │      │
-│                                          │       Value: _da38df93563490b16daee8c697da91ec.zjfbrrwmzc.acm-validations.aws.                        │      │
-│                                          │     ValidationMethod: DNS                                                                             │      │
-│                                          │ Serial: 0e:c9:76:47:08:94:d4:b2:70:db:4a:42:37:b1:13:62                                               │      │
-│                                          │ Subject: CN=dev.example-module-aws-certificate.grucloud.org                                           │      │
-│                                          │ Issuer: Amazon                                                                                        │      │
-│                                          │ CreatedAt: 2021-04-03T01:31:53.000Z                                                                   │      │
-│                                          │ IssuedAt: 2021-04-03T01:32:33.000Z                                                                    │      │
-│                                          │ Status: ISSUED                                                                                        │      │
-│                                          │ NotBefore: 2021-04-03T00:00:00.000Z                                                                   │      │
-│                                          │ NotAfter: 2022-05-02T23:59:59.000Z                                                                    │      │
-│                                          │ KeyAlgorithm: RSA-2048                                                                                │      │
-│                                          │ SignatureAlgorithm: SHA256WITHRSA                                                                     │      │
-│                                          │ InUseBy: []                                                                                           │      │
-│                                          │ Type: AMAZON_ISSUED                                                                                   │      │
-│                                          │ KeyUsages:                                                                                            │      │
-│                                          │   - Name: DIGITAL_SIGNATURE                                                                           │      │
-│                                          │   - Name: KEY_ENCIPHERMENT                                                                            │      │
-│                                          │ ExtendedKeyUsages:                                                                                    │      │
-│                                          │   - Name: TLS_WEB_SERVER_AUTHENTICATION                                                               │      │
-│                                          │     OID: 1.3.6.1.5.5.7.3.1                                                                            │      │
-│                                          │   - Name: TLS_WEB_CLIENT_AUTHENTICATION                                                               │      │
-│                                          │     OID: 1.3.6.1.5.5.7.3.2                                                                            │      │
-│                                          │ RenewalEligibility: INELIGIBLE                                                                        │      │
-│                                          │ Options:                                                                                              │      │
-│                                          │   CertificateTransparencyLoggingPreference: ENABLED                                                   │      │
-│                                          │ Tags:                                                                                                 │      │
-│                                          │   - Key: ManagedBy                                                                                    │      │
-│                                          │     Value: GruCloud                                                                                   │      │
-│                                          │   - Key: stage                                                                                        │      │
-│                                          │     Value: dev                                                                                        │      │
-│                                          │   - Key: projectName                                                                                  │      │
-│                                          │     Value: @grucloud/example-module-aws-certificate                                                   │      │
-│                                          │   - Key: CreatedByProvider                                                                            │      │
-│                                          │     Value: aws                                                                                        │      │
-│                                          │   - Key: Name                                                                                         │      │
-│                                          │     Value: dev.example-module-aws-certificate.grucloud.org                                            │      │
-│                                          │                                                                                                       │      │
-└──────────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────┴──────┘
+┌──────────────────────────────────────────────────────────────────┐
+│ 2 ACM::Certificate from aws                                      │
+├──────────────────────────────────────────────────────────────────┤
+│ name: dev.cloudfront.aws.test.grucloud.org                       │
+│ managedByUs: NO                                                  │
+│ live:                                                            │
+│   CertificateArn: arn:aws:acm:us-east-1:840541460064:certificat… │
+│   DomainName: dev.cloudfront.aws.test.grucloud.org               │
+│   SubjectAlternativeNames:                                       │
+│     - "dev.cloudfront.aws.test.grucloud.org"                     │
+│   DomainValidationOptions:                                       │
+│     - DomainName: dev.cloudfront.aws.test.grucloud.org           │
+│       ValidationDomain: dev.cloudfront.aws.test.grucloud.org     │
+│       ValidationStatus: SUCCESS                                  │
+│       ResourceRecord:                                            │
+│         Name: _1c003a592ed0c0c949c1031f5deaef5e.dev.cloudfront.… │
+│         Type: CNAME                                              │
+│         Value: _20c68e8d64be718e90d61c5bbb573b2b.bbfvkzsszw.acm… │
+│       ValidationMethod: DNS                                      │
+│   Serial: 08:be:e5:a5:32:6e:83:1f:04:62:74:ad:35:40:35:59        │
+│   Subject: CN=dev.cloudfront.aws.test.grucloud.org               │
+│   Issuer: Amazon                                                 │
+│   CreatedAt: 2021-09-21T18:09:06.000Z                            │
+│   IssuedAt: 2021-09-21T18:10:02.000Z                             │
+│   Status: ISSUED                                                 │
+│   NotBefore: 2021-09-21T00:00:00.000Z                            │
+│   NotAfter: 2022-10-20T23:59:59.000Z                             │
+│   KeyAlgorithm: RSA-2048                                         │
+│   SignatureAlgorithm: SHA256WITHRSA                              │
+│   InUseBy: []                                                    │
+│   Type: AMAZON_ISSUED                                            │
+│   KeyUsages:                                                     │
+│     - Name: DIGITAL_SIGNATURE                                    │
+│     - Name: KEY_ENCIPHERMENT                                     │
+│   ExtendedKeyUsages:                                             │
+│     - Name: TLS_WEB_SERVER_AUTHENTICATION                        │
+│       OID: 1.3.6.1.5.5.7.3.1                                     │
+│     - Name: TLS_WEB_CLIENT_AUTHENTICATION                        │
+│       OID: 1.3.6.1.5.5.7.3.2                                     │
+│   RenewalEligibility: INELIGIBLE                                 │
+│   Options:                                                       │
+│     CertificateTransparencyLoggingPreference: ENABLED            │
+│   Tags:                                                          │
+│     - Key: gc-created-by-provider                                │
+│       Value: aws                                                 │
+│     - Key: gc-managed-by                                         │
+│       Value: grucloud                                            │
+│     - Key: gc-project-name                                       │
+│       Value: @grucloud/example-aws-website-https                 │
+│     - Key: gc-stage                                              │
+│       Value: dev                                                 │
+│     - Key: Name                                                  │
+│       Value: dev.cloudfront.aws.test.grucloud.org                │
+│                                                                  │
+├──────────────────────────────────────────────────────────────────┤
+│ name: grucloud.org                                               │
+│ managedByUs: NO                                                  │
+│ live:                                                            │
+│   CertificateArn: arn:aws:acm:us-east-1:840541460064:certificat… │
+│   DomainName: grucloud.org                                       │
+│   SubjectAlternativeNames:                                       │
+│     - "grucloud.org"                                             │
+│   DomainValidationOptions:                                       │
+│     - DomainName: grucloud.org                                   │
+│       ValidationDomain: grucloud.org                             │
+│       ValidationStatus: SUCCESS                                  │
+│       ResourceRecord:                                            │
+│         Name: _691e4a68814938b97e40e8e955bf1a30.grucloud.org.    │
+│         Type: CNAME                                              │
+│         Value: _19aece4a9123a510cd3c628c73fa754b.wggjkglgrm.acm… │
+│       ValidationMethod: DNS                                      │
+│   Serial: 04:66:5e:8d:c5:53:94:cc:cd:f7:33:70:73:a4:33:05        │
+│   Subject: CN=grucloud.org                                       │
+│   Issuer: Amazon                                                 │
+│   CreatedAt: 2021-10-27T17:31:03.044Z                            │
+│   IssuedAt: 2021-10-27T17:41:51.537Z                             │
+│   Status: ISSUED                                                 │
+│   NotBefore: 2021-10-27T00:00:00.000Z                            │
+│   NotAfter: 2022-11-25T23:59:59.000Z                             │
+│   KeyAlgorithm: RSA-2048                                         │
+│   SignatureAlgorithm: SHA256WITHRSA                              │
+│   InUseBy: []                                                    │
+│   Type: AMAZON_ISSUED                                            │
+│   KeyUsages:                                                     │
+│     - Name: DIGITAL_SIGNATURE                                    │
+│     - Name: KEY_ENCIPHERMENT                                     │
+│   ExtendedKeyUsages:                                             │
+│     - Name: TLS_WEB_SERVER_AUTHENTICATION                        │
+│       OID: 1.3.6.1.5.5.7.3.1                                     │
+│     - Name: TLS_WEB_CLIENT_AUTHENTICATION                        │
+│       OID: 1.3.6.1.5.5.7.3.2                                     │
+│   RenewalEligibility: INELIGIBLE                                 │
+│   Options:                                                       │
+│     CertificateTransparencyLoggingPreference: ENABLED            │
+│   Tags: []                                                       │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 
 
-List Summary:
-Provider: aws
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                                                                                    │
-├────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ Certificate        │ dev.example-module-aws-certificate.grucloud.org                                                                                   │
-└────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```

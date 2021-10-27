@@ -27,13 +27,13 @@ const iamPolicy = provider.IAM.makePolicy({
 
 const iamGroup = provider.IAM.makeGroup({
   name: "Admin",
-  dependencies: { policies: [iamPolicy] },
+  dependencies: () => ({ policies: [iamPolicy] }),
   properties: () => ({}),
 });
 
 const iamUser = provider.IAM.makeUser({
   name: "Alice",
-  dependencies: { iamGroups: [iamGroup] },
+  dependencies: () => ({ iamGroups: [iamGroup] }),
   properties: () => ({}),
 });
 ```

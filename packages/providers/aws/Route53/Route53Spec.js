@@ -1,6 +1,17 @@
 const assert = require("assert");
-const { tap, pipe, assign, map, pick, get, omit, or } = require("rubico");
-const { when, isEmpty } = require("rubico/x");
+const {
+  tap,
+  pipe,
+  assign,
+  map,
+  pick,
+  get,
+  omit,
+  or,
+  switchCase,
+} = require("rubico");
+const { prepend } = require("rubico/x");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
 const { Route53HostedZone, compareHostedZone } = require("./Route53HostedZone");
@@ -30,17 +41,43 @@ module.exports = () =>
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
-      filterLive: () =>
+      inferName: ({ properties, dependencies }) =>
         pipe([
-          pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          dependencies,
           tap((params) => {
             assert(true);
           }),
-          //TODO omitIfEmpty(["ResourceRecords"])
-          when(
-            pipe([get("ResourceRecords"), isEmpty]),
-            omit(["ResourceRecords"])
-          ),
+          switchCase([
+            get("certificate"),
+            pipe([get("certificate.name"), prepend("ACM::Certificate::")]),
+            get("loadBalancer"),
+            pipe([get("loadBalancer.name"), prepend("ELBv2::LoadBalancer::")]),
+            get("distribution"),
+            pipe([
+              get("distribution.name"),
+              prepend("CloudFront::Distribution::"),
+            ]),
+            get("apiGatewayDomainName"),
+            pipe([
+              get("apiGatewayDomainName.name"),
+              prepend("APIGateway::DomainName::"),
+            ]),
+            get("apiGatewayV2DomainName"),
+            pipe([
+              get("apiGatewayV2DomainName.name"),
+              prepend("ApiGatewayV2::DomainName::"),
+            ]),
+            () => "",
+          ]),
+          prepend("record::"),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      filterLive: () =>
+        pipe([
+          pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          omitIfEmpty(["ResourceRecords"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([

@@ -19,7 +19,7 @@ const vpc = provider.EC2.makeVpc({
 
 const subnet = provider.EC2.makeSubnet({
   name: "subnet",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
   }),
@@ -27,7 +27,7 @@ const subnet = provider.EC2.makeSubnet({
 
 const routeTable = provider.EC2.makeRouteTable({
   name: "rt",
-  dependencies: { vpc, subnets: [subnet] },
+  dependencies: () => ({ vpc, subnets: [subnet] }),
 });
 ```
 

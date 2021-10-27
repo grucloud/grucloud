@@ -15,7 +15,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Route53.makeRecord({
-    name: "_691e4a68814938b97e40e8e955bf1a30.grucloud.org.::CNAME",
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone["grucloud.org."],
       certificate: resources.ACM.Certificate["grucloud.org"],

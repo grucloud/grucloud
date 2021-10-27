@@ -32,8 +32,7 @@ const iamPolicy = provider.IAM.makePolicy({
 
 const iamRole = provider.IAM.makeRole({
   name: "my-role",
-  dependencies: { policies: [iamPolicy] },
-
+  dependencies: () => ({ policies: [iamPolicy] }),
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",
@@ -66,8 +65,7 @@ const iamPolicyEKSCluster = provider.IAM.usePolicy({
 
 const iamRole = provider.IAM.makeRole({
   name: "my-role",
-  dependencies: { policies: [iamPolicyEKSCluster] },
-
+  dependencies: () => ({ policies: [iamPolicyEKSCluster] }),
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",
@@ -111,7 +109,7 @@ const iamPolicy = provider.IAM.makePolicy({
 
 const iamUser = provider.IAM.makeUser({
   name: "Alice",
-  dependencies: { policies: [iamPolicy] },
+  dependencies: () => ({ policies: [iamPolicy] }),
   properties: () => ({}),
 });
 ```
@@ -140,7 +138,7 @@ const iamPolicy = provider.IAM.makePolicy({
 
 const iamGroup = provider.IAM.makeGroup({
   name: "Admin",
-  dependencies: { policies: [iamPolicy] },
+  dependencies: () => ({ policies: [iamPolicy] }),
   properties: () => ({}),
 });
 ```

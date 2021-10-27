@@ -150,18 +150,16 @@ const createResources = ({ provider }) => {
   });
 
   provider.Route53.makeRecord({
-    name: "api-gateway-alias-record",
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      apiGatewayV2DomainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
+      certificate: resources.ACM.Certificate["grucloud.org"],
     }),
   });
 
   provider.Route53.makeRecord({
-    name: "certificate-validation-grucloud.org.",
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      certificate: resources.ACM.Certificate["grucloud.org"],
+      apiGatewayV2DomainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
     }),
   });
 

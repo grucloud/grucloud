@@ -10,7 +10,7 @@ Add new ingress and egress rules with [SecurityGroupRuleIngress](./SecurityGroup
 ```js
 const sg = provider.EC2.makeSecurityGroup({
   name: "securityGroup",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     Description: "Security Group SSH",
   }),

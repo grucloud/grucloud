@@ -30,7 +30,7 @@ const role = provider.IAM.makeRole({
 
 const iamInstanceProfile = provider.IAM.makeInstanceProfile({
   name: "my-instance-profile",
-  dependencies: { roles: [role] },
+  dependencies: () => ({ roles: [role] }),
   properties: () => ({
     Path: "/",
   }),
@@ -54,7 +54,7 @@ const image = provider.EC2.useImage({
 
 const server = provider.EC2.makeInstance({
   name: "web-iam",
-  dependencies: { image, keyPair, iamInstanceProfile },
+  dependencies: () => ({ image, keyPair, iamInstanceProfile }),
   properties: () => ({
     InstanceType: "t2.micro",
   }),

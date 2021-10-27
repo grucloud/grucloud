@@ -12,7 +12,7 @@ Upon creation, the SSL certicate chain is fetched from the `identity.oidc.issuer
 ```js
 const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
   name: "oidp-eks",
-  dependencies: { cluster },
+  dependencies: () => ({ cluster }),
 });
 ```
 

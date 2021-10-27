@@ -15,7 +15,7 @@ const vpc = provider.EC2.makeVpc({
 
 const ig = provider.EC2.makeInternetGateway({
   name: "ig",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
 });
 ```
 

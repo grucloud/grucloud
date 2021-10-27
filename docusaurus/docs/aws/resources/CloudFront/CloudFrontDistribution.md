@@ -31,7 +31,7 @@ const websiteBucket = provider.S3.makeBucket({
 
 const distribution = provider.CloudFront.makeDistribution({
   name: `distribution-${domainName}`,
-  dependencies: { websiteBucket, certificate },
+  dependencies: () => ({ websiteBucket, certificate }),
   properties: ({ dependencies }) => {
     return {
       PriceClass: "PriceClass_100",

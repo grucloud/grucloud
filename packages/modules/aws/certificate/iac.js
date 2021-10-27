@@ -26,7 +26,6 @@ const createResources = ({
   });
 
   const certificateRecordValidation = provider.Route53.makeRecord({
-    name: `certificate-validation-${domainName}.`,
     namespace,
     dependencies: { hostedZone, certificate },
   });

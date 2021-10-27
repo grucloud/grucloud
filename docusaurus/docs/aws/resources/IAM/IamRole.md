@@ -49,8 +49,7 @@ const iamPolicy = provider.IAM.makePolicy({
 
 const iamRole = provider.IAM.makeRole({
   name: "my-role",
-  dependencies: { policies: [iamPolicy] },
-
+  dependencies: () => ({ policies: [iamPolicy] }),
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",
@@ -133,7 +132,7 @@ const iamRole = provider.IAM.makeRole({
 
 const iamInstanceProfile = provider.IAM.makeInstanceProfile({
   name: "my-instance-profile",
-  dependencies: { iamRoles: [iamRole] },
+  dependencies: () => ({ iamRoles: [iamRole] }),
   properties: () => ({}),
 });
 ```
@@ -148,7 +147,7 @@ const loadBalancerPolicy = require("./load-balancer-policy.json");
 
 const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
   name: "oidc",
-  dependencies: { cluster },
+  dependencies: () => ({ cluster }),
 });
 
 const iamLoadBalancerPolicy = provider.IAM.makePolicy({
@@ -161,10 +160,10 @@ const iamLoadBalancerPolicy = provider.IAM.makePolicy({
 
 const roleLoadBalancer = provider.IAM.makeRole({
   name: "roleLoadBalancer"
-  dependencies: {
+  dependencies: () => ({
     openIdConnectProvider: iamOpenIdConnectProvider,
     policies: [iamLoadBalancerPolicy],
-  },
+  }),
 });
 ```
 

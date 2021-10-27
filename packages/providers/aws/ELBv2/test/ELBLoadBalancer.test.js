@@ -194,7 +194,6 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     provider.Route53.makeRecord({
-      name: `dns-record-alias-load-balancer-${hostedZoneName}`,
       dependencies: {
         hostedZone,
         loadBalancer: loadBalancerReadOnly,

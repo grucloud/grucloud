@@ -119,7 +119,7 @@ exports.Route53Record = ({ spec, config }) => {
                 providerName,
               }),
             filter(eq(get("live.DNSName"), DNSName)),
-            pluck("id"),
+            map(pick(["id", "name"])),
           ])(),
       ])(),
     },
@@ -139,7 +139,7 @@ exports.Route53Record = ({ spec, config }) => {
                 providerName,
               }),
             filter(eq(get("live.regionalDomainName"), DNSName)),
-            pluck("id"),
+            map(pick(["id", "name"])),
           ])(),
       ])(),
     },
@@ -164,7 +164,7 @@ exports.Route53Record = ({ spec, config }) => {
                 DNSName
               )
             ),
-            pluck("id"),
+            map(pick(["id", "name"])),
           ])(),
       ])(),
     },
@@ -184,7 +184,7 @@ exports.Route53Record = ({ spec, config }) => {
                 providerName,
               }),
             filter(eq(get("live.DomainName"), DNSName)),
-            pluck("id"),
+            map(pick(["id", "name"])),
           ])(),
       ])(),
     },
@@ -193,7 +193,11 @@ exports.Route53Record = ({ spec, config }) => {
       group: "ACM",
       ids: pipe([
         () =>
-          lives.getByType({ type: "Certificate", group: "ACM", providerName }),
+          lives.getByType({
+            type: "Certificate",
+            group: "ACM",
+            providerName,
+          }),
         filter(
           and([
             eq(
@@ -203,15 +207,25 @@ exports.Route53Record = ({ spec, config }) => {
             () => eq(get("Type"), "CNAME")(live),
           ])
         ),
-        pluck("id"),
+        map(pick(["id", "name"])),
       ])(),
     },
   ];
 
+  const findNameInDependencies = pipe([
+    findDependencies,
+    filter(not(eq(get("type"), "HostedZone"))),
+    find(pipe([get("ids"), not(isEmpty)])),
+    unless(
+      isEmpty,
+      ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`
+    ),
+  ]);
+
   const findName = ({ live, lives }) =>
     pipe([
       () => {
-        for (fn of [findNameInTags, findId]) {
+        for (fn of [findNameInDependencies, findNameInTags, findId]) {
           const name = fn({ live, lives, config });
           if (!isEmpty(name)) {
             return name;

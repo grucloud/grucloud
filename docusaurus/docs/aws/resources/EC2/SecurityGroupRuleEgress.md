@@ -20,7 +20,7 @@ const vpc = provider.EC2.makeVpc({
 
 const sg = provider.EC2.makeSecurityGroup({
   name: "securityGroup",
-  dependencies: { vpc },
+  dependencies: () => ({ vpc }),
   properties: () => ({
     create: {
       Description: "Security Group",
@@ -30,9 +30,9 @@ const sg = provider.EC2.makeSecurityGroup({
 
 const sgRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
   name: "sg-rule-egress",
-  dependencies: {
+  dependencies: () => ({
     securityGroup: sg,
-  },
+  }),
   properties: () => ({
     IpPermission: {
       FromPort: 1024,

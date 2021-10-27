@@ -1,3 +1,3 @@
-# Aws deploymemt
+# ACM Certificate
 
-Boilerplate to deploy infrastructure on Aws with GruCloud.
+Deploy an SSL Certificate, validated by a DNS record.
