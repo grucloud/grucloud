@@ -80,7 +80,7 @@ In this section, we'll create the files needed to describe an infrastructure wit
 
 ![grucloud-files](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-files.svg)
 
-- [reosurces.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/resources.js): creates the resources given a provider.
+- [resources.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/resources.js): creates the resources given a provider.
 
 - [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
 

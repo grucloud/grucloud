@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { pipe, tap } = require("rubico");
 const path = require("path");
 const { Client } = require("pg");
 const { retryCall } = require("@grucloud/core").Retry;
@@ -39,6 +40,12 @@ module.exports = ({ provider }) => {
           dbInstanceLive,
         };
       },
+      cleanUp: ({ client }) =>
+        pipe([
+          tap(() => {
+            client.end();
+          }),
+        ])(),
       actions: [
         {
           name: "create database",

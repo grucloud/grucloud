@@ -201,10 +201,12 @@ function CoreProvider({
         name,
         onDeployed: {
           init: () => {},
+          cleanUp: () => {},
           actions: [],
         },
         onDestroyed: {
           init: () => {},
+          cleanUp: () => {},
           actions: [],
         },
       }),
@@ -439,66 +441,73 @@ function CoreProvider({
       tryCatch(
         pipe([
           assign({ payload: (script) => script.init() }),
-          ({ actions, payload }) =>
-            map.pool(
-              mapPoolSize,
-              tryCatch(
-                pipe([
-                  tap((action) => {
-                    onStateChange({
-                      context: contextFromHookAction({
-                        providerName,
-                        hookType,
-                        hookName,
-                        name: action.name,
-                      }),
-                      nextState: "RUNNING",
-                    });
-                  }),
-                  tap((action) => {
-                    assert(action.command);
-                  }),
-                  tap(callProp("command", payload)),
-                  tap((action) => {
-                    onStateChange({
-                      context: contextFromHookAction({
-                        providerName,
-                        hookType,
-                        hookName,
-                        name: action.name,
-                      }),
-                      nextState: "DONE",
-                    });
-                  }),
-                ]),
-                (error, action) => {
-                  logger.error(
-                    `runScriptCommands ${hookType}, error for ${action.name}`
-                  );
-                  logger.error(tos(error));
-                  error.stack && logger.error(error.stack);
+          ({ actions, payload, cleanUp }) =>
+            pipe([
+              () => actions,
+              map.pool(
+                mapPoolSize,
+                tryCatch(
+                  pipe([
+                    tap((action) => {
+                      onStateChange({
+                        context: contextFromHookAction({
+                          providerName,
+                          hookType,
+                          hookName,
+                          name: action.name,
+                        }),
+                        nextState: "RUNNING",
+                      });
+                    }),
+                    tap((action) => {
+                      assert(action.command);
+                    }),
+                    tap(callProp("command", payload)),
+                    tap((action) => {
+                      onStateChange({
+                        context: contextFromHookAction({
+                          providerName,
+                          hookType,
+                          hookName,
+                          name: action.name,
+                        }),
+                        nextState: "DONE",
+                      });
+                    }),
+                  ]),
+                  (error, action) => {
+                    logger.error(
+                      `runScriptCommands ${hookType}, error for ${action.name}`
+                    );
+                    logger.error(tos(error));
+                    error.stack && logger.error(error.stack);
 
-                  onStateChange({
-                    context: contextFromHookAction({
-                      providerName,
+                    onStateChange({
+                      context: contextFromHookAction({
+                        providerName,
+                        hookType,
+                        hookName,
+                        name: action.name,
+                      }),
+                      nextState: "ERROR",
+                      error: convertError({ error }),
+                    });
+
+                    return {
+                      error,
+                      action: action.name,
                       hookType,
                       hookName,
-                      name: action.name,
-                    }),
-                    nextState: "ERROR",
-                    error: convertError({ error }),
-                  });
-
-                  return {
-                    error,
-                    action: action.name,
-                    hookType,
-                    hookName,
-                    providerName,
-                  };
-                }
-              )
-            )(actions),
+                      providerName,
+                    };
+                  }
+                )
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+              tap(() => cleanUp(payload)),
+            ])(),
           tap((xx) => {
             logger.debug(
               `runScriptCommands ${tos({ hookName, hookType })} ${tos(xx)}`
