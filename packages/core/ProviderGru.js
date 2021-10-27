@@ -219,7 +219,16 @@ exports.ProviderGru = ({
         logger.info(`planQuery`);
       }),
       () => listLives({ onStateChange }),
-      () =>
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        get("error"),
+        pipe([
+          () => ({
+            lives: lives,
+          }),
+        ]),
         pipe([
           () => stacks,
           map(({ provider, isProviderUp }) => ({
@@ -257,7 +266,8 @@ exports.ProviderGru = ({
           tap((result) => {
             logger.info(`planQuery done`);
           }),
-        ])(),
+        ]),
+      ]),
     ])();
 
   const planApply = ({ plan, onStateChange, onProviderEnd = () => {} }) =>

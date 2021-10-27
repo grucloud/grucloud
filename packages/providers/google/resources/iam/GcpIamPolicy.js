@@ -42,6 +42,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
   const prevervedRolesName = [
     "roles/owner",
     "roles/resourcemanager.projectIamAdmin",
+    "roles/iam.serviceAccountAdmin",
   ];
 
   const configDefault = ({ properties, live }) =>
@@ -66,7 +67,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
         },
       }),
       tap((policy) => {
-        logger.debug(`configDefault ${policy}`);
+        logger.debug(`configDefault ${tos(policy)}`);
       }),
     ])();
 

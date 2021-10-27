@@ -741,13 +741,16 @@ function CoreProvider({
           assert(title, "title");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStopClient ${title}, #clients ${clients.length}`
+            `spinnersStopClient ${title}, #clients ${size(
+              clients
+            )}, error: ${error}`
           );
         }),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ providerName, title }),
             nextState: nextStateOnError(error),
+            error,
           })
         ),
       ])
@@ -845,7 +848,7 @@ function CoreProvider({
     tap(
       pipe([
         tap(() => {
-          logger.debug("spinnersStopListLives");
+          logger.debug(`spinnersStopListLives error: ${error}`);
         }),
         spinnersStopClient({
           onStateChange,
