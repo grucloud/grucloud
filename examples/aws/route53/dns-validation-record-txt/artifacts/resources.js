@@ -11,7 +11,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Route53.makeRecord({
-    name: "txt.grucloud.org.",
     properties: ({ config }) => ({
       Name: "grucloud.org.",
       Type: "TXT",

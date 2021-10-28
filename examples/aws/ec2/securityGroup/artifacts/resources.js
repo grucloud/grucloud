@@ -7,8 +7,6 @@ const createResources = ({ provider }) => {
     name: "vpc-test-sg",
     properties: ({ config }) => ({
       CidrBlock: "10.1.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: false,
     }),
   });
 

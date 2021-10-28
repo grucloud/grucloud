@@ -11,8 +11,6 @@ const createResources = ({ provider }) => {
     name: "Vpc",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: true,
     }),
   });
 
@@ -21,8 +19,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
@@ -34,8 +30,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
