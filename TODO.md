@@ -1,7 +1,7 @@
 ## Bugs
 
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
-- inferName for SecurityGroup
+- inferName for SecurityGroup, Route and Route Table
 - resource schema
 - check stage for all providers
 - compare refactor

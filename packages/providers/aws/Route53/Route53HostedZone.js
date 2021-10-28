@@ -6,14 +6,12 @@ const {
   tryCatch,
   get,
   switchCase,
-  pick,
   filter,
   assign,
   fork,
   or,
   not,
   eq,
-  omit,
   and,
 } = require("rubico");
 const {
@@ -25,8 +23,6 @@ const {
   includes,
   differenceWith,
   isDeepEqual,
-  flatten,
-  identity,
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
@@ -253,14 +249,51 @@ exports.Route53HostedZone = ({ spec, config }) => {
             );
           }),
           map((nameserver) => ({ Name: nameserver })),
-          (Nameservers) =>
-            route53domains().updateDomainNameservers({
-              DomainName: domain.live.DomainName,
-              Nameservers,
-            }),
-          tap(({ OperationId }) => {
-            logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
-          }),
+          tryCatch(
+            pipe([
+              //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#updateDomainNameservers-property
+              (Nameservers) =>
+                route53domains().updateDomainNameservers({
+                  DomainName: domain.live.DomainName,
+                  Nameservers,
+                }),
+              tap(({ OperationId }) => {
+                logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
+              }),
+              ({ OperationId }) =>
+                retryCall({
+                  name: `updateDomainNameservers: getOperationDetail OperationId: ${OperationId}`,
+                  fn: pipe([
+                    () => route53domains().getOperationDetail({ OperationId }),
+                    tap(({ Status, Message }) =>
+                      pipe([
+                        tap(() => {
+                          logger.debug(
+                            `updateDomainNameservers Status: ${Status}, Message: ${Message}`
+                          );
+                        }),
+                        () => ["ERROR", "FAILED"],
+                        tap.if(includes(Status), () => {
+                          logger.error(
+                            `Cannot updateDomainNameservers: ${Message}`
+                          );
+                          throw Error(
+                            `Cannot updateDomainNameservers: ${Message}`
+                          );
+                        }),
+                      ])()
+                    ),
+                  ]),
+                  isExpectedResult: pipe([eq(get("Status"), "SUCCESSFUL")]),
+                  config,
+                }),
+              // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#getOperationDetail-property
+            ]),
+            (error) => {
+              logger.error(`updateDomainNameservers ${tos({ error })}`);
+              throw error;
+            }
+          ),
         ])
       ),
       tap((HostedZone) => {
@@ -269,7 +302,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy hostedZone ${JSON.stringify({ name, id })}`);
@@ -316,7 +349,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
     ])();
 
-  const update = async ({ name, live, diff }) =>
+  const update = ({ name, live, diff }) =>
     pipe([
       tap(() => {
         logger.info(`update hosted zone ${name}, diff: ${tos(diff)}`);
@@ -359,7 +392,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
+  const configDefault = ({ name, properties, dependencies }) => {
     return defaultsDeep({
       Name: name,
     })(properties);

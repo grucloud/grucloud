@@ -30,7 +30,7 @@ const {
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ListenerArn");
-const findName = findNameInTagsOrId({ findId });
+const findName = pipe([findNameInTagsOrId({ findId })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
