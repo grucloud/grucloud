@@ -92,10 +92,20 @@ const createResources = ({ provider }) => {
     name: "RouteViaIgw",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
-      subnets: [
-        resources.EC2.Subnet["PubSubnetAz1"],
-        resources.EC2.Subnet["PubSubnetAz2"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
+      subnet: resources.EC2.Subnet["PubSubnetAz1"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
+      subnet: resources.EC2.Subnet["PubSubnetAz2"],
     }),
   });
 

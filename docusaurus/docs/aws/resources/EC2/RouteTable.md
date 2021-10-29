@@ -17,17 +17,9 @@ const vpc = provider.EC2.makeVpc({
   }),
 });
 
-const subnet = provider.EC2.makeSubnet({
-  name: "subnet",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
-  }),
-});
-
 const routeTable = provider.EC2.makeRouteTable({
   name: "rt",
-  dependencies: () => ({ vpc, subnets: [subnet] }),
+  dependencies: () => ({ vpc }),
 });
 ```
 
@@ -39,10 +31,10 @@ const routeTable = provider.EC2.makeRouteTable({
 ## Dependencies
 
 - [Vpc](./Vpc)
-- [Subnet](./Subnet)
 
 ## Used By
 
+- [RouteTableAssociation](./RouteTableAssociation.md)
 - [Route](./Route)
 
 ## List

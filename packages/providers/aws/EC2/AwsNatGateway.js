@@ -79,7 +79,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
       ])(),
     },
   ];
-
+  //TODO handle deleting
   const isInstanceUp = eq(get("State"), "available");
   const isInstanceDown = eq(get("State"), "deleted");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNatGateways-property

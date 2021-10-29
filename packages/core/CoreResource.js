@@ -16,6 +16,7 @@ const {
   and,
   or,
   transform,
+  fork,
 } = require("rubico");
 
 const {
@@ -352,7 +353,7 @@ exports.ResourceMaker = ({
                 () => dependency,
                 switchCase([
                   () => dependency.filterLives,
-                  () => dependency.resolveConfig({}),
+                  () => dependency.resolveConfig({ deep: true }),
                   pipe([() => dependency.findLive({})]),
                 ]),
                 tap.if(
@@ -534,11 +535,16 @@ exports.ResourceMaker = ({
           lives: provider.lives,
           programOptions,
         }),
-      () => getLive({ deep: true }),
+      () =>
+        retryCall({
+          name: `getLive ${toString()}`,
+          fn: async () => getLive({ deep: true }),
+          config: { retryCount: 2, retryDelay: 5e3 },
+          isExpectedResult: not(isEmpty),
+        }),
       tap((live) => {
-        //assert(live);
         if (!live) {
-          assert(true, `no live after create ${getResourceName()}`);
+          assert(false, `no live after create ${getResourceName()}`);
         }
         logger.info(`created: ${toString()}`);
         logger.debug(`created: live: ${tos(live)}`);
@@ -664,13 +670,30 @@ exports.ResourceMaker = ({
           name: `waitForResourceUp ${toString()}`,
           fn: tryCatch(
             pipe([
-              () => ({ lives }),
-              client.getLives,
-              get("resources"),
-              (resources) =>
+              fork({
+                resources: pipe([
+                  () => ({ lives }),
+                  client.getLives,
+                  get("resources"),
+                  tap((resources) => {
+                    logger.error(
+                      `waitForResourceUp: ${toString()}, #resources: ${size(
+                        resources
+                      )}`
+                    );
+                  }),
+                ]),
+                resolveDependencies: () =>
+                  resolveDependencies({
+                    resourceName: getResourceName(),
+                    dependencies: getDependencies(),
+                  }),
+              }),
+              ({ resources, resolveDependencies }) =>
                 filterLives({
                   resources,
                   lives,
+                  dependencies: resolveDependencies,
                 }),
               tap((params) => {
                 logger.error(

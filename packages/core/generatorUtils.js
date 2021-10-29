@@ -291,7 +291,7 @@ const buildDependencies = ({
   dependencies = {},
 }) =>
   switchCase([
-    () => resource.managedByOther,
+    () => /*resource.managedByOther*/ false,
     () => "",
     pipe([
       tap(() => {

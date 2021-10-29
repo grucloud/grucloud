@@ -11,8 +11,6 @@ const createResources = ({ provider }) => {
     name: "vpc",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: true,
     }),
   });
 
@@ -36,8 +34,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
@@ -49,8 +45,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
@@ -62,8 +56,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
@@ -75,8 +67,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
@@ -87,7 +77,13 @@ const createResources = ({ provider }) => {
     name: "route-table-private-a",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
-      subnets: [resources.EC2.Subnet["subnet-private-a"]],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-private-a"],
+      subnet: resources.EC2.Subnet["subnet-private-a"],
     }),
   });
 
@@ -95,7 +91,13 @@ const createResources = ({ provider }) => {
     name: "route-table-private-b",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
-      subnets: [resources.EC2.Subnet["subnet-private-b"]],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-private-b"],
+      subnet: resources.EC2.Subnet["subnet-private-b"],
     }),
   });
 
@@ -103,10 +105,20 @@ const createResources = ({ provider }) => {
     name: "route-table-public",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
-      subnets: [
-        resources.EC2.Subnet["subnet-public-a"],
-        resources.EC2.Subnet["subnet-public-b"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-public-a"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-public-b"],
     }),
   });
 

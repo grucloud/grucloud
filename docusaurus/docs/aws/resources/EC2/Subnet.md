@@ -94,7 +94,7 @@ const subnetPrivate = provider.EC2.makeSubnet({
 
 - [SecurityGroup](./SecurityGroup)
 - [EC2](./EC2)
-- [RouteTable](./RouteTable)
+- [RouteTableAssociation](./RouteTableAssociation.md)
 - [NatGateway](./NatGateway)
 
 ## Listing

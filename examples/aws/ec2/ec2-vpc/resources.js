@@ -20,8 +20,6 @@ const createResources = ({ provider }) => {
     name: "vpc-ec2-example",
     properties: ({ config }) => ({
       CidrBlock: "10.1.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: false,
     }),
   });
 
@@ -37,8 +35,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "10.1.0.0/24",
       AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-ec2-example"],
@@ -49,7 +45,13 @@ const createResources = ({ provider }) => {
     name: "route-table",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-ec2-example"],
-      subnets: [resources.EC2.Subnet["subnet"]],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table"],
+      subnet: resources.EC2.Subnet["subnet"],
     }),
   });
 

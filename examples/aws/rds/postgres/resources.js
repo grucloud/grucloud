@@ -24,8 +24,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-postgres"],
@@ -37,8 +35,6 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-postgres"],
@@ -49,10 +45,20 @@ const createResources = ({ provider }) => {
     name: "route-table-public",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-postgres"],
-      subnets: [
-        resources.EC2.Subnet["subnet-1"],
-        resources.EC2.Subnet["subnet-2"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-1"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-2"],
     }),
   });
 

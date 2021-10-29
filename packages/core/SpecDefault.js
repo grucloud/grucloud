@@ -9,7 +9,6 @@ const {
   prepend,
   identity,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
 const { compare } = require("./Common");
 const findNamespaceFromProps = (properties) =>
@@ -91,6 +90,15 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
+  findDefault: ({ resources }) =>
+    pipe([
+      () => resources,
+      //TODO check for multiple default and assert
+      find(get("isDefault")),
+      tap((live) => {
+        assert(live, `Cannot find default resource`);
+      }),
+    ])(),
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>
@@ -121,16 +129,7 @@ const SpecDefault = ({ providerName }) => ({
         () => ({ params, provider, programOptions, spec }),
         useParams,
         assign({
-          filterLives:
-            () =>
-            ({ resources }) =>
-              pipe([
-                () => resources,
-                find(eq(get("isDefault"), true)),
-                tap((live) => {
-                  assert(live, `Cannot find default resource ${spec.type}`);
-                }),
-              ])(),
+          filterLives: () => spec.findDefault,
         }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),

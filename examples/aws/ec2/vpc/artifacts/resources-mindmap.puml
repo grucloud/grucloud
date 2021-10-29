@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project vpc
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ RouteTableAssociation (4)
+++++ Route (3)
+++++ ElasticIpAddress (1)
+@endmindmap

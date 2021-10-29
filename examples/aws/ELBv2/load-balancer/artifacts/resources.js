@@ -3,10 +3,6 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.ACM.makeCertificate({
-    name: "grucloud.org",
-  });
-
   provider.EC2.makeVpc({
     name: "vpc",
     properties: ({ config }) => ({
@@ -43,73 +39,42 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.EC2.makeRouteTable({
-    name: "rtb-031ea0be78dc1d844",
+  provider.EC2.useDefaultRouteTable({
+    name: "rt-default-vpc",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
-      subnets: [
-        resources.EC2.Subnet["subnet-a"],
-        resources.EC2.Subnet["subnet-b"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
+      subnet: resources.EC2.Subnet["subnet-a"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
+      subnet: resources.EC2.Subnet["subnet-b"],
     }),
   });
 
   provider.EC2.makeRoute({
-    name: "rtb-031ea0be78dc1d844-igw",
+    name: "rt-default-vpc-igw",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rtb-031ea0be78dc1d844"],
+      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
       ig: resources.EC2.InternetGateway["internet-gateway"],
     }),
   });
 
-  provider.EC2.makeSecurityGroup({
-    name: "load-balancer",
-    properties: ({ config }) => ({
-      Description: "Load Balancer",
-    }),
+  provider.EC2.useDefaultSecurityGroup({
+    name: "sg-default-vpc",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc"],
-    }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
-    name: "load-balancer-rule-ingress-tcp-0-v4",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 0,
-        ToPort: 0,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
-    }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
-    name: "load-balancer-rule-ingress-tcp-443-v4",
-    properties: ({ config }) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 443,
-        ToPort: 443,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
     }),
   });
 
@@ -125,7 +90,7 @@ const createResources = ({ provider }) => {
         resources.EC2.Subnet["subnet-a"],
         resources.EC2.Subnet["subnet-b"],
       ],
-      securityGroups: [resources.EC2.SecurityGroup["load-balancer"]],
+      securityGroups: [resources.EC2.SecurityGroup["sg-default-vpc"]],
     }),
   });
 
@@ -152,44 +117,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.ELBv2.makeTargetGroup({
-    name: "target-group-https",
-    properties: ({ config }) => ({
-      Protocol: "HTTPS",
-      Port: 443,
-      HealthCheckProtocol: "HTTPS",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
-    }),
-  });
-
   provider.ELBv2.makeListener({
-    name: "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener/app/load-balancer/2a78b39a8ae3a5a4/829a2a99e6cd463b",
-    properties: ({ config }) => ({
-      Port: 443,
-      Protocol: "HTTPS",
-    }),
-    dependencies: ({ resources }) => ({
-      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-https"],
-      certificate: resources.ACM.Certificate["grucloud.org"],
-    }),
-  });
-
-  provider.ELBv2.makeListener({
-    name: "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener/app/load-balancer/2a78b39a8ae3a5a4/d590fbeec09fa03d",
     properties: ({ config }) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -197,6 +125,36 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
       targetGroup: resources.ELBv2.TargetGroup["target-group-http"],
+    }),
+  });
+
+  provider.ELBv2.makeRule({
+    name: "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener-rule/app/load-balancer/24ec0f6e956d9686/b45d9c1b3d6fc1f0/499d7d82cae12bb5",
+    properties: ({ config }) => ({
+      Priority: "1",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/*"],
+        },
+      ],
+      Actions: [
+        {
+          Type: "redirect",
+          Order: 1,
+          RedirectConfig: {
+            Protocol: "HTTPS",
+            Port: "443",
+            Host: "#{host}",
+            Path: "/#{path}",
+            Query: "#{query}",
+            StatusCode: "HTTP_301",
+          },
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      listener: resources.ELBv2.Listener["listener::load-balancer::HTTP::80"],
     }),
   });
 };

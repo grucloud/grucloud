@@ -11,6 +11,7 @@ skinparam monochrome true
 ++++ InternetGateway (1)
 ++++ Subnet (2)
 ++++ RouteTable (1)
+++++ RouteTableAssociation (2)
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)

@@ -101,10 +101,17 @@ const differenceObject = (exclude) => (target) =>
                   (value) => ({ ...acc, [key]: value }),
                 ]),
               ]),
-              () => acc,
+              switchCase([
+                eq(exclude[key], target[key]),
+                () => acc,
+                () => ({ ...acc, [key]: target[key] }),
+              ]),
             ]),
             () => ({ ...acc, [key]: target[key] }),
           ]),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
       {}
     ),

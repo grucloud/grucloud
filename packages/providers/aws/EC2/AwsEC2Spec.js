@@ -44,7 +44,8 @@ const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
-const { AwsRouteTable } = require("./AwsRouteTable");
+const { EC2RouteTable } = require("./EC2RouteTable");
+const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
 const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
@@ -64,6 +65,24 @@ const GROUP = "EC2";
 
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = pipe([omit(["Tags"])]);
+
+const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
+  pipe([
+    tap(() => {
+      assert(resources);
+      assert(dependencies);
+    }),
+    () => resources,
+    find(
+      and([
+        get("isDefault"),
+        eq(get("live.VpcId"), get("vpc.live.VpcId")(dependencies)),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const DecodeUserData = when(
   get("UserData"),
@@ -338,7 +357,6 @@ module.exports = () =>
         MapPublicIpOnLaunch: false,
         MapCustomerOwnedIpOnLaunch: false,
       },
-
       filterLive: () =>
         pipe([
           pick([
@@ -360,8 +378,8 @@ module.exports = () =>
     },
     {
       type: "RouteTable",
-      dependsOn: ["EC2::Vpc", "EC2::Subnet"],
-      Client: AwsRouteTable,
+      dependsOn: ["EC2::Vpc"],
+      Client: EC2RouteTable,
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["VpcId"])]),
@@ -377,6 +395,7 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      findDefault: findDefaultWithVpcDependency,
       filterLive: () => pick([]),
       ignoreResource: (input) =>
         pipe([
@@ -394,7 +413,35 @@ module.exports = () =>
         ]),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
+      }),
+    },
+    {
+      type: "RouteTableAssociation",
+      dependsOn: ["EC2::RouteTable", "EC2::Subnet"],
+      Client: EC2RouteTableAssociation,
+      isOurMinion: () => () => true,
+      compare: compare({
+        filterTarget: filterTargetDefault,
+        filterLive: pipe([
+          pick(["RouteTableId", "SubnetId"]),
+          filterLiveDefault,
+        ]),
+      }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ routeTable, subnet }) => {
+            assert(routeTable);
+            assert(subnet);
+          }),
+          ({ routeTable, subnet }) =>
+            `rt-assoc::${routeTable.name}::${subnet.name}`,
+        ])(),
+      filterLive: () => pick([]),
+      includeDefaultDependencies: true,
+      dependencies: () => ({
+        routeTable: { type: "RouteTable", group: "EC2" },
+        subnet: { type: "Subnet", group: "EC2" },
       }),
     },
     {
@@ -417,7 +464,6 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
-
       includeDefaultDependencies: true,
       dependencies: () => ({
         routeTable: { type: "RouteTable", group: "EC2" },
@@ -430,6 +476,7 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
+      findDefault: findDefaultWithVpcDependency,
       compare: compare({
         filterTarget: pipe([pick(["Description"]), filterTargetDefault]),
         filterLive: pipe([pick(["Description"])]),

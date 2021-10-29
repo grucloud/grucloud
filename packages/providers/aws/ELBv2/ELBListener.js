@@ -30,7 +30,6 @@ const {
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ListenerArn");
-const findName = pipe([findNameInTagsOrId({ findId })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
@@ -38,6 +37,25 @@ exports.ELBListener = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
   const { providerName } = config;
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+      }),
+      () =>
+        lives.getById({
+          id: live.LoadBalancerArn,
+          type: "LoadBalancer",
+          group: "ELBv2",
+          providerName: config.providerName,
+        }),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      (name) => `listener::${name}::${live.Protocol}::${live.Port}`,
+    ])();
 
   const managedByOther = ({ live, lives }) =>
     pipe([
@@ -132,13 +150,13 @@ exports.ELBListener = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getByName = ({ name }) =>
+  const getByName = ({ name, lives }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
       describeAllListeners,
-      find(eq((live) => findName({ live }), name)),
+      find(eq((live) => findName({ live, lives }), name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -214,9 +232,9 @@ exports.ELBListener = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteListener-property
-  const destroy = ({ live }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
-      () => ({ id: findId({ live }), name: findName({ live }) }),
+      () => ({ id: findId({ live }), name: findName({ live, lives }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

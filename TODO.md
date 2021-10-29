@@ -1,7 +1,7 @@
 ## Bugs
 
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
-- inferName for SecurityGroup, Route and Route Table
+- inferName for SecurityGroup, Route53 record and Route Table
 - resource schema
 - check stage for all providers
 - compare refactor
@@ -59,6 +59,9 @@
 
 ## Aws
 
+- InternetGateway name
+- Nat gateway handle deleting
+- subnet: MapPublicIpOnLaunch
 - Internet gateway getByName with Filter tags
 - EC2 Instance placement
 - Route display internet gateway or nat gateway in configDefault

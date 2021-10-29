@@ -33,7 +33,7 @@ module.exports = () =>
       Client: ELBLoadBalancerV2,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Name", "Subnets"])]),
+        filterTarget: pipe([omit(["Name", "Subnets", "Tags"])]),
         filterLive: pipe([
           omit([
             "LoadBalancerArn",
@@ -44,10 +44,11 @@ module.exports = () =>
             "VpcId",
             "State",
             "AvailabilityZones",
-            "IpAddressType",
+            "Tags",
           ]),
         ]),
       }),
+      includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
       dependencies: () => ({
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -63,7 +64,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
-          omit(["Name"]),
+          omit(["Name", "Tags"]),
           defaultsDeep({
             HealthCheckPath: "/",
             HealthCheckPort: "traffic-port",
@@ -81,8 +82,8 @@ module.exports = () =>
           omit([
             "TargetGroupArn",
             "TargetGroupName",
-            "HealthCheckProtocol",
             "LoadBalancerArns",
+            "Tags",
           ]),
         ]),
       }),
@@ -120,12 +121,24 @@ module.exports = () =>
       Client: ELBListener,
       isOurMinion,
       compare: compare({
+        filterTarget: pipe([omit(["Tags"])]),
         filterLive: pipe([
-          omit(["ListenerArn", "SslPolicy"]),
+          omit(["ListenerArn", "SslPolicy", "Tags"]),
           omitIfEmpty(["AlpnPolicy", "Certificates"]),
         ]),
       }),
-      //TODO inferName
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ loadBalancer }) => {
+            assert(loadBalancer);
+          }),
+          ({ loadBalancer }) =>
+            `listener::${loadBalancer.name}::${properties.Protocol}::${properties.Port}`,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
       filterLive: pipe([
         tap((params) => {
           assert(true);

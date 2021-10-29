@@ -43,10 +43,20 @@ const createResources = ({ provider }) => {
     name: "route-table-public",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-postgres"],
-      subnets: [
-        resources.EC2.Subnet["subnet-1"],
-        resources.EC2.Subnet["subnet-2"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-1"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table-public"],
+      subnet: resources.EC2.Subnet["subnet-2"],
     }),
   });
 

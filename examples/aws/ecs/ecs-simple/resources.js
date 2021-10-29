@@ -56,8 +56,6 @@ const createResources = ({ provider }) => {
     name: "Vpc",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: true,
     }),
   });
 
@@ -74,7 +72,6 @@ const createResources = ({ provider }) => {
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
@@ -87,7 +84,6 @@ const createResources = ({ provider }) => {
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
-      MapCustomerOwnedIpOnLaunch: false,
     }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
@@ -98,10 +94,20 @@ const createResources = ({ provider }) => {
     name: "RouteViaIgw",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["Vpc"],
-      subnets: [
-        resources.EC2.Subnet["PubSubnetAz1"],
-        resources.EC2.Subnet["PubSubnetAz2"],
-      ],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
+      subnet: resources.EC2.Subnet["PubSubnetAz1"],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
+      subnet: resources.EC2.Subnet["PubSubnetAz2"],
     }),
   });
 

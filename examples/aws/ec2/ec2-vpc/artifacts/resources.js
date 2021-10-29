@@ -45,7 +45,13 @@ const createResources = ({ provider }) => {
     name: "route-table",
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["vpc-ec2-example"],
-      subnets: [resources.EC2.Subnet["subnet"]],
+    }),
+  });
+
+  provider.EC2.makeRouteTableAssociation({
+    dependencies: ({ resources }) => ({
+      routeTable: resources.EC2.RouteTable["route-table"],
+      subnet: resources.EC2.Subnet["subnet"],
     }),
   });
 
