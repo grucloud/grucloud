@@ -175,6 +175,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
+          omit(["Tags"]),
           defaultsDeep({
             IsDefault: false,
           }),
@@ -192,6 +193,7 @@ module.exports = () =>
         ]),
         filterLive: pipe([
           omit([
+            "Tags",
             "RuleArn",
             "TargetGroupName",
             "HealthCheckProtocol",
@@ -205,6 +207,14 @@ module.exports = () =>
           }),
         ]),
       }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ listener }) => {
+            assert(listener);
+          }),
+          ({ listener }) => `rule::${listener.name}::${properties.Priority}`,
+        ])(),
       filterLive: pipe([
         ({ resource }) =>
           (live) =>

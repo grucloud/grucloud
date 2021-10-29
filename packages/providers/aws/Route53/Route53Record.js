@@ -118,7 +118,9 @@ exports.Route53Record = ({ spec, config }) => {
                 group: "ELBv2",
                 providerName,
               }),
-            filter(eq(get("live.DNSName"), DNSName)),
+            filter(({ live }) =>
+              pipe([() => DNSName, includes(live.DNSName)])()
+            ),
             map(pick(["id", "name"])),
           ])(),
       ])(),

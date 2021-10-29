@@ -46,8 +46,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          omit(["Tags"]),
-          omitIfEmpty(["TargetGroupARNs"]),
+          omit(["Tags", "TargetGroupARNs"]),
         ]),
         filterLive: pipe([
           tap((params) => {

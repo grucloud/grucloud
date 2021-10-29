@@ -255,7 +255,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,

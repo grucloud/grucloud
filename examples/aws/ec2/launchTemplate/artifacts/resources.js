@@ -11,6 +11,7 @@ const createResources = ({ provider }) => {
     name: "Vpc",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
     }),
   });
 
