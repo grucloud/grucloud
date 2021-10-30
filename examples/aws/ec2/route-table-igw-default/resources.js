@@ -3,12 +3,19 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.EC2.useDefaultVpc({
+    name: "vpc-default",
+  });
+
   provider.EC2.useDefaultInternetGateway({
     name: "default",
   });
 
   provider.EC2.useDefaultRouteTable({
     name: "rt-default-vpc-default",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["vpc-default"],
+    }),
   });
 
   provider.EC2.makeRoute({

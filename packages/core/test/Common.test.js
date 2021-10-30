@@ -3,7 +3,7 @@ const { isDeepEqual } = require("rubico/x");
 
 const { differenceObject } = require("../Common");
 
-describe.only("Common", function () {
+describe("Common", function () {
   it("differenceObject 1", async function () {
     const result = differenceObject({ b: true })({ a: true });
     assert(

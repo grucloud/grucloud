@@ -465,6 +465,7 @@ exports.ResourceMaker = ({
             }),
             (resources) =>
               filterLives({
+                name: getResourceName(),
                 dependencies: resolvedDependencies,
                 resources,
                 configProvider: provider.config,

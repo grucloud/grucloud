@@ -1,11 +1,13 @@
 {
-  "name": "@grucloud/example-aws-rds-postgres-stateless",
+  "name": "@grucloud/example-aws-vpc-use",
   "version": "2.3.1",
-  "description": "",
   "private": true,
-  "main": "iac.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "tree": "gc tree",
+    "list": "gc list -g",
     "gencode": "gc gencode"
   },
   "author": "",
@@ -13,10 +15,9 @@
   "dependencies": {
     "@grucloud/core": "^2.3.1",
     "@grucloud/provider-aws": "^2.3.1",
-    "rubico": "^1.6.26",
-    "ssh2": "^0.8.9"
+    "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "mocha": "^9.0.3"
+    "mocha": "^9.1.3"
   }
 }

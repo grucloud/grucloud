@@ -72,6 +72,7 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
     tap(() => {
       assert(resources);
       assert(dependencies);
+      assert(dependencies.vpc);
     }),
     () => resources,
     find(
@@ -497,6 +498,7 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
+      includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       compare: compare({
         filterTarget: pipe([pick(["Description"]), filterTargetDefault]),

@@ -36,7 +36,6 @@ const routeTable = provider.EC2.makeRouteTable({
 });
 
 const route = provider.EC2.makeRoute({
-  name: "route-ig",
   dependencies: () => ({ routeTable, ig }),
 });
 ```
@@ -82,7 +81,6 @@ const routeTablePrivate = provider.EC2.makeRouteTable({
 });
 
 const routeNat = provider.EC2.makeRoute({
-  name: "route-nat",
   dependencies: () => ({ routeTable: routeTablePrivate, natGateway }),
 });
 ```

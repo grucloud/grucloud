@@ -359,10 +359,10 @@ const createClient = ({
                 (resources) => ({ resources }),
               ])(),
             pipe([
-              pick(["message", "code", "stack", "config", "response"]),
               tap((error) => {
                 logger.error(`list error ${error.stack} `);
               }),
+              pick(["message", "code", "stack", "config", "response"]),
               (error) => ({ error }),
             ])
           ),

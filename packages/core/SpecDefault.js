@@ -90,6 +90,19 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
+  findResource: ({ resources, client, name, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(resources);
+        assert(name);
+      }),
+      () => resources,
+      //TODO check for multiple default and assert
+      find(eq(get("name"), name)),
+      tap((live) => {
+        assert(live, `Cannot find resource '${name}' in lives`);
+      }),
+    ])(),
   findDefault: ({ resources }) =>
     pipe([
       () => resources,
@@ -119,6 +132,9 @@ const SpecDefault = ({ providerName }) => ({
       pipe([
         () => ({ params, provider, programOptions, spec }),
         useParams,
+        assign({
+          filterLives: () => spec.findResource,
+        }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),
       ])(),

@@ -119,6 +119,7 @@ module.exports = () =>
         filterTarget: pipe([pick([])]),
         filterLive: pipe([pick([])]),
       }),
+      includeDefaultDependencies: true,
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
