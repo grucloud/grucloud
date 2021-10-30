@@ -146,7 +146,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1D-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -157,7 +156,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1F-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -168,7 +166,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PublicRouteTable-igw",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),

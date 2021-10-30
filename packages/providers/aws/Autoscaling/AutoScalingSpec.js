@@ -21,6 +21,8 @@ const {
   AutoScalingLaunchConfiguration,
 } = require("./AutoScalingLaunchConfiguration");
 
+const { AutoScalingAttachment } = require("./AutoScalingAttachment");
+
 const GROUP = "AutoScaling";
 
 const filterTags = filter((tag) =>
@@ -38,6 +40,7 @@ module.exports = () =>
         "ELBv2::LoadBalancer",
         "ELBv2::TargetGroup",
         "EKS::Cluster",
+        "IAM::Role",
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
@@ -89,6 +92,47 @@ module.exports = () =>
           type: "LaunchConfiguration",
           group: "AutoScaling",
         },
+        serviceLinkedRole: {
+          type: "Role",
+          group: "IAM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap(() => {
+                  assert(resource);
+                  assert(resource.live);
+                }),
+                () => resource,
+                get("live.ServiceLinkedRoleARN"),
+                not(includes("AWSServiceRoleForAutoScaling")),
+              ])(),
+        },
+      }),
+    },
+    {
+      type: "AutoScalingAttachment",
+      dependsOn: ["AutoScaling::AutoScalingGroup", "ELBv2::TargetGroup"],
+      Client: AutoScalingAttachment,
+      isOurMinion: () => true,
+      compare: compare({
+        filterTarget: pipe([pick([])]),
+        filterLive: pipe([pick([])]),
+      }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ autoScalingGroup, targetGroup }) => {
+            assert(autoScalingGroup);
+            assert(targetGroup);
+          }),
+          ({ autoScalingGroup, targetGroup }) =>
+            `attachment::${autoScalingGroup.name}::${targetGroup.name}`,
+        ])(),
+      filterLive: () => pipe([pick([])]),
+      dependencies: () => ({
+        autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
       }),
     },
     {

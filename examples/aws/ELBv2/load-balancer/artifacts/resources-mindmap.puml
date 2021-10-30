@@ -5,6 +5,7 @@ skinparam monochrome true
 ++ aws
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
+++++ AutoScalingAttachment (2)
 +++ ACM
 ++++ Certificate (1)
 +++ EC2

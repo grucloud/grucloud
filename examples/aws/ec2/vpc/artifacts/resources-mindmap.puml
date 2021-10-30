@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project vpc
+title Resources for project AWS VPC
 skinparam monochrome true
 + Infra
 ++ aws

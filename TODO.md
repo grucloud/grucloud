@@ -1,7 +1,7 @@
 ## Bugs
 
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
-- inferName for SecurityGroup, Route53 record and Route Table
+- inferName for SecurityGroup, and Route Table
 - resource schema
 - check stage for all providers
 - compare refactor
@@ -59,6 +59,7 @@
 
 ## Aws
 
+- LaunchConfiguration UserData Decoded
 - InternetGateway name
 - Nat gateway handle deleting
 - subnet: MapPublicIpOnLaunch

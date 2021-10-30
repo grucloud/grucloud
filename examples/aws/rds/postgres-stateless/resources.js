@@ -123,7 +123,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-private-a",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -134,7 +133,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-private-b",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -145,7 +143,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-public",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),

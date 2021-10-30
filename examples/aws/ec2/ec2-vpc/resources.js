@@ -56,7 +56,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-ig",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),

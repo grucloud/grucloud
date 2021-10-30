@@ -11,7 +11,8 @@ const {
   fork,
   flatMap,
 } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, first, find } = require("rubico/x");
+const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RouteTableAssociation",
@@ -86,6 +87,19 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
+  const getById = ({ RouteTableId, SubnetId }) =>
+    pipe([
+      () => ({ RouteTableIds: [RouteTableId] }),
+      ec2().describeRouteTables,
+      get("RouteTables"),
+      first,
+      get("Associations"),
+      find(eq(get("SubnetId"), SubnetId)),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
   const create = ({ payload, name, dependencies, lives }) =>
     pipe([
@@ -98,11 +112,20 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
         logger.debug(`created rt assoc ${JSON.stringify({ payload, result })}`);
       }),
       // Refresh the route table
+      tap(() =>
+        retryCall({
+          name: `create describeRouteTables: ${name}`,
+          fn: pipe([
+            () => payload,
+            getById,
+            eq(get("AssociationState.State"), "associated"),
+          ]),
+          config,
+        })
+      ),
       tap(() => dependencies().routeTable.getLive({ lives })),
-      tap((routeTable) => {
-        logger.debug(
-          `routeTable updated ${JSON.stringify({ name, routeTable })}`
-        );
+      tap(() => {
+        logger.debug(`routeTable updated ${JSON.stringify({ name })}`);
       }),
     ])();
 

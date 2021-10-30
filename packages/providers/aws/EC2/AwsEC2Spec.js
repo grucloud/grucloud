@@ -25,6 +25,7 @@ const {
   isEmpty,
   find,
   last,
+  append,
 } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion } = require("../AwsCommon");
@@ -464,6 +465,26 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ routeTable }) => {
+            assert(routeTable);
+          }),
+          ({ routeTable, ig, natGateway }) =>
+            pipe([
+              () => routeTable.name,
+              switchCase([
+                () => ig,
+                append("-igw"),
+                () => natGateway,
+                append("-nat-gateway"),
+                () => {
+                  throw Error("missing 'ig' or 'natGateway' dependency");
+                },
+              ]),
+            ])(),
+        ])(),
       includeDefaultDependencies: true,
       dependencies: () => ({
         routeTable: { type: "RouteTable", group: "EC2" },

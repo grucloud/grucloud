@@ -39,14 +39,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const findId = get("live.RouteTableId");
 
   const isDefault = ({ live, lives }) =>
-    pipe([
-      () => live,
-      // tap((params) => {
-      //   logger.debug(`isDefault: ${tos(live)}`);
-      // }),
-      get("Associations"),
-      any(get("Main")),
-    ])();
+    pipe([() => live, get("Associations"), any(get("Main"))])();
 
   const findDefaultName = ({ live, lives }) =>
     pipe([

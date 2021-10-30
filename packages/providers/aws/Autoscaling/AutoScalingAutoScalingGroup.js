@@ -93,7 +93,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
       ],
     },
-    { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
+    // { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
     {
       type: "Instance",
       group: "EC2",
@@ -191,8 +191,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
       launchTemplate,
       launchConfiguration,
       subnets = [],
-      targetGroups = [],
-      serviceRole,
+      serviceLinkedRole,
     },
   }) =>
     pipe([
@@ -219,12 +218,8 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
             LaunchTemplateId: getField(launchTemplate, "LaunchTemplateId"),
           },
         }),
-        TargetGroupARNs: pipe([
-          () => targetGroups,
-          map((targetGroup) => getField(targetGroup, "TargetGroupArn")),
-        ])(),
-        ...(serviceRole && {
-          ServiceLinkedRoleARN: getField(serviceRole, "Arn"),
+        ...(serviceLinkedRole && {
+          ServiceLinkedRoleARN: getField(serviceLinkedRole, "Arn"),
         }),
         VPCZoneIdentifier: pipe([
           () => subnets,

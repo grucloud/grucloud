@@ -121,7 +121,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-table-private-a-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -132,7 +131,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "route-table-private-b-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -143,7 +141,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "rt-default-vpc-igw",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),

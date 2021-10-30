@@ -14,15 +14,25 @@ const createResources = ({ provider }) => {
       HealthCheckGracePeriod: 300,
     }),
     dependencies: ({ resources }) => ({
-      targetGroups: [
-        resources.ELBv2.TargetGroup["target-group-rest"],
-        resources.ELBv2.TargetGroup["target-group-web"],
-      ],
       subnets: [
         resources.EC2.Subnet["subnet-a"],
         resources.EC2.Subnet["subnet-b"],
       ],
       launchTemplate: resources.EC2.LaunchTemplate["my-template"],
+    }),
+  });
+
+  provider.AutoScaling.makeAutoScalingAttachment({
+    dependencies: ({ resources }) => ({
+      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["ag"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    }),
+  });
+
+  provider.AutoScaling.makeAutoScalingAttachment({
+    dependencies: ({ resources }) => ({
+      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["ag"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
     }),
   });
 
@@ -88,7 +98,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "rt-default-vpc-igw",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
