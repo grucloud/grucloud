@@ -60,11 +60,9 @@ module.exports = ({ provider }) => {
               retryCallOnError({
                 name: `GET`,
                 fn: () => axios.get("/my-function"),
-                isExpectedException: pipe([
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  eq(get("response.status"), 401),
+                isExpectedException: pipe([eq(get("response.status"), 401)]),
+                shouldRetryOnException: or([
+                  eq(get("error.code"), "ENOTFOUND"),
                 ]),
                 config: { retryCount: 10, retryDelay: 5e3 },
               }),

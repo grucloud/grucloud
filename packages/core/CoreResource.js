@@ -692,6 +692,7 @@ exports.ResourceMaker = ({
               }),
               ({ resources, resolveDependencies }) =>
                 filterLives({
+                  name: getResourceName(),
                   resources,
                   lives,
                   dependencies: resolveDependencies,

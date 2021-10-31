@@ -19,6 +19,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const findId = get("live.AutoScalingGroupARN");
 const pickId = pick(["AutoScalingGroupName"]);
@@ -147,10 +148,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     decorate,
   });
 
-  const getByName = pipe([
-    ({ name }) => ({ AutoScalingGroupName: name }),
-    getById,
-  ]);
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({

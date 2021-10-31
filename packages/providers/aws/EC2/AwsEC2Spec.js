@@ -397,6 +397,7 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       filterLive: () => pick([]),
       ignoreResource: (input) =>

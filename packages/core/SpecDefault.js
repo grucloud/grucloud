@@ -9,6 +9,11 @@ const {
   prepend,
   identity,
 } = require("rubico/x");
+
+const logger = require("./logger")({
+  prefix: "Spec",
+});
+
 const { ResourceMaker } = require("./CoreResource");
 const { compare } = require("./Common");
 const findNamespaceFromProps = (properties) =>
@@ -90,7 +95,7 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
-  findResource: ({ resources, client, name, lives }) =>
+  findResource: ({ resources, name, lives }) =>
     pipe([
       tap((params) => {
         assert(resources);
@@ -100,7 +105,13 @@ const SpecDefault = ({ providerName }) => ({
       //TODO check for multiple default and assert
       find(eq(get("name"), name)),
       tap((live) => {
-        assert(live, `Cannot find resource '${name}' in lives`);
+        logger.info(
+          `findResource: Cannot find resource '${name}', ${JSON.stringify(
+            resources,
+            null,
+            4
+          )}`
+        );
       }),
     ])(),
   findDefault: ({ resources }) =>
@@ -132,8 +143,8 @@ const SpecDefault = ({ providerName }) => ({
       pipe([
         () => ({ params, provider, programOptions, spec }),
         useParams,
-        assign({
-          filterLives: () => spec.findResource,
+        defaultsDeep({
+          filterLives: spec.findResource,
         }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),
@@ -144,8 +155,8 @@ const SpecDefault = ({ providerName }) => ({
       pipe([
         () => ({ params, provider, programOptions, spec }),
         useParams,
-        assign({
-          filterLives: () => spec.findDefault,
+        defaultsDeep({
+          filterLives: spec.findDefault,
         }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),

@@ -62,7 +62,6 @@ module.exports = ({ provider }) => {
                 fn: () => axios.get("/my-function"),
                 shouldRetryOnException: or([
                   eq(get("error.code"), "ENOTFOUND"),
-                  eq(get("error.response.status"), 404),
                 ]),
                 isExpectedResult: pipe([
                   tap((params) => {

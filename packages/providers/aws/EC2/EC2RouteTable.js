@@ -200,6 +200,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
   return {
     spec,
     isDefault,
+    managedByOther: isDefault,
     findId,
     findName,
     findDependencies,

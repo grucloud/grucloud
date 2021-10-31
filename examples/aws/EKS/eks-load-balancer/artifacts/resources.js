@@ -265,8 +265,11 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.EC2.useDefaultSecurityGroup({
-    name: "sg-default-VPC",
+  provider.EC2.makeSecurityGroup({
+    name: "load-balancer",
+    properties: ({ config }) => ({
+      Description: "Load Balancer",
+    }),
     dependencies: ({ resources }) => ({
       vpc: resources.EC2.Vpc["VPC"],
     }),
@@ -320,6 +323,60 @@ const createResources = ({ provider }) => {
         resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
       securityGroupFrom:
         resources.EC2.SecurityGroup["ClusterSharedNodeSecurityGroup"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-load-balancer",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "-1",
+        FromPort: -1,
+        ToPort: -1,
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup:
+        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroupFrom: resources.EC2.SecurityGroup["load-balancer"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "load-balancer-rule-ingress-tcp-443-v4",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 443,
+        ToPort: 443,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "load-balancer-rule-ingress-tcp-80-v4",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 80,
+        ToPort: 80,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
     }),
   });
 
@@ -411,7 +468,7 @@ const createResources = ({ provider }) => {
         resources.EC2.Subnet["SubnetPublicUSEAST1D"],
         resources.EC2.Subnet["SubnetPublicUSEAST1F"],
       ],
-      securityGroups: [resources.EC2.SecurityGroup["sg-default-VPC"]],
+      securityGroups: [resources.EC2.SecurityGroup["load-balancer"]],
     }),
   });
 
@@ -426,7 +483,7 @@ const createResources = ({ provider }) => {
       HealthCheckIntervalSeconds: 30,
       HealthCheckTimeoutSeconds: 5,
       HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
+      HealthCheckPath: "/api/v1/version",
       Matcher: {
         HttpCode: "200",
       },
@@ -669,6 +726,24 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     }),
+  });
+
+  provider.Route53.makeHostedZone({
+    name: "grucloud.org.",
+    dependencies: ({ resources }) => ({
+      domain: resources.Route53Domains.Domain["grucloud.org"],
+    }),
+  });
+
+  provider.Route53.makeRecord({
+    dependencies: ({ resources }) => ({
+      hostedZone: resources.Route53.HostedZone["grucloud.org."],
+      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
   });
 };
 

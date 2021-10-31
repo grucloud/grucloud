@@ -3,8 +3,15 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.EC2.useVpc({
+    name: "vpc-default",
+  });
+
   provider.EC2.useDefaultSecurityGroup({
     name: "sg-default-vpc-default",
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["vpc-default"],
+    }),
   });
 
   provider.EC2.makeSecurityGroupRuleIngress({

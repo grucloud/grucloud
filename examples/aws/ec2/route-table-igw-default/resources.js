@@ -8,7 +8,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.useDefaultInternetGateway({
-    name: "default",
+    name: "ig-default",
   });
 
   provider.EC2.useDefaultRouteTable({
@@ -24,7 +24,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       routeTable: resources.EC2.RouteTable["rt-default-vpc-default"],
-      ig: resources.EC2.InternetGateway["default"],
+      ig: resources.EC2.InternetGateway["ig-default"],
     }),
   });
 };

@@ -60,8 +60,14 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("live.InternetGatewayId");
-  //TODO use default
-  const findName = findNameInTagsOrId({ findId });
+
+  const findName = pipe([
+    switchCase([
+      isDefault(config),
+      () => "ig-default",
+      findNameInTagsOrId({ findId }),
+    ]),
+  ]);
 
   const findDependencies = ({ live }) => [
     {

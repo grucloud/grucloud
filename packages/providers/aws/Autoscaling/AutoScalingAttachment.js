@@ -1,17 +1,14 @@
 const assert = require("assert");
 const { tap, get, pipe, map, not, fork, flatMap } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, first, includes, size } = require("rubico/x");
+const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AutoScalingAttachment",
 });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  Ec2New,
-  shouldRetryOnException,
-  createEndpoint,
-} = require("../AwsCommon");
+const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 //const { AwsClient } = require("../AwsClient");
 
@@ -20,8 +17,6 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     createEndpoint({ endpointName: "AutoScaling" })(config);
 
   //const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
-
   const findId = get("live.TargetGroupARN");
 
   const findName = ({ live, lives }) =>
@@ -37,8 +32,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       tap((targetGroupName) => {
         assert(targetGroupName);
       }),
-      (targetGroupName) =>
-        `attachment::${live.AutoScalingGroupName}::${targetGroupName}`,
+      (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
       tap((params) => {
         assert(true);
       }),
@@ -64,12 +58,16 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
           group: "AutoScaling",
           providerName: config.providerName,
         }),
-      flatMap(({ live }) =>
+      tap((asg) => {
+        logger.info(`getList attachment #autoscalinggroups ${size(asg)}`);
+      }),
+      flatMap(({ live, name }) =>
         pipe([
           () => live,
           get("TargetGroupARNs"),
           map((TargetGroupARN) => ({
             TargetGroupARN,
+            name,
             AutoScalingGroupName: live.AutoScalingGroupName,
             AutoScalingGroupARN: live.AutoScalingGroupARN,
           })),
@@ -82,6 +80,23 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
+  const isUpById = ({ TargetGroupARN, AutoScalingGroupName }) =>
+    pipe([
+      tap(() => {
+        logger.debug(
+          `isUpById ${JSON.stringify({ AutoScalingGroupName, TargetGroupARN })}`
+        );
+        assert(TargetGroupARN);
+        assert(AutoScalingGroupName);
+      }),
+      () => ({ AutoScalingGroupNames: [AutoScalingGroupName] }),
+      autoScaling().describeAutoScalingGroups,
+      get("AutoScalingGroups"),
+      first,
+      get("TargetGroupARNs"),
+      includes(TargetGroupARN),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
   const create = ({ payload, name, dependencies, lives }) =>
     pipe([
@@ -92,6 +107,22 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       autoScaling().attachLoadBalancerTargetGroups,
       tap((result) => {
         logger.debug(`attached ${JSON.stringify({ payload, result })}`);
+      }),
+      tap(() =>
+        retryCall({
+          name: `isUpById AutoScalingAttachment: ${name}`,
+          fn: pipe([
+            () => ({
+              AutoScalingGroupName: payload.AutoScalingGroupName,
+              TargetGroupARN: payload.TargetGroupARNs[0],
+            }),
+            isUpById,
+          ]),
+          config,
+        })
+      ),
+      tap((params) => {
+        assert(true);
       }),
       tap(() => dependencies().autoScalingGroup.getLive({ lives })),
     ])();

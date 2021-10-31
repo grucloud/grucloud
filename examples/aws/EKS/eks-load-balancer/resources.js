@@ -3,6 +3,42 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.AutoScaling.useAutoScalingGroup({
+    name: "asg-ng-1",
+    properties: ({ config }) => ({
+      MinSize: 1,
+      MaxSize: 1,
+      DesiredCapacity: 1,
+      DefaultCooldown: 300,
+      HealthCheckType: "EC2",
+      HealthCheckGracePeriod: 15,
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [
+        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
+        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
+      ],
+    }),
+  });
+
+  provider.AutoScaling.makeAutoScalingAttachment({
+    dependencies: ({ resources }) => ({
+      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["asg-ng-1"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    }),
+  });
+
+  provider.AutoScaling.makeAutoScalingAttachment({
+    dependencies: ({ resources }) => ({
+      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["asg-ng-1"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+    }),
+  });
+
+  provider.ACM.makeCertificate({
+    name: "grucloud.org",
+  });
+
   provider.EC2.makeVpc({
     name: "VPC",
     properties: ({ config }) => ({
@@ -223,6 +259,20 @@ const createResources = ({ provider }) => {
           ])
         ),
       ])(),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["VPC"],
+      eksCluster: resources.EKS.Cluster["my-cluster"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroup({
+    name: "load-balancer",
+    properties: ({ config }) => ({
+      Description: "Load Balancer",
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["VPC"],
+    }),
   });
 
   provider.EC2.makeSecurityGroupRuleIngress({
@@ -276,6 +326,60 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-load-balancer",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "-1",
+        FromPort: -1,
+        ToPort: -1,
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup:
+        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroupFrom: resources.EC2.SecurityGroup["load-balancer"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "load-balancer-rule-ingress-tcp-443-v4",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 443,
+        ToPort: 443,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
+    }),
+  });
+
+  provider.EC2.makeSecurityGroupRuleIngress({
+    name: "load-balancer-rule-ingress-tcp-80-v4",
+    properties: ({ config }) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 80,
+        ToPort: 80,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      securityGroup: resources.EC2.SecurityGroup["load-balancer"],
+    }),
+  });
+
   provider.EC2.makeElasticIpAddress({
     name: "NATIP",
   });
@@ -300,11 +404,6 @@ const createResources = ({ provider }) => {
           HttpPutResponseHopLimit: 2,
         },
       },
-    }),
-    dependencies: ({ resources }) => ({
-      securityGroups: [
-        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
-      ],
     }),
   });
 
@@ -339,8 +438,8 @@ const createResources = ({ provider }) => {
         desiredSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
       },
     }),
     dependencies: ({ resources }) => ({
@@ -354,6 +453,152 @@ const createResources = ({ provider }) => {
       ],
       launchTemplate:
         resources.EC2.LaunchTemplate["eksctl-my-cluster-nodegroup-ng-1"],
+    }),
+  });
+
+  provider.ELBv2.makeLoadBalancer({
+    name: "load-balancer",
+    properties: ({ config }) => ({
+      Scheme: "internet-facing",
+      Type: "application",
+      IpAddressType: "ipv4",
+    }),
+    dependencies: ({ resources }) => ({
+      subnets: [
+        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
+        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
+      ],
+      securityGroups: [resources.EC2.SecurityGroup["load-balancer"]],
+    }),
+  });
+
+  provider.ELBv2.makeTargetGroup({
+    name: "target-group-rest",
+    properties: ({ config }) => ({
+      Protocol: "HTTP",
+      Port: 30020,
+      HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 30,
+      HealthCheckTimeoutSeconds: 5,
+      HealthyThresholdCount: 5,
+      HealthCheckPath: "/api/v1/version",
+      Matcher: {
+        HttpCode: "200",
+      },
+      TargetType: "instance",
+      ProtocolVersion: "HTTP1",
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["VPC"],
+    }),
+  });
+
+  provider.ELBv2.makeTargetGroup({
+    name: "target-group-web",
+    properties: ({ config }) => ({
+      Protocol: "HTTP",
+      Port: 30010,
+      HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 30,
+      HealthCheckTimeoutSeconds: 5,
+      HealthyThresholdCount: 5,
+      HealthCheckPath: "/",
+      Matcher: {
+        HttpCode: "200",
+      },
+      TargetType: "instance",
+      ProtocolVersion: "HTTP1",
+    }),
+    dependencies: ({ resources }) => ({
+      vpc: resources.EC2.Vpc["VPC"],
+    }),
+  });
+
+  provider.ELBv2.makeListener({
+    properties: ({ config }) => ({
+      Port: 80,
+      Protocol: "HTTP",
+    }),
+    dependencies: ({ resources }) => ({
+      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+    }),
+  });
+
+  provider.ELBv2.makeListener({
+    properties: ({ config }) => ({
+      Port: 443,
+      Protocol: "HTTPS",
+    }),
+    dependencies: ({ resources }) => ({
+      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+      certificate: resources.ACM.Certificate["grucloud.org"],
+    }),
+  });
+
+  provider.ELBv2.makeRule({
+    properties: ({ config }) => ({
+      Priority: "1",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/*"],
+        },
+      ],
+      Actions: [
+        {
+          Type: "redirect",
+          Order: 1,
+          RedirectConfig: {
+            Protocol: "HTTPS",
+            Port: "443",
+            Host: "#{host}",
+            Path: "/#{path}",
+            Query: "#{query}",
+            StatusCode: "HTTP_301",
+          },
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      listener: resources.ELBv2.Listener["listener::load-balancer::HTTP::80"],
+    }),
+  });
+
+  provider.ELBv2.makeRule({
+    properties: ({ config }) => ({
+      Priority: "1",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/api/*"],
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      listener: resources.ELBv2.Listener["listener::load-balancer::HTTPS::443"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    }),
+  });
+
+  provider.ELBv2.makeRule({
+    properties: ({ config }) => ({
+      Priority: "2",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/*"],
+        },
+      ],
+    }),
+    dependencies: ({ resources }) => ({
+      listener: resources.ELBv2.Listener["listener::load-balancer::HTTPS::443"],
+      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
     }),
   });
 
@@ -481,6 +726,24 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     }),
+  });
+
+  provider.Route53.makeHostedZone({
+    name: "grucloud.org.",
+    dependencies: ({ resources }) => ({
+      domain: resources.Route53Domains.Domain["grucloud.org"],
+    }),
+  });
+
+  provider.Route53.makeRecord({
+    dependencies: ({ resources }) => ({
+      hostedZone: resources.Route53.HostedZone["grucloud.org."],
+      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    }),
+  });
+
+  provider.Route53Domains.useDomain({
+    name: "grucloud.org",
   });
 };
 

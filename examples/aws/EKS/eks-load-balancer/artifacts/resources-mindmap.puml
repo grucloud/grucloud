@@ -1,59 +1,34 @@
 @startmindmap
-title Resources for project example
+title Resources for project EKS Load Balancer
 skinparam monochrome true
 + Infra
 ++ aws
++++ AutoScaling
+++++ AutoScalingGroup (1)
+++++ AutoScalingAttachment (2)
++++ ACM
+++++ Certificate (1)
 +++ EC2
 ++++ Vpc (1)
-+++++ VPC
 ++++ InternetGateway (1)
-+++++ InternetGateway
 ++++ NatGateway (1)
-+++++ NATGateway
 ++++ Subnet (4)
-+++++ SubnetPrivateUSEAST1D
-+++++ SubnetPrivateUSEAST1F
-+++++ SubnetPublicUSEAST1D
-+++++ SubnetPublicUSEAST1F
 ++++ RouteTable (3)
-+++++ PrivateRouteTableUSEAST1D
-+++++ PrivateRouteTableUSEAST1F
-+++++ PublicRouteTable
 ++++ RouteTableAssociation (4)
-+++++ rt-assoc::PrivateRouteTableUSEAST1D::SubnetPrivateUSEAST1D
-+++++ rt-assoc::PrivateRouteTableUSEAST1F::SubnetPrivateUSEAST1F
-+++++ rt-assoc::PublicRouteTable::SubnetPublicUSEAST1D
-+++++ rt-assoc::PublicRouteTable::SubnetPublicUSEAST1F
 ++++ Route (3)
-+++++ PrivateRouteTableUSEAST1D-nat-gateway
-+++++ PrivateRouteTableUSEAST1F-nat-gateway
-+++++ PublicRouteTable-igw
-++++ SecurityGroup (3)
-+++++ ClusterSharedNodeSecurityGroup
-+++++ ControlPlaneSecurityGroup
-+++++ eks-cluster-sg-my-cluster-1909614887
+++++ SecurityGroup (4)
 ++++ SecurityGroupRuleIngress (3)
-+++++ ClusterSharedNodeSecurityGroup-rule-ingress-all-from-ClusterSharedNodeSecurityGroup
-+++++ ClusterSharedNodeSecurityGroup-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887
-+++++ eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-ClusterSharedNodeSecurityGroup
 ++++ ElasticIpAddress (1)
-+++++ NATIP
 ++++ LaunchTemplate (1)
-+++++ eksctl-my-cluster-nodegroup-ng-1
 +++ EKS
 ++++ Cluster (1)
-+++++ my-cluster
 ++++ NodeGroup (1)
-+++++ ng-1
++++ ELBv2
+++++ LoadBalancer (1)
+++++ TargetGroup (2)
+++++ Listener (2)
+++++ Rule (3)
 +++ IAM
 ++++ Role (2)
-+++++ eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB
-+++++ eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI
 ++++ Policy (6)
-+++++ AmazonEC2ContainerRegistryReadOnly
-+++++ AmazonEKS_CNI_Policy
-+++++ AmazonEKSClusterPolicy
-+++++ AmazonEKSVPCResourceController
-+++++ AmazonEKSWorkerNodePolicy
-+++++ AmazonSSMManagedInstanceCore
 @endmindmap

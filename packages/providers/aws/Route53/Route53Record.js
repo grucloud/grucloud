@@ -584,8 +584,8 @@ exports.Route53Record = ({ spec, config }) => {
         Type: "A",
         AliasTarget: {
           HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
-          DNSName: `${getField(loadBalancer, "DNSName")}.`,
-          EvaluateTargetHealth: false,
+          DNSName: `dualstack.${getField(loadBalancer, "DNSName")}.`,
+          EvaluateTargetHealth: true,
         },
       })),
     ])();
