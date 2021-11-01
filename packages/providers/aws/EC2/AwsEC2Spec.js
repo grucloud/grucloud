@@ -28,7 +28,7 @@ const {
   append,
 } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinion, DecodeUserData } = require("../AwsCommon");
 
 const {
   hasDependency,
@@ -85,22 +85,6 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
       assert(true);
     }),
   ])();
-
-const DecodeUserData = when(
-  get("UserData"),
-  assign({
-    UserData: pipe([
-      get("UserData"),
-      tap((params) => {
-        assert(true);
-      }),
-      (UserData) => Buffer.from(UserData, "base64").toString(),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-  })
-);
 
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
@@ -698,6 +682,7 @@ module.exports = () =>
                 "NetworkInterfaces",
                 "SecurityGroupIds",
                 "IamInstanceProfile",
+                "KeyName",
               ]),
               DecodeUserData,
             ]),

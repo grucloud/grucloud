@@ -2,7 +2,17 @@
 
 The purpose of this example is to deploy automatically a virtual machine attached to a public IP address, inside a VPC, secured by firewall rules.
 
-![diagram-target](artifacts/diagram-target.svg)
+```sh
+gc tree
+```
+
+![resources-mindmap](./artifacts/resources-mindmap.svg)
+
+```sh
+gc graph
+```
+
+![diagram-target.svg](./artifacts/diagram-target.svg)
 
 The infrastructure is described in [resources.js](./resources.js), and configured in [config.js](./config.js).
 

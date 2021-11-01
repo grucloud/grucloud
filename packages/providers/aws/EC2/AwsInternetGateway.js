@@ -246,14 +246,18 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, namespace, properties = {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         TagSpecifications: [
           {
             ResourceType: "internet-gateway",
-            Tags: buildTags({ config, namespace, name }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       }),

@@ -202,7 +202,7 @@ exports.EC2Route = ({ spec, config }) => {
                 pipe([
                   assign({
                     RouteTableId: () => RouteTableId,
-                    Tags: () => Tags,
+                    //Tags: () => Tags,
                   }),
                 ])
               ),

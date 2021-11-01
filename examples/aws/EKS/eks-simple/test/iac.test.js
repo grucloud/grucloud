@@ -4,7 +4,7 @@ const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-const title = "EKS Module";
+const title = "EKS Simple";
 describe(title, async function () {
   it("run", async function () {
     await testEnd2End({

@@ -229,7 +229,7 @@ module.exports = pipe([
             "metadata.fingerprint",
             "metadata.kind",
           ]),
-          omitIfEmpty(["tags"]),
+          omitIfEmpty(["tags", "description", "metadata"]),
           assign({
             machineType: pipe([
               get("machineType"),

@@ -10,7 +10,7 @@ const createResources = ({ provider }) => {
   provider.EC2.makeSubnet({
     name: "subnet-1",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/24",
+      CidrBlock: "172.31.96.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
     dependencies: ({ resources }) => ({

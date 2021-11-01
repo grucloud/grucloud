@@ -10,13 +10,17 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.EC2.Subnet.subnetPrivateUseast1C,
-        resources.EC2.Subnet.subnetPrivateUseast1F,
-        resources.EC2.Subnet.subnetPublicUseast1C,
-        resources.EC2.Subnet.subnetPublicUseast1F,
+        resources.EC2.Subnet["SubnetPrivateUSEAST1D"],
+        resources.EC2.Subnet["SubnetPrivateUSEAST1F"],
+        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
+        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
       ],
-      securityGroups: [resources.EC2.SecurityGroup.controlPlaneSecurityGroup],
-      role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_1X24Aqf8Lrqdl,
+      securityGroups: [
+        resources.EC2.SecurityGroup["ControlPlaneSecurityGroup"],
+      ],
+      role: resources.IAM.Role[
+        "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB"
+      ],
     }),
   });
 
@@ -35,14 +39,16 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      cluster: resources.EKS.Cluster.myCluster,
+      cluster: resources.EKS.Cluster["my-cluster"],
       subnets: [
-        resources.EC2.Subnet.subnetPublicUseast1C,
-        resources.EC2.Subnet.subnetPublicUseast1F,
+        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
+        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
       ],
-      role: resources.IAM.Role
-        .eksctlMyClusterNodegroupNg_1NodeInstanceRole_1H4Gn851M2Nx6,
-      launchTemplate: resources.EC2.LaunchTemplate.ltNg_1,
+      role: resources.IAM.Role[
+        "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI"
+      ],
+      launchTemplate:
+        resources.EC2.LaunchTemplate["eksctl-my-cluster-nodegroup-ng-1"],
     }),
   });
 };

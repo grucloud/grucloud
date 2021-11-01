@@ -24,9 +24,17 @@ Here is the list of the resources involved in this deployment:
 - [Route53Domain](https://www.grucloud.com/docs/aws/resources/Route53Domain/Route53Domain): The DNS server will be updated from the servers returned by the _HostedZone_.
 - [CloudFrontDistribution](https://www.grucloud.com/docs/aws/resources/CloudFront/CloudFrontDistribution): Serves the S3 objects with the HTTPS Certificate.
 
-## Dependency Graph
+```sh
+gc tree
+```
 
-![GraphTarget](diagram-target.svg)
+![resources-mindmap](./artifacts/resources-mindmap.svg)
+
+```sh
+gc graph
+```
+
+![diagram-target.svg](./artifacts/diagram-target.svg)
 
 ## Requirements
 

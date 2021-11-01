@@ -17,7 +17,7 @@ skinparam monochrome true
 ++++ RouteTableAssociation (4)
 ++++ Route (3)
 ++++ SecurityGroup (4)
-++++ SecurityGroupRuleIngress (3)
+++++ SecurityGroupRuleIngress (6)
 ++++ ElasticIpAddress (1)
 ++++ LaunchTemplate (1)
 +++ EKS
@@ -31,4 +31,9 @@ skinparam monochrome true
 +++ IAM
 ++++ Role (2)
 ++++ Policy (6)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
 @endmindmap

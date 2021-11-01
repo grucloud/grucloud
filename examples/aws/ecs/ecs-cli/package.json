@@ -1,0 +1,24 @@
+{
+  "name": "@grucloud/example-aws-ecs-cli",
+  "version": "2.3.1",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "tree": "gc tree",
+    "list": "gc list -g",
+    "gencode": "gc gencode",
+    "ecs-cli-create": "ecs-cli up --cluster my-cluster --capability-iam --instance-type t2.small --launch-type EC2 --tags my-tag=my-value"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^2.3.1",
+    "@grucloud/provider-aws": "^2.3.1",
+    "rubico": "^1.8.3"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.3"
+  }
+}

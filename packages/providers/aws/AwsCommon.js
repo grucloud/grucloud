@@ -136,6 +136,16 @@ exports.shouldRetryOnException = ({ error, name }) =>
     }),
   ])();
 
+exports.DecodeUserData = when(
+  get("UserData"),
+  assign({
+    UserData: pipe([
+      get("UserData"),
+      (UserData) => Buffer.from(UserData, "base64").toString(),
+    ]),
+  })
+);
+
 exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
   pipe([
     () => error,

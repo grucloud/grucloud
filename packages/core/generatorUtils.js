@@ -23,9 +23,11 @@ const {
   and,
   reduce,
   any,
+  flatMap,
 } = require("rubico");
 
 const {
+  uniq,
   size,
   isEmpty,
   find,
@@ -42,6 +44,7 @@ const {
   isFunction,
   unless,
   when,
+  append,
 } = require("rubico/x");
 
 const { resourcesTpl } = require("./resourcesTpl");
@@ -376,21 +379,38 @@ const codeTpl = ({
   properties,
   hasNoProperty,
   additionalCode = "",
-}) => `
-  provider.${group}.${buildPrefix(resource)}${type}({
-    ${buildName({ inferName, resourceName })}${configBuildPropertiesDefault({
-  resource,
-  properties,
-  hasNoProperty: hasNoProperty({ resource }),
-})}${additionalCode}
-${buildDependencies({
-  providerName,
-  resource,
-  lives,
-  dependencies,
-})}
-  });
-`;
+}) =>
+  pipe([
+    () => "provider.",
+    append(group),
+    append("."),
+    append(buildPrefix(resource)),
+    append(type),
+    append("({"),
+    append(buildName({ inferName, resourceName })),
+    switchCase([
+      () => additionalCode,
+      append(additionalCode),
+      pipe([
+        append(
+          configBuildPropertiesDefault({
+            resource,
+            properties,
+            hasNoProperty: hasNoProperty({ resource }),
+          })
+        ),
+        append(
+          buildDependencies({
+            providerName,
+            resource,
+            lives,
+            dependencies,
+          })
+        ),
+      ]),
+    ]),
+    append("});\n"),
+  ])();
 
 const writeToFile =
   ({ filename, programOptions }) =>
@@ -501,6 +521,7 @@ const findUsedBy =
       tap(() => {
         assert(resource);
         assert(resource.id);
+        assert(resource.groupType);
         assert(writersSpec);
       }),
       () => lives,
@@ -534,6 +555,8 @@ const findUsedBy =
           ]),
         ])
       ),
+      flatMap((dep) => [dep, ...findUsedBy({ lives, writersSpec })(dep)]),
+      uniq,
     ])();
 
 // TODO split in 2

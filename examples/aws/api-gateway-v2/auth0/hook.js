@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, fork } = require("rubico");
+const { pipe, tap, get, eq, fork, or } = require("rubico");
 const { find, first } = require("rubico/x");
 const Axios = require("axios");
 const { retryCallOnError } = require("@grucloud/core/Retry");
@@ -64,7 +64,7 @@ module.exports = ({ provider }) => {
                 shouldRetryOnException: or([
                   eq(get("error.code"), "ENOTFOUND"),
                 ]),
-                config: { retryCount: 10, retryDelay: 5e3 },
+                config: { retryCount: 40, retryDelay: 5e3 },
               }),
           ]),
         },

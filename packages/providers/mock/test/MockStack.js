@@ -6,17 +6,20 @@ const createResources = ({ provider }) => {
   const ip = provider.makeIp({ name: "myip" });
 
   // Boot images
-  const image = provider.useImage({
-    name: "ubuntu",
-    filterLives: ({ resources }) => {
-      assert(images);
-      const image = resources.find(
-        (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
-      );
-      //assert(image);
-      return image;
-    },
-  });
+  // const image = provider.useImage({
+  //   name: "ubuntu",
+  //   filterLives: ({ resources }) => {
+  //     const image = resources.find(
+  //       (image) =>
+  //         image.live.name.includes("Ubuntu") && image.live.arch === "x86_64"
+  //     );
+  //     if (!image) {
+  //       //assert(image);
+  //       assert(true);
+  //     }
+  //     return image;
+  //   },
+  // });
 
   const volume = provider.makeVolume({
     name: "volume1",
@@ -48,7 +51,7 @@ const createResources = ({ provider }) => {
   //Server
   const server = provider.makeServer({
     name: "web-server",
-    dependencies: { volume, sg: [sg], ip },
+    dependencies: () => ({ volume, sg: [sg], ip }),
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",

@@ -17,7 +17,7 @@ describe("MockProviderCornerCase", async function () {
       },
     });
     const resources = provider.resources();
-    const server = resources.Server.webServer;
+    const server = resources.Server["web-server"];
 
     assert(server);
     const deps = server.getDependencyList();

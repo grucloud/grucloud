@@ -1081,7 +1081,7 @@ exports.GoogleProvider = ({
             () => gcloudConfig,
             get("config.properties.compute", {}),
             pick(["region", "zone"]),
-            (computeConfig) => defaultsDeep(computeConfig)(config),
+            defaultsDeep(config),
           ])(),
       ]),
     ])();

@@ -92,7 +92,6 @@ const createResources = ({ provider }) => {
         EbsOptimized: false,
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
-        KeyName: "kp-ecs",
       },
     }),
     dependencies: ({ resources }) => ({

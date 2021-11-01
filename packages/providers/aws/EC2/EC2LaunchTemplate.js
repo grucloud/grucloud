@@ -79,7 +79,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "SecurityGroup",
       group: "EC2",
-      ids: live.LaunchTemplateData.SecurityGroupIds,
+      ids: pipe([() => live, get("LaunchTemplateData.SecurityGroupIds")])(),
     },
     {
       type: "InstanceProfile",

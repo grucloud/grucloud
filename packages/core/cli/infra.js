@@ -26,8 +26,8 @@ const createProviderMaker =
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
         assert(
-          isFunction(createResources),
-          "createResources must be a function"
+          isFunction(createResources) || Array.isArray(createResources),
+          "createResources must be a function or an array of functions"
         );
       }),
       () => [configOverride, ...configsOverride, configUser, ...configsUser],

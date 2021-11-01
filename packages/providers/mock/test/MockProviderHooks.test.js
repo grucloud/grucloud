@@ -42,7 +42,7 @@ describe("MockProviderHooks", async function () {
     });
     assert(onDestroyed.init.called);
   });
-  it("onDeployed and onDestroyed called when apply fails", async function () {
+  it("onDeployed and onDestroyed not called when apply fails", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
@@ -74,7 +74,7 @@ describe("MockProviderHooks", async function () {
       assert(error.error, tos(error));
     }
 
-    assert(onDeployed.init.called);
+    assert(!onDeployed.init.called);
 
     try {
       await cli.planDestroy({
@@ -85,7 +85,7 @@ describe("MockProviderHooks", async function () {
       const lives = error.error.lives.json;
       assert.equal(lives[0].results[0].error.response.status, 404);
     }
-    //TODO should be called ?
+
     assert(!onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {

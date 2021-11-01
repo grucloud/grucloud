@@ -4,3 +4,4 @@ default.env
 coverage
 *.log
 default.env
+*.pem

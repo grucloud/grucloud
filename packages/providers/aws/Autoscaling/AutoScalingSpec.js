@@ -11,7 +11,8 @@ const {
   pick,
 } = require("rubico");
 const { includes } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinion, DecodeUserData } = require("../AwsCommon");
+
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
@@ -75,6 +76,7 @@ module.exports = () =>
           }),
         ]),
       }),
+      // defaultValue: { DefaultCooldown: 300 },
       filterLive: () =>
         pick([
           "MinSize",
@@ -130,6 +132,7 @@ module.exports = () =>
           ({ autoScalingGroup, targetGroup }) =>
             `attachment::${autoScalingGroup.name}::${targetGroup.name}`,
         ])(),
+
       filterLive: () => pipe([pick([])]),
       dependencies: () => ({
         autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
@@ -159,6 +162,13 @@ module.exports = () =>
           ]),
         ]),
       }),
+      // defaultValue: {
+      //   EbsOptimized: false,
+      //   BlockDeviceMappings: [],
+      //   InstanceMonitoring: {
+      //     Enabled: true,
+      //   },
+      // },
       filterLive: () =>
         pipe([
           pick([
@@ -170,8 +180,10 @@ module.exports = () =>
             "RamdiskId",
             "BlockDeviceMappings",
             "EbsOptimized",
+            "AssociatePublicIpAddress",
           ]),
           omitIfEmpty(["KernelId", "RamdiskId"]),
+          DecodeUserData,
         ]),
       dependencies: () => ({
         instanceProfile: { type: "InstanceProfile", group: "IAM" },

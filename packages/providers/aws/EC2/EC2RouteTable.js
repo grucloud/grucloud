@@ -176,20 +176,20 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties = {},
+    properties: { Tags, ...otheProps },
     dependencies: { vpc },
   }) =>
     pipe([
       tap(() => {
         assert(vpc, "RouteTable is missing the dependency 'vpc'");
       }),
-      () => properties,
+      () => otheProps,
       defaultsDeep({
         VpcId: getField(vpc, "VpcId"),
         TagSpecifications: [
           {
             ResourceType: "route-table",
-            Tags: buildTags({ config, namespace, name }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       }),

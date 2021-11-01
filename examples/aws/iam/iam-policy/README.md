@@ -2,10 +2,14 @@
 
 The purpose of this example is to deploy a policy and a read only policy attached to a role
 
-## Dependency Graph
+```sh
+gc tree
+```
+
+![resources-mindmap](./artifacts/resources-mindmap.svg)
 
 ```sh
 gc graph
 ```
 
-![GraphTarget](artifacts/diagram-target.svg)
+![diagram-target.svg](./artifacts/diagram-target.svg)

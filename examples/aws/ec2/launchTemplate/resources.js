@@ -11,34 +11,7 @@ const createResources = ({ provider }) => {
     name: "Vpc",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/16",
-      DnsSupport: true,
       DnsHostnames: true,
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "PubSubnetAz1",
-    properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
-    }),
-  });
-
-  provider.EC2.makeSubnet({
-    name: "PubSubnetAz2",
-    properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: false,
-      MapCustomerOwnedIpOnLaunch: false,
-    }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
     }),
   });
 
@@ -78,12 +51,12 @@ const createResources = ({ provider }) => {
         EbsOptimized: false,
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
-        KeyName: "kp-ecs",
       },
     }),
     dependencies: ({ resources }) => ({
       keyPair: resources.EC2.KeyPair["kp-ecs"],
       iamInstanceProfile: resources.IAM.InstanceProfile["role-ecs"],
+      securityGroups: [resources.EC2.SecurityGroup["EcsSecurityGroup"]],
     }),
   });
 

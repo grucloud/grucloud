@@ -1,6 +1,5 @@
 const { assign, map, pipe, get, omit, pick, eq } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
-
 const { isOurMinionFactory } = require("../AwsCommon");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 

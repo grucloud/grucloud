@@ -4,18 +4,14 @@ The purpose of this example is to deploy security group rules in the default sec
 
 See the [AWS Getting Started](https://www.grucloud.com/docs/aws/AwsGettingStarted)
 
-## Dependency Graph
+```sh
+gc tree
+```
+
+![resources-mindmap](./artifacts/resources-mindmap.svg)
 
 ```sh
 gc graph
 ```
 
-![Graph](./artifacts/diagram-target.svg)
-
-## Live diagram
-
-```sh
-gc list
-```
-
-![Graph-Live](./artifacts/diagram-live.svg)
+![diagram-target.svg](./artifacts/diagram-target.svg)

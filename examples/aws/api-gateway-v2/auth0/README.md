@@ -1,9 +1,13 @@
 # API Gateway with Auth0 Autorizer
 
-## Dependency Graph
+```sh
+gc tree
+```
+
+![resources-mindmap](./artifacts/resources-mindmap.svg)
 
 ```sh
 gc graph
 ```
 
-![GraphTarget](artifacts/diagram-target.svg)
+![diagram-target.svg](./artifacts/diagram-target.svg)

@@ -2,10 +2,14 @@
 
 The purpose of this example is to create and attach an EBS volume to an EC2 instance.
 
-## Dependency Graph
+```sh
+gc tree
+```
+
+![resources-mindmap](./artifacts/resources-mindmap.svg)
 
 ```sh
 gc graph
 ```
 
-![GraphTarget](artifacts/diagram-target.svg)
+![diagram-target.svg](./artifacts/diagram-target.svg)

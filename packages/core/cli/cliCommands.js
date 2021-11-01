@@ -119,8 +119,8 @@ const countDeployResources = pipe([
 
 const hasPlans = pipe([
   tap((input) => {
-    assert(input);
-    assert(input.results);
+    //assert(input);
+    //assert(input.results);
   }),
   get("results"),
   //filter(not(get("error"))),
@@ -261,10 +261,9 @@ const displayListError = (input) =>
     filter(get("error")),
     map(
       pipe([
-        tap(({ error, providerName, group, type }) => {
-          assert(group);
-          assert(type);
-          console.error(`Resource ${providerName}::${group}::${type}`);
+        tap(({ error, providerName, groupType }) => {
+          assert(groupType);
+          console.error(`Resource ${providerName}::${groupType}`);
           console.error(YAML.stringify(convertError({ error })));
         }),
       ])
@@ -701,8 +700,8 @@ const applyNeedsRetry = ({ infra }) =>
       assert(infra);
       //assert(result.resultDeploy);
       //assert(result.resultDeploy.results);
-      assert(result.resultQuery);
-      assert(result.resultQuery.results);
+      //assert(result.resultQuery);
+      //assert(result.resultQuery.results);
     }),
     and([
       () => isMultiProvider({ infra }),

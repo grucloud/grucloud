@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, tryCatch, get, switchCase, pick, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  pick,
+  map,
+  assign,
+} = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -208,6 +217,10 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
           () => securityGroups,
           map((securityGroup) => getField(securityGroup, "GroupId")),
         ])(),
+      }),
+      assign({
+        UserData: ({ UserData }) =>
+          Buffer.from(UserData, "utf-8").toString("base64"),
       }),
       tap((params) => {
         assert(true);
