@@ -7,6 +7,11 @@ const { createProject } = require("../createProject");
 const fs = require("fs").promises;
 
 describe("createProject", function () {
+  before(async function () {
+    if (process.env.CONTINUOUS_INTEGRATION) {
+      this.skip();
+    }
+  });
   it("createProject aws", async function () {
     await tryCatch(
       pipe([
