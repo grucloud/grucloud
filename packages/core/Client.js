@@ -285,26 +285,11 @@ const createClient = ({
       isDefault: () => false,
       managedByOther: () => false,
       isOurMinion: ({ uri, live, lives }) =>
-        pipe([
-          fork({
-            resource: () =>
-              getResourceFromLive({
-                uri,
-                live,
-                lives,
-              }),
-            resources: () => getResourcesByType(spec),
-          }),
-          ({ resource, resources }) =>
-            spec.isOurMinion({
-              resource,
-              resources,
-              live,
-              lives,
-              config,
-            }),
-        ])(),
-
+        !!getResourceFromLive({
+          uri,
+          live,
+          lives,
+        }),
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
