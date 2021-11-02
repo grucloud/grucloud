@@ -165,13 +165,6 @@ module.exports = pipe([
         "compute::Disk",
       ],
       Client: GoogleVmInstance,
-      propertiesDefault: {
-        machineType: "f1-micro",
-        diskSizeGb: "10",
-        diskType: "pd-standard",
-        sourceImage:
-          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-      },
       compare: compareVmInstance,
       dependencies: () => ({
         ip: { type: "Address", group: "compute" },
@@ -180,7 +173,21 @@ module.exports = pipe([
         frewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       }),
-      defaultValue: {
+      propertiesDefault: {
+        diskSizeGb: "10",
+        diskType: "pd-standard",
+        sourceImage:
+          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+        canIpForward: false,
+        reservationAffinity: {
+          consumeReservationType: "ANY_RESERVATION",
+        },
+        displayDevice: {
+          enableDisplay: false,
+        },
+        confidentialInstanceConfig: {
+          enableConfidentialCompute: false,
+        },
         startRestricted: false,
         deletionProtection: false,
         shieldedInstanceConfig: {

@@ -5,9 +5,6 @@ const createResources = ({ provider }) => {
       MinSize: 1,
       MaxSize: 2,
       DesiredCapacity: 1,
-      DefaultCooldown: 300,
-      HealthCheckType: "EC2",
-      HealthCheckGracePeriod: 300,
     }),
     dependencies: ({ resources }) => ({
       subnets: [

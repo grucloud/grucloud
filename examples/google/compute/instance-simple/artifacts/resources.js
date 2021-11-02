@@ -3,74 +3,10 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.iam.makePolicy({
-    name: "policy",
-    properties: ({ config }) => ({
-      bindings: [
-        {
-          role: "roles/compute.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/dns.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/editor",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/iam.serviceAccountAdmin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/owner",
-          members: ["user:fred@grucloud.com"],
-        },
-        {
-          role: "roles/resourcemanager.projectIamAdmin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/storage.admin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-        {
-          role: "roles/storage.objectAdmin",
-          members: [
-            "serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com",
-          ],
-        },
-      ],
-    }),
-  });
-
   provider.compute.makeVmInstance({
     name: "instance-1",
     properties: ({ config }) => ({
       machineType: "e2-micro",
-      canIpForward: false,
-      reservationAffinity: {
-        consumeReservationType: "ANY_RESERVATION",
-      },
-      displayDevice: {
-        enableDisplay: false,
-      },
-      confidentialInstanceConfig: {
-        enableConfidentialCompute: false,
-      },
       sourceImage:
         "projects/debian-cloud/global/images/debian-10-buster-v20211028",
     }),

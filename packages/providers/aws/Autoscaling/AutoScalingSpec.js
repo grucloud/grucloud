@@ -76,7 +76,11 @@ module.exports = () =>
           }),
         ]),
       }),
-      // defaultValue: { DefaultCooldown: 300 },
+      propertiesDefault: {
+        HealthCheckType: "EC2",
+        DefaultCooldown: 300,
+        HealthCheckGracePeriod: 300,
+      },
       filterLive: () =>
         pick([
           "MinSize",
@@ -162,7 +166,7 @@ module.exports = () =>
           ]),
         ]),
       }),
-      // defaultValue: {
+      // propertiesDefault: {
       //   EbsOptimized: false,
       //   BlockDeviceMappings: [],
       //   InstanceMonitoring: {

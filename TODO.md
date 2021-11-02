@@ -15,8 +15,6 @@
   privacy policy
   resource table styling
 
-- SecurityGroup self
-
 ## Common:
 
 - TODO add client.toString()
@@ -59,10 +57,7 @@
 
 ## Aws
 
-- LaunchConfiguration UserData Decoded
-- InternetGateway name
 - Nat gateway handle deleting
-- subnet: MapPublicIpOnLaunch
 - Internet gateway getByName with Filter tags
 - EC2 Instance placement
 - Route display internet gateway or nat gateway in configDefault
@@ -109,6 +104,12 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+fic cannotBeDeleted for Disk:
+
+- ✖ Destroying  
+   ✖ compute::Disk 0/1 Request failed with status code 400 The disk resource 'projects/grucloud-test/zones/southamerica-east1-b/disks/instance-1' is already being used by 'projects/grucloud-test/zones/southamerica-east1-b/instances/instance-1'
+  ✓ compute::VmInstance 1/1
 
 - examples vm-ssh key: create key pair with https://github.com/juliangruber/keypair
 

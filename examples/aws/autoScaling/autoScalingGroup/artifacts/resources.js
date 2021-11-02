@@ -9,9 +9,6 @@ const createResources = ({ provider }) => {
       MinSize: 1,
       MaxSize: 1,
       DesiredCapacity: 1,
-      DefaultCooldown: 300,
-      HealthCheckType: "EC2",
-      HealthCheckGracePeriod: 300,
     }),
     dependencies: ({ resources }) => ({
       subnets: [
@@ -89,7 +86,6 @@ const createResources = ({ provider }) => {
     name: "lt-ec2-micro",
     properties: ({ config }) => ({
       LaunchTemplateData: {
-        EbsOptimized: false,
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
       },

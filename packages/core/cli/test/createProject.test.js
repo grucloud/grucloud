@@ -4,8 +4,9 @@ const os = require("os");
 const prompts = require("prompts");
 const path = require("path");
 const { createProject } = require("../createProject");
-const fs = require("fs");
-describe("createProject", function () {
+const fs = require("fs").promises;
+
+describe.only("createProject", function () {
   it("createProject aws", async function () {
     await tryCatch(
       pipe([
@@ -21,7 +22,7 @@ describe("createProject", function () {
       (error) => {
         throw error;
       }
-    );
+    )();
   });
   it("createProject azure", async function () {
     await tryCatch(
@@ -38,12 +39,14 @@ describe("createProject", function () {
       (error) => {
         throw error;
       }
-    );
+    )();
   });
   it("createProject gcp", async function () {
     await tryCatch(
       pipe([
-        tap(() => prompts.inject(["google", "google-project-test"])),
+        tap(() => {
+          prompts.inject(["google", "google-project-test", "grucloud-test"]);
+        }),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
         (tempPath) =>
           createProject({
@@ -55,6 +58,6 @@ describe("createProject", function () {
       (error) => {
         throw error;
       }
-    );
+    )();
   });
 });

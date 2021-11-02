@@ -1,11 +1,14 @@
 const assert = require("assert");
-const { pipe, get, fork, tap, assign, not } = require("rubico");
+const { pipe, get, fork, tap, assign, not, switchCase, eq } = require("rubico");
 const { includes } = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
 const fs = require("fs").promises;
 const fse = require("fs-extra");
 const shell = require("shelljs");
+const live = require("shelljs-live/promise");
+
+const { createProjectGoogle } = require("./providers/createProjectGoogle");
 
 const promptProvider = pipe([
   () => ({
@@ -71,9 +74,26 @@ const displayGuide = ({ provider, dirs: { destination } }) =>
       console.log(`New ${provider} project created in ${destination}`);
       console.log(`What to do next ?`);
       console.log(`Step 1: cd ${destination}`);
-      console.log(`Step 2: npm install`);
-      console.log(`Step 3: npm run list`);
-      console.log(`Step 4: npm run gencode`);
+      console.log(`Step 2: npm run list`);
+      console.log(`Step 3: npm run gencode`);
+    }),
+  ])();
+
+const npmInstall = ({ provider, dirs: { destination } }) =>
+  pipe([
+    tap((params) => {
+      console.log(`cd ${destination}`);
+    }),
+    () =>
+      shell.cd(destination, {
+        silent: false,
+      }),
+    tap((params) => {
+      console.log(`npm install`);
+    }),
+    () => live(["npm", "install"]),
+    tap((params) => {
+      assert(true);
     }),
   ])();
 
@@ -89,5 +109,13 @@ exports.createProject =
         projectName: promptProjectName,
       }),
       assign({ dirs: writeDirectory({ commandOptions, programOptions }) }),
-      displayGuide,
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([eq(get("provider"), "google"), createProjectGoogle]),
+      tap((params) => {
+        assert(true);
+      }),
+      tap(npmInstall),
+      tap(displayGuide),
     ])();

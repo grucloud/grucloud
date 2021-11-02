@@ -32,6 +32,7 @@ const {
   unless,
   isEmpty,
   keys,
+  defaultsDeep,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -424,7 +425,17 @@ exports.compare = ({
       assert(true);
     }),
     assign({
-      target: pipe([get("target", {}), removeOurTags, filterTarget, filterAll]),
+      target: ({ target = {}, propertiesDefault }) =>
+        pipe([
+          () => target,
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep(propertiesDefault),
+          removeOurTags,
+          filterTarget,
+          filterAll,
+        ])(),
       live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
     }),
     tap((params) => {

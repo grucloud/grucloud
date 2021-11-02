@@ -34,7 +34,7 @@ exports.createResources = ({ provider }) => {
 
   const server = provider.compute.makeVmInstance({
     name: `webserver-ssh-keys`,
-    dependencies: { ip },
+    dependencies: () => ({ ip }),
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",

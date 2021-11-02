@@ -9,8 +9,6 @@ const createResources = ({ provider }) => {
       MinSize: 1,
       MaxSize: 1,
       DesiredCapacity: 1,
-      DefaultCooldown: 300,
-      HealthCheckType: "EC2",
       HealthCheckGracePeriod: 15,
     }),
     dependencies: ({ resources }) => ({
@@ -234,16 +232,6 @@ const createResources = ({ provider }) => {
 
   provider.EC2.useSecurityGroup({
     name: "eks-cluster-sg-my-cluster-1909614887",
-    properties: ({ config }) => ({
-      Description:
-        "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/my-cluster",
-          Value: "owned",
-        },
-      ],
-    }),
     filterLives: ({ resources }) =>
       pipe([
         () => resources,
@@ -259,10 +247,6 @@ const createResources = ({ provider }) => {
           ])
         ),
       ])(),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
-      eksCluster: resources.EKS.Cluster["my-cluster"],
-    }),
   });
 
   provider.EC2.makeSecurityGroup({
@@ -438,8 +422,8 @@ const createResources = ({ provider }) => {
         desiredSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/cluster-name": "my-cluster",
         "alpha.eksctl.io/nodegroup-name": "ng-1",
+        "alpha.eksctl.io/cluster-name": "my-cluster",
       },
     }),
     dependencies: ({ resources }) => ({

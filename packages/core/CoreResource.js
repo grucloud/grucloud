@@ -232,6 +232,7 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
+          propertiesDefault: spec.propertiesDefault,
           target,
           live,
           dependencies: resource.dependencies(),

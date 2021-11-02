@@ -7,6 +7,7 @@ const createResources = ({ provider }) => {
     name: "vpc-postgres",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/16",
+      DnsHostnames: true,
     }),
   });
 

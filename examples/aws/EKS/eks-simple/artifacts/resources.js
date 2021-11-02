@@ -146,7 +146,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1D-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -157,7 +156,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PrivateRouteTableUSEAST1F-nat-gateway",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -168,7 +166,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.EC2.makeRoute({
-    name: "PublicRouteTable-igw",
     properties: ({ config }) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -201,16 +198,6 @@ const createResources = ({ provider }) => {
 
   provider.EC2.useSecurityGroup({
     name: "eks-cluster-sg-my-cluster-1909614887",
-    properties: ({ config }) => ({
-      Description:
-        "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-      Tags: [
-        {
-          Key: "kubernetes.io/cluster/my-cluster",
-          Value: "owned",
-        },
-      ],
-    }),
     filterLives: ({ resources }) =>
       pipe([
         () => resources,
@@ -342,8 +329,8 @@ const createResources = ({ provider }) => {
         desiredSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
       },
     }),
     dependencies: ({ resources }) => ({

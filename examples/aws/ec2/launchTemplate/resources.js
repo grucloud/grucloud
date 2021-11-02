@@ -48,7 +48,6 @@ const createResources = ({ provider }) => {
     name: "lt-ec2-micro",
     properties: ({ config }) => ({
       LaunchTemplateData: {
-        EbsOptimized: false,
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
       },

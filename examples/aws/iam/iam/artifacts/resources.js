@@ -36,32 +36,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.IAM.makeRole({
-    name: "role-4-policies",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy["AmazonEKSWorkerNodePolicy"],
-        resources.IAM.Policy["policy-allow-ec2"],
-      ],
-    }),
-  });
-
-  provider.IAM.makeRole({
     name: "role-allow-assume-role",
     properties: ({ config }) => ({
       Path: "/",
@@ -138,29 +112,6 @@ const createResources = ({ provider }) => {
         Statement: [
           {
             Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
-    }),
-  });
-
-  provider.IAM.makePolicy({
-    name: "policy-allow-ec2",
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-          {
-            Action: ["sqs:*"],
             Effect: "Allow",
             Resource: "*",
           },

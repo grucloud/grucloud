@@ -10,6 +10,7 @@ skinparam monochrome true
 ++++ NatGateway (1)
 ++++ Subnet (4)
 ++++ RouteTable (3)
+++++ RouteTableAssociation (4)
 ++++ Route (3)
 ++++ SecurityGroup (2)
 ++++ SecurityGroupRuleIngress (2)

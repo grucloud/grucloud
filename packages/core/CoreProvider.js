@@ -1631,7 +1631,11 @@ function CoreProvider({
               engine.update({
                 payload: input,
                 live,
-                diff: engine.spec.compare({ live, target: input }),
+                diff: engine.spec.compare({
+                  live,
+                  target: input,
+                  propertiesDefault: engine.spec.propertiesDefault,
+                }),
                 resolvedDependencies,
                 lives: getLives(),
               }),

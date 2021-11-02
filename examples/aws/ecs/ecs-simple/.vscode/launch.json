@@ -94,17 +94,6 @@
       "port": 9229
     },
     {
-      "name": "Destroy AutoScalingGroup",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["destroy", "-f", "-t", "AutoScalingGroup"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
       "name": "Destroy All",
       "type": "node",
       "request": "launch",

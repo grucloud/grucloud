@@ -32,9 +32,9 @@ const createResources = ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, { config: require("./config") });
-  createResources({
-    provider,
+  const provider = createProvider(AwsProvider, {
+    createResources,
+    config: require("./config"),
   });
 
   return {

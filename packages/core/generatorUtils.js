@@ -120,7 +120,7 @@ const buildProperties = ({
   commandOptions,
   programOptions,
   filterLive = () => identity,
-  defaultValue = {},
+  propertiesDefault = {},
 }) =>
   pipe([
     tap(() => {
@@ -139,7 +139,7 @@ const buildProperties = ({
     tap((params) => {
       assert(true);
     }),
-    differenceObject(defaultValue),
+    differenceObject(propertiesDefault),
     tap((params) => {
       assert(true);
     }),
@@ -386,7 +386,7 @@ const codeTpl = ({
     append("."),
     append(buildPrefix(resource)),
     append(type),
-    append("({"),
+    append("({\n"),
     append(buildName({ inferName, resourceName })),
     switchCase([
       () => additionalCode,
@@ -893,7 +893,7 @@ const writeResource =
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
     filterLive,
-    defaultValue,
+    propertiesDefault,
     codeBuildProperties,
     hasNoProperty,
     inferName,
@@ -932,7 +932,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
-                  defaultValue,
+                  propertiesDefault,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
                   commandOptions,
@@ -989,7 +989,7 @@ const writeResources =
     group,
     providerName,
     filterLive,
-    defaultValue,
+    propertiesDefault,
     properties,
     dependencies,
     environmentVariables,
@@ -1039,7 +1039,7 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
-                defaultValue,
+                propertiesDefault,
                 inferName,
                 dependencies,
                 ignoreResource,

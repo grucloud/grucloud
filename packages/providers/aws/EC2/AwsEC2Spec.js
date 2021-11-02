@@ -265,7 +265,7 @@ module.exports = () =>
           ]),
         ]),
       }),
-      defaultValue: { DnsSupport: true, DnsHostnames: false },
+      propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
     },
     {
@@ -339,7 +339,7 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
-      defaultValue: {
+      propertiesDefault: {
         MapPublicIpOnLaunch: false,
         MapCustomerOwnedIpOnLaunch: false,
       },
@@ -621,7 +621,6 @@ module.exports = () =>
       Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
-        InstanceType: "t2.micro",
         MaxCount: 1,
         MinCount: 1,
       },
@@ -664,6 +663,9 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      propertiesDefault: {
+        LaunchTemplateData: { EbsOptimized: false },
+      },
       filterLive: () =>
         pipe([
           pick(["LaunchTemplateData"]),

@@ -53,14 +53,11 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       ApiMappingKey: "",
     }),
-    dependencies: ({ resources }) => {
-      const deps = {
-        api: resources.ApiGatewayV2.Api["my-api"],
-        domainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
-        stage: resources.ApiGatewayV2.Stage["my-api-stage-dev"],
-      };
-      return deps;
-    },
+    dependencies: ({ resources }) => ({
+      api: resources.ApiGatewayV2.Api["my-api"],
+      domainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
+      stage: resources.ApiGatewayV2.Stage["my-api-stage-dev"],
+    }),
   });
 
   provider.ApiGatewayV2.makeIntegration({
@@ -171,14 +168,14 @@ const createResources = ({ provider }) => {
   provider.Route53.makeRecord({
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      apiGatewayV2DomainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
+      certificate: resources.ACM.Certificate["grucloud.org"],
     }),
   });
 
   provider.Route53.makeRecord({
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      certificate: resources.ACM.Certificate["grucloud.org"],
+      apiGatewayV2DomainName: resources.ApiGatewayV2.DomainName["grucloud.org"],
     }),
   });
 
