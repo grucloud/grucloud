@@ -6,7 +6,7 @@ const path = require("path");
 const { createProject } = require("../createProject");
 const fs = require("fs").promises;
 
-describe.only("createProject", function () {
+describe("createProject", function () {
   it("createProject aws", async function () {
     await tryCatch(
       pipe([

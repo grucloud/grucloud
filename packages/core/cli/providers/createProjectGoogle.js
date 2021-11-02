@@ -8,6 +8,7 @@ const {
   switchCase,
   eq,
   map,
+  tryCatch,
 } = require("rubico");
 const { findIndex } = require("rubico/x");
 const prompts = require("prompts");
@@ -40,6 +41,24 @@ const gcloudExecCommand = (command) =>
     ]),
   ])();
 
+const isGcloudPresent = pipe([
+  () => "version",
+  tryCatch(
+    pipe([
+      gcloudExecCommand,
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+    (error) => {
+      console.error(
+        "The gcloud CLI is not installed.\nVisit https://https://cloud.google.com/sdk/docs/install to install gcloud\nReme"
+      );
+      process.exit(-1);
+    }
+  ),
+]);
+
 const promptGoogleProjectId = pipe([
   () => `config get-value project`,
   gcloudExecCommand,
@@ -66,6 +85,10 @@ const promptGoogleProjectId = pipe([
 ]);
 
 exports.createProjectGoogle = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  tap(isGcloudPresent),
   tap((params) => {
     assert(true);
   }),

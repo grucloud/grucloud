@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, fork, tap, assign, not, switchCase, eq } = require("rubico");
-const { includes } = require("rubico/x");
+const { includes, when, append } = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
 const fs = require("fs").promises;
@@ -97,6 +97,42 @@ const npmInstall = ({ provider, dirs: { destination } }) =>
     }),
   ])();
 
+const updatePackageJson = ({ projectName, dirs: { destination } }) =>
+  pipe([
+    tap(() => {
+      assert(destination);
+      assert(projectName);
+    }),
+    () => path.resolve(destination, "package.json"),
+    (filename) =>
+      pipe([
+        () => fs.readFile(filename, "utf-8"),
+        JSON.parse,
+        assign({ name: () => projectName }),
+        JSON.stringify,
+        (content) => fs.writeFile(filename, content),
+      ])(),
+  ])();
+
+const createConfig = ({ projectId, projectName, dirs: { destination } }) =>
+  pipe([
+    tap(() => {
+      assert(destination);
+    }),
+    () => path.resolve(destination, "config.js"),
+    (filename) =>
+      pipe([
+        () => `module.exports = () => ({\n`,
+        when(() => projectId, append(`  projectId: "${projectId}",\n`)),
+        when(() => projectName, append(`  projectName: "${projectName}",\n`)),
+        append("});"),
+        tap((params) => {
+          assert(true);
+        }),
+        (content) => fs.writeFile(filename, content),
+      ])(),
+  ])();
+
 exports.createProject =
   ({ programOptions }) =>
   (commandOptions) =>
@@ -112,10 +148,12 @@ exports.createProject =
       tap((params) => {
         assert(true);
       }),
-      switchCase([eq(get("provider"), "google"), createProjectGoogle]),
+      when(eq(get("provider"), "google"), createProjectGoogle),
       tap((params) => {
         assert(true);
       }),
+      tap(updatePackageJson),
+      tap(createConfig),
       tap(npmInstall),
       tap(displayGuide),
     ])();
