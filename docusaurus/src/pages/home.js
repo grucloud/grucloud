@@ -270,7 +270,7 @@ function Home() {
               infrastructure showing the dependencies between resources.
             </p>
             <img
-              src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-vpc/diagram-target.svg"
+              src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-target.svg"
               alt="graph"
             ></img>
           </div>
