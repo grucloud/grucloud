@@ -57,6 +57,17 @@
       "port": 9229
     },
     {
+      "name": "Generate Code --no-inventory-fetch",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["gencode", "--no-inventory-fetch"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Plan",
       "type": "node",
       "request": "launch",

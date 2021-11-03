@@ -27,7 +27,6 @@ const {
 } = require("rubico");
 const {
   find,
-  last,
   pluck,
   isEmpty,
   flatten,
@@ -1178,7 +1177,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
   ]);
 
 //List all
-const list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const list = ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     listDoOk({ commandOptions, programOptions }),
     DisplayAndThrow({ name: "List" })
@@ -1653,12 +1652,17 @@ exports.Cli = ({
               programOptions.workingDirectory,
               "artifacts/default.env"
             ),
+            all: true,
           }),
           (commandOptions) => ({
             infra,
             programOptions,
             commandOptions,
           }),
+          tap((params) => {
+            assert(true);
+          }),
+          tap.if(get("commandOptions.inventoryFetch"), list),
           genCode,
         ])(),
     }),

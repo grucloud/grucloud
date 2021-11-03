@@ -3,6 +3,8 @@ const path = require("path");
 const fs = require("fs").promises;
 const { snakeCase } = require("change-case");
 const prettier = require("prettier");
+const prompts = require("prompts");
+
 const { differenceObject } = require("./Common");
 const {
   pipe,
@@ -46,7 +48,7 @@ const {
   when,
   append,
 } = require("rubico/x");
-
+const Diff = require("diff");
 const { resourcesTpl } = require("./resourcesTpl");
 
 const ResourceVarNameDefault = pipe([
@@ -412,8 +414,76 @@ const codeTpl = ({
     append("});\n"),
   ])();
 
+const displayDiff = pipe([
+  get("hunks"),
+  map(({ lines, newLines }) =>
+    pipe([
+      tap((params) => {
+        console.log(`New lines ${newLines}`);
+      }),
+      () => lines,
+      map((line) => {
+        console.log(line);
+      }),
+    ])()
+  ),
+]);
+
+const promptSave =
+  ({ commandOptions }) =>
+  ({ contentFormated, contentOld }) =>
+    pipe([
+      tap((params) => {
+        assert(contentFormated);
+        assert(contentOld);
+      }),
+      () =>
+        Diff.structuredPatch(
+          "resources.js.old",
+          "resources.js.new",
+          contentOld,
+          contentFormated,
+          "old",
+          "new"
+        ),
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        pipe([get("hunks"), isEmpty]),
+        pipe([
+          tap((params) => {
+            console.log("Infrastructure has not changed.");
+          }),
+          () => false,
+        ]), // No diff, do not save
+        pipe([
+          tap((params) => {
+            console.log(
+              `Some changes has been detected between the lives resources and the target code.`
+            );
+          }),
+          displayDiff,
+          switchCase([
+            () => commandOptions.prompt,
+            pipe([
+              () => ({
+                type: "confirm",
+                name: "confirmWrite",
+                message: `Write new infrastructure to resource.js`,
+                initial: false,
+              }),
+              prompts,
+              get("confirmWrite"),
+            ]),
+            () => true,
+          ]),
+        ]),
+      ]),
+    ])();
+
 const writeToFile =
-  ({ filename, programOptions }) =>
+  ({ filename, programOptions, commandOptions }) =>
   (content) =>
     pipe([
       tap(() => {
@@ -426,21 +496,52 @@ const writeToFile =
           path.resolve(programOptions.workingDirectory, filename),
         contentFormated: () => prettier.format(content, { parser: "babel" }),
       }),
-      tryCatch(
-        pipe([
-          ({ filenameResolved, contentFormated }) =>
-            fs.writeFile(filenameResolved, contentFormated),
-        ]),
-        (error) =>
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        contentOld: tryCatch(
           pipe([
-            tap(() => {
-              console.error(`Cannot write to file '${filename}`);
-              console.error(error);
+            tap((params) => {
+              assert(true);
             }),
-            () => {
-              throw error;
-            },
-          ])()
+            ({ filenameResolved }) => fs.readFile(filenameResolved, "utf-8"),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+          (error) => {
+            //Ignore error
+          }
+        ),
+      }),
+      assign({
+        doSave: pipe([
+          switchCase([
+            get("contentOld"),
+            promptSave({ commandOptions }),
+            () => true,
+          ]),
+        ]),
+      }),
+      tap.if(
+        get("doSave"),
+        tryCatch(
+          pipe([
+            ({ filenameResolved, contentFormated }) =>
+              fs.writeFile(filenameResolved, contentFormated),
+          ]),
+          (error) =>
+            pipe([
+              tap(() => {
+                console.error(`Cannot write to file '${filename}`);
+                console.error(error);
+              }),
+              () => {
+                throw error;
+              },
+            ])()
+        )
       ),
     ])();
 
@@ -679,7 +780,7 @@ const removeDefaultDependencies =
                                   ])()
                                 ),
                                 tap.if(isEmpty, () => {
-                                  console.log(`Ignoring dependency ${id}`);
+                                  //console.log(`Ignoring dependency ${id}`);
                                 }),
                               ])(),
                           ]),
@@ -726,10 +827,12 @@ const readModel = ({
       assert(writersSpec);
       assert(programOptions);
       assert(programOptions.workingDirectory);
+      assert(programOptions.workingDirectory);
+      assert(commandOptions.inventory);
     }),
     () =>
       fs.readFile(
-        path.resolve(programOptions.workingDirectory, commandOptions.input),
+        path.resolve(programOptions.workingDirectory, commandOptions.inventory),
         "utf-8"
       ),
     JSON.parse,
@@ -778,7 +881,7 @@ const readMapping = ({ commandOptions, programOptions }) =>
 exports.readMapping = readMapping;
 
 const writeResourcesToFile =
-  ({ filename, resourcesTpl, programOptions }) =>
+  ({ filename, resourcesTpl, programOptions, commandOptions }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -795,7 +898,7 @@ const writeResourcesToFile =
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
       ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
-      writeToFile({ filename, programOptions }),
+      writeToFile({ filename, programOptions, commandOptions }),
     ])();
 
 const writeEnv =
@@ -879,7 +982,7 @@ const ignoreDefault =
         pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
       tap.if(identity, (xxx) => {
-        console.log("ignoreDefault", resource.name);
+        //console.log("ignoreDefault", resource.name);
       }),
     ])();
 
@@ -916,7 +1019,7 @@ const writeResource =
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
         (resource) => {
           assert(true);
-          console.log(" Ignore", resource.name);
+          //console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
@@ -1075,7 +1178,7 @@ exports.generatorMain = ({
 }) =>
   pipe([
     tap((xxx) => {
-      console.log(name, commandOptions, programOptions);
+      //console.log(name, commandOptions, programOptions);
     }),
     fork({
       lives: readModel({
@@ -1126,10 +1229,12 @@ exports.generatorMain = ({
             filename: commandOptions.outputCode,
             resourcesTpl,
             programOptions,
+            commandOptions,
           }),
           env: writeEnv({
             filename: commandOptions.outputEnv,
             programOptions,
+            commandOptions,
           }),
         }),
         tap((params) => {

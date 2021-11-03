@@ -793,17 +793,14 @@ exports.ProviderGru = ({
           `generateCode ${JSON.stringify({ commandOptions, programOptions })}`
         );
       }),
-      () => getProviders(),
+      getProviders,
       map(
         tryCatch(
           callProp("generateCode", { commandOptions, programOptions }),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(error);
-                throw error;
-              }),
-            ])()
+          (error) => {
+            logger.error("generateCode", error);
+            throw error;
+          }
         )
       ),
     ])();

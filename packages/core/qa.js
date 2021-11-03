@@ -91,6 +91,7 @@ exports.testEnd2End = ({
             commandOptions: {
               inventory: "artifacts/inventory.json",
               outputCode: "artifacts/resources.js",
+              prompt: false,
             },
           }),
         () =>
