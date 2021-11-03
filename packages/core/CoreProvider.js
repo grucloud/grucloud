@@ -1185,10 +1185,7 @@ function CoreProvider({
           assert(meta.groupType);
 
           assert(meta.providerName);
-          //TODO do we need this ?
-          if (error) {
-            getLives().addResources({ ...meta, error });
-          }
+
           const client = getClient(meta);
           assert(client.spec);
           onStateChange({

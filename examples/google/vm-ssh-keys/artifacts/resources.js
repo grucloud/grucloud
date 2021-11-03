@@ -60,18 +60,8 @@ const createResources = ({ provider }) => {
           },
         ],
       },
-      startRestricted: false,
-      deletionProtection: false,
-      shieldedInstanceConfig: {
-        enableSecureBoot: false,
-        enableVtpm: true,
-        enableIntegrityMonitoring: true,
-      },
-      shieldedInstanceIntegrityPolicy: {
-        updateAutoLearnPolicy: true,
-      },
       sourceImage:
-        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
+        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20211102",
     }),
     dependencies: ({ resources }) => ({
       ip: resources.compute.Address["ip-webserver-ssh-keys"],

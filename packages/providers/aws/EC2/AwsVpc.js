@@ -43,37 +43,34 @@ exports.AwsVpc = ({ spec, config }) => {
     findNameInTagsOrId({ findId }),
   ]);
 
-  const getList = ({ params, deep } = {}) =>
+  const decorate = () =>
     pipe([
-      tap(() => {
-        logger.info(`getList vpc ${JSON.stringify({ params, deep })}`);
+      assign({
+        DnsSupport: pipe([
+          ({ VpcId }) =>
+            ec2().describeVpcAttribute({
+              VpcId,
+              Attribute: "enableDnsSupport",
+            }),
+          get("EnableDnsSupport.Value"),
+        ]),
+        DnsHostnames: pipe([
+          ({ VpcId }) =>
+            ec2().describeVpcAttribute({
+              VpcId,
+              Attribute: "enableDnsHostnames",
+            }),
+          get("EnableDnsHostnames.Value"),
+        ]),
       }),
-      () => ec2().describeVpcs(params),
-      get("Vpcs"),
-      when(
-        () => deep,
-        map(
-          assign({
-            DnsSupport: pipe([
-              ({ VpcId }) =>
-                ec2().describeVpcAttribute({
-                  VpcId,
-                  Attribute: "enableDnsSupport",
-                }),
-              get("EnableDnsSupport.Value"),
-            ]),
-            DnsHostnames: pipe([
-              ({ VpcId }) =>
-                ec2().describeVpcAttribute({
-                  VpcId,
-                  Attribute: "enableDnsHostnames",
-                }),
-              get("EnableDnsHostnames.Value"),
-            ]),
-          })
-        )
-      ),
-    ])();
+    ]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+  const getList = client.getList({
+    method: "describeVpcs",
+    getParam: "Vpcs",
+    decorate,
+  });
 
   const getByName = getByNameCore({ getList, findName });
 

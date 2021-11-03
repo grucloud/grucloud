@@ -99,7 +99,7 @@ exports.createLives = (livesRaw = []) => {
 
       const mapPerType = mapPerProvider.get(providerName) || new Map();
 
-      logger.debug(
+      logger.info(
         `live addResource ${JSON.stringify({
           providerName,
           type,
@@ -108,7 +108,7 @@ exports.createLives = (livesRaw = []) => {
           mapPerTypeSize: mapPerType.size,
         })}`
       );
-      logger.debug(`live addResource ${JSON.stringify(resource)}`);
+      logger.debug(`live addResource resource: ${JSON.stringify(resource)}`);
 
       pipe([
         () =>
