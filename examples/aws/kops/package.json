@@ -28,6 +28,7 @@
     "shelljs": "^0.8.4"
   },
   "devDependencies": {
-    "mocha": "^9.0.3"
+    "mocha": "^9.0.3",
+    "mocha-junit-reporter": "^2.0.2"
   }
 }
