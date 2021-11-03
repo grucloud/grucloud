@@ -99,9 +99,8 @@ Now choose a name, _ec2-instance_ for instance.
 New aws project created in /Users/joe/test/ec2-instance
 What to do next ?
 Step 1: cd /Users/joe/test/ec2-instance
-Step 2: npm install
-Step 3: npm run list
-Step 4: npm run gencode
+Step 2: npm run list
+Step 3: npm run gencode
 ```
 
 The code generated is written to _resource.js_ and ready to be commited to a source code repository.

@@ -22,19 +22,29 @@ Install the grucloud command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-Clone the code and go to one of the azure examples:
+Create a new project:
 
-```bash
-git clone git@github.com:grucloud/grucloud.git
+```sh
+gc new
 ```
 
-```bash
-cd grucloud/examples/azure/vm
+```txt
+? Cloud Provider › - Use arrow-keys. Return to submit.
+    AWS
+❯   Azure - Microsoft Azure
+    GCP
 ```
 
-```bash
-npm install
+Select Azure as the cloud provider.
+
+```txt
+✔ Cloud Provider › Azure
+? Project's name ›
 ```
+
+Enter the project's name, for instance _my-project_
+
+The directory _my-project_ will be created with all the necessary files for an Azure project.
 
 ### Environment
 
@@ -57,6 +67,7 @@ Edit **config.js** and set the location:
 
 ```js
 module.exports = () => ({
+  projectName: "my-project",
   location: "uksouth",
 });
 ```
@@ -67,155 +78,6 @@ To find out the list of locations:
 az account list-locations -o table
 ```
 
-Now it is time to edit the infrastructure **iac.js** file that describes the architecture.
-
-```js
-const assert = require("assert");
-const { AzureProvider } = require("@grucloud/provider-azure");
-
-exports.createStack = async ({ createProvider }) => {
-  // Create an Azure provider
-  const provider = createProvider(AzureProvider, {
-    config: require("./config"),
-  });
-  // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
-  const rg = provider.resourceManagement.makeResourceGroup({
-    name: `resource-group`,
-  });
-
-  // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
-  const vnet = provider.virtualNetworks.makeVirtualNetwork({
-    name: `virtual-network`,
-    dependencies: { resourceGroup: rg },
-    properties: () => ({
-      properties: {
-        addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
-        subnets: [
-          {
-            name: `subnet`,
-            properties: {
-              addressPrefix: "10.0.0.0/24",
-            },
-          },
-        ],
-      },
-    }),
-  });
-
-  // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
-  const sg = provider.virtualNetworks.makeSecurityGroup({
-    name: `security-group`,
-    dependencies: { resourceGroup: rg },
-    properties: () => ({
-      properties: {
-        securityRules: [
-          {
-            name: "SSH",
-            properties: {
-              access: "Allow",
-              direction: "Inbound",
-              protocol: "Tcp",
-              destinationPortRange: "22",
-              destinationAddressPrefix: "*",
-              sourcePortRange: "*",
-              sourceAddressPrefix: "*",
-              priority: 1000,
-            },
-          },
-        ],
-      },
-    }),
-  });
-
-  // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
-  const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
-    name: `ip`,
-    dependencies: {
-      resourceGroup: rg,
-    },
-    properties: () => ({
-      properties: {
-        publicIPAllocationMethod: "Dynamic",
-      },
-    }),
-  });
-  // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
-  const networkInterface = provider.virtualNetworks.makeNetworkInterface({
-    name: `network-interface`,
-    dependencies: {
-      resourceGroup: rg,
-      virtualNetwork: vnet,
-      securityGroup: sg,
-      subnet: `subnet`,
-      publicIpAddress,
-    },
-    properties: () => ({
-      properties: {
-        ipConfigurations: [
-          {
-            name: "ipconfig",
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-            },
-          },
-        ],
-      },
-    }),
-  });
-
-  const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
-  assert(MACHINE_ADMIN_USERNAME);
-  assert(MACHINE_ADMIN_PASSWORD);
-
-  // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/createorupdate
-  const vm = provider.compute.makeVirtualMachine({
-    name: `vm`,
-    dependencies: {
-      resourceGroup: rg,
-      networkInterface,
-    },
-    properties: () => ({
-      properties: {
-        hardwareProfile: {
-          vmSize: "Standard_A1_v2",
-        },
-        storageProfile: {
-          imageReference: {
-            // az vm image list
-            offer: "UbuntuServer",
-            publisher: "Canonical",
-            sku: "18.04-LTS",
-            version: "latest",
-          },
-        },
-        osProfile: {
-          adminUsername: MACHINE_ADMIN_USERNAME,
-          computerName: "myVM",
-          adminPassword: MACHINE_ADMIN_PASSWORD,
-        },
-      },
-    }),
-  });
-  return { provider };
-};
-```
-
-## Plan
-
-Find out which resources are going to be allocated:
-
-```sh
-gc plan
-```
-
-## Deploy
-
-Happy with the expected plan ? Deploy it now:
-
-```sh
-gc apply
-```
-
 ## List
 
 List the available resources and display a diagram with:
@@ -224,10 +86,36 @@ List the available resources and display a diagram with:
 gc list --graph
 ```
 
+## Generate the code
+
+```sh
+gc gencode
+```
+
+The file `resource.js` will be updated according the live insfrastructure.
+
+## Plan
+
+To find out which resources are going to be allocated.
+
+```sh
+gc plan
+```
+
+The plan should be empty at this stage.
+
 ## Destroy
 
 Time to destroy the resouces allocated:
 
 ```sh
 gc destroy
+```
+
+## Deploy
+
+The instructure can be deployed with the _apply_ command.
+
+```sh
+gc apply
 ```
