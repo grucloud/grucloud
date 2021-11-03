@@ -51,7 +51,6 @@ const iamUser = provider.IAM.makeUser({
 ### Used By
 
 - [IamPolicy](./IamPolicy)
-- [IamPolicyReadOnly](./IamPolicyReadOnly)
 - [IamUser](./IamUser)
 
 ### List

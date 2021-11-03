@@ -3,6 +3,7 @@ jobs:
     docker:
       - image: "cimg/node:14.15.2"
     steps:
+      - aws-cli/install
       - checkout
       - node/install:
           node-version: "14.15.2"
@@ -26,6 +27,8 @@ jobs:
 
 orbs:
   node: circleci/node@4.1.0
+  aws-cli: circleci/aws-cli@2.0.3
+
 version: 2.1
 workflows:
   test:
