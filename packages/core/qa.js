@@ -11,7 +11,13 @@ const isEmptyPlan = pipe([
     pipe([get("resultDestroy"), isEmpty]),
   ]),
 ]);
-exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
+exports.testEnd2End = ({
+  programOptions,
+  title,
+  listOptions,
+  steps = [],
+  doGraph = !process.env.CONTINUOUS_INTEGRATION,
+}) =>
   pipe([
     () => steps,
     first,
@@ -26,16 +32,22 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
         tap((params) => {
           assert(true);
         }),
-        () =>
-          cli.graphTree({
-            commandOptions: { title },
-            programOptions: { noOpen: true },
-          }),
-        () =>
-          cli.graphTarget({
-            commandOptions: { title },
-            programOptions: { noOpen: true },
-          }),
+        tap.if(
+          () => doGraph,
+          () =>
+            cli.graphTree({
+              commandOptions: { title },
+              programOptions: { noOpen: true },
+            })
+        ),
+        tap.if(
+          () => doGraph,
+          () =>
+            cli.graphTarget({
+              commandOptions: { title },
+              programOptions: { noOpen: true },
+            })
+        ),
         () =>
           cli.planDestroy({
             commandOptions: { force: true },
@@ -77,7 +89,7 @@ exports.testEnd2End = ({ programOptions, title, listOptions, steps = [] }) =>
         () =>
           cli.genCode({
             commandOptions: {
-              input: "artifacts/inventory.json",
+              inventory: "artifacts/inventory.json",
               outputCode: "artifacts/resources.js",
             },
           }),
