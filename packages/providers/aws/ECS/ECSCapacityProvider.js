@@ -26,7 +26,7 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   AutoScalingAutoScalingGroup,
-} = require("../AutoScaling/AutoScalingAutoScalingGroup");
+} = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.capacityProviderArn");
