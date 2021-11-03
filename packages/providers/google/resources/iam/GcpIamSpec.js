@@ -70,6 +70,7 @@ module.exports = () =>
       isOurMinion: () => true,
       compare: compareIamPolicy,
       filterLive: () => pipe([pick(["bindings"])]),
+      ignoreResource: () => () => true,
     },
     {
       type: "Binding",
