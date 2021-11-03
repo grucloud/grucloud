@@ -1554,10 +1554,19 @@ function CoreProvider({
         resultDestroy: result.resultDestroy,
       }),
       tap((result) =>
-        forEach((client) => {
-          //TODO Refactor and
-          client.onDeployed && client.onDeployed(result);
-        })(getClients())
+        pipe([
+          getClients,
+          forEach(
+            tryCatch(
+              tap.if(get("onDeployed"), callProp("onDeployed", result)),
+              (error) => {
+                logger.error(`error running client.onDeployed `);
+                logger.error(error.stack);
+                throw error;
+              }
+            )
+          ),
+        ])()
       ),
       tap((result) => {
         logger.info(`Apply done`);

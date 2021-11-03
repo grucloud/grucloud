@@ -74,8 +74,11 @@ const displayGuide = ({ provider, dirs: { destination } }) =>
       console.log(`New ${provider} project created in ${destination}`);
       console.log(`What to do next ?`);
       console.log(`Step 1: cd ${destination}`);
-      console.log(`Step 2: npm run list`);
-      console.log(`Step 3: npm run gencode`);
+      console.log(`Step 2: gc init`);
+      console.log(`Step 3: gc list --graph`);
+      console.log(`Step 5: gc gencode`);
+      console.log(`Step 6: gc destroy`);
+      console.log(`Step 7: gc apply`);
     }),
   ])();
 
