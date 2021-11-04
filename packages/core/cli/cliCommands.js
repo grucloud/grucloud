@@ -273,6 +273,8 @@ const displayError = ({ name, error }) => {
   assert(error);
   assert(name);
   console.error(`ERROR running command '${name}'`);
+  error.stack && console.error(error.stack);
+
   displayErrorResults({ name, results: error.result?.results });
   displayErrorResults({ name, results: error.resultQuery?.results });
   displayErrorResults({ name, results: error.resultDeploy?.results });
@@ -442,7 +444,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
 const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
   pipe([
     tap(() => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType}`);
+      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType}`);
       assert(providerGru);
     }),
     () =>
@@ -457,10 +459,11 @@ const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
           ])({}),
       }),
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
+      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
     }),
     //throwIfError,
-  ]);
+  ])();
+
 // planRunScript
 const planRunScript = async ({
   infra,
@@ -492,7 +495,7 @@ const planRunScript = async ({
               providerGru,
               hookType: HookType.ON_DEPLOYED,
               commandTitle: `Running OnDeployedGlobal`,
-            })({}),
+            }),
           () => commandOptions.onDestroyed,
           () =>
             runAsyncCommandHook({
@@ -506,7 +509,7 @@ const planRunScript = async ({
               providerGru,
               hookType: HookType.ON_DESTROYED,
               commandTitle: `Running OnDestroyedGlobal`,
-            })({}),
+            }),
           () => {
             throw { code: 422, message: "no command found" };
           },
@@ -772,7 +775,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
                 providerGru,
                 hookType: HookType.ON_DEPLOYED,
                 commandTitle: `Running OnDeployedGlobal`,
-              })({}),
+              }),
           }),
           assign({ error: any(get("error")) }),
           tap((result) => {
@@ -1018,7 +1021,7 @@ const planDestroy = async ({
                 providerGru,
                 hookType: HookType.ON_DESTROYED,
                 commandTitle: `Running OnDestroyedGlobal`,
-              })({}),
+              }),
           }),
           assign({ error: any(get("error")) }),
           tap((xxx) => {

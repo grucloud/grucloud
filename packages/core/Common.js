@@ -452,9 +452,6 @@ exports.compare = ({
       liveDiff: pipe([
         () => detailedDiff(live, target),
         omitIfEmpty(["added", "updated", "deleted"]),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     }),
     tap((diff) => {

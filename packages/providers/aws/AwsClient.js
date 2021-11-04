@@ -364,6 +364,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       isInstanceDown = isEmpty,
       ignoreError = () => false,
       ignoreErrorCodes = [],
+      shouldRetryOnException = () => false,
       config,
     }) =>
     ({ name, live, lives }) =>
@@ -388,6 +389,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             tap((params) => {
               assert(true);
             }),
+            //TODO add retryCall with shouldRetryOnException ResourceInUseException
             endpoint()[method],
             tap((params) => {
               assert(true);

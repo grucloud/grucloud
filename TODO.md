@@ -1,8 +1,7 @@
 ## Bugs
 
+- add retryCall to client.destroy with shouldRetryOnException ResourceInUseException for EventSourceMapping
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
-- inferName for SecurityGroup, and Route Table
-- resource schema
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -40,14 +39,14 @@
 
 ## Azure
 
+- gc new: az auth
+- gc new: fetch and prompt for location.
+
 - virtualNetworks::Subnet 0/1 Request failed with status code 400 Subnet subnet is in use by /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups
   /resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig and cannot be deleted. In order to delete the subnet, delete
   all the resources within the subnet. See aka.ms/deletesubnet.
 
 - remove NetworkWatcherRG from list
-- check resource group name
-- check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
-
 - doc
 
 ## Aws2gc
@@ -57,10 +56,12 @@
 
 ## Aws
 
+- inferName for SecurityGroup, and Route Table
 - Nat gateway handle deleting
 - Internet gateway getByName with Filter tags
 - EC2 Instance placement
 - Route display internet gateway or nat gateway in configDefault
+- resource schema
 
 - Lambda env var dependencies with DynamoDB table
 - Policy dependencies with other resources: DynamoDB table
@@ -92,8 +93,6 @@
 
 - aws.config.loadFromPath('./AwsConfig.json');
 
-- error padend
-
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
 
@@ -105,7 +104,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-fic cannotBeDeleted for Disk:
+- fix cannotBeDeleted for Disk:
 
 - ✖ Destroying  
    ✖ compute::Disk 0/1 Request failed with status code 400 The disk resource 'projects/grucloud-test/zones/southamerica-east1-b/disks/instance-1' is already being used by 'projects/grucloud-test/zones/southamerica-east1-b/instances/instance-1'
