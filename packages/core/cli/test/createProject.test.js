@@ -32,7 +32,13 @@ describe("createProject", function () {
   it("createProject azure", async function () {
     await tryCatch(
       pipe([
-        tap(() => prompts.inject(["azure", "azure-project-test"])),
+        tap(() => {
+          prompts.inject([
+            "azure",
+            "azure-project-test",
+            "e012cd34-c794-4e35-916f-f38dcd8ac45c",
+          ]);
+        }),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
         (tempPath) =>
           createProject({

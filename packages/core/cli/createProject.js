@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, fork, tap, assign, not, switchCase, eq } = require("rubico");
-const { includes, when, append } = require("rubico/x");
+const { includes, when, append, isEmpty } = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
 const fs = require("fs").promises;
@@ -9,6 +9,7 @@ const shell = require("shelljs");
 const live = require("shelljs-live/promise");
 
 const { createProjectGoogle } = require("./providers/createProjectGoogle");
+const { createProjectAzure } = require("./providers/createProjectAzure");
 
 const promptProvider = pipe([
   () => ({
@@ -38,6 +39,9 @@ const promptProjectName = pipe([
     type: "text",
     name: "projectName",
     message: "Project's name",
+
+    validate: (projectName) =>
+      isEmpty(projectName) ? `should not be empty` : true,
   }),
   prompts,
   get("projectName"),
@@ -48,7 +52,8 @@ const writeDirectory =
   ({ provider, projectName }) =>
     pipe([
       tap((params) => {
-        assert(true);
+        assert(provider);
+        assert(projectName);
       }),
       () => programOptions,
       get("workingDirectory", process.cwd()),
@@ -147,11 +152,16 @@ exports.createProject =
       assign({
         projectName: promptProjectName,
       }),
+      tap((params) => {
+        assert(true);
+      }),
       assign({ dirs: writeDirectory({ commandOptions, programOptions }) }),
       tap((params) => {
         assert(true);
       }),
       when(eq(get("provider"), "google"), createProjectGoogle),
+      when(eq(get("provider"), "azure"), createProjectAzure),
+
       tap((params) => {
         assert(true);
       }),

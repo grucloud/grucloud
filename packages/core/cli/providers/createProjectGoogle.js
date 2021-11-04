@@ -10,35 +10,16 @@ const {
   map,
   tryCatch,
 } = require("rubico");
-const { findIndex } = require("rubico/x");
+const { findIndex, append } = require("rubico/x");
 const prompts = require("prompts");
 const shell = require("shelljs");
 
+const { execCommand } = require("./createProjectCommon");
+
 const gcloudExecCommand = (command) =>
   pipe([
-    () => `gcloud ${command} --format=json`,
-    (commandFull) =>
-      shell.exec(commandFull, {
-        silent: true,
-      }),
-    switchCase([
-      eq(get("code"), 0),
-      pipe([
-        get("stdout"),
-        pipe([
-          JSON.parse,
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      ]),
-      pipe([
-        get("stderr"),
-        (stderr) => {
-          throw Error(stderr);
-        },
-      ]),
-    ]),
+    () => `gcloud ${command}`,
+    execCommand({ transform: append(" --format=json") }),
   ])();
 
 const isGcloudPresent = pipe([
@@ -52,7 +33,7 @@ const isGcloudPresent = pipe([
     ]),
     (error) => {
       console.error(
-        "The gcloud CLI is not installed.\nVisit https://https://cloud.google.com/sdk/docs/install to install gcloud\nReme"
+        "The gcloud CLI is not installed.\nVisit https://https://cloud.google.com/sdk/docs/install to install gcloud\n"
       );
       process.exit(-1);
     }
@@ -89,9 +70,6 @@ exports.createProjectGoogle = pipe([
     assert(true);
   }),
   tap(isGcloudPresent),
-  tap((params) => {
-    assert(true);
-  }),
   assign({ projectId: promptGoogleProjectId }),
   tap((params) => {
     assert(true);
