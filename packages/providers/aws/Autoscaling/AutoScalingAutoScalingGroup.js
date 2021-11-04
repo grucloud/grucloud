@@ -156,6 +156,10 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     pickId,
     getById,
     config,
+    shouldRetryOnException: pipe([
+      get("error.message"),
+      includes("Invalid IAM Instance Profile ARN"),
+    ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
