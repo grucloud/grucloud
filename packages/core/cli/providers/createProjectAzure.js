@@ -25,6 +25,43 @@ const isAzPresent = pipe([
   ),
 ]);
 
+// az account show
+
+const isAuthenticated = pipe([
+  () => "az account show",
+  tryCatch(
+    pipe([
+      execCommand(),
+      tap((account) => {
+        //console.log(account);
+      }),
+    ]),
+    (error) =>
+      pipe([
+        () => {
+          //console.error("not authenticated");
+        },
+        azLogin,
+        isAuthenticated,
+      ])()
+  ),
+]);
+
+const azLogin = pipe([
+  () => "az login",
+  tryCatch(
+    pipe([
+      execCommand(),
+      tap((account) => {
+        //console.log(account);
+      }),
+    ]),
+    (error) => {
+      throw Error("Could not authenticate");
+    }
+  ),
+]);
+
 const promptSubscribtionId = pipe([
   tap((params) => {
     assert(true);
@@ -98,6 +135,7 @@ exports.createProjectAzure = pipe([
     assert(true);
   }),
   tap(isAzPresent),
+  tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
   tap(writeEnv),
