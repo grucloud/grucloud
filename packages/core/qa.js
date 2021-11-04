@@ -50,7 +50,7 @@ exports.testEnd2End = ({
         ),
         () =>
           cli.planDestroy({
-            commandOptions: { force: true },
+            commandOptions: { force: true, all: true },
           }),
         () =>
           cli.list({

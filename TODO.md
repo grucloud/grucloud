@@ -1,6 +1,5 @@
 ## Bugs
 
-- add retryCall to client.destroy with shouldRetryOnException ResourceInUseException for EventSourceMapping
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
 - check stage for all providers
 - compare refactor

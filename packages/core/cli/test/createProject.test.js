@@ -53,7 +53,7 @@ describe("createProject", function () {
       }
     )();
   });
-  it.only("createProject gcp", async function () {
+  it("createProject gcp", async function () {
     await tryCatch(
       pipe([
         tap(() => {

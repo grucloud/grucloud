@@ -608,7 +608,7 @@ const findDependencySpec =
         ]),
         pipe([
           tap((params) => {
-            console.error("cannot find dependency: ", resource.id);
+            //console.error("cannot find dependency: ", resource.id);
           }),
           () => [],
         ]),
@@ -960,7 +960,7 @@ const findLiveById =
       find(isEqualById({ type, group, providerName, id })),
       tap((live) => {
         if (!live) {
-          console.error(`no live for ${type}, id: ${id},`);
+          //console.error(`no live for ${type}, id: ${id},`);
           //assert(live, `no live for ${type}, id: ${id},`);
         }
       }),
