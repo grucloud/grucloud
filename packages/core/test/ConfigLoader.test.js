@@ -9,7 +9,7 @@ const envFile = path.join(__dirname, "./test.env");
 
 describe("ConfigLoader", async function () {
   it("envFromFile ", async function () {
-    const [r1, r2, r3, r4, r5, r6] = envFromFile({ envFile });
+    const [r1, r2, r3, r4, r5, r6] = envFromFile(envFile);
     assert(isDeepEqual(r1, ["K1", "V1"]));
     assert(isDeepEqual(r2, ["K2", "V 2"]));
     assert(isDeepEqual(r3, ["K3", "V3"]));
