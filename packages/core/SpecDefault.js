@@ -104,7 +104,7 @@ const SpecDefault = ({ providerName }) => ({
       () => resources,
       //TODO check for multiple default and assert
       find(eq(get("name"), name)),
-      tap((live) => {
+      tap.if(isEmpty, () => {
         logger.info(
           `findResource: Cannot find resource '${name}', ${JSON.stringify(
             resources,

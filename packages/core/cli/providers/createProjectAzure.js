@@ -9,62 +9,30 @@ const { execCommand } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
   () => "az version",
-  tryCatch(
-    pipe([
-      execCommand(),
-      tap((version) => {
-        //console.log("az version: ", version["azure-cli"]);
-      }),
-    ]),
-    (error) => {
-      console.error(
-        "The az CLI is not installed.\nVisit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli to install az\n"
-      );
-      process.exit(-1);
-    }
-  ),
+  tryCatch(pipe([execCommand()]), (error) => {
+    console.error(
+      "The az CLI is not installed.\nVisit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli to install az\n"
+    );
+    process.exit(-1);
+  }),
 ]);
 
 // az account show
 const isAuthenticated = pipe([
   () => "az account show",
-  tryCatch(
-    pipe([
-      execCommand(),
-      tap((account) => {
-        //console.log(account);
-      }),
-    ]),
-    (error) =>
-      pipe([
-        () => {
-          //console.error("not authenticated");
-        },
-        azLogin,
-        isAuthenticated,
-      ])()
+  tryCatch(pipe([execCommand()]), (error) =>
+    pipe([azLogin, isAuthenticated])()
   ),
 ]);
 
 const azLogin = pipe([
   () => "az login",
-  tryCatch(
-    pipe([
-      execCommand(),
-      tap((account) => {
-        //console.log(account);
-      }),
-    ]),
-    (error) => {
-      throw Error("Could not authenticate");
-    }
-  ),
+  tryCatch(pipe([execCommand()]), (error) => {
+    throw Error("Could not authenticate");
+  }),
 ]);
 
 const promptSubscribtionId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   () => `az account list`,
   execCommand(),
   (accounts) =>
@@ -96,9 +64,6 @@ const promptSubscribtionId = pipe([
 ]);
 
 const fetchAppIdPassword = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   () => `az ad sp create-for-rbac -n sp1`,
   execCommand(),
   tap(({ appId, password }) => {
@@ -122,10 +87,12 @@ APP_ID=${app.appId}
 PASSWORD=${app.password}
 `,
       ]),
-      filename: () => path.resolve(dirs.destination, "default.env"),
+      filename: () => path.resolve(dirs.destination, "auth.env"),
     }),
-    tap(({ content, filename }) => {
-      console.log(`Writing environemnt file to ${filename}`);
+    tap(({ filename }) => {
+      console.log(
+        `Writing environment variables TENANT_ID, SUBSCRIPTION_ID, APP_ID and PASSWORD to ${filename}`
+      );
     }),
     ({ content, filename }) => fs.writeFile(filename, content),
   ])();
@@ -165,17 +132,11 @@ const createConfig = ({ location, projectName, dirs: { destination } }) =>
         append(`  projectName: "${projectName}",\n`),
         append(`  location: "${location}",\n`),
         append("});"),
-        tap((params) => {
-          assert(true);
-        }),
         (content) => fs.writeFile(filename, content),
       ])(),
   ])();
 
 exports.createProjectAzure = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   tap(isAzPresent),
   tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),

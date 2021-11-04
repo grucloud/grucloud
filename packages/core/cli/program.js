@@ -271,7 +271,7 @@ exports.createProgram = () => {
     .option(
       "--outputEnv <file>",
       "default.env environment variables",
-      "artifacts/default.env"
+      "default.env"
     )
     .option("-m, --mapping <file>", "mapping file", "mapping.json")
     .option("--no-prompt", "no prompt for saving")

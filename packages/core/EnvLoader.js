@@ -1,5 +1,5 @@
-const { map, pipe, tap, filter, switchCase } = require("rubico");
-const { isEmpty } = require("rubico/x");
+const { map, pipe, tap, filter } = require("rubico");
+const { isEmpty, forEach, when } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
@@ -13,11 +13,11 @@ const checkFileExist = (fileName) => {
   }
 };
 
-const envFromFile = ({ envFile }) => {
-  assert(envFile);
-  logger.info(`envFromFile: ${envFile}`);
-  return pipe([
+const envFromFile = (envFile) =>
+  pipe([
     tap(() => {
+      assert(envFile);
+      logger.info(`envFromFile: ${envFile}`);
       checkFileExist(envFile);
     }),
     () => fs.readFileSync(envFile, "utf8"),
@@ -42,42 +42,16 @@ const envFromFile = ({ envFile }) => {
       return [key, value];
     }),
   ])();
-};
 
 exports.envFromFile = envFromFile;
 
-const envFromDefault = ({ configDir }) => {
-  assert(configDir);
-  logger.info(`envFromDefault: ${configDir}`);
+exports.envLoader = ({ configDir = process.cwd(), stage = "dev" }) =>
   pipe([
-    () => npath.join(configDir, `default.env`),
-    switchCase([
-      (envFile) => fs.existsSync(envFile),
-      (envFile) => envFromFile({ envFile }),
-      () => {
-        logger.info(
-          `default environment file ${configDir}/default.env  does not exist`
-        );
-      },
-    ]),
+    () => [`default.env`, `auth.env`, `${stage}.env`],
+    forEach(
+      pipe([
+        (filename) => npath.join(configDir, filename),
+        when(fs.existsSync, envFromFile),
+      ])
+    ),
   ])();
-};
-
-const envFromStage = ({ configDir, stage }) => {
-  assert(configDir);
-  assert(stage);
-  logger.info(`envFromStage: ${JSON.stringify({ configDir, stage })}`);
-  pipe([
-    () => npath.join(configDir, `${stage}.env`),
-    switchCase([
-      (envFile) => fs.existsSync(envFile),
-      (envFile) => envFromFile({ envFile }),
-      () => {},
-    ]),
-  ])();
-};
-
-exports.envLoader = ({ configDir = process.cwd(), stage = "dev" }) => {
-  envFromDefault({ configDir });
-  envFromStage({ configDir, stage });
-};

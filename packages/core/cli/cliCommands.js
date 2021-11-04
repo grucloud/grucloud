@@ -1653,7 +1653,7 @@ exports.Cli = ({
             ),
             outputEnv: path.resolve(
               programOptions.workingDirectory,
-              "artifacts/default.env"
+              "default.env"
             ),
             all: true,
           }),
