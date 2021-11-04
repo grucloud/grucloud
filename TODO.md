@@ -39,8 +39,9 @@
 
 ## Azure
 
-- gc new: az auth
-- gc new: fetch and prompt for location.
+- gc new :
+  az provider register --namespace Microsoft.Network
+  az provider register --namespace Microsoft.Compute
 
 - virtualNetworks::Subnet 0/1 Request failed with status code 400 Subnet subnet is in use by /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups
   /resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig and cannot be deleted. In order to delete the subnet, delete

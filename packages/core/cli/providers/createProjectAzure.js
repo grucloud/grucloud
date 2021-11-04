@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, get, tap, assign, eq, map, tryCatch } = require("rubico");
+const { findIndex, find, append, callProp } = require("rubico/x");
 const path = require("path");
-const { findIndex, find } = require("rubico/x");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
@@ -26,7 +26,6 @@ const isAzPresent = pipe([
 ]);
 
 // az account show
-
 const isAuthenticated = pipe([
   () => "az account show",
   tryCatch(
@@ -107,6 +106,7 @@ const fetchAppIdPassword = pipe([
     assert(password);
   }),
 ]);
+
 const writeEnv = ({ dirs, app, account }) =>
   pipe([
     tap(() => {
@@ -130,6 +130,48 @@ PASSWORD=${app.password}
     ({ content, filename }) => fs.writeFile(filename, content),
   ])();
 
+const promptLocation = ({}) =>
+  pipe([
+    () => `az account list-locations`,
+    execCommand(),
+    callProp("sort", (a, b) =>
+      a.regionalDisplayName.localeCompare(b.regionalDisplayName)
+    ),
+    map(({ regionalDisplayName, name }) => ({
+      title: name,
+      description: regionalDisplayName,
+      value: name,
+    })),
+    (choices) => ({
+      type: "autocomplete",
+      limit: 40,
+      name: "location",
+      message: "Select a location",
+      choices,
+    }),
+    prompts,
+    get("location"),
+  ])();
+
+const createConfig = ({ location, projectName, dirs: { destination } }) =>
+  pipe([
+    tap(() => {
+      assert(destination);
+    }),
+    () => path.resolve(destination, "config.js"),
+    (filename) =>
+      pipe([
+        () => `module.exports = () => ({\n`,
+        append(`  projectName: "${projectName}",\n`),
+        append(`  location: "${location}",\n`),
+        append("});"),
+        tap((params) => {
+          assert(true);
+        }),
+        (content) => fs.writeFile(filename, content),
+      ])(),
+  ])();
+
 exports.createProjectAzure = pipe([
   tap((params) => {
     assert(true);
@@ -138,5 +180,7 @@ exports.createProjectAzure = pipe([
   tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
+  assign({ location: promptLocation }),
   tap(writeEnv),
+  tap(createConfig),
 ]);

@@ -15,7 +15,7 @@ describe("createProject", function () {
   it("createProject aws", async function () {
     await tryCatch(
       pipe([
-        tap(() => prompts.inject(["aws", "aws-project-test"])),
+        tap(() => prompts.inject(["aws", "aws-project-test", "us-east-1"])),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
         (tempPath) =>
           createProject({
@@ -37,6 +37,7 @@ describe("createProject", function () {
             "azure",
             "azure-project-test",
             "e012cd34-c794-4e35-916f-f38dcd8ac45c",
+            "uksouth",
           ]);
         }),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
@@ -52,11 +53,16 @@ describe("createProject", function () {
       }
     )();
   });
-  it("createProject gcp", async function () {
+  it.only("createProject gcp", async function () {
     await tryCatch(
       pipe([
         tap(() => {
-          prompts.inject(["google", "google-project-test", "grucloud-test"]);
+          prompts.inject([
+            "google",
+            "google-project-test",
+            "grucloud-test",
+            "us-east1",
+          ]);
         }),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
         (tempPath) =>

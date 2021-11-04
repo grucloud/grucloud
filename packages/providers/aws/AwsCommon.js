@@ -56,6 +56,11 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
+            tap(() => {
+              logger.info(
+                `shouldRetryOnException: ${name}, code: ${error.code}`
+              );
+            }),
             () => [
               "Throttling",
               "UnknownEndpoint",
@@ -66,7 +71,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
             ],
             includes(error.code),
             tap.if(identity, () => {
-              logger.debug(
+              logger.info(
                 `shouldRetryOnException: ${name}: retrying, code: ${error.code}`
               );
             }),

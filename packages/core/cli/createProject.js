@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, fork, tap, assign, not, switchCase, eq } = require("rubico");
+const { pipe, get, fork, tap, assign, not, eq } = require("rubico");
 const { includes, when, append, isEmpty } = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
@@ -8,6 +8,7 @@ const fse = require("fs-extra");
 const shell = require("shelljs");
 const live = require("shelljs-live/promise");
 
+const { createProjectAws } = require("./providers/createProjectAws");
 const { createProjectGoogle } = require("./providers/createProjectGoogle");
 const { createProjectAzure } = require("./providers/createProjectAzure");
 
@@ -122,25 +123,6 @@ const updatePackageJson = ({ projectName, dirs: { destination } }) =>
       ])(),
   ])();
 
-const createConfig = ({ projectId, projectName, dirs: { destination } }) =>
-  pipe([
-    tap(() => {
-      assert(destination);
-    }),
-    () => path.resolve(destination, "config.js"),
-    (filename) =>
-      pipe([
-        () => `module.exports = () => ({\n`,
-        when(() => projectId, append(`  projectId: "${projectId}",\n`)),
-        when(() => projectName, append(`  projectName: "${projectName}",\n`)),
-        append("});"),
-        tap((params) => {
-          assert(true);
-        }),
-        (content) => fs.writeFile(filename, content),
-      ])(),
-  ])();
-
 exports.createProject =
   ({ programOptions }) =>
   (commandOptions) =>
@@ -152,21 +134,19 @@ exports.createProject =
       assign({
         projectName: promptProjectName,
       }),
+      assign({
+        dirs: writeDirectory({ commandOptions, programOptions }),
+      }),
       tap((params) => {
         assert(true);
       }),
-      assign({ dirs: writeDirectory({ commandOptions, programOptions }) }),
-      tap((params) => {
-        assert(true);
-      }),
+      when(eq(get("provider"), "aws"), createProjectAws),
       when(eq(get("provider"), "google"), createProjectGoogle),
       when(eq(get("provider"), "azure"), createProjectAzure),
-
       tap((params) => {
         assert(true);
       }),
       tap(updatePackageJson),
-      tap(createConfig),
       tap(npmInstall),
       tap(displayGuide),
     ])();

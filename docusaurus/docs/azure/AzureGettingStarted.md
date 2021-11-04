@@ -12,9 +12,7 @@ Let's create a simple infrastructure with the following resources:
 - [Network Interface](./resources/NetworkInterface)
 - [Virtual Machine](./resources/VirtualMachine)
 
-First of all, ensure all the Azure prerequisites has been met: [AzureRequirements](./AzureRequirements.md)
-
-## Getting the code
+## Install the GruCloud CLI
 
 Install the grucloud command line utility: **gc**
 
@@ -22,7 +20,9 @@ Install the grucloud command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-Create a new project:
+## Create a new project
+
+Use the _new_ command to create a new project:
 
 ```sh
 gc new
@@ -45,38 +45,6 @@ Select Azure as the cloud provider.
 Enter the project's name, for instance _my-project_
 
 The directory _my-project_ will be created with all the necessary files for an Azure project.
-
-### Environment
-
-Create **default.env** and set the correct values:
-
-```sh
-TENANT_ID=
-SUBSCRIPTION_ID=
-APP_ID=
-PASSWORD=
-MACHINE_ADMIN_USERNAME=
-MACHINE_ADMIN_PASSWORD=
-```
-
-> See [AzureRequirements](./AzureRequirements.md) to retrieve these informations
-
-### Config
-
-Edit **config.js** and set the location:
-
-```js
-module.exports = () => ({
-  projectName: "my-project",
-  location: "uksouth",
-});
-```
-
-To find out the list of locations:
-
-```
-az account list-locations -o table
-```
 
 ## List
 

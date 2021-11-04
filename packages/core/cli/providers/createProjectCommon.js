@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, switchCase, eq } = require("rubico");
+const { pipe, get, tap, switchCase, eq, tryCatch } = require("rubico");
 const { identity } = require("rubico/x");
 const shell = require("shelljs");
 
@@ -9,7 +9,7 @@ const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "
 const spinner = { interval: 300, frames };
 
 exports.execCommand =
-  ({ transform = identity } = {}) =>
+  ({ transform = identity, displayText } = {}) =>
   (command) =>
     pipe([
       () => new Spinnies({ spinner }),
@@ -17,7 +17,7 @@ exports.execCommand =
         pipe([
           tap(() => {
             spinnies.add(command, {
-              text: command,
+              text: displayText || command,
               color: "green",
               status: "spinning",
             });
@@ -40,17 +40,20 @@ exports.execCommand =
             pipe([
               get("stdout"),
               pipe([
-                JSON.parse,
+                tap((params) => {
+                  assert(true);
+                }),
+                tryCatch(JSON.parse, (error, output) => output),
                 tap((params) => {
                   spinnies.succeed(command);
                 }),
               ]),
             ]),
             pipe([
-              tap((params) => {
-                spinnies.fail(command);
-              }),
               get("stderr"),
+              tap((stderr) => {
+                spinnies.fail(command, { text: `${command} ${stderr}` });
+              }),
               (stderr) => {
                 throw Error(stderr);
               },
