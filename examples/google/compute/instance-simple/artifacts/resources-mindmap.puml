@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project Gcp Template
-skinparam monochrome true
-+ Infra
-++ google
-+++ compute
-++++ VmInstance (1)
-@endmindmap
