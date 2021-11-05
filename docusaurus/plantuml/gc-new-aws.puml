@@ -1,0 +1,36 @@
+@startuml gc-new-aws
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc new for AWS" {
+start
+
+:""gc new"";
+: Select AWS;
+: Enter the project's name;
+
+
+partition "Is the aws CLI installed ?" {
+repeat :""aws --version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+  if (""aws sts get-caller-identity"") then (yes)
+else (no)
+  
+repeat :Prompt for <b>AWS Access Key ID</b>;
+:Prompt for <b>AWS Secret Key</b>;
+repeat while (""aws sts get-caller-identity"") is (no) 
+endif
+
+}
+
+: Prompt for region from list;
+: Save files: ""config.js"", ""iac.js"", ""resources.js"", ""package.json"" etc ...; 
+end
+}
+@enduml
