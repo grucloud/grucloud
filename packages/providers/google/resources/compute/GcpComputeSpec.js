@@ -31,6 +31,7 @@ const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
 const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 const { GcpDisk } = require("./GcpDisk");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
@@ -164,21 +165,40 @@ module.exports = pipe([
         "compute::Disk",
       ],
       Client: GoogleVmInstance,
-      propertiesDefault: {
-        machineType: "f1-micro",
-        diskSizeGb: "10",
-        diskType: "pd-standard",
-        sourceImage:
-          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-      },
       compare: compareVmInstance,
       dependencies: () => ({
-        address: { type: "Address", group: "compute" },
-        subnetworks: { type: "SubNetwork", group: "compute", list: true },
+        ip: { type: "Address", group: "compute" },
+        subNetwork: { type: "SubNetwork", group: "compute" },
         disks: { type: "Disk", group: "compute", list: true },
         frewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       }),
+      propertiesDefault: {
+        diskSizeGb: "10",
+        diskType: "pd-standard",
+        sourceImage:
+          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+        canIpForward: false,
+        reservationAffinity: {
+          consumeReservationType: "ANY_RESERVATION",
+        },
+        displayDevice: {
+          enableDisplay: false,
+        },
+        confidentialInstanceConfig: {
+          enableConfidentialCompute: false,
+        },
+        startRestricted: false,
+        deletionProtection: false,
+        shieldedInstanceConfig: {
+          enableSecureBoot: false,
+          enableVtpm: true,
+          enableIntegrityMonitoring: true,
+        },
+        shieldedInstanceIntegrityPolicy: {
+          updateAutoLearnPolicy: true,
+        },
+      },
       filterLive: ({ providerConfig, lives }) =>
         pipe([
           assign({
@@ -212,10 +232,11 @@ module.exports = pipe([
             "lastStartTimestamp",
             "kind",
             "zone",
+            "tags.fingerprint",
+            "metadata.fingerprint",
+            "metadata.kind",
           ]),
-          omit(["tags.fingerprint", "metadata.fingerprint", "metadata.kind"]),
-          ///TODO remove our tags in labels
-          //TODO remove tags if empty
+          omitIfEmpty(["tags", "description", "metadata"]),
           assign({
             machineType: pipe([
               get("machineType"),

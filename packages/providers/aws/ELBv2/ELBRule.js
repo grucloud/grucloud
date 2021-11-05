@@ -21,6 +21,7 @@ const {
   find,
   identity,
   prepend,
+  append,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -33,7 +34,6 @@ const {
   buildTags,
   findNamespaceInTags,
   shouldRetryOnException,
-  findNameInTagsOrId,
 } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
@@ -49,35 +49,30 @@ exports.ELBRule = ({ spec, config }) => {
 
   const findName = ({ live, lives }) =>
     pipe([
-      tap((params) => {
+      tap(() => {
         assert(lives);
         assert(live.ListenerArn);
       }),
-      () => ({ live, lives }),
-      switchCase([
-        get("live.IsDefault"),
-        pipe([
-          () =>
-            lives.getById({
-              type: "Listener",
-              group: "ELBv2",
-              id: live.ListenerArn,
-              providerName,
-            }),
-          tap((listener) => {
-            assert(listener);
-          }),
-          get("name"),
-          tap((listenerName) => {
-            assert(listenerName);
-          }),
-          prepend("rule-default-"),
-        ]),
-        findNameInTagsOrId({ findId }),
-      ]),
-      tap((params) => {
-        assert(true);
+      () =>
+        lives.getById({
+          type: "Listener",
+          group: "ELBv2",
+          id: live.ListenerArn,
+          providerName,
+        }),
+      tap((listener) => {
+        assert(listener);
       }),
+      get("name"),
+      tap((listenerName) => {
+        assert(listenerName);
+      }),
+      switchCase([
+        () => live.IsDefault,
+        prepend("rule-default-"),
+        prepend("rule::"),
+      ]),
+      append(`::${live.Priority}`),
     ])();
 
   const isDefault = get("live.IsDefault");
@@ -226,7 +221,7 @@ exports.ELBRule = ({ spec, config }) => {
       }),
       () => ({ RuleArns: [id] }),
       tryCatch(
-        pipe([(params) => elb().describeRules(params), get("Rules"), first]),
+        pipe([elb().describeRules, get("Rules"), first]),
         switchCase([
           eq(get("code"), "RuleNotFound"),
           () => undefined,
@@ -302,6 +297,7 @@ exports.ELBRule = ({ spec, config }) => {
           {
             Type: "forward",
             TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+            Order: 1,
             ForwardConfig: {
               TargetGroups: [
                 {
@@ -320,7 +316,7 @@ exports.ELBRule = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,

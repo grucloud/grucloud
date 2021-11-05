@@ -27,7 +27,6 @@ const {
 } = require("rubico");
 const {
   find,
-  last,
   pluck,
   isEmpty,
   flatten,
@@ -119,8 +118,8 @@ const countDeployResources = pipe([
 
 const hasPlans = pipe([
   tap((input) => {
-    assert(input);
-    assert(input.results);
+    //assert(input);
+    //assert(input.results);
   }),
   get("results"),
   //filter(not(get("error"))),
@@ -150,7 +149,7 @@ const displayLiveError = (result) =>
 
 const displayPlanQueryErrorResult = pipe([
   tap((result) => {
-    logger.debug(result);
+    //logger.debug(result);
   }),
   filter(get("error")),
   forEach(({ resource, error }) => {
@@ -253,22 +252,44 @@ const displayErrorResults = ({ results = [], name }) => {
   }
 };
 
+const displayListError = (input) =>
+  pipe([
+    () => input,
+    pluck("results"),
+    flatten,
+    filter(get("error")),
+    map(
+      pipe([
+        tap(({ error, providerName, groupType }) => {
+          assert(groupType);
+          console.error(`Resource ${providerName}::${groupType}`);
+          console.error(YAML.stringify(convertError({ error })));
+        }),
+      ])
+    ),
+  ])();
+
 const displayError = ({ name, error }) => {
   assert(error);
   assert(name);
   console.error(`ERROR running command '${name}'`);
+  error.stack && console.error(error.stack);
+
   displayErrorResults({ name, results: error.result?.results });
   displayErrorResults({ name, results: error.resultQuery?.results });
   displayErrorResults({ name, results: error.resultDeploy?.results });
   displayErrorResults({ name, results: error.resultDestroy?.results });
   displayErrorHooks({ name, resultsHook: error.resultHook });
-
+  if (error.lives?.error) {
+    displayListError(error.lives.json);
+  }
   const results =
     error.resultQuery ||
     error.resultsDestroy ||
     error.result ||
     error.resultQueryDestroy ||
-    error.results;
+    error.results ||
+    error.lives?.error;
 
   if (!results) {
     const convertedError = convertError({ error });
@@ -315,7 +336,8 @@ const doPlanQuery = ({ commandOptions } = {}) =>
     }),
     assign({ error: any(get("error")) }),
     //TODO create own function
-    tap(
+    tap.if(
+      not(get("error")),
       pipe([
         tap((result) => {
           assert(result);
@@ -422,7 +444,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providerGru }) =>
 const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
   pipe([
     tap(() => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType}`);
+      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType}`);
       assert(providerGru);
     }),
     () =>
@@ -437,10 +459,11 @@ const runAsyncCommandHookGlobal = ({ hookType, commandTitle, providerGru }) =>
           ])({}),
       }),
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
+      logger.info(`runAsyncCommandHookGlobal hookType: ${hookType} DONE`);
     }),
     //throwIfError,
-  ]);
+  ])();
+
 // planRunScript
 const planRunScript = async ({
   infra,
@@ -472,7 +495,7 @@ const planRunScript = async ({
               providerGru,
               hookType: HookType.ON_DEPLOYED,
               commandTitle: `Running OnDeployedGlobal`,
-            })({}),
+            }),
           () => commandOptions.onDestroyed,
           () =>
             runAsyncCommandHook({
@@ -486,7 +509,7 @@ const planRunScript = async ({
               providerGru,
               hookType: HookType.ON_DESTROYED,
               commandTitle: `Running OnDestroyedGlobal`,
-            })({}),
+            }),
           () => {
             throw { code: 422, message: "no command found" };
           },
@@ -679,8 +702,8 @@ const applyNeedsRetry = ({ infra }) =>
       assert(infra);
       //assert(result.resultDeploy);
       //assert(result.resultDeploy.results);
-      assert(result.resultQuery);
-      assert(result.resultQuery.results);
+      //assert(result.resultQuery);
+      //assert(result.resultQuery.results);
     }),
     and([
       () => isMultiProvider({ infra }),
@@ -752,7 +775,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
                 providerGru,
                 hookType: HookType.ON_DEPLOYED,
                 commandTitle: `Running OnDeployedGlobal`,
-              })({}),
+              }),
           }),
           assign({ error: any(get("error")) }),
           tap((result) => {
@@ -998,7 +1021,7 @@ const planDestroy = async ({
                 providerGru,
                 hookType: HookType.ON_DESTROYED,
                 commandTitle: `Running OnDestroyedGlobal`,
-              })({}),
+              }),
           }),
           assign({ error: any(get("error")) }),
           tap((xxx) => {
@@ -1075,7 +1098,7 @@ const filterShow = map(
       tap((params) => {
         assert(true);
       }),
-      filter(and([not(get("error")), pipe([get("resources"), not(isEmpty)])])),
+      filter(or([get("error"), pipe([get("resources"), not(isEmpty)])])),
       tap((params) => {
         assert(true);
       }),
@@ -1157,7 +1180,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
   ]);
 
 //List all
-const list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const list = ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     listDoOk({ commandOptions, programOptions }),
     DisplayAndThrow({ name: "List" })
@@ -1513,6 +1536,7 @@ exports.Cli = ({
         ({ programOptions }) =>
           createStack({
             createProvider: createProviderMaker({
+              createResources,
               programOptions,
               config,
               configs,
@@ -1520,6 +1544,9 @@ exports.Cli = ({
             }),
           }),
         tap.if(() => createResources, createResources),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
     }),
     tap.if(not(get("infra")), () => {
@@ -1618,7 +1645,7 @@ exports.Cli = ({
           defaultsDeep({
             outputCode: path.resolve(
               programOptions.workingDirectory,
-              "artifacts/iac.js"
+              "artifacts/resources.js"
             ),
             outputConfig: path.resolve(
               programOptions.workingDirectory,
@@ -1626,14 +1653,19 @@ exports.Cli = ({
             ),
             outputEnv: path.resolve(
               programOptions.workingDirectory,
-              "artifacts/default.env"
+              "default.env"
             ),
+            all: true,
           }),
           (commandOptions) => ({
             infra,
             programOptions,
             commandOptions,
           }),
+          tap((params) => {
+            assert(true);
+          }),
+          tap.if(get("commandOptions.inventoryFetch"), list),
           genCode,
         ])(),
     }),

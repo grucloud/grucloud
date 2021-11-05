@@ -19,7 +19,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup.securityGroupClusterTest,
+      securityGroup: resources.EC2.SecurityGroup["security-group-cluster-test"],
     }),
   });
 };

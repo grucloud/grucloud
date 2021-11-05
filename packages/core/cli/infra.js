@@ -1,26 +1,34 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const { pipe, tap, filter, not, switchCase, get } = require("rubico");
-const { isEmpty, isFunction } = require("rubico/x");
-const { ConfigLoader } = require("../ConfigLoader");
+const { pipe, tap, filter, switchCase, map } = require("rubico");
+const { isFunction, identity } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Infra" });
 
-const filterNotEmpty = filter((x) => x);
 const createProviderMaker =
   ({
     programOptions,
     stage,
     config: configOverride,
     configs: configsOverride = [],
+    createResources: createResourcesUpdate,
   }) =>
   (
     provider,
-    { config: configUser, configs: configsUser = [], ...otherProps } = {}
+    {
+      createResources,
+      config: configUser,
+      configs: configsUser = [],
+      ...otherProps
+    } = {}
   ) =>
     pipe([
       tap(() => {
         assert(isFunction(provider), "provider must be a function");
+        assert(
+          isFunction(createResources) || Array.isArray(createResources),
+          "createResources must be a function or an array of functions"
+        );
       }),
       () => [configOverride, ...configsOverride, configUser, ...configsUser],
       // IsEmpty does not work with function
@@ -32,6 +40,40 @@ const createProviderMaker =
           stage,
           ...otherProps,
         }),
+      tap((params) => {
+        assert(true);
+      }),
+      tap((provider) =>
+        pipe([
+          () => createResources,
+          switchCase([
+            Array.isArray,
+            map((cr) =>
+              pipe([
+                tap(() => {
+                  assert(
+                    isFunction(cr),
+                    "createResources should be an array of functions"
+                  );
+                }),
+                () => cr({ provider }),
+              ])()
+            ),
+            isFunction,
+            (createResources) => createResources({ provider }),
+            () => {
+              throw Error(
+                "createResources should be a function or an array of function"
+              );
+            },
+          ]),
+          tap.if(
+            () => createResourcesUpdate,
+            () => createResourcesUpdate({ provider })
+          ),
+          provider.targetResourcesBuildMap,
+        ])()
+      ),
     ])();
 
 exports.createProviderMaker = createProviderMaker;

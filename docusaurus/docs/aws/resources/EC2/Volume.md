@@ -25,7 +25,7 @@ const volume = provider.EC2.makeVolume({
 
 const server = provider.EC2.makeInstance({
   name: "server",
-  dependencies: { volumes: [volume] },
+  dependencies: () => ({ volumes: [volume] }),
   properties: () => ({
     UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
     Placement: { AvailabilityZone },

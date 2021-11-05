@@ -3,6 +3,7 @@ jobs:
     docker:
       - image: "cimg/node:14.15.2"
     steps:
+      - aws-cli/install
       - checkout
       - node/install:
           node-version: "14.15.2"
@@ -18,7 +19,7 @@ jobs:
       - run: sudo npm run bootstrap
       - run: mkdir ~/junit
       - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials && touch /home/circleci/.aws/config
-      - run: CONTINUOUS_INTEGRATION=1 STAGE=ci MOCHA_FILE=~/junit/test-results.xml npm run test:ci
+      - run: STAGE=ci MOCHA_FILE=~/junit/test-results.xml npm run test:ci
       - store_test_results:
           path: ~/junit
       - store_artifacts:
@@ -26,12 +27,10 @@ jobs:
 
 orbs:
   node: circleci/node@4.1.0
+  aws-cli: circleci/aws-cli@2.0.3
+
 version: 2.1
 workflows:
   test:
     jobs:
-      - test:
-        matrix:
-          parameters:
-            version:
-              - 14.15.0
+      - test

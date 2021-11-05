@@ -14,5 +14,5 @@ exports.loadManifest = pipe([
   yaml.loadAll,
 ]);
 
-exports.createResources = async ({ provider }) =>
+exports.createResources = ({ provider }) =>
   Prometheus.createResources({ provider });

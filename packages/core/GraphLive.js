@@ -324,23 +324,14 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
               tap(() => {
                 assert(dependency.type);
                 assert(dependency.groupType);
-
-                assert(
-                  Array.isArray(dependency.ids),
-                  `no ids array in ${JSON.stringify({
-                    type,
-                    group,
-                    providerName,
-                    dependency,
-                  })}`
-                );
                 logger.debug(
                   `dependency type ${dependency.type}, #ids ${size(
                     dependency.ids
                   )}`
                 );
               }),
-              () => dependency.ids,
+              () => dependency,
+              get("ids", []),
               filter(not(isEmpty)),
               map((dependencyId) =>
                 switchCase([

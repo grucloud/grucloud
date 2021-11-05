@@ -67,7 +67,7 @@ const configDefault =
     dependencies: {
       keyPair,
       subnet,
-      securityGroups = {},
+      securityGroups,
       iamInstanceProfile,
       image,
     },
@@ -82,21 +82,6 @@ const configDefault =
           UserData: Buffer.from(UserData, "utf-8").toString("base64"),
         }),
         ...(image && { ImageId: getField(image, "ImageId") }),
-        ...((subnet || !isEmpty(securityGroups)) && {
-          NetworkInterfaces: [
-            {
-              AssociatePublicIpAddress: true,
-              DeviceIndex: 0,
-              ...(!isEmpty(securityGroups) && {
-                Groups: transform(
-                  map((sg) => [getField(sg, "GroupId")]),
-                  () => []
-                )(securityGroups),
-              }),
-              ...(subnet && { SubnetId: getField(subnet, "SubnetId") }),
-            },
-          ],
-        }),
         ...(iamInstanceProfile && {
           IamInstanceProfile: {
             Arn: getField(iamInstanceProfile, "Arn"),
@@ -112,6 +97,23 @@ const configDefault =
         }),
         ...(keyPair && { KeyName: keyPair.resource.name }),
       }),
+      // Subnet
+      when(
+        () => subnet,
+        assign({
+          SubnetId: () => getField(subnet, "SubnetId"),
+        })
+      ),
+      // Security Groups
+      when(
+        () => securityGroups,
+        assign({
+          SecurityGroupIds: pipe([
+            () => securityGroups,
+            map((sg) => getField(sg, "GroupId")),
+          ]),
+        })
+      ),
       tap((params) => {
         assert(true);
       }),

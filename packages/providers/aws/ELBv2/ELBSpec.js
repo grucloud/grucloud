@@ -27,13 +27,13 @@ module.exports = () =>
       dependsOn: [
         "EC2::Subnet",
         "EC2::InternetGateway",
-        "EC2::NetworkInterface",
+        //"EC2::NetworkInterface",
         "EC2::SecurityGroup",
       ],
       Client: ELBLoadBalancerV2,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Name", "Subnets"])]),
+        filterTarget: pipe([omit(["Name", "Subnets", "Tags"])]),
         filterLive: pipe([
           omit([
             "LoadBalancerArn",
@@ -44,10 +44,11 @@ module.exports = () =>
             "VpcId",
             "State",
             "AvailabilityZones",
-            "IpAddressType",
+            "Tags",
           ]),
         ]),
       }),
+      includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
       dependencies: () => ({
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -63,7 +64,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
-          omit(["Name"]),
+          omit(["Name", "Tags"]),
           defaultsDeep({
             HealthCheckPath: "/",
             HealthCheckPort: "traffic-port",
@@ -81,8 +82,8 @@ module.exports = () =>
           omit([
             "TargetGroupArn",
             "TargetGroupName",
-            "HealthCheckProtocol",
             "LoadBalancerArns",
+            "Tags",
           ]),
         ]),
       }),
@@ -120,11 +121,24 @@ module.exports = () =>
       Client: ELBListener,
       isOurMinion,
       compare: compare({
+        filterTarget: pipe([omit(["Tags"])]),
         filterLive: pipe([
-          omit(["ListenerArn", "SslPolicy"]),
+          omit(["ListenerArn", "SslPolicy", "Tags"]),
           omitIfEmpty(["AlpnPolicy", "Certificates"]),
         ]),
       }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ loadBalancer }) => {
+            assert(loadBalancer);
+          }),
+          ({ loadBalancer }) =>
+            `listener::${loadBalancer.name}::${properties.Protocol}::${properties.Port}`,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
       filterLive: pipe([
         tap((params) => {
           assert(true);
@@ -161,6 +175,7 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
+          omit(["Tags"]),
           defaultsDeep({
             IsDefault: false,
           }),
@@ -178,6 +193,7 @@ module.exports = () =>
         ]),
         filterLive: pipe([
           omit([
+            "Tags",
             "RuleArn",
             "TargetGroupName",
             "HealthCheckProtocol",
@@ -191,6 +207,14 @@ module.exports = () =>
           }),
         ]),
       }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ listener }) => {
+            assert(listener);
+          }),
+          ({ listener }) => `rule::${listener.name}::${properties.Priority}`,
+        ])(),
       filterLive: pipe([
         ({ resource }) =>
           (live) =>

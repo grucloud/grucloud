@@ -16,6 +16,7 @@ const {
   and,
   or,
   transform,
+  fork,
 } = require("rubico");
 
 const {
@@ -231,6 +232,7 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
+          propertiesDefault: spec.propertiesDefault,
           target,
           live,
           dependencies: resource.dependencies(),
@@ -310,6 +312,7 @@ exports.ResourceMaker = ({
         // );
       }),
       () => dependencies(),
+      filter(or([isEmpty, not(eq(callProp("toString"), toString))])),
       tap((params) => {
         assert(true);
       }),
@@ -351,7 +354,7 @@ exports.ResourceMaker = ({
                 () => dependency,
                 switchCase([
                   () => dependency.filterLives,
-                  () => dependency.resolveConfig({}),
+                  () => dependency.resolveConfig({ deep: true }),
                   pipe([() => dependency.findLive({})]),
                 ]),
                 tap.if(
@@ -463,6 +466,7 @@ exports.ResourceMaker = ({
             }),
             (resources) =>
               filterLives({
+                name: getResourceName(),
                 dependencies: resolvedDependencies,
                 resources,
                 configProvider: provider.config,
@@ -533,11 +537,16 @@ exports.ResourceMaker = ({
           lives: provider.lives,
           programOptions,
         }),
-      () => getLive({ deep: true }),
+      () =>
+        retryCall({
+          name: `getLive ${toString()}`,
+          fn: async () => getLive({ deep: true }),
+          config: { retryCount: 2, retryDelay: 5e3 },
+          isExpectedResult: not(isEmpty),
+        }),
       tap((live) => {
-        //assert(live);
         if (!live) {
-          assert(true, `no live after create ${getResourceName()}`);
+          assert(false, `no live after create ${getResourceName()}`);
         }
         logger.info(`created: ${toString()}`);
         logger.debug(`created: live: ${tos(live)}`);
@@ -591,36 +600,126 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpsert = ({ resource }) =>
+  const planUpsert = ({ resource, lives }) =>
+    pipe([
+      tap((params) => {
+        logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(lives);
+      }),
+      () => resource,
+      get("readOnly"),
+      switchCase([
+        isEmpty,
+        pipe([
+          () => ({}),
+          assign({
+            live: () => resource.findLive({}),
+          }),
+          assign({
+            target: pipe([
+              ({ live }) => resource.resolveConfig({ live, deep: true }),
+            ]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            pipe([get("live"), isEmpty]),
+            ({ target, live }) => [
+              {
+                action: "CREATE",
+                resource: resource.toJSON(),
+                target: resource.spec.displayResource()(target),
+                live: resource.spec.displayResource()(live),
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            ({ live, target }) => planUpdate({ live, target, resource }),
+          ]),
+        ]),
+        // readOnly : true
+        pipe([
+          () => resource.resolveConfig({ deep: true }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            isEmpty,
+            () => [
+              {
+                action: "WAIT_CREATION",
+                resource: resource.toJSON(),
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            () => [],
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      ]),
+    ])();
+
+  const waitForResourceUp = ({ lives }) =>
     pipe([
       tap(() => {
-        logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(filterLives);
       }),
-      assign({
-        live: () => resource.findLive({}),
+      getClient,
+      (client) =>
+        retryCall({
+          name: `waitForResourceUp ${toString()}`,
+          fn: tryCatch(
+            pipe([
+              fork({
+                resources: pipe([
+                  () => ({ lives }),
+                  client.getLives,
+                  get("resources"),
+                  tap((resources) => {
+                    logger.error(
+                      `waitForResourceUp: ${toString()}, #resources: ${size(
+                        resources
+                      )}`
+                    );
+                  }),
+                ]),
+                resolveDependencies: () =>
+                  resolveDependencies({
+                    resourceName: getResourceName(),
+                    dependencies: getDependencies(),
+                  }),
+              }),
+              ({ resources, resolveDependencies }) =>
+                filterLives({
+                  name: getResourceName(),
+                  resources,
+                  lives,
+                  dependencies: resolveDependencies,
+                }),
+              tap((params) => {
+                logger.error(
+                  `waitForResourceUp: ${toString()}, filterLives: ${tos(
+                    params
+                  )}`
+                );
+              }),
+            ]),
+            (error) => {
+              logger.error(
+                `error waitForResourceUp: ${toString()}, error: ${tos(error)}`
+              );
+              throw error;
+            }
+          ),
+          isExpectedResult: not(isEmpty),
+          config: client.retryConfigs.isUp,
+        }),
+      tap((params) => {
+        logger.error(`waitForResourceUp: ${toString()}, done`);
       }),
-      assign({
-        target: pipe([
-          ({ live }) => resource.resolveConfig({ live, deep: true }),
-        ]),
-      }),
-      tap(({ live, target }) => {
-        assert(true);
-      }),
-      switchCase([
-        pipe([get("live"), isEmpty]),
-        ({ target, live }) => [
-          {
-            action: "CREATE",
-            resource: resource.toJSON(),
-            target: resource.spec.displayResource()(target),
-            live: resource.spec.displayResource()(live),
-            providerName: resource.toJSON().providerName,
-          },
-        ],
-        ({ live, target }) => planUpdate({ live, target, resource }),
-      ]),
-    ])({});
+    ])();
 
   const toString = () =>
     spec.resourceKey({
@@ -677,6 +776,7 @@ exports.ResourceMaker = ({
     create,
     update,
     planUpsert,
+    waitForResourceUp,
     filterLives,
     getLive,
     findLive,

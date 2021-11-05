@@ -260,17 +260,21 @@ exports.createProgram = () => {
     .command("gencode")
     .description("Generate infrastruture code from deployed resources")
     .alias("c")
-    .option("--projectName <value>", "The project name")
-    .option("--projectId <value>", "The project id")
-    .option("--input <file>", "lives resources", "artifacts/inventory.json")
+    .option(
+      "--inventory <file>",
+      "resources inventory",
+      "artifacts/inventory.json"
+    )
+    .option("--no-inventory-fetch", "do not fetch the inventory")
     .option("--no-download", "do not download assets")
-    .option("-o, --outputCode <file>", "iac.js output", "artifacts/iac.js")
+    .option("-o, --outputCode <file>", "resources.js output", "resources.js")
     .option(
       "--outputEnv <file>",
       "default.env environment variables",
-      "artifacts/default.env"
+      "default.env"
     )
     .option("-m, --mapping <file>", "mapping file", "mapping.json")
+    .option("--no-prompt", "no prompt for saving")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "genCode", program }));
 

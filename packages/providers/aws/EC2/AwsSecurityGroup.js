@@ -23,7 +23,6 @@ const {
 } = require("rubico/x");
 const {
   Ec2New,
-  getByIdCore,
   shouldRetryOnException,
   buildTags,
   findNameInTags,
@@ -32,13 +31,9 @@ const {
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { hasKeyInTags } = require("../AwsCommon");
+const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
 
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 const { AwsClient } = require("../AwsClient");
@@ -94,7 +89,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findId = get("live.GroupId");
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {
       type: "SecurityGroup",
@@ -106,6 +101,17 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         flatten,
         pluck("GroupId"),
       ])(),
+    },
+    {
+      type: "Cluster",
+      group: "EKS",
+      ids: [
+        pipe([
+          () => ({ live, lives }),
+          findEksCluster({ config }),
+          get("id"),
+        ])(),
+      ],
     },
   ];
 
@@ -128,20 +134,23 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`list sg ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeSecurityGroups(params),
-      get("SecurityGroups"),
-    ])();
+
+  const getList = client.getList({
+    method: "describeSecurityGroups",
+    getParam: "SecurityGroups",
+  });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "GroupIds", getList });
 
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId: ({ GroupId }) => ({ GroupIds: [GroupId] }),
+    method: "describeSecurityGroups",
+    getField: "SecurityGroups",
+    ignoreErrorCodes: ["InvalidGroup.NotFound"],
+  });
+
+  const isUpById = pipe([getById, not(isEmpty)]);
+  const isDownById = pipe([getById, isEmpty]);
 
   const cannotBeDeleted = pipe([
     get("live"),
@@ -177,33 +186,14 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
           () =>
             retryCall({
               name: `sg create isUpById: ${name} id: ${GroupId}`,
-              fn: () => isUpById({ id: GroupId, name }),
+              fn: () => isUpById({ GroupId, name }),
               config,
             }),
-          fork({
-            ingress: tap.if(
-              () => payload.ingress,
-              () =>
-                ec2().authorizeSecurityGroupIngress({
-                  GroupId,
-                  ...payload.ingress,
-                })
-            ),
-            egress: tap.if(
-              () => payload.egress,
-              () =>
-                ec2().authorizeSecurityGroupEgress({
-                  GroupId,
-                  ...payload.egress,
-                })
-            ),
-          }),
         ])()
       ),
       tap((GroupId) => {
         logger.info(`created sg ${tos({ name, GroupId })}`);
       }),
-      (id) => ({ id }),
     ])();
 
   const revokeIngressRules = (live) =>
@@ -269,7 +259,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
           tap(() =>
             retryCall({
               name: `destroy sg isDownById: ${name} GroupId: ${GroupId}`,
-              fn: () => isDownById({ id: GroupId }),
+              fn: () => isDownById({ GroupId }),
               config,
             })
           ),
@@ -279,26 +269,29 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies,
-  }) => {
-    const { vpc } = dependencies;
-    //assert(vpc, "missing vpc dependency");
-    return defaultsDeep(otherProps)({
-      GroupName: name,
-      Description: managedByDescription,
-      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-      TagSpecifications: [
-        {
-          ResourceType: "security-group",
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        },
-      ],
-    });
-  };
+    dependencies: { vpc },
+  }) =>
+    pipe([
+      () => ({}),
+      defaultsDeep(otherProps),
+      defaultsDeep({
+        GroupName: name,
+        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        TagSpecifications: [
+          {
+            ResourceType: "security-group",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   return {
     spec,

@@ -3,10 +3,17 @@ const { MockProvider } = require("../MockProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { createAxiosMock } = require("../MockAxios");
 const { ProviderGru } = require("@grucloud/core/ProviderGru");
+const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
-const createMockProvider = async ({ name, config, mockCloud }) => {
-  return MockProvider({
+const createMockProvider = async ({
+  name,
+  config,
+  mockCloud,
+  createResources,
+}) => {
+  return createProviderMaker({})(MockProvider, {
     name,
+    createResources,
     config: () => ({
       //...config,
       mockCloud,
@@ -14,6 +21,7 @@ const createMockProvider = async ({ name, config, mockCloud }) => {
     }),
   });
 };
+
 describe("MockProvider errors", async function () {
   let config;
   let mockCloud;
@@ -28,26 +36,32 @@ describe("MockProvider errors", async function () {
       name: "mock",
       config,
       mockCloud: MockCloud(),
+      createResources: ({ provider }) => {
+        provider.makeIp({ name: "myip" });
+        provider.makeIp({ name: "myip" });
+      },
     });
-
-    // Ip
-    const ip = provider.makeIp({ name: "myip" });
-    const ip2 = provider.makeIp({ name: "myip" });
+    const resources = provider.resources();
+    assert(!isEmpty(resources));
   });
-  //TODO should not throw an error
   it("create 2 providers with the same resource name", async function () {
     const provider1 = await createMockProvider({
       name: "mock1",
       config,
       mockCloud,
+      createResources: ({ provider }) => {
+        provider.makeIp({ name: "myip" });
+      },
     });
     const provider2 = await createMockProvider({
       name: "mock2",
       config,
       mockCloud,
+      createResources: ({ provider }) => {
+        provider.makeIp({ name: "myip" });
+      },
     });
-    provider1.makeIp({ name: "myip" });
-    provider2.makeIp({ name: "myip" });
+
     const providersGru = ProviderGru({
       stacks: [{ provider: provider1 }, { provider: provider2 }],
     });
@@ -62,27 +76,29 @@ describe("MockProvider errors", async function () {
         name: "mock1",
         config,
         mockCloud,
+        createResources: ({ provider }) => {
+          provider.makeVolume({
+            name: "volume1",
+            properties: () => ({
+              size: 20_000_000_000,
+            }),
+          });
+
+          provider.makeServer({
+            name: "web-server",
+            properties: () => ({
+              diskSizeGb: "20",
+              machineType: "f1-micro",
+            }),
+          });
+
+          provider.makeIp({
+            name: "ip",
+            properties: () => ({}),
+          });
+        },
       });
 
-      const volume = provider.makeVolume({
-        name: "volume1",
-        properties: () => ({
-          size: 20_000_000_000,
-        }),
-      });
-
-      provider.makeServer({
-        name: "web-server",
-        properties: () => ({
-          diskSizeGb: "20",
-          machineType: "f1-micro",
-        }),
-      });
-
-      provider.makeIp({
-        name: "ip",
-        properties: () => ({}),
-      });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
       const { error } = providersGru.planQuery();
       assert(!error);
@@ -92,6 +108,7 @@ describe("MockProvider errors", async function () {
         name: "mock2",
         config,
         mockCloud,
+        createResources: ({ provider }) => {},
       });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
       const { error } = providersGru.planQuery();

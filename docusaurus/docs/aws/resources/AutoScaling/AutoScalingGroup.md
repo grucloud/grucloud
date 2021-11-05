@@ -38,11 +38,15 @@ provider.AutoScaling.makeAutoScalingGroup({
 
 - [Subnet](../EC2/Subnet)
 - [Launch Configuration](./LaunchConfiguration) or [Launch Template](../EC2/LaunchTemplate)
-- [ELB Target Groups](../ELBv2/TargetGroup.md)
 
-  ## Full Examples
+## Used By
+
+- [AutoScalingAttachment](./AutoScalingAttachment.md)
+
+## Full Examples
 
 - [AutoScaling Group example](https://github.com/grucloud/grucloud/tree/main/examples/aws/autoScaling/autoScalingGroup)
+- [AutoScalingGroup attached to a load balancer](https://github.com/grucloud/grucloud/tree/main/examples/aws/ELBv2/load-balancer)
 - [AutoScaling Group in ECS with Launch Configuration](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)
 
 ## List

@@ -1,22 +1,25 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
 
-const createResources = async ({ provider }) => {
+const createResources = ({ provider }) => {
   // Ip
   const ip = provider.makeIp({ name: "myip" });
 
   // Boot images
-  const image = provider.useImage({
-    name: "ubuntu",
-    filterLives: ({ resources }) => {
-      assert(images);
-      const image = resources.find(
-        (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
-      );
-      //assert(image);
-      return image;
-    },
-  });
+  // const image = provider.useImage({
+  //   name: "ubuntu",
+  //   filterLives: ({ resources }) => {
+  //     const image = resources.find(
+  //       (image) =>
+  //         image.live.name.includes("Ubuntu") && image.live.arch === "x86_64"
+  //     );
+  //     if (!image) {
+  //       //assert(image);
+  //       assert(true);
+  //     }
+  //     return image;
+  //   },
+  // });
 
   const volume = provider.makeVolume({
     name: "volume1",
@@ -48,24 +51,21 @@ const createResources = async ({ provider }) => {
   //Server
   const server = provider.makeServer({
     name: "web-server",
-    dependencies: { volume, sg: [sg], ip },
+    dependencies: () => ({ volume, sg: [sg], ip }),
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",
     }),
   });
-
-  return { ip, image, volume, sg, server };
 };
 
 exports.createResources = createResources;
 
 exports.createStack = async ({ name = "mock", createProvider }) => {
-  // Provider
   const provider = createProvider(MockProvider, {
     name,
+    createResources,
     config: require("./config"),
   });
-  const resources = await createResources({ provider });
-  return { provider, resources };
+  return { provider };
 };

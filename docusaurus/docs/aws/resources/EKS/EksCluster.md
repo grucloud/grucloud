@@ -22,14 +22,21 @@ In order to create an EKS Cluster, a few resources need to be created before:
 - a customer master key
 
 ```js
-const cluster = provider.EKS.makeCluster({
-  name: "cluster",
-  dependencies: {
-    subnets: [...subnetPublics, ...subnetPrivates],
-    securityGroups: [securityGroup],
-    role,
-    key,
-  },
+provider.EKS.makeCluster({
+  name: "my-cluster",
+  properties: ({ config }) => ({
+    version: "1.20",
+  }),
+  dependencies: ({ resources }) => ({
+    subnets: [
+      resources.EC2.Subnet.subnetPrivateUseast1A,
+      resources.EC2.Subnet.subnetPrivateUseast1D,
+      resources.EC2.Subnet.subnetPublicUseast1A,
+      resources.EC2.Subnet.subnetPublicUseast1D,
+    ],
+    securityGroups: [resources.EC2.SecurityGroup.controlPlaneSecurityGroup],
+    role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_13Ask7Knkkbgb,
+  }),
 });
 ```
 
@@ -70,83 +77,76 @@ kubectl config delete-cluster arn:aws:eks:eu-west-2:840541460064:cluster/myClust
 ## List
 
 ```sh
-gc l -t EKSCluster
+gc l -t EKS::Cluster
 ```
 
 ```sh
-Listing resources on 2 providers: aws, k8s
+Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 5/5
-✓ k8s
-  ✓ Initialising
-  ✓ Listing
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│ 1 EKSCluster from aws                                                            │
-├──────────┬────────────────────────────────────────────────────────────────┬──────┤
-│ Name     │ Data                                                           │ Our  │
-├──────────┼────────────────────────────────────────────────────────────────┼──────┤
-│ cluster  │ name: cluster                                                  │ Yes  │
-│          │ arn: arn:aws:eks:eu-west-2:840541460064:cluster/cluster        │      │
-│          │ createdAt: 2021-04-16T19:17:59.258Z                            │      │
-│          │ version: 1.18                                                  │      │
-│          │ endpoint: https://789895ABB5E7DDFABC1AD92FA854A4B3.gr7.eu-wes… │      │
-│          │ roleArn: arn:aws:iam::840541460064:role/role-cluster           │      │
-│          │ resourcesVpcConfig:                                            │      │
-│          │   subnetIds:                                                   │      │
-│          │     - "subnet-053363a740a209ba8"                               │      │
-│          │     - "subnet-0a7a0a47b7130c01f"                               │      │
-│          │     - "subnet-0dff8b29620034c34"                               │      │
-│          │     - "subnet-0f436523b208a068c"                               │      │
-│          │   securityGroupIds:                                            │      │
-│          │     - "sg-04ffe6df304c184d7"                                   │      │
-│          │     - "sg-094514a64ee09d3c9"                                   │      │
-│          │   clusterSecurityGroupId: sg-0a83ac7deb9323c1d                 │      │
-│          │   vpcId: vpc-03b8d521b703d6c46                                 │      │
-│          │   endpointPublicAccess: true                                   │      │
-│          │   endpointPrivateAccess: false                                 │      │
-│          │   publicAccessCidrs:                                           │      │
-│          │     - "0.0.0.0/0"                                              │      │
-│          │ kubernetesNetworkConfig:                                       │      │
-│          │   serviceIpv4Cidr: 10.100.0.0/16                               │      │
-│          │ logging:                                                       │      │
-│          │   clusterLogging:                                              │      │
-│          │     - types:                                                   │      │
-│          │         - "api"                                                │      │
-│          │         - "audit"                                              │      │
-│          │         - "authenticator"                                      │      │
-│          │         - "controllerManager"                                  │      │
-│          │         - "scheduler"                                          │      │
-│          │       enabled: false                                           │      │
-│          │ identity:                                                      │      │
-│          │   oidc:                                                        │      │
-│          │     issuer: https://oidc.eks.eu-west-2.amazonaws.com/id/78989… │      │
-│          │ status: ACTIVE                                                 │      │
-│          │ certificateAuthority:                                          │      │
-│          │   data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ… │      │
-│          │ clientRequestToken: null                                       │      │
-│          │ platformVersion: eks.4                                         │      │
-│          │ tags:                                                          │      │
-│          │   ManagedBy: GruCloud                                          │      │
-│          │   stage: dev                                                   │      │
-│          │   projectName: starhackit                                      │      │
-│          │   CreatedByProvider: aws                                       │      │
-│          │   Name: cluster                                                │      │
-│          │                                                                │      │
-└──────────┴────────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 6/6
+┌───────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 EKS::Cluster from aws                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: my-cluster                                                                          │
+│ managedByUs: Yes                                                                          │
+│ live:                                                                                     │
+│   name: my-cluster                                                                        │
+│   arn: arn:aws:eks:us-east-1:1234567890:cluster/my-cluster                                │
+│   createdAt: 2021-10-23T15:13:54.383Z                                                     │
+│   version: 1.20                                                                           │
+│   endpoint: https://076E04BC82258CCF892CE6C7393099A2.sk1.us-east-1.eks.amazonaws.com      │
+│   roleArn: arn:aws:iam::1234567890:role/eksctl-my-cluster-cluster-ServiceRole-13ASK7KN…   │
+│   resourcesVpcConfig:                                                                     │
+│     subnetIds:                                                                            │
+│       - "subnet-0d00758befedaa8c4"                                                        │
+│       - "subnet-0418a68064c4c57d9"                                                        │
+│       - "subnet-054f90a7bcd3875b8"                                                        │
+│       - "subnet-0666abe5c8cb6dc15"                                                        │
+│     securityGroupIds:                                                                     │
+│       - "sg-08a13c94f85fe6f4a"                                                            │
+│     clusterSecurityGroupId: sg-0c6cb4f616e846c91                                          │
+│     vpcId: vpc-04d05283d2a788120                                                          │
+│     endpointPublicAccess: true                                                            │
+│     endpointPrivateAccess: false                                                          │
+│     publicAccessCidrs:                                                                    │
+│       - "0.0.0.0/0"                                                                       │
+│   kubernetesNetworkConfig:                                                                │
+│     serviceIpv4Cidr: 10.100.0.0/16                                                        │
+│   logging:                                                                                │
+│     clusterLogging:                                                                       │
+│       - types:                                                                            │
+│           - "api"                                                                         │
+│           - "audit"                                                                       │
+│           - "authenticator"                                                               │
+│           - "controllerManager"                                                           │
+│           - "scheduler"                                                                   │
+│         enabled: false                                                                    │
+│   identity:                                                                               │
+│     oidc:                                                                                 │
+│       issuer: https://oidc.eks.us-east-1.amazonaws.com/id/076E04BC82258CCF892CE6C7393099… │
+│   status: ACTIVE                                                                          │
+│   certificateAuthority:                                                                   │
+│     data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2… │
+│   clientRequestToken: null                                                                │
+│   platformVersion: eks.2                                                                  │
+│   tags:                                                                                   │
+│     gc-managed-by: grucloud                                                               │
+│     gc-project-name: ex-eks-mod                                                           │
+│     gc-stage: dev                                                                         │
+│     gc-created-by-provider: aws                                                           │
+│     Name: my-cluster                                                                      │
+│                                                                                           │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
-Provider: k8s
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ k8s                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────┘
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                             │
-├────────────────────┬────────────────────────────────────────────────────────────┤
-│ EKSCluster         │ cluster                                                    │
-└────────────────────┴────────────────────────────────────────────────────────────┘
-1 resource, 1 type, 2 providers
-Command "gc l -t EKSCluster" executed in 8s
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                      │
+├──────────────┬───────────────────────────────────────────────────────────────────────────┤
+│ EKS::Cluster │ my-cluster                                                                │
+└──────────────┴───────────────────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t EKS::Cluster" executed in 11s
 ```

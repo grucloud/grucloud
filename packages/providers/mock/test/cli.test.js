@@ -234,20 +234,7 @@ describe("cli error", function () {
       configFile: configFileNetworkError,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { resultQuery } = error;
-        assert(Array.isArray(resultQuery.results));
-        const result = resultQuery.results[0];
-        assert(result.providerName);
-        assert(result.resultCreate, `missing resultCreate in ${tos(result)}`);
-        assert(
-          result.resultCreate[0],
-          `missing resultCreate[0] in ${tos(result)}`
-        );
-        assert(
-          result.resultCreate[0].resource,
-          `missing resultCreate[0].resource in ${tos(result)}`
-        );
-        assert(error.lives.error, `error.lives.error in ${tos(result)}`);
+        assert(error.lives.error, `error.lives.error`);
         const livesJson = error.lives.json;
         assert.equal(livesJson[0].results[0].error.message, "Network Error");
       },
@@ -317,7 +304,7 @@ describe("cli error", function () {
         assert(error.resultDeploy.results[0]);
 
         assert.equal(
-          error.resultDeploy.results[0].resultCreate.results[0].error.Status,
+          error.resultDeploy.results[0].resultCreate.results[1].error.Status,
           500
         );
       },
@@ -393,7 +380,8 @@ describe("cli error", function () {
     const result = await runProgram({
       cmds: ["apply", "-f"],
       configFile: configFile400RetryOnce,
-      onExit: ({ code }) => {
+      onExit: ({ code, error }) => {
+        assert(!error);
         assert.equal(code, 0);
       },
     });

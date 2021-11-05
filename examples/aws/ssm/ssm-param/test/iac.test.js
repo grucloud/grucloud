@@ -6,7 +6,7 @@ const { createStack } = require("../iac");
 const config = require("../config.js");
 
 describe("SSM Parameter", async function () {
-  it("run repository", async function () {
+  it("ssm param", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       steps: [

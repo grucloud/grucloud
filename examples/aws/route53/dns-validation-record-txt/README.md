@@ -3,15 +3,14 @@
 The purpose of this example is to validate a website domain by DNS validation.
 A TXT record will be created for that purpose.
 
-## Resources
+```sh
+gc tree
+```
 
-- [HostedZone](https://www.grucloud.com/docs/aws/resources/Route53/Route53HostedZone)
-- [Record](https://www.grucloud.com/docs/aws/resources/Route53/Route53Record)
-
-## Dependency Graph
+![resources-mindmap](./artifacts/resources-mindmap.svg)
 
 ```sh
 gc graph
 ```
 
-![GraphTarget](artifacts/diagram-target.svg)
+![diagram-target.svg](./artifacts/diagram-target.svg)

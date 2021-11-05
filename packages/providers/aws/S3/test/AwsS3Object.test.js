@@ -59,7 +59,7 @@ const createStackNext = async ({ config }) => {
 
   return provider;
 };
-describe("AwsS3Object", async function () {
+describe.skip("AwsS3Object", async function () {
   let config;
 
   before(async function () {

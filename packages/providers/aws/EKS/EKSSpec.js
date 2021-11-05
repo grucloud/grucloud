@@ -1,9 +1,11 @@
 const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
+
 const { compare } = require("@grucloud/core/Common");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
-const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
+const { EKSNodeGroup } = require("./EKSNodeGroup");
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
@@ -28,13 +30,21 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-        filterTarget: omit([
-          "resourcesVpcConfig.clusterSecurityGroupId",
-          "resourcesVpcConfig.vpcId",
-          "resourcesVpcConfig.subnetIds",
-          "resourcesVpcConfig.publicAccessCidrs",
-          "version",
-          "encryptionConfig",
+        filterTarget: pipe([
+          defaultsDeep({
+            resourcesVpcConfig: {
+              endpointPublicAccess: true,
+              endpointPrivateAccess: false,
+            },
+          }),
+          omit([
+            "resourcesVpcConfig.clusterSecurityGroupId",
+            "resourcesVpcConfig.vpcId",
+            "resourcesVpcConfig.subnetIds",
+            "resourcesVpcConfig.publicAccessCidrs",
+            "version",
+            "encryptionConfig",
+          ]),
         ]),
         filterLive: omit([
           "arn",
@@ -93,27 +103,53 @@ module.exports = () =>
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({
-        filterAll: pick([
+        filterTarget: pick([
           "amiType",
           "capacityType",
           "diskSize",
           "instanceTypes",
           "scalingConfig",
+          "diskSize",
+        ]),
+        filterLive: pipe([
+          pick([
+            "amiType",
+            "capacityType",
+            "diskSize",
+            "instanceTypes",
+            "scalingConfig",
+            "diskSize",
+            "launchTemplate",
+          ]),
+          when(
+            get("launchTemplate"),
+            omit(["instanceTypes", "amiType", "diskSize"])
+          ),
+          omit(["launchTemplate"]),
         ]),
       }),
       filterLive: () =>
-        pick([
-          "capacityType",
-          "scalingConfig",
-          "instanceTypes",
-          "amiType",
-          "labels",
-          "diskSize",
+        pipe([
+          pick([
+            "capacityType",
+            "scalingConfig",
+            "instanceTypes",
+            "amiType",
+            "labels",
+            "diskSize",
+            "launchTemplate",
+          ]),
+          when(
+            get("launchTemplate"),
+            omit(["instanceTypes", "amiType", "diskSize"])
+          ),
+          omit(["launchTemplate"]),
         ]),
       dependencies: () => ({
         cluster: { type: "Cluster", group: "EKS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         role: { type: "Role", group: "IAM" },
+        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
       }),
     },
   ]);

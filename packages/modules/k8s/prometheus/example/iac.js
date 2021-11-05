@@ -2,19 +2,21 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const Prometheus = require("../iac");
 
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, {
-    configs: [Prometheus.config],
-    manifests: await Prometheus.loadManifest(),
-  });
-
+const createResources = async ({ provider }) => {
   const namespace = provider.makeNamespace({
     name: "pgo",
   });
 
-  const resources = await Prometheus.createResources({ provider });
+  await Prometheus.createResources({ provider });
+};
+exports.createStack = async ({ createProvider }) => {
+  const provider = await createProvider(K8sProvider, {
+    configs: [Prometheus.config],
+    createResources,
+    manifests: await Prometheus.loadManifest(),
+  });
+
   return {
     provider,
-    resources: { namespace, ...resources },
   };
 };

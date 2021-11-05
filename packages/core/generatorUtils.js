@@ -1,9 +1,11 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs").promises;
-const { camelCase, snakeCase } = require("change-case");
+const { snakeCase } = require("change-case");
 const prettier = require("prettier");
+const prompts = require("prompts");
 
+const { differenceObject } = require("./Common");
 const {
   pipe,
   tap,
@@ -23,9 +25,11 @@ const {
   and,
   reduce,
   any,
+  flatMap,
 } = require("rubico");
 
 const {
+  uniq,
   size,
   isEmpty,
   find,
@@ -42,13 +46,16 @@ const {
   isFunction,
   unless,
   when,
+  append,
 } = require("rubico/x");
+const Diff = require("diff");
+const { resourcesTpl } = require("./resourcesTpl");
 
 const ResourceVarNameDefault = pipe([
   tap((name) => {
     assert(name, "missing resource name");
   }),
-  camelCase,
+  identity,
 ]);
 
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
@@ -72,16 +79,28 @@ const findDependencyNames = ({
       assert(Array.isArray(resource.dependencies));
     }),
     () => resource.dependencies,
+    tap((dependencies) => {
+      //console.log(resource.uri, "dependencies ", dependencies);
+    }),
     find(eq(get("groupType"), `${group}::${type}`)),
     get("ids"),
+    tap((ids) => {
+      //console.log(resource.uri, "#ids ", size(ids));
+    }),
     map(findLiveById({ type, group, lives, providerName })),
+    tap((deps) => {
+      //console.log(resource.uri, "#deps ", size(deps));
+    }),
     filter(not(isEmpty)),
     filter(filterDependency({ resource })),
     //TODO openstack should set its group
     map(
       ({ group = "compute", type, name }) =>
-        `resources.${group}.${type}.${ResourceVarNameDefault(name)}`
+        `resources.${group}.${type}['${name}']`
     ),
+    tap((params) => {
+      assert(true);
+    }),
     (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
@@ -103,6 +122,7 @@ const buildProperties = ({
   commandOptions,
   programOptions,
   filterLive = () => identity,
+  propertiesDefault = {},
 }) =>
   pipe([
     tap(() => {
@@ -118,6 +138,10 @@ const buildProperties = ({
       programOptions,
       commandOptions,
     }),
+    tap((params) => {
+      assert(true);
+    }),
+    differenceObject(propertiesDefault),
     tap((params) => {
       assert(true);
     }),
@@ -271,52 +295,66 @@ const buildDependencies = ({
   lives,
   dependencies = {},
 }) =>
-  pipe([
-    tap(() => {
-      assert(resource);
-      assert(lives);
-    }),
-    () => dependencies,
-    map.entries(([key, dependency]) => [
-      key,
-      pipe([
-        () => dependency,
-        tap((params) => {
-          assert(true);
-        }),
-        defaultsDeep({
-          findDependencyNames,
-        }),
-        ({ findDependencyNames }) =>
-          findDependencyNames({ providerName, resource, lives, ...dependency }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    ]),
-    tap((params) => {
-      assert(true);
-    }),
-    filter(not(isEmpty)),
-    map.entries(([key, { list, dependencyVarNames }]) => [
-      key,
-      !isEmpty(dependencyVarNames) &&
-        `${key}: ${dependencyValue({ key, list, resource })(
-          dependencyVarNames
-        )}`,
-    ]),
-    values,
-    filter(identity),
-    switchCase([
-      isEmpty,
-      () => "",
-      (values) => `dependencies: ({resources}) =>({ 
+  switchCase([
+    () => /*resource.managedByOther*/ false,
+    () => "",
+    pipe([
+      tap(() => {
+        assert(resource);
+        assert(lives);
+        //console.log(`${resource.name} : ${JSON.stringify(dependencies)}`);
+      }),
+      () => dependencies,
+      map.entries(([key, dependency]) => [
+        key,
+        pipe([
+          () => dependency,
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep({
+            findDependencyNames,
+          }),
+          ({ findDependencyNames }) =>
+            findDependencyNames({
+              providerName,
+              resource,
+              lives,
+              ...dependency,
+            }),
+          tap((deps) => {
+            // console.log(
+            //   `buildDependencies ${resource.name} : ${JSON.stringify(
+            //     dependency
+            //   )}, ${JSON.stringify(deps)}`
+            // );
+          }),
+        ])(),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
+      map.entries(([key, { list, dependencyVarNames }]) => [
+        key,
+        !isEmpty(dependencyVarNames) &&
+          `${key}: ${dependencyValue({ key, list, resource })(
+            dependencyVarNames
+          )}`,
+      ]),
+      values,
+      filter(identity),
+      switchCase([
+        isEmpty,
+        () => "",
+        (values) => `dependencies: ({resources}) =>({ 
        ${values.join(",\n")}
      }),`,
+      ]),
+      tap((params) => {
+        //console.log(params);
+      }),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const buildPrefix = switchCase([
@@ -342,44 +380,168 @@ const codeTpl = ({
   lives,
   properties,
   hasNoProperty,
-}) => `
-  provider.${group}.${buildPrefix(resource)}${type}({
-    ${buildName({ inferName, resourceName })}${configBuildPropertiesDefault({
-  resource,
-  properties,
-  hasNoProperty: hasNoProperty({ resource }),
-})}
-${buildDependencies({
-  providerName,
-  resource,
-  lives,
-  dependencies,
-})}
-  });
-`;
+  additionalCode = "",
+}) =>
+  pipe([
+    () => "provider.",
+    append(group),
+    append("."),
+    append(buildPrefix(resource)),
+    append(type),
+    append("({\n"),
+    append(buildName({ inferName, resourceName })),
+    switchCase([
+      () => additionalCode,
+      append(additionalCode),
+      pipe([
+        append(
+          configBuildPropertiesDefault({
+            resource,
+            properties,
+            hasNoProperty: hasNoProperty({ resource }),
+          })
+        ),
+        append(
+          buildDependencies({
+            providerName,
+            resource,
+            lives,
+            dependencies,
+          })
+        ),
+      ]),
+    ]),
+    append("});\n"),
+  ])();
+
+const displayDiff = pipe([
+  get("hunks"),
+  map(({ lines, newLines }) =>
+    pipe([
+      tap((params) => {
+        console.log(`New lines ${newLines}`);
+      }),
+      () => lines,
+      map((line) => {
+        console.log(line);
+      }),
+    ])()
+  ),
+]);
+
+const promptSave =
+  ({ commandOptions }) =>
+  ({ contentFormated, contentOld }) =>
+    pipe([
+      tap((params) => {
+        assert(contentFormated);
+        assert(contentOld);
+      }),
+      () =>
+        Diff.structuredPatch(
+          "resources.js.old",
+          "resources.js.new",
+          contentOld,
+          contentFormated,
+          "old",
+          "new"
+        ),
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        pipe([get("hunks"), isEmpty]),
+        pipe([
+          tap((params) => {
+            console.log("Infrastructure has not changed.");
+          }),
+          () => false,
+        ]), // No diff, do not save
+        pipe([
+          tap((params) => {
+            console.log(
+              `Some changes has been detected between the lives resources and the target code.`
+            );
+          }),
+          displayDiff,
+          switchCase([
+            () => commandOptions.prompt,
+            pipe([
+              () => ({
+                type: "confirm",
+                name: "confirmWrite",
+                message: `Write new infrastructure to resource.js`,
+                initial: false,
+              }),
+              prompts,
+              get("confirmWrite"),
+            ]),
+            () => true,
+          ]),
+        ]),
+      ]),
+    ])();
 
 const writeToFile =
-  ({ filename }) =>
+  ({ filename, programOptions, commandOptions }) =>
   (content) =>
     pipe([
       tap(() => {
         assert(filename);
         assert(content);
+        assert(programOptions);
       }),
-      tryCatch(
-        pipe([
-          () => prettier.format(content, { parser: "babel" }),
-          (formatted) => fs.writeFile(filename, formatted),
-        ]),
-        (error) =>
+      assign({
+        filenameResolved: () =>
+          path.resolve(programOptions.workingDirectory, filename),
+        contentFormated: () => prettier.format(content, { parser: "babel" }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        contentOld: tryCatch(
           pipe([
-            tap(() => {
-              console.error(content);
+            tap((params) => {
+              assert(true);
             }),
-            () => {
-              throw error;
-            },
-          ])()
+            ({ filenameResolved }) => fs.readFile(filenameResolved, "utf-8"),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+          (error) => {
+            //Ignore error
+          }
+        ),
+      }),
+      assign({
+        doSave: pipe([
+          switchCase([
+            get("contentOld"),
+            promptSave({ commandOptions }),
+            () => true,
+          ]),
+        ]),
+      }),
+      tap.if(
+        get("doSave"),
+        tryCatch(
+          pipe([
+            ({ filenameResolved, contentFormated }) =>
+              fs.writeFile(filenameResolved, contentFormated),
+          ]),
+          (error) =>
+            pipe([
+              tap(() => {
+                console.error(`Cannot write to file '${filename}`);
+                console.error(error);
+              }),
+              () => {
+                throw error;
+              },
+            ])()
+        )
       ),
     ])();
 
@@ -401,6 +563,7 @@ const hasResourceInDependency = (resource) =>
       ])
     ),
     get("ids"),
+    map(when(isObject, get("id"))),
     includes(resource.id),
   ]);
 
@@ -443,7 +606,12 @@ const findDependencySpec =
             ])
           ),
         ]),
-        () => undefined,
+        pipe([
+          tap((params) => {
+            //console.error("cannot find dependency: ", resource.id);
+          }),
+          () => [],
+        ]),
       ]),
     ])();
 
@@ -454,6 +622,7 @@ const findUsedBy =
       tap(() => {
         assert(resource);
         assert(resource.id);
+        assert(resource.groupType);
         assert(writersSpec);
       }),
       () => lives,
@@ -487,6 +656,8 @@ const findUsedBy =
           ]),
         ])
       ),
+      flatMap((dep) => [dep, ...findUsedBy({ lives, writersSpec })(dep)]),
+      uniq,
     ])();
 
 // TODO split in 2
@@ -539,6 +710,7 @@ const removeDefaultDependencies =
                                   tap((params) => {
                                     assert(true);
                                   }),
+                                  //TODO isDefault ?
                                   not(get("managedByOther")),
                                 ])
                               ),
@@ -552,6 +724,9 @@ const removeDefaultDependencies =
             ])(),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
       map(
         assign({
           dependencies: (resource) =>
@@ -572,8 +747,9 @@ const removeDefaultDependencies =
                         assert(ids);
                       }),
                       () => ids,
-                      filter(
+                      filter((id) =>
                         pipe([
+                          () => id,
                           tap((id) => {
                             assert(id);
                           }),
@@ -590,22 +766,25 @@ const removeDefaultDependencies =
                               pipe([
                                 () => dependency,
                                 findDependencySpec({ writersSpec, resource }),
-                                any(
-                                  pipe([
-                                    get("filterDependency"),
-                                    switchCase([
-                                      isFunction,
-                                      (filterDependency) =>
-                                        filterDependency({ resource })(
+                                filter(not(isEmpty)),
+                                any((spec) =>
+                                  switchCase([
+                                    () => isFunction(spec.filterDependency),
+                                    pipe([
+                                      () =>
+                                        spec.filterDependency({ resource })(
                                           dependency
                                         ),
-                                      () => true,
                                     ]),
-                                  ])
+                                    () => true,
+                                  ])()
                                 ),
+                                tap.if(isEmpty, () => {
+                                  //console.log(`Ignoring dependency ${id}`);
+                                }),
                               ])(),
                           ]),
-                        ])
+                        ])()
                       ),
                     ])(),
                 })
@@ -648,10 +827,12 @@ const readModel = ({
       assert(writersSpec);
       assert(programOptions);
       assert(programOptions.workingDirectory);
+      assert(programOptions.workingDirectory);
+      assert(commandOptions.inventory);
     }),
     () =>
       fs.readFile(
-        path.resolve(programOptions.workingDirectory, commandOptions.input),
+        path.resolve(programOptions.workingDirectory, commandOptions.inventory),
         "utf-8"
       ),
     JSON.parse,
@@ -699,8 +880,8 @@ const readMapping = ({ commandOptions, programOptions }) =>
 
 exports.readMapping = readMapping;
 
-const writeIac =
-  ({ filename, iacTpl }) =>
+const writeResourcesToFile =
+  ({ filename, resourcesTpl, programOptions, commandOptions }) =>
   (resourceMap) =>
     pipe([
       () => resourceMap,
@@ -716,9 +897,8 @@ const writeIac =
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
-      ({ resourcesVarNames, resourcesCode }) =>
-        iacTpl({ resourcesVarNames, resourcesCode }),
-      writeToFile({ filename }),
+      ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
+      writeToFile({ filename, programOptions, commandOptions }),
     ])();
 
 const writeEnv =
@@ -759,7 +939,7 @@ const writeEnv =
 
 const isEqualById = ({ type, group, providerName, id }) =>
   and([
-    eq(get("id"), id),
+    or([eq(get("id"), id), eq(get("id"), id?.id)]),
     eq(get("type"), type),
     eq(get("group"), group),
     eq(get("providerName"), providerName),
@@ -780,7 +960,7 @@ const findLiveById =
       find(isEqualById({ type, group, providerName, id })),
       tap((live) => {
         if (!live) {
-          console.error(`no live for ${type}, id: ${id},`);
+          //console.error(`no live for ${type}, id: ${id},`);
           //assert(live, `no live for ${type}, id: ${id},`);
         }
       }),
@@ -799,8 +979,11 @@ const ignoreDefault =
       () => resource,
       and([
         get("managedByOther"),
-        pipe([get("usedBy"), not(find(eq(get("managedByOther"), false)))]),
+        pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
+      tap.if(identity, (xxx) => {
+        //console.log("ignoreDefault", resource.name);
+      }),
     ])();
 
 const writeResource =
@@ -813,11 +996,13 @@ const writeResource =
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
     filterLive,
+    propertiesDefault,
     codeBuildProperties,
     hasNoProperty,
     inferName,
     properties = always({}),
     dependencies = always({}),
+    addCode = always(""),
     environmentVariables = always([]),
     ignoreResource = () => () => false,
     options,
@@ -832,8 +1017,9 @@ const writeResource =
       () => resource,
       switchCase([
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
-        () => {
+        (resource) => {
           assert(true);
+          //console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
@@ -849,6 +1035,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
+                  propertiesDefault,
                   dependencies: dependencies(),
                   environmentVariables: environmentVariables(),
                   commandOptions,
@@ -860,11 +1047,12 @@ const writeResource =
                   defaultsDeep(props),
                 ])(),
             ]),
+            additionalCode: () => addCode({ resource, lives }),
           }),
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, resourceName, properties }) => ({
+          ({ resourceVarName, resourceName, properties, additionalCode }) => ({
             resourceVarName,
             env: envTpl({
               options,
@@ -884,6 +1072,7 @@ const writeResource =
               hasNoProperty,
               properties,
               codeBuildProperties,
+              additionalCode,
             }),
           }),
           tap((params) => {
@@ -903,6 +1092,7 @@ const writeResources =
     group,
     providerName,
     filterLive,
+    propertiesDefault,
     properties,
     dependencies,
     environmentVariables,
@@ -913,6 +1103,7 @@ const writeResources =
     codeBuildProperties,
     configBuildProperties,
     hasNoProperty = () => false,
+    addCode,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -951,6 +1142,7 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
+                propertiesDefault,
                 inferName,
                 dependencies,
                 ignoreResource,
@@ -959,6 +1151,7 @@ const writeResources =
                 codeBuildProperties,
                 configBuildProperties,
                 hasNoProperty,
+                addCode,
               })({
                 resource,
                 lives,
@@ -985,7 +1178,7 @@ exports.generatorMain = ({
 }) =>
   pipe([
     tap((xxx) => {
-      console.log(name, commandOptions, programOptions);
+      //console.log(name, commandOptions, programOptions);
     }),
     fork({
       lives: readModel({
@@ -1032,10 +1225,16 @@ exports.generatorMain = ({
           assert(true);
         }),
         fork({
-          iac: writeIac({ filename: commandOptions.outputCode, iacTpl }),
+          resources: writeResourcesToFile({
+            filename: commandOptions.outputCode,
+            resourcesTpl,
+            programOptions,
+            commandOptions,
+          }),
           env: writeEnv({
             filename: commandOptions.outputEnv,
             programOptions,
+            commandOptions,
           }),
         }),
         tap((params) => {

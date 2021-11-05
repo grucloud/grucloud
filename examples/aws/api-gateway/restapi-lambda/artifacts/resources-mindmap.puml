@@ -3,13 +3,13 @@ title Resources for project RestApiGateway Lambda
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
-+++ IAM
-++++ Policy (1)
-++++ Role (1)
 +++ APIGateway
 ++++ Account (1)
 ++++ RestApi (1)
 ++++ Stage (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
 @endmindmap

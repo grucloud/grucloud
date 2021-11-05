@@ -17,8 +17,7 @@ const domain = provider.Route53Domains.useDomain({
 
 const hostedZone = provider.Route53.makeHostedZone({
   name: `${domainName}.`,
-  dependencies: { domain },
-  properties: ({}) => ({}),
+  dependencies: () => ({ domain }),
 });
 ```
 

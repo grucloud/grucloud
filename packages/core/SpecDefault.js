@@ -9,7 +9,11 @@ const {
   prepend,
   identity,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+
+const logger = require("./logger")({
+  prefix: "Spec",
+});
+
 const { ResourceMaker } = require("./CoreResource");
 const { compare } = require("./Common");
 const findNamespaceFromProps = (properties) =>
@@ -91,6 +95,34 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
+  findResource: ({ resources, name, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(resources);
+        assert(name);
+      }),
+      () => resources,
+      //TODO check for multiple default and assert
+      find(eq(get("name"), name)),
+      tap.if(isEmpty, () => {
+        logger.info(
+          `findResource: Cannot find resource '${name}', ${JSON.stringify(
+            resources,
+            null,
+            4
+          )}`
+        );
+      }),
+    ])(),
+  findDefault: ({ resources }) =>
+    pipe([
+      () => resources,
+      //TODO check for multiple default and assert
+      find(get("isDefault")),
+      tap((live) => {
+        assert(live, `Cannot find default resource`);
+      }),
+    ])(),
   makeResource:
     ({ provider, spec, programOptions }) =>
     (params) =>
@@ -111,6 +143,9 @@ const SpecDefault = ({ providerName }) => ({
       pipe([
         () => ({ params, provider, programOptions, spec }),
         useParams,
+        defaultsDeep({
+          filterLives: spec.findResource,
+        }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),
       ])(),
@@ -120,17 +155,8 @@ const SpecDefault = ({ providerName }) => ({
       pipe([
         () => ({ params, provider, programOptions, spec }),
         useParams,
-        assign({
-          filterLives:
-            () =>
-            ({ resources }) =>
-              pipe([
-                () => resources,
-                find(eq(get("isDefault"), true)),
-                tap((live) => {
-                  assert(live, `Cannot find default resource ${spec.type}`);
-                }),
-              ])(),
+        defaultsDeep({
+          filterLives: spec.findDefault,
         }),
         ResourceMaker,
         tap(provider.targetResourcesAdd),

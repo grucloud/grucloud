@@ -8,13 +8,7 @@ const MockStack2 = require("../../mock-simple/iac");
 describe("Mock Multi", async function () {
   let config;
 
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   it("run mocks example", async function () {
     const cli1 = await Cli({ createStack: MockStack1.createStack, config });
     const cli2 = await Cli({ createStack: MockStack2.createStack, config });

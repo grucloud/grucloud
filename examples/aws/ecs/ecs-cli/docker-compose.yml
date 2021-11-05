@@ -1,0 +1,60 @@
+version: "3"
+services:
+  pg:
+    image: postgres:10-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: dev
+      POSTGRES_PASSWORD: password
+    expose:
+      - "5432"
+    ports:
+      - "7432:5432"
+    networks:
+      - net
+
+  redis:
+    image: smebberson/alpine-redis
+    expose:
+      - "6379"
+    networks:
+      - net
+
+  api:
+    image: fredericheem/api:v10.41.0
+    expose:
+      - "9000"
+    ports:
+      - "9001:9000"
+    environment:
+      NODE_CONFIG: |
+        {
+          "db": {
+            "url":  "postgres://postgres:password@pg:5432/dev?sslmode=disable"
+          },
+          "redis":{
+            "url": "redis://redis:6379"
+          }
+        }
+    links:
+      - pg
+      - redis
+    entrypoint: sh scripts/initialise.sh
+    networks:
+      - net
+  ui:
+    image: fredericheem/ui:v10.41.0
+    expose:
+      - "3000"
+    ports:
+      - "3001:3000"
+    links:
+      - api
+    depends_on:
+      - api
+    networks:
+      - net
+
+networks:
+  net:

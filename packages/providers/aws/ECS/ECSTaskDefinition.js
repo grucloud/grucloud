@@ -7,7 +7,7 @@ const {
   get,
   switchCase,
   eq,
-  not,
+  or,
   pick,
   flatMap,
 } = require("rubico");
@@ -24,7 +24,6 @@ const {
   createEndpoint,
   shouldRetryOnException,
   buildTags,
-  findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -59,7 +58,10 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
-    eq(get("message"), "The specified task definition does not exist."),
+    or([
+      eq(get("message"), "The specified task definition does not exist."),
+      eq(get("code"), "InvalidParameterException"),
+    ]),
   ]);
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property

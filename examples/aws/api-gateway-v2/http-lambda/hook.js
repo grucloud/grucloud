@@ -62,7 +62,6 @@ module.exports = ({ provider }) => {
                 fn: () => axios.get("/my-function"),
                 shouldRetryOnException: or([
                   eq(get("error.code"), "ENOTFOUND"),
-                  eq(get("error.response.status"), 404),
                 ]),
                 isExpectedResult: pipe([
                   tap((params) => {
@@ -70,7 +69,7 @@ module.exports = ({ provider }) => {
                   }),
                   eq(get("status"), 200),
                 ]),
-                config: { retryCount: 5, retryDelay: 5e3 },
+                config: { retryCount: 50, retryDelay: 5e3 },
               }),
           ]),
         },

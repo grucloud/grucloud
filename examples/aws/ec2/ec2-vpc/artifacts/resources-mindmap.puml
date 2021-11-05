@@ -5,15 +5,15 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ KeyPair (1)
+++++ Volume (1)
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ Subnet (1)
 ++++ RouteTable (1)
+++++ RouteTableAssociation (1)
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (2)
 ++++ ElasticIpAddress (1)
-++++ Volume (1)
-++++ Image (1)
 ++++ Instance (1)
 @endmindmap

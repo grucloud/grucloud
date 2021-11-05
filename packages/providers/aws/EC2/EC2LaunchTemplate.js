@@ -19,13 +19,13 @@ const {
   first,
   unless,
   prepend,
+  includes,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchTemplate",
 });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -65,6 +65,11 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ec2 = () => createEndpoint({ endpointName: "EC2" })(config);
 
+  const managedByOther = pipe([
+    get("live.CreatedBy"),
+    includes("AWSServiceRoleForAmazonEKSNodegroup"),
+  ]);
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "KeyPair",
@@ -74,7 +79,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "SecurityGroup",
       group: "EC2",
-      ids: live.LaunchTemplateData.SecurityGroupIds,
+      ids: pipe([() => live, get("LaunchTemplateData.SecurityGroupIds")])(),
     },
     {
       type: "InstanceProfile",
@@ -279,6 +284,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   return {
     spec,
     findId,
+    managedByOther,
     findNamespace,
     findDependencies,
     getByName,

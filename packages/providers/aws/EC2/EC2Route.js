@@ -53,16 +53,16 @@ exports.EC2Route = ({ spec, config }) => {
           id: live.RouteTableId,
         }),
       tap((routeTable) => {
-        assert(routeTable);
+        //assert(routeTable);
       }),
-      get("name"),
+      get("name", "no-route-table-id"),
       switchCase([
-        not(eq(live.GatewayId, "local")),
-        append("-igw"),
-        eq(live.GatewayId, "local"),
-        append("-local"),
         () => live.NatGatewayId,
         append("-nat-gateway"),
+        eq(live.GatewayId, "local"),
+        append("-local"),
+        not(eq(live.GatewayId, "local")),
+        append("-igw"),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {
@@ -202,7 +202,7 @@ exports.EC2Route = ({ spec, config }) => {
                 pipe([
                   assign({
                     RouteTableId: () => RouteTableId,
-                    Tags: () => Tags,
+                    //Tags: () => Tags,
                   }),
                 ])
               ),

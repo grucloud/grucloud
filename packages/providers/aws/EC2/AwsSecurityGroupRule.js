@@ -23,12 +23,12 @@ const {
   defaultsDeep,
   isEmpty,
   find,
-  identity,
   first,
   groupBy,
   values,
   isDeepEqual,
   uniq,
+  when,
 } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
@@ -43,6 +43,7 @@ const {
   buildTags,
   findNamespaceInTags,
   findNameInTags,
+  findEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -55,12 +56,15 @@ const findProperty = (property) =>
 
 const mergeSecurityGroupRules = (rules) =>
   pipe([
+    tap((params) => {
+      logger.debug(`mergeSecurityGroupRules #rules: ${size(rules)}`);
+    }),
     () => rules,
     groupBy((rule) =>
       pipe([
         () => rule,
         findValueInTags({ key: "Name" }),
-        switchCase([isEmpty, () => get("SecurityGroupRuleId")(rule), identity]),
+        when(isEmpty, () => get("SecurityGroupRuleId")(rule)),
       ])()
     ),
     values,
@@ -236,18 +240,45 @@ const findName =
       }),
     ])();
 
-const findDependencies = ({ live }) => [
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    ids: pipe([
-      () => [get("GroupId"), get("IpPermission.UserIdGroupPairs[0].GroupId")],
-      map((fn) => fn(live)),
-      uniq,
-      filter(not(isEmpty)),
-    ])(),
-  },
-];
+const findDependencies =
+  ({ config }) =>
+  ({ live, lives }) =>
+    [
+      {
+        type: "SecurityGroup",
+        group: "EC2",
+        ids: pipe([
+          () => [
+            get("GroupId"),
+            get("IpPermission.UserIdGroupPairs[0].GroupId"),
+          ],
+          map((fn) => fn(live)),
+          uniq,
+          filter(not(isEmpty)),
+        ])(),
+      },
+      {
+        type: "Cluster",
+        group: "EKS",
+        ids: [
+          pipe([
+            () =>
+              lives.getById({
+                id: live.GroupId,
+                type: "SecurityGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            tap(({ live }) => {
+              assert(live, "cannot find security group in cache");
+            }),
+            ({ live }) => ({ live, lives }),
+            findEksCluster({ config }),
+            get("id"),
+          ])(),
+        ],
+      },
+    ];
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
@@ -262,15 +293,23 @@ const SecurityGroupRuleBase = ({ config }) => {
         and([
           or([
             () => IsEgress,
-            pipe([
-              () =>
-                lives.getById({
-                  type: "SecurityGroup",
-                  group: "EC2",
-                  providerName: config.providerName,
-                  id: live.GroupId,
-                }),
-              get("isDefault"),
+            and([
+              pipe([
+                () =>
+                  lives.getById({
+                    type: "SecurityGroup",
+                    group: "EC2",
+                    providerName: config.providerName,
+                    id: live.GroupId,
+                  }),
+                get("managedByOther"),
+              ]),
+              pipe([
+                () => live,
+                get("IpPermission.UserIdGroupPairs"),
+                first,
+                or([isEmpty, eq(get("GroupId"), live.GroupId)]),
+              ]),
             ]),
           ]),
           pipe([
@@ -286,19 +325,15 @@ const SecurityGroupRuleBase = ({ config }) => {
           ]),
         ]),
         tap((result) => {
-          logger.debug(
-            `securityGroupRule IsEgress: ${IsEgress}, ${tos(
-              live
-            )} isDefault ${result}`
-          );
+          // logger.debug(
+          //   `securityGroupRule IsEgress: ${IsEgress}, ${tos(
+          //     live
+          //   )} isDefault ${result}`
+          // );
         }),
       ])();
 
-  const managedByOther = ({ IsEgress }) =>
-    or([
-      isDefault({ IsEgress }),
-      pipe([get("resource.name"), callProp("startsWith", "eks-")]),
-    ]);
+  const managedByOther = isDefault;
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -377,6 +412,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroupRules-property
   const getByName = ({ name }) =>
     pipe([
       tap(() => {
@@ -388,6 +424,9 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
       ec2().describeSecurityGroupRules,
       get("SecurityGroupRules"),
+      tap((SecurityGroupRules) => {
+        logger.debug(`getByName ${name} ${tos({ SecurityGroupRules })}`);
+      }),
       mergeSecurityGroupRules,
       first,
       tap((result) => {
@@ -395,22 +434,36 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupEgress-property
   const create =
     ({ kind, authorizeSecurityGroup }) =>
     ({ payload, name, namespace }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `create sg rule ${JSON.stringify({ kind, name, namespace })}`
-          );
-          logger.debug(`create sg rule: ${tos(payload)}`);
-        }),
-        () => payload,
-        authorizeSecurityGroup,
-        tap((result) => {
-          logger.info(`created sg rule ${kind} ${tos({ name })}`);
-        }),
-      ])();
+      tryCatch(
+        pipe([
+          tap(() => {
+            logger.info(
+              `create sg rule ${JSON.stringify({ kind, name, namespace })}`
+            );
+            logger.debug(`create sg rule: ${tos(payload)}`);
+          }),
+          () => payload,
+          authorizeSecurityGroup,
+          tap.if(not(get("Return")), (result) => {
+            throw Error(`cannot create security group rule ${name}`);
+          }),
+          tap((result) => {
+            logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
+          }),
+        ]),
+        switchCase([
+          eq(get("code"), "InvalidPermission.Duplicate"),
+          () => {},
+          (error) => {
+            throw error;
+          },
+        ])
+      )();
 
   const destroy =
     ({ kind, revokeSecurityGroup }) =>
@@ -496,7 +549,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     spec,
     findId,
     findName: findName({ kind: "ingress", config }),
-    findDependencies,
+    findDependencies: findDependencies({ config }),
     findNamespace,
     getByName,
     getList: getList({ kind: "ingress", IsEgress: false }),
@@ -538,7 +591,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
 
   return {
     spec,
-    findDependencies,
+    findDependencies: findDependencies({ config }),
     findNamespace,
     findId,
     findName: findName({ kind: "egress", config }),
@@ -571,6 +624,8 @@ exports.compareSecurityGroupRule = compare({
       IpPermission: IpPermissions[0],
     }),
   ]),
-  filterAll: pipe([omit(["SecurityGroupRuleId"])]),
-  filterLive: pipe([omit(["Tags"])]),
+  filterAll: pipe([
+    omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"]),
+  ]),
+  filterLive: pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
 });

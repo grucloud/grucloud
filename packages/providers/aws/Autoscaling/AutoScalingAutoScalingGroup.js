@@ -19,6 +19,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const findId = get("live.AutoScalingGroupARN");
 const pickId = pick(["AutoScalingGroupName"]);
@@ -93,7 +94,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
       ],
     },
-    { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
+    // { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
     {
       type: "Instance",
       group: "EC2",
@@ -147,10 +148,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     decorate,
   });
 
-  const getByName = pipe([
-    ({ name }) => ({ AutoScalingGroupName: name }),
-    getById,
-  ]);
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({
@@ -158,6 +156,10 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     pickId,
     getById,
     config,
+    shouldRetryOnException: pipe([
+      get("error.message"),
+      includes("Invalid IAM Instance Profile ARN"),
+    ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
@@ -191,8 +193,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
       launchTemplate,
       launchConfiguration,
       subnets = [],
-      targetGroups = [],
-      serviceRole,
+      serviceLinkedRole,
     },
   }) =>
     pipe([
@@ -219,12 +220,8 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
             LaunchTemplateId: getField(launchTemplate, "LaunchTemplateId"),
           },
         }),
-        TargetGroupARNs: pipe([
-          () => targetGroups,
-          map((targetGroup) => getField(targetGroup, "TargetGroupArn")),
-        ])(),
-        ...(serviceRole && {
-          ServiceLinkedRoleARN: getField(serviceRole, "Arn"),
+        ...(serviceLinkedRole && {
+          ServiceLinkedRoleARN: getField(serviceLinkedRole, "Arn"),
         }),
         VPCZoneIdentifier: pipe([
           () => subnets,

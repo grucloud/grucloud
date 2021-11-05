@@ -6,8 +6,8 @@ skinparam monochrome true
 +++ iam
 ++++ ServiceAccount (1)
 +++ compute
-++++ Address (1)
 ++++ Firewall (2)
+++++ Address (1)
 ++++ Disk (1)
 ++++ VmInstance (1)
 @endmindmap

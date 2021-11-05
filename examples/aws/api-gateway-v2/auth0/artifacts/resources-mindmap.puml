@@ -3,27 +3,27 @@ title Resources for project ApiGateway Auth0 Autorizer
 skinparam monochrome true
 + Infra
 ++ aws
-+++ IAM
-++++ Policy (1)
-++++ Role (1)
++++ ApiGatewayV2
+++++ DomainName (1)
+++++ Api (1)
+++++ Stage (1)
+++++ Authorizer (1)
+++++ ApiMapping (1)
+++++ Deployment (1)
+++++ Integration (1)
+++++ Route (1)
 +++ ACM
 ++++ Certificate (1)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
-+++ Route53Domains
-++++ Domain (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Lambda
+++++ Function (1)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ Lambda
-++++ Function (1)
-+++ ApiGatewayV2
-++++ Api (1)
-++++ Authorizer (1)
-++++ Integration (1)
-++++ Route (1)
-++++ Stage (1)
-++++ Deployment (1)
-++++ DomainName (1)
-++++ ApiMapping (1)
++++ Route53Domains
+++++ Domain (1)
 @endmindmap

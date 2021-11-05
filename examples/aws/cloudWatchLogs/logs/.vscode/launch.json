@@ -68,6 +68,17 @@
       "port": 9229
     },
     {
+      "name": "Plan Update",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["plan", "-r", "test/resourcesUpdate1.js"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Apply",
       "type": "node",
       "request": "launch",

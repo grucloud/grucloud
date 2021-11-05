@@ -35,14 +35,8 @@ const checkDig = async ({ nameServer, domain, type = "A" }) => {
   });
 };
 
-module.exports = ({ resources, provider }) => {
+module.exports = ({ provider }) => {
   const { DomainName, stage } = provider.config;
-  const { websiteBucket, hostedZone, distribution, certificate } = resources;
-  assert(websiteBucket);
-  assert(hostedZone);
-  assert(distribution);
-  assert(DomainName);
-  assert(certificate);
 
   const domainName = makeDomainName({
     DomainName,
@@ -50,8 +44,7 @@ module.exports = ({ resources, provider }) => {
   });
 
   const bucketUrl = `https://${domainName}`;
-  const bucketStorageUrl = `http://${websiteBucket.name}.s3.amazonaws.com`;
-  const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
+
   //const bucketUrl404 = `${bucketStorageUrl}/404.html`;
 
   const axios = Axios.create({
@@ -62,6 +55,22 @@ module.exports = ({ resources, provider }) => {
   return {
     onDeployed: {
       init: async () => {
+        const resources = provider.resources();
+        const websiteBucket =
+          resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"];
+        const hostedZone =
+          resources.Route53.HostedZone["dev.cloudfront.aws.test.grucloud.org."];
+        const distribution =
+          resources.CloudFront.Distribution[
+            "distribution-cloudfront.aws.test.grucloud.org-dev"
+          ];
+        const certificate =
+          resources.ACM.Certificate["dev.cloudfront.aws.test.grucloud.org"];
+        assert(websiteBucket);
+        assert(hostedZone);
+        assert(distribution);
+        assert(DomainName);
+        assert(certificate);
         const hostedZoneLive = await hostedZone.getLive();
         assert.equal(hostedZoneLive.ResourceRecordSetCount, 4);
 
@@ -71,12 +80,23 @@ module.exports = ({ resources, provider }) => {
         const distributionDomainName = distributionLive.DomainName;
         assert(distributionDomainName);
         const distrubutionUrl = `https://${distributionDomainName}`;
-        return { hostedZoneLive, sslCertificateLive, distrubutionUrl };
+
+        const bucketStorageUrl = `http://${websiteBucket.name}.s3.amazonaws.com`;
+        const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
+
+        return {
+          hostedZoneLive,
+          sslCertificateLive,
+          distrubutionUrl,
+          bucketStorageUrl,
+          bucketUrlIndex,
+          certificate,
+        };
       },
       actions: [
         {
-          name: `get ${bucketUrlIndex}`,
-          command: async ({}) => {
+          name: `get`,
+          command: async ({ bucketUrlIndex }) => {
             await retryCallOnError({
               name: `get  ${bucketUrlIndex}`,
               fn: () => axios.get(bucketUrlIndex),
@@ -105,7 +125,7 @@ module.exports = ({ resources, provider }) => {
         },
         {
           name: `ssl certificate ready`,
-          command: async () => {
+          command: async ({ certificate }) => {
             await retryCall({
               name: `getting certificate status`,
               fn: () => certificate.getLive(),

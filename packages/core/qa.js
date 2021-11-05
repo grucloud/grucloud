@@ -16,7 +16,7 @@ exports.testEnd2End = ({
   title,
   listOptions,
   steps = [],
-  noEmptyPlanCheck,
+  doGraph = !process.env.CONTINUOUS_INTEGRATION,
 }) =>
   pipe([
     () => steps,
@@ -32,23 +32,33 @@ exports.testEnd2End = ({
         tap((params) => {
           assert(true);
         }),
-        () =>
-          cli.graphTree({
-            commandOptions: { title },
-            programOptions: { noOpen: true },
-          }),
-        () =>
-          cli.graphTarget({
-            commandOptions: { title },
-            programOptions: { noOpen: true },
-          }),
+        tap.if(
+          () => doGraph,
+          () =>
+            cli.graphTree({
+              commandOptions: { title },
+              programOptions: { noOpen: true },
+            })
+        ),
+        tap.if(
+          () => doGraph,
+          () =>
+            cli.graphTarget({
+              commandOptions: { title },
+              programOptions: { noOpen: true },
+            })
+        ),
         () =>
           cli.planDestroy({
-            commandOptions: { force: true },
+            commandOptions: { force: true, all: true },
           }),
         () =>
           cli.list({
-            commandOptions: { our: true, canBeDeleted: true },
+            commandOptions: {
+              our: true,
+              canBeDeleted: true,
+              json: "artifacts/inventoryAfterDestroy.json",
+            },
           }),
         () =>
           cli.planApply({
@@ -79,7 +89,9 @@ exports.testEnd2End = ({
         () =>
           cli.genCode({
             commandOptions: {
-              input: "artifacts/inventory.json",
+              inventory: "artifacts/inventory.json",
+              outputCode: "artifacts/resources.js",
+              prompt: false,
             },
           }),
         () =>
@@ -90,7 +102,6 @@ exports.testEnd2End = ({
             },
             commandOptions: {
               graph: true,
-              //defaultExclude: true,
               typesExclude: ["EC2::NetworkInterface"],
               ...listOptions,
             },
@@ -118,7 +129,7 @@ exports.testEnd2End = ({
                   cli.list({
                     commandOptions: {
                       canBeDeleted: true,
-                      //defaultExclude: true,
+                      json: "artifacts/inventoryAfterUpdate.json",
                     },
                   }),
                 () =>
@@ -138,6 +149,7 @@ exports.testEnd2End = ({
         () =>
           cli.list({
             commandOptions: { canBeDeleted: true, defaultExclude: true },
+            json: "artifacts/inventoryAfterDestroy.json",
           }),
       ])(),
   ])();

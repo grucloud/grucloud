@@ -60,8 +60,14 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("live.InternetGatewayId");
-  //TODO use default
-  const findName = findNameInTagsOrId({ findId });
+
+  const findName = pipe([
+    switchCase([
+      isDefault(config),
+      () => "ig-default",
+      findNameInTagsOrId({ findId }),
+    ]),
+  ]);
 
   const findDependencies = ({ live }) => [
     {
@@ -72,6 +78,12 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
+
+  // const getList = client.getList({
+  //   method: "describeInternetGateways",
+  //   getParam: "InternetGateways",
+  // });
+
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
@@ -234,14 +246,18 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, namespace, properties = {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         TagSpecifications: [
           {
             ResourceType: "internet-gateway",
-            Tags: buildTags({ config, namespace, name }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       }),

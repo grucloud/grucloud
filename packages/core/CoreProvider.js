@@ -201,10 +201,12 @@ function CoreProvider({
         name,
         onDeployed: {
           init: () => {},
+          cleanUp: () => {},
           actions: [],
         },
         onDestroyed: {
           init: () => {},
+          cleanUp: () => {},
           actions: [],
         },
       }),
@@ -218,6 +220,7 @@ function CoreProvider({
     ])();
 
   // Target Resources
+  const resourcesSet = new Set();
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
 
@@ -255,7 +258,14 @@ function CoreProvider({
     }),
   ]);
 
-  const targetResourcesAdd = (resource) => {
+  const targetResourcesAdd = (resource) =>
+    pipe([
+      tap(() => {
+        resourcesSet.add(resource);
+      }),
+    ])();
+
+  const targetResourceAddToMap = (resource) => {
     assert(resource.spec.providerName);
     const { type, group, name, spec } = resource;
     assert(name);
@@ -270,9 +280,8 @@ function CoreProvider({
       logger.debug(`resource '${resourceKey}' already exists`);
     }
 
-    const resourceVarName = camelCase(name);
     resourcesObj = set(
-      `${groupName(group)}${type}.${resourceVarName}`,
+      filter(not(isEmpty))([group, type, name]),
       resource
     )(resourcesObj);
 
@@ -294,6 +303,25 @@ function CoreProvider({
       })
     )(resource.client);
   };
+
+  const targetResourceAdd = (resource) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => targetResourceAddToMap(resource),
+    ])();
+
+  const targetResourcesBuildMap = pipe([
+    () => resourcesSet,
+    forEach(tryCatch(targetResourceAdd, () => undefined)),
+    tap((params) => {
+      assert(true);
+    }),
+    //TODO use dependencies
+    () => resourcesSet,
+    forEach(targetResourceAdd),
+  ]);
 
   const getTargetResources = () => [...mapNameToResource.values()];
 
@@ -413,66 +441,73 @@ function CoreProvider({
       tryCatch(
         pipe([
           assign({ payload: (script) => script.init() }),
-          ({ actions, payload }) =>
-            map.pool(
-              mapPoolSize,
-              tryCatch(
-                pipe([
-                  tap((action) => {
-                    onStateChange({
-                      context: contextFromHookAction({
-                        providerName,
-                        hookType,
-                        hookName,
-                        name: action.name,
-                      }),
-                      nextState: "RUNNING",
-                    });
-                  }),
-                  tap((action) => {
-                    assert(action.command);
-                  }),
-                  tap(callProp("command", payload)),
-                  tap((action) => {
-                    onStateChange({
-                      context: contextFromHookAction({
-                        providerName,
-                        hookType,
-                        hookName,
-                        name: action.name,
-                      }),
-                      nextState: "DONE",
-                    });
-                  }),
-                ]),
-                (error, action) => {
-                  logger.error(
-                    `runScriptCommands ${hookType}, error for ${action.name}`
-                  );
-                  logger.error(tos(error));
-                  error.stack && logger.error(error.stack);
+          ({ actions, payload, cleanUp }) =>
+            pipe([
+              () => actions,
+              map.pool(
+                mapPoolSize,
+                tryCatch(
+                  pipe([
+                    tap((action) => {
+                      onStateChange({
+                        context: contextFromHookAction({
+                          providerName,
+                          hookType,
+                          hookName,
+                          name: action.name,
+                        }),
+                        nextState: "RUNNING",
+                      });
+                    }),
+                    tap((action) => {
+                      assert(action.command);
+                    }),
+                    tap(callProp("command", payload)),
+                    tap((action) => {
+                      onStateChange({
+                        context: contextFromHookAction({
+                          providerName,
+                          hookType,
+                          hookName,
+                          name: action.name,
+                        }),
+                        nextState: "DONE",
+                      });
+                    }),
+                  ]),
+                  (error, action) => {
+                    logger.error(
+                      `runScriptCommands ${hookType}, error for ${action.name}`
+                    );
+                    logger.error(tos(error));
+                    error.stack && logger.error(error.stack);
 
-                  onStateChange({
-                    context: contextFromHookAction({
-                      providerName,
+                    onStateChange({
+                      context: contextFromHookAction({
+                        providerName,
+                        hookType,
+                        hookName,
+                        name: action.name,
+                      }),
+                      nextState: "ERROR",
+                      error: convertError({ error }),
+                    });
+
+                    return {
+                      error,
+                      action: action.name,
                       hookType,
                       hookName,
-                      name: action.name,
-                    }),
-                    nextState: "ERROR",
-                    error: convertError({ error }),
-                  });
-
-                  return {
-                    error,
-                    action: action.name,
-                    hookType,
-                    hookName,
-                    providerName,
-                  };
-                }
-              )
-            )(actions),
+                      providerName,
+                    };
+                  }
+                )
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+              tap(() => cleanUp(payload)),
+            ])(),
           tap((xx) => {
             logger.debug(
               `runScriptCommands ${tos({ hookName, hookType })} ${tos(xx)}`
@@ -715,13 +750,16 @@ function CoreProvider({
           assert(title, "title");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStopClient ${title}, #clients ${clients.length}`
+            `spinnersStopClient ${title}, #clients ${size(
+              clients
+            )}, error: ${error}`
           );
         }),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ providerName, title }),
             nextState: nextStateOnError(error),
+            error,
           })
         ),
       ])
@@ -819,7 +857,7 @@ function CoreProvider({
     tap(
       pipe([
         tap(() => {
-          logger.debug("spinnersStopListLives");
+          logger.debug(`spinnersStopListLives error: ${error}`);
         }),
         spinnersStopClient({
           onStateChange,
@@ -1147,10 +1185,7 @@ function CoreProvider({
           assert(meta.groupType);
 
           assert(meta.providerName);
-          //TODO do we need this ?
-          if (error) {
-            getLives().addResources({ ...meta, error });
-          }
+
           const client = getClient(meta);
           assert(client.spec);
           onStateChange({
@@ -1345,7 +1380,7 @@ function CoreProvider({
       }),
     ])();
 
-  const planUpsert = ({ onStateChange = noop }) =>
+  const planUpsert = ({ onStateChange = noop, lives }) =>
     pipe([
       tap(() => {
         logger.info(`planUpsert`);
@@ -1360,7 +1395,10 @@ function CoreProvider({
         })
       ),
       getTargetResources,
-      filter(not(get("spec.listOnly"))),
+      tap((resources) => {
+        logger.debug(`planUpsert target #resources ${size(resources)}`);
+      }),
+      //filter(not(get("spec.listOnly"))),
       tap(
         map((resource) =>
           onStateChange({
@@ -1383,7 +1421,10 @@ function CoreProvider({
               }),
               nextState: "RUNNING",
             });
-            const actions = await resource.planUpsert({ resource });
+            const actions = await resource.planUpsert({
+              resource,
+              lives: getLives(),
+            });
             onStateChange({
               context: contextFromResource({
                 operation: TitleQuery,
@@ -1513,10 +1554,19 @@ function CoreProvider({
         resultDestroy: result.resultDestroy,
       }),
       tap((result) =>
-        forEach((client) => {
-          //TODO Refactor and
-          client.onDeployed && client.onDeployed(result);
-        })(getClients())
+        pipe([
+          getClients,
+          forEach(
+            tryCatch(
+              tap.if(get("onDeployed"), callProp("onDeployed", result)),
+              (error) => {
+                logger.error(`error running client.onDeployed `);
+                logger.error(error.stack);
+                throw error;
+              }
+            )
+          ),
+        ])()
       ),
       tap((result) => {
         logger.info(`Apply done`);
@@ -1587,7 +1637,11 @@ function CoreProvider({
               engine.update({
                 payload: input,
                 live,
-                diff: engine.spec.compare({ live, target: input }),
+                diff: engine.spec.compare({
+                  live,
+                  target: input,
+                  propertiesDefault: engine.spec.propertiesDefault,
+                }),
                 resolvedDependencies,
                 lives: getLives(),
               }),
@@ -1600,7 +1654,6 @@ function CoreProvider({
                     resolvedDependencies,
                     lives: getLives(),
                   }),
-
                 tap((live) => {
                   assert(live);
                 }),
@@ -1619,10 +1672,20 @@ function CoreProvider({
                   });
                 }),
               ])(),
-            () => assert("action is not handled"),
+            eq(action, "WAIT_CREATION"),
+            ({ engine, input, resolvedDependencies }) =>
+              pipe([
+                () => ({ lives: getLives() }),
+                engine.waitForResourceUp,
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+            () => {
+              assert(false, "action is not handled");
+            },
           ]),
         }),
-
         pick(["input", "output"]),
         tap((params) => {
           assert(true);
@@ -1840,6 +1903,7 @@ function CoreProvider({
     getSpecs,
     mapNameToResource,
     generateCode,
+    targetResourcesBuildMap,
   };
 
   return pipe([

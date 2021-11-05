@@ -11,7 +11,8 @@ const {
   pick,
 } = require("rubico");
 const { includes } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinion, DecodeUserData } = require("../AwsCommon");
+
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
@@ -20,6 +21,8 @@ const {
 const {
   AutoScalingLaunchConfiguration,
 } = require("./AutoScalingLaunchConfiguration");
+
+const { AutoScalingAttachment } = require("./AutoScalingAttachment");
 
 const GROUP = "AutoScaling";
 
@@ -38,6 +41,7 @@ module.exports = () =>
         "ELBv2::LoadBalancer",
         "ELBv2::TargetGroup",
         "EKS::Cluster",
+        "IAM::Role",
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
@@ -46,8 +50,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          omit(["Tags"]),
-          omitIfEmpty(["TargetGroupARNs"]),
+          omit(["Tags", "TargetGroupARNs"]),
         ]),
         filterLive: pipe([
           tap((params) => {
@@ -73,6 +76,11 @@ module.exports = () =>
           }),
         ]),
       }),
+      propertiesDefault: {
+        HealthCheckType: "EC2",
+        DefaultCooldown: 300,
+        HealthCheckGracePeriod: 300,
+      },
       filterLive: () =>
         pick([
           "MinSize",
@@ -90,6 +98,49 @@ module.exports = () =>
           type: "LaunchConfiguration",
           group: "AutoScaling",
         },
+        serviceLinkedRole: {
+          type: "Role",
+          group: "IAM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap(() => {
+                  assert(resource);
+                  assert(resource.live);
+                }),
+                () => resource,
+                get("live.ServiceLinkedRoleARN"),
+                not(includes("AWSServiceRoleForAutoScaling")),
+              ])(),
+        },
+      }),
+    },
+    {
+      type: "AutoScalingAttachment",
+      dependsOn: ["AutoScaling::AutoScalingGroup", "ELBv2::TargetGroup"],
+      Client: AutoScalingAttachment,
+      isOurMinion: () => true,
+      compare: compare({
+        filterTarget: pipe([pick([])]),
+        filterLive: pipe([pick([])]),
+      }),
+      includeDefaultDependencies: true,
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ autoScalingGroup, targetGroup }) => {
+            assert(autoScalingGroup);
+            assert(targetGroup);
+          }),
+          ({ autoScalingGroup, targetGroup }) =>
+            `attachment::${autoScalingGroup.name}::${targetGroup.name}`,
+        ])(),
+
+      filterLive: () => pipe([pick([])]),
+      dependencies: () => ({
+        autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
       }),
     },
     {
@@ -115,6 +166,13 @@ module.exports = () =>
           ]),
         ]),
       }),
+      // propertiesDefault: {
+      //   EbsOptimized: false,
+      //   BlockDeviceMappings: [],
+      //   InstanceMonitoring: {
+      //     Enabled: true,
+      //   },
+      // },
       filterLive: () =>
         pipe([
           pick([
@@ -126,8 +184,10 @@ module.exports = () =>
             "RamdiskId",
             "BlockDeviceMappings",
             "EbsOptimized",
+            "AssociatePublicIpAddress",
           ]),
           omitIfEmpty(["KernelId", "RamdiskId"]),
+          DecodeUserData,
         ]),
       dependencies: () => ({
         instanceProfile: { type: "InstanceProfile", group: "IAM" },

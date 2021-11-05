@@ -1,0 +1,39 @@
+@startmindmap
+title Resources for project EKS Load Balancer
+skinparam monochrome true
++ Infra
+++ aws
++++ AutoScaling
+++++ AutoScalingGroup (1)
+++++ AutoScalingAttachment (2)
++++ ACM
+++++ Certificate (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ RouteTableAssociation (4)
+++++ Route (3)
+++++ SecurityGroup (4)
+++++ SecurityGroupRuleIngress (6)
+++++ ElasticIpAddress (1)
+++++ LaunchTemplate (1)
++++ EKS
+++++ Cluster (1)
+++++ NodeGroup (1)
++++ ELBv2
+++++ LoadBalancer (1)
+++++ TargetGroup (2)
+++++ Listener (2)
+++++ Rule (3)
++++ IAM
+++++ Role (2)
+++++ Policy (6)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

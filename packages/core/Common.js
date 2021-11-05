@@ -15,6 +15,7 @@ const {
   reduce,
   not,
   or,
+  switchCase,
 } = require("rubico");
 const {
   isObject,
@@ -30,6 +31,8 @@ const {
   identity,
   unless,
   isEmpty,
+  keys,
+  defaultsDeep,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -75,6 +78,47 @@ const omitIfEmpty = (paths) => (obj) =>
     }),
   ])();
 exports.omitIfEmpty = omitIfEmpty;
+
+const differenceObject = (exclude) => (target) =>
+  pipe([
+    tap(() => {
+      assert(target);
+      assert(exclude);
+    }),
+    () => target,
+    keys,
+    reduce(
+      (acc, key) =>
+        pipe([
+          switchCase([
+            () => exclude.hasOwnProperty(key),
+            switchCase([
+              () => isObject(exclude[key]),
+              pipe([
+                () => differenceObject(exclude[key])(target[key]),
+                switchCase([
+                  isEmpty,
+                  () => acc,
+                  (value) => ({ ...acc, [key]: value }),
+                ]),
+              ]),
+              switchCase([
+                eq(exclude[key], target[key]),
+                () => acc,
+                () => ({ ...acc, [key]: target[key] }),
+              ]),
+            ]),
+            () => ({ ...acc, [key]: target[key] }),
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      {}
+    ),
+  ])();
+
+exports.differenceObject = differenceObject;
 
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;
@@ -381,7 +425,17 @@ exports.compare = ({
       assert(true);
     }),
     assign({
-      target: pipe([get("target", {}), removeOurTags, filterTarget, filterAll]),
+      target: ({ target = {}, propertiesDefault }) =>
+        pipe([
+          () => target,
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep(propertiesDefault),
+          removeOurTags,
+          filterTarget,
+          filterAll,
+        ])(),
       live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
     }),
     tap((params) => {
@@ -398,9 +452,6 @@ exports.compare = ({
       liveDiff: pipe([
         () => detailedDiff(live, target),
         omitIfEmpty(["added", "updated", "deleted"]),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     }),
     tap((diff) => {

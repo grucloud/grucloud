@@ -6,9 +6,8 @@ const { retryCallOnError } = require("@grucloud/core").Retry;
 
 module.exports = ({ stacks }) => {
   assert(stacks);
-  const stackAws = find(eq(get("provider.name"), "aws"))(stacks);
-  assert(stackAws);
-  const { domainName } = stackAws.provider.config.certificate;
+  //TODO from config
+  const domainName = "grucloud.org";
   assert(domainName);
 
   const axios = Axios.create({

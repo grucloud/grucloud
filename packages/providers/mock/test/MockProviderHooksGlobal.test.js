@@ -39,13 +39,12 @@ describe("MockProviderHooksGlobal", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
+    const provider = MockProvider({ config: () => ({}), createResources });
 
     const hookGlobal = makehookGlobal({ onDeployed, onDestroyed });
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
     });
 
     await cli.planApply({
@@ -59,19 +58,19 @@ describe("MockProviderHooksGlobal", async function () {
     });
     assert(onDestroyed.init.called);
   });
-  it("onDeployed and onDestroyed called when apply fails", async function () {
+  it("global onDeployed and onDestroyed called when apply fails", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
     const hookGlobal = makehookGlobal({ onDeployed, onDestroyed });
 
     const provider = MockProvider({
+      createResources,
       config: config404,
     });
-    const resources = await createResources({ provider });
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
     });
 
     try {
@@ -97,13 +96,12 @@ describe("MockProviderHooksGlobal", async function () {
     assert(onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
+    const provider = MockProvider({ config: () => ({}), createResources });
 
     const hookGlobal = makeHookGlobalThrowInit();
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
     });
     try {
       const result = await cli.planApply({
@@ -128,13 +126,12 @@ describe("MockProviderHooksGlobal", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
+    const provider = MockProvider({ config: () => ({}), createResources });
 
     const hookGlobal = makeHookGlobalThrowInit();
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
     });
     try {
       await cli.planRunScript({
@@ -147,8 +144,7 @@ describe("MockProviderHooksGlobal", async function () {
   });
 
   it("action throw ", async function () {
-    const provider = MockProvider({ config: () => ({}) });
-    const resources = await createResources({ provider });
+    const provider = MockProvider({ config: () => ({}), createResources });
     const message = "i throw in a command";
 
     const hookGlobal = () => ({
@@ -186,7 +182,7 @@ describe("MockProviderHooksGlobal", async function () {
     });
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider, resources }], hookGlobal }),
+      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
     });
 
     try {

@@ -10,22 +10,26 @@ Manage an [ELB Listener](https://docs.aws.amazon.com/elasticloadbalancing/latest
 ### Http listener
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
+provider.ELBv2.makeListener({
+  properties: ({ config }) => ({
+    Port: 80,
+    Protocol: "HTTP",
+  }),
+  dependencies: ({ resources }) => ({
+    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
   }),
 });
 
-const listenerHttp = provider.ELBv2.makeListener({
-  name: config.ELBv2.listeners.http.name,
-  dependencies: {
-    loadBalancer,
-    targetGroup: targetGroups.web,
-  },
-  properties: () => ({
-    Port: 80,
-    Protocol: "HTTP",
+provider.ELBv2.makeListener({
+  properties: ({ config }) => ({
+    Port: 443,
+    Protocol: "HTTPS",
+  }),
+  dependencies: ({ resources }) => ({
+    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    certificate: resources.ACM.Certificate["grucloud.org"],
   }),
 });
 ```
@@ -36,7 +40,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 
 ## Source Code
 
-- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
 
 ## Dependencies
 
@@ -50,91 +54,88 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 gc l -t Listener
 ```
 
-```sh
-Listing resources on 2 providers: aws, k8s
+```txt
+Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 5/5
-✓ k8s
-  ✓ Initialising
-  ✓ Listing
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│ 2 Listener from aws                                                              │
-├────────────────┬──────────────────────────────────────────────────────────┬──────┤
-│ Name           │ Data                                                     │ Our  │
-├────────────────┼──────────────────────────────────────────────────────────┼──────┤
-│ listener-http  │ ListenerArn: arn:aws:elasticloadbalancing:eu-west-2:840… │ Yes  │
-│                │ LoadBalancerArn: arn:aws:elasticloadbalancing:eu-west-2… │      │
-│                │ Port: 80                                                 │      │
-│                │ Protocol: HTTP                                           │      │
-│                │ Certificates: []                                         │      │
-│                │ DefaultActions:                                          │      │
-│                │   - Type: forward                                        │      │
-│                │     TargetGroupArn: arn:aws:elasticloadbalancing:eu-wes… │      │
-│                │     ForwardConfig:                                       │      │
-│                │       TargetGroups:                                      │      │
-│                │         - TargetGroupArn: arn:aws:elasticloadbalancing:… │      │
-│                │           Weight: 1                                      │      │
-│                │       TargetGroupStickinessConfig:                       │      │
-│                │         Enabled: false                                   │      │
-│                │ AlpnPolicy: []                                           │      │
-│                │ Tags:                                                    │      │
-│                │   - Key: ManagedBy                                       │      │
-│                │     Value: GruCloud                                      │      │
-│                │   - Key: stage                                           │      │
-│                │     Value: dev                                           │      │
-│                │   - Key: projectName                                     │      │
-│                │     Value: starhackit                                    │      │
-│                │   - Key: CreatedByProvider                               │      │
-│                │     Value: aws                                           │      │
-│                │   - Key: Name                                            │      │
-│                │     Value: listener-http                                 │      │
-│                │                                                          │      │
-├────────────────┼──────────────────────────────────────────────────────────┼──────┤
-│ listener-https │ ListenerArn: arn:aws:elasticloadbalancing:eu-west-2:840… │ Yes  │
-│                │ LoadBalancerArn: arn:aws:elasticloadbalancing:eu-west-2… │      │
-│                │ Port: 443                                                │      │
-│                │ Protocol: HTTPS                                          │      │
-│                │ Certificates:                                            │      │
-│                │   - CertificateArn: arn:aws:acm:eu-west-2:840541460064:… │      │
-│                │ SslPolicy: ELBSecurityPolicy-2016-08                     │      │
-│                │ DefaultActions:                                          │      │
-│                │   - Type: forward                                        │      │
-│                │     TargetGroupArn: arn:aws:elasticloadbalancing:eu-wes… │      │
-│                │     ForwardConfig:                                       │      │
-│                │       TargetGroups:                                      │      │
-│                │         - TargetGroupArn: arn:aws:elasticloadbalancing:… │      │
-│                │           Weight: 1                                      │      │
-│                │       TargetGroupStickinessConfig:                       │      │
-│                │         Enabled: false                                   │      │
-│                │ AlpnPolicy: []                                           │      │
-│                │ Tags:                                                    │      │
-│                │   - Key: ManagedBy                                       │      │
-│                │     Value: GruCloud                                      │      │
-│                │   - Key: stage                                           │      │
-│                │     Value: dev                                           │      │
-│                │   - Key: projectName                                     │      │
-│                │     Value: starhackit                                    │      │
-│                │   - Key: CreatedByProvider                               │      │
-│                │     Value: aws                                           │      │
-│                │   - Key: Name                                            │      │
-│                │     Value: listener-https                                │      │
-│                │                                                          │      │
-└────────────────┴──────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 8/8
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2 ELBv2::Listener from aws                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ name: listener::load-balancer::HTTP::80                                     │
+│ managedByUs: Yes                                                            │
+│ live:                                                                       │
+│   ListenerArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:listene… │
+│   LoadBalancerArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:loa… │
+│   Port: 80                                                                  │
+│   Protocol: HTTP                                                            │
+│   Certificates: []                                                          │
+│   DefaultActions:                                                           │
+│     - Type: forward                                                         │
+│       TargetGroupArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:… │
+│       ForwardConfig:                                                        │
+│         TargetGroups:                                                       │
+│           - TargetGroupArn: arn:aws:elasticloadbalancing:us-east-1:8405414… │
+│             Weight: 1                                                       │
+│         TargetGroupStickinessConfig:                                        │
+│           Enabled: false                                                    │
+│   AlpnPolicy: []                                                            │
+│   Tags:                                                                     │
+│     - Key: gc-created-by-provider                                           │
+│       Value: aws                                                            │
+│     - Key: gc-managed-by                                                    │
+│       Value: grucloud                                                       │
+│     - Key: gc-project-name                                                  │
+│       Value: @grucloud/example-aws-elbv2-loadbalancer                       │
+│     - Key: gc-stage                                                         │
+│       Value: dev                                                            │
+│     - Key: Name                                                             │
+│       Value: listener::load-balancer::HTTP::80                              │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ name: listener::load-balancer::HTTPS::443                                   │
+│ managedByUs: Yes                                                            │
+│ live:                                                                       │
+│   ListenerArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:listene… │
+│   LoadBalancerArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:loa… │
+│   Port: 443                                                                 │
+│   Protocol: HTTPS                                                           │
+│   Certificates:                                                             │
+│     - CertificateArn: arn:aws:acm:us-east-1:840541460064:certificate/bc419… │
+│   SslPolicy: ELBSecurityPolicy-2016-08                                      │
+│   DefaultActions:                                                           │
+│     - Type: forward                                                         │
+│       TargetGroupArn: arn:aws:elasticloadbalancing:us-east-1:840541460064:… │
+│       ForwardConfig:                                                        │
+│         TargetGroups:                                                       │
+│           - TargetGroupArn: arn:aws:elasticloadbalancing:us-east-1:8405414… │
+│             Weight: 1                                                       │
+│         TargetGroupStickinessConfig:                                        │
+│           Enabled: false                                                    │
+│   AlpnPolicy: []                                                            │
+│   Tags:                                                                     │
+│     - Key: gc-created-by-provider                                           │
+│       Value: aws                                                            │
+│     - Key: gc-managed-by                                                    │
+│       Value: grucloud                                                       │
+│     - Key: gc-project-name                                                  │
+│       Value: @grucloud/example-aws-elbv2-loadbalancer                       │
+│     - Key: gc-stage                                                         │
+│       Value: dev                                                            │
+│     - Key: Name                                                             │
+│       Value: listener::load-balancer::HTTPS::443                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
-Provider: k8s
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ k8s                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────┘
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                             │
-├────────────────────┬────────────────────────────────────────────────────────────┤
-│ Listener           │ listener-http                                              │
-│                    │ listener-https                                             │
-└────────────────────┴────────────────────────────────────────────────────────────┘
-2 resources, 1 type, 2 providers
-Command "gc l -t Listener" executed in 10s
+┌────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                        │
+├─────────────────┬──────────────────────────────────────────────────────────┤
+│ ELBv2::Listener │ listener::load-balancer::HTTP::80                        │
+│                 │ listener::load-balancer::HTTPS::443                      │
+└─────────────────┴──────────────────────────────────────────────────────────┘
+2 resources, 1 type, 1 provider
+Command "gc l -t Listener" executed in 6s
 ```

@@ -112,7 +112,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Route53.makeRecord({
-    name: "distribution-alias-dev.cloudfront.aws.test.grucloud.org",
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
       distribution:
@@ -122,7 +121,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Route53.makeRecord({
-    name: "validation-dev.cloudfront.aws.test.grucloud.org.",
     dependencies: ({ resources }) => ({
       hostedZone: resources.Route53.HostedZone.devCloudfrontAwsTestGrucloudOrg,
       certificate: resources.ACM.Certificate.devCloudfrontAwsTestGrucloudOrg,

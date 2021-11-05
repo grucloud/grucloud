@@ -263,6 +263,7 @@ const createClient = ({
       assert(client.getList);
     }),
     defaultsDeep({
+      retryConfigs: { isUp: { retryDelay: 10e3, retryCount: 6 * 25 } },
       displayName: pipe([
         tap((xxx) => {
           assert(true);
@@ -284,26 +285,11 @@ const createClient = ({
       isDefault: () => false,
       managedByOther: () => false,
       isOurMinion: ({ uri, live, lives }) =>
-        pipe([
-          fork({
-            resource: () =>
-              getResourceFromLive({
-                uri,
-                live,
-                lives,
-              }),
-            resources: () => getResourcesByType(spec),
-          }),
-          ({ resource, resources }) =>
-            spec.isOurMinion({
-              resource,
-              resources,
-              live,
-              lives,
-              config,
-            }),
-        ])(),
-
+        !!getResourceFromLive({
+          uri,
+          live,
+          lives,
+        }),
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -349,13 +335,19 @@ const createClient = ({
                     )}`
                   );
                 }),
+                tap((resources) =>
+                  lives.addResources({
+                    ...client.spec,
+                    resources,
+                  })
+                ),
                 (resources) => ({ resources }),
               ])(),
             pipe([
-              pick(["message", "code", "stack", "config", "response"]),
               tap((error) => {
                 logger.error(`list error ${error.stack} `);
               }),
+              pick(["message", "code", "stack", "config", "response"]),
               (error) => ({ error }),
             ])
           ),

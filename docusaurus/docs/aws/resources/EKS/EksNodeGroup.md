@@ -10,57 +10,31 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ### Create a Node Group
 
 ```js
-const iamPolicyEKSWorkerNode = provider.IAM.usePolicy({
-  name: "AmazonEKSWorkerNodePolicy",
-  properties: () => ({
-    Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-  }),
-});
-
-const iamPolicyEC2ContainerRegistryReadOnly = provider.IAM.usePolicy({
-  name: "AmazonEC2ContainerRegistryReadOnly",
-  properties: () => ({
-    Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-  }),
-});
-
-const roleNodeGroup = provider.IAM.makeRole({
-  name: "role-node-group",
-  dependencies: {
-    policies: [iamPolicyEKSWorkerNode, iamPolicyEC2ContainerRegistryReadOnly],
-  },
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Effect: "Allow",
-          Principal: {
-            Service: "ec2.amazonaws.com",
-          },
-          Action: "sts:AssumeRole",
-        },
-      ],
+provider.EKS.makeNodeGroup({
+  name: "ng-1",
+  properties: ({ config }) => ({
+    capacityType: "ON_DEMAND",
+    scalingConfig: {
+      minSize: 1,
+      maxSize: 1,
+      desiredSize: 1,
     },
   }),
-});
-
-const cluster = {}; //See demo
-const subnetPrivate = {}; //See demo
-
-const nodeGroup = provider.EKS.makeNodeGroup({
-  name: "node-group",
-  dependencies: {
-    subnets: [subnetPrivate],
-    cluster,
-    role: roleNodeGroup,
-  },
+  dependencies: ({ resources }) => ({
+    cluster: resources.EKS.Cluster.myCluster,
+    subnets: [
+      resources.EC2.Subnet.subnetPublicUseast1A,
+      resources.EC2.Subnet.subnetPublicUseast1D,
+    ],
+    role: resources.IAM.Role.eksctlMyClusterNodegroupNg_1NodeInstanceRole,
+    launchTemplate: resources.EC2.LaunchTemplate.eksctlMyClusterNodegroupNg_1,
+  }),
 });
 ```
 
 ## Source Code Examples
 
-- [eks](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+- [eks](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/eks_basic/iac.js)
 
 ## Properties
 
@@ -70,106 +44,80 @@ const nodeGroup = provider.EKS.makeNodeGroup({
 
 - [Cluster](./EksCluster)
 - [Subnet](../EC2/Subnet)
+- [LaunchTemplate](../EC2/LaunchTemplate.md)
 - [Role](../Iam/IamRole)
 
 ## Listing
 
 ```sh
-gc l -t EKSNodeGroup
+gc l -t EKS::NodeGroup
 ```
 
 ```sh
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 4/4
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 2 EKSNodeGroup from aws                                                                              │
-├────────────────────────────┬──────────────────────────────────────────────────────────────────┬──────┤
-│ Name                       │ Data                                                             │ Our  │
-├────────────────────────────┼──────────────────────────────────────────────────────────────────┼──────┤
-│ node-group-private-cluster │ nodegroupName: node-group-private-cluster                        │ Yes  │
-│                            │ nodegroupArn: arn:aws:eks:eu-west-2:840541460064:nodegroup/clus… │      │
-│                            │ clusterName: cluster                                             │      │
-│                            │ version: 1.18                                                    │      │
-│                            │ releaseVersion: 1.18.9-20210329                                  │      │
-│                            │ createdAt: 2021-04-07T21:21:17.588Z                              │      │
-│                            │ modifiedAt: 2021-04-07T21:23:59.967Z                             │      │
-│                            │ status: ACTIVE                                                   │      │
-│                            │ capacityType: ON_DEMAND                                          │      │
-│                            │ scalingConfig:                                                   │      │
-│                            │   minSize: 1                                                     │      │
-│                            │   maxSize: 1                                                     │      │
-│                            │   desiredSize: 1                                                 │      │
-│                            │ instanceTypes:                                                   │      │
-│                            │   - "t2.medium"                                                  │      │
-│                            │ subnets:                                                         │      │
-│                            │   - "subnet-0e600c9492fbf10c7"                                   │      │
-│                            │   - "subnet-0335cd853ab7b2cd1"                                   │      │
-│                            │ amiType: AL2_x86_64                                              │      │
-│                            │ nodeRole: arn:aws:iam::840541460064:role/role-node-group         │      │
-│                            │ labels:                                                          │      │
-│                            │ resources:                                                       │      │
-│                            │   autoScalingGroups:                                             │      │
-│                            │     - name: eks-52bc571a-fcb1-ae34-12e9-690fca52780d             │      │
-│                            │   remoteAccessSecurityGroup: null                                │      │
-│                            │ diskSize: 20                                                     │      │
-│                            │ health:                                                          │      │
-│                            │   issues: []                                                     │      │
-│                            │ tags:                                                            │      │
-│                            │   ManagedBy: GruCloud                                            │      │
-│                            │   stage: dev                                                     │      │
-│                            │   projectName: @grucloud/example-module-aws-eks                  │      │
-│                            │   CreatedByProvider: aws                                         │      │
-│                            │   Name: node-group-private-cluster                               │      │
-│                            │                                                                  │      │
-├────────────────────────────┼──────────────────────────────────────────────────────────────────┼──────┤
-│ node-group-public-cluster  │ nodegroupName: node-group-public-cluster                         │ Yes  │
-│                            │ nodegroupArn: arn:aws:eks:eu-west-2:840541460064:nodegroup/clus… │      │
-│                            │ clusterName: cluster                                             │      │
-│                            │ version: 1.18                                                    │      │
-│                            │ releaseVersion: 1.18.9-20210329                                  │      │
-│                            │ createdAt: 2021-04-07T21:21:17.654Z                              │      │
-│                            │ modifiedAt: 2021-04-07T21:23:14.421Z                             │      │
-│                            │ status: ACTIVE                                                   │      │
-│                            │ capacityType: ON_DEMAND                                          │      │
-│                            │ scalingConfig:                                                   │      │
-│                            │   minSize: 1                                                     │      │
-│                            │   maxSize: 1                                                     │      │
-│                            │   desiredSize: 1                                                 │      │
-│                            │ instanceTypes:                                                   │      │
-│                            │   - "t2.medium"                                                  │      │
-│                            │ subnets:                                                         │      │
-│                            │   - "subnet-0bc901f569ce3e55c"                                   │      │
-│                            │   - "subnet-0a56a7f4e874f99fc"                                   │      │
-│                            │ amiType: AL2_x86_64                                              │      │
-│                            │ nodeRole: arn:aws:iam::840541460064:role/role-node-group         │      │
-│                            │ labels:                                                          │      │
-│                            │ resources:                                                       │      │
-│                            │   autoScalingGroups:                                             │      │
-│                            │     - name: eks-66bc571a-fcb2-fdea-6810-81680a780432             │      │
-│                            │   remoteAccessSecurityGroup: null                                │      │
-│                            │ diskSize: 20                                                     │      │
-│                            │ health:                                                          │      │
-│                            │   issues: []                                                     │      │
-│                            │ tags:                                                            │      │
-│                            │   ManagedBy: GruCloud                                            │      │
-│                            │   stage: dev                                                     │      │
-│                            │   projectName: @grucloud/example-module-aws-eks                  │      │
-│                            │   CreatedByProvider: aws                                         │      │
-│                            │   Name: node-group-public-cluster                                │      │
-│                            │                                                                  │      │
-└────────────────────────────┴──────────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 19/19
+┌───────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 EKS::NodeGroup from aws                                                                 │
+├───────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: ng-1                                                                                │
+│ managedByUs: Yes                                                                          │
+│ live:                                                                                     │
+│   nodegroupName: ng-1                                                                     │
+│   nodegroupArn: arn:aws:eks:us-east-1:1234567890:nodegroup/my-cluster/ng-1/eabe56e1-9a… │
+│   clusterName: my-cluster                                                                 │
+│   version: 1.20                                                                           │
+│   releaseVersion: 1.20.10-20211013                                                        │
+│   createdAt: 2021-10-23T15:27:06.791Z                                                     │
+│   modifiedAt: 2021-10-23T15:38:20.659Z                                                    │
+│   status: ACTIVE                                                                          │
+│   capacityType: ON_DEMAND                                                                 │
+│   scalingConfig:                                                                          │
+│     minSize: 1                                                                            │
+│     maxSize: 1                                                                            │
+│     desiredSize: 1                                                                        │
+│   instanceTypes:                                                                          │
+│     - "t3.medium"                                                                         │
+│   subnets:                                                                                │
+│     - "subnet-054f90a7bcd3875b8"                                                          │
+│     - "subnet-0666abe5c8cb6dc15"                                                          │
+│   amiType: AL2_x86_64                                                                     │
+│   nodeRole: arn:aws:iam::1234567890:role/eksctl-my-cluster-nodegroup-ng-1-NodeInstance… │
+│   labels:                                                                                 │
+│     alpha.eksctl.io/cluster-name: my-cluster                                              │
+│     alpha.eksctl.io/nodegroup-name: ng-1                                                  │
+│   resources:                                                                              │
+│     autoScalingGroups:                                                                    │
+│       - name: eks-eabe56e1-9ac4-c7f0-26bf-90bf1bcc66bc                                    │
+│     remoteAccessSecurityGroup: null                                                       │
+│   diskSize: null                                                                          │
+│   health:                                                                                 │
+│     issues: []                                                                            │
+│   updateConfig:                                                                           │
+│     maxUnavailable: 1                                                                     │
+│     maxUnavailablePercentage: null                                                        │
+│   launchTemplate:                                                                         │
+│     name: eksctl-my-cluster-nodegroup-ng-1                                                │
+│     version: 1                                                                            │
+│     id: lt-0045f65b3d11014b2                                                              │
+│   tags:                                                                                   │
+│     gc-managed-by: grucloud                                                               │
+│     gc-project-name: ex-eks-mod                                                           │
+│     gc-stage: dev                                                                         │
+│     gc-created-by-provider: aws                                                           │
+│     Name: ng-1                                                                            │
+│                                                                                           │
+└───────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                                 │
-├────────────────────┬────────────────────────────────────────────────────────────────────────────────┤
-│ EKSNodeGroup       │ node-group-private-cluster                                                     │
-│                    │ node-group-public-cluster                                                      │
-└────────────────────┴────────────────────────────────────────────────────────────────────────────────┘
-2 resources, 1 type, 1 provider
-Command "gc l -t EKSNodeGroup" executed in 10s
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                      │
+├────────────────┬─────────────────────────────────────────────────────────────────────────┤
+│ EKS::NodeGroup │ ng-1                                                                    │
+└────────────────┴─────────────────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t NodeGroup" executed in 11s
 ```

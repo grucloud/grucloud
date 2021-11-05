@@ -3,19 +3,20 @@ title Resources for project RDS Postgres
 skinparam monochrome true
 + Infra
 ++ aws
-+++ IAM
-++++ Policy (1)
 +++ EC2
 ++++ Vpc (1)
-++++ Subnet (2)
 ++++ InternetGateway (1)
+++++ Subnet (2)
 ++++ RouteTable (1)
+++++ RouteTableAssociation (2)
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
++++ IAM
+++++ Policy (1)
 +++ KMS
 ++++ Key (1)
 +++ RDS
-++++ DBInstance (1)
 ++++ DBSubnetGroup (1)
+++++ DBInstance (1)
 @endmindmap

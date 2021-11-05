@@ -7,7 +7,7 @@ const createResources = ({ provider }) => {
       State: "DISABLED",
     }),
     dependencies: ({ resources }) => ({
-      eventBus: resources.CloudWatchEvents.EventBus.busTest,
+      eventBus: resources.CloudWatchEvents.EventBus["bus-test"],
     }),
   });
 };

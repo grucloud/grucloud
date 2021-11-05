@@ -121,7 +121,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
           );
           spinnies.update(uri, {
             text: displayText(spinner.state),
-            color: "greenBright",
+            color: "blue",
             status: "spinning",
           });
         }
@@ -282,11 +282,11 @@ exports.saveToJson = ({
       assert(programOptions.workingDirectory);
     }),
     () => programOptions,
-    get("json", commandOptions.json),
+    get("json", commandOptions.inventory),
     when(
       not(isEmpty),
       pipe([
-        (json) => path.resolve(programOptions.workingDirectory, json),
+        (filename) => path.resolve(programOptions.workingDirectory, filename),
         tap((fullPath) => {
           logger.debug(`saveToJson: ${fullPath}`);
         }),

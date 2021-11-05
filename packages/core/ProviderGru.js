@@ -117,6 +117,9 @@ exports.ProviderGru = ({
     () => stacks,
     forEach(({ provider, resources, hooks }) =>
       pipe([
+        tap(() => {
+          assert(provider);
+        }),
         () => provider.register({ resources, hooks }),
         () => provider.setLives(lives),
       ])()
@@ -216,7 +219,16 @@ exports.ProviderGru = ({
         logger.info(`planQuery`);
       }),
       () => listLives({ onStateChange }),
-      () =>
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        get("error"),
+        pipe([
+          () => ({
+            lives: lives,
+          }),
+        ]),
         pipe([
           () => stacks,
           map(({ provider, isProviderUp }) => ({
@@ -254,7 +266,8 @@ exports.ProviderGru = ({
           tap((result) => {
             logger.info(`planQuery done`);
           }),
-        ])(),
+        ]),
+      ]),
     ])();
 
   const planApply = ({ plan, onStateChange, onProviderEnd = () => {} }) =>
@@ -780,17 +793,14 @@ exports.ProviderGru = ({
           `generateCode ${JSON.stringify({ commandOptions, programOptions })}`
         );
       }),
-      () => getProviders(),
+      getProviders,
       map(
         tryCatch(
           callProp("generateCode", { commandOptions, programOptions }),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(error);
-                throw error;
-              }),
-            ])()
+          (error) => {
+            logger.error("generateCode", error);
+            throw error;
+          }
         )
       ),
     ])();

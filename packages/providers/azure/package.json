@@ -5,7 +5,6 @@
   "main": "AzureProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/azure",
   "scripts": {
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "test": "mocha '../../../examples/azure/**/iac.test.js' './test/**.test.js' ",
     "coverage": "nyc npm run test"
   },
@@ -14,10 +13,12 @@
   "dependencies": {
     "@grucloud/core": "^2.3.1",
     "axios": "^0.21.1",
+    "deep-object-diff": "^1.1.0",
     "rubico": "^1.7.3"
   },
   "devDependencies": {
     "mocha": "^9.1.0",
+    "mocha-junit-reporter": "^2.0.2",
     "nyc": "^15.1.0"
   },
   "repository": {

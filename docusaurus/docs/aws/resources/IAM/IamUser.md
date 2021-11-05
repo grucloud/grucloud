@@ -8,7 +8,6 @@ Provides an Iam User
 ```js
 const iamUser = provider.IAM.makeUser({
   name: "Alice",
-  properties: () => ({}),
 });
 ```
 
@@ -17,13 +16,11 @@ const iamUser = provider.IAM.makeUser({
 ```js
 const iamGroup = provider.IAM.makeGroup({
   name: "Admin",
-  properties: () => ({}),
 });
 
 const iamUser = provider.IAM.makeUser({
   name: "Alice",
-  dependencies: { iamGroups: [iamGroup] },
-  properties: () => ({}),
+  dependencies: () => ({ iamGroups: [iamGroup] }),
 });
 ```
 

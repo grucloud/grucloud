@@ -5,9 +5,7 @@ const Axios = require("axios");
 
 const { retryCallOnError } = require("@grucloud/core").Retry;
 
-module.exports = ({ resources: { ingress } }) => {
-  assert(ingress);
-
+module.exports = ({ provider }) => {
   const axios = Axios.create({
     timeout: 15e3,
     withCredentials: true,
@@ -16,6 +14,8 @@ module.exports = ({ resources: { ingress } }) => {
   return {
     onDeployed: {
       init: async () => {
+        const resources = provider.resources();
+        const ingress = resources.Ingress.ingress;
         const ingressLive = await ingress.getLive();
         assert(ingressLive);
         const ingressIp = pipe([

@@ -17,7 +17,7 @@ const s3Bucket = provider.S3.makeBucket({
 
 const s3Object = provider.S3.makeObject({
   name: `file-test`,
-  dependencies: { bucket: s3Bucket },
+  dependencies: () => ({ bucket: s3Bucket }),
   properties: () => ({
     ACL: "public-read",
     ContentType: "text/plain",

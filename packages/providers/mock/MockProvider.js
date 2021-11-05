@@ -82,8 +82,12 @@ const fnSpecs = (config) => {
               properties,
               dependencies: { ip },
             }) => {
-              const { machineType, diskType, diskSizeGb, ...otherProperties } =
-                properties;
+              const {
+                machineType,
+                diskType = "pd-standard",
+                diskSizeGb = 10,
+                ...otherProperties
+              } = properties;
               return defaultsDeep({
                 name,
                 zone: `projects/${config.project}/zones/${config.zone}`,
@@ -116,11 +120,6 @@ const fnSpecs = (config) => {
             },
           }),
         type: "Server",
-        propertiesDefault: {
-          machineType: "f1-micro",
-          diskSizeGb: "10",
-          diskType: "pd-standard",
-        },
       },
     ],
     map(

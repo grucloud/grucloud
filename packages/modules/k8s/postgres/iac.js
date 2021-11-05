@@ -6,7 +6,7 @@ exports.hooks = [require("./hook")];
 const config = require("./config");
 exports.config = config;
 
-const createResources = async ({ provider, resources: { namespace } }) => {
+const createResources = ({ provider, resources: { namespace } }) => {
   assert(namespace, "This postgres module requires a namespace");
 
   const { postgres } = provider.config;
@@ -185,25 +185,3 @@ const createResources = async ({ provider, resources: { namespace } }) => {
   };
 };
 exports.createResources = createResources;
-// Only for "gc graph"
-
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, {
-    config: require("./config"),
-  });
-
-  const namespace = provider.makeNamespace({
-    name: "postgres",
-  });
-
-  const resources = await createResources({
-    provider,
-    resources: { namespace },
-  });
-
-  return {
-    provider,
-    resources,
-    hooks,
-  };
-};

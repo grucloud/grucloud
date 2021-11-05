@@ -10,74 +10,67 @@ Manage an AWS Load Balancer.
 ### Load Balancer in a VPC
 
 ```js
-const vpc = provider.EC2.makeVpc({
+provider.EC2.makeVpc({
   name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
+  properties: ({ config }) => ({
+    CidrBlock: "192.168.0.0/16",
   }),
 });
 
-const subnetA = provider.EC2.makeSubnet({
-  name: "subnetA",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
+provider.EC2.makeSubnet({
+  name: "subnet-a",
+  properties: ({ config }) => ({
+    CidrBlock: "192.168.0.0/19",
+    AvailabilityZone: `${config.region}a`,
+  }),
+  dependencies: ({ resources }) => ({
+    vpc: resources.EC2.Vpc["vpc"],
   }),
 });
 
-const subnetB = provider.EC2.makeSubnet({
-  name: "subnetB",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.1.1/24",
+provider.EC2.makeSubnet({
+  name: "subnet-b",
+  properties: ({ config }) => ({
+    CidrBlock: "192.168.32.0/19",
+    AvailabilityZone: `${config.region}b`,
+  }),
+  dependencies: ({ resources }) => ({
+    vpc: resources.EC2.Vpc["vpc"],
   }),
 });
 
-const securityGroup = provider.EC2.makeSecurityGroup({
-  name: "security-group-balancer",
-  dependencies: { vpc },
-  properties: () => ({
-    create: {
-      Description: "Load Balancer Security Group",
-    },
-    ingress: {
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 80,
-      },
-    },
+provider.EC2.useDefaultSecurityGroup({
+  name: "sg-default-vpc",
+  dependencies: ({ resources }) => ({
+    vpc: resources.EC2.Vpc["vpc"],
   }),
 });
 
-const loadBalancer = provider.ELBv2.makeLoadBalancer({
+provider.ELBv2.makeLoadBalancer({
   name: "load-balancer",
-  dependencies: {
-    subnets: [subnetA, subnetA],
-    securityGroups: [securityGroup],
-  },
+  properties: ({ config }) => ({
+    Scheme: "internet-facing",
+    Type: "application",
+    IpAddressType: "ipv4",
+  }),
+  dependencies: ({ resources }) => ({
+    subnets: [
+      resources.EC2.Subnet["subnet-a"],
+      resources.EC2.Subnet["subnet-b"],
+    ],
+    securityGroups: [resources.EC2.SecurityGroup["sg-default-vpc"]],
+  }),
 });
 ```
 
 ### Reference an existing Load Balancer
 
-When using the _AWS Load Balancer Controller_ to create the load balancer & associated resources, there is the need to get a reference to this load balancer. _DNSName_ and _CanonicalHostedZoneId_ are 2 pieces of information required to create a DNS record which maps a DNS name to the load balancer DNS name.
+When using the _AWS Load Balancer Controller_ to create the load balancer & associated resources, there is the need to get a reference to this load balancer.
 
 ```js
 const clusterName = "cluster";
-const domainName = "test-load-balancer.grucloud.org";
 
-const loadBalancer = provider.ELBv2.useLoadBalancer({
+provider.ELBv2.useLoadBalancer({
   name: "load-balancer",
   filterLives: ({ resources }) =>
     pipe([
@@ -93,44 +86,31 @@ const loadBalancer = provider.ELBv2.useLoadBalancer({
           ),
         ])
       ),
-      tap((lb) => {
-        // log here
-      }),
     ])(),
 });
 
-const hostedZone = provider.Route53.makeHostedZone({
-  name: `${domainName}.`,
+provider.Route53.makeHostedZone({
+  name: "grucloud.org.",
+  dependencies: ({ resources }) => ({
+    domain: resources.Route53Domains.Domain["grucloud.org"],
+  }),
 });
 
-const loadBalancerRecord = provider.Route53.makeRecord({
-  name: `dns-record-alias-load-balancer-${hostedZoneName}`,
-  dependencies: { hostedZone, loadBalancer },
-  properties: ({ dependencies }) => {
-    const hostname = dependencies.loadBalancer.live?.DNSName;
-    if (!hostname) {
-      return {
-        message: "loadBalancer not up yet",
-        Type: "A",
-        Name: hostedZone.name,
-      };
-    }
-    return {
-      Name: hostedZone.name,
-      Type: "A",
-      AliasTarget: {
-        HostedZoneId: dependencies.loadBalancer?.live.CanonicalHostedZoneId,
-        DNSName: `${hostname}.`,
-        EvaluateTargetHealth: false,
-      },
-    };
-  },
+provider.Route53.makeRecord({
+  dependencies: ({ resources }) => ({
+    hostedZone: resources.Route53.HostedZone["grucloud.org."],
+    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+  }),
+});
+
+provider.Route53Domains.useDomain({
+  name: "grucloud.org",
 });
 ```
 
 ## Source Code
 
-- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
 
 ## Dependencies
 
@@ -144,64 +124,58 @@ gc l -t LoadBalancer
 ```
 
 ```sh
-Listing resources on 2 providers: aws, k8s
+Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 3/3
-✓ k8s
-  ✓ Initialising
-  ✓ Listing
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│ 1 LoadBalancer from aws                                                          │
-├───────────────┬───────────────────────────────────────────────────────────┬──────┤
-│ Name          │ Data                                                      │ Our  │
-├───────────────┼───────────────────────────────────────────────────────────┼──────┤
-│ load-balancer │ LoadBalancerArn: arn:aws:elasticloadbalancing:eu-west-2:… │ Yes  │
-│               │ DNSName: load-balancer-298589237.eu-west-2.elb.amazonaws… │      │
-│               │ CanonicalHostedZoneId: ZHURV8PSTC4K8                      │      │
-│               │ CreatedTime: 2021-04-16T19:17:58.750Z                     │      │
-│               │ LoadBalancerName: load-balancer                           │      │
-│               │ Scheme: internet-facing                                   │      │
-│               │ VpcId: vpc-03b8d521b703d6c46                              │      │
-│               │ State:                                                    │      │
-│               │   Code: active                                            │      │
-│               │ Type: application                                         │      │
-│               │ AvailabilityZones:                                        │      │
-│               │   - ZoneName: eu-west-2a                                  │      │
-│               │     SubnetId: subnet-053363a740a209ba8                    │      │
-│               │     LoadBalancerAddresses: []                             │      │
-│               │   - ZoneName: eu-west-2b                                  │      │
-│               │     SubnetId: subnet-0a7a0a47b7130c01f                    │      │
-│               │     LoadBalancerAddresses: []                             │      │
-│               │ SecurityGroups:                                           │      │
-│               │   - "sg-07601a1066ed23072"                                │      │
-│               │ IpAddressType: ipv4                                       │      │
-│               │ Tags:                                                     │      │
-│               │   - Key: ManagedBy                                        │      │
-│               │     Value: GruCloud                                       │      │
-│               │   - Key: stage                                            │      │
-│               │     Value: dev                                            │      │
-│               │   - Key: projectName                                      │      │
-│               │     Value: starhackit                                     │      │
-│               │   - Key: CreatedByProvider                                │      │
-│               │     Value: aws                                            │      │
-│               │   - Key: Name                                             │      │
-│               │     Value: load-balancer                                  │      │
-│               │                                                           │      │
-└───────────────┴───────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 5/5
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1 ELBv2::LoadBalancer from aws                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ name: load-balancer                                                         │
+│ managedByUs: Yes                                                            │
+│ live:                                                                       │
+│   LoadBalancerArn: arn:aws:elasticloadbalancing:us-east-1:123456789123:loa… │
+│   DNSName: load-balancer-742239368.us-east-1.elb.amazonaws.com              │
+│   CanonicalHostedZoneId: Z35SXDOTRQ7X7K                                     │
+│   CreatedTime: 2021-10-29T17:13:03.430Z                                     │
+│   LoadBalancerName: load-balancer                                           │
+│   Scheme: internet-facing                                                   │
+│   VpcId: vpc-055bc1b8bdcbd18ac                                              │
+│   State:                                                                    │
+│     Code: active                                                            │
+│   Type: application                                                         │
+│   AvailabilityZones:                                                        │
+│     - ZoneName: us-east-1a                                                  │
+│       SubnetId: subnet-05ee2729854925587                                    │
+│       LoadBalancerAddresses: []                                             │
+│     - ZoneName: us-east-1b                                                  │
+│       SubnetId: subnet-0ec0f9a0cec61d35b                                    │
+│       LoadBalancerAddresses: []                                             │
+│   SecurityGroups:                                                           │
+│     - "sg-0111f30f176535b9d"                                                │
+│   IpAddressType: ipv4                                                       │
+│   Tags:                                                                     │
+│     - Key: gc-created-by-provider                                           │
+│       Value: aws                                                            │
+│     - Key: gc-managed-by                                                    │
+│       Value: grucloud                                                       │
+│     - Key: gc-project-name                                                  │
+│       Value: @grucloud/example-aws-elbv2-loadbalancer                       │
+│     - Key: gc-stage                                                         │
+│       Value: dev                                                            │
+│     - Key: Name                                                             │
+│       Value: load-balancer                                                  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
-Provider: k8s
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ k8s                                                                             │
-└─────────────────────────────────────────────────────────────────────────────────┘
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                             │
-├────────────────────┬────────────────────────────────────────────────────────────┤
-│ LoadBalancer       │ load-balancer                                              │
-└────────────────────┴────────────────────────────────────────────────────────────┘
-1 resource, 1 type, 2 providers
-Command "gc l -t LoadBalancer" executed in 7s
+┌────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                        │
+├─────────────────────┬──────────────────────────────────────────────────────┤
+│ ELBv2::LoadBalancer │ load-balancer                                        │
+└─────────────────────┴──────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t LoadBalancer" executed in 6s
 ```

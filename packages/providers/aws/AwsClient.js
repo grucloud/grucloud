@@ -12,6 +12,7 @@ const {
   filter,
   any,
   or,
+  eq,
 } = require("rubico");
 const {
   pluck,
@@ -364,6 +365,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       isInstanceDown = isEmpty,
       ignoreError = () => false,
       ignoreErrorCodes = [],
+      shouldRetryOnException = eq(get("error.code"), "ResourceInUseException"),
       config,
     }) =>
     ({ name, live, lives }) =>
@@ -385,13 +387,13 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               );
             }),
             defaultsDeep(extraParam),
-            tap((params) => {
-              assert(true);
-            }),
-            endpoint()[method],
-            tap((params) => {
-              assert(true);
-            }),
+            (params) =>
+              retryCall({
+                name: `destroying ${type}`,
+                fn: pipe([() => params, endpoint()[method]]),
+                config,
+                shouldRetryOnException,
+              }),
             () => live,
             tap(postDestroy),
             tap.if(

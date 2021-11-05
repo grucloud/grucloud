@@ -12,6 +12,8 @@ const {
   fork,
   filter,
   tryCatch,
+  any,
+  or,
 } = require("rubico");
 const Axios = require("axios");
 const { pluck, when, callProp, isEmpty, values, groupBy } = require("rubico/x");
@@ -19,6 +21,8 @@ const { pluck, when, callProp, isEmpty, values, groupBy } = require("rubico/x");
 const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
+
+const ignoredTags = ["aws", "alpha.eksctl.io", "eksctl.cluster.k8s.io", "eks"];
 
 const { removeOurTags } = require("@grucloud/core/Common");
 
@@ -28,7 +32,6 @@ const {
   readMapping,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
-const { iacTpl } = require("./iacTpl");
 
 const bucketFileNameFromLive = ({ live: { Name }, commandOptions }) =>
   `s3/${Name}/`;
@@ -160,6 +163,12 @@ const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
       ])(),
   ])();
 
+const ignoreTags = (key) =>
+  pipe([
+    () => ignoredTags,
+    any((ingnoredTag) => key.startsWith(ingnoredTag)),
+  ])();
+
 const filterModel = pipe([
   map(
     assign({
@@ -176,19 +185,17 @@ const filterModel = pipe([
                 assert(true);
               }),
               filter(
-                and([
-                  pipe([
-                    get("Key"),
-                    when(isEmpty, get("key")),
-                    when(isEmpty, get("TagKey")),
-                    switchCase([
-                      isEmpty,
-                      () => true,
-                      not(callProp("startsWith", "aws")),
+                not(
+                  or([
+                    pipe([
+                      get("Key"),
+                      when(isEmpty, get("key")),
+                      when(isEmpty, get("TagKey")),
+                      switchCase([isEmpty, () => false, ignoreTags]),
                     ]),
-                  ]),
-                  not(get("ResourceId")),
-                ])
+                    get("ResourceId"),
+                  ])
+                )
               ),
             ]),
           })
@@ -235,7 +242,6 @@ exports.generateCode = ({
               providerConfig,
               commandOptions,
               programOptions,
-              iacTpl,
               configTpl,
               filterModel,
             }),

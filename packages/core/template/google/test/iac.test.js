@@ -1,10 +1,10 @@
-const assert = require("assert");
+const pkg = require("../package.json");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-const title = "Gcp Template";
+const title = pkg.name;
 
 describe(title, async function () {
   it("run", async function () {

@@ -23,7 +23,7 @@ const createResources = ({ provider }) => {
           {
             destinations: [
               {
-                region: "us-east-1",
+                region: "us-east-2",
                 registryId: config.accountId(),
               },
             ],

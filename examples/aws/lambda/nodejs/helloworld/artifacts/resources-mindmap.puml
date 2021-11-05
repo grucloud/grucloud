@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ IAM
-++++ Policy (1)
 ++++ Role (1)
+++++ Policy (1)
 +++ Lambda
 ++++ Layer (1)
 ++++ Function (1)

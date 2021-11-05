@@ -15,8 +15,8 @@ const createResources = ({ provider }) => {
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
     dependencies: ({ resources }) => ({
-      dbSubnetGroup: resources.RDS.DBSubnetGroup.subnetGroupPostgres,
-      securityGroups: [resources.EC2.SecurityGroup.securityGroup],
+      dbSubnetGroup: resources.RDS.DBSubnetGroup["subnet-group-postgres"],
+      securityGroups: [resources.EC2.SecurityGroup["security-group"]],
     }),
   });
 };

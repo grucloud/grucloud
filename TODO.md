@@ -1,7 +1,6 @@
 ## Bugs
 
-- inferName for SecurityGroup, Route53Record
-- resource schema
+- gc d -f -a: APIGateway::DomainName 1/2 in grey
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -13,8 +12,6 @@
   backup data.
   privacy policy
   resource table styling
-
-- SecurityGroup self
 
 ## Common:
 
@@ -41,14 +38,15 @@
 
 ## Azure
 
+- gc new :
+  az provider register --namespace Microsoft.Network
+  az provider register --namespace Microsoft.Compute
+
 - virtualNetworks::Subnet 0/1 Request failed with status code 400 Subnet subnet is in use by /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups
   /resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig and cannot be deleted. In order to delete the subnet, delete
   all the resources within the subnet. See aka.ms/deletesubnet.
 
 - remove NetworkWatcherRG from list
-- check resource group name
-- check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
-
 - doc
 
 ## Aws2gc
@@ -58,12 +56,15 @@
 
 ## Aws
 
-- Optional name
+- inferName for SecurityGroup, and Route Table
+- Nat gateway handle deleting
+- Internet gateway getByName with Filter tags
+- EC2 Instance placement
+- Route display internet gateway or nat gateway in configDefault
+- resource schema
 
 - Lambda env var dependencies with DynamoDB table
 - Policy dependencies with other resources: DynamoDB table
-
-- gc d -f -a: ✖ ec2::NetworkInterface 0/1 Network interface 'eni-0f496fb1a5988286d' is currently in use.
 
 - ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
   4:key/79507edb-c301-43a8-8217-524d24f6daa7
@@ -92,8 +93,6 @@
 
 - aws.config.loadFromPath('./AwsConfig.json');
 
-- error padend
-
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
 
@@ -104,6 +103,12 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+- fix cannotBeDeleted for Disk:
+
+- ✖ Destroying  
+   ✖ compute::Disk 0/1 Request failed with status code 400 The disk resource 'projects/grucloud-test/zones/southamerica-east1-b/disks/instance-1' is already being used by 'projects/grucloud-test/zones/southamerica-east1-b/instances/instance-1'
+  ✓ compute::VmInstance 1/1
 
 - examples vm-ssh key: create key pair with https://github.com/juliangruber/keypair
 

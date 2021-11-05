@@ -13,10 +13,22 @@ const {
   or,
   any,
   switchCase,
+  filter,
 } = require("rubico");
-const { when, pluck, identity, includes, isEmpty } = require("rubico/x");
+const {
+  when,
+  first,
+  unless,
+  pluck,
+  identity,
+  includes,
+  isEmpty,
+  find,
+  last,
+  append,
+} = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinion, DecodeUserData } = require("../AwsCommon");
 
 const {
   hasDependency,
@@ -33,7 +45,8 @@ const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
-const { AwsRouteTable } = require("./AwsRouteTable");
+const { EC2RouteTable } = require("./EC2RouteTable");
+const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
 const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
@@ -53,6 +66,25 @@ const GROUP = "EC2";
 
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = pipe([omit(["Tags"])]);
+
+const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
+  pipe([
+    tap(() => {
+      assert(resources);
+      assert(dependencies);
+      assert(dependencies.vpc);
+    }),
+    () => resources,
+    find(
+      and([
+        get("isDefault"),
+        eq(get("live.VpcId"), get("vpc.live.VpcId")(dependencies)),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
@@ -110,6 +142,18 @@ const ec2InstanceDependencies = () => ({
   },
 });
 
+const buildAvailabilityZone = pipe([
+  get("AvailabilityZone"),
+  tap((params) => {
+    assert(true);
+  }),
+  last,
+  (az) => () => "`${config.region}" + az + "`",
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -155,7 +199,12 @@ module.exports = () =>
         ]),
       }),
       filterLive: () =>
-        pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+        pipe([
+          pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
+          assign({
+            AvailabilityZone: buildAvailabilityZone,
+          }),
+        ]),
       //TODO do we need that ?
       ignoreResource:
         ({ lives }) =>
@@ -190,7 +239,8 @@ module.exports = () =>
     },
     {
       type: "Vpc",
-      dependsOn: ["IAM::User", "IAM::Group"],
+      //TODO only for delete
+      //dependsOn: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
       compare: compare({
@@ -215,6 +265,7 @@ module.exports = () =>
           ]),
         ]),
       }),
+      propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
     },
     {
@@ -288,15 +339,24 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      propertiesDefault: {
+        MapPublicIpOnLaunch: false,
+        MapCustomerOwnedIpOnLaunch: false,
+      },
       filterLive: () =>
-        pick([
-          "CidrBlock",
-          "Ipv6CidrBlock",
-          "AvailabilityZone",
-          "MapPublicIpOnLaunch",
-          "CustomerOwnedIpv4Pool",
-          "MapCustomerOwnedIpOnLaunch",
-          "MapPublicIpOnLaunch",
+        pipe([
+          pick([
+            "CidrBlock",
+            "Ipv6CidrBlock",
+            "AvailabilityZone",
+            "MapPublicIpOnLaunch",
+            "CustomerOwnedIpv4Pool",
+            "MapCustomerOwnedIpOnLaunch",
+            "MapPublicIpOnLaunch",
+          ]),
+          assign({
+            AvailabilityZone: buildAvailabilityZone,
+          }),
         ]),
       dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
       //TODO remove ?
@@ -304,8 +364,8 @@ module.exports = () =>
     },
     {
       type: "RouteTable",
-      dependsOn: ["EC2::Vpc", "EC2::Subnet"],
-      Client: AwsRouteTable,
+      dependsOn: ["EC2::Vpc"],
+      Client: EC2RouteTable,
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["VpcId"])]),
@@ -321,12 +381,54 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      includeDefaultDependencies: true,
+      findDefault: findDefaultWithVpcDependency,
       filterLive: () => pick([]),
       ignoreResource: (input) =>
-        pipe([and([get("isDefault"), pipe([get("usedBy"), isEmpty])])]),
+        pipe([
+          and([
+            get("isDefault"),
+            pipe([
+              get("usedBy"),
+              filter(not(get("managedByOther"))),
+              tap((params) => {
+                assert(true);
+              }),
+              isEmpty,
+            ]),
+          ]),
+        ]),
       dependencies: () => ({
         vpc: { type: "Vpc", group: "EC2" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
+      }),
+    },
+    {
+      type: "RouteTableAssociation",
+      dependsOn: ["EC2::RouteTable", "EC2::Subnet"],
+      Client: EC2RouteTableAssociation,
+      isOurMinion: () => () => true,
+      compare: compare({
+        filterTarget: filterTargetDefault,
+        filterLive: pipe([
+          pick(["RouteTableId", "SubnetId"]),
+          filterLiveDefault,
+        ]),
+      }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ routeTable, subnet }) => {
+            assert(routeTable);
+            assert(subnet);
+          }),
+          ({ routeTable, subnet }) =>
+            `rt-assoc::${routeTable.name}::${subnet.name}`,
+        ])(),
+      filterLive: () => pick([]),
+      includeDefaultDependencies: true,
+      dependencies: () => ({
+        routeTable: { type: "RouteTable", group: "EC2" },
+        subnet: { type: "Subnet", group: "EC2" },
       }),
     },
     {
@@ -349,7 +451,26 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
-
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ routeTable }) => {
+            assert(routeTable);
+          }),
+          ({ routeTable, ig, natGateway }) =>
+            pipe([
+              () => routeTable.name,
+              switchCase([
+                () => ig,
+                append("-igw"),
+                () => natGateway,
+                append("-nat-gateway"),
+                () => {
+                  throw Error("missing 'ig' or 'natGateway' dependency");
+                },
+              ]),
+            ])(),
+        ])(),
       includeDefaultDependencies: true,
       dependencies: () => ({
         routeTable: { type: "RouteTable", group: "EC2" },
@@ -362,12 +483,54 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
       isOurMinion,
+      includeDefaultDependencies: true,
+      findDefault: findDefaultWithVpcDependency,
       compare: compare({
         filterTarget: pipe([pick(["Description"]), filterTargetDefault]),
         filterLive: pipe([pick(["Description"])]),
       }),
       filterLive: () => pick(["Description"]),
-      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      dependencies: () => ({
+        vpc: { type: "Vpc", group: "EC2" },
+        eksCluster: {
+          type: "Cluster",
+          group: "EKS",
+        },
+      }),
+      addCode: ({ resource, lives }) =>
+        pipe([
+          () => resource,
+          get("dependencies"),
+          find(eq(get("type"), "Cluster")),
+          get("ids"),
+          first,
+          unless(isEmpty, (id) =>
+            pipe([
+              () => lives,
+              find(eq(get("id"), id)),
+              get("name"),
+              tap((name) => {
+                assert(name, "cannot found cluster");
+              }),
+              (name) => `
+                filterLives: ({ resources }) =>
+                  pipe([
+                    () => resources,
+                    find(
+                      pipe([
+                        get("live.Tags"),
+                        find(
+                          and([
+                            eq(get("Key"), "aws:eks:cluster-name"),
+                            eq(get("Value"), "${name}"),
+                          ])
+                        ),
+                      ])
+                    ),
+                  ])(),`,
+            ])()
+          ),
+        ])(),
     },
     {
       type: "SecurityGroupRuleIngress",
@@ -402,10 +565,7 @@ module.exports = () =>
                   assert(resource.live.GroupId);
                 }),
                 get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
-                and([
-                  eq(identity, dependency.live.GroupId),
-                  not(eq(resource.live.GroupId, dependency.live.GroupId)),
-                ]),
+                eq(identity, dependency.live.GroupId),
               ])(),
         },
       }),
@@ -424,7 +584,7 @@ module.exports = () =>
     },
     {
       type: "ElasticIpAddress",
-      dependsOn: ["EC2::InternetGateway", "EC2::NetworkInterface"],
+      dependsOn: ["EC2::InternetGateway" /*, "EC2::NetworkInterface"*/],
       Client: AwsElasticIpAddress,
       isOurMinion,
       compare: compare({
@@ -454,14 +614,13 @@ module.exports = () =>
         "EC2::Subnet",
         "EC2::ElasticIpAddress",
         "EC2::Volume",
-        "EC2::NetworkInterface",
+        /*"EC2::NetworkInterface",*/
         "EC2::InternetGateway",
         "IAM::InstanceProfile",
       ],
       Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
-        InstanceType: "t2.micro",
         MaxCount: 1,
         MinCount: 1,
       },
@@ -473,21 +632,7 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          when(
-            get("UserData"),
-            assign({
-              UserData: pipe([
-                get("UserData"),
-                tap((params) => {
-                  assert(true);
-                }),
-                (UserData) => Buffer.from(UserData, "base64").toString(),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-            })
-          ),
+          DecodeUserData,
         ]),
       dependencies: ec2InstanceDependencies,
     },
@@ -500,6 +645,7 @@ module.exports = () =>
         "IAM::InstanceProfile",
       ],
       Client: EC2LaunchTemplate,
+      includeDefaultDependencies: true,
       isOurMinion,
       compare: compare({
         filterTarget: pipe([omit(["LaunchTemplateData"]), filterTargetDefault]),
@@ -517,36 +663,46 @@ module.exports = () =>
           filterLiveDefault,
         ]),
       }),
+      propertiesDefault: {
+        LaunchTemplateData: { EbsOptimized: false },
+      },
       filterLive: () =>
         pipe([
           pick(["LaunchTemplateData"]),
-          omitIfEmpty([
-            "LaunchTemplateData.BlockDeviceMappings",
-            "LaunchTemplateData.ElasticGpuSpecifications",
-            "LaunchTemplateData.ElasticInferenceAccelerators",
-            "LaunchTemplateData.SecurityGroups",
-            "LaunchTemplateData.LicenseSpecifications",
-            "LaunchTemplateData.TagSpecifications",
-          ]),
-          omit([
-            "LaunchTemplateData.NetworkInterfaces",
-            "LaunchTemplateData.SecurityGroupIds",
-            "LaunchTemplateData.IamInstanceProfile",
-          ]),
+          assign({
+            LaunchTemplateData: pipe([
+              get("LaunchTemplateData"),
+              omitIfEmpty([
+                "BlockDeviceMappings",
+                "ElasticGpuSpecifications",
+                "ElasticInferenceAccelerators",
+                "SecurityGroups",
+                "LicenseSpecifications",
+                "TagSpecifications",
+              ]),
+              omit([
+                "NetworkInterfaces",
+                "SecurityGroupIds",
+                "IamInstanceProfile",
+                "KeyName",
+              ]),
+              DecodeUserData,
+            ]),
+          }),
         ]),
       dependencies: ec2InstanceDependencies,
     },
 
-    {
-      type: "NetworkInterface",
-      dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
-      Client: AwsNetworkInterface,
-      isOurMinion,
-      compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
-        filterLive: pipe([filterLiveDefault]),
-      }),
-    },
+    // {
+    //   type: "NetworkInterface",
+    //   //dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
+    //   Client: AwsNetworkInterface,
+    //   isOurMinion,
+    //   compare: compare({
+    //     filterTarget: pipe([filterTargetDefault]),
+    //     filterLive: pipe([filterLiveDefault]),
+    //   }),
+    // },
     {
       type: "NetworkAcl",
       Client: AwsNetworkAcl,

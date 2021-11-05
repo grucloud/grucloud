@@ -1,16 +1,19 @@
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const ModuleCertManager = require("../iac");
 
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, {
-    configs: [require("./config"), ModuleCertManager.config],
-    manifests: [...(await ModuleCertManager.loadManifest())],
-  });
-
+const createResources = async ({ provider }) => {
   const namespace = provider.makeNamespace({
     name: "example",
   });
 
   const resources = await ModuleCertManager.createResources({ provider });
-  return { provider, resources: { namespace, ...resources } };
+};
+exports.createStack = async ({ createProvider }) => {
+  const provider = await createProvider(K8sProvider, {
+    createResources,
+    configs: [require("./config"), ModuleCertManager.config],
+    manifests: [...(await ModuleCertManager.loadManifest())],
+  });
+
+  return { provider };
 };

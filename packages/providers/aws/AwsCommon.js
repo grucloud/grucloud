@@ -56,16 +56,22 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
+            tap(() => {
+              logger.info(
+                `shouldRetryOnException: ${name}, code: ${error.code}`
+              );
+            }),
             () => [
               "Throttling",
               "UnknownEndpoint",
               "TooManyRequestsException",
               "OperationAborted",
               "TimeoutError",
+              "ServiceUnavailable",
             ],
             includes(error.code),
             tap.if(identity, () => {
-              logger.debug(
+              logger.info(
                 `shouldRetryOnException: ${name}: retrying, code: ${error.code}`
               );
             }),
@@ -134,6 +140,16 @@ exports.shouldRetryOnException = ({ error, name }) =>
       logger.error(`aws shouldRetryOnException ${name}, retry: ${retry}`);
     }),
   ])();
+
+exports.DecodeUserData = when(
+  get("UserData"),
+  assign({
+    UserData: pipe([
+      get("UserData"),
+      (UserData) => Buffer.from(UserData, "base64").toString(),
+    ]),
+  })
+);
 
 exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
   pipe([

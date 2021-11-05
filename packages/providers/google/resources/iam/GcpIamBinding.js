@@ -14,7 +14,14 @@ const {
   omit,
 } = require("rubico");
 
-const { find, defaultsDeep, isDeepEqual, uniq, identity } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  isDeepEqual,
+  uniq,
+  identity,
+  callProp,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const { retryCallOnError } = require("@grucloud/core/Retry");
@@ -57,6 +64,34 @@ exports.GcpIamBinding = ({ spec, config }) => {
     url: `/projects/${projectId}`,
     config,
   });
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "ServiceAccount",
+      group: "iam",
+      ids: pipe([
+        () => live,
+        get("members"),
+        filter(callProp("startsWith", "serviceAccount:")),
+        map(
+          pipe([
+            callProp("replace", "serviceAccount:", ""),
+            (email) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "ServiceAccount",
+                    group: "iam",
+                  }),
+                find(eq(get("live.email"), email)),
+                get("id"),
+              ])(),
+          ])
+        ),
+      ])(),
+    },
+  ];
 
   const configDefault = ({ name, properties, dependencies }) =>
     pipe([
@@ -215,6 +250,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
     configDefault,
     cannotBeDeleted,
     shouldRetryOnException,
+    findDependencies,
   };
 };
 

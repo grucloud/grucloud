@@ -1,4 +1,5 @@
-const { pipe, assign, map, omit, pick, get } = require("rubico");
+const { pipe, assign, map, omit, pick, get, eq, and } = require("rubico");
+const { isEmpty, identity, first, when, size } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { compare } = require("@grucloud/core/Common");
 

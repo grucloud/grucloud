@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
-const createResources = async ({ provider }) => {
+const createResources = ({ provider }) => {
   const { config } = provider;
   const { topLevelDomain, subDomainName = "", recordTxtValue } = config;
   assert(topLevelDomain);
@@ -34,16 +34,12 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AwsProvider, {
+    createResources,
     config: require("./config"),
-  });
-
-  const resources = await createResources({
-    provider,
   });
 
   return {
     provider,
-    resources,
     hooks: [hook],
   };
 };

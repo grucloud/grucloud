@@ -5,16 +5,13 @@ const createResources = ({ provider }) => {
       MinSize: 1,
       MaxSize: 2,
       DesiredCapacity: 1,
-      DefaultCooldown: 300,
-      HealthCheckType: "EC2",
-      HealthCheckGracePeriod: 300,
     }),
     dependencies: ({ resources }) => ({
       subnets: [
-        resources.EC2.Subnet.pubSubnetAz1,
-        resources.EC2.Subnet.pubSubnetAz2,
+        resources.EC2.Subnet["PubSubnetAz1"],
+        resources.EC2.Subnet["PubSubnetAz2"],
       ],
-      launchTemplate: resources.EC2.LaunchTemplate.ltEc2Micro,
+      launchTemplate: resources.EC2.LaunchTemplate["lt-ec2-micro"],
     }),
   });
 };

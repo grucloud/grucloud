@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, tryCatch, get, switchCase, pick, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  pick,
+  map,
+  assign,
+} = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -13,12 +22,7 @@ const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchConfiguration",
 });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -213,6 +217,10 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
           () => securityGroups,
           map((securityGroup) => getField(securityGroup, "GroupId")),
         ])(),
+      }),
+      assign({
+        UserData: ({ UserData }) =>
+          Buffer.from(UserData, "utf-8").toString("base64"),
       }),
       tap((params) => {
         assert(true);

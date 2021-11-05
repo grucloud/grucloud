@@ -6,10 +6,8 @@ const createResources = ({ provider }) => {
     name: "lt-ec2-micro",
     properties: () => ({
       LaunchTemplateData: {
-        EbsOptimized: false,
         ImageId: "ami-0d26eb3972b7f8c96",
         InstanceType: "t2.small",
-        KeyName: "kp-ecs",
       },
     }),
     dependencies: ({ resources }) => ({

@@ -157,6 +157,9 @@ module.exports = () =>
           "IdentityValidationExpression",
           "JwtConfiguration",
         ]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+      }),
     },
     {
       type: "ApiMapping",
@@ -173,6 +176,11 @@ module.exports = () =>
             assert(properties);
           }),
           dependencies,
+          tap(({ domainName, api, stage }) => {
+            assert(domainName);
+            assert(api);
+            assert(stage);
+          }),
           ({ domainName, api, stage }) =>
             `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
           tap((params) => {
@@ -298,6 +306,11 @@ module.exports = () =>
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
+      dependencies: () => ({
+        api: { type: "Api", group: "ApiGatewayV2" },
+        integration: { type: "Integration", group: "ApiGatewayV2" },
+        authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
+      }),
     },
     {
       type: "Deployment",

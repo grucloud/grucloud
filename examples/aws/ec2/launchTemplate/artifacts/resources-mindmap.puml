@@ -3,14 +3,13 @@ title Resources for project launchTemplate
 skinparam monochrome true
 + Infra
 ++ aws
-+++ IAM
-++++ Role (1)
-++++ InstanceProfile (1)
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
 ++++ KeyPair (1)
+++++ Vpc (1)
 ++++ SecurityGroup (1)
 ++++ SecurityGroupRuleIngress (1)
 ++++ LaunchTemplate (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 @endmindmap

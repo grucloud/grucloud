@@ -1,0 +1,24 @@
+@startmindmap
+title Resources for project EKS Simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ RouteTableAssociation (4)
+++++ Route (3)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (3)
+++++ ElasticIpAddress (1)
+++++ LaunchTemplate (1)
++++ EKS
+++++ Cluster (1)
+++++ NodeGroup (1)
++++ IAM
+++++ Role (2)
+++++ Policy (6)
+@endmindmap

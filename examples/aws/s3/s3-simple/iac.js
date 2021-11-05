@@ -46,7 +46,9 @@ const createResources = async ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, { config: require("./config") });
-  const resources = await createResources({ provider });
-  return { provider, resources, hooks: [hook] };
+  const provider = await createProvider(AwsProvider, {
+    createResources,
+    config: require("./config"),
+  });
+  return { provider, hooks: [hook] };
 };
