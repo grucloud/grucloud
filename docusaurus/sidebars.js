@@ -27,7 +27,7 @@ module.exports = {
       type: "category",
       label: "Modules",
       collapsed: true,
-      items: ["aws/AwsModules", "k8s/K8sModules"],
+      items: ["k8s/K8sModules"],
     },
     {
       type: "category",
@@ -120,6 +120,7 @@ module.exports = {
       collapsed: true,
       items: [
         "cli/gc",
+        "cli/New",
         "cli/Init",
         "cli/PlanQuery",
         "cli/PlanApply",
