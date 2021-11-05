@@ -52,13 +52,16 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pipe([
         tap(() => {
           assert(method);
-          logger.info(`getById ${type} ${JSON.stringify(params)}`);
+          logger.debug(`getById ${type} ${JSON.stringify(params)}`);
         }),
         tryCatch(
           pipe([
             () => params,
             pickId,
             defaultsDeep(extraParams),
+            tap((params) => {
+              logger.info(`getById ${type} ${JSON.stringify(params)}`);
+            }),
             endpoint()[method],
             tap((params) => {
               assert(true);

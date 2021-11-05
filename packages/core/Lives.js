@@ -44,7 +44,7 @@ exports.createLives = (livesRaw = []) => {
       () => mapPerProvider.get(providerName) || new Map(),
       (mapPerType) => mapPerType.get(JSON.stringify({ type, group })),
       tap.if(isEmpty, () => {
-        logger.info(
+        logger.debug(
           `getByType cannot find type ${group}::${type} on provider ${providerName}`
         );
       }),
