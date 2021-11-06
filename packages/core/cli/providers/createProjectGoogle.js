@@ -10,7 +10,15 @@ const {
   tryCatch,
   fork,
 } = require("rubico");
-const { findIndex, append, when, isEmpty, identity } = require("rubico/x");
+const {
+  findIndex,
+  append,
+  when,
+  isEmpty,
+  identity,
+  includes,
+  callProp,
+} = require("rubico/x");
 const prompts = require("prompts");
 const path = require("path");
 const fs = require("fs").promises;
@@ -88,7 +96,7 @@ const initialProjectIndex = ({ projectCurrent, choices }) =>
     () => choices,
     findIndex(eq(get("value"), projectCurrent)),
     when(eq(identity, -1), () => 0),
-  ]);
+  ])();
 
 const promptGoogleProjectId = pipe([
   () => `config get-value project`,
@@ -115,12 +123,13 @@ const promptGoogleProjectId = pipe([
       get("projectId"),
     ])(),
 ]);
+
 const initialRegionIndex = ({ regionCurrent, regions }) =>
   pipe([
     () => regions,
     findIndex(eq(get("name"), regionCurrent)),
     when(eq(identity, -1), () => 0),
-  ]);
+  ])();
 
 const promptRegion = pipe([
   fork({
@@ -152,6 +161,55 @@ const promptRegion = pipe([
       }),
       prompts,
       get("region"),
+    ])(),
+]);
+
+const initialZoneIndex = ({ zoneCurrent, zones }) =>
+  pipe([
+    tap(() => {
+      assert(zoneCurrent);
+      assert(zones);
+    }),
+    () => zones,
+    findIndex(eq(get("name"), zoneCurrent)),
+    when(eq(identity, -1), () => 0),
+  ])();
+
+const promptZone = pipe([
+  assign({
+    zoneCurrent: pipe([
+      () => `config get-value compute/zone`,
+      gcloudExecCommand(),
+      when(isEmpty, () => undefined),
+    ]),
+  }),
+  assign({
+    zones: ({ region }) =>
+      pipe([
+        () => `compute zones list`,
+        gcloudExecCommand(),
+        filter(pipe([get("region"), includes(region)])),
+        callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+      ])(),
+  }),
+  ({ zoneCurrent, zones }) =>
+    pipe([
+      () => zones,
+      map(({ name, description }) => ({
+        title: name,
+        description: description,
+        value: name,
+      })),
+      (choices) => ({
+        type: "autocomplete",
+        limit: 40,
+        name: "zone",
+        message: "Select the zone",
+        choices,
+        initial: initialZoneIndex({ zoneCurrent, zones }),
+      }),
+      prompts,
+      get("zone"),
     ])(),
 ]);
 
@@ -197,6 +255,16 @@ exports.createProjectGoogle = pipe([
         assert(region);
       }),
       ({ region }) => `config set compute/region ${region}`,
+      gcloudExecCommand(),
+    ])
+  ),
+  assign({ zone: promptZone }),
+  tap(
+    pipe([
+      tap(({ zone }) => {
+        assert(zone);
+      }),
+      ({ zone }) => `config set compute/zone ${zone}`,
       gcloudExecCommand(),
     ])
   ),
