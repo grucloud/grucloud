@@ -329,7 +329,7 @@ const createClient = ({
                   lives,
                 }),
                 tap((resources) => {
-                  logger.debug(
+                  logger.info(
                     `getLives ${client.spec.groupType} #resources ${size(
                       resources
                     )}`

@@ -150,7 +150,7 @@ exports.createLives = (livesRaw = []) => {
       assert(type);
       assert(groupType);
       assert(Array.isArray(resources) || latestError);
-      logger.debug(
+      logger.info(
         `live addResources ${JSON.stringify({
           providerName,
           group,

@@ -157,9 +157,8 @@ exports.testEnd2End = ({
     ]),
     (error) => {
       logger.error("Error running tests:");
-      logger.error(error);
+      logger.error(JSN.stringify(error, null, 4));
       logger.error(error.stack);
-
       throw error;
     }
   )();
