@@ -19,6 +19,7 @@ repeat while (version >= 2 ?) is (no)
 }
 
 partition "Is Authenticated ? " {
+  
   if (""aws sts get-caller-identity"") then (yes)
 else (no)
   
@@ -30,7 +31,26 @@ endif
 }
 
 : Prompt for region from list;
-: Save files: ""config.js"", ""iac.js"", ""resources.js"", ""package.json"" etc ...; 
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
 end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
 }
 @enduml

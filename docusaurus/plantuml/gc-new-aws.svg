@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1308px" preserveAspectRatio="none" style="width:436px;height:1308px;background:#FFFFFF;" version="1.1" viewBox="0 0 436 1308" width="436px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="1296.8838" style="stroke:#000000;stroke-width:2.0;" width="423.5" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="429.5" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="112" x="161.75" y="22.0752">gc new for AWS</text><ellipse cx="145" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="62" x="114" y="98.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="42" x="124" y="117.0615">gc new</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="92" x="99" y="165.0146"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="68" x="113" y="187.0791">Select AWS</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="173" x="58.5" y="234.5986"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="149" x="72.5" y="256.6631">Enter the project's name</text><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="340" x="79.5" y="304.1826"/><path d="M267.5,304.1826 L267.5,314.1973 L257.5,324.1973 L79.5,324.1973 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="178" x="82.5" y="319.2578">Is the aws CLI installed ?</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="111" x="89.5" y="341.1973"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="91" x="99.5" y="360.2441">aws --version</text><polygon fill="#FFFFFF" points="102.5,469.1973,187.5,469.1973,199.5,481.1973,187.5,493.1973,102.5,493.1973,90.5,481.1973,102.5,469.1973" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="85" x="102.5" y="485.572">version &gt;= 2 ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="199.5" y="478.8877">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="185" x="224.5" y="399.9053"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="242.5" y="421.9697"/><a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" target="_blank" title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:actuate="onRequest" xlink:href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:show="new" xlink:title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="157" x="242.5" y="421.9697">Download the AWS CLI v2</text></a><rect fill="#FFFFFF" height="343.5513" style="stroke:#000000;stroke-width:2.0;" width="294" x="16" y="561.5659"/><path d="M161,561.5659 L161,571.5806 L151,581.5806 L16,581.5806 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="130" x="19" y="576.6411">Is Authenticated ?</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="195" x="47.5" y="729.8489"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="63" x="57.5" y="751.9133">Prompt for</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="108" x="124.5" y="751.9133">AWS Secret Key</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="218" x="36" y="647.2649"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="63" x="46" y="669.3293">Prompt for</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="131" x="113" y="669.3293">AWS Access Key ID</text><polygon fill="#FFFFFF" points="50.5,812.4329,239.5,812.4329,251.5,824.4329,239.5,836.4329,50.5,836.4329,38.5,824.4329,50.5,812.4329" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Courier" font-size="11" lengthAdjust="spacing" textLength="189" x="50.5" y="827.2258">aws sts get-caller-identity</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="251.5" y="822.1233">no</text><polygon fill="#FFFFFF" points="50.5,598.5806,239.5,598.5806,251.5,610.5806,239.5,622.5806,50.5,622.5806,38.5,610.5806,50.5,598.5806" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="149" y="633.6396">no</text><text fill="#000000" font-family="Courier" font-size="11" lengthAdjust="spacing" textLength="189" x="50.5" y="613.3735">aws sts get-caller-identity</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="251.5" y="608.271">yes</text><polygon fill="#FFFFFF" points="145,861.1172,157,873.1172,145,885.1172,133,873.1172,145,861.1172" style="stroke:#000000;stroke-width:1.5;"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="181" x="54.5" y="940.1172"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="157" x="68.5" y="962.1816">Prompt for region from list</text><path d="M205,1009.7012 L205,1051.1008 L185,1055.1008 L205,1059.1008 L205,1100.5005 A0,0 0 0 0 205,1100.5005 L335,1100.5005 A0,0 0 0 0 335,1100.5005 L335,1019.7012 L325,1009.7012 L205,1009.7012 A0,0 0 0 0 205,1009.7012 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M325,1009.7012 L325,1019.7012 L335,1019.7012 L325,1009.7012 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="216.5" cy="1020.2012" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="72" x="224" y="1024.502">config.js</text><ellipse cx="216.5" cy="1033.2012" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="64" x="224" y="1037.502">auth.env</text><ellipse cx="216.5" cy="1046.2012" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="48" x="224" y="1050.502">iac.js</text><ellipse cx="216.5" cy="1059.2012" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="224" y="1063.502">resources.js</text><ellipse cx="216.5" cy="1072.2012" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="224" y="1076.502">package.json</text><ellipse cx="216.5" cy="1088.0005" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="40" x="224" y="1092.771">etc ...</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="80" x="105" y="1037.8088"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="56" x="119" y="1059.8733">Save files</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="101" x="94.5" y="1135.5005"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="108.5" y="1157.5649"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="108.5" y="1157.1313">npm install</text><path d="M175,1205.0845 L175,1239.9841 L155,1243.9841 L175,1247.9841 L175,1282.8838 A0,0 0 0 0 175,1282.8838 L289,1282.8838 A0,0 0 0 0 289,1282.8838 L289,1215.0845 L279,1205.0845 L175,1205.0845 A0,0 0 0 0 175,1205.0845 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M279,1205.0845 L279,1215.0845 L289,1215.0845 L279,1205.0845 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="79" x="181" y="1223.1543">Next Steps:</text><ellipse cx="186.5" cy="1231.3838" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="56" x="194" y="1235.6846">gc list</text><ellipse cx="186.5" cy="1244.3838" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="80" x="194" y="1248.6846">gc gencode</text><ellipse cx="186.5" cy="1257.3838" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="80" x="194" y="1261.6846">gc destroy</text><ellipse cx="186.5" cy="1270.3838" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="64" x="194" y="1274.6846">gc apply</text><ellipse cx="145" cy="1243.9841" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="138.8128" x2="151.1872" y1="1237.7969" y2="1250.1713"/><line style="stroke:#000000;stroke-width:2.5;" x1="151.1872" x2="138.8128" y1="1237.7969" y2="1250.1713"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="141,88.0146,145,98.0146,149,88.0146,145,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="130.0146" y2="165.0146"/><polygon fill="#000000" points="141,155.0146,145,165.0146,149,155.0146,145,159.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="199.5986" y2="234.5986"/><polygon fill="#000000" points="141,224.5986,145,234.5986,149,224.5986,145,228.5986" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="373.1973" y2="469.1973"/><polygon fill="#000000" points="141,459.1973,145,469.1973,149,459.1973,145,463.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="199.5" x2="317" y1="481.1973" y2="481.1973"/><line style="stroke:#000000;stroke-width:1.5;" x1="317" x2="317" y1="434.4893" y2="481.1973"/><polygon fill="#000000" points="313,444.4893,317,434.4893,321,444.4893,317,440.4893" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="317" x2="317" y1="357.1973" y2="399.9053"/><line style="stroke:#000000;stroke-width:1.5;" x1="317" x2="200.5" y1="357.1973" y2="357.1973"/><polygon fill="#000000" points="210.5,353.1973,200.5,357.1973,210.5,361.1973,206.5,357.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="269.1826" y2="341.1973"/><polygon fill="#000000" points="141,331.1973,145,341.1973,149,331.1973,145,335.1973" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="681.8489" y2="729.8489"/><polygon fill="#000000" points="141,719.8489,145,729.8489,149,719.8489,145,723.8489" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="251.5" x2="266" y1="824.4329" y2="824.4329"/><polygon fill="#000000" points="262,754.4949,266,744.4949,270,754.4949,266,750.4949" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="266" x2="266" y1="664.5569" y2="824.4329"/><line style="stroke:#000000;stroke-width:1.5;" x1="266" x2="254" y1="664.5569" y2="664.5569"/><polygon fill="#000000" points="264,660.5569,254,664.5569,264,668.5569,260,664.5569" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="764.4329" y2="812.4329"/><polygon fill="#000000" points="141,802.4329,145,812.4329,149,802.4329,145,806.4329" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="622.5806" y2="647.2649"/><polygon fill="#000000" points="141,637.2649,145,647.2649,149,637.2649,145,641.2649" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="251.5" x2="288" y1="610.5806" y2="610.5806"/><polygon fill="#000000" points="284,731.8489,288,741.8489,292,731.8489,288,735.8489" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="288" x2="288" y1="610.5806" y2="873.1172"/><line style="stroke:#000000;stroke-width:1.5;" x1="288" x2="157" y1="873.1172" y2="873.1172"/><polygon fill="#000000" points="167,869.1172,157,873.1172,167,877.1172,163,873.1172" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="836.4329" y2="861.1172"/><polygon fill="#000000" points="141,851.1172,145,861.1172,149,851.1172,145,855.1172" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="493.1973" y2="598.5806"/><polygon fill="#000000" points="141,588.5806,145,598.5806,149,588.5806,145,592.5806" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="149" y="550.2637">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="885.1172" y2="940.1172"/><polygon fill="#000000" points="141,930.1172,145,940.1172,149,930.1172,145,934.1172" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="974.7012" y2="1037.8088"/><polygon fill="#000000" points="141,1027.8088,145,1037.8088,149,1027.8088,145,1031.8088" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="1072.3928" y2="1135.5005"/><polygon fill="#000000" points="141,1125.5005,145,1135.5005,149,1125.5005,145,1129.5005" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="145" x2="145" y1="1170.0845" y2="1233.9841"/><polygon fill="#000000" points="141,1223.9841,145,1233.9841,149,1223.9841,145,1227.9841" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[fe8fd175e426d0dc75173796a9f487fa]
+@startuml gc-new-aws
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc new for AWS" {
+start
+
+:""gc new"";
+: Select AWS;
+: Enter the project's name;
+
+
+partition "Is the aws CLI installed ?" {
+repeat :""aws - -version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+  
+  if (""aws sts get-caller-identity"") then (yes)
+else (no)
+  
+repeat :Prompt for <b>AWS Access Key ID</b>;
+:Prompt for <b>AWS Secret Key</b>;
+repeat while (""aws sts get-caller-identity"") is (no) 
+endif
+
+}
+
+: Prompt for region from list;
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
+}
+@enduml
+
+@startuml gc-new-aws
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "gc new for AWS" {
+start
+
+:""gc new"";
+: Select AWS;
+: Enter the project's name;
+
+
+partition "Is the aws CLI installed ?" {
+repeat :""aws - -version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+  
+  if (""aws sts get-caller-identity"") then (yes)
+else (no)
+  
+repeat :Prompt for <b>AWS Access Key ID</b>;
+:Prompt for <b>AWS Secret Key</b>;
+repeat while (""aws sts get-caller-identity"") is (no) 
+endif
+
+}
+
+: Prompt for region from list;
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 09:40:07 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
