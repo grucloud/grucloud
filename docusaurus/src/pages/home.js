@@ -225,161 +225,137 @@ function Home() {
       >
         <GettingStarted />
         <Features />
-        <section css={css``}>
-          <div
-            css={css`
+        <section
+          css={css`
+            @media (min-width: 600px) {
               display: grid;
-              grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-              grid-template-rows: [row] auto [row] auto [row];
+              grid-template-columns: repeat(5, 1fr);
               gap: 20px 20px;
               grid-template-areas:
-                ". ."
-                ". .";
+                "gencode-text gencode-text gencode-image gencode-image gencode-image"
+                "gclist-image gclist-image gclist-image gclist-text gclist-text"
+                "gctree-text gctree-text gctree-image gctree-image gctree-image"
+                "gccli-image gccli-image gccli-image gccli-text gccli-text";
+            }
 
-              @media (max-width: 600px) {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr 1fr 1fr 1fr;
-                gap: 10px 10px;
-                grid-template-areas:
-                  "."
-                  "."
-                  "."
-                  ".";
-              }
-              > a {
-                margin: 0.5rem 0 0.5rem 0;
-                width: 375;
-              }
-              > div {
-                padding: 1rem 2rem;
-                margin: 1rem;
-              }
+            > a {
+              margin: 0.5rem 0 0.5rem 0;
+              width: 375;
+            }
+            padding: 1rem;
+          `}
+        >
+          <div
+            css={css`
+              grid-area: gencode-text;
             `}
           >
-            <div
-              css={css`
-                grid-column: 1 / span 2;
-                grid-row: 1;
-              `}
+            <h2>Generate code from a live infrastructure.</h2>
+            <p>
+              Manually writing infrastructure code is time consuming and require
+              expertise. The code generation feature frees you from this tedious
+              task.
+            </p>
+            <p>
+              The <code>gc gencode</code> command fetches the current state of
+              the infrastructure and generate the <code>resources.js</code>{" "}
+              file.
+            </p>
+          </div>
+          <div
+            css={css`
+              grid-area: gencode-image;
+            `}
+          >
+            <SyntaxHighlighter
+              language="javascript"
+              wrapLongLines
+              style={{
+                ...docco,
+                hljs: {
+                  ...docco.hljs,
+                  //display: "inline-block",
+                },
+              }}
             >
-              <h2>Generate code from a live infrastructure.</h2>
-              <p>
-                Manually writing infrastructure code is time consuming and
-                require expertise. The code generation feature frees you from
-                this tedious task.
-              </p>
-              <p>
-                The <code>gc gencode</code> command fetches the current state of
-                the infrastructure and generate the <code>resources.js</code>{" "}
-                file.
-              </p>
-            </div>
+              {gcpExample}
+            </SyntaxHighlighter>
+          </div>
+          <div
+            css={css`
+              grid-area: gclist-text;
+            `}
+          >
+            <h2>Visualize the resources</h2>
+            <p>
+              The <code>gc list --graph</code> command displays a graph of the
+              live infrastructure showing the dependencies between resources.
+            </p>
+          </div>
+          <div
+            css={css`
+              grid-area: gclist-image;
+            `}
+          >
+            <img
+              src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg"
+              alt="graph"
+            ></img>
+          </div>
+          <div
+            css={css`
+              grid-area: gctree-text;
+            `}
+          >
+            <h2>Visualize as a mindmap</h2>
+            <p>
+              The <code>gc tree</code> command displays a mindmap resources
+              types.
+            </p>
+          </div>
+          <div
+            css={css`
+              grid-area: gctree-image;
+            `}
+          >
+            <img
+              src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg"
+              alt="graph"
+            ></img>
+          </div>
+          <div
+            css={css`
+              grid-area: gccli-text;
+            `}
+          >
+            <h2>GruCloud Command Line Interface</h2>
+            <p>
+              Use the <em>gc</em> command line interface to deploy and destroy
+              the infrastructure:
+            </p>
 
-            <div
+            <Link
               css={css`
-                grid-column: 3 / span 3;
-                grid-row: 1;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                width: 300px;
               `}
+              to={"https://www.grucloud.com/docs/cli/gc"}
             >
-              <SyntaxHighlighter
-                language="javascript"
-                style={{
-                  ...docco,
-                  hljs: {
-                    ...docco.hljs,
-                    display: "inline-block",
-                  },
-                }}
-              >
-                {gcpExample}
-              </SyntaxHighlighter>
-            </div>
-            <div
-              css={css`
-                grid-column: 1 / span 3;
-                grid-row: 2;
-              `}
-            >
-              <img
-                src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg"
-                alt="graph"
-              ></img>
-            </div>
-            <div
-              css={css`
-                grid-column: 4 / span 2;
-                grid-row: 2;
-              `}
-            >
-              <h2>Visualize the resources</h2>
-              <p>
-                The <code>gc list --graph</code> command displays a graph of the
-                live infrastructure showing the dependencies between resources.
-              </p>
-            </div>
-            <div
-              css={css`
-                grid-column: 1 / span 2;
-                grid-row: 3;
-              `}
-            >
-              <h2>Visualize as a mindmap</h2>
-              <p>
-                The <code>gc tree</code> command displays a mindmap resources
-                types.
-              </p>
-            </div>
-            <div
-              css={css`
-                grid-column: 3 / span 3;
-                grid-row: 3;
-              `}
-            >
-              <img
-                src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg"
-                alt="graph"
-              ></img>
-            </div>
-
-            <div
-              css={css`
-                grid-column: 1 / 3;
-                grid-row: 4;
-              `}
-            >
-              <h2>GruCloud Command Line Interface</h2>
-              <p>
-                Use the <em>gc</em> command line interface to deploy and destroy
-                the infrastructure:
-              </p>
-
-              <Link
-                css={css`
-                  width: 300px;
-                `}
-                to={"https://www.grucloud.com/docs/cli/gc"}
-              >
-                Visit the GruCloud CLI documentation
-              </Link>
-            </div>
-            <div
-              css={css`
-                grid-column: 3 / span 3;
-                grid-row: 4;
-              `}
-            >
-              <iframe
-                data-autoplay
-                src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
-                id="asciicast-iframe-13761"
-                name="asciicast-iframe-13761"
-                scrolling="no"
-                style={{ width: "100%", height: "720px" }}
-              ></iframe>
-            </div>
+              Visit the GruCloud CLI documentation
+            </Link>
+          </div>
+          <div
+            css={css`
+              grid-area: gccli-image;
+            `}
+          >
+            <iframe
+              data-autoplay
+              src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
+              id="asciicast-iframe-13761"
+              name="asciicast-iframe-13761"
+              scrolling="no"
+              style={{ width: "100%", height: "720px" }}
+            ></iframe>
           </div>
         </section>
       </main>
