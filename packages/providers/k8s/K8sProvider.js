@@ -24,6 +24,7 @@ const {
   isEmpty,
   identity,
   uniq,
+  when,
 } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
@@ -94,6 +95,61 @@ const findDependenciesConfig = ({ live }) =>
     uniq,
     map((name) => ({ name, namespace: findNamespace(live) })),
   ])();
+
+const findNamespaceFromProps = (properties) =>
+  tryCatch(
+    pipe([
+      () => properties({ dependencies: {} }),
+      get("metadata.namespace", ""),
+    ]),
+    () => ""
+  )();
+
+const findNamespaceFromLive = get("metadata.namespace", "");
+
+const findNamespaceFromDeps = get("namespace.name", "");
+
+const buildNamespaceKey = ({
+  properties = () => undefined,
+  dependencies = () => undefined,
+  live,
+}) =>
+  pipe([
+    () => findNamespaceFromProps(properties),
+    when(isEmpty, () => findNamespaceFromLive(live)),
+    when(isEmpty, () =>
+      tryCatch(
+        () => findNamespaceFromDeps(dependencies()),
+        () => ""
+      )()
+    ),
+    unless(isEmpty, prepend("::")),
+  ])();
+
+const resourceKey = pipe([
+  tap((resource) => {
+    assert(resource.providerName);
+    assert(resource.type);
+    assert(resource.name);
+  }),
+  ({
+    providerName,
+    type,
+    group = "",
+    properties,
+    name,
+    dependencies,
+    id,
+    live,
+  }) =>
+    `${providerName}${type}${buildNamespaceKey({
+      properties,
+      dependencies,
+      live,
+      name,
+      type,
+    })}::${name || id}`,
+]);
 
 const fnSpecs = pipe([
   () => [
@@ -650,7 +706,7 @@ const fnSpecs = pipe([
       listOnly: true,
     },
   ],
-  map(defaultsDeep({ isOurMinion, compare: compareK8s() })),
+  map(defaultsDeep({ resourceKey, isOurMinion, compare: compareK8s() })),
   tap((params) => {
     assert(true);
   }),
