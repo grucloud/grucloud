@@ -45,6 +45,8 @@ const GcpCompute = require("./resources/compute/");
 const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
+const GcpRun = require("./resources/run/");
+
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const { generateCode } = require("./Gcp2gc");
@@ -104,6 +106,7 @@ const fnSpecs = (config) => [
   ...GcpIam(config),
   ...GcpCompute(config),
   ...GcpDns(config),
+  ...GcpRun(config),
 ];
 //const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
 

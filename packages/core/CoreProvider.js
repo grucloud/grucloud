@@ -18,6 +18,7 @@ const {
   not,
   pick,
   omit,
+  and,
 } = require("rubico");
 
 const {
@@ -1270,7 +1271,7 @@ function CoreProvider({
           return false;
         },
         // Delete all resources
-        () => all,
+        and([() => all, () => isEmpty(types)]),
         () => {
           logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
           return true;

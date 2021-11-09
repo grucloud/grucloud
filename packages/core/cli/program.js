@@ -260,6 +260,9 @@ exports.createProgram = () => {
     .command("gencode")
     .description("Generate infrastruture code from deployed resources")
     .alias("c")
+    .option(...optionFilteredByTypes)
+    .option(...optionFilteredByGroups)
+    .option(...optionExcludesByTypes)
     .option(
       "--inventory <file>",
       "resources inventory",

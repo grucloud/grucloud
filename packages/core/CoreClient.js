@@ -27,6 +27,7 @@ module.exports = CoreClient = ({
   verbGet = "GET",
   verbList = "GET",
   verbCreate = "POST",
+  verbUpdate = "PATCH",
   isInstanceUp,
   isDefault,
   managedByOther,
@@ -261,7 +262,11 @@ module.exports = CoreClient = ({
               (path) =>
                 retryCallOnError({
                   name: `update type ${spec.type}, path: ${path}`,
-                  fn: () => axios.patch(path, payload),
+                  fn: () =>
+                    axios.request(path, {
+                      method: verbUpdate,
+                      data: payload,
+                    }),
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },
                 }),

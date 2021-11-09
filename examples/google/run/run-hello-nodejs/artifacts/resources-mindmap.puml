@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project run-hello-nodejs
+skinparam monochrome true
++ Infra
+++ google
++++ run
+++++ Service (1)
+@endmindmap
