@@ -142,7 +142,17 @@ exports.KmsKey = ({ spec, config }) => {
         logger.debug(tos({ payload, diff, live }));
       }),
       () => live,
-      tap.if(isInstanceDown, pipe([pickId, kms().cancelKeyDeletion])),
+      tap.if(
+        isInstanceDown,
+        tryCatch(pipe([pickId, kms().cancelKeyDeletion])),
+        (error) =>
+          pipe([
+            tap(() => {
+              // Ignore error
+              logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
+            }),
+          ])()
+      ),
       tap.if(
         () => get("liveDiff.updated.Enabled")(diff),
         pipe([
@@ -202,6 +212,7 @@ exports.KmsKey = ({ spec, config }) => {
     pipe([
       () => properties,
       defaultsDeep({
+        Enabled: true,
         Tags: buildTags({
           config,
           namespace,
