@@ -22,8 +22,6 @@ describe("AzProvider", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-      assert(config);
     } catch (error) {
       this.skip();
     }
