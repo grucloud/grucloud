@@ -7,8 +7,8 @@
   "scripts": {
     "test": "mocha",
     "tree": "gc tree",
-    "list": "gc list -g",
-    "gencode": "gc gencode -t run::Service"
+    "list": "gc list -g -a",
+    "gencode": "gc gencode -t run::Service -t iam::ServiceAccount"
   },
   "author": "",
   "license": "ISC",

@@ -13,17 +13,11 @@ const createResources = ({ provider }) => {
         labels: {
           "cloud.googleapis.com/location": "us-central1",
         },
-        annotations: {
-          "run.googleapis.com/client-name": "cloud-console",
-          "client.knative.dev/user-image":
-            "gcr.io/grucloud-test/github.com/fredericheem/starhackit@sha256:f0c4de568cf04ec5a4588a471aff9992c5cbf68afbcc17edae8912a8de7af77a",
-          "run.googleapis.com/ingress": "all",
-        },
       },
       spec: {
         template: {
           metadata: {
-            name: "starhackit-server-00005-rud",
+            name: "starhackit-server-00006-rud",
             annotations: {
               "run.googleapis.com/client-name": "cloud-console",
               "run.googleapis.com/execution-environment": "gen1",
@@ -33,8 +27,7 @@ const createResources = ({ provider }) => {
           spec: {
             containerConcurrency: 90,
             timeoutSeconds: 300,
-            serviceAccountName:
-              "91170824493-compute@developer.gserviceaccount.com",
+            serviceAccountName: `${config.projectNumber()}-compute@developer.gserviceaccount.com`,
             containers: [
               {
                 image:

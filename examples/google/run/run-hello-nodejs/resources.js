@@ -4,7 +4,6 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.run.makeService({
-    name: "starhackit-server",
     properties: ({ config }) => ({
       apiVersion: "serving.knative.dev/v1",
       kind: "Service",
@@ -13,17 +12,11 @@ const createResources = ({ provider }) => {
         labels: {
           "cloud.googleapis.com/location": "us-central1",
         },
-        annotations: {
-          "run.googleapis.com/client-name": "cloud-console",
-          "client.knative.dev/user-image":
-            "gcr.io/grucloud-test/github.com/fredericheem/starhackit@sha256:f0c4de568cf04ec5a4588a471aff9992c5cbf68afbcc17edae8912a8de7af77a",
-          "run.googleapis.com/ingress": "all",
-        },
       },
       spec: {
         template: {
           metadata: {
-            name: "starhackit-server-00004-rud",
+            name: "starhackit-server-00005-rud",
             annotations: {
               "run.googleapis.com/client-name": "cloud-console",
               "run.googleapis.com/execution-environment": "gen1",
@@ -33,12 +26,10 @@ const createResources = ({ provider }) => {
           spec: {
             containerConcurrency: 80,
             timeoutSeconds: 300,
-            serviceAccountName:
-              "91170824493-compute@developer.gserviceaccount.com",
+            serviceAccountName: `${config.projectNumber()}-compute@developer.gserviceaccount.com`,
             containers: [
               {
-                image:
-                  "gcr.io/grucloud-test/github.com/fredericheem/starhackit@sha256:f0c4de568cf04ec5a4588a471aff9992c5cbf68afbcc17edae8912a8de7af77a",
+                image: "gcr.io/google-samples/hello-app:1.0",
                 resources: {
                   limits: {
                     cpu: "2000m",
@@ -59,6 +50,22 @@ const createResources = ({ provider }) => {
           {
             percent: 100,
             latestRevision: true,
+          },
+        ],
+      },
+    }),
+  });
+
+  provider.run.makeServiceIamMember({
+    properties: ({ config }) => ({
+      service: "starhackit-server",
+      location: "us-central1",
+      policy: {
+        version: 1,
+        bindings: [
+          {
+            role: "roles/run.invoker",
+            members: ["allUsers"],
           },
         ],
       },

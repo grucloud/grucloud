@@ -16,7 +16,7 @@ exports.GcpRunService = ({ spec, config }) => {
 
   const findName = pipe([get("live.metadata.name")]);
   const findId = findName;
-  const findTargetId = findName;
+  const findTargetId = get("metadata.name");
 
   const configDefault = ({ name, properties }) => defaultsDeep({})(properties);
 

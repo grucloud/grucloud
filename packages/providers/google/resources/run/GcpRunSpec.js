@@ -1,8 +1,9 @@
 const assert = require("assert");
-const { pipe, assign, map, tap, omit } = require("rubico");
+const { pipe, assign, map, tap, omit, set, get } = require("rubico");
 const { compare } = require("../../GoogleCommon");
 
 const { GcpRunService } = require("./GcpRunService");
+const { GcpRunServiceIamMember } = require("./GcpRunServiceIamMember");
 
 const GROUP = "run";
 
@@ -11,6 +12,8 @@ module.exports = () =>
     {
       type: "Service",
       Client: GcpRunService,
+      inferName: ({ properties, dependencies }) =>
+        pipe([() => properties, get("metadata.name")])(),
       filterLive: () =>
         pipe([
           tap((params) => {
@@ -23,14 +26,16 @@ module.exports = () =>
           omit(["metadata.creationTimestamp"]),
           omit(["metadata.deletionTimestamp"]),
           omit(["metadata.generation"]),
-          omit([
-            ["metadata", "annotations", "serving.knative.dev/lastModifier"],
-          ]),
-          omit([["metadata", "annotations", "serving.knative.dev/creator"]]),
-          omit([
-            ["metadata", "annotations", "run.googleapis.com/ingress-status"],
-          ]),
+          omit(["metadata.annotations"]),
           omit(["status"]),
+          set(
+            "spec.template.spec.serviceAccountName",
+            () =>
+              "`${config.projectNumber()}-compute@developer.gserviceaccount.com`"
+          ),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
       compare: compare({
         filterTarget: pipe([
@@ -42,7 +47,41 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
+          omit(["metadata.annotations"]),
           omit(["status"]),
+        ]),
+      }),
+    },
+    {
+      type: "ServiceIamMember",
+      Client: GcpRunServiceIamMember,
+      dependsOn: ["run::Service"],
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          () => properties,
+          ({ service, location }) => `${service}::${location}`,
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["policy.etag"]),
+        ]),
+      compare: compare({
+        filterTarget: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["policy.etag"]),
         ]),
       }),
     },
