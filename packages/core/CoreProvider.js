@@ -1173,9 +1173,6 @@ function CoreProvider({
               assert(type);
               assert(groupType);
             }),
-            tap((result) => {
-              getLives().addResources(result);
-            }),
           ])(),
       })),
       Lister({

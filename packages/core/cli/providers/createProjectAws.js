@@ -71,7 +71,7 @@ const initialRegionIndex = ({ currentRegion, regions }) =>
     () => regions,
     findIndex(eq(get("RegionName"), currentRegion)),
     when(eq(identity, -1), () => 0),
-  ]);
+  ])();
 
 const promptRegion = pipe([
   tap((params) => {

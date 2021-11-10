@@ -52,13 +52,16 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pipe([
         tap(() => {
           assert(method);
-          logger.info(`getById ${type} ${JSON.stringify(params)}`);
+          logger.debug(`getById ${type} ${JSON.stringify(params)}`);
         }),
         tryCatch(
           pipe([
             () => params,
             pickId,
             defaultsDeep(extraParams),
+            tap((params) => {
+              logger.info(`getById ${type} ${JSON.stringify(params)}`);
+            }),
             endpoint()[method],
             tap((params) => {
               assert(true);
@@ -102,7 +105,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({ lives, params } = {}) =>
       pipe([
         tap(() => {
-          logger.debug(`getList ${type}`);
+          logger.info(`getList ${type}`);
           assert(method);
           assert(getParam);
           assert(isFunction(endpoint()[method]));
@@ -120,7 +123,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         map(assignTags),
         tap((items) => {
           assert(Array.isArray(items));
-          logger.debug(`getList ${type} #items ${size(items)}`);
+          logger.info(`getList ${type} #items ${size(items)}`);
         }),
         filter(not(isEmpty)),
       ])();
@@ -147,7 +150,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         () =>
           lives.getByType({ providerName: config.providerName, type, group }),
         tap((parents) => {
-          logger.debug(`getListWithParent ${type} #parents: ${size(parents)}`);
+          logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
         }),
         pluck("live"),
         flatMap((live) =>
@@ -169,7 +172,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           ])()
         ),
         tap((items) => {
-          logger.debug(`getListWithParent ${type} #items ${size(items)}`);
+          logger.info(`getListWithParent ${type} #items ${size(items)}`);
         }),
       ])();
 
@@ -190,7 +193,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({ name, payload, programOptions, resolvedDependencies }) =>
       pipe([
         tap(() => {
-          logger.debug(`create ${type}, ${name}`);
+          logger.info(`create ${type}, ${name}`);
           assert(method);
           assert(pickCreated);
           assert(pickId);
@@ -230,7 +233,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ),
         postCreate({ name, payload, programOptions, resolvedDependencies }),
         tap(() => {
-          logger.debug(`created ${type}, ${name}`);
+          logger.info(`created ${type}, ${name}`);
         }),
       ])();
 
@@ -262,8 +265,9 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(pickId);
           assert(compare);
           assert(getById);
+          logger.info(`update ${type}, ${name}`);
           logger.debug(
-            `update ${type}, ${name}, ${JSON.stringify({
+            `${JSON.stringify({
               payload,
               live,
               diff,
@@ -350,7 +354,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         ),
         postUpdate({ name, live, payload, diff, programOptions }),
         tap(() => {
-          logger.debug(`updated ${type}, ${name}`);
+          logger.info(`updated ${type}, ${name}`);
         }),
       ])();
 

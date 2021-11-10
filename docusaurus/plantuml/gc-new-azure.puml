@@ -1,0 +1,74 @@
+@startuml gc-new-azure
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc new for Azure" {
+start
+
+:""gc new"";
+: Select Azure;
+: Enter the project's name;
+
+
+partition "Is the az CLI installed ?" {
+repeat :""az version"";
+backward:  Visit [[https://docs.microsoft.com/en-us/cli/azure/install-azure-cli]];
+repeat while (is installed ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+
+repeat :""az account show"";
+backward:  ""az login"";
+repeat while (is authenticated ?) is (no) 
+
+}
+
+partition "Select Subscription Id" {
+ 
+: ""az account list"";
+: Prompt for Subscription Id from list;
+}
+
+partition "Create a Service Principal" {
+: ""az ad sp create-for-rbac -n sp1"";
+}
+
+partition "Select Region " {
+  :""az account list-locations"";
+: Prompt for region from list;
+}
+
+: Create ""auth.env"";
+note right
+* ""TENANT_ID""
+* ""SUBSCRIPTION_ID""
+* ""APP_ID""
+* ""PASSWORD""
+end note 
+
+: Save files; 
+note right
+* ""config.js""
+* ""auth.env""
+* ""iac.js""
+* ""resources.js""
+* ""package.json""
+* etc ...
+end note 
+
+: ""npm install"";
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc gencode""
+* ""gc destroy""
+* ""gc apply""
+end note 
+
+}
+@enduml

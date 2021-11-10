@@ -62,6 +62,7 @@ describe("createProject", function () {
             "google-project-test",
             "grucloud-test",
             "us-east1",
+            "us-east1-a",
           ]);
         }),
         () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
