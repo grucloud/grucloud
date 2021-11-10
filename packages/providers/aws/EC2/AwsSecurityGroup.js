@@ -131,17 +131,25 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     method: "describeSecurityGroups",
     getParam: "SecurityGroups",
   });
-  const getByName = getByNameCore({ getList, findName });
 
-  // const getByName = ({ name }) =>
-  //   pipe([
-  //     () => ({ GroupNames: [name] }),
-  //     getList,
-  //     first,
-  //     tap((securityGroup) => {
-  //       logger.debug(`getByName ${name}: ${JSON.stringify(securityGroup)}`);
-  //     }),
-  //   ])();
+  const getByName = ({ name, dependencies }) =>
+    pipe([
+      () => ({
+        params: {
+          Filters: [
+            {
+              Name: "group-name",
+              Values: [name],
+            },
+          ],
+        },
+      }),
+      getList,
+      first,
+      tap((securityGroup) => {
+        logger.debug(`getByName ${name}: ${JSON.stringify(securityGroup)}`);
+      }),
+    ])();
 
   const getById = client.getById({
     pickId: ({ GroupId }) => ({ GroupIds: [GroupId] }),
