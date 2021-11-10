@@ -7,7 +7,7 @@ exports.createStack = ({ createProvider }) => {
     provider: createProvider(GoogleProvider, {
       createResources,
       config: require("./config"),
-      hooks: [require("./hook")],
     }),
+    hooks: [require("./hook")],
   };
 };

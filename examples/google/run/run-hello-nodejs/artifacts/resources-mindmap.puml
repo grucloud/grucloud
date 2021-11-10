@@ -5,4 +5,5 @@ skinparam monochrome true
 ++ google
 +++ run
 ++++ Service (1)
+++++ ServiceIamMember (1)
 @endmindmap

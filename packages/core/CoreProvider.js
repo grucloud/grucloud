@@ -989,7 +989,7 @@ function CoreProvider({
     pipe([
       () => hooks,
       tap(() => {
-        logger.debug(`register #hooks ${hooks.length}`);
+        logger.debug(`register #hooks ${size(hooks)}`);
       }),
       map((hook) =>
         pipe([

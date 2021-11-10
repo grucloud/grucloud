@@ -96,9 +96,6 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
       }),
       () => payload,
       getIamPolicy,
-      tap((params) => {
-        assert(true);
-      }),
       ({ etag }) =>
         retryCallOnError({
           name: `setIamPolicy`,

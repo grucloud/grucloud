@@ -2,6 +2,10 @@
 const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
-const createResources = ({ provider }) => {};
+const createResources = ({ provider }) => {
+  provider.KMS.makeKey({
+    name: "secret-key-test",
+  });
+};
 
 exports.createResources = createResources;

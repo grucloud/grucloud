@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { get, pipe, eq, map, tap } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "GcpRunService" });
-const { tos } = require("@grucloud/core/tos");
 const GoogleClient = require("../../GoogleClient");
 const { isUpByIdCore } = require("@grucloud/core/Common");
 
@@ -12,15 +10,15 @@ exports.GcpRunService = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);
-  const { projectId, region, managedByDescription, providerName } = config;
+  const { projectId, region } = config;
 
-  const findName = pipe([get("live.metadata.name")]);
+  const findName = get("live.metadata.name");
   const findId = findName;
   const findTargetId = get("metadata.name");
 
   const configDefault = ({ name, properties }) => defaultsDeep({})(properties);
 
-  const isInstanceUp = identity;
+  const isInstanceUp = get("status.url");
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
