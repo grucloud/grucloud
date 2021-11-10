@@ -95,9 +95,10 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     getList,
     first,
   ]);
+
   const update = pipe([
     tap((xx) => {
-      console.log("update");
+      logger.info("update");
     }),
     ({ payload }) =>
       retryCallOnError({
@@ -110,7 +111,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
         config,
       }),
     tap((xx) => {
-      console.log("updated");
+      logger.info("updated");
     }),
   ]);
 

@@ -7,7 +7,7 @@ exports.createStack = ({ createProvider }) => {
     provider: createProvider(AwsProvider, {
       createResources,
       config: require("./config"),
-      hooks: [require("./hook")],
     }),
+    hooks: [require("./hook")],
   };
 };

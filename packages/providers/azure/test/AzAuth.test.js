@@ -3,14 +3,7 @@ const { envLoader } = require("@grucloud/core/EnvLoader");
 const { AzAuthorize } = require("../AzAuthorize");
 
 describe("AzAuth", function () {
-  before(async function () {
-    try {
-      envLoader({ configDir: "../../../examples/multi" });
-    } catch (error) {
-      assert(error.code, 422);
-      this.skip();
-    }
-  });
+  before(async function () {});
 
   it("ok", async function () {
     try {

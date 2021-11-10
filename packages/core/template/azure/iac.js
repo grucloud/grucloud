@@ -6,7 +6,7 @@ exports.createStack = ({ createProvider }) => {
     provider: createProvider(AzureProvider, {
       createResources,
       config: require("./config"),
-      hooks: [require("./hook")],
     }),
+    hooks: [require("./hook")],
   };
 };

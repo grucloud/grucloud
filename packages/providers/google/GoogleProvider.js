@@ -45,6 +45,8 @@ const GcpCompute = require("./resources/compute/");
 const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
+const GcpRun = require("./resources/run/");
+
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const { generateCode } = require("./Gcp2gc");
@@ -82,11 +84,16 @@ const servicesApiMapMain = {
     url: ({ projectId }) =>
       `https://dns.googleapis.com/dns/v1beta2/projects/${projectId}/managedZones`,
   },
+  "run.googleapis.com": {
+    url: ({ projectId, region }) =>
+      `https://${region}-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/${projectId}/services`,
+  },
   /*"domains.googleapis.com": {
     url: ({ projectId }) =>
       `https://domains.googleapis.com/v1beta1/projects/${projectId}/locations/global/registrations`,
   },*/
 };
+
 const rolesDefault = [
   "iam.serviceAccountAdmin",
   "compute.admin",
@@ -96,6 +103,7 @@ const rolesDefault = [
   //"domains.admin",
   "editor",
   "resourcemanager.projectIamAdmin",
+  "run.admin",
 ];
 const ServiceAccountName = "grucloud";
 
@@ -104,6 +112,7 @@ const fnSpecs = (config) => [
   ...GcpIam(config),
   ...GcpCompute(config),
   ...GcpDns(config),
+  ...GcpRun(config),
 ];
 //const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
 
@@ -233,7 +242,13 @@ const createAxiosService = ({ accessToken, projectId }) =>
     }),
   });
 
-const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
+const serviceEnable = async ({
+  accessToken,
+  projectId,
+  region,
+  servicesApiMap,
+}) => {
+  assert(region);
   const axiosService = createAxiosService({ accessToken, projectId });
   const axios = createAxiosGeneric({ accessToken, projectId });
   const servicesApis = Object.keys(servicesApiMap);
@@ -275,7 +290,7 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
         }),
         map((serviceId) =>
           pipe([
-            () => servicesApiMap[serviceId].url({ projectId }),
+            () => servicesApiMap[serviceId].url({ projectId, region }),
             (url) =>
               retryCallOnError({
                 name: `check for serviceId ${serviceId}, getting ${url}`,
@@ -751,12 +766,9 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
       logger.debug(`Current projects: ${tos(projects)}`);
     }),
     filter(eq(get("lifecycleState"), "ACTIVE")),
-    find(eq(get("name"), projectName)),
+    find(eq(get("projectId"), projectId)),
     switchCase([
-      (project) => project,
-      tap((project) => {
-        console.log(`project ${projectName} already exist`);
-      }),
+      isEmpty,
       pipe([
         tap(() => {
           logger.debug(
@@ -772,6 +784,9 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
           logger.debug(`project ${projectName} created`);
         }),
       ]),
+      tap((project) => {
+        console.log(`project ${projectId} already exist`);
+      }),
     ]),
   ])();
 };
@@ -898,6 +913,7 @@ const init = async ({
   gcloudConfig,
   projectId,
   projectName,
+  region,
   applicationCredentialsFile,
   serviceAccountName,
   options,
@@ -906,6 +922,7 @@ const init = async ({
     console.error(`gcloud is not installed, setup aborted`);
     return;
   }
+  assert(region);
 
   return tryCatch(
     pipe([
@@ -926,6 +943,7 @@ const init = async ({
             () =>
               serviceEnable({
                 projectId,
+                region,
                 accessToken,
                 servicesApiMap: servicesApiMapBase,
               }),
@@ -960,6 +978,7 @@ const init = async ({
               }),
             () =>
               serviceEnable({
+                region,
                 projectId,
                 accessToken,
                 servicesApiMap: servicesApiMapMain,
@@ -1064,6 +1083,7 @@ exports.GoogleProvider = ({
         managedByValue: "grucloud",
         ...computeDefault,
         accessToken: () => serviceAccountAccessToken,
+        projectNumber: () => _projectNumber,
       }),
       switchCase([
         get("credentialFile"),
@@ -1090,6 +1110,7 @@ exports.GoogleProvider = ({
 
   const projectId = () => get("projectId")(mergedConfig);
   const projectName = () => get("projectName", projectId())(mergedConfig);
+  const region = () => get("region")(mergedConfig);
 
   const applicationCredentialsFile = switchCase([
     () => mergedConfig.credentialFile,
@@ -1102,17 +1123,43 @@ exports.GoogleProvider = ({
   ])();
 
   let serviceAccountAccessToken;
+  let _projectNumber;
 
   const start = async () => {
     if (!serviceAccountAccessToken) {
       serviceAccountAccessToken = await authorize({
         gcloudConfig,
+
         projectId: projectId(),
         projectName: projectName(),
         applicationCredentialsFile,
       });
     }
-    logger.debug(`started`);
+
+    return pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => ({
+        baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects/${projectId()}`,
+        onHeaders: () => ({
+          Authorization: `Bearer ${serviceAccountAccessToken}`,
+        }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      AxiosMaker,
+      (axiosService) => axiosService.get("/"),
+      tap((params) => {
+        assert(true);
+      }),
+      get("data"),
+      tap(({ projectNumber }) => {
+        logger.debug(`started`);
+        _projectNumber = projectNumber;
+      }),
+    ])();
   };
 
   const core = CoreProvider({
@@ -1136,6 +1183,7 @@ exports.GoogleProvider = ({
       init({
         options,
         gcloudConfig,
+        region: region(),
         projectName: projectName(),
         projectId: projectId(),
         applicationCredentialsFile,

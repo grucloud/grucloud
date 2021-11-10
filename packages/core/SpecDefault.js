@@ -16,35 +16,6 @@ const logger = require("./logger")({
 
 const { ResourceMaker } = require("./CoreResource");
 const { compare } = require("./Common");
-const findNamespaceFromProps = (properties) =>
-  tryCatch(
-    pipe([
-      () => properties({ dependencies: {} }),
-      get("metadata.namespace", ""),
-    ]),
-    () => ""
-  )();
-
-const findNamespaceFromLive = get("metadata.namespace", "");
-
-const findNamespaceFromDeps = get("namespace.name", "");
-
-const buildNamespaceKey = ({
-  properties = () => undefined,
-  dependencies = () => undefined,
-  live,
-}) =>
-  pipe([
-    () => findNamespaceFromProps(properties),
-    when(isEmpty, () => findNamespaceFromLive(live)),
-    when(isEmpty, () =>
-      tryCatch(
-        () => findNamespaceFromDeps(dependencies()),
-        () => ""
-      )()
-    ),
-    unless(isEmpty, prepend("::")),
-  ])();
 
 const buildGroupKey = unless(isEmpty, prepend("::"));
 
@@ -63,14 +34,7 @@ const resourceKeyDefault = pipe([
     dependencies,
     id,
     live,
-  }) =>
-    `${providerName}${buildGroupKey(group)}::${type}${buildNamespaceKey({
-      properties,
-      dependencies,
-      live,
-      name,
-      type,
-    })}::${name || id}`,
+  }) => `${providerName}${buildGroupKey(group)}::${type}::${name || id}`,
 ]);
 
 const defaultConfig = ({ config = {}, provider }) =>

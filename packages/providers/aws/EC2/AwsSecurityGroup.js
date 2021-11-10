@@ -20,6 +20,7 @@ const {
   identity,
   when,
   prepend,
+  first,
 } = require("rubico/x");
 const {
   Ec2New,
@@ -46,7 +47,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const findNameGroupName = ({ live, lives }) =>
+  const findName = ({ live, lives }) =>
     pipe([
       tap(() => {
         assert(lives);
@@ -73,19 +74,10 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
           prepend("sg-default-"),
         ])
       ),
+      tap((name) => {
+        assert(name);
+      }),
     ])();
-
-  const findName = (params) => {
-    const fns = [findNameInTags({ findId }), findNameGroupName];
-
-    for (fn of fns) {
-      const name = fn(params);
-      if (!isEmpty(name)) {
-        return name;
-      }
-    }
-    assert(false, "should have a name");
-  };
 
   const findId = get("live.GroupId");
 
@@ -140,7 +132,24 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     getParam: "SecurityGroups",
   });
 
-  const getByName = getByNameCore({ getList, findName });
+  const getByName = ({ name, dependencies }) =>
+    pipe([
+      () => ({
+        params: {
+          Filters: [
+            {
+              Name: "group-name",
+              Values: [name],
+            },
+          ],
+        },
+      }),
+      getList,
+      first,
+      tap((securityGroup) => {
+        logger.debug(`getByName ${name}: ${JSON.stringify(securityGroup)}`);
+      }),
+    ])();
 
   const getById = client.getById({
     pickId: ({ GroupId }) => ({ GroupIds: [GroupId] }),

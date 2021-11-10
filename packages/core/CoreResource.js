@@ -541,7 +541,7 @@ exports.ResourceMaker = ({
         retryCall({
           name: `getLive ${toString()}`,
           fn: async () => getLive({ deep: true }),
-          config: { retryCount: 2, retryDelay: 5e3 },
+          config: { retryCount: 5, retryDelay: 5e3 },
           isExpectedResult: not(isEmpty),
         }),
       tap((live) => {

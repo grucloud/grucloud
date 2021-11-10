@@ -2,10 +2,27 @@ const assert = require("assert");
 const { pipe, tap, get, assign, omit } = require("rubico");
 const { identity } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
-const { omitIfEmpty } = require("@grucloud/core/Common");
-
+const { omitIfEmpty, isUpByIdCore } = require("@grucloud/core/Common");
 const filterTargetDefault = identity;
 const filterLiveDefault = identity;
+
+const getStateName = (instance) => {
+  const { provisioningState } = instance.properties;
+  assert(provisioningState);
+  //logger.debug(`az stateName ${provisioningState}`);
+  return provisioningState;
+};
+
+const isInstanceUp = (instance) => {
+  return ["Succeeded"].includes(getStateName(instance));
+};
+exports.isInstanceUp = isInstanceUp;
+
+exports.isUpByIdFactory = ({ getById }) =>
+  isUpByIdCore({
+    isInstanceUp,
+    getById,
+  });
 
 exports.compare = ({
   filterAll = identity,

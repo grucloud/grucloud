@@ -104,7 +104,7 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
   const create = ({ payload, name, dependencies, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`create rt assoc ${tos({ payload })}`);
+        logger.info(`create associateRouteTable ${tos({ payload })}`);
       }),
       () => payload,
       ec2().associateRouteTable,
@@ -114,7 +114,7 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
       // Refresh the route table
       tap(() =>
         retryCall({
-          name: `create describeRouteTables: ${name}`,
+          name: `create rt assoc: ${name}`,
           fn: pipe([
             () => payload,
             getById,
@@ -125,7 +125,7 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
       ),
       tap(() => dependencies().routeTable.getLive({ lives })),
       tap(() => {
-        logger.debug(`routeTable updated ${JSON.stringify({ name })}`);
+        logger.debug(`rt assoc updated ${JSON.stringify({ name })}`);
       }),
     ])();
 
