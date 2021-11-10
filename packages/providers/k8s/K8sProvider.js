@@ -25,6 +25,8 @@ const {
   identity,
   uniq,
   when,
+  unless,
+  prepend,
 } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
