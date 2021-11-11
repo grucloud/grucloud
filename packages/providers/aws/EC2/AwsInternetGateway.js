@@ -1,33 +1,20 @@
 const {
   pipe,
-  filter,
   map,
   get,
   tap,
   eq,
   switchCase,
-  not,
   tryCatch,
   any,
 } = require("rubico");
-const {
-  find,
-  defaultsDeep,
-  isEmpty,
-  first,
-  pluck,
-  includes,
-} = require("rubico/x");
+const { find, defaultsDeep, first, pluck } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   getByIdCore,
@@ -59,6 +46,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ec2 = Ec2New(config);
 
+  const pickId = pick(["InternetGatewayId"]);
   const findId = get("live.InternetGatewayId");
 
   const findName = pipe([
@@ -78,72 +66,46 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
-
-  // const getList = client.getList({
-  //   method: "describeInternetGateways",
-  //   getParam: "InternetGateways",
-  // });
-
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList ig ${JSON.stringify(params)}`);
-      }),
-      () => params,
-      ec2().describeInternetGateways,
-      get("InternetGateways"),
-    ])();
+  const getList = client.getList({
+    method: "describeInternetGateways",
+    getParam: "InternetGateways",
+  });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "InternetGatewayIds", getList });
+  const getById = pipe([
+    ({ InternetGatewayId }) => ({ id: InternetGatewayId }),
+    getByIdCore({ fieldIds: "InternetGatewayIds", getList }),
+  ]);
 
   const getStateName = pipe([
     get("Attachments"),
     first,
     get("State"),
     tap((State) => {
-      logger.info(`ig stateName ${State}`);
+      logger.debug(`ig stateName ${State}`);
     }),
   ]);
 
   const isInstanceUp = eq(getStateName, "available");
-  const isUpById = isUpByIdCore({
-    getById,
-    isInstanceUp,
-  });
-
-  const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
-
-  const create = ({ payload, name, resolvedDependencies: { vpc } }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create ig ${tos({ name })}`);
-        assert(vpc, "InternetGateway is missing the dependency 'vpc'");
-      }),
-      () => ec2().createInternetGateway(payload),
-      get("InternetGateway.InternetGatewayId"),
-      tap((InternetGatewayId) =>
-        pipe([
-          () =>
-            ec2().attachInternetGateway({
-              InternetGatewayId,
-              VpcId: vpc.live.VpcId,
-            }),
-          () =>
-            retryCall({
-              name: `ig create isUpById: ${name} id: ${InternetGatewayId}`,
-              fn: () => isUpById({ id: InternetGatewayId }),
-              config,
-            }),
-        ])()
-      ),
-      tap((InternetGatewayId) => {
-        logger.info(`created ig ${tos({ name, InternetGatewayId })}`);
-      }),
-      (InternetGatewayId) => ({ id: InternetGatewayId }),
-    ])();
+  const create = client.create({
+    method: "createInternetGateway",
+    pickCreated: () => (result) =>
+      pipe([() => result, get("InternetGateway"), pickId])(),
+    pickId,
+    getById,
+    isInstanceUp,
+    config,
+    postCreate: ({ resolvedDependencies: { vpc } }) =>
+      pipe([
+        ({ InternetGatewayId }) => ({
+          InternetGatewayId,
+          VpcId: vpc.live.VpcId,
+        }),
+        ec2().attachInternetGateway,
+      ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInternetGateway-property
@@ -176,8 +138,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap(() => {
         assert(InternetGatewayId);
       }),
-      //TODO use live
-      () => getById({ id: InternetGatewayId }),
+      () => getById({ InternetGatewayId }),
       get("Attachments"),
       map(
         tryCatch(
@@ -207,44 +168,23 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = async ({ id, name, live }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`destroy ig ${JSON.stringify({ name, id })}`);
-        assert(live);
-        assert(id);
-      }),
-      () => detachInternetGateways({ InternetGatewayId: id }),
-      tryCatch(
-        pipe([
-          // TODO InvalidInternetGatewayID.NotFound
-          () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
-          () =>
-            retryCall({
-              name: `destroy ig isDownById: ${name} id: ${id}`,
-              fn: () => isDownById({ id }),
-              config,
-            }),
-        ]),
-        (error) =>
-          pipe([
-            tap(() => {
-              logger.error(`error destroying ig ${tos({ name, id, error })}`);
-            }),
-            () => error,
-            switchCase([
-              eq(get("code"), "AuthFailure"),
-              () => undefined,
-              (error) => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-      tap(() => {
-        logger.debug(`destroyed ig ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    preDestroy: pipe([detachInternetGateways]),
+    pickId,
+    method: "deleteInternetGateway",
+    getById,
+    ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
+    shouldRetryOnException: ({ error, name }) =>
+      pipe([
+        () => error,
+        tap(() => {
+          // "The internetGateway 'igw-0913a9915c19844a8' has dependencies and cannot be deleted."
+          logger.error(`deleteInternetGateway ${name}: ${tos(error)}`);
+        }),
+        eq(get("code"), "DependencyViolation"),
+      ])(),
+    config,
+  });
 
   const configDefault = ({
     name,

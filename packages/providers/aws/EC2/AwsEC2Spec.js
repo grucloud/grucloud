@@ -584,7 +584,7 @@ module.exports = () =>
     },
     {
       type: "ElasticIpAddress",
-      dependsOn: ["EC2::InternetGateway" /*, "EC2::NetworkInterface"*/],
+      dependsOn: ["EC2::InternetGateway", "EC2::InternetGateway"],
       Client: AwsElasticIpAddress,
       isOurMinion,
       compare: compare({
