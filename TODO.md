@@ -1,6 +1,5 @@
 ## Bugs
 
-- gc d -f -a: APIGateway::DomainName 1/2 in grey
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -56,9 +55,9 @@
 
 ## Aws
 
+- gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table
 - Nat gateway handle deleting
-- Internet gateway getByName with Filter tags
 - EC2 Instance placement
 - Route display internet gateway or nat gateway in configDefault
 - resource schema

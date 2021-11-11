@@ -1255,7 +1255,8 @@ const DoCommand = ({ commandOptions, programOptions, command }) =>
     ({ providerGru }) => providerGru.getProviders(),
     map(
       tryCatch(
-        (provider) => provider[command]({ options: commandOptions }),
+        (provider) =>
+          provider[command]({ options: commandOptions, programOptions }),
         (error, provider) => {
           return { error, provider: provider.toString() };
         }

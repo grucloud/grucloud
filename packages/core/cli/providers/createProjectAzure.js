@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, get, tap, assign, eq, map, tryCatch } = require("rubico");
-const { findIndex, find, append, callProp } = require("rubico/x");
+const {
+  findIndex,
+  find,
+  append,
+  callProp,
+  when,
+  identity,
+} = require("rubico/x");
 const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
@@ -32,36 +39,40 @@ const azLogin = pipe([
   }),
 ]);
 
-const promptSubscribtionId = pipe([
-  () => `az account list`,
-  execCommand(),
-  (accounts) =>
-    pipe([
-      () => accounts,
-      map(({ name, id }) => ({
-        title: id,
-        description: `${name}`,
-        value: id,
-      })),
-      (choices) => ({
-        type: "select",
-        name: "subscriptionId",
-        message: "Select the Subscription Id",
-        choices,
-        initial: findIndex(get("isDefault"))(accounts),
-      }),
-      prompts,
-      get("subscriptionId"),
-      (subscriptionId) =>
-        pipe([
-          () => accounts,
-          find(eq(get("id"), subscriptionId)),
-          tap((account) => {
-            assert(account);
-          }),
-        ])(),
-    ])(),
-]);
+const promptSubscribtionId = (params) =>
+  pipe([
+    tap(() => {
+      assert(params);
+    }),
+    () => `az account list`,
+    execCommand(),
+    (accounts) =>
+      pipe([
+        () => accounts,
+        map(({ name, id }) => ({
+          title: id,
+          description: `${name}`,
+          value: id,
+        })),
+        (choices) => ({
+          type: "select",
+          name: "subscriptionId",
+          message: "Select the Subscription Id",
+          choices,
+          initial: findIndex(get("isDefault"))(accounts),
+        }),
+        prompts,
+        get("subscriptionId"),
+        (subscriptionId) =>
+          pipe([
+            () => accounts,
+            find(eq(get("id"), subscriptionId)),
+            tap((account) => {
+              assert(account);
+            }),
+          ])(),
+      ])(),
+  ])();
 
 const fetchAppIdPassword = pipe([
   () => `az ad sp create-for-rbac -n sp1`,
@@ -76,6 +87,7 @@ const writeEnv = ({ dirs, app, account }) =>
   pipe([
     tap(() => {
       assert(dirs);
+      assert(dirs.destination);
       assert(app);
       assert(account);
     }),
@@ -97,8 +109,18 @@ PASSWORD=${app.password}
     ({ content, filename }) => fs.writeFile(filename, content),
   ])();
 
-const promptLocation = ({}) =>
+const findDefaultLocation = ({ config, choices }) =>
   pipe([
+    () => choices,
+    findIndex(eq(get("value"), config.location)),
+    when(eq(identity, -1), () => 0),
+  ])();
+
+const promptLocation = ({ config = {} }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
     () => `az account list-locations`,
     execCommand(),
     callProp("sort", (a, b) =>
@@ -115,24 +137,31 @@ const promptLocation = ({}) =>
       name: "location",
       message: "Select a location",
       choices,
+      initial: findDefaultLocation({ config, choices }),
     }),
     prompts,
     get("location"),
   ])();
 
-const createConfig = ({ location, projectName, dirs: { destination } }) =>
+const createConfig = ({ location, dirs: { destination } }) =>
   pipe([
     tap(() => {
       assert(destination);
+      assert(location);
     }),
     () => path.resolve(destination, "config.js"),
     (filename) =>
       pipe([
-        () => `module.exports = () => ({\n`,
-        append(`  projectName: "${projectName}",\n`),
+        () => "",
+        append(`const pkg = require("./package.json");\n`),
+        append(`module.exports = () => ({\n`),
+        append("  projectName: pkg.name,\n"),
         append(`  location: "${location}",\n`),
         append("});"),
         (content) => fs.writeFile(filename, content),
+        tap(() => {
+          console.log(`Writing config file to ${filename}`);
+        }),
       ])(),
   ])();
 
