@@ -7,8 +7,10 @@ const {
   switchCase,
   tryCatch,
   any,
+  pick,
+  not,
 } = require("rubico");
-const { find, defaultsDeep, first, pluck } = require("rubico/x");
+const { find, defaultsDeep, first, pluck, isEmpty } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
@@ -86,7 +88,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     }),
   ]);
 
-  const isInstanceUp = eq(getStateName, "available");
+  const isAttached = eq(getStateName, "available");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
   const create = client.create({
@@ -95,21 +97,28 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       pipe([() => result, get("InternetGateway"), pickId])(),
     pickId,
     getById,
-    isInstanceUp,
     config,
-    postCreate: ({ resolvedDependencies: { vpc } }) =>
-      pipe([
-        ({ InternetGatewayId }) => ({
-          InternetGatewayId,
-          VpcId: vpc.live.VpcId,
-        }),
-        ec2().attachInternetGateway,
-      ]),
+    postCreate:
+      ({ resolvedDependencies: { vpc } }) =>
+      ({ InternetGatewayId }) =>
+        pipe([
+          () => ({
+            InternetGatewayId,
+            VpcId: vpc.live.VpcId,
+          }),
+          ec2().attachInternetGateway,
+          () =>
+            retryCall({
+              name: `attachInternetGateway ${InternetGatewayId}`,
+              fn: pipe([() => ({ InternetGatewayId }), getById, isAttached]),
+              isExpectedResult: not(isEmpty),
+              config: { retryCount: 20, retryDelay: 5e3 },
+            }),
+        ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInternetGateway-property
-
   const detachInternetGateway = ({ InternetGatewayId, VpcId }) =>
     pipe([
       () =>
