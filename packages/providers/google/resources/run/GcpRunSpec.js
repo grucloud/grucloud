@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, tap, omit, set, get } = require("rubico");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compare } = require("../../GoogleCommon");
 
 const { GcpRunService } = require("./GcpRunService");
@@ -27,7 +28,28 @@ module.exports = () =>
           omit(["metadata.deletionTimestamp"]),
           omit(["metadata.generation"]),
           omit(["metadata.annotations"]),
+          omit([["metadata", "labels", "cloud.googleapis.com/location"]]),
+          omit([
+            [
+              "spec",
+              "template",
+              "metadata",
+              "annotations",
+              "run.googleapis.com/client-name",
+            ],
+          ]),
+          omit([
+            [
+              "spec",
+              "template",
+              "metadata",
+              "annotations",
+              "run.googleapis.com/execution-environment",
+            ],
+          ]),
+
           omit(["status"]),
+          omitIfEmpty(["metadata.labels"]),
           set(
             "spec.template.spec.serviceAccountName",
             () =>
@@ -70,6 +92,10 @@ module.exports = () =>
             assert(true);
           }),
           omit(["policy.etag"]),
+          set("location", () => "config.region"),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
       compare: compare({
         filterTarget: pipe([

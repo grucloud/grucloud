@@ -9,17 +9,12 @@ const createResources = ({ provider }) => {
       kind: "Service",
       metadata: {
         name: "starhackit-server",
-        labels: {
-          "cloud.googleapis.com/location": "us-central1",
-        },
       },
       spec: {
         template: {
           metadata: {
             name: "starhackit-server-00005-rud",
             annotations: {
-              "run.googleapis.com/client-name": "cloud-console",
-              "run.googleapis.com/execution-environment": "gen1",
               "autoscaling.knative.dev/maxScale": "100",
             },
           },
@@ -59,7 +54,7 @@ const createResources = ({ provider }) => {
   provider.run.makeServiceIamMember({
     properties: ({ config }) => ({
       service: "starhackit-server",
-      location: "us-central1",
+      location: config.region,
       policy: {
         version: 1,
         bindings: [
