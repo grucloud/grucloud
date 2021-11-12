@@ -1516,12 +1516,17 @@ exports.Cli = ({
   config,
   configs = [],
   stage,
+  promptsInject,
 } = {}) =>
   pipe([
     tap(() => {
       logger.debug(`Cli ${JSON.stringify({ programOptions, stage })}`);
       assert(isFunction(createStack), "createStack must be a function");
       assert(config ? isFunction(config) : true, "config must be a function");
+    }),
+    () => promptsInject,
+    tap.if(not(isEmpty), () => {
+      prompts.inject(promptsInject);
     }),
     () => ({
       programOptions: pipe([

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, tap, switchCase, eq, tryCatch } = require("rubico");
-const { identity } = require("rubico/x");
+const { identity, isFunction } = require("rubico/x");
 const shell = require("shelljs");
 
 const Spinnies = require("spinnies");
@@ -8,56 +8,70 @@ const Spinnies = require("spinnies");
 const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const spinner = { interval: 300, frames };
 
-exports.execCommand =
-  ({ transform = identity, displayText } = {}) =>
-  (command) =>
+const execCommand =
+  ({ textStart, textEnd, textError }) =>
+  (asyncCommand) =>
     pipe([
       () => new Spinnies({ spinner }),
       (spinnies) =>
         pipe([
+          tap((params) => {
+            assert(isFunction(asyncCommand));
+          }),
           tap(() => {
-            spinnies.add(command, {
-              text: displayText || command,
+            spinnies.add(textStart, {
+              text: textStart,
               color: "green",
               status: "spinning",
             });
           }),
-          () =>
-            new Promise((resolve) => {
-              shell.exec(
-                transform(command),
-                {
-                  silent: true,
-                  async: true,
-                },
-                (code, stdout, stderr) => {
-                  resolve({ code, stdout, stderr });
-                }
-              );
-            }),
-          switchCase([
-            eq(get("code"), 0),
+          tryCatch(
             pipe([
-              get("stdout"),
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                tryCatch(JSON.parse, (error, output) => output),
-                tap((params) => {
-                  spinnies.succeed(command);
-                }),
-              ]),
-            ]),
-            pipe([
-              get("stderr"),
-              tap((stderr) => {
-                spinnies.fail(command, { text: `${command} ${stderr}` });
+              asyncCommand,
+              tap((result) => {
+                spinnies.succeed(textStart);
               }),
-              (stderr) => {
-                throw Error(stderr);
-              },
             ]),
-          ]),
+            pipe([
+              tap((error) => {
+                spinnies.fail(textStart, {
+                  text: `${textError || textStart}, error: ${error.message}`,
+                });
+              }),
+            ])
+          ),
         ])(),
+    ])();
+
+exports.execCommand = execCommand;
+
+exports.execCommandShell =
+  ({ transform = identity } = {}) =>
+  (command) =>
+    pipe([
+      () => () =>
+        new Promise((resolve, reject) => {
+          shell.exec(
+            transform(command),
+            {
+              silent: true,
+              async: true,
+            },
+            (code, stdout, stderr) =>
+              pipe([
+                switchCase([
+                  eq(code, 0),
+                  pipe([
+                    () => stdout,
+                    pipe([
+                      tryCatch(JSON.parse, (error, output) => output),
+                      resolve,
+                    ]),
+                  ]),
+                  pipe([() => stderr, reject]),
+                ]),
+              ])()
+          );
+        }),
+      execCommand({ textStart: command }),
     ])();

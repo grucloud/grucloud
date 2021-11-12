@@ -28,6 +28,21 @@ Flowchart for creating a new AWS project:
 
 ![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-aws.svg)
 
+Example of the CLI output:
+
+```txt
+✔ Cloud Provider › AWS
+✔ Project's name … my-project
+✓ aws --version
+✓ aws sts get-caller-identity --region us-east-1
+✓ aws ec2 describe-regions --region us-east-1
+✓ aws configure get region
+✔ Select a region › us-east-1
+✓ aws configure set region us-east-1
+cd /Users/joe/my-project
+npm install
+```
+
 ### Azure
 
 Flowchart for creating a new Azure project:

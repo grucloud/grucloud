@@ -17,6 +17,7 @@ const {
   not,
   omit,
   reduce,
+  fork,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -37,6 +38,10 @@ const { convertError } = require("@grucloud/core/Common");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 const YAML = require("@grucloud/core/cli/json2yaml");
+
+const {
+  createProjectGoogle,
+} = require("@grucloud/core/cli/providers/createProjectGoogle");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleProvider" });
 const { tos } = require("@grucloud/core/tos");
@@ -208,22 +213,35 @@ const runGCloudCommand = tryCatch(
 const getConfig = () =>
   runGCloudCommand({ command: "gcloud info --format json" });
 
-const getDefaultAccessToken = () => {
-  const result = runGCloudCommand({
+const getDefaultAccessToken = pipe([
+  () => ({
     command: "gcloud auth print-access-token --format json",
-  });
-  if (result.error) {
-    const result = runGCloudCommand({
-      command: "gcloud auth login",
-    });
-    if (!result.error) {
-      return getDefaultAccessToken();
-    }
-  } else {
-    assert(result.token, `no token in ${tos(result)}`);
-    return result.token;
-  }
-};
+  }),
+  runGCloudCommand,
+  switchCase([
+    get("error"),
+    pipe([
+      () => ({
+        command: "gcloud auth login",
+      }),
+      runGCloudCommand,
+      get("error"),
+      switchCase([
+        isEmpty,
+        () => getDefaultAccessToken(),
+        (error) => {
+          throw error;
+        },
+      ]),
+    ]),
+    pipe([
+      get("token"),
+      tap((token) => {
+        assert(token, `no token`);
+      }),
+    ]),
+  ]),
+]);
 
 exports.authorize = authorize;
 
@@ -909,7 +927,7 @@ const info = ({
   };
 };
 
-const init = async ({
+const init = ({
   gcloudConfig,
   projectId,
   projectName,
@@ -917,92 +935,105 @@ const init = async ({
   applicationCredentialsFile,
   serviceAccountName,
   options,
-}) => {
-  if (!gcloudConfig.config) {
-    console.error(`gcloud is not installed, setup aborted`);
-    return;
-  }
-  assert(region);
-
-  return tryCatch(
-    pipe([
-      () => {
-        console.log(`Initializing project ${projectId}`);
-      },
-      () => getDefaultAccessToken(),
-      switchCase([
-        isEmpty,
+  programOptions,
+}) =>
+  switchCase([
+    () => gcloudConfig.config,
+    tryCatch(
+      pipe([
+        tap(() => {
+          assert(region);
+          assert(programOptions.workingDirectory);
+        }),
+        fork({
+          dirs: () => ({
+            destination: path.resolve(programOptions.workingDirectory),
+          }),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        createProjectGoogle,
         () => {
-          console.error(
-            `Cannot get default access token, run 'gcloud auth login' and try again`
-          );
+          console.log(`Initializing project ${projectId}`);
         },
-        (accessToken) =>
-          pipe([
-            () => createProject({ projectName, projectId, accessToken }),
-            () =>
-              serviceEnable({
-                projectId,
-                region,
-                accessToken,
-                servicesApiMap: servicesApiMapBase,
-              }),
-            () => billingEnable({ projectId, accessToken }),
-            () =>
-              serviceAccountCreate({
-                projectId,
-                accessToken,
-                serviceAccountName,
-              }),
-            () => {
-              console.log(
-                `Create and save credential file to ${applicationCredentialsFile}`
-              );
-            },
-            () =>
-              serviceAccountKeyCreate({
-                projectId,
-                projectName,
-                accessToken,
-                serviceAccountName,
-                applicationCredentialsFile,
-              }),
-            () => {
-              console.log(`Update IAM policy`);
-            },
-            () =>
-              iamPolicyAdd({
-                accessToken,
-                projectId,
-                serviceAccountName,
-              }),
-            () =>
-              serviceEnable({
-                region,
-                projectId,
-                accessToken,
-                servicesApiMap: servicesApiMapMain,
-              }),
-            () => {
-              console.log(`Project ${projectName} is now initialized`);
-            },
-          ])(),
+        () => getDefaultAccessToken(),
+        switchCase([
+          isEmpty,
+          () => {
+            console.error(
+              `Cannot get default access token, run 'gcloud auth login' and try again`
+            );
+          },
+          (accessToken) =>
+            pipe([
+              () => createProject({ projectName, projectId, accessToken }),
+              () =>
+                serviceEnable({
+                  projectId,
+                  region,
+                  accessToken,
+                  servicesApiMap: servicesApiMapBase,
+                }),
+              () => billingEnable({ projectId, accessToken }),
+              () =>
+                serviceAccountCreate({
+                  projectId,
+                  accessToken,
+                  serviceAccountName,
+                }),
+              () => {
+                console.log(
+                  `Create and save credential file to ${applicationCredentialsFile}`
+                );
+              },
+              () =>
+                serviceAccountKeyCreate({
+                  projectId,
+                  projectName,
+                  accessToken,
+                  serviceAccountName,
+                  applicationCredentialsFile,
+                }),
+              () => {
+                console.log(`Update IAM policy`);
+              },
+              () =>
+                iamPolicyAdd({
+                  accessToken,
+                  projectId,
+                  serviceAccountName,
+                }),
+              () =>
+                serviceEnable({
+                  region,
+                  projectId,
+                  accessToken,
+                  servicesApiMap: servicesApiMapMain,
+                }),
+              () => {
+                console.log(`Project ${projectName} is now initialized`);
+              },
+            ])(),
+        ]),
       ]),
-    ]),
-    pipe([
-      tap((error) => {
-        assert(true);
-      }),
-      (error) => convertError({ error }),
-      tap((error) => {
-        console.error(YAML.stringify(error));
-      }),
-      (error) => {
-        throw error;
-      },
-    ])
-  )();
-};
+      pipe([
+        tap((error) => {
+          assert(true);
+        }),
+        (error) => convertError({ error }),
+        tap((error) => {
+          console.error(YAML.stringify(error));
+        }),
+        (error) => {
+          throw error;
+        },
+      ])
+    ),
+    () => {
+      console.error(`gcloud is not installed, setup aborted`);
+    },
+  ])();
 
 const unInit = async ({
   gcloudConfig,
@@ -1179,9 +1210,10 @@ exports.GoogleProvider = ({
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
-    init: ({ options } = {}) =>
+    init: ({ options, programOptions } = {}) =>
       init({
         options,
+        programOptions,
         gcloudConfig,
         region: region(),
         projectName: projectName(),

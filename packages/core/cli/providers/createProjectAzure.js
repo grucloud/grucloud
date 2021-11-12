@@ -12,11 +12,11 @@ const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
-const { execCommand } = require("./createProjectCommon");
+const { execCommandShell } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
   () => "az version",
-  tryCatch(pipe([execCommand()]), (error) => {
+  tryCatch(pipe([execCommandShell()]), (error) => {
     console.error(
       "The az CLI is not installed.\nVisit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli to install az\n"
     );
@@ -27,14 +27,14 @@ const isAzPresent = pipe([
 // az account show
 const isAuthenticated = pipe([
   () => "az account show",
-  tryCatch(pipe([execCommand()]), (error) =>
+  tryCatch(pipe([execCommandShell()]), (error) =>
     pipe([azLogin, isAuthenticated])()
   ),
 ]);
 
 const azLogin = pipe([
   () => "az login",
-  tryCatch(pipe([execCommand()]), (error) => {
+  tryCatch(pipe([execCommandShell()]), (error) => {
     throw Error("Could not authenticate");
   }),
 ]);
@@ -45,7 +45,7 @@ const promptSubscribtionId = (params) =>
       assert(params);
     }),
     () => `az account list`,
-    execCommand(),
+    execCommandShell(),
     (accounts) =>
       pipe([
         () => accounts,
@@ -76,7 +76,7 @@ const promptSubscribtionId = (params) =>
 
 const fetchAppIdPassword = pipe([
   () => `az ad sp create-for-rbac -n sp1`,
-  execCommand(),
+  execCommandShell(),
   tap(({ appId, password }) => {
     assert(appId);
     assert(password);
@@ -122,7 +122,7 @@ const promptLocation = ({ config = {} }) =>
       assert(true);
     }),
     () => `az account list-locations`,
-    execCommand(),
+    execCommandShell(),
     callProp("sort", (a, b) =>
       a.regionalDisplayName.localeCompare(b.regionalDisplayName)
     ),
@@ -143,26 +143,20 @@ const promptLocation = ({ config = {} }) =>
     get("location"),
   ])();
 
-const createConfig = ({ location, dirs: { destination } }) =>
+const createConfig = ({ location }) =>
   pipe([
     tap(() => {
-      assert(destination);
       assert(location);
     }),
-    () => path.resolve(destination, "config.js"),
-    (filename) =>
-      pipe([
-        () => "",
-        append(`const pkg = require("./package.json");\n`),
-        append(`module.exports = () => ({\n`),
-        append("  projectName: pkg.name,\n"),
-        append(`  location: "${location}",\n`),
-        append("});"),
-        (content) => fs.writeFile(filename, content),
-        tap(() => {
-          console.log(`Writing config file to ${filename}`);
-        }),
-      ])(),
+    () => "",
+    append(`const pkg = require("./package.json");\n`),
+    append(`module.exports = () => ({\n`),
+    append("  projectName: pkg.name,\n"),
+    append(`  location: "${location}",\n`),
+    append("});"),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.createProjectAzure = pipe([
@@ -171,6 +165,6 @@ exports.createProjectAzure = pipe([
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
   assign({ location: promptLocation }),
+  assign({ config: createConfig }),
   tap(writeEnv),
-  tap(createConfig),
 ]);

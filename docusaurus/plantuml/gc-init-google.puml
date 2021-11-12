@@ -1,0 +1,58 @@
+@startuml gc-init-google
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc init for GCP" {
+start
+
+:""gc init"";
+
+partition "Is the gcloud CLI installed ?" {
+repeat :""gcloud version"";
+backward:  Visit [[https://https://cloud.google.com/sdk/docs/install]];
+repeat while (is installed ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+
+repeat :""gcloud auth list"";
+backward:  ""gloud auth login"";
+repeat while (is authenticated ?) is (no) 
+
+}
+
+partition "Select Region " {
+fork
+  :""gcloud compute regions list"";
+fork again
+  :""gcloud config get-value compute/region"";
+end fork
+: Prompt for region from list;
+}
+
+partition "Select Zone " {
+ fork
+  :""gcloud compute zones list"";
+fork again
+  :""gcloud config get-value compute/zone"";
+end fork
+: Prompt for zone from list;
+}
+
+:setup billing for that project;
+:enable the api services;
+:create a service account;
+:create and save the credential file for this service account;
+:update the iam policy by binding roles to the service account;
+
+end
+note right
+Next Steps:
+* ""gc list""
+* ""gc apply""
+* ""gc destroy""
+end note 
+}
+@enduml

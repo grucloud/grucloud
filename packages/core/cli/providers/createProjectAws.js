@@ -10,10 +10,8 @@ const {
   first,
 } = require("rubico/x");
 const prompts = require("prompts");
-const path = require("path");
-const fs = require("fs").promises;
 const shell = require("shelljs");
-const { execCommand } = require("./createProjectCommon");
+const { execCommandShell } = require("./createProjectCommon");
 const { identity } = require("rxjs");
 
 const awsExecCommand =
@@ -21,7 +19,7 @@ const awsExecCommand =
   (command) =>
     pipe([
       () => `aws ${command}`,
-      execCommand({ transform: append(" --output json"), displayText }),
+      execCommandShell({ transform: append(" --output json"), displayText }),
     ])();
 
 const isAwsPresent = pipe([
@@ -189,22 +187,19 @@ const isAuthenticated = pipe([
   ),
 ]);
 
-const createConfig = ({ projectName, dirs: { destination } }) =>
+const createConfig = ({}) =>
   pipe([
     tap(() => {
-      assert(destination);
+      assert(true);
     }),
-    () => path.resolve(destination, "config.js"),
-    (filename) =>
-      pipe([
-        () => `module.exports = () => ({\n`,
-        append(`  projectName: "${projectName}",\n`),
-        append("});"),
-        tap((params) => {
-          assert(true);
-        }),
-        (content) => fs.writeFile(filename, content),
-      ])(),
+    () => "",
+    append(`const pkg = require("./package.json");\n`),
+    append(`module.exports = () => ({\n`),
+    append("  projectName: pkg.name,\n"),
+    append("});"),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.createProjectAws = pipe([
@@ -214,8 +209,8 @@ exports.createProjectAws = pipe([
   tap(isAwsPresent),
   tap(isAuthenticated),
   assign({ region: promptRegion }),
+  assign({ config: createConfig }),
   tap((params) => {
     assert(true);
   }),
-  tap(createConfig),
 ]);

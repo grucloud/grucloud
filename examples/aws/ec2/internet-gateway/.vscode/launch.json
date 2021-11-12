@@ -13,6 +13,17 @@
       "port": 9229
     },
     {
+      "name": "Init",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "init"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "GenCode",
       "type": "node",
       "request": "launch",

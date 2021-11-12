@@ -1,0 +1,63 @@
+@startuml gc-init-azure
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc init for Azure" {
+start
+
+:""gc init"";
+
+partition "Is the az CLI installed ?" {
+repeat :""az version"";
+backward:  Visit [[https://docs.microsoft.com/en-us/cli/azure/install-azure-cli]];
+repeat while (is installed ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+
+repeat :""az account show"";
+backward:  ""az login"";
+repeat while (is authenticated ?) is (no) 
+
+}
+
+partition "Select Subscription Id" {
+ 
+: ""az account list"";
+: Prompt for Subscription Id from list;
+}
+
+partition "Create a Service Principal" {
+: ""az ad sp create-for-rbac -n sp1"";
+}
+
+partition "Select Location " {
+  :""az account list-locations"";
+: Prompt for location from list;
+}
+
+: Create ""auth.env"";
+note right
+* ""TENANT_ID""
+* ""SUBSCRIPTION_ID""
+* ""APP_ID""
+* ""PASSWORD""
+end note 
+
+: Create ""config.js"";
+note right
+* ""location""
+end note 
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc apply""
+* ""gc destroy""
+end note 
+
+}
+@enduml
