@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1103px" preserveAspectRatio="none" style="width:693px;height:1103px;background:#FFFFFF;" version="1.1" viewBox="0 0 693 1103" width="693px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="1091.3877" style="stroke:#000000;stroke-width:2.0;" width="680.5" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="686.5" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="200" x="246.25" y="22.0752">GruCloud Example Workflow</text><ellipse cx="263.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><path d="M397,102.407 L397,111.3066 L377,115.3066 L397,119.3066 L397,128.2063 A0,0 0 0 0 397,128.2063 L537,128.2063 A0,0 0 0 0 537,128.2063 L537,112.407 L527,102.407 L397,102.407 A0,0 0 0 0 397,102.407 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M527,102.407 L527,112.407 L537,112.407 L527,102.407 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="41" x="403" y="120.4768">Install</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="16" x="449" y="120.0071">gc</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="52" x="470" y="120.4768">globally</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="227" x="150" y="98.0146"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="164" y="120.0791"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="203" x="164" y="119.6455">npm install -g @grucloud/core</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="374" x="76.5" y="167.5986"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="90.5" y="189.6631"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="350" x="90.5" y="189.2295">git clone https://github.com/grucloud/grucloud.git</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="269" x="129" y="237.1826"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="143" y="259.2471"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="245" x="143" y="258.8135">cd examples/the/example/in/question</text><path d="M334,306.7666 L334,323.5659 L314,327.5659 L334,331.5659 L334,348.3652 A0,0 0 0 0 334,348.3652 L567,348.3652 A0,0 0 0 0 567,348.3652 L567,316.7666 L557,306.7666 L334,306.7666 A0,0 0 0 0 334,306.7666 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M557,306.7666 L557,316.7666 L567,316.7666 L557,306.7666 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="212" x="340" y="324.8364">Install the project's dependency</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="66" x="340" y="340.6357">defined in</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="411" y="340.166">package.json</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="101" x="213" y="310.2739"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="227" y="332.3384"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="227" y="331.9048">npm install</text><path d="M320,383.3652 L320,415.9639 L300,419.9639 L320,423.9639 L320,456.5625 A0,0 0 0 0 320,456.5625 L521,456.5625 A0,0 0 0 0 521,456.5625 L521,393.3652 L511,383.3652 L320,383.3652 A0,0 0 0 0 320,383.3652 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M511,383.3652 L511,393.3652 L521,393.3652 L511,383.3652 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="150" x="326" y="401.4351">Initialize the provider:</text><ellipse cx="331.5" cy="412.4639" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="94" x="339" y="417.2344">authentication</text><ellipse cx="331.5" cy="428.2632" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="167" x="339" y="433.0337">service account/principal</text><ellipse cx="331.5" cy="444.0625" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="79" x="339" y="448.833">region/zone</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="73" x="227" y="402.6719"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="241" y="424.7363"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="49" x="241" y="424.3027">gc init</text><path d="M323.5,495.9548 L323.5,504.8545 L303.5,508.8545 L323.5,512.8545 L323.5,521.7542 A0,0 0 0 0 323.5,521.7542 L534.5,521.7542 A0,0 0 0 0 534.5,521.7542 L534.5,505.9548 L524.5,495.9548 L323.5,495.9548 A0,0 0 0 0 323.5,495.9548 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M524.5,495.9548 L524.5,505.9548 L534.5,505.9548 L524.5,495.9548 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="190" x="329.5" y="514.0247">List the target infrastructure</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="80" x="223.5" y="491.5625"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="237.5" y="513.627"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="56" x="237.5" y="513.1934">gc graph</text><path d="M323.5,565.5388 L323.5,574.4385 L303.5,578.4385 L323.5,582.4385 L323.5,591.3381 A0,0 0 0 0 323.5,591.3381 L676.5,591.3381 A0,0 0 0 0 676.5,591.3381 L676.5,575.5388 L666.5,565.5388 L323.5,565.5388 A0,0 0 0 0 323.5,565.5388 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M666.5,565.5388 L666.5,575.5388 L676.5,575.5388 L666.5,565.5388 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="239" x="329.5" y="583.6086">Deploy the infrastructure defined in</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="88" x="573.5" y="583.1389">resource.js</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="80" x="223.5" y="561.1465"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="237.5" y="583.2109"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="56" x="237.5" y="582.7773">gc apply</text><path d="M320,635.1228 L320,644.0225 L300,648.0225 L320,652.0225 L320,660.9221 A0,0 0 0 0 320,660.9221 L515,660.9221 A0,0 0 0 0 515,660.9221 L515,645.1228 L505,635.1228 L320,635.1228 A0,0 0 0 0 320,635.1228 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M505,635.1228 L505,645.1228 L515,645.1228 L505,635.1228 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="174" x="326" y="653.1926">List the live infrastructure</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="73" x="227" y="630.7305"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="241" y="652.7949"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="49" x="241" y="652.3613">gc list</text><polygon fill="#FFFFFF" points="228.5,703.0518,298.5,703.0518,310.5,715.0518,298.5,727.0518,228.5,727.0518,216.5,715.0518,228.5,703.0518" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="70" x="228.5" y="719.4265">Update infra</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="89" x="123.5" y="699.3735">Update with the</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="88" x="123.5" y="712.7422">provider's tools</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="139" x="310.5" y="712.7422">Directly update the code</text><rect fill="#FFFFFF" height="49.168" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="143" x="26" y="737.0518"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="123" x="36" y="759.1162">Modify the infra with</text><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="102" x="36" y="773.7002">web portal or CLI</text><path d="M162.5,824.3201 L162.5,833.2197 L142.5,837.2197 L162.5,841.2197 L162.5,850.1194 A0,0 0 0 0 162.5,850.1194 L345.5,850.1194 A0,0 0 0 0 345.5,850.1194 L345.5,834.3201 L335.5,824.3201 L162.5,824.3201 A0,0 0 0 0 162.5,824.3201 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M335.5,824.3201 L335.5,834.3201 L345.5,834.3201 L335.5,824.3201 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="61" x="168.5" y="842.3899">Generate</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="96" x="234.5" y="841.9202">resources.js</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="90" x="52.5" y="821.2197"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="70" x="62.5" y="840.2666">gc gencode</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="128" x="365.5" y="737.0518"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="23" x="379.5" y="759.1162">Edit</text><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="406.5" y="758.6826">resource.js</text><polygon fill="#FFFFFF" points="263.5,859.2197,275.5,871.2197,263.5,883.2197,251.5,871.2197,263.5,859.2197" style="stroke:#000000;stroke-width:1.5;"/><path d="M323.5,922.6121 L323.5,931.5117 L303.5,935.5117 L323.5,939.5117 L323.5,948.4114 A0,0 0 0 0 323.5,948.4114 L518.5,948.4114 A0,0 0 0 0 518.5,948.4114 L518.5,932.6121 L508.5,922.6121 L323.5,922.6121 A0,0 0 0 0 323.5,922.6121 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M508.5,922.6121 L508.5,932.6121 L518.5,932.6121 L508.5,922.6121 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="174" x="329.5" y="940.6819">Update  the infrastructure</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="80" x="223.5" y="918.2197"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="237.5" y="940.2842"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="56" x="237.5" y="939.8506">gc apply</text><path d="M330.5,992.196 L330.5,1001.0957 L310.5,1005.0957 L330.5,1009.0957 L330.5,1017.9954 A0,0 0 0 0 330.5,1017.9954 L530.5,1017.9954 A0,0 0 0 0 530.5,1017.9954 L530.5,1002.196 L520.5,992.196 L330.5,992.196 A0,0 0 0 0 330.5,992.196 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M520.5,992.196 L520.5,1002.196 L530.5,1002.196 L520.5,992.196 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="179" x="336.5" y="1010.2659">Destroy  the infrastructure</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="94" x="216.5" y="987.8037"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="230.5" y="1009.8682"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="70" x="230.5" y="1009.4346">gc destroy</text><ellipse cx="263.5" cy="1067.3877" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="257.3128" x2="269.6872" y1="1061.2005" y2="1073.5749"/><line style="stroke:#000000;stroke-width:2.5;" x1="269.6872" x2="257.3128" y1="1061.2005" y2="1073.5749"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="259.5,88.0146,263.5,98.0146,267.5,88.0146,263.5,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="132.5986" y2="167.5986"/><polygon fill="#000000" points="259.5,157.5986,263.5,167.5986,267.5,157.5986,263.5,161.5986" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="202.1826" y2="237.1826"/><polygon fill="#000000" points="259.5,227.1826,263.5,237.1826,267.5,227.1826,263.5,231.1826" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="271.7666" y2="310.2739"/><polygon fill="#000000" points="259.5,300.2739,263.5,310.2739,267.5,300.2739,263.5,304.2739" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="344.8579" y2="402.6719"/><polygon fill="#000000" points="259.5,392.6719,263.5,402.6719,267.5,392.6719,263.5,396.6719" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="437.2559" y2="491.5625"/><polygon fill="#000000" points="259.5,481.5625,263.5,491.5625,267.5,481.5625,263.5,485.5625" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="526.1465" y2="561.1465"/><polygon fill="#000000" points="259.5,551.1465,263.5,561.1465,267.5,551.1465,263.5,555.1465" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="595.7305" y2="630.7305"/><polygon fill="#000000" points="259.5,620.7305,263.5,630.7305,267.5,620.7305,263.5,624.7305" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="97.5" x2="97.5" y1="786.2197" y2="821.2197"/><polygon fill="#000000" points="93.5,811.2197,97.5,821.2197,101.5,811.2197,97.5,815.2197" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="216.5" x2="97.5" y1="715.0518" y2="715.0518"/><line style="stroke:#000000;stroke-width:1.5;" x1="97.5" x2="97.5" y1="715.0518" y2="737.0518"/><polygon fill="#000000" points="93.5,727.0518,97.5,737.0518,101.5,727.0518,97.5,731.0518" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="310.5" x2="429.5" y1="715.0518" y2="715.0518"/><line style="stroke:#000000;stroke-width:1.5;" x1="429.5" x2="429.5" y1="715.0518" y2="737.0518"/><polygon fill="#000000" points="425.5,727.0518,429.5,737.0518,433.5,727.0518,429.5,731.0518" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="97.5" x2="97.5" y1="853.2197" y2="871.2197"/><line style="stroke:#000000;stroke-width:1.5;" x1="97.5" x2="251.5" y1="871.2197" y2="871.2197"/><polygon fill="#000000" points="241.5,867.2197,251.5,871.2197,241.5,875.2197,245.5,871.2197" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="429.5" x2="429.5" y1="771.6357" y2="871.2197"/><line style="stroke:#000000;stroke-width:1.5;" x1="429.5" x2="275.5" y1="871.2197" y2="871.2197"/><polygon fill="#000000" points="285.5,867.2197,275.5,871.2197,285.5,875.2197,281.5,871.2197" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="665.3145" y2="703.0518"/><polygon fill="#000000" points="259.5,693.0518,263.5,703.0518,267.5,693.0518,263.5,697.0518" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="883.2197" y2="918.2197"/><polygon fill="#000000" points="259.5,908.2197,263.5,918.2197,267.5,908.2197,263.5,912.2197" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="952.8037" y2="987.8037"/><polygon fill="#000000" points="259.5,977.8037,263.5,987.8037,267.5,977.8037,263.5,981.8037" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="263.5" x2="263.5" y1="1022.3877" y2="1057.3877"/><polygon fill="#000000" points="259.5,1047.3877,263.5,1057.3877,267.5,1047.3877,263.5,1051.3877" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[6cd83da6bb89bf9f98594a98224815b1]
+@startuml gc-example-workflow
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "GruCloud Example Workflow" {
+start
+: ""npm install -g @grucloud/core"";
+note right
+Install ""gc"" globally
+end note 
+
+: ""git clone https://github.com/grucloud/grucloud.git"";
+: ""cd examples/the/example/in/question"";
+: ""npm install"";
+note right
+Install the project's dependency
+defined in ""package.json""
+end note 
+
+: ""gc init"";
+note right
+Initialize the provider:
+* authentication
+* service account/principal
+* region/zone
+end note 
+
+: ""gc graph"";
+note right
+List the target infrastructure
+end note 
+
+: ""gc apply"";
+note right
+Deploy the infrastructure defined in ""resource.js""
+end note 
+: ""gc list"";
+note right
+List the live infrastructure
+end note 
+if (Update infra) then (Update with the \nprovider's tools)
+  :Modify the infra with\nweb portal or CLI;
+  :""gc gencode"";
+  note right
+Generate ""resources.js""
+end note 
+else (Directly update the code)
+  : Edit ""resource.js"";
+endif
+: ""gc apply"";
+note right
+Update  the infrastructure
+end note 
+: ""gc destroy"";
+note right
+Destroy  the infrastructure
+end note 
+end
+
+}
+@enduml
+
+@startuml gc-example-workflow
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "GruCloud Example Workflow" {
+start
+: ""npm install -g @grucloud/core"";
+note right
+Install ""gc"" globally
+end note 
+
+: ""git clone https://github.com/grucloud/grucloud.git"";
+: ""cd examples/the/example/in/question"";
+: ""npm install"";
+note right
+Install the project's dependency
+defined in ""package.json""
+end note 
+
+: ""gc init"";
+note right
+Initialize the provider:
+* authentication
+* service account/principal
+* region/zone
+end note 
+
+: ""gc graph"";
+note right
+List the target infrastructure
+end note 
+
+: ""gc apply"";
+note right
+Deploy the infrastructure defined in ""resource.js""
+end note 
+: ""gc list"";
+note right
+List the live infrastructure
+end note 
+if (Update infra) then (Update with the \nprovider's tools)
+  :Modify the infra with\nweb portal or CLI;
+  :""gc gencode"";
+  note right
+Generate ""resources.js""
+end note 
+else (Directly update the code)
+  : Edit ""resource.js"";
+endif
+: ""gc apply"";
+note right
+Update  the infrastructure
+end note 
+: ""gc destroy"";
+note right
+Destroy  the infrastructure
+end note 
+end
+
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 09:40:07 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
