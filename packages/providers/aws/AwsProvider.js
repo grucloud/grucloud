@@ -11,7 +11,10 @@ const {
   filter,
   not,
   map,
+  fork,
 } = require("rubico");
+const path = require("path");
+
 const { first, pluck, isFunction, size } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
@@ -19,7 +22,9 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New, assignTags } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
-
+const {
+  createProjectAws,
+} = require("@grucloud/core/cli/providers/createProjectAws");
 const { generateCode } = require("./Aws2gc");
 
 const ApiGatewayV2 = require("./ApiGatewayV2");
@@ -200,6 +205,19 @@ exports.AwsProvider = ({
     config: omit(["accountId", "zone"])(makeConfig()),
   });
 
+  const init = ({ options, programOptions }) =>
+    pipe([
+      tap(() => {
+        assert(programOptions.workingDirectory);
+      }),
+      fork({
+        dirs: () => ({
+          destination: path.resolve(programOptions.workingDirectory),
+        }),
+      }),
+      createProjectAws,
+    ])();
+
   const getListHof = ({ getList, spec }) =>
     tryCatch(
       pipe([
@@ -237,6 +255,7 @@ exports.AwsProvider = ({
     fnSpecs,
     start,
     info,
+    init,
     generateCode: ({ commandOptions, programOptions }) =>
       generateCode({
         providerConfig: makeConfig(),

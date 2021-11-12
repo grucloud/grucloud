@@ -20,17 +20,18 @@ const {
   callProp,
 } = require("rubico/x");
 const prompts = require("prompts");
-const path = require("path");
-const fs = require("fs").promises;
 
-const { execCommand } = require("./createProjectCommon");
+const { execCommandShell } = require("./createProjectCommon");
 
 const gcloudExecCommand =
   ({} = {}) =>
   (command) =>
     pipe([
       () => `gcloud ${command}`,
-      execCommand({ transform: append(" --format=json") }),
+      execCommandShell({ transform: append(" --format=json") }),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const isGcloudPresent = pipe([
@@ -213,23 +214,18 @@ const promptZone = pipe([
     ])(),
 ]);
 
-const createConfig = ({ projectId, projectName, dirs: { destination } }) =>
+const createConfig = ({ projectId, projectName }) =>
   pipe([
     tap(() => {
-      assert(destination);
+      assert(projectId);
     }),
-    () => path.resolve(destination, "config.js"),
-    (filename) =>
-      pipe([
-        () => `module.exports = () => ({\n`,
-        append(`  projectId: "${projectId}",\n`),
-        append(`  projectName: "${projectName}",\n`),
-        append("});"),
-        tap((params) => {
-          assert(true);
-        }),
-        (content) => fs.writeFile(filename, content),
-      ])(),
+    () => `module.exports = () => ({\n`,
+    append(`  projectId: "${projectId}",\n`),
+    append(`  projectName: "${projectName}",\n`),
+    append("});"),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.createProjectGoogle = pipe([
@@ -271,5 +267,5 @@ exports.createProjectGoogle = pipe([
   tap((params) => {
     assert(true);
   }),
-  tap(createConfig),
+  assign({ config: createConfig }),
 ]);

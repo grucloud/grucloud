@@ -9,8 +9,9 @@ const testPing = ({ host }) =>
     timeout: 3,
   });
 
-const testSsh = async ({ host, username = "ubuntu", password }) =>
+const testSsh = async ({ host, username = "ops", password }) =>
   await new Promise((resolve, reject) => {
+    assert(password);
     const conn = new Client();
     conn
       .on("ready", function () {

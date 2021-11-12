@@ -1255,7 +1255,8 @@ const DoCommand = ({ commandOptions, programOptions, command }) =>
     ({ providerGru }) => providerGru.getProviders(),
     map(
       tryCatch(
-        (provider) => provider[command]({ options: commandOptions }),
+        (provider) =>
+          provider[command]({ options: commandOptions, programOptions }),
         (error, provider) => {
           return { error, provider: provider.toString() };
         }
@@ -1515,12 +1516,17 @@ exports.Cli = ({
   config,
   configs = [],
   stage,
+  promptsInject,
 } = {}) =>
   pipe([
     tap(() => {
       logger.debug(`Cli ${JSON.stringify({ programOptions, stage })}`);
       assert(isFunction(createStack), "createStack must be a function");
       assert(config ? isFunction(config) : true, "config must be a function");
+    }),
+    () => promptsInject,
+    tap.if(not(isEmpty), () => {
+      prompts.inject(promptsInject);
     }),
     () => ({
       programOptions: pipe([

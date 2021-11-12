@@ -1,15 +1,22 @@
 const assert = require("assert");
 const { pipe, get, tap, assign, eq, map, tryCatch } = require("rubico");
-const { findIndex, find, append, callProp } = require("rubico/x");
+const {
+  findIndex,
+  find,
+  append,
+  callProp,
+  when,
+  identity,
+} = require("rubico/x");
 const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
-const { execCommand } = require("./createProjectCommon");
+const { execCommandShell } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
   () => "az version",
-  tryCatch(pipe([execCommand()]), (error) => {
+  tryCatch(pipe([execCommandShell()]), (error) => {
     console.error(
       "The az CLI is not installed.\nVisit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli to install az\n"
     );
@@ -20,52 +27,56 @@ const isAzPresent = pipe([
 // az account show
 const isAuthenticated = pipe([
   () => "az account show",
-  tryCatch(pipe([execCommand()]), (error) =>
+  tryCatch(pipe([execCommandShell()]), (error) =>
     pipe([azLogin, isAuthenticated])()
   ),
 ]);
 
 const azLogin = pipe([
   () => "az login",
-  tryCatch(pipe([execCommand()]), (error) => {
+  tryCatch(pipe([execCommandShell()]), (error) => {
     throw Error("Could not authenticate");
   }),
 ]);
 
-const promptSubscribtionId = pipe([
-  () => `az account list`,
-  execCommand(),
-  (accounts) =>
-    pipe([
-      () => accounts,
-      map(({ name, id }) => ({
-        title: id,
-        description: `${name}`,
-        value: id,
-      })),
-      (choices) => ({
-        type: "select",
-        name: "subscriptionId",
-        message: "Select the Subscription Id",
-        choices,
-        initial: findIndex(get("isDefault"))(accounts),
-      }),
-      prompts,
-      get("subscriptionId"),
-      (subscriptionId) =>
-        pipe([
-          () => accounts,
-          find(eq(get("id"), subscriptionId)),
-          tap((account) => {
-            assert(account);
-          }),
-        ])(),
-    ])(),
-]);
+const promptSubscribtionId = (params) =>
+  pipe([
+    tap(() => {
+      assert(params);
+    }),
+    () => `az account list`,
+    execCommandShell(),
+    (accounts) =>
+      pipe([
+        () => accounts,
+        map(({ name, id }) => ({
+          title: id,
+          description: `${name}`,
+          value: id,
+        })),
+        (choices) => ({
+          type: "select",
+          name: "subscriptionId",
+          message: "Select the Subscription Id",
+          choices,
+          initial: findIndex(get("isDefault"))(accounts),
+        }),
+        prompts,
+        get("subscriptionId"),
+        (subscriptionId) =>
+          pipe([
+            () => accounts,
+            find(eq(get("id"), subscriptionId)),
+            tap((account) => {
+              assert(account);
+            }),
+          ])(),
+      ])(),
+  ])();
 
 const fetchAppIdPassword = pipe([
   () => `az ad sp create-for-rbac -n sp1`,
-  execCommand(),
+  execCommandShell(),
   tap(({ appId, password }) => {
     assert(appId);
     assert(password);
@@ -76,6 +87,7 @@ const writeEnv = ({ dirs, app, account }) =>
   pipe([
     tap(() => {
       assert(dirs);
+      assert(dirs.destination);
       assert(app);
       assert(account);
     }),
@@ -97,10 +109,20 @@ PASSWORD=${app.password}
     ({ content, filename }) => fs.writeFile(filename, content),
   ])();
 
-const promptLocation = ({}) =>
+const findDefaultLocation = ({ config, choices }) =>
   pipe([
+    () => choices,
+    findIndex(eq(get("value"), config.location)),
+    when(eq(identity, -1), () => 0),
+  ])();
+
+const promptLocation = ({ config = {} }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
     () => `az account list-locations`,
-    execCommand(),
+    execCommandShell(),
     callProp("sort", (a, b) =>
       a.regionalDisplayName.localeCompare(b.regionalDisplayName)
     ),
@@ -115,25 +137,26 @@ const promptLocation = ({}) =>
       name: "location",
       message: "Select a location",
       choices,
+      initial: findDefaultLocation({ config, choices }),
     }),
     prompts,
     get("location"),
   ])();
 
-const createConfig = ({ location, projectName, dirs: { destination } }) =>
+const createConfig = ({ location }) =>
   pipe([
     tap(() => {
-      assert(destination);
+      assert(location);
     }),
-    () => path.resolve(destination, "config.js"),
-    (filename) =>
-      pipe([
-        () => `module.exports = () => ({\n`,
-        append(`  projectName: "${projectName}",\n`),
-        append(`  location: "${location}",\n`),
-        append("});"),
-        (content) => fs.writeFile(filename, content),
-      ])(),
+    () => "",
+    append(`const pkg = require("./package.json");\n`),
+    append(`module.exports = () => ({\n`),
+    append("  projectName: pkg.name,\n"),
+    append(`  location: "${location}",\n`),
+    append("});"),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.createProjectAzure = pipe([
@@ -142,6 +165,6 @@ exports.createProjectAzure = pipe([
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
   assign({ location: promptLocation }),
+  assign({ config: createConfig }),
   tap(writeEnv),
-  tap(createConfig),
 ]);

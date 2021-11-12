@@ -87,19 +87,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = ({ RouteTableId, SubnetId }) =>
-    pipe([
-      () => ({ RouteTableIds: [RouteTableId] }),
-      ec2().describeRouteTables,
-      get("RouteTables"),
-      first,
-      get("Associations"),
-      find(eq(get("SubnetId"), SubnetId)),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
   const create = ({ payload, name, dependencies, lives }) =>
     pipe([
@@ -116,16 +103,20 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
         retryCall({
           name: `create rt assoc: ${name}`,
           fn: pipe([
-            () => payload,
-            getById,
+            () => ({ lives }),
+            dependencies().routeTable.getLive,
+            tap((params) => {
+              assert(true);
+            }),
+            get("Associations"),
+            find(eq(get("SubnetId"), payload.SubnetId)),
             eq(get("AssociationState.State"), "associated"),
           ]),
           config,
         })
       ),
-      tap(() => dependencies().routeTable.getLive({ lives })),
       tap(() => {
-        logger.debug(`rt assoc updated ${JSON.stringify({ name })}`);
+        logger.info(`rt assoc updated ${JSON.stringify({ name })}`);
       }),
     ])();
 

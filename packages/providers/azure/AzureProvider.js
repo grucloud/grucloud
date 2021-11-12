@@ -1,7 +1,11 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, filter, map, not, omit } = require("rubico");
-
+const { pipe, get, tap, fork, tryCatch } = require("rubico");
+const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
+const {
+  createProjectAzure,
+} = require("@grucloud/core/cli/providers/createProjectAzure");
+
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
@@ -19,19 +23,25 @@ exports.AzureProvider = ({
 }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
 
-  let bearerToken;
-  const start = async () => {
-    checkEnv(mandatoryEnvs);
-    const result = await AzAuthorize({
+  let _bearerToken;
+
+  const start = pipe([
+    tap(() => {
+      checkEnv(mandatoryEnvs);
+    }),
+    () => ({
       tenantId: process.env.TENANT_ID,
       appId: process.env.APP_ID,
       password: process.env.PASSWORD,
-    });
-    bearerToken = result.bearerToken;
-  };
-
+    }),
+    AzAuthorize,
+    get("bearerToken"),
+    tap((bearerToken) => {
+      _bearerToken = bearerToken;
+    }),
+  ]);
   const configProviderDefault = {
-    bearerToken: () => bearerToken,
+    bearerToken: () => _bearerToken,
     retryCount: 60,
     retryDelay: 10e3,
   };
@@ -46,7 +56,35 @@ exports.AzureProvider = ({
     config: makeConfig(),
   });
 
-  const core = CoreProvider({
+  const configRead = ({ programOptions }) =>
+    pipe([
+      tryCatch(
+        pipe([
+          () => path.resolve(programOptions.workingDirectory, "config.js"),
+          require,
+          (fnConfig) => fnConfig(),
+        ]),
+        (error) => {
+          return undefined;
+        }
+      ),
+    ])();
+
+  const init = ({ options, programOptions }) =>
+    pipe([
+      tap(() => {
+        assert(programOptions.workingDirectory);
+      }),
+      fork({
+        config: pipe([() => ({ programOptions }), configRead]),
+        dirs: () => ({
+          destination: path.resolve(programOptions.workingDirectory),
+        }),
+      }),
+      createProjectAzure,
+    ])();
+
+  return CoreProvider({
     ...other,
     type: "azure",
     name,
@@ -55,6 +93,7 @@ exports.AzureProvider = ({
     fnSpecs,
     start,
     info,
+    init,
     generateCode: ({ commandOptions, programOptions }) =>
       generateCode({
         providerConfig: makeConfig(),
@@ -63,6 +102,4 @@ exports.AzureProvider = ({
         programOptions,
       }),
   });
-
-  return core;
 };

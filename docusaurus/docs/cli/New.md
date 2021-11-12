@@ -24,13 +24,51 @@ Options:
 
 ### AWS
 
+Flowchart for creating a new AWS project:
+
 ![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-aws.svg)
+
+Example of the CLI output:
+
+```txt
+✔ Cloud Provider › AWS
+✔ Project's name … my-project
+✓ aws --version
+✓ aws sts get-caller-identity --region us-east-1
+✓ aws ec2 describe-regions --region us-east-1
+✓ aws configure get region
+✔ Select a region › us-east-1
+✓ aws configure set region us-east-1
+cd /Users/joe/my-project
+npm install
+```
 
 ### Azure
 
+Flowchart for creating a new Azure project:
+
 ![gc-new-azure](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-azure.svg)
 
+Example of the CLI output:
+
+```sh
+✔ Cloud Provider › Azure
+✔ Project's name … az-test
+✓ az version
+✓ az account show
+✓ az account list
+✔ Select the Subscription Id › e012cd34-c794-4e35-916f-f38dcd8ac45c
+✓ az ad sp create-for-rbac -n sp1
+✓ az account list-locations
+✔ Select a location › brazilsouth
+Writing environment variables TENANT_ID, SUBSCRIPTION_ID, APP_ID and PASSWORD to /Users/fredericheem/test/az-test/auth.env
+cd /Users/fredericheem/test/az-test
+npm install
+```
+
 ### Google
+
+Flowchart for creating a new GCP project:
 
 ![gc-new-google](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-google.svg)
 

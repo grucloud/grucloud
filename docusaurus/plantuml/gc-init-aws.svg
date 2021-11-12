@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1137px" preserveAspectRatio="none" style="width:590px;height:1137px;background:#FFFFFF;" version="1.1" viewBox="0 0 590 1137" width="590px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="1125.3472" style="stroke:#000000;stroke-width:2.0;" width="577" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="583" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="107" x="241" y="22.0752">gc init for AWS</text><ellipse cx="294.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="69" x="260" y="98.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="49" x="270" y="117.0615">gc init</text><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="340" x="229" y="165.0146"/><path d="M417,165.0146 L417,175.0293 L407,185.0293 L229,185.0293 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="178" x="232" y="180.0898">Is the aws CLI installed ?</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="111" x="239" y="202.0293"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="91" x="249" y="221.0762">aws --version</text><polygon fill="#FFFFFF" points="252,330.0293,337,330.0293,349,342.0293,337,354.0293,252,354.0293,240,342.0293,252,330.0293" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="85" x="252" y="346.4041">version &gt;= 2 ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="349" y="339.7197">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="185" x="374" y="260.7373"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="392" y="282.8018"/><a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" target="_blank" title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:actuate="onRequest" xlink:href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:show="new" xlink:title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="157" x="392" y="282.8018">Download the AWS CLI v2</text></a><rect fill="#FFFFFF" height="343.5513" style="stroke:#000000;stroke-width:2.0;" width="294" x="165.5" y="422.3979"/><path d="M310.5,422.3979 L310.5,432.4126 L300.5,442.4126 L165.5,442.4126 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="130" x="168.5" y="437.4731">Is Authenticated ?</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="195" x="197" y="590.6809"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="63" x="207" y="612.7454">Prompt for</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="108" x="274" y="612.7454">AWS Secret Key</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="218" x="185.5" y="508.0969"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="63" x="195.5" y="530.1614">Prompt for</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="131" x="262.5" y="530.1614">AWS Access Key ID</text><polygon fill="#FFFFFF" points="200,673.2649,389,673.2649,401,685.2649,389,697.2649,200,697.2649,188,685.2649,200,673.2649" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Courier" font-size="11" lengthAdjust="spacing" textLength="189" x="200" y="688.0579">aws sts get-caller-identity</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="401" y="682.9553">no</text><polygon fill="#FFFFFF" points="200,459.4126,389,459.4126,401,471.4126,389,483.4126,200,483.4126,188,471.4126,200,459.4126" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="298.5" y="494.4717">no</text><text fill="#000000" font-family="Courier" font-size="11" lengthAdjust="spacing" textLength="189" x="200" y="474.2056">aws sts get-caller-identity</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="401" y="469.103">yes</text><polygon fill="#FFFFFF" points="294.5,721.9492,306.5,733.9492,294.5,745.9492,282.5,733.9492,294.5,721.9492" style="stroke:#000000;stroke-width:1.5;"/><rect fill="#FFFFFF" height="210.5986" style="stroke:#000000;stroke-width:2.0;" width="557" x="16" y="800.9492"/><path d="M127,800.9492 L127,810.9639 L117,820.9639 L16,820.9639 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="96" x="19" y="816.0244">Select Region</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="537" x="26" y="837.9639"/><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="188" x="40" y="863.9639"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="168" x="50" y="883.0107">aws configure get region</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="293" x="256" y="863.9639"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="273" x="266" y="883.0107">ec2 describe-regions --region us-east-1</text><rect fill="#000000" height="6" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="537" x="26" y="915.9639"/><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="181" x="204" y="956.9639"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="157" x="218" y="979.0283">Prompt for region from list</text><path d="M324.5,1046.5479 L324.5,1074.9475 L304.5,1078.9475 L324.5,1082.9475 L324.5,1111.3472 A0,0 0 0 0 324.5,1111.3472 L438.5,1111.3472 A0,0 0 0 0 438.5,1111.3472 L438.5,1056.5479 L428.5,1046.5479 L324.5,1046.5479 A0,0 0 0 0 324.5,1046.5479 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M428.5,1046.5479 L428.5,1056.5479 L438.5,1056.5479 L428.5,1046.5479 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="79" x="330.5" y="1064.6177">Next Steps:</text><ellipse cx="336" cy="1072.8472" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="56" x="343.5" y="1077.1479">gc list</text><ellipse cx="336" cy="1085.8472" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="64" x="343.5" y="1090.1479">gc apply</text><ellipse cx="336" cy="1098.8472" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="80" x="343.5" y="1103.1479">gc destroy</text><ellipse cx="294.5" cy="1078.9475" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="288.3128" x2="300.6872" y1="1072.7603" y2="1085.1347"/><line style="stroke:#000000;stroke-width:2.5;" x1="300.6872" x2="288.3128" y1="1072.7603" y2="1085.1347"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="290.5,88.0146,294.5,98.0146,298.5,88.0146,294.5,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="234.0293" y2="330.0293"/><polygon fill="#000000" points="290.5,320.0293,294.5,330.0293,298.5,320.0293,294.5,324.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="349" x2="466.5" y1="342.0293" y2="342.0293"/><line style="stroke:#000000;stroke-width:1.5;" x1="466.5" x2="466.5" y1="295.3213" y2="342.0293"/><polygon fill="#000000" points="462.5,305.3213,466.5,295.3213,470.5,305.3213,466.5,301.3213" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="466.5" x2="466.5" y1="218.0293" y2="260.7373"/><line style="stroke:#000000;stroke-width:1.5;" x1="466.5" x2="350" y1="218.0293" y2="218.0293"/><polygon fill="#000000" points="360,214.0293,350,218.0293,360,222.0293,356,218.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="130.0146" y2="202.0293"/><polygon fill="#000000" points="290.5,192.0293,294.5,202.0293,298.5,192.0293,294.5,196.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="542.6809" y2="590.6809"/><polygon fill="#000000" points="290.5,580.6809,294.5,590.6809,298.5,580.6809,294.5,584.6809" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="401" x2="415.5" y1="685.2649" y2="685.2649"/><polygon fill="#000000" points="411.5,615.3269,415.5,605.3269,419.5,615.3269,415.5,611.3269" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="415.5" x2="415.5" y1="525.3889" y2="685.2649"/><line style="stroke:#000000;stroke-width:1.5;" x1="415.5" x2="403.5" y1="525.3889" y2="525.3889"/><polygon fill="#000000" points="413.5,521.3889,403.5,525.3889,413.5,529.3889,409.5,525.3889" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="625.2649" y2="673.2649"/><polygon fill="#000000" points="290.5,663.2649,294.5,673.2649,298.5,663.2649,294.5,667.2649" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="483.4126" y2="508.0969"/><polygon fill="#000000" points="290.5,498.0969,294.5,508.0969,298.5,498.0969,294.5,502.0969" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="401" x2="437.5" y1="471.4126" y2="471.4126"/><polygon fill="#000000" points="433.5,592.6809,437.5,602.6809,441.5,592.6809,437.5,596.6809" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="437.5" x2="437.5" y1="471.4126" y2="733.9492"/><line style="stroke:#000000;stroke-width:1.5;" x1="437.5" x2="306.5" y1="733.9492" y2="733.9492"/><polygon fill="#000000" points="316.5,729.9492,306.5,733.9492,316.5,737.9492,312.5,733.9492" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="697.2649" y2="721.9492"/><polygon fill="#000000" points="290.5,711.9492,294.5,721.9492,298.5,711.9492,294.5,715.9492" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="354.0293" y2="459.4126"/><polygon fill="#000000" points="290.5,449.4126,294.5,459.4126,298.5,449.4126,294.5,453.4126" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="298.5" y="411.0957">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="134" x2="134" y1="843.9639" y2="863.9639"/><polygon fill="#000000" points="130,853.9639,134,863.9639,138,853.9639,134,857.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="402.5" x2="402.5" y1="843.9639" y2="863.9639"/><polygon fill="#000000" points="398.5,853.9639,402.5,863.9639,406.5,853.9639,402.5,857.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="134" x2="134" y1="895.9639" y2="915.9639"/><polygon fill="#000000" points="130,905.9639,134,915.9639,138,905.9639,134,909.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="402.5" x2="402.5" y1="895.9639" y2="915.9639"/><polygon fill="#000000" points="398.5,905.9639,402.5,915.9639,406.5,905.9639,402.5,909.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="921.9639" y2="956.9639"/><polygon fill="#000000" points="290.5,946.9639,294.5,956.9639,298.5,946.9639,294.5,950.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="745.9492" y2="837.9639"/><polygon fill="#000000" points="290.5,827.9639,294.5,837.9639,298.5,827.9639,294.5,831.9639" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="294.5" x2="294.5" y1="991.5479" y2="1068.9475"/><polygon fill="#000000" points="290.5,1058.9475,294.5,1068.9475,298.5,1058.9475,294.5,1062.9475" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[01275c29694d6e1fcc951e27ad0d373f]
+@startuml gc-init-aws
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "gc init for AWS" {
+start
+
+:""gc init"";
+
+partition "Is the aws CLI installed ?" {
+repeat :""aws - -version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+  
+  if (""aws sts get-caller-identity"") then (yes)
+else (no)
+  
+repeat :Prompt for <b>AWS Access Key ID</b>;
+:Prompt for <b>AWS Secret Key</b>;
+repeat while (""aws sts get-caller-identity"") is (no) 
+endif
+
+}
+
+partition "Select Region " {
+fork
+  :""aws configure get region"";
+fork again
+  :""ec2 describe-regions - -region us-east-1"";
+end fork
+: Prompt for region from list;
+}
+
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc apply""
+* ""gc destroy""
+end note 
+}
+@enduml
+
+@startuml gc-init-aws
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "gc init for AWS" {
+start
+
+:""gc init"";
+
+partition "Is the aws CLI installed ?" {
+repeat :""aws - -version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "Is Authenticated ? " {
+  
+  if (""aws sts get-caller-identity"") then (yes)
+else (no)
+  
+repeat :Prompt for <b>AWS Access Key ID</b>;
+:Prompt for <b>AWS Secret Key</b>;
+repeat while (""aws sts get-caller-identity"") is (no) 
+endif
+
+}
+
+partition "Select Region " {
+fork
+  :""aws configure get region"";
+fork again
+  :""ec2 describe-regions - -region us-east-1"";
+end fork
+: Prompt for region from list;
+}
+
+end
+
+note right
+Next Steps:
+* ""gc list""
+* ""gc apply""
+* ""gc destroy""
+end note 
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 09:40:07 BRT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
