@@ -1,5 +1,5 @@
-const { map, pipe, tap, filter } = require("rubico");
-const { isEmpty, forEach, when } = require("rubico/x");
+const { map, pipe, tap, filter, switchCase } = require("rubico");
+const { isEmpty, forEach, when, callProp } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
@@ -21,9 +21,9 @@ const envFromFile = (envFile) =>
       checkFileExist(envFile);
     }),
     () => fs.readFileSync(envFile, "utf8"),
-    (content) => content.split(/\r?\n/),
+    callProp("split", /\r?\n/),
     filter((line) => !line.match(/^\s*#/)),
-    map((line) => line.split("=")),
+    map(callProp("split", "=")),
     filter(([key, value]) => !isEmpty(key) && !isEmpty(value)),
     map(([key, value]) => [
       // Remove surrounding spaces from key and value
@@ -36,11 +36,25 @@ const envFromFile = (envFile) =>
       value.replace(/^['"](.+)['"]$/g, "$1"),
     ]),
     //tap(console.log),
-    map(([key, value]) => {
-      logger.debug(`envFromFile: key: ${key}`);
-      process.env[key] = value;
-      return [key, value];
-    }),
+
+    map(([key, value]) =>
+      pipe([
+        tap((params) => {
+          logger.debug(`envFromFile: key: ${key}`);
+        }),
+        () => process.env[key],
+        switchCase([
+          isEmpty,
+          () => {
+            process.env[key] = value;
+          },
+          () => {
+            logger.debug(`envFromFile: key: ${key} already set`);
+          },
+        ]),
+        () => [key, value],
+      ])()
+    ),
   ])();
 
 exports.envFromFile = envFromFile;
