@@ -4,7 +4,7 @@ const { createProviderMaker } = require("@grucloud/core/cli/infra");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 const { pipe, tap } = require("rubico");
 
-const promptsInject = ["grucloud-test", "us-east1", "us-east1-a"];
+const promptsInject = ["grucloud-test", "us-central1", "us-central1-a"];
 
 describe("GoogleProviderInit", async function () {
   let provider;
