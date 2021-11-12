@@ -1,15 +1,15 @@
 This tutorial explains the code generation from a live infrastructure.
 Instead of manually coding the infrastructure, GruCloud automatically creates the infrastructure as code.
 
-## Requirements
+## Workflow
 
-The following chart explains the AWS requirements:
+![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
+
+### AWS Requirements
 
 - AWS Account
 - AWS CLI
 - Access and Secret Key
-
-![AWS Requirements](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/aws-requirements.svg)
 
 ### AWS Account
 
@@ -62,9 +62,11 @@ Check the current version of **gc**:
 gc --version
 ```
 
-## Create a new project
+### Create a new project
 
-The _new_ command guides you on how to create anf configured new project.
+The **new** command guides you on how to create and configure a new project.
+
+![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-aws.svg)
 
 ```sh
 gc new
@@ -104,7 +106,7 @@ Step 7: gc apply
 
 The boilerplate project is now created and configured.
 
-## List the live resources
+### List the live resources
 
 Visualize your current infrastructure with the _list_ command:
 
@@ -112,7 +114,7 @@ Visualize your current infrastructure with the _list_ command:
 gc list --graph
 ```
 
-## Generate the code
+### Generate the code
 
 ```sh
 gc gencode
@@ -121,7 +123,7 @@ gc gencode
 The live resources will be fetched and the code generated in _resource.js_.
 A diff between the current file and the new one is displayed.
 
-## Resource mind map
+### Resource mind map
 
 Given the target resources defined in _resources.js_, let's generate a mindmap of the target resources by group and type.
 
@@ -129,7 +131,7 @@ Given the target resources defined in _resources.js_, let's generate a mindmap o
 gc tree
 ```
 
-## Target Graph
+### Target Graph
 
 The _graph_ command creates a dependency graph of the target resources:
 
@@ -137,7 +139,7 @@ The _graph_ command creates a dependency graph of the target resources:
 gc graph
 ```
 
-## Destroy
+### Destroy
 
 Resources can be destroyed in the right order with the _destroy_ command:
 

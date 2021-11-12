@@ -33,13 +33,9 @@ end note
 
 : ""gc graph"";
 note right
-List the target infrastructure
+List the target infrastructure from ""resource.js""
 end note 
 
-: ""gc apply"";
-note right
-Deploy the infrastructure defined in ""resource.js""
-end note 
 : ""gc list"";
 note right
 List the live infrastructure
