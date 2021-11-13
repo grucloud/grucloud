@@ -14,23 +14,6 @@ module.exports = {
     },
     {
       type: "category",
-      label: "Examples",
-      collapsed: false,
-      items: [
-        "aws/AwsExamples",
-        "google/GoogleExamples",
-        "azure/AzureExamples",
-        "k8s/K8sExamples",
-      ],
-    },
-    {
-      type: "category",
-      label: "Modules",
-      collapsed: true,
-      items: ["k8s/K8sModules"],
-    },
-    {
-      type: "category",
       label: "Providers",
       collapsed: false,
       items: [
@@ -112,8 +95,6 @@ module.exports = {
         },
       ],
     },
-
-    "Requirements",
     {
       type: "category",
       label: "CLI",

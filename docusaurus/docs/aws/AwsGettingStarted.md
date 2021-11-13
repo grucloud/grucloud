@@ -1,3 +1,8 @@
+---
+id: AwsGettingStarted
+title: Aws Getting Started
+---
+
 This tutorial explains the code generation from a live infrastructure.
 Instead of manually coding the infrastructure, GruCloud automatically creates the infrastructure as code.
 
@@ -11,11 +16,11 @@ Instead of manually coding the infrastructure, GruCloud automatically creates th
 - AWS CLI
 - Access and Secret Key
 
-### AWS Account
+#### AWS Account
 
 Ensure access to the [Amazon Console](https://console.aws.amazon.com) and create an account if necessary.
 
-### AWS CLI
+#### AWS CLI
 
 Ensure the _AWS CLI_ is installed and configured:
 
@@ -25,7 +30,7 @@ aws --version
 
 If not, visit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
 
-### Access and Secret Key
+#### Access and Secret Key
 
 Visit the [security credentials](https://console.aws.amazon.com/iam/home#/security_credentials)
 
@@ -123,6 +128,14 @@ gc gencode
 The live resources will be fetched and the code generated in _resource.js_.
 A diff between the current file and the new one is displayed.
 
+### Target Graph
+
+The _graph_ command creates a dependency graph of the target resources:
+
+```sh
+gc graph
+```
+
 ### Resource mind map
 
 Given the target resources defined in _resources.js_, let's generate a mindmap of the target resources by group and type.
@@ -131,12 +144,12 @@ Given the target resources defined in _resources.js_, let's generate a mindmap o
 gc tree
 ```
 
-### Target Graph
+### Update
 
-The _graph_ command creates a dependency graph of the target resources:
+One can still use
 
 ```sh
-gc graph
+gc apply
 ```
 
 ### Destroy

@@ -36,9 +36,9 @@ note right
 List the target infrastructure from ""resource.js""
 end note 
 
-: ""gc list"";
+: ""gc tree"";
 note right
-List the live infrastructure
+Target infrastructure mindmap from ""resource.js""
 end note 
 if (Update infra) then (Update with the \nprovider's tools)
   :Modify the infra with\nweb portal or CLI;
