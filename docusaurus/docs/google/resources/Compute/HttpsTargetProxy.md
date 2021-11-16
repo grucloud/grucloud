@@ -54,8 +54,8 @@ const httpsTargetProxy = provider.compute.makeHttpsTargetProxy({
 
 ## Dependencies
 
-- [SslCertificate](./SslCertificate)
-- [UrlMap](./UrlMap)
+- [SslCertificate](./SslCertificate.md)
+- [UrlMap](./UrlMap.md)
 
 ## Used by
 

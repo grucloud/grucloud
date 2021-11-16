@@ -1,5 +1,5 @@
 ---
-id: LambdaLayer
+id: Layer
 title: Layer
 ---
 
@@ -54,7 +54,7 @@ const lambda = provider.Lambda.makeFunction({
 
 ## Dependencies
 
-- [Iam Role](../IAM/IamRole.md)
+- [Iam Role](../IAM/Role.md)
 
 ## UsedBy
 

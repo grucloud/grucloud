@@ -72,7 +72,7 @@ The list of properties can be found in [describeImages](https://docs.aws.amazon.
 
 ## Used By
 
-- [EC2](./EC2)
+- [EC2](./EC2.md)
 
 ## Listing
 

@@ -25,7 +25,7 @@ const ig = provider.EC2.makeInternetGateway({
 
 ### Dependencies
 
-- [Vpc](./Vpc)
+- [Vpc](./Vpc.md)
 
 ## Listing
 

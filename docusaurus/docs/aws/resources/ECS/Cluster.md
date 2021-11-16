@@ -1,5 +1,5 @@
 ---
-id: ECSCluster
+id: Cluster
 title: Cluster
 ---
 
@@ -31,7 +31,7 @@ provider.ECS.makeCluster({
 ## Dependencies
 
 - [Capacity Provider](./CapacityProvider.md)
-- [KMS Key](../KMS/KmsKey.md)
+- [KMS Key](../KMS/Key.md)
 
 ## Full Examples
 

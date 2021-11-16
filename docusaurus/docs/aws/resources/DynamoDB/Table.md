@@ -1,5 +1,5 @@
 ---
-id: DynamoDBTable
+id: Table
 title: Table
 ---
 

@@ -25,7 +25,7 @@ const dbSubnetGroup = provider.RDS.makeDBSubnetGroup({
 
 ## Used By
 
-- [DB Cluster](./DBCluster)
+- [DB Cluster](./DBCluster.md)
 
 ## List
 

@@ -27,10 +27,10 @@ const sg = provider.EC2.makeSecurityGroup({
 
 ### Dependencies
 
-- [Vpc](./Vpc)
+- [Vpc](./Vpc.md)
 
 ### Used By
 
-- [EC2](./EC2)
-- [SecurityGroupRuleIngress](./SecurityGroupRuleIngress)
-- [SecurityGroupRuleEgress](./SecurityGroupRuleEgress)
+- [EC2](./EC2.md)
+- [SecurityGroupRuleIngress](./SecurityGroupRuleIngress.md)
+- [SecurityGroupRuleEgress](./SecurityGroupRuleEgress.md)

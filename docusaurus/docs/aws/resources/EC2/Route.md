@@ -92,6 +92,6 @@ const routeNat = provider.EC2.makeRoute({
 
 ## Dependencies
 
-- [RouteTable](./RouteTable)
-- [InternetGateway](./InternetGateway)
-- [NatGateway](./NatGateway)
+- [RouteTable](./RouteTable.md)
+- [InternetGateway](./InternetGateway.md)
+- [NatGateway](./NatGateway.md)

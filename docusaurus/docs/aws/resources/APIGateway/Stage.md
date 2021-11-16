@@ -1,5 +1,5 @@
 ---
-id: APIGatewayStage
+id: Stage
 title: Stage
 ---
 
@@ -55,7 +55,7 @@ provider.APIGateway.makeStage({
 
 ## Dependencies
 
-- [RestAPI](./APIGatewayRestApi)
+- [RestAPI](./RestApi.md)
 
 ## Full Examples
 

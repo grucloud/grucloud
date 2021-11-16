@@ -19,4 +19,4 @@ const network = provider.compute.makeNetwork({ name: "network" });
 
 ### Used By
 
-- [Vm Instance](./VmInstance)
+- [Vm Instance](./VmInstance.md)

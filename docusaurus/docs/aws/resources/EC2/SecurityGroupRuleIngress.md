@@ -63,7 +63,7 @@ const sgRuleIngressSsh = provider.EC2.makeSecurityGroupRuleIngress({
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup)
+- [SecurityGroup](./SecurityGroup.md)
 
 ## Listing
 

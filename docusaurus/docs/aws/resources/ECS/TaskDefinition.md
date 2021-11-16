@@ -1,5 +1,5 @@
 ---
-id: ECSTaskDefinition
+id: TaskDefinition
 title: TaskDefinition
 ---
 
@@ -42,7 +42,7 @@ provider.ECS.makeTaskDefinition({
 
 ## Used By
 
-- [Service](./ECSService)
+- [Service](./Service.md)
 
 ## Full Examples
 

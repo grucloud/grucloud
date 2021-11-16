@@ -35,8 +35,11 @@ const {
   size,
   append,
   unless,
+  groupBy,
+  prepend,
+  values,
 } = require("rubico/x");
-
+const fs = require("fs").promises;
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { createSpec } = require("./SpecDefault");
@@ -1842,6 +1845,37 @@ function CoreProvider({
       ),
     ])();
 
+  const docPrefix = ({ providerName, group, type }) =>
+    `./resources/${group}/${type}.md`;
+
+  const resourcesList = ({ commandOptions }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`resourcesList`);
+        assert(commandOptions);
+      }),
+      getSpecs,
+      groupBy("group"),
+      map.entries(([key, values]) => [
+        key,
+        pipe([
+          () => values,
+          map((spec) => `[${spec.type}](${docPrefix(spec)})`),
+          callProp("join", ", "),
+          prepend(`* ${key}: \n`),
+        ])(),
+      ]),
+      values,
+      callProp("join", "\n"),
+      prepend(`---
+id: ResourcesList
+title: Resources List
+---
+List of resources for provider ${providerName}:\n
+`),
+      (content) => fs.writeFile(commandOptions.output, content),
+    ])();
+
   const toString = () => ({ name: providerName, type: toType() });
 
   const provider = {
@@ -1858,6 +1892,7 @@ function CoreProvider({
     name: providerName,
     dependencies,
     type: toType,
+    resourcesList,
     getResourceFromLive,
     spinnersStopProvider,
     spinnersStartHook,

@@ -5,7 +5,7 @@ title: Launch Template
 
 Manages an EC2 [Launch Template](https://console.aws.amazon.com/ec2/v2/home?region=eu-west-2#LaunchTemplates:)
 
-## Example Code
+## Example Code
 
 ```js
 provider.EC2.makeLaunchTemplate({
@@ -55,10 +55,10 @@ provider.EC2.makeLaunchTemplate({
 
 ## Dependencies
 
-- [Security Group](./SecurityGroup)
-- [KeyPair](./KeyPair)
-- [Image](./Image)
-- [Instance Profile](../IAM/IamInstanceProfile)
+- [Security Group](./SecurityGroup.md)
+- [KeyPair](./KeyPair.md)
+- [Image](./Image.md)
+- [Instance Profile](../IAM/IamInstanceProfile.md)
 
 ## Used By
 

@@ -47,4 +47,4 @@ const firewallIcmp = provider.compute.makeFirewall({
 
 ### Dependencies
 
-- [Network](./Network)
+- [Network](./Network.md)

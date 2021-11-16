@@ -18,4 +18,4 @@ const ip = provider.compute.makeAddress({ name: "ip-webserver" });
 
 ### Used By
 
-- [Vm Instance](./VmInstance)
+- [Vm Instance](./VmInstance.md)

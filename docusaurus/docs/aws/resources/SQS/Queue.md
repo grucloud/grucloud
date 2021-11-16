@@ -1,6 +1,6 @@
 ---
-id: SQSQueue
-title: SQS Queue
+id: Queue
+title: Queue
 ---
 
 Manages an [SQS Queue](https://console.aws.amazon.com/sqs/v2/home?#/).

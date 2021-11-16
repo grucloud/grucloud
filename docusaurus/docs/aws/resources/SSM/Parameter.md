@@ -1,5 +1,5 @@
 ---
-id: SSMParameter
+id: Parameter
 title: Parameter
 ---
 

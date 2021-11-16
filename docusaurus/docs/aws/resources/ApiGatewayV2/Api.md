@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Api
+id: Api
 title: Api
 ---
 
@@ -25,10 +25,10 @@ provider.ApiGatewayV2.makeApi({
 
 ## Used By
 
-- [Authorizer](./ApiGatewayV2Authorizer)
-- [Deployment](./ApiGatewayV2Deployment)
-- [ApiMapping](./ApiGatewayV2ApiMapping)
-- [Stage](./ApiGatewayV2Stage)
+- [Authorizer](./Authorizer.md)
+- [Deployment](./Deployment.md)
+- [ApiMapping](./ApiMapping.md)
+- [Stage](./Stage.md)
 
 ## Full Examples
 

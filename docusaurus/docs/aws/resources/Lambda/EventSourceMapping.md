@@ -1,5 +1,5 @@
 ---
-id: LambdaEventSourceMapping
+id: EventSourceMapping
 title: Event Source Mapping
 ---
 

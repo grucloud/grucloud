@@ -47,4 +47,4 @@ const server = provider.compute.makeVmInstance({
 
 ### Used By
 
-- [VmInstance](./VmInstance)
+- [VmInstance](./VmInstance.md)
