@@ -27,7 +27,7 @@ provider.AppSync.makeResolver({
 
 ## Dependencies
 
-- [GraphqlApi](./AppSyncGraphqlApi.md)
+- [GraphqlApi](./GraphqlApi.md)
 
 ## Full Examples
 

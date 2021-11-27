@@ -25,8 +25,8 @@ provider.AppSync.makeGraphqlApi({
 
 ## Used By
 
-- [Resolver](./AppSyncResolver.md)
-- [Data Source](./AppSyncDataSource.md)
+- [Resolver](./Resolver.md)
+- [Data Source](./DataSource.md)
 
 ## Full Examples
 

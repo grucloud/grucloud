@@ -10,6 +10,10 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.APIGateway.makeApiKey({
+    name: "my-key",
+  });
+
   provider.APIGateway.makeRestApi({
     name: "PetStore",
     properties: ({ config }) => ({

@@ -36,4 +36,4 @@ See [Object create properties](https://cloud.google.com/storage/docs/json_api/v1
 
 ## Depends On
 
-- [GcpBucket](./GcpBucket.md)
+- [GcpBucket](./Bucket.md)

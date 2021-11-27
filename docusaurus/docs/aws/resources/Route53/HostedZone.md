@@ -5,7 +5,7 @@ title: Hosted Zone
 
 Provides a [Route53 Hosted Zone](https://console.aws.amazon.com/route53/v2/home#Dashboard)
 
-Add one or more records with the [Route53 Record](./Route53Record) resource.
+Add one or more records with the [Route53 Record](./Record.md) resource.
 
 ## Examples
 
@@ -39,11 +39,11 @@ const hostedZone = provider.Route53.makeHostedZone({
 
 ## Dependencies
 
-- [Route53 Domain](../Route53Domain/Route53Domain)
+- [Route53 Domain](../Route53Domains/Domain.md)
 
 ## Used By
 
-- [Route53 Record](./Route53Record)
+- [Route53 Record](./Record.md)
 
 ## List
 

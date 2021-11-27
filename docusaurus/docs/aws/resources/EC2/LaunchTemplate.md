@@ -58,11 +58,11 @@ provider.EC2.makeLaunchTemplate({
 - [Security Group](./SecurityGroup.md)
 - [KeyPair](./KeyPair.md)
 - [Image](./Image.md)
-- [Instance Profile](../IAM/IamInstanceProfile.md)
+- [Instance Profile](../IAM/InstanceProfile.md)
 
 ## Used By
 
-- [EKS NodeGroup](../EKS/EksNodeGroup.md)
+- [EKS NodeGroup](../EKS/NodeGroup.md)
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
 
 ## List

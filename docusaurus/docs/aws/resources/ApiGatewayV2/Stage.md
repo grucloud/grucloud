@@ -30,11 +30,11 @@ provider.ApiGatewayV2.makeStage({
 ## Dependencies
 
 - [API](./Api.md)
-- [CloudWatch LogGroup](../CloudWatchLogs/CloudWatchLogGroup.md)
+- [CloudWatch LogGroup](../CloudWatchLogs/LogGroup.md)
 
 ## Used By
 
-- [Deployment](./ApiGatewayV2Deployment)
+- [Deployment](./Deployment.md)
 
 ## Full Examples
 

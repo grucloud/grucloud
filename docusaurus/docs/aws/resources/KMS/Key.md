@@ -9,7 +9,7 @@ Manages a [Customer Master Key](https://docs.aws.amazon.com/kms/latest/developer
 
 ### Symmetric key
 
-Create a symmetric key, for instance used by an [EKS Cluster](../EKS/EksCluster)
+Create a symmetric key, for instance used by an [EKS Cluster](../EKS/Cluster.md)
 
 ```js
 const cmk = provider.KMS.makeKey({

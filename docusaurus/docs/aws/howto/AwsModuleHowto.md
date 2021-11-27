@@ -7,8 +7,6 @@ This document will guide you through the implementation of new module for the [G
 
 A GruCloud module is just a bunch of functions to create a set of related resources, packaged and distributed with the node package manager NPM
 
-A bunch of AWS GruCloud modules have already been crafted, check out the [list of AWS GruCloud Module](../AwsModules.md)
-
 Case study: VPC suited for EKS, the Amazon Elastic Kubernetes Service.
 The following resources are required to create an EKS Cluster:
 

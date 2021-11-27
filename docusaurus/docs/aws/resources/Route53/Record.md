@@ -101,12 +101,12 @@ const recordCloudFront = provider.Route53.makeRecord({
 
 ## Dependencies
 
-- [Route53 HostedZone](./Route53HostedZone)
+- [Route53 HostedZone](./HostedZone)
 - [LoadBalancer](../ELBv2/LoadBalancer.md)
 - [Certificate](../ACM/Certificate)
 - [APIGateway DomainName](../APIGateway/DomainName.md)
 - [ApiGatewayV2 DomainName](../ApiGatewayV2/DomainName.md)
-- [CloudFront Distribution](../CloudFront/CloudFrontDistribution.md)
+- [CloudFront Distribution](../CloudFront/Distribution.md)
 
 ## List
 

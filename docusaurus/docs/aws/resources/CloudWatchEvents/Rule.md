@@ -31,7 +31,7 @@ provider.CloudWatchEvents.makeRule({
 
 ## Dependencies
 
-- [Event Bus](./CloudWatchEventBus)
+- [Event Bus](./EventBus.md)
 
 ## Full Examples
 

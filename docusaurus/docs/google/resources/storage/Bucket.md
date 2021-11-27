@@ -51,4 +51,4 @@ See [Bucket create properties](https://cloud.google.com/storage/docs/json_api/v1
 
 ## Used By
 
-- [GcpObject](./GcpObject.md)
+- [GcpObject](./Object.md)

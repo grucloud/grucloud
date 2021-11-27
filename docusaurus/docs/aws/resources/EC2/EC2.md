@@ -42,7 +42,7 @@ const server = provider.EC2.makeInstance({
 - [ElasticIpAddress](./ElasticIpAddress.md)
 - [Volume](./Volume.md)
 - [Image](./Image.md)
-- [IamInstanceProfile](../IAM/IamInstanceProfile.md)
+- [IamInstanceProfile](../IAM/InstanceProfile.md)
 
 ### Update
 

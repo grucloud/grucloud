@@ -19,7 +19,7 @@ provider.CloudWatchEvents.makeEventBus({
 
 ## Used By
 
-- [Rule](./CloudWatchEventRule)
+- [Rule](./Rule.md)
 
 ## Full Examples
 
