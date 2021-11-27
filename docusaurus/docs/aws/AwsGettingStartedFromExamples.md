@@ -154,7 +154,7 @@ We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs
 
 Then, instantiate _AwsProvider_ by providing the _config_ function.
 
-In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.EC2.makeInstance`.
+In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/Instance) is defined with `provider.EC2.makeInstance`.
 
 ```js
 // iac.js

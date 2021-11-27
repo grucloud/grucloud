@@ -18,7 +18,7 @@ const keyPair = provider.EC2.useKeyPair({
 
 ### Used By
 
-- [EC2](./EC2.md)
+- [EC2](./Instance.md)
 
 ### Aws cli
 
