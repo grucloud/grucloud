@@ -1,5 +1,5 @@
 ---
-id: APIGatewayDomainName
+id: DomainName
 title: Domain Name
 ---
 
@@ -21,7 +21,7 @@ const apiGatewayDomainName = provider.APIGateway.makeDomainName({
 
 ## Dependencies
 
-- [Certificate](../ACM/AcmCertificate)
+- [Certificate](../ACM/Certificate)
 
 ## Full Examples
 

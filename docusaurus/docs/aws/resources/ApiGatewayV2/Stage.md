@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Stage
+id: Stage
 title: Stage
 ---
 
@@ -29,12 +29,12 @@ provider.ApiGatewayV2.makeStage({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
-- [CloudWatch LogGroup](../CloudWatchLogs/CloudWatchLogGroup.md)
+- [API](./Api.md)
+- [CloudWatch LogGroup](../CloudWatchLogs/LogGroup.md)
 
 ## Used By
 
-- [Deployment](./ApiGatewayV2Deployment)
+- [Deployment](./Deployment.md)
 
 ## Full Examples
 

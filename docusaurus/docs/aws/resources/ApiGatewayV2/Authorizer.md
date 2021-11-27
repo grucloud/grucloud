@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Authorizer
+id: Authorizer
 title: Authorizer
 ---
 
@@ -26,7 +26,7 @@ const authorizer = provider.ApiGatewayV2.makeAuthorizer({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
+- [API](./Api.md)
 
 ## Full Examples
 

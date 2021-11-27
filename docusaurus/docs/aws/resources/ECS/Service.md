@@ -1,5 +1,5 @@
 ---
-id: ECSService
+id: Service
 title: Service
 ---
 
@@ -49,8 +49,8 @@ provider.ECS.makeService({
 
 ## Dependencies
 
-- [Cluster](./ECSCluster)
-- [TaskDefinition](./ECSTaskDefinition)
+- [Cluster](./Cluster.md)
+- [TaskDefinition](./TaskDefinition.md)
 
 ## Full Examples
 

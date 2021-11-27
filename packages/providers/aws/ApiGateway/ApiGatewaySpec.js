@@ -142,6 +142,14 @@ module.exports = () =>
           omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
         ]),
       }),
+      propertiesDefault: { enabled: true },
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["name", "id", "createdDate", "lastUpdatedDate", "stageKeys"]),
+        ]),
     },
     {
       type: "RestApi",

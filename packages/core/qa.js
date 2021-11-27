@@ -84,7 +84,6 @@ exports.testEnd2End = ({
                 noOpen: true,
               },
               commandOptions: {
-                typesExclude: ["EC2::NetworkInterface"],
                 ...listOptions,
               },
             }),
@@ -104,7 +103,7 @@ exports.testEnd2End = ({
               },
               commandOptions: {
                 graph: true,
-                typesExclude: ["EC2::NetworkInterface"],
+                our: true,
                 ...listOptions,
               },
             }),

@@ -35,7 +35,7 @@ const routeTable = provider.EC2.makeRouteTable({
 ## Used By
 
 - [RouteTableAssociation](./RouteTableAssociation.md)
-- [Route](./Route)
+- [Route](./Route.md)
 
 ## List
 

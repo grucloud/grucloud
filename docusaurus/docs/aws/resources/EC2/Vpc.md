@@ -35,8 +35,6 @@ const vpc = provider.EC2.makeVpc({
 ### Vpc with DnsHostnames and DnsSupport
 
 ```js
-const clusterName = "cluster";
-
 const vpc = provider.EC2.makeVpc({
   name: "vpc",
   properties: () => ({
@@ -50,10 +48,9 @@ const vpc = provider.EC2.makeVpc({
 ## Code Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js#L13)
-- [module vpc](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/vpc/iac.js)
 
 ## Used By
 
-- [Subnet](./Subnet)
-- [Security Group](./SecurityGroup)
-- [Internet Gateway ](./InternetGateway)
+- [Subnet](./Subnet.md)
+- [Security Group](./SecurityGroup.md)
+- [Internet Gateway ](./InternetGateway.md)

@@ -36,8 +36,8 @@ provider.AutoScaling.makeAutoScalingGroup({
 
 ## Dependencies
 
-- [Subnet](../EC2/Subnet)
-- [Launch Configuration](./LaunchConfiguration) or [Launch Template](../EC2/LaunchTemplate)
+- [Subnet](../EC2/Subnet.md)
+- [Launch Configuration](./LaunchConfiguration.md) or [Launch Template](../EC2/LaunchTemplate.md)
 
 ## Used By
 

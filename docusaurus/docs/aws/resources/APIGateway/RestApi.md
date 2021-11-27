@@ -1,5 +1,5 @@
 ---
-id: APIGatewayRestApi
+id: RestApi
 title: RestApi
 ---
 
@@ -35,8 +35,8 @@ The remaining input properties:
 
 ## Used By
 
-- [Authorizer](./APIGatewayAuthorizer)
-- [Stage](./APIGatewayStage)
+- [Authorizer](./Authorizer.md)
+- [Stage](./Stage.md)
 
 ## Full Examples
 

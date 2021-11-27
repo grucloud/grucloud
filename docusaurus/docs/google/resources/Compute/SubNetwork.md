@@ -25,8 +25,8 @@ const subNetwork = provider.ec2.makeSubnetwork({
 
 ### Dependencies
 
-- [Network](./Network)
+- [Network](./Network.md)
 
 ### Used By
 
-- [VmInstance](./VmInstance)
+- [VmInstance](./VmInstance.md)

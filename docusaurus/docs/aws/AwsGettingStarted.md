@@ -73,42 +73,19 @@ The **new** command guides you on how to create and configure a new project.
 
 ![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-aws.svg)
 
-```sh
-gc new
-```
+Below is the screencast of **gc new**:
 
-```txt
-✔ Cloud Provider › AWS
-✔ Project's name … my-aws-project
-✓ aws --version
-✖ aws sts get-caller-identity --region us-east-1
-Unable to locate credentials. You can configure credentials by running "aws configure".
-
-Create and retrieve the AWS Access Key ID and AWS Secret Access Key by visiting the following page:
-✔ Open https://console.aws.amazon.com/iam/home#/security_credentials … yes
-✔ AWS Access Key ID … XXXXX64Y2BD7AGAXXXXX
-✔ AWS Secret Access Key … ****************************************
-✓ aws configure set aws_access_key_id XXXXX64Y2BD7AGAXXXXX
-✓ aws configure set aws_secret_access_key XXXXXXXXXXXXXXX
-✓ aws sts get-caller-identity --region us-east-1
-✓ aws ec2 describe-regions --region us-east-1
-✖ aws configure get region
-✔ Select a region › us-east-2
-✓ aws configure set region us-east-2
-cd /Users/fredericheem/test/my-aws-project
-npm install
-added 217 packages from 198 contributors and audited 218 packages in 8.098s
-
-New aws project created in /Users/fredericheem/test/my-aws-project
-What to do next ?
-Step 1: cd /Users/joe/test/my-aws-project
-Step 2: gc init
-Step 3: gc list --graph
-Step 5: gc gencode
-Step 6: gc destroy
-Step 7: gc apply
-```
-
+ <div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "400px" }}
+    ></iframe>
+</div>
+            
 The boilerplate project is now created and configured.
 
 ### List the live resources
@@ -118,6 +95,8 @@ Visualize your current infrastructure with the _list_ command:
 ```sh
 gc list --graph
 ```
+
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg)
 
 ### Generate the code
 
@@ -144,9 +123,12 @@ Given the target resources defined in _resources.js_, let's generate a mindmap o
 gc tree
 ```
 
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg)
+
 ### Update
 
-One can still use
+To update the infrastructure, either use the AWS console and run **gc gencode**, or modify directly the file **resource.js**.
+Once done, use the **apply** command to update the infrastructure:
 
 ```sh
 gc apply

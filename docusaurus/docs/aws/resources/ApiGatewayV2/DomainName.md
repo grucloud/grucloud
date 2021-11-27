@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2DomainName
+id: DomainName
 title: DomainName
 ---
 
@@ -22,7 +22,7 @@ provider.ApiGatewayV2.makeDomainName({
 
 ## Dependencies
 
-- [Certificate](../ACM/AcmCertificate)
+- [Certificate](../ACM/Certificate.md)
 
 ## Full Examples
 

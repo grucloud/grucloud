@@ -2,10 +2,10 @@
 
 The package implements the [GruCloud Azure provider](https://www.npmjs.com/package/@grucloud/provider-azure)
 
-## Examples
+### Resources
 
-- [Virtual Machine with network](https://github.com/grucloud/grucloud/tree/main/examples/azure)
+The list of Azure resources implemented can be found [here](https://grucloud.com/docs/docs/azure/ResourcesList)
 
-## Resources
+### Examples
 
-Available Resources: [ResourceGroup](https://grucloud.com/docs/azure/resources/ResourceGroup), [VirtualNetwork](https://grucloud.com/docs/azure/resources/VirtualNetwork), [SecurityGroup](https://grucloud.com/docs/azure/resources/SecurityGroup), [PublicIpAddress](https://grucloud.com/docs/azure/resources/PublicIpAddress), [NetworkInterface](https://grucloud.com/docs/azure/resources/NetworkInterface), [VirtualMachine](https://grucloud.com/docs/azure/resources/VirtualMachine)
+Explore the numerous AWS examples [here](https://github.com/grucloud/grucloud/tree/main/examples/azure)

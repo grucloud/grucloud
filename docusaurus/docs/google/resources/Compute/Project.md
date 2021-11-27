@@ -19,7 +19,7 @@ const project = provider.makeProject({ name: "myproject" });
 
 ### Used By
 
-- [Vm Instance](./VmInstance)
+- [Vm Instance](./VmInstance.md)
 
 ### Gcloud CLI
 

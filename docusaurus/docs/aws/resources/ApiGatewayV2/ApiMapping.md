@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2ApiMapping
+id: ApiMapping
 title: ApiMapping
 ---
 
@@ -26,9 +26,9 @@ provider.ApiGatewayV2.makeApiMapping({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
-- [Stage](./ApiGatewayV2Stage)
-- [DomainName](./ApiGatewayV2DomainName)
+- [API](./Api.md)
+- [Stage](./Stage.md)
+- [DomainName](./DomainName.md)
 
 ## Full Examples
 

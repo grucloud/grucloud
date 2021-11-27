@@ -37,12 +37,12 @@ const natGateway = provider.EC2.makeNatGateway({
 
 ### Dependencies
 
-- [ElasticIpAddress](./ElasticIpAddress)
-- [Subnet](./Subnet)
+- [ElasticIpAddress](./ElasticIpAddress.md)
+- [Subnet](./Subnet.md)
 
 ### Used By
 
-- [RouteTable](./RouteTable)
+- [RouteTable](./RouteTable.md)
 
 ### List
 

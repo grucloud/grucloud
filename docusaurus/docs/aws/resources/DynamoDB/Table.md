@@ -1,5 +1,5 @@
 ---
-id: DynamoDBTable
+id: Table
 title: Table
 ---
 
@@ -43,7 +43,7 @@ provider.DynamoDB.makeTable({
 
 ## Dependencies
 
-- [KMS Key](../KMS/KmsKey)
+- [KMS Key](../KMS/Key.md)
 
 ## Full Examples
 

@@ -410,7 +410,7 @@ We recommend VS Code for debugging, many debug configuration has already been cr
 
 ## AwsLoadBalancer.js
 
-To list all the load balancers for a given account, we'll use the (describeLoadBalancers)[https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#describeLoadBalancers-property] function.
+To list all the load balancers for a given account, we'll use the [describeLoadBalancers](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#describeLoadBalancers-property) function.
 
 The _describeLoadBalancers_ _json_ output is:
 
@@ -658,7 +658,7 @@ const isInstanceUp = not(isEmpty);
 ### Create
 
 Now that the _configDefault_ and _isInstanceUp_ are implemented, we can write the _create_ function.
-We start calling the [aws createLoadBalancer](<(https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#createLoadBalancer-property)>) function, we check that the resource is up.
+We start calling the [aws createLoadBalancer](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#createLoadBalancer-property) function, we check that the resource is up.
 
 We tag the resource with [addTags](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#addTags-property) to so we know they have been created by GruCloud.
 

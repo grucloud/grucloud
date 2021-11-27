@@ -1,5 +1,5 @@
 ---
-id: AwsLoadBalancer
+id: LoadBalancer
 title: Load Balancer
 ---
 

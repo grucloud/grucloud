@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Deployment
+id: Deployment
 title: Deployment
 ---
 
@@ -32,8 +32,8 @@ provider.ApiGatewayV2.makeDeployment({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
-- [Stage](./ApiGatewayV2Stage)
+- [API](./Api.md)
+- [Stage](./Stage.md)
 
 ## Full Examples
 

@@ -1,5 +1,5 @@
 ---
-id: APIGatewayAccount
+id: Account
 title: Account
 ---
 

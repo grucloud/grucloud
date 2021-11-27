@@ -5,12 +5,12 @@ title: Azure Getting Started
 
 Let's create a simple infrastructure with the following resources:
 
-- [Resource Group](./resources/ResourceGroup)
-- [Virtual Network](./resources/VirtualNetwork)
-- [Security Group](./resources/SecurityGroup)
-- [Public Ip Address](./resources/PublicIpAddress)
-- [Network Interface](./resources/NetworkInterface)
-- [Virtual Machine](./resources/VirtualMachine)
+- [Resource Group](./resources/resourceManagement/ResourceGroup.md)
+- [Virtual Network](./resources/virtualNetworks/VirtualNetwork.md)
+- [Security Group](./resources/virtualNetworks/SecurityGroup.md)
+- [Public Ip Address](./resources/virtualNetworks/PublicIpAddress.md)
+- [Network Interface](./resources/virtualNetworks/NetworkInterface.md)
+- [Virtual Machine](./resources/compute/VirtualMachine.md)
 
 ## Install the GruCloud CLI
 

@@ -1,5 +1,5 @@
 ---
-id: AwsTargetGroup
+id: TargetGroup
 title: Target Group
 ---
 
@@ -45,7 +45,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 ## Dependencies
 
 - [VPC](../EC2/Vpc.md)
-- [EKS NodeGroup](../EKS/EksNodeGroup.md)
+- [EKS NodeGroup](../EKS/NodeGroup.md)
 
 ## Used By
 

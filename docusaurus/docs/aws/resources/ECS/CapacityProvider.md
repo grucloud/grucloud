@@ -1,5 +1,5 @@
 ---
-id: ECSCapacityProvider
+id: CapacityProvider
 title: CapacityProvider
 ---
 
@@ -38,7 +38,7 @@ provider.ECS.makeCapacityProvider({
 
 ## Used By
 
-- [ECS Cluster](./ECSCluster)
+- [ECS Cluster](./Cluster.md)
 
 ## Full Examples
 

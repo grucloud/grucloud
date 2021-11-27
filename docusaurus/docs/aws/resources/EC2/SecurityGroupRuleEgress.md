@@ -59,7 +59,7 @@ const sgRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup)
+- [SecurityGroup](./SecurityGroup.md)
 
 ## Listing
 

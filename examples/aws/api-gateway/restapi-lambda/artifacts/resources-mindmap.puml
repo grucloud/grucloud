@@ -5,6 +5,7 @@ skinparam monochrome true
 ++ aws
 +++ APIGateway
 ++++ Account (1)
+++++ ApiKey (1)
 ++++ RestApi (1)
 ++++ Stage (2)
 +++ CloudWatchLogs

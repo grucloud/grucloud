@@ -35,9 +35,9 @@ const dbCluster = provider.RDS.makeDBInstance({
 
 ## Dependencies
 
-- [DB Subnet Group](./DBSubnetGroup)
-- [Security Group](../EC2/SecurityGroup)
-- [KMS Key](../KMS/KmsKey)
+- [DB Subnet Group](./DBSubnetGroup.md)
+- [Security Group](../EC2/SecurityGroup.md)
+- [KMS Key](../KMS/Key.md)
 
 ## List
 

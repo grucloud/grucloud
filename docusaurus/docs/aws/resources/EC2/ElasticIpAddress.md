@@ -18,5 +18,5 @@ const ip = provider.EC2.makeElasticIpAddress({
 
 ### Used By
 
-- [EC2](./EC2)
-- [NatGateway](./EC2)
+- [EC2](./EC2.md)
+- [NatGateway](./NatGateway.md)

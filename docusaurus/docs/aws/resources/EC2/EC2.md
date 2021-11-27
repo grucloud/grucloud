@@ -1,6 +1,6 @@
 ---
 id: EC2
-title: EC2 Instance
+title: Instance
 ---
 
 Manages an EC2 instance resource, a.k.a virtual machine.
@@ -36,13 +36,13 @@ const server = provider.EC2.makeInstance({
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup)
-- [Subnet](./Subnet)
-- [KeyPair](./KeyPair)
-- [ElasticIpAddress](./ElasticIpAddress)
-- [Volume](./Volume)
-- [Image](./Image)
-- [IamInstanceProfile](../IAM/iamInstanceProfile)
+- [SecurityGroup](./SecurityGroup.md)
+- [Subnet](./Subnet.md)
+- [KeyPair](./KeyPair.md)
+- [ElasticIpAddress](./ElasticIpAddress.md)
+- [Volume](./Volume.md)
+- [Image](./Image.md)
+- [IamInstanceProfile](../IAM/InstanceProfile.md)
 
 ### Update
 

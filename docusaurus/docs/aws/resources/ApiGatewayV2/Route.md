@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Route
+id: Route
 title: Route
 ---
 
@@ -27,8 +27,8 @@ provider.ApiGatewayV2.makeRoute({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
-- [Integration](./ApiGatewayV2Integration)
+- [API](./Api.md)
+- [Integration](./Integration.md)
 - [Authorizer](./Authorizer.md)
 
 ## Full Examples

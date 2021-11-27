@@ -1,5 +1,5 @@
 ---
-id: ApiGatewayV2Integration
+id: Integration
 title: Integration
 ---
 
@@ -28,12 +28,12 @@ provider.ApiGatewayV2.makeIntegration({
 
 ## Dependencies
 
-- [API](./ApiGatewayV2Api)
+- [API](./Api.md)
 - [Lambda Function](../Lambda/Function.md)
 
 ## Used By
 
-- [Route](./ApiGatewayV2Route)
+- [Route](./Route.md)
 
 ## Full Examples
 

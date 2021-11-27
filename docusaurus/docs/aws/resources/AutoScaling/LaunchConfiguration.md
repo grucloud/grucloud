@@ -86,7 +86,7 @@ Command "gc l -t LaunchConfiguration" executed in 7s
 
 ## Dependencies
 
-- [InstanceProfile](../IAM/IamInstanceProfile.md)
+- [InstanceProfile](../IAM/InstanceProfile.md)
 - [KeyPair](../EC2/KeyPair.md)
 - [Image](../EC2/Image.md)
 - [SecurityGroup](../EC2/SecurityGroup.md)
