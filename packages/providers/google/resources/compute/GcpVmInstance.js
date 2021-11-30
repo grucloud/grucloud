@@ -258,10 +258,10 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       tap(() => {
         logger.debug(`instanceStop ${name}, id: ${id}`);
       }),
-      () => axios.post(`${name}/stop`),
+      () => axios.post(`/${name}/stop`),
       tap(() =>
         retryCall({
-          name: `instance isDownById name: ${name}`,
+          name: `instanceStop isDownById name: ${name}`,
           fn: () => client.isDownById({ id, name }),
           config: configProvider,
         })
@@ -276,10 +276,10 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       tap(() => {
         logger.debug(`instanceStart ${name}`);
       }),
-      () => axios.post(`${name}/start`),
+      () => axios.post(`/${name}/start`),
       tap(() =>
         retryCall({
-          name: `instance isDownById name: ${name}`,
+          name: `instanceStart isDownById name: ${name}`,
           fn: () => client.isUpById({ id, name }),
           config: configProvider,
         })
@@ -304,7 +304,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
             (disk) => ({
               source: `/compute/v1/projects/${projectId}/zones/${zone}/disks/${disk.name}`,
             }),
-            (params) => axios.post(`${name}/attachDisk`, params),
+            (params) => axios.post(`/${name}/attachDisk`, params),
           ]),
           (error, disk) =>
             pipe([
@@ -362,7 +362,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
             () => instanceStop({ name, id }),
             () => client.getById({ id }),
             ({ fingerprint }) =>
-              axios.put(name, {
+              axios.put(`/${name}`, {
                 ...payload,
                 fingerprint,
               }),
@@ -374,7 +374,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
               logger.debug(`updateNeedRefresh`);
             }),
             () =>
-              axios.put(name, {
+              axios.put(`/${name}`, {
                 ...payload,
                 fingerprint: live.fingerprint,
               }),
@@ -435,8 +435,8 @@ const VM_INSTANCE_ATTRIBUTES_REFRESH = [
 ];
 
 exports.compareVmInstance = pipe([
-  tap((xxx) => {
-    assert(true);
+  tap(({ config }) => {
+    assert(config);
   }),
   assign({
     target: ({ target, config }) => filterItem({ config, item: target }),

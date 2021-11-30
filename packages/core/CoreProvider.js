@@ -1642,6 +1642,7 @@ function CoreProvider({
                   live,
                   target: input,
                   propertiesDefault: engine.spec.propertiesDefault,
+                  config: getProviderConfig(),
                 }),
                 resolvedDependencies,
                 lives: getLives(),

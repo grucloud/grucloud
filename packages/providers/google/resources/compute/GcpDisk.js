@@ -71,5 +71,6 @@ exports.GcpDisk = ({ spec, config }) => {
     isUpByIdFactory,
     configDefault,
     managedByOther,
+    cannotBeDeleted: managedByOther,
   });
 };

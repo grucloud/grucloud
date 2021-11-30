@@ -230,6 +230,7 @@ module.exports = pipe([
             "labelFingerprint",
             "fingerprint",
             "lastStartTimestamp",
+            "lastStopTimestamp",
             "kind",
             "zone",
             "tags.fingerprint",
