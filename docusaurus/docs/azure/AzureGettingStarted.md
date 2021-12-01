@@ -5,6 +5,10 @@ title: Azure Getting Started
 
 This document describes how to get started with GruCloud on Azure.
 
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
 ## Use Cases
 
 ![usecase.svg](../../plantuml/gc-usecase.svg)
@@ -29,15 +33,19 @@ At this point, ensure the **az** command is installed:
 az --version
 ```
 
-### Install the GruCloud CLI
+### Installing the GruCloud CLI
 
-Install the grucloud command line utility: **gc**
+The GruCloud CLI, `gc`, is written in Javascript running on [Node.js](https://nodejs.org)
 
-```bash
+Install it globally with:
+
+```sh
 npm i -g @grucloud/core
 ```
 
-## GruCloud CLI
+![gc-cli-install.svg](../../plantuml/grucloud-cli-install.svg)
+
+## GruCloud CLI commands
 
 ### `gc new` Create a new project
 

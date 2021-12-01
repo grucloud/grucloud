@@ -5,6 +5,10 @@ title: GCP Getting Started
 
 This document describes how to get started with GruCloud on the Google Cloud Platform.
 
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
 ## Use Cases
 
 ![usecase.svg](../../plantuml/gc-usecase.svg)
@@ -35,33 +39,19 @@ core 2021.10.29
 gsutil 5.4
 ```
 
-### Node.js
+### Installing the GruCloud CLI
 
-GruCloud is written in Javascript running on [Node.js](https://nodejs.org)
+The GruCloud CLI, `gc`, is written in Javascript running on [Node.js](https://nodejs.org)
 
-Verify the presence of _node_ and check the version:
-
-```sh
-node --version
-```
-
-Any version above 14 should be fine.
-
-## GruCloud CLI
-
-The GruCloud CLI called `gc` can be installed globally with NPM:
+Install it globally with:
 
 ```sh
 npm i -g @grucloud/core
 ```
 
-As a sanity check, display the version with:
+![gc-cli-install.svg](../../plantuml/grucloud-cli-install.svg)
 
-```sh
-gc --version
-```
-
-That's all for these requirements.
+## GruCloud CLI commands
 
 ### `gc new` Create a new project
 

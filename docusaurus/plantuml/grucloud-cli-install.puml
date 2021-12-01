@@ -15,7 +15,7 @@ repeat while (version >= 14?) is (no)
 partition "GruCloud CLI" {
 repeat :""gc --version"";
 backward: ""npm install -g @grucloud/core"";
-repeat while (version >= 1.20) is (no) 
+repeat while (version >= 3.0) is (no) 
 ->yes;
 }
 end

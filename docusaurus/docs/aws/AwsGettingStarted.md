@@ -5,6 +5,10 @@ title: Aws Getting Started
 
 This document describes how to get started with GruCloud on AWS.
 
+import TOCInline from '@theme/TOCInline';
+
+<TOCInline toc={toc} />
+
 ## Use Cases
 
 ![usecase.svg](../../plantuml/gc-usecase.svg)
