@@ -43,4 +43,4 @@ const server = provider.EC2.makeInstance({
 
 ### Used By
 
-- [EC2 Instance](./EC2.md)
+- [EC2 Instance](./Instance.md)

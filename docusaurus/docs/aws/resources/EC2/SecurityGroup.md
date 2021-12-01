@@ -31,6 +31,6 @@ const sg = provider.EC2.makeSecurityGroup({
 
 ### Used By
 
-- [EC2](./EC2.md)
+- [EC2](./Instance.md)
 - [SecurityGroupRuleIngress](./SecurityGroupRuleIngress.md)
 - [SecurityGroupRuleEgress](./SecurityGroupRuleEgress.md)
