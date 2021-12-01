@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-tuto1",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "GruCloud Kubernetes Tutorial Part 1",
   "main": "iac.js",
   "private": true,
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.0.1",
-    "@grucloud/provider-k8s": "^3.0.1",
+    "@grucloud/core": "^3.0.2",
+    "@grucloud/provider-k8s": "^3.0.2",
     "axios": "^0.21.1",
     "rubico": "^1.6.27"
   },
