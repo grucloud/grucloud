@@ -3,24 +3,27 @@ id: AwsGettingStarted
 title: Aws Getting Started
 ---
 
-This tutorial explains the code generation from a live infrastructure.
-Instead of manually coding the infrastructure, GruCloud automatically creates the infrastructure as code.
+This document describes how to get started with GruCloud on AWS.
+
+## Use Cases
+
+![usecase.svg](../../plantuml/gc-usecase.svg)
 
 ## Workflow
 
-![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
+![gc-new-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
 
-### AWS Requirements
+## Requirements
 
 - AWS Account
 - AWS CLI
 - Access and Secret Key
 
-#### AWS Account
+### AWS Account
 
 Ensure access to the [Amazon Console](https://console.aws.amazon.com) and create an account if necessary.
 
-#### AWS CLI
+### AWS CLI
 
 Ensure the _AWS CLI_ is installed and configured:
 
@@ -30,7 +33,7 @@ aws --version
 
 If not, visit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
 
-#### Access and Secret Key
+### Access and Secret Key
 
 Visit the [security credentials](https://console.aws.amazon.com/iam/home#/security_credentials)
 
@@ -67,7 +70,9 @@ Check the current version of **gc**:
 gc --version
 ```
 
-### Create a new project
+## GruCloud CLI
+
+### `gc new` Create a new project
 
 The **new** command guides you on how to create and configure a new project.
 
@@ -88,7 +93,7 @@ Below is the screencast of **gc new**:
             
 The boilerplate project is now created and configured.
 
-### List the live resources
+### `gc list` List the live resources
 
 Visualize your current infrastructure with the _list_ command:
 
@@ -98,7 +103,7 @@ gc list --graph
 
 ![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg)
 
-### Generate the code
+### `gc gencode` Generate the code
 
 ```sh
 gc gencode
@@ -107,7 +112,7 @@ gc gencode
 The live resources will be fetched and the code generated in _resource.js_.
 A diff between the current file and the new one is displayed.
 
-### Target Graph
+### `gc graph` Target Graph
 
 The _graph_ command creates a dependency graph of the target resources:
 
@@ -115,7 +120,7 @@ The _graph_ command creates a dependency graph of the target resources:
 gc graph
 ```
 
-### Resource mind map
+### `gc tree` Resource mind map
 
 Given the target resources defined in _resources.js_, let's generate a mindmap of the target resources by group and type.
 
@@ -125,7 +130,7 @@ gc tree
 
 ![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg)
 
-### Update
+### `gc apply` Update
 
 To update the infrastructure, either use the AWS console and run **gc gencode**, or modify directly the file **resource.js**.
 Once done, use the **apply** command to update the infrastructure:
@@ -134,10 +139,16 @@ Once done, use the **apply** command to update the infrastructure:
 gc apply
 ```
 
-### Destroy
+### `gc destroy` Destroy
 
 Resources can be destroyed in the right order with the _destroy_ command:
 
 ```sh
 gc destroy
 ```
+
+## Next Steps
+
+- Browse the various [examples](https://github.com/grucloud/grucloud/tree/main/examples/aws) which helps to find out how to use this software.
+
+- Available [Aws Resources](./AwsResources.md)

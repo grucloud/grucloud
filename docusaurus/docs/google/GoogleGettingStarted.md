@@ -129,7 +129,7 @@ Here we assume some resources are already deployed.
 gc gencode
 ```
 
-This command fetches the resources inventory and generated the code in _resource.js_.
+This command fetches the resources inventory and generate the code in _resource.js_.
 
 <div>
     <iframe

@@ -48,6 +48,8 @@ module.exports = AzClient = ({
       queryParameters()
     );
 
+  const pathUpdate = ({ id }) => path.join(`/${id}`, queryParameters());
+
   const axios = AxiosMaker({
     baseURL: BASE_URL,
     onHeaders: () => ({
@@ -64,6 +66,7 @@ module.exports = AzClient = ({
     configDefault,
     pathGet,
     pathCreate,
+    pathUpdate,
     pathDelete,
     pathList,
     verbCreate: "PUT",
