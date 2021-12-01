@@ -3,16 +3,33 @@ id: AzureGettingStarted
 title: Azure Getting Started
 ---
 
-Let's create a simple infrastructure with the following resources:
+This document describes how to get started with GruCloud on Azure.
 
-- [Resource Group](./resources/resourceManagement/ResourceGroup.md)
-- [Virtual Network](./resources/virtualNetworks/VirtualNetwork.md)
-- [Security Group](./resources/virtualNetworks/SecurityGroup.md)
-- [Public Ip Address](./resources/virtualNetworks/PublicIpAddress.md)
-- [Network Interface](./resources/virtualNetworks/NetworkInterface.md)
-- [Virtual Machine](./resources/compute/VirtualMachine.md)
+## Use Cases
 
-## Install the GruCloud CLI
+![usecase.svg](../../plantuml/gc-usecase.svg)
+
+## Workflow
+
+![gc-new-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
+
+## Requirement
+
+### Azure Account
+
+Visit the [azure portal](https://portal.azure.com) and ensure you have an azure account as well as a subscription.
+
+### Azure CLI
+
+Install the Azure Command Line Interface **az** from [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+
+At this point, ensure the **az** command is installed:
+
+```bash
+az --version
+```
+
+### Install the GruCloud CLI
 
 Install the grucloud command line utility: **gc**
 
@@ -20,33 +37,28 @@ Install the grucloud command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-## Create a new project
+## GruCloud CLI
+
+### `gc new` Create a new project
 
 Use the _new_ command to create a new project:
 
-```sh
-gc new
-```
+![gc-new-azure](../../plantuml/gc-new-azure.svg)
 
-```txt
-? Cloud Provider › - Use arrow-keys. Return to submit.
-    AWS
-❯   Azure - Microsoft Azure
-    GCP
-```
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "500px" }}
+    ></iframe>
+</div>
+            
+The boilerplate project is now created and configured.
 
-Select Azure as the cloud provider.
-
-```txt
-✔ Cloud Provider › Azure
-? Project's name ›
-```
-
-Enter the project's name, for instance _my-project_
-
-The directory _my-project_ will be created with all the necessary files for an Azure project.
-
-## List
+### `gc list` List the live resources
 
 List the available resources and display a diagram with:
 
@@ -54,25 +66,61 @@ List the available resources and display a diagram with:
 gc list --graph
 ```
 
-## Generate the code
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/zbXkGiXBdDwOXHCJtKvttxv9z/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "700px" }}
+    ></iframe>
+</div>
+
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-live.svg)
+
+### `gc gencode` Generate the code
+
+Here we assume some resources are already deployed.
 
 ```sh
 gc gencode
 ```
 
-The file `resource.js` will be updated according the live insfrastructure.
+This command fetches the resources inventory and generate the code in _resource.js_.
 
-## Plan
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/MyAIWObbcxVXLMaBA2A05u3y4/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "700px" }}
+    ></iframe>
+</div>
 
-To find out which resources are going to be allocated.
+### `gc apply` Update the resources
+
+To update the infrastructure, either use the [Azure portal](https://portal.azure.com) and run **gc gencode**, or modify directly the file **resource.js**.
+Once done, use the **apply** command to update the infrastructure:
 
 ```sh
-gc plan
+gc apply
 ```
 
-The plan should be empty at this stage.
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/X8nXfxNUnAKVPTORfPRggDbP0/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "700px", height: "800px" }}
+    ></iframe>
+</div>
 
-## Destroy
+### `gc destroy` Destroy the resources
 
 Time to destroy the resouces allocated:
 
@@ -80,10 +128,19 @@ Time to destroy the resouces allocated:
 gc destroy
 ```
 
-## Deploy
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/2pQiYTgZgQD776G077qOHBU64/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "700px", height: "900px" }}
+    ></iframe>
+</div>
 
-The instructure can be deployed with the _apply_ command.
+## Next Steps
 
-```sh
-gc apply
-```
+- Browse the various [examples](https://github.com/grucloud/grucloud/tree/main/examples/azure) which helps to find out how to use this software.
+
+- Available [Azure Resources](./AzureResources.md)

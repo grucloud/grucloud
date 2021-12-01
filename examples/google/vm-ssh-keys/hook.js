@@ -2,6 +2,7 @@ const assert = require("assert");
 const Client = require("ssh2").Client;
 const { retryCall } = require("@grucloud/core").Retry;
 
+// TODO create privateKey
 const testSsh = async ({ host, username = "ubuntu" }) =>
   await new Promise((resolve, reject) => {
     const conn = new Client();
