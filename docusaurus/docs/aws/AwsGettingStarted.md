@@ -11,9 +11,12 @@ import TOCInline from '@theme/TOCInline';
 
 ## Use Cases
 
+The following use case diagram depicts an overview of what a Solution Architect/DevOps can perform with GruCloud.
 ![usecase.svg](../../plantuml/gc-usecase.svg)
 
 ## Workflow
+
+While the previous use case diagram shows a high-level description, the next flowchart diagram details the commands to perform to migrate an existing infrastructure to GruCloud, regardless of how the infrastructure was deployed: via the web interface, or via an IaC tool such as _Terraform_, _pulumi_ or the _AWS CDK_.
 
 ![gc-new-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
 
@@ -78,7 +81,7 @@ gc --version
 
 ### `gc new` Create a new project
 
-The **new** command guides you on how to create and configure a new project.
+The [new](../cli/New.md) command guides you on how to create and configure a new project.
 
 ![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-aws.svg)
 
@@ -99,34 +102,45 @@ The boilerplate project is now created and configured.
 
 ### `gc list` List the live resources
 
-Visualize your current infrastructure with the _list_ command:
+Visualize your current infrastructure with the [list](../cli/List.md) command:
 
 ```sh
 gc list --graph
 ```
 
+The following diagram is taken from the [ec2-vpc example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2/ec2-vpc)
+
 ![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg)
 
 ### `gc gencode` Generate the code
+
+The [gencode](../cli/GenCode.md) command fetches the live resources and generate the code in `resource.js`
 
 ```sh
 gc gencode
 ```
 
-The live resources will be fetched and the code generated in _resource.js_.
-A diff between the current file and the new one is displayed.
+The following flowchart explains in more detail the process of generating the code from the live infrastructure.
+
+![gc-gencode.svg](../../plantuml/gc-gencode.svg)
+
+At this point, the target infrastructure matches the live infrastructure.
 
 ### `gc graph` Target Graph
 
-The _graph_ command creates a dependency graph of the target resources:
+The [graph](../cli/Graph.md) command creates a dependency graph of the target resources:
 
 ```sh
 gc graph
 ```
 
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-target.svg)
+
+> The `graph` command requires [graphviz](https://graphviz.org/) to convert the generated `artifacts/diagram-target.dot` into an image such as `artifacts/diagram-target.svg`
+
 ### `gc tree` Resource mind map
 
-Given the target resources defined in _resources.js_, let's generate a mindmap of the target resources by group and type.
+Given the target resources defined in _resources.js_, let's generate a mindmap of the target resources by group and type with the [tree](../cli/Tree.md) command.
 
 ```sh
 gc tree
@@ -137,19 +151,43 @@ gc tree
 ### `gc apply` Update
 
 To update the infrastructure, either use the AWS console and run **gc gencode**, or modify directly the file **resource.js**.
-Once done, use the **apply** command to update the infrastructure:
+Once done, use the [apply](../cli/Apply.md) command to update the infrastructure:
 
 ```sh
 gc apply
 ```
 
+For instance, let's change the EC2 _InstanceType_ from _t2.micro_ to _t2.small_. The machine will be stopped, its _InstanceType_ changed, and finally, the machine will be started.
+
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/iab00IPqf2GCNx4nHRJQ0snKN/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "700px" }}
+    ></iframe>
+</div>
+
 ### `gc destroy` Destroy
 
-Resources can be destroyed in the right order with the _destroy_ command:
+Resources can be destroyed in the right order with the [destroy](../cli/Destroy.md) command:
 
 ```sh
 gc destroy
 ```
+
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/0lD2ub5ltJCEifqifCWGNYAg6/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "700px" }}
+    ></iframe>
+</div>
 
 ## Next Steps
 

@@ -30,18 +30,16 @@ Flowchart for creating a new AWS project:
 
 Example of the CLI output:
 
-```txt
-✔ Cloud Provider › AWS
-✔ Project's name … my-project
-✓ aws --version
-✓ aws sts get-caller-identity --region us-east-1
-✓ aws ec2 describe-regions --region us-east-1
-✓ aws configure get region
-✔ Select a region › us-east-1
-✓ aws configure set region us-east-1
-cd /Users/joe/my-project
-npm install
-```
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "600px" }}
+    ></iframe>
+</div>
 
 ### Azure
 
@@ -51,20 +49,16 @@ Flowchart for creating a new Azure project:
 
 Example of the CLI output:
 
-```sh
-✔ Cloud Provider › Azure
-✔ Project's name … az-test
-✓ az version
-✓ az account show
-✓ az account list
-✔ Select the Subscription Id › e012cd34-c794-4e35-916f-f38dcd8ac45c
-✓ az ad sp create-for-rbac -n sp1
-✓ az account list-locations
-✔ Select a location › brazilsouth
-Writing environment variables TENANT_ID, SUBSCRIPTION_ID, APP_ID and PASSWORD to /Users/fredericheem/test/az-test/auth.env
-cd /Users/fredericheem/test/az-test
-npm install
-```
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "500px" }}
+    ></iframe>
+</div>
 
 ### Google
 
@@ -74,23 +68,13 @@ Flowchart for creating a new GCP project:
 
 Example of the CLI output:
 
-```txt
-✔ Cloud Provider › GCP
-✔ Project's name … mygcp
-✓ gcloud version
-✓ gcloud auth list
-✓ gcloud config get-value project
-✓ gcloud projects list
-✔ Select the project Id › grucloud-test
-✓ gcloud config set project grucloud-test
-✓ gcloud config get-value compute/region
-✓ gcloud compute regions list
-✔ Select the region › southamerica-east1
-✓ gcloud config set compute/region southamerica-east1
-✓ gcloud config get-value compute/zone
-✓ gcloud compute zones list
-✔ Select the zone › southamerica-east1-b
-✓ gcloud config set compute/zone southamerica-east1-b
-cd /Users/joe/test/mygcp
-npm install
-```
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/lskiblzLpXqnPsZ5Z1W7Bf2Kd/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "700px" }}
+    ></iframe>
+</div>

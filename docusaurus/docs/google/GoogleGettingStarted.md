@@ -55,7 +55,7 @@ npm i -g @grucloud/core
 
 ### `gc new` Create a new project
 
-The **new** command guides you on how to create and configure a new project.
+The [new](../cli/New.md) command guides you on how to create and configure a new project.
 
 ![gc-new-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-google.svg)
 
@@ -103,7 +103,7 @@ gc init
 
 ### `gc list` List the live resources
 
-Visualize your current infrastructure with the _list_ command:
+Visualize your current infrastructure with the [list](../cli/List.md) command:
 
 ```sh
 gc list --graph
@@ -113,13 +113,15 @@ gc list --graph
 
 ### `gc gencode` Code Generation
 
-Here we assume some resources are already deployed.
+The [gencode](../cli/GenCode.md) command fetches the live resources and generate the code in `resource.js`
 
 ```sh
 gc gencode
 ```
 
-This command fetches the resources inventory and generate the code in _resource.js_.
+The following flowchart explains in more detail the process of generating the code from the live infrastructure.
+
+![gc-gencode.svg](../../plantuml/gc-gencode.svg)
 
 <div>
     <iframe
@@ -136,7 +138,7 @@ Congratulation, the infrastructure code has been created automatically.
 
 ### `gc graph` Target Graph
 
-The _graph_ command creates a dependency graph of the target resources:
+The [graph](../cli/Graph.md) command creates a dependency graph of the target resources:
 
 ```sh
 gc graph
@@ -157,7 +159,7 @@ gc tree
 ### `gc apply` Update
 
 To update the infrastructure, either use the GCP console and run **gc gencode**, or modify directly the file **resource.js**.
-Once done, use the **apply** command to update the infrastructure:
+Once done, use the [apply](../cli/Apply.md) command to update the infrastructure:
 
 ```sh
 gc apply
@@ -176,7 +178,7 @@ gc apply
 
 ### `gc destroy` Destroy
 
-To destroy the infrastructure, use the _destroy_ command:
+To destroy the infrastructure, use the [destroy](../cli/Destroy.md) command:
 
 ```sh
 gc destroy

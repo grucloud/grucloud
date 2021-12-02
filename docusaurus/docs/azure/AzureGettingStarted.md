@@ -25,7 +25,7 @@ Visit the [azure portal](https://portal.azure.com) and ensure you have an azure 
 
 ### Azure CLI
 
-Install the Azure Command Line Interface **az** from [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+Install the Azure Command-Line Interface **az** from [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 At this point, ensure the **az** command is installed:
 
@@ -49,7 +49,7 @@ npm i -g @grucloud/core
 
 ### `gc new` Create a new project
 
-Use the _new_ command to create a new project:
+Use the [new](../cli/New.md) command to create a new project:
 
 ![gc-new-azure](../../plantuml/gc-new-azure.svg)
 
@@ -68,7 +68,7 @@ The boilerplate project is now created and configured.
 
 ### `gc list` List the live resources
 
-List the available resources and display a diagram with:
+Visualize your current infrastructure with the [list](../cli/List.md) command:
 
 ```sh
 gc list --graph
@@ -87,15 +87,17 @@ gc list --graph
 
 ![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-live.svg)
 
-### `gc gencode` Generate the code
+### `gc gencode` Generate the code
 
-Here we assume some resources are already deployed.
+The [gencode](../cli/GenCode.md) command fetches the live resources and generate the code in `resource.js`
 
 ```sh
 gc gencode
 ```
 
-This command fetches the resources inventory and generate the code in _resource.js_.
+The following flowchart explains in more detail the process of generating the code from the live infrastructure.
+
+![gc-gencode.svg](../../plantuml/gc-gencode.svg)
 
 <div>
     <iframe
@@ -108,10 +110,22 @@ This command fetches the resources inventory and generate the code in _resource.
     ></iframe>
 </div>
 
+### `gc graph` Target Graph
+
+The [graph](../cli/Graph.md) command creates a dependency graph of the target resources:
+
+```sh
+gc graph
+```
+
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-target.svg)
+
+> The `graph` command requires [graphviz](https://graphviz.org/) to convert the generated `artifacts/diagram-target.dot` into an image such as `artifacts/diagram-target.svg`
+
 ### `gc apply` Update the resources
 
 To update the infrastructure, either use the [Azure portal](https://portal.azure.com) and run **gc gencode**, or modify directly the file **resource.js**.
-Once done, use the **apply** command to update the infrastructure:
+Once done, use the [apply](../cli/Apply.md) command to update the infrastructure:
 
 ```sh
 gc apply
@@ -130,7 +144,7 @@ gc apply
 
 ### `gc destroy` Destroy the resources
 
-Time to destroy the resouces allocated:
+To destroy the infrastructure, use the [destroy](../cli/Destroy.md) command:
 
 ```sh
 gc destroy
