@@ -155,60 +155,6 @@ const resourceKey = pipe([
 
 const fnSpecs = pipe([
   () => [
-    {
-      type: "Namespace",
-      Client: createResourceNamespaceless({
-        baseUrl: ({ apiVersion }) => `/api/${apiVersion}/namespaces`,
-        configKey: "namespace",
-        apiVersion: "v1",
-        kind: "Namespace",
-        cannotBeDeleted: pipe([
-          get("live.metadata.name", ""),
-          or([
-            (name) => name.startsWith("default"),
-            (name) => name.startsWith("kube"),
-          ]),
-        ]),
-      }),
-      compare: detailedDiff,
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch
-    {
-      type: "Job",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/jobs`,
-        pathList: ({ apiVersion }) => `/apis/${apiVersion}/jobs`,
-        configKey: "job",
-        apiVersion: "batch/v1",
-        kind: "Job",
-      }),
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
-    {
-      type: "PodDisruptionBudget",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/poddisruptionbudgets`,
-        pathList: ({ apiVersion }) =>
-          `/apis/${apiVersion}/poddisruptionbudgets`,
-        configKey: "podDisruptionBudget",
-        apiVersion: "policy/v1beta1",
-        kind: "PodDisruptionBudget",
-      }),
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps
-    {
-      type: "DaemonSet",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/daemonsets`,
-        pathList: ({ apiVersion }) => `/apis/${apiVersion}/daemonsets`,
-        configKey: "daemonset",
-        apiVersion: "apps/v1",
-        kind: "DaemonSet",
-      }),
-    },
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#apiservice-v1-apiregistration-k8s-io
     {
       type: "APIService",
@@ -220,41 +166,16 @@ const fnSpecs = pipe([
           kind: "APIService",
         })({ config, spec }),
     },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
     {
-      type: "CustomResourceDefinition",
-      Client: ({ config, spec }) =>
-        createResourceNamespaceless({
-          baseUrl: ({ apiVersion }) =>
-            `/apis/${apiVersion}/customresourcedefinitions`,
-          configKey: "customResourceDefinition",
-          apiVersion: "apiextensions.k8s.io/v1",
-          kind: "CustomResourceDefinition",
-          cannotBeDeleted: cannotBeDeletedDefault,
-          isInstanceUp: K8sUtils({ config }).isUpByCrd,
-        })({ config, spec }),
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
-    {
-      type: "MutatingWebhookConfiguration",
-      Client: createResourceNamespaceless({
-        baseUrl: ({ apiVersion }) =>
-          `/apis/${apiVersion}/mutatingwebhookconfigurations`,
-        configKey: "mutatingWebhookConfiguration",
-        apiVersion: "admissionregistration.k8s.io/v1",
-        kind: "MutatingWebhookConfiguration",
-        cannotBeDeleted: cannotBeDeletedDefault,
-      }),
-    },
-    //https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#validatingwebhookconfiguration-v1-admissionregistration-k8s-io
-    {
-      type: "ValidatingWebhookConfiguration",
-      Client: createResourceNamespaceless({
-        baseUrl: ({ apiVersion }) =>
-          `/apis/${apiVersion}/validatingwebhookconfigurations`,
-        configKey: "validatingWebhookConfiguration",
-        apiVersion: "admissionregistration.k8s.io/v1",
-        kind: "ValidatingWebhookConfiguration",
+      type: "ConfigMap",
+      dependsOn: ["Namespace"],
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/api/${apiVersion}/namespaces/${namespace}/configmaps`,
+        pathList: ({ apiVersion }) => `/api/${apiVersion}/configmaps`,
+        configKey: "configMap",
+        apiVersion: "v1",
+        kind: "ConfigMap",
         cannotBeDeleted: cannotBeDeletedDefault,
       }),
     },
@@ -302,109 +223,63 @@ const fnSpecs = pipe([
         ],
       }),
     },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#role-v1beta1-rbac-authorization-k8s-io
+
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
     {
-      type: "Role",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/roles`,
-        pathList: ({ apiVersion }) => `/apis/${apiVersion}/roles`,
-        configKey: "role",
-        apiVersion: "rbac.authorization.k8s.io/v1",
-        kind: "Role",
-        cannotBeDeleted: cannotBeDeletedDefault,
-      }),
+      type: "CustomResourceDefinition",
+      Client: ({ config, spec }) =>
+        createResourceNamespaceless({
+          baseUrl: ({ apiVersion }) =>
+            `/apis/${apiVersion}/customresourcedefinitions`,
+          configKey: "customResourceDefinition",
+          apiVersion: "apiextensions.k8s.io/v1",
+          kind: "CustomResourceDefinition",
+          cannotBeDeleted: cannotBeDeletedDefault,
+          isInstanceUp: K8sUtils({ config }).isUpByCrd,
+        })({ config, spec }),
     },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#rolebinding-v1beta1-rbac-authorization-k8s-io
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps
     {
-      type: "RoleBinding",
-      dependsOn: ["Namespace", "Role", "ServiceAccount"],
+      type: "DaemonSet",
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/rolebindings`,
-        pathList: ({ apiVersion }) => `/apis/${apiVersion}/rolebindings`,
-        configKey: "roleBinding",
-        apiVersion: "rbac.authorization.k8s.io/v1",
-        kind: "RoleBinding",
-        cannotBeDeleted: cannotBeDeletedDefault,
-        findDependencies: ({ live }) => [
-          {
-            type: "Role",
-            ids: pipe([
-              () => live,
-              get("roleRef.name"),
-              (name) => [{ name, namespace: findNamespace(live) }],
-            ])(),
-          },
-        ],
-      }),
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#serviceaccount-v1-core
-    {
-      type: "ServiceAccount",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/api/${apiVersion}/namespaces/${namespace}/serviceaccounts`,
-        pathList: ({ apiVersion }) => `/api/${apiVersion}/serviceaccounts`,
-        configKey: "serviceAccount",
-        apiVersion: "v1",
-        kind: "ServiceAccount",
-        cannotBeDeleted: cannotBeDeletedDefault,
-        findDependencies: ({ live }) => [
-          {
-            type: "Secret",
-            ids: pipe([
-              () => live,
-              get("secrets"),
-              map(({ name }) => ({ name, namespace: findNamespace(live) })),
-            ])(),
-          },
-        ],
+          `/apis/${apiVersion}/namespaces/${namespace}/daemonsets`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/daemonsets`,
+        configKey: "daemonset",
+        apiVersion: "apps/v1",
+        kind: "DaemonSet",
       }),
     },
     {
-      type: "Secret",
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/api/${apiVersion}/namespaces/${namespace}/secrets`,
-        pathList: ({ apiVersion }) => `/api/${apiVersion}/secrets`,
-        configKey: "secret",
-        apiVersion: "v1",
-        kind: "Secret",
-        cannotBeDeleted: cannotBeDeletedDefault,
-      }),
-      compare: compareK8s({
-        filterAll: ({ live, target }) =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => ({ live, target }),
-            set(
-              "live.data",
-              pipe([
-                () => live,
-                get("data", {}),
-                map.entries(([key, value]) => [
-                  key,
-                  pipe([
-                    () => target,
-                    get("data", {}),
-                    // Cannnot use rubico 'get' because the key may contain a dot
-                    (data) => data[key],
-                    switchCase([isEmpty, identity, () => value]),
-                  ])(),
-                ]),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])()
-            ),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-      }),
+      type: "Deployment",
+      dependsOn: [
+        "Namespace",
+        "ConfigMap",
+        "Secret",
+        "ServiceAccount",
+        "CustomResourceDefinition",
+      ],
+      Client: ({ config, spec }) =>
+        createResourceNamespace({
+          baseUrl: ({ namespace, apiVersion }) =>
+            `/apis/${apiVersion}/namespaces/${namespace}/deployments`,
+          pathList: ({ apiVersion }) => `/apis/${apiVersion}/deployments`,
+          configKey: "deployment",
+          apiVersion: "apps/v1",
+          kind: "Deployment",
+          cannotBeDeleted: cannotBeDeletedDefault,
+          isInstanceUp: K8sUtils({ config }).isUpByPod,
+          findDependencies: ({ live, lives }) => [
+            {
+              type: "Service",
+              ids: findDependenciesService({ live, lives, config }),
+            },
+            {
+              type: "ConfigMap",
+              ids: findDependenciesConfig({ live, lives }),
+            },
+          ],
+        })({ config, spec }),
     },
     {
       type: "Ingress",
@@ -470,27 +345,46 @@ const fnSpecs = pipe([
         ],
       }),
     },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch
     {
-      type: "StorageClass",
+      type: "Job",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/jobs`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/jobs`,
+        configKey: "job",
+        apiVersion: "batch/v1",
+        kind: "Job",
+      }),
+    },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
+    {
+      type: "MutatingWebhookConfiguration",
       Client: createResourceNamespaceless({
-        baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/storageclasses`,
-        configKey: "storageClass",
-        apiVersion: "storage.k8s.io/v1",
-        kind: "StorageClass",
+        baseUrl: ({ apiVersion }) =>
+          `/apis/${apiVersion}/mutatingwebhookconfigurations`,
+        configKey: "mutatingWebhookConfiguration",
+        apiVersion: "admissionregistration.k8s.io/v1",
+        kind: "MutatingWebhookConfiguration",
+        cannotBeDeleted: cannotBeDeletedDefault,
       }),
     },
     {
-      type: "Service",
-      dependsOn: ["Namespace"],
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/api/${apiVersion}/namespaces/${namespace}/services`,
-        pathList: ({ apiVersion }) => `/api/${apiVersion}/services`,
-        configKey: "service",
+      type: "Namespace",
+      Client: createResourceNamespaceless({
+        baseUrl: ({ apiVersion }) => `/api/${apiVersion}/namespaces`,
+        configKey: "namespace",
         apiVersion: "v1",
-        kind: "Service",
-        cannotBeDeleted: cannotBeDeletedDefault,
+        kind: "Namespace",
+        cannotBeDeleted: pipe([
+          get("live.metadata.name", ""),
+          or([
+            (name) => name.startsWith("default"),
+            (name) => name.startsWith("kube"),
+          ]),
+        ]),
       }),
+      compare: detailedDiff,
     },
     {
       type: "PersistentVolume",
@@ -535,75 +429,6 @@ const fnSpecs = pipe([
           ],
         })({ config, spec }),
       isOurMinion: isOurMinionPersistentVolumeClaim,
-    },
-    {
-      type: "Deployment",
-      dependsOn: [
-        "Namespace",
-        "ConfigMap",
-        "Secret",
-        "ServiceAccount",
-        "CustomResourceDefinition",
-      ],
-      Client: ({ config, spec }) =>
-        createResourceNamespace({
-          baseUrl: ({ namespace, apiVersion }) =>
-            `/apis/${apiVersion}/namespaces/${namespace}/deployments`,
-          pathList: ({ apiVersion }) => `/apis/${apiVersion}/deployments`,
-          configKey: "deployment",
-          apiVersion: "apps/v1",
-          kind: "Deployment",
-          cannotBeDeleted: cannotBeDeletedDefault,
-          isInstanceUp: K8sUtils({ config }).isUpByPod,
-          findDependencies: ({ live, lives }) => [
-            {
-              type: "Service",
-              ids: findDependenciesService({ live, lives, config }),
-            },
-            {
-              type: "ConfigMap",
-              ids: findDependenciesConfig({ live, lives }),
-            },
-          ],
-        })({ config, spec }),
-    },
-    {
-      type: "StatefulSet",
-      dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
-      Client: ({ config, spec }) =>
-        createResourceNamespace({
-          baseUrl: ({ namespace, apiVersion }) =>
-            `/apis/${apiVersion}/namespaces/${namespace}/statefulsets`,
-          pathList: ({ apiVersion }) => `/apis/${apiVersion}/statefulsets`,
-          configKey: "statefulSets",
-          apiVersion: "apps/v1",
-          kind: "StatefulSet",
-          cannotBeDeleted: cannotBeDeletedDefault,
-          isInstanceUp: K8sUtils({ config }).isUpByPod,
-          findDependencies: ({ live, lives }) => [
-            {
-              type: "Service",
-              ids: findDependenciesService({ live, lives, config }),
-            },
-            {
-              type: "ConfigMap",
-              ids: findDependenciesConfig({ live }),
-            },
-          ],
-        })({ config, spec }),
-    },
-    {
-      type: "ConfigMap",
-      dependsOn: ["Namespace"],
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/api/${apiVersion}/namespaces/${namespace}/configmaps`,
-        pathList: ({ apiVersion }) => `/api/${apiVersion}/configmaps`,
-        configKey: "configMap",
-        apiVersion: "v1",
-        kind: "ConfigMap",
-        cannotBeDeleted: cannotBeDeletedDefault,
-      }),
     },
     {
       type: "Pod",
@@ -684,6 +509,172 @@ const fnSpecs = pipe([
       }),
       listOnly: true,
     },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
+    {
+      type: "PodDisruptionBudget",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/poddisruptionbudgets`,
+        pathList: ({ apiVersion }) =>
+          `/apis/${apiVersion}/poddisruptionbudgets`,
+        configKey: "podDisruptionBudget",
+        apiVersion: "policy/v1beta1",
+        kind: "PodDisruptionBudget",
+      }),
+    },
+
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#role-v1beta1-rbac-authorization-k8s-io
+    {
+      type: "Role",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/roles`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/roles`,
+        configKey: "role",
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        kind: "Role",
+        cannotBeDeleted: cannotBeDeletedDefault,
+      }),
+    },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#rolebinding-v1beta1-rbac-authorization-k8s-io
+    {
+      type: "RoleBinding",
+      dependsOn: ["Namespace", "Role", "ServiceAccount"],
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/rolebindings`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/rolebindings`,
+        configKey: "roleBinding",
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        kind: "RoleBinding",
+        cannotBeDeleted: cannotBeDeletedDefault,
+        findDependencies: ({ live }) => [
+          {
+            type: "Role",
+            ids: pipe([
+              () => live,
+              get("roleRef.name"),
+              (name) => [{ name, namespace: findNamespace(live) }],
+            ])(),
+          },
+        ],
+      }),
+    },
+    {
+      type: "Secret",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/api/${apiVersion}/namespaces/${namespace}/secrets`,
+        pathList: ({ apiVersion }) => `/api/${apiVersion}/secrets`,
+        configKey: "secret",
+        apiVersion: "v1",
+        kind: "Secret",
+        cannotBeDeleted: cannotBeDeletedDefault,
+      }),
+      compare: compareK8s({
+        filterAll: ({ live, target }) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => ({ live, target }),
+            set(
+              "live.data",
+              pipe([
+                () => live,
+                get("data", {}),
+                map.entries(([key, value]) => [
+                  key,
+                  pipe([
+                    () => target,
+                    get("data", {}),
+                    // Cannnot use rubico 'get' because the key may contain a dot
+                    (data) => data[key],
+                    switchCase([isEmpty, identity, () => value]),
+                  ])(),
+                ]),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])()
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      }),
+    },
+    {
+      type: "Service",
+      dependsOn: ["Namespace"],
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/api/${apiVersion}/namespaces/${namespace}/services`,
+        pathList: ({ apiVersion }) => `/api/${apiVersion}/services`,
+        configKey: "service",
+        apiVersion: "v1",
+        kind: "Service",
+        cannotBeDeleted: cannotBeDeletedDefault,
+      }),
+    },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#serviceaccount-v1-core
+    {
+      type: "ServiceAccount",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/api/${apiVersion}/namespaces/${namespace}/serviceaccounts`,
+        pathList: ({ apiVersion }) => `/api/${apiVersion}/serviceaccounts`,
+        configKey: "serviceAccount",
+        apiVersion: "v1",
+        kind: "ServiceAccount",
+        cannotBeDeleted: cannotBeDeletedDefault,
+        findDependencies: ({ live }) => [
+          {
+            type: "Secret",
+            ids: pipe([
+              () => live,
+              get("secrets"),
+              map(({ name }) => ({ name, namespace: findNamespace(live) })),
+            ])(),
+          },
+        ],
+      }),
+    },
+    {
+      type: "StatefulSet",
+      dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
+      Client: ({ config, spec }) =>
+        createResourceNamespace({
+          baseUrl: ({ namespace, apiVersion }) =>
+            `/apis/${apiVersion}/namespaces/${namespace}/statefulsets`,
+          pathList: ({ apiVersion }) => `/apis/${apiVersion}/statefulsets`,
+          configKey: "statefulSets",
+          apiVersion: "apps/v1",
+          kind: "StatefulSet",
+          cannotBeDeleted: cannotBeDeletedDefault,
+          isInstanceUp: K8sUtils({ config }).isUpByPod,
+          findDependencies: ({ live, lives }) => [
+            {
+              type: "Service",
+              ids: findDependenciesService({ live, lives, config }),
+            },
+            {
+              type: "ConfigMap",
+              ids: findDependenciesConfig({ live }),
+            },
+          ],
+        })({ config, spec }),
+    },
+    {
+      type: "StorageClass",
+      Client: createResourceNamespaceless({
+        baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/storageclasses`,
+        configKey: "storageClass",
+        apiVersion: "storage.k8s.io/v1",
+        kind: "StorageClass",
+      }),
+    },
+
     {
       type: "ReplicaSet",
       dependsOn: ["Namespace", "ConfigMap", "Secret"],
@@ -706,6 +697,18 @@ const fnSpecs = pipe([
         ],
       }),
       listOnly: true,
+    },
+    //https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#validatingwebhookconfiguration-v1-admissionregistration-k8s-io
+    {
+      type: "ValidatingWebhookConfiguration",
+      Client: createResourceNamespaceless({
+        baseUrl: ({ apiVersion }) =>
+          `/apis/${apiVersion}/validatingwebhookconfigurations`,
+        configKey: "validatingWebhookConfiguration",
+        apiVersion: "admissionregistration.k8s.io/v1",
+        kind: "ValidatingWebhookConfiguration",
+        cannotBeDeleted: cannotBeDeletedDefault,
+      }),
     },
   ],
   map(defaultsDeep({ resourceKey, isOurMinion, compare: compareK8s() })),
