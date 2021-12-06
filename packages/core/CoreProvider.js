@@ -1847,7 +1847,11 @@ function CoreProvider({
     ])();
 
   const docPrefix = ({ providerName, group, type }) =>
-    `./resources/${group}/${type}.md`;
+    pipe([
+      () => `./resources/`,
+      when(() => group, append(`${group}/`)),
+      append(`${type}.md`),
+    ])();
 
   const resourcesList = ({ commandOptions }) =>
     pipe([
@@ -1862,8 +1866,11 @@ function CoreProvider({
         pipe([
           () => values,
           map((spec) => `[${spec.type}](${docPrefix(spec)})`),
-          callProp("join", ", "),
-          prepend(`* ${key}: \n`),
+          switchCase([
+            () => isEmpty(key),
+            pipe([map(prepend("* ")), callProp("join", "\n")]),
+            pipe([callProp("join", ", "), prepend(`* ${key}: \n`)]),
+          ]),
         ])(),
       ]),
       values,

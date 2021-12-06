@@ -41,13 +41,47 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
       }),
     ])();
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Service",
+      group: "run",
+      ids: [
+        pipe([
+          () =>
+            lives.getByName({
+              providerName,
+              group: "run",
+              type: "Service",
+              name: live.service,
+            }),
+          tap((service) => {
+            assert(service);
+          }),
+          get("id"),
+        ])(),
+      ],
+    },
+  ];
+
   const axios = createAxiosMakerGoogle({
     baseURL: `https://${region}-run.googleapis.com/v1`,
     url: `/projects/${projectId}/locations/${region}/services`,
     config,
   });
 
-  const configDefault = ({ name, properties }) => defaultsDeep({})(properties);
+  const configDefault = ({ name, properties, dependencies: { service } }) =>
+    pipe([
+      tap(() => {
+        assert(service);
+      }),
+      () => properties,
+      defaultsDeep({
+        service: service.resource.name,
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const getIamPolicy = ({ service }) =>
     pipe([
@@ -139,6 +173,7 @@ exports.GcpRunServiceIamMember = ({ spec, config }) => {
     configDefault,
     create,
     update,
+    findDependencies,
     cannotBeDeleted: () => true,
   };
 };

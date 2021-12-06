@@ -1,6 +1,8 @@
 
 digraph {
-    
+    labelloc=t;
+    fontname=Helvetica;
+    label="Target and Live Infrastructure";
     rankdir=LR;
     node [shape=box  fontname=Helvetica]
     target [label="Target Infrastructure\n defined in resources.js"]; 

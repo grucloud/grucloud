@@ -53,7 +53,6 @@ const createResources = ({ provider }) => {
 
   provider.run.makeServiceIamMember({
     properties: ({ config }) => ({
-      service: "starhackit-server",
       location: config.region,
       policy: {
         version: 1,
@@ -64,6 +63,9 @@ const createResources = ({ provider }) => {
           },
         ],
       },
+    }),
+    dependencies: ({ resources }) => ({
+      service: resources.run.Service["starhackit-server"],
     }),
   });
 };
