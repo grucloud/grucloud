@@ -5,6 +5,19 @@ title: List Resources
 
 The **list** commands lists the live resources.
 
+## Screencast
+
+<div>
+    <iframe
+    data-autoplay
+    src="https://asciinema.org/a/JXYoBtVZKtiZ6BmIhgWCEpIho/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13761"
+    name="asciicast-iframe-13761"
+    scrolling="no"
+    style={{ width: "900px", height: "750px" }}
+    ></iframe>
+</div>
+
 ## Command Options
 
 ```

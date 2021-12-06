@@ -44,5 +44,4 @@ Commands:
   tree|t [options]               Output the target resources as a mind map tree
   gencode|c [options]            Generate infrastruture code from deployed resources
   help [command]                 display help for command
-fredericheem@frederics-MacBook-Pro vm-simple-azure %
 ```

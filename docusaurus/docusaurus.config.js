@@ -1,5 +1,11 @@
-module.exports = {
+// @ts-check
+// Note: type annotations allow type checking and IDEs autocompletion
+
+/** @type {import('@docusaurus/types').Config} */
+const config = {
   onBrokenLinks: "warn",
+  onBrokenMarkdownLinks: "warn",
+
   title: "GruCloud",
   tagline: "Infrastructure as Code",
   url: "https://grucloud.github.io/",
@@ -50,8 +56,7 @@ module.exports = {
             },
             {
               label: "Discord",
-              href:
-                "https://discord.com/channels/803645280359546920/803645355606147082",
+              href: "https://discord.com/channels/803645280359546920/803645355606147082",
             },
           ],
         },
@@ -93,24 +98,28 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} GruCloud`,
     },
   },
+
   presets: [
     [
       "@docusaurus/preset-classic",
-      {
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          /*editUrl: "https://github.com/fredericheem/grucloud",*/
-        },
-        /*blog: {
-          showReadingTime: true,
           // Please change this to your repo.
-          editUrl:
-            "https://github.com/facebook/docusaurus/edit/master/website/blog/",
-        },*/
+        },
+        // blog: {
+        //   showReadingTime: true,
+        //   // Please change this to your repo.
+        //   editUrl:
+        //     "https://github.com/facebook/docusaurus/edit/main/website/blog/",
+        // },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-      },
+      }),
     ],
   ],
 };
+
+module.exports = config;

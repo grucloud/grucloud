@@ -1,6 +1,6 @@
 ---
-id: PlanQuery
-title: Plan Query
+id: Plan
+title: Plan
 ---
 
 The **plan** commands finds out which resources need to be deployed or destroyed. It interrogates the cloud service provider to retrieve the currently deployed resources and compare it to the desired state.
