@@ -75,6 +75,13 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList nodeGroup`);
       }),
+      //TODO
+      // () =>
+      // lives.getByType({
+      //   providerName: config.providerName,
+      //   type: "Cluster",
+      //   group: "EKS",
+      // }),
       eks().listClusters,
       get("clusters"),
       flatMap((clusterName) =>

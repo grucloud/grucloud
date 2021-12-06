@@ -30,6 +30,7 @@ module.exports = () =>
         //"EC2::NetworkInterface",
         "EC2::SecurityGroup",
       ],
+
       Client: ELBLoadBalancerV2,
       isOurMinion,
       compare: compare({
@@ -118,6 +119,7 @@ module.exports = () =>
         "ELBv2::TargetGroup",
         "ACM::Certificate",
       ],
+      dependsOnList: ["ELBv2::LoadBalancer"],
       Client: ELBListener,
       isOurMinion,
       compare: compare({
@@ -171,6 +173,7 @@ module.exports = () =>
     {
       type: "Rule",
       dependsOn: ["ELBv2::Listener", "ELBv2::TargetGroup"],
+      dependsOnList: ["ELBv2::Listener"],
       Client: ELBRule,
       isOurMinion,
       compare: compare({

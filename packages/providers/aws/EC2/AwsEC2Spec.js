@@ -365,6 +365,7 @@ module.exports = () =>
     {
       type: "RouteTable",
       dependsOn: ["EC2::Vpc"],
+      dependsOnList: ["EC2::Vpc"],
       Client: EC2RouteTable,
       isOurMinion,
       compare: compare({
@@ -405,6 +406,8 @@ module.exports = () =>
     {
       type: "RouteTableAssociation",
       dependsOn: ["EC2::RouteTable", "EC2::Subnet"],
+      dependsOnList: ["EC2::RouteTable"],
+
       Client: EC2RouteTableAssociation,
       isOurMinion: () => () => true,
       compare: compare({
@@ -434,6 +437,7 @@ module.exports = () =>
     {
       type: "Route",
       dependsOn: ["EC2::RouteTable", "EC2::InternetGateway", "EC2::NatGateway"],
+      dependsOnList: ["EC2::RouteTable"],
       Client: EC2Route,
       isOurMinion,
       compare: compare({
@@ -535,6 +539,8 @@ module.exports = () =>
     {
       type: "SecurityGroupRuleIngress",
       dependsOn: ["EC2::SecurityGroup"],
+      dependsOnList: ["EC2::SecurityGroup"],
+
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       isOurMinion,
@@ -573,6 +579,7 @@ module.exports = () =>
     {
       type: "SecurityGroupRuleEgress",
       dependsOn: ["EC2::SecurityGroup"],
+      dependsOnList: ["EC2::SecurityGroup"],
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
       isOurMinion,

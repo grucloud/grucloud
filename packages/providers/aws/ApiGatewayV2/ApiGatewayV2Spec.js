@@ -90,6 +90,7 @@ module.exports = () =>
     {
       type: "Stage",
       dependsOn: ["ApiGatewayV2::Api", "CloudWatchLogs::LogGroup"],
+      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -129,6 +130,7 @@ module.exports = () =>
     {
       type: "Authorizer",
       dependsOn: ["ApiGatewayV2::Api"],
+      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -168,6 +170,7 @@ module.exports = () =>
         "ApiGatewayV2::Stage",
         "ApiGatewayV2::DomainName",
       ],
+      dependsOnList: ["ApiGatewayV2::DomainName", "ApiGatewayV2::Api"],
       Client: ApiMapping,
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -214,6 +217,7 @@ module.exports = () =>
     {
       type: "Integration",
       dependsOn: ["ApiGatewayV2::Api", "Lambda::Function"],
+      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Integration,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -274,6 +278,7 @@ module.exports = () =>
         "ApiGatewayV2::Integration",
         "ApiGatewayV2::Authorizer",
       ],
+      dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Integration"],
       Client: Route,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -320,6 +325,7 @@ module.exports = () =>
         "ApiGatewayV2::Stage",
         "ApiGatewayV2::Integration",
       ],
+      dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Stage"],
       Client: Deployment,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -350,7 +356,6 @@ module.exports = () =>
           }),
           omit(["CreatedDate", "DeploymentId", "DeploymentStatus", "ApiName"]),
           defaultsDeep({ Description: "" }),
-
           filterLiveDefaut,
         ]),
       }),

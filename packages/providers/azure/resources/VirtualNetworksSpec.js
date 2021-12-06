@@ -377,6 +377,7 @@ exports.fnSpecs = ({ config }) => {
         group: "virtualNetworks",
         type: "Subnet",
         dependsOn: ["virtualNetworks::VirtualNetwork"],
+        dependsOnList: ["virtualNetworks::VirtualNetwork"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -387,7 +388,6 @@ exports.fnSpecs = ({ config }) => {
             group: "virtualNetworks",
           },
         }),
-
         isOurMinion: ({ live, lives }) =>
           pipe([
             () =>

@@ -117,6 +117,7 @@ module.exports = () =>
     {
       type: "Service",
       dependsOn: ["ECS::Cluster", "ECS::TaskDefinition"],
+      dependsOnList: ["ECS::Cluster"],
       Client: ECSService,
       isOurMinion,
       compare: compare({
@@ -167,6 +168,7 @@ module.exports = () =>
     {
       type: "TaskSet",
       dependsOn: ["ECS::Cluster", "ECS::Service"],
+      dependsOnList: ["ECS::Service"],
       Client: ECSTaskSet,
       isOurMinion,
       compare: compare({
@@ -180,9 +182,10 @@ module.exports = () =>
         "ECS::Cluster",
         "ECS::TaskDefinition",
         "ECS::Service",
-        "EC2::subnet",
-        "EC2::securityGroup",
+        "EC2::Subnet",
+        "EC2::SecurityGroup",
       ],
+      dependsOnList: ["ECS::Cluster"],
       Client: ECSTask,
       isOurMinion,
       compare: compare({
@@ -190,14 +193,7 @@ module.exports = () =>
         filterLive: pipe([omit([""]), filterLiveDefault]),
       }),
       filterLive: () =>
-        pick([
-          //"cpu",
-          "enableExecuteCommand",
-          //"group",
-          "launchType",
-          //"memory",
-          "overrides",
-        ]),
+        pick(["enableExecuteCommand", "launchType", "overrides"]),
       dependencies: () => ({
         cluster: { type: "Cluster", group: "ECS" },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
