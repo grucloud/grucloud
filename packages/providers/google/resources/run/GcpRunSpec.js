@@ -78,10 +78,16 @@ module.exports = () =>
       type: "ServiceIamMember",
       Client: GcpRunServiceIamMember,
       dependsOn: ["run::Service"],
+      dependencies: () => ({
+        service: { type: "Service", group: "run" },
+      }),
       inferName: ({ properties, dependencies }) =>
         pipe([
-          () => properties,
-          ({ service, location }) => `${service}::${location}`,
+          dependencies,
+          tap(({ service }) => {
+            assert(service);
+          }),
+          ({ service }) => `${service.name}::${properties.location}`,
           tap((params) => {
             assert(true);
           }),
@@ -91,12 +97,13 @@ module.exports = () =>
           tap((params) => {
             assert(true);
           }),
-          omit(["policy.etag"]),
+          omit(["policy.etag", "service"]),
           set("location", () => "config.region"),
           tap((params) => {
             assert(true);
           }),
         ]),
+
       compare: compare({
         filterTarget: pipe([
           tap((params) => {

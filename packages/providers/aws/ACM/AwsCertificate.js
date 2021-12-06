@@ -144,7 +144,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       ),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
