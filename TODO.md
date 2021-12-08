@@ -37,6 +37,8 @@
 
 ## Azure
 
+- cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
+
 - gc new :
   az provider register --namespace Microsoft.Network
   az provider register --namespace Microsoft.Compute

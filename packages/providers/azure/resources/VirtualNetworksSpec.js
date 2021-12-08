@@ -9,7 +9,12 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
-const { compare, isUpByIdFactory, isInstanceUp } = require("../AzureCommon");
+const {
+  compare,
+  isUpByIdFactory,
+  isInstanceUp,
+  findDependenciesResourceGroup,
+} = require("../AzureCommon");
 const AzClient = require("../AzClient");
 const AzTag = require("../AzTag");
 
@@ -22,12 +27,6 @@ exports.fnSpecs = ({ config }) => {
   const buildTags = () => ({
     [managedByKey]: managedByValue,
     [stageTagKey]: stage,
-  });
-
-  const findDependenciesResourceGroup = ({ live }) => ({
-    type: "ResourceGroup",
-    group: "resourceManagement",
-    ids: [live.id.replace(`/providers/${live.type}/${live.name}`, "")],
   });
 
   return pipe([
@@ -68,8 +67,8 @@ exports.fnSpecs = ({ config }) => {
             queryParameters: () => "?api-version=2020-05-01",
             isUpByIdFactory,
             isInstanceUp,
-            findDependencies: ({ live }) => [
-              findDependenciesResourceGroup({ live }),
+            findDependencies: ({ live, lives }) => [
+              findDependenciesResourceGroup({ live, lives, config }),
             ],
             config,
             configDefault: ({ properties }) =>
@@ -143,8 +142,8 @@ exports.fnSpecs = ({ config }) => {
                 location,
                 tags: buildTags(config),
               })(properties),
-            findDependencies: ({ live }) => [
-              findDependenciesResourceGroup({ live }),
+            findDependencies: ({ live, lives }) => [
+              findDependenciesResourceGroup({ live, lives, config }),
             ],
           }),
       },
@@ -196,8 +195,8 @@ exports.fnSpecs = ({ config }) => {
                 properties: {},
               })(properties);
             },
-            findDependencies: ({ live }) => [
-              findDependenciesResourceGroup({ live }),
+            findDependencies: ({ live, lives }) => [
+              findDependenciesResourceGroup({ live, lives, config }),
             ],
           }),
       },
@@ -282,7 +281,7 @@ exports.fnSpecs = ({ config }) => {
             isInstanceUp,
 
             findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live }),
+              findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "VirtualNetwork",
                 group: "virtualNetworks",
@@ -415,26 +414,7 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec, config }) =>
           AzClient({
             findDependencies: ({ live, lives }) => [
-              {
-                type: "ResourceGroup",
-                group: "resourceManagement",
-                ids: [
-                  pipe([
-                    () => live,
-                    get("id"),
-                    callProp("split", "/"),
-                    (arr) => arr[4],
-                    (resourceGroup) =>
-                      lives.getByName({
-                        name: resourceGroup,
-                        providerName: config.providerName,
-                        type: "ResourceGroup",
-                        group: "resourceManagement",
-                      }),
-                    get("id"),
-                  ])(),
-                ],
-              },
+              findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "VirtualNetwork",
                 group: "virtualNetworks",

@@ -24,7 +24,7 @@ const fnSpecs = (config) => {
           spec,
           url: `/ips`,
           config,
-          onResponseList: (data) => {
+          onResponseList: () => (data) => {
             logger.debug(`onResponse ${tos(data)}`);
             if (data && data.ips) {
               return data.ips;
@@ -51,7 +51,10 @@ const fnSpecs = (config) => {
           spec,
           url: `/bootscripts`,
           config,
-          onResponseList: ({ bootscripts }) => bootscripts,
+          onResponseList:
+            () =>
+            ({ bootscripts }) =>
+              bootscripts,
         }),
       type: "Bootscript",
       listOnly: true,
@@ -63,7 +66,10 @@ const fnSpecs = (config) => {
         ScalewayClient({
           spec,
           url: `/images`,
-          onResponseList: ({ images }) => images,
+          onResponseList:
+            () =>
+            ({ images }) =>
+              images,
           config,
         }),
       type: "Image",
@@ -77,7 +83,7 @@ const fnSpecs = (config) => {
           spec,
           url: `/volumes`,
           config,
-          onResponseList: (result) => {
+          onResponseList: () => (result) => {
             logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
             const { volumes = [] } = result;
             return volumes;
@@ -98,7 +104,10 @@ const fnSpecs = (config) => {
           spec,
           url: `/servers`,
           config,
-          onResponseList: ({ servers }) => servers,
+          onResponseList:
+            () =>
+            ({ servers }) =>
+              servers,
           findTargetId: (item) => {
             return item.server?.id;
           },

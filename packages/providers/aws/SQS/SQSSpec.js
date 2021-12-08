@@ -20,6 +20,15 @@ module.exports = () =>
       type: "Queue",
       Client: SQSQueue,
       isOurMinion,
+      propertiesDefault: {
+        Attributes: {
+          VisibilityTimeout: "30",
+          MaximumMessageSize: "262144",
+          MessageRetentionPeriod: "345600",
+          DelaySeconds: "0",
+          ReceiveMessageWaitTimeSeconds: "0",
+        },
+      },
       compare: compare({
         filterTarget: pipe([
           tap((params) => {
@@ -36,6 +45,7 @@ module.exports = () =>
             "Attributes.ApproximateNumberOfMessagesDelayed",
             "Attributes.CreatedTimestamp",
             "Attributes.LastModifiedTimestamp",
+            "Attributes.SqsManagedSseEnabled",
           ]),
         ]),
       }),
@@ -52,6 +62,7 @@ module.exports = () =>
                 "ApproximateNumberOfMessagesDelayed",
                 "CreatedTimestamp",
                 "LastModifiedTimestamp",
+                "SqsManagedSseEnabled",
               ]),
               when(
                 eq(get("Policy.Id"), "__default_policy_ID"),

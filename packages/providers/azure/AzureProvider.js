@@ -4,13 +4,13 @@ const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
   createProjectAzure,
+  writeConfigToFile,
 } = require("@grucloud/core/cli/providers/createProjectAzure");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { checkEnv } = require("@grucloud/core/Utils");
-const { tos } = require("@grucloud/core/tos");
 const { generateCode } = require("./Az2gc");
 
 const { fnSpecs } = require("./AzureSpec");
@@ -82,6 +82,7 @@ exports.AzureProvider = ({
         }),
       }),
       createProjectAzure,
+      writeConfigToFile,
     ])();
 
   return CoreProvider({

@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { assign, tryCatch, pipe, tap, switchCase, eq, get } = require("rubico");
+const {
+  assign,
+  tryCatch,
+  pipe,
+  tap,
+  switchCase,
+  eq,
+  get,
+  map,
+} = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreClient" });
@@ -45,9 +54,10 @@ module.exports = CoreClient = ({
   ]),
   findId = get("live.id"),
   findTargetId = get("id"),
+  decorate = () => identity,
   //TODO curry
   onResponseGet = get("data"),
-  onResponseList = identity,
+  onResponseList = () => identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
   onResponseUpdate = identity,
@@ -117,6 +127,7 @@ module.exports = CoreClient = ({
               }),
             get("data"),
             (data) => onResponseGet({ id, data }),
+            decorate({ axios }),
             tap((data) => {
               logger.debug(`getById result: ${tos(data)}`);
             }),
@@ -150,7 +161,8 @@ module.exports = CoreClient = ({
           tap((data) => {
             logger.debug(`getList ${spec.type}, ${tos(data)}`);
           }),
-          onResponseList,
+          onResponseList({ axios }),
+          map(decorate({ axios })),
           tap((params) => {
             assert(true);
           }),
@@ -311,6 +323,7 @@ module.exports = CoreClient = ({
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },
                   isExpectedException: eq(get("response.status"), 404),
+                  shouldRetryOnException: eq(get("error.response.status"), 409),
                 }),
               get("data"),
               onResponseDelete,

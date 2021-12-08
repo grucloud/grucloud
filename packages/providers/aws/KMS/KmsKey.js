@@ -212,7 +212,6 @@ exports.KmsKey = ({ spec, config }) => {
     pipe([
       () => properties,
       defaultsDeep({
-        Enabled: true,
         Tags: buildTags({
           config,
           namespace,

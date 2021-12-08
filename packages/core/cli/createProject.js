@@ -123,7 +123,7 @@ const updatePackageJson = ({ projectName, dirs: { destination } }) =>
       ])(),
   ])();
 
-const createConfig = ({ config, dirs: { destination } }) =>
+const writeConfigToFile = ({ config, dirs: { destination } }) =>
   pipe([
     tap(() => {
       assert(destination);
@@ -132,6 +132,8 @@ const createConfig = ({ config, dirs: { destination } }) =>
     () => path.resolve(destination, "config.js"),
     (filename) => fs.writeFile(filename, config),
   ])();
+
+exports.writeConfigToFile = writeConfigToFile;
 
 exports.createProject =
   ({ programOptions }) =>
@@ -157,7 +159,7 @@ exports.createProject =
         assert(true);
       }),
       tap(updatePackageJson),
-      tap(createConfig),
+      tap(writeConfigToFile),
       tap(npmInstall),
       tap(displayGuide),
     ])();

@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project plantuml
+skinparam monochrome true
++ Infra
+++ azure
++++ resourceManagement
+++++ ResourceGroup (1)
++++ LogAnalytics
+++++ Workspace (1)
++++ AppService
+++++ KubeEnvironment (1)
+++++ ContainerApp (1)
+@endmindmap

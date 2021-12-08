@@ -40,7 +40,7 @@ module.exports = OpenStackClient = ({
     spec,
     config,
     findDependencies,
-    onResponseList: (data) => onResponseList({ axios, data }),
+    onResponseList,
     findName,
     configDefault,
     pathGet,

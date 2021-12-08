@@ -81,7 +81,7 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://network.compute.uk1.cloud.ovh.net`,
           pathSuffixList: () => `/v2.0/networks`,
-          onResponseList: get("data.networks"),
+          onResponseList: () => get("networks"),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -103,7 +103,7 @@ const fnSpecs = (config) => {
           pathBase: `https://network.compute.uk1.cloud.ovh.net`,
           pathSuffixList: () => `/v2.0/subnets`,
           findName: (subnet) => `${subnet.name}::${subnet.cidr}`,
-          onResponseList: get("data.subnets"),
+          onResponseList: () => get("subnets"),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -144,12 +144,14 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://volume.compute.uk1.cloud.ovh.net/v3`,
           pathSuffixList: () => `/${projectId}/volumes`,
-          onResponseList: ({ axios, data }) =>
-            pipe([
-              () => data,
-              get("volumes"),
-              map(getHref({ field: "volume", axios, type: "self" })),
-            ])(),
+          onResponseList:
+            ({ axios }) =>
+            (data) =>
+              pipe([
+                () => data,
+                get("volumes"),
+                map(getHref({ field: "volume", axios, type: "self" })),
+              ])(),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -167,29 +169,31 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://compute.uk1.cloud.ovh.net/v2.1`,
           pathSuffixList: () => `/${projectId}/servers`,
-          onResponseList: ({ axios, data }) =>
-            pipe([
-              () => data,
-              get("servers"),
-              map(
-                pipe([
-                  getHref({ field: "server", axios, type: "self" }),
-                  assign({
-                    image: pipe([
-                      get("image"),
-                      getHref({ field: "image", axios }),
-                    ]),
-                    flavor: pipe([
-                      get("flavor"),
-                      getHref({ field: "flavor", axios }),
-                    ]),
-                  }),
-                  tap((xxx) => {
-                    //logger.debug(``);
-                  }),
-                ])
-              ),
-            ])(),
+          onResponseList:
+            ({ axios }) =>
+            (data) =>
+              pipe([
+                () => data,
+                get("servers"),
+                map(
+                  pipe([
+                    getHref({ field: "server", axios, type: "self" }),
+                    assign({
+                      image: pipe([
+                        get("image"),
+                        getHref({ field: "image", axios }),
+                      ]),
+                      flavor: pipe([
+                        get("flavor"),
+                        getHref({ field: "flavor", axios }),
+                      ]),
+                    }),
+                    tap((xxx) => {
+                      //logger.debug(``);
+                    }),
+                  ])
+                ),
+              ])(),
           isUpByIdFactory,
           isInstanceUp,
           config,
