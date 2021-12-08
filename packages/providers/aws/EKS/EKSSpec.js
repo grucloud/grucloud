@@ -100,6 +100,7 @@ module.exports = () =>
         "AutoScaling::AutoScalingGroup",
         "EC2::Instance",
       ],
+      dependsOnList: ["EKS::Cluster"],
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({

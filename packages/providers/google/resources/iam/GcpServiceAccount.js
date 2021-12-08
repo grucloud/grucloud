@@ -78,18 +78,17 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       }),
     ])();
 
-  const onResponseList = ({ accounts = [] }) =>
-    pipe([
-      () => accounts,
-      map(
-        assign({
-          iamPolicy: (account) => fetchIamPolicy({ name: account.name }),
-        })
-      ),
-      tap((xxx) => {
-        logger.debug("onResponseList");
-      }),
-    ])();
+  const onResponseList =
+    () =>
+    ({ accounts = [] }) =>
+      pipe([
+        () => accounts,
+        map(
+          assign({
+            iamPolicy: (account) => fetchIamPolicy({ name: account.name }),
+          })
+        ),
+      ])();
 
   const cannotBeDeleted = not(isOurMinionServiceAccount);
 

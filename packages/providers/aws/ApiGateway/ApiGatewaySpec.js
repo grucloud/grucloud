@@ -211,6 +211,7 @@ module.exports = () =>
     {
       type: "Stage",
       dependsOn: ["APIGateway::RestApi"],
+      dependsOnList: ["APIGateway::RestApi"],
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
@@ -263,6 +264,7 @@ module.exports = () =>
     {
       type: "Authorizer",
       dependsOn: ["APIGateway::RestApi"],
+      dependsOnList: ["APIGateway::RestApi"],
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),

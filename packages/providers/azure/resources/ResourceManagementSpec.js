@@ -1,42 +1,30 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
+const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const AzTag = require("../AzTag");
-const { compare, isUpByIdFactory, isInstanceUp } = require("../AzureCommon");
+const { isUpByIdFactory, isInstanceUp, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
-  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
+  const { location } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   const isDefaultResourceGroup = eq(get("live.name"), "NetworkWatcherRG");
-
-  const isOurMinion = AzTag.isOurMinion;
-
-  const buildTags = () => ({
-    [managedByKey]: managedByValue,
-    [stageTagKey]: stage,
-  });
 
   return pipe([
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/resources/resource-groups
-        // GET    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
-        // PUT    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
-        // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
-        // LIST   https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01
         group: "resourceManagement",
         type: "ResourceGroup",
         filterLive: () => pipe([pick(["tags"])]),
-        ignoreResource: () =>
-          pipe([
-            tap((params) => {
-              assert(params.name);
-            }),
-            eq(get("name"), "NetworkWatcherRG"),
-          ]),
+        // ignoreResource: () =>
+        //   pipe([
+        //     tap((params) => {
+        //       assert(params.name);
+        //     }),
+        //     eq(get("name"), "NetworkWatcherRG"),
+        //   ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -51,12 +39,16 @@ exports.fnSpecs = ({ config }) => {
                 location,
                 tags: buildTags(config),
               })(properties),
+            onResponseList: () =>
+              pipe([
+                get("value", []),
+                filter(not(eq(get("name"), "NetworkWatcherRG"))),
+              ]),
             isDefault: isDefaultResourceGroup,
             managedByOther: isDefaultResourceGroup,
             cannotBeDeleted: isDefaultResourceGroup,
           }),
       },
     ],
-    map(defaultsDeep({ isOurMinion, compare })),
   ])();
 };

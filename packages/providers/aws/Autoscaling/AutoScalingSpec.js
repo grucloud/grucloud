@@ -119,6 +119,7 @@ module.exports = () =>
     {
       type: "AutoScalingAttachment",
       dependsOn: ["AutoScaling::AutoScalingGroup", "ELBv2::TargetGroup"],
+      dependsOnList: ["AutoScaling::AutoScalingGroup"],
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
       compare: compare({

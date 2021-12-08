@@ -105,6 +105,7 @@ module.exports = () =>
     {
       type: "DataSource",
       dependsOn: ["AppSync::GraphqlApi", "Lambda::Function"],
+      dependsOnList: ["AppSync::GraphqlApi"],
       Client: AppSyncDataSource,
       isOurMinion,
       compare: compare({
@@ -148,6 +149,7 @@ module.exports = () =>
         "AppSync::Type",
         "AppSync::DataSource",
       ],
+      dependsOnList: ["AppSync::GraphqlApi"],
       Client: AppSyncResolver,
       inferName: ({ properties }) =>
         pipe([

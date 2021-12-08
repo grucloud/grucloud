@@ -1151,10 +1151,12 @@ function CoreProvider({
       }),
       map((client) => ({
         meta: pick(["type", "group", "groupType", "providerName"])(client.spec),
-        key: `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`,
-        dependsOn: map(
-          (dependOn) => `${client.spec.providerName}::${dependOn}`
-        )(client.spec.dependsOn),
+        key: `${client.spec.providerName}::${client.spec.groupType}`,
+        dependsOn: pipe([
+          () => client,
+          get("spec.dependsOnList", []),
+          map((dependOn) => `${client.spec.providerName}::${dependOn}`),
+        ])(),
         executor: ({ results }) =>
           pipe([
             () =>

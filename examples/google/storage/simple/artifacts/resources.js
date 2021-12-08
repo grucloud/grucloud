@@ -14,7 +14,7 @@ const createResources = ({ provider }) => {
         uniformBucketLevelAccess: {
           enabled: false,
         },
-        publicAccessPrevention: "unspecified",
+        publicAccessPrevention: "inherited",
       },
       iam: {
         bindings: [

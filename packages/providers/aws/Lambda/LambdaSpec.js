@@ -106,6 +106,7 @@ module.exports = () =>
     {
       type: "EventSourceMapping",
       dependsOn: ["Lambda::Function", "SQS::Queue"],
+      dependsOnList: ["Lambda::Function"],
       Client: EventSourceMapping,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),

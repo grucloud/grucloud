@@ -1,10 +1,31 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, omit } = require("rubico");
-const { identity } = require("rubico/x");
+const { identity, callProp } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { omitIfEmpty, isUpByIdCore } = require("@grucloud/core/Common");
-const filterTargetDefault = identity;
-const filterLiveDefault = identity;
+
+exports.buildTags = ({ managedByKey, managedByValue, stageTagKey, stage }) => ({
+  [managedByKey]: managedByValue,
+  [stageTagKey]: stage,
+});
+
+exports.findDependenciesResourceGroup = ({ live, lives, config }) => ({
+  type: "ResourceGroup",
+  group: "resourceManagement",
+  ids: [
+    pipe([
+      () => live,
+      get("id"),
+      callProp("split", "/"),
+      callProp("slice", 0, 5),
+      callProp("join", "/"),
+      callProp("replace", "resourcegroups", "resourceGroups"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+  ],
+});
 
 const getStateName = (instance) => {
   const { provisioningState } = instance.properties;
@@ -26,8 +47,8 @@ exports.isUpByIdFactory = ({ getById }) =>
 
 exports.compare = ({
   filterAll = identity,
-  filterTarget = filterTargetDefault,
-  filterLive = filterLiveDefault,
+  filterTarget = identity,
+  filterLive = identity,
 } = {}) =>
   pipe([
     tap((params) => {
