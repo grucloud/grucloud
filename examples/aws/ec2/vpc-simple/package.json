@@ -1,6 +1,6 @@
 {
   "name": "vpc-simple",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.0.2",
-    "@grucloud/provider-aws": "^3.0.2",
+    "@grucloud/core": "^3.1.0",
+    "@grucloud/provider-aws": "^3.1.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
