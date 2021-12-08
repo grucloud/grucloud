@@ -1,7 +1,7 @@
 const assert = require("assert");
-const { pipe, map, tap } = require("rubico");
+const { pipe, map, tap, flatMap } = require("rubico");
 
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzTag = require("./AzTag");
 const { compare } = require("./AzureCommon");
@@ -12,21 +12,15 @@ const ComputeSpec = require("./resources/ComputeSpec");
 const LogAnalyticsSpec = require("./resources/LogAnalyticsSpec");
 const AppServiceSpec = require("./resources/AppServiceSpec");
 
-exports.fnSpecs = (config) => {
-  const isOurMinion = AzTag.isOurMinion;
-
-  //TODO refactor with callProp and flatten
-  return pipe([
+exports.fnSpecs = (config) =>
+  pipe([
     () => [
-      ...ResourceManagementSpec.fnSpecs({ config }),
-      ...VirtualNetworkSpec.fnSpecs({ config }),
-      ...ComputeSpec.fnSpecs({ config }),
-      ...LogAnalyticsSpec.fnSpecs({ config }),
-      ...AppServiceSpec.fnSpecs({ config }),
+      ResourceManagementSpec,
+      VirtualNetworkSpec,
+      ComputeSpec,
+      LogAnalyticsSpec,
+      AppServiceSpec,
     ],
-    map(defaultsDeep({ isOurMinion, compare: compare() })),
-    tap((params) => {
-      assert(true);
-    }),
+    flatMap(callProp("fnSpecs", { config })),
+    map(defaultsDeep({ isOurMinion: AzTag.isOurMinion, compare: compare() })),
   ])();
-};

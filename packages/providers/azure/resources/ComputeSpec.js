@@ -5,19 +5,16 @@ const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compare, isUpByIdFactory, isInstanceUp } = require("../AzureCommon");
-const AzTag = require("../AzTag");
+const {
+  compare,
+  isUpByIdFactory,
+  isInstanceUp,
+  buildTags,
+} = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
-  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
+  const { location } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
-
-  const isOurMinion = AzTag.isOurMinion;
-
-  const buildTags = () => ({
-    [managedByKey]: managedByValue,
-    [stageTagKey]: stage,
-  });
 
   return pipe([
     () => [
@@ -139,6 +136,5 @@ exports.fnSpecs = ({ config }) => {
           }),
       },
     ],
-    map(defaultsDeep({ isOurMinion, compare })),
   ])();
 };

@@ -9,23 +9,12 @@ const {
   isInstanceUp,
   findDependenciesResourceGroup,
   compare,
+  buildTags,
 } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
-  const {
-    providerName,
-    location,
-    managedByKey,
-    managedByValue,
-    stageTagKey,
-    stage,
-  } = config;
+  const { providerName, location } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
-
-  const buildTags = () => ({
-    [managedByKey]: managedByValue,
-    [stageTagKey]: stage,
-  });
 
   return pipe([
     () => [

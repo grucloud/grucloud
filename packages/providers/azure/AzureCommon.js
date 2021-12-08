@@ -4,6 +4,11 @@ const { identity, callProp } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { omitIfEmpty, isUpByIdCore } = require("@grucloud/core/Common");
 
+exports.buildTags = ({ managedByKey, managedByValue, stageTagKey, stage }) => ({
+  [managedByKey]: managedByValue,
+  [stageTagKey]: stage,
+});
+
 exports.findDependenciesResourceGroup = ({ live, lives, config }) => ({
   type: "ResourceGroup",
   group: "resourceManagement",

@@ -3,24 +3,16 @@ const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const AzTag = require("../AzTag");
 const {
-  compare,
   isUpByIdFactory,
   isInstanceUp,
   findDependenciesResourceGroup,
+  buildTags,
 } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
-  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
+  const { location } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
-
-  const isOurMinion = AzTag.isOurMinion;
-
-  const buildTags = () => ({
-    [managedByKey]: managedByValue,
-    [stageTagKey]: stage,
-  });
 
   return pipe([
     () => [
@@ -81,6 +73,5 @@ exports.fnSpecs = ({ config }) => {
           }),
       },
     ],
-    map(defaultsDeep({ isOurMinion, compare })),
   ])();
 };
