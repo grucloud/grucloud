@@ -26,6 +26,9 @@ module.exports = AzClient = ({
   getByName = () => undefined,
   onResponseList = () => get("value", []),
   decorate,
+  verbCreate = "PUT",
+  verbUpdate = "PATCH",
+  pathUpdate = ({ id }) => `${id}${queryParameters()}`,
 }) => {
   assert(pathBase);
   assert(spec);
@@ -49,8 +52,6 @@ module.exports = AzClient = ({
       pathSuffixList ? pathSuffixList() : ""
     )}${queryParameters()}`;
 
-  const pathUpdate = ({ id }) => `${id}${queryParameters()}`;
-
   const axios = AxiosMaker({
     baseURL: BASE_URL,
     onHeaders: () => ({
@@ -72,7 +73,8 @@ module.exports = AzClient = ({
     pathDelete,
     pathList,
     findTargetId,
-    verbCreate: "PUT",
+    verbCreate,
+    verbUpdate,
     isUpByIdFactory,
     isInstanceUp,
     isDefault,

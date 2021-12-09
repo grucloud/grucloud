@@ -16,7 +16,7 @@ const createResources = ({ provider }) => {
         template: {
           containers: [
             {
-              image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.15",
+              image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.16",
               name: "plantuml",
               resources: {
                 cpu: 1,

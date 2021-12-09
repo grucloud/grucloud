@@ -266,7 +266,7 @@ module.exports = CoreClient = ({
               tap(() => {
                 logger.info(`update ${tos({ type, name, id })}`);
               }),
-              () => ({ id, name, dependencies: dependencies() }),
+              () => ({ id, name, payload, dependencies: dependencies() }),
               tap((params) => {
                 assert(true);
               }),
