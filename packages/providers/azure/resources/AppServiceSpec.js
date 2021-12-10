@@ -198,6 +198,7 @@ exports.fnSpecs = ({ config }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/containerapps`;
             },
+            verbUpdate: "PUT",
             pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
             queryParameters: () => "?api-version=2021-03-01",
             isUpByIdFactory,

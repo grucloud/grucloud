@@ -6,3 +6,4 @@ coverage
 auth.env
 default.env
 *.pem
+.DS_Store

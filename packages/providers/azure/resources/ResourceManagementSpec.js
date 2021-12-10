@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
 const { isUpByIdFactory, isInstanceUp, buildTags } = require("../AzureCommon");
@@ -9,7 +9,10 @@ exports.fnSpecs = ({ config }) => {
   const { location } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
 
-  const isDefaultResourceGroup = eq(get("live.name"), "NetworkWatcherRG");
+  const isDefaultResourceGroup = pipe([
+    get("live.name"),
+    callProp("startsWith", "DefaultResourceGroup"),
+  ]);
 
   return pipe([
     () => [
@@ -18,13 +21,14 @@ exports.fnSpecs = ({ config }) => {
         group: "resourceManagement",
         type: "ResourceGroup",
         filterLive: () => pipe([pick(["tags"])]),
-        // ignoreResource: () =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(params.name);
-        //     }),
-        //     eq(get("name"), "NetworkWatcherRG"),
-        //   ]),
+        ignoreResource: () =>
+          pipe([
+            tap((params) => {
+              assert(params.name);
+            }),
+            get("name"),
+            callProp("startsWith", "DefaultResourceGroup"),
+          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,

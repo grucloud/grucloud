@@ -4,3 +4,4 @@ node_modules/
 coverage
 *.log
 *.pem
+.DS_Store
