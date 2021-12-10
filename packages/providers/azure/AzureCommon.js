@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, assign, omit } = require("rubico");
 const { identity, callProp } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
-const { omitIfEmpty, isUpByIdCore } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 exports.buildTags = ({ managedByKey, managedByValue, stageTagKey, stage }) => ({
   [managedByKey]: managedByValue,
@@ -38,12 +38,6 @@ const isInstanceUp = (instance) => {
   return ["Succeeded"].includes(getStateName(instance));
 };
 exports.isInstanceUp = isInstanceUp;
-
-exports.isUpByIdFactory = ({ getById }) =>
-  isUpByIdCore({
-    isInstanceUp,
-    getById,
-  });
 
 exports.compare = ({
   filterAll = identity,

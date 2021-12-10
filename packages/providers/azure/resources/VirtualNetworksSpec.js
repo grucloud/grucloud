@@ -11,7 +11,6 @@ const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const {
   compare,
-  isUpByIdFactory,
   isInstanceUp,
   findDependenciesResourceGroup,
   buildTags,
@@ -59,7 +58,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/virtualNetworks`,
             queryParameters: () => "?api-version=2020-05-01",
-            isUpByIdFactory,
             isInstanceUp,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
@@ -128,7 +126,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/networkSecurityGroups`,
             queryParameters: () => "?api-version=2020-05-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             configDefault: ({ properties }) =>
@@ -179,7 +176,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/publicIPAddresses`,
             queryParameters: () => "?api-version=2020-05-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             configDefault: ({ properties, dependencies }) => {
@@ -479,7 +475,6 @@ exports.fnSpecs = ({ config }) => {
             },
             queryParametersCreate: () => "?api-version=2021-02-01",
             queryParameters: () => "?api-version=2021-02-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             configDefault: ({ properties, dependencies }) => {

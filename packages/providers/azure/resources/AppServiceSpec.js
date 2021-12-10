@@ -5,7 +5,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const AzClient = require("../AzClient");
 const {
-  isUpByIdFactory,
   isInstanceUp,
   findDependenciesResourceGroup,
   compare,
@@ -72,7 +71,6 @@ exports.fnSpecs = ({ config }) => {
             },
             pathSuffixList: () => `/providers/Microsoft.Web/kubeEnvironments`,
             queryParameters: () => "?api-version=2021-02-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             findDependencies: ({ live, lives }) => [
@@ -201,7 +199,6 @@ exports.fnSpecs = ({ config }) => {
             verbUpdate: "PUT",
             pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
             queryParameters: () => "?api-version=2021-03-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             findDependencies: ({ live, lives }) => [

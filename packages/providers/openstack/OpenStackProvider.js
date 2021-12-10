@@ -26,8 +26,6 @@ const OpenStackClient = require("./OpenStackClient");
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 
-const { isUpByIdCore } = require("@grucloud/core/Common");
-const { checkEnv } = require("@grucloud/core/Utils");
 const { tos } = require("@grucloud/core/tos");
 const { isOurMinion } = require("./OpenStackTag");
 const { OpenStackAuthorize } = require("./OpenStackUtils");
@@ -41,12 +39,6 @@ const fnSpecs = (config) => {
   const isInstanceUp = (instance) => {
     return !!instance;
   };
-
-  const isUpByIdFactory = ({ getById }) =>
-    isUpByIdCore({
-      isInstanceUp,
-      getById,
-    });
 
   const getHref = ({ field, axios, type = "bookmark" }) =>
     pipe([
@@ -82,7 +74,6 @@ const fnSpecs = (config) => {
           pathBase: `https://network.compute.uk1.cloud.ovh.net`,
           pathSuffixList: () => `/v2.0/networks`,
           onResponseList: () => get("networks"),
-          isUpByIdFactory,
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
@@ -104,7 +95,6 @@ const fnSpecs = (config) => {
           pathSuffixList: () => `/v2.0/subnets`,
           findName: (subnet) => `${subnet.name}::${subnet.cidr}`,
           onResponseList: () => get("subnets"),
-          isUpByIdFactory,
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
@@ -152,7 +142,6 @@ const fnSpecs = (config) => {
                 get("volumes"),
                 map(getHref({ field: "volume", axios, type: "self" })),
               ])(),
-          isUpByIdFactory,
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
@@ -194,7 +183,6 @@ const fnSpecs = (config) => {
                   ])
                 ),
               ])(),
-          isUpByIdFactory,
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),

@@ -1,7 +1,7 @@
 const { get, not } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const K8sClient = require("./K8sClient");
-const { buildTagsObject, isUpByIdCore } = require("@grucloud/core/Common");
+const { buildTagsObject } = require("@grucloud/core/Common");
 const {
   displayNameDefault,
   displayNameNamespace,
@@ -50,12 +50,6 @@ exports.createResourceNamespaceless =
     const pathDelete = ({ name, apiVersion = apiVersionDefault }) =>
       `${baseUrl({ apiVersion })}/${name}`;
 
-    const isUpByIdFactory = ({ getById }) =>
-      isUpByIdCore({
-        isInstanceUp,
-        getById,
-      });
-
     return K8sClient({
       spec,
       config,
@@ -70,7 +64,6 @@ exports.createResourceNamespaceless =
       displayNameResource: displayNameResourceDefault,
       cannotBeDeleted,
       isInstanceUp,
-      isUpByIdFactory,
       findDependencies,
     });
   };
@@ -108,12 +101,6 @@ exports.createResourceNamespace =
     const pathUpdate = pathGet;
     const pathDelete = pathGet;
 
-    const isUpByIdFactory = ({ getById }) =>
-      isUpByIdCore({
-        isInstanceUp,
-        getById,
-      });
-
     return K8sClient({
       spec,
       config,
@@ -125,7 +112,6 @@ exports.createResourceNamespace =
       configDefault,
       cannotBeDeleted,
       isInstanceUp,
-      isUpByIdFactory,
       displayName: displayNameNamespace,
       displayNameResource: displayNameResourceNamespace,
       findDependencies,

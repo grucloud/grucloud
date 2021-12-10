@@ -3,7 +3,7 @@ const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const { isUpByIdFactory, isInstanceUp, buildTags } = require("../AzureCommon");
+const { isInstanceUp, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -35,7 +35,6 @@ exports.fnSpecs = ({ config }) => {
             pathBase: `/subscriptions/${subscriptionId}/resourcegroups`,
             pathSuffix: () => "",
             queryParameters: () => "?api-version=2019-10-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             configDefault: ({ properties }) =>
