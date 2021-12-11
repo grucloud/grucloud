@@ -5,7 +5,7 @@
 const config = {
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
-
+  trailingSlash: false,
   title: "GruCloud",
   tagline: "Infrastructure as Code",
   url: "https://grucloud.github.io/",
