@@ -7,7 +7,7 @@ const createResources = ({ provider }) => {
     name: "resource-group",
   });
 
-  provider.virtualNetworks.makeVirtualNetwork({
+  provider.Network.makeVirtualNetwork({
     name: "virtual-network",
     properties: ({ config }) => ({
       properties: {
@@ -22,7 +22,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.virtualNetworks.makeSecurityGroup({
+  provider.Network.makeSecurityGroup({
     name: "security-group",
     properties: ({ config }) => ({
       properties: {
@@ -61,7 +61,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.virtualNetworks.makePublicIpAddress({
+  provider.Network.makePublicIpAddress({
     name: "ip",
     properties: ({ config }) => ({
       properties: {
@@ -75,7 +75,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.virtualNetworks.makeNetworkInterface({
+  provider.Network.makeNetworkInterface({
     name: "network-interface",
     properties: ({ config }) => ({
       properties: {
@@ -91,15 +91,14 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork:
-        resources.virtualNetworks.VirtualNetwork["virtual-network"],
-      publicIpAddress: resources.virtualNetworks.PublicIpAddress["ip"],
-      securityGroup: resources.virtualNetworks.SecurityGroup["security-group"],
-      subnet: resources.virtualNetworks.Subnet["subnet"],
+      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
+      publicIpAddress: resources.Network.PublicIpAddress["ip"],
+      securityGroup: resources.Network.SecurityGroup["security-group"],
+      subnet: resources.Network.Subnet["subnet"],
     }),
   });
 
-  provider.virtualNetworks.makeSubnet({
+  provider.Network.makeSubnet({
     name: "subnet",
     properties: ({ config }) => ({
       properties: {
@@ -108,8 +107,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork:
-        resources.virtualNetworks.VirtualNetwork["virtual-network"],
+      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
     }),
   });
 
@@ -142,8 +140,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterface:
-        resources.virtualNetworks.NetworkInterface["network-interface"],
+      networkInterface: resources.Network.NetworkInterface["network-interface"],
     }),
   });
 };

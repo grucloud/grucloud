@@ -6,7 +6,7 @@ title: Network Interface
 Provides a Network Interface:
 
 ```js
-provider.virtualNetworks.makeNetworkInterface({
+provider.Network.makeNetworkInterface({
   name: "network-interface",
   properties: ({ config }) => ({
     properties: {
@@ -22,10 +22,10 @@ provider.virtualNetworks.makeNetworkInterface({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-    virtualNetwork: resources.virtualNetworks.VirtualNetwork["virtual-network"],
-    publicIpAddress: resources.virtualNetworks.PublicIpAddress["ip"],
-    securityGroup: resources.virtualNetworks.SecurityGroup["security-group"],
-    subnet: resources.virtualNetworks.Subnet["subnet"],
+    virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
+    publicIpAddress: resources.Network.PublicIpAddress["ip"],
+    securityGroup: resources.Network.SecurityGroup["security-group"],
+    subnet: resources.Network.Subnet["subnet"],
   }),
 });
 ```

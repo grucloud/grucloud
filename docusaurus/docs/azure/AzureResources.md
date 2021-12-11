@@ -6,8 +6,8 @@ List of resources for provider azure:
 
 * Resources: 
 [ResourceGroup](./resources/Resources/ResourceGroup.md)
-* virtualNetworks: 
-[VirtualNetwork](./resources/virtualNetworks/VirtualNetwork.md), [SecurityGroup](./resources/virtualNetworks/SecurityGroup.md), [PublicIpAddress](./resources/virtualNetworks/PublicIpAddress.md), [NetworkInterface](./resources/virtualNetworks/NetworkInterface.md), [Subnet](./resources/virtualNetworks/Subnet.md)
+* Network: 
+[VirtualNetwork](./resources/Network/VirtualNetwork.md), [SecurityGroup](./resources/Network/SecurityGroup.md), [PublicIpAddress](./resources/Network/PublicIpAddress.md), [NetworkInterface](./resources/Network/NetworkInterface.md), [Subnet](./resources/Network/Subnet.md)
 * compute: 
 [VirtualMachine](./resources/compute/VirtualMachine.md)
 * LogAnalytics: 

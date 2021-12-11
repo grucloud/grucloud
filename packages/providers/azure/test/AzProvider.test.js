@@ -32,7 +32,7 @@ describe("AzProvider", async function () {
     resourceGroup = provider.Resources.makeResourceGroup({
       name: rgName,
     });
-    virtualNetwork = provider.virtualNetworks.makeVirtualNetwork({
+    virtualNetwork = provider.Network.makeVirtualNetwork({
       name: vnName,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -47,7 +47,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    securityGroup = provider.virtualNetworks.makeSecurityGroup({
+    securityGroup = provider.Network.makeSecurityGroup({
       name: `security-group`,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -70,7 +70,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
+    const publicIpAddress = provider.Network.makePublicIpAddress({
       name: `ip`,
       dependencies: {
         resourceGroup,
@@ -81,7 +81,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const networkInterface = provider.virtualNetworks.makeNetworkInterface({
+    const networkInterface = provider.Network.makeNetworkInterface({
       name: `network-interface`,
       dependencies: {
         resourceGroup,

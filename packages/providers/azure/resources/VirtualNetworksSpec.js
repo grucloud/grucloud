@@ -26,7 +26,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
-        group: "virtualNetworks",
+        group: "Network",
         type: "VirtualNetwork",
         dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
@@ -70,7 +70,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
-        group: "virtualNetworks",
+        group: "Network",
         type: "SecurityGroup",
         dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
@@ -136,7 +136,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
         // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
         // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
-        group: "virtualNetworks",
+        group: "Network",
         type: "PublicIpAddress",
         dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
@@ -186,14 +186,14 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
-        group: "virtualNetworks",
+        group: "Network",
         type: "NetworkInterface",
         dependsOn: [
           "Resources::ResourceGroup",
-          "virtualNetworks::VirtualNetwork",
-          "virtualNetworks::SecurityGroup",
-          "virtualNetworks::PublicIpAddress",
-          "virtualNetworks::Subnet",
+          "Network::VirtualNetwork",
+          "Network::SecurityGroup",
+          "Network::PublicIpAddress",
+          "Network::Subnet",
         ],
         filterLive: () =>
           pipe([
@@ -228,14 +228,14 @@ exports.fnSpecs = ({ config }) => {
           },
           virtualNetwork: {
             type: "VirtualNetwork",
-            group: "virtualNetworks",
+            group: "Network",
           },
           publicIpAddress: {
             type: "PublicIpAddress",
-            group: "virtualNetworks",
+            group: "Network",
           },
-          securityGroup: { type: "SecurityGroup", group: "virtualNetworks" },
-          subnet: { type: "Subnet", group: "virtualNetworks" },
+          securityGroup: { type: "SecurityGroup", group: "Network" },
+          subnet: { type: "Subnet", group: "Network" },
         }),
         compare: compare({
           filterTarget: pipe([
@@ -263,7 +263,7 @@ exports.fnSpecs = ({ config }) => {
               findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "VirtualNetwork",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: pipe([
                   () => live,
                   get("properties.ipConfigurations"),
@@ -277,7 +277,7 @@ exports.fnSpecs = ({ config }) => {
               },
               {
                 type: "PublicIpAddress",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: pipe([
                   () => live,
                   get("properties.ipConfigurations"),
@@ -288,12 +288,12 @@ exports.fnSpecs = ({ config }) => {
               },
               {
                 type: "SecurityGroup",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: [get("properties.networkSecurityGroup.id")(live)],
               },
               {
                 type: "Subnet",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: pipe([
                   () => live,
                   get("properties.ipConfigurations"),
@@ -349,13 +349,13 @@ exports.fnSpecs = ({ config }) => {
             },
           }),
       },
-      // GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets?api-version=2021-02-01
-      // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}?api-version=2021-04-01
+      // GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/Network/{virtualNetworkName}/subnets?api-version=2021-02-01
+      // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/Network/{virtualNetworkName}/subnets/{subnetName}?api-version=2021-04-01
       {
-        group: "virtualNetworks",
+        group: "Network",
         type: "Subnet",
-        dependsOn: ["virtualNetworks::VirtualNetwork"],
-        dependsOnList: ["virtualNetworks::VirtualNetwork"],
+        dependsOn: ["Network::VirtualNetwork"],
+        dependsOnList: ["Network::VirtualNetwork"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -363,7 +363,7 @@ exports.fnSpecs = ({ config }) => {
           },
           virtualNetwork: {
             type: "VirtualNetwork",
-            group: "virtualNetworks",
+            group: "Network",
           },
         }),
         isOurMinion: ({ live, lives }) =>
@@ -372,7 +372,7 @@ exports.fnSpecs = ({ config }) => {
               lives.getByType({
                 providerName: config.providerName,
                 type: "VirtualNetwork",
-                group: "virtualNetworks",
+                group: "Network",
               }),
             find(
               pipe([
@@ -396,7 +396,7 @@ exports.fnSpecs = ({ config }) => {
               findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "VirtualNetwork",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: [
                   pipe([
                     () => live,
@@ -408,7 +408,7 @@ exports.fnSpecs = ({ config }) => {
                         name: virtualNetwork,
                         providerName: config.providerName,
                         type: "VirtualNetwork",
-                        group: "virtualNetworks",
+                        group: "Network",
                       }),
                     get("id"),
                   ])(),
@@ -424,7 +424,7 @@ exports.fnSpecs = ({ config }) => {
                   lives.getByType({
                     providerName: config.providerName,
                     type: "VirtualNetwork",
-                    group: "virtualNetworks",
+                    group: "Network",
                   }),
                 pluck("live"),
                 pluck("properties"),

@@ -17,10 +17,7 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
         group: "compute",
         type: "VirtualMachine",
-        dependsOn: [
-          "Resources::ResourceGroup",
-          "virtualNetworks::NetworkInterface",
-        ],
+        dependsOn: ["Resources::ResourceGroup", "Network::NetworkInterface"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -28,7 +25,7 @@ exports.fnSpecs = ({ config }) => {
           },
           networkInterface: {
             type: "NetworkInterface",
-            group: "virtualNetworks",
+            group: "Network",
           },
         }),
         environmentVariables: () => [
@@ -115,7 +112,7 @@ exports.fnSpecs = ({ config }) => {
               },
               {
                 type: "NetworkInterface",
-                group: "virtualNetworks",
+                group: "Network",
                 ids: pipe([
                   () => live,
                   get("properties.networkProfile.networkInterfaces"),

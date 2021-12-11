@@ -5,7 +5,7 @@ skinparam monochrome true
 ++ azure
 +++ Resources
 ++++ ResourceGroup (1)
-+++ virtualNetworks
++++ Network
 ++++ VirtualNetwork (1)
 ++++ SecurityGroup (1)
 ++++ PublicIpAddress (1)
