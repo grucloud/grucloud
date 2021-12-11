@@ -29,7 +29,7 @@ describe("AzProvider", async function () {
       name: "azure",
       config: () => ({ location: "uksouth" }),
     });
-    resourceGroup = provider.resourceManagement.makeResourceGroup({
+    resourceGroup = provider.Resources.makeResourceGroup({
       name: rgName,
     });
     virtualNetwork = provider.virtualNetworks.makeVirtualNetwork({

@@ -34,7 +34,7 @@ provider.AppService.makeContainerApp({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+    resourceGroup: resources.Resources.ResourceGroup["rg"],
     kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
   }),
 });
@@ -50,5 +50,5 @@ provider.AppService.makeContainerApp({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [KubeEnvironment](./KubeEnvironment.md)

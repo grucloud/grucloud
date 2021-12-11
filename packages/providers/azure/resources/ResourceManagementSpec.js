@@ -17,7 +17,7 @@ exports.fnSpecs = ({ config }) => {
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/resources/resource-groups
-        group: "resourceManagement",
+        group: "Resources",
         type: "ResourceGroup",
         filterLive: () => pipe([pick(["tags"])]),
         ignoreResource: () =>

@@ -4,8 +4,8 @@ title: Resources List
 ---
 List of resources for provider azure:
 
-* resourceManagement: 
-[ResourceGroup](./resources/resourceManagement/ResourceGroup.md)
+* Resources: 
+[ResourceGroup](./resources/Resources/ResourceGroup.md)
 * virtualNetworks: 
 [VirtualNetwork](./resources/virtualNetworks/VirtualNetwork.md), [SecurityGroup](./resources/virtualNetworks/SecurityGroup.md), [PublicIpAddress](./resources/virtualNetworks/PublicIpAddress.md), [NetworkInterface](./resources/virtualNetworks/NetworkInterface.md), [Subnet](./resources/virtualNetworks/Subnet.md)
 * compute: 

@@ -31,7 +31,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
       kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
     }),
   });

@@ -3,7 +3,7 @@ title Resources for project plantuml
 skinparam monochrome true
 + Infra
 ++ azure
-+++ resourceManagement
++++ Resources
 ++++ ResourceGroup (1)
 +++ LogAnalytics
 ++++ Workspace (1)

@@ -11,7 +11,7 @@ exports.buildTags = ({ managedByKey, managedByValue, stageTagKey, stage }) => ({
 
 exports.findDependenciesResourceGroup = ({ live, lives, config }) => ({
   type: "ResourceGroup",
-  group: "resourceManagement",
+  group: "Resources",
   ids: [
     pipe([
       () => live,

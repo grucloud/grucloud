@@ -15,11 +15,11 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
         group: "LogAnalytics",
         type: "Workspace",
-        dependsOn: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
         }),
         filterLive: () =>

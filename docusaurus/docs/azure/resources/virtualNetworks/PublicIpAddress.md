@@ -29,7 +29,7 @@ const publicIpAddress = provider.makePublicIpAddress({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 
 ### Used By
 

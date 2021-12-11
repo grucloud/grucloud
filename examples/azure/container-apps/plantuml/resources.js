@@ -3,7 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.resourceManagement.makeResourceGroup({
+  provider.Resources.makeResourceGroup({
     name: "rg",
   });
 
@@ -18,14 +18,14 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
     }),
   });
 
   provider.AppService.makeKubeEnvironment({
     name: "dev",
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
       workspace: resources.LogAnalytics.Workspace["logs"],
     }),
   });
@@ -58,7 +58,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
       kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
     }),
   });

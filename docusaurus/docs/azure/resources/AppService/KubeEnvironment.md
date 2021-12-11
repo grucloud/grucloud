@@ -9,7 +9,7 @@ Provides a Kube Environment:
 provider.AppService.makeKubeEnvironment({
   name: "dev",
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+    resourceGroup: resources.Resources.ResourceGroup["rg"],
     workspace: resources.LogAnalytics.Workspace["logs"],
   }),
 });
@@ -25,5 +25,5 @@ provider.AppService.makeKubeEnvironment({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../LogAnalytics/Workspace.md)

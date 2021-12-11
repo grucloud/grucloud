@@ -54,7 +54,7 @@ const sg = provider.makeSecurityGroup({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 
 ### Used By
 

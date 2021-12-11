@@ -19,15 +19,12 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         group: "AppService",
         type: "KubeEnvironment",
-        dependsOn: [
-          "resourceManagement::ResourceGroup",
-          "LogAnalytics::Workspace",
-        ],
-        dependsOnList: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup", "LogAnalytics::Workspace"],
+        dependsOnList: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           workspace: {
             type: "Workspace",
@@ -135,15 +132,12 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         group: "AppService",
         type: "ContainerApp",
-        dependsOn: [
-          "resourceManagement::ResourceGroup",
-          "AppService::KubeEnvironment",
-        ],
-        dependsOnList: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup", "AppService::KubeEnvironment"],
+        dependsOnList: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           kubeEnvironment: {
             type: "KubeEnvironment",

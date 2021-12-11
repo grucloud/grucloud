@@ -14,7 +14,7 @@ provider.virtualNetworks.makeSubnet({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["resource-group"],
+    resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     virtualNetwork: resources.virtualNetworks.VirtualNetwork["virtual-network"],
   }),
 });
@@ -30,7 +30,7 @@ provider.virtualNetworks.makeSubnet({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [Virtual Network](./VirtualNetwork.md)
 
 ### Used By

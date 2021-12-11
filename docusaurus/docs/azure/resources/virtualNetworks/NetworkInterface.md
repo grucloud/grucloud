@@ -21,7 +21,7 @@ provider.virtualNetworks.makeNetworkInterface({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["resource-group"],
+    resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     virtualNetwork: resources.virtualNetworks.VirtualNetwork["virtual-network"],
     publicIpAddress: resources.virtualNetworks.PublicIpAddress["ip"],
     securityGroup: resources.virtualNetworks.SecurityGroup["security-group"],
@@ -40,7 +40,7 @@ provider.virtualNetworks.makeNetworkInterface({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](./VirtualNetwork.md)
 - [SecurityGroup](./SecurityGroup.md)
 - [PublicIpAddress](./PublicIpAddress.md)

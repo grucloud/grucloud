@@ -18,13 +18,13 @@ exports.fnSpecs = ({ config }) => {
         group: "compute",
         type: "VirtualMachine",
         dependsOn: [
-          "resourceManagement::ResourceGroup",
+          "Resources::ResourceGroup",
           "virtualNetworks::NetworkInterface",
         ],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           networkInterface: {
             type: "NetworkInterface",
@@ -103,7 +103,7 @@ exports.fnSpecs = ({ config }) => {
             findDependencies: ({ live }) => [
               {
                 type: "ResourceGroup",
-                group: "resourceManagement",
+                group: "Resources",
                 ids: pipe([
                   () => [
                     live.id

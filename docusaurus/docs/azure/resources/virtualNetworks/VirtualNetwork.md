@@ -35,7 +35,7 @@ const virtualNetwork = provider.makeVirtualNetwork({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 
 ### Used By
 

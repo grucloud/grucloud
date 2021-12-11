@@ -3,7 +3,7 @@ title Resources for project Azure VM
 skinparam monochrome true
 + Infra
 ++ azure
-+++ resourceManagement
++++ Resources
 ++++ ResourceGroup (1)
 +++ virtualNetworks
 ++++ VirtualNetwork (1)

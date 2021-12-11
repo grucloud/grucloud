@@ -3,7 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.resourceManagement.makeResourceGroup({
+  provider.Resources.makeResourceGroup({
     name: "resource-group",
   });
 
@@ -18,8 +18,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),
   });
 
@@ -58,8 +57,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),
   });
 
@@ -73,8 +71,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),
   });
 
@@ -93,8 +90,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
       virtualNetwork:
         resources.virtualNetworks.VirtualNetwork["virtual-network"],
       publicIpAddress: resources.virtualNetworks.PublicIpAddress["ip"],
@@ -111,8 +107,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
       virtualNetwork:
         resources.virtualNetworks.VirtualNetwork["virtual-network"],
     }),
@@ -146,8 +141,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
       networkInterface:
         resources.virtualNetworks.NetworkInterface["network-interface"],
     }),

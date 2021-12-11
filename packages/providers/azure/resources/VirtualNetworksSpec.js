@@ -28,11 +28,11 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
         group: "virtualNetworks",
         type: "VirtualNetwork",
-        dependsOn: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
         }),
         filterLive: () =>
@@ -72,11 +72,11 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
         group: "virtualNetworks",
         type: "SecurityGroup",
-        dependsOn: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
         }),
         filterLive: () =>
@@ -138,11 +138,11 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
         group: "virtualNetworks",
         type: "PublicIpAddress",
-        dependsOn: ["resourceManagement::ResourceGroup"],
+        dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
         }),
         filterLive: () =>
@@ -189,7 +189,7 @@ exports.fnSpecs = ({ config }) => {
         group: "virtualNetworks",
         type: "NetworkInterface",
         dependsOn: [
-          "resourceManagement::ResourceGroup",
+          "Resources::ResourceGroup",
           "virtualNetworks::VirtualNetwork",
           "virtualNetworks::SecurityGroup",
           "virtualNetworks::PublicIpAddress",
@@ -224,7 +224,7 @@ exports.fnSpecs = ({ config }) => {
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           virtualNetwork: {
             type: "VirtualNetwork",
@@ -359,7 +359,7 @@ exports.fnSpecs = ({ config }) => {
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           virtualNetwork: {
             type: "VirtualNetwork",

@@ -68,61 +68,61 @@
 <path fill="none" stroke="#707070" d="M540.24,-247.05C589.49,-252.58 655.31,-256.64 713,-249 721.49,-247.87 730.27,-246.27 738.97,-244.38"/>
 <polygon fill="#707070" stroke="#707070" points="739.78,-247.79 748.75,-242.15 738.22,-240.97 739.78,-247.79"/>
 </g>
-<!-- Subnet::subnet -->
-<g id="node5" class="node">
-<title>Subnet::subnet</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="504,-189 425,-189 425,-131 504,-131 504,-189"/>
-<text text-anchor="start" x="437.5" y="-169.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
-<text text-anchor="start" x="437.5" y="-144.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet</text>
-</g>
-<!-- Subnet::subnet&#45;&gt;ResourceGroup::resource&#45;group -->
-<g id="edge4" class="edge">
-<title>Subnet::subnet&#45;&gt;ResourceGroup::resource&#45;group</title>
-<path fill="none" stroke="#707070" d="M504.36,-176.94C516.26,-182.87 529.08,-190.06 540,-198 558.3,-211.3 555.09,-225.34 576,-234 604.5,-245.8 679.24,-239.73 738.65,-232.25"/>
-<polygon fill="#707070" stroke="#707070" points="739.33,-235.69 748.8,-230.94 738.43,-228.75 739.33,-235.69"/>
-</g>
-<!-- Subnet::subnet&#45;&gt;VirtualNetwork::virtual&#45;network -->
-<g id="edge5" class="edge">
-<title>Subnet::subnet&#45;&gt;VirtualNetwork::virtual&#45;network</title>
-<path fill="none" stroke="#707070" d="M504.12,-167.81C522.22,-171.47 544.46,-175.97 565.81,-180.29"/>
-<polygon fill="#707070" stroke="#707070" points="565.38,-183.77 575.87,-182.32 566.76,-176.91 565.38,-183.77"/>
-</g>
 <!-- NetworkInterface::network&#45;interface -->
-<g id="node6" class="node">
+<g id="node5" class="node">
 <title>NetworkInterface::network&#45;interface</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="353,-169 199,-169 199,-111 353,-111 353,-169"/>
 <text text-anchor="start" x="211" y="-149.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">NetworkInterface</text>
 <text text-anchor="start" x="211" y="-124.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">network&#45;interface</text>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;&gt;ResourceGroup::resource&#45;group -->
-<g id="edge6" class="edge">
+<g id="edge4" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;&gt;ResourceGroup::resource&#45;group</title>
 <path fill="none" stroke="#707070" d="M291.41,-169.26C309.24,-201.76 342.99,-252.49 389,-274 505.14,-328.29 657.06,-286.8 746.2,-252.7"/>
 <polygon fill="#707070" stroke="#707070" points="747.64,-255.9 755.69,-249.01 745.1,-249.38 747.64,-255.9"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;&gt;VirtualNetwork::virtual&#45;network -->
-<g id="edge7" class="edge">
+<g id="edge5" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;&gt;VirtualNetwork::virtual&#45;network</title>
 <path fill="none" stroke="#707070" d="M353.02,-126.11C365.02,-124.4 377.32,-122.93 389,-122 455.9,-116.66 478,-96.32 540,-122 560.91,-130.66 557.97,-144.32 576,-158 577.4,-159.06 578.83,-160.11 580.29,-161.16"/>
 <polygon fill="#707070" stroke="#707070" points="578.64,-164.26 588.88,-166.98 582.57,-158.47 578.64,-164.26"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;&gt;SecurityGroup::security&#45;group -->
-<g id="edge8" class="edge">
+<g id="edge7" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;&gt;SecurityGroup::security&#45;group</title>
 <path fill="none" stroke="#707070" d="M353.17,-114.41C365.04,-111.34 377.26,-108.69 389,-107 448.09,-98.48 515.61,-102.55 566.24,-108.31"/>
 <polygon fill="#707070" stroke="#707070" points="566.12,-111.82 576.46,-109.52 566.94,-104.87 566.12,-111.82"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;&gt;PublicIpAddress::ip -->
-<g id="edge10" class="edge">
+<g id="edge6" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;&gt;PublicIpAddress::ip</title>
 <path fill="none" stroke="#707070" d="M333.08,-169.13C350.94,-178.38 370.79,-188.64 389,-198 391.75,-199.41 394.56,-200.86 397.4,-202.31"/>
 <polygon fill="#707070" stroke="#707070" points="396.04,-205.55 406.54,-206.99 399.23,-199.32 396.04,-205.55"/>
 </g>
+<!-- Subnet::subnet -->
+<g id="node6" class="node">
+<title>Subnet::subnet</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="504,-189 425,-189 425,-131 504,-131 504,-189"/>
+<text text-anchor="start" x="437.5" y="-169.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
+<text text-anchor="start" x="437.5" y="-144.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet</text>
+</g>
 <!-- NetworkInterface::network&#45;interface&#45;&gt;Subnet::subnet -->
-<g id="edge9" class="edge">
+<g id="edge8" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;&gt;Subnet::subnet</title>
 <path fill="none" stroke="#707070" d="M353.13,-148.16C373.95,-150.4 395.95,-152.76 414.78,-154.78"/>
 <polygon fill="#707070" stroke="#707070" points="414.57,-158.27 424.89,-155.86 415.32,-151.31 414.57,-158.27"/>
+</g>
+<!-- Subnet::subnet&#45;&gt;ResourceGroup::resource&#45;group -->
+<g id="edge9" class="edge">
+<title>Subnet::subnet&#45;&gt;ResourceGroup::resource&#45;group</title>
+<path fill="none" stroke="#707070" d="M504.36,-176.94C516.26,-182.87 529.08,-190.06 540,-198 558.3,-211.3 555.09,-225.34 576,-234 604.5,-245.8 679.24,-239.73 738.65,-232.25"/>
+<polygon fill="#707070" stroke="#707070" points="739.33,-235.69 748.8,-230.94 738.43,-228.75 739.33,-235.69"/>
+</g>
+<!-- Subnet::subnet&#45;&gt;VirtualNetwork::virtual&#45;network -->
+<g id="edge10" class="edge">
+<title>Subnet::subnet&#45;&gt;VirtualNetwork::virtual&#45;network</title>
+<path fill="none" stroke="#707070" d="M504.12,-167.81C522.22,-171.47 544.46,-175.97 565.81,-180.29"/>
+<polygon fill="#707070" stroke="#707070" points="565.38,-183.77 575.87,-182.32 566.76,-176.91 565.38,-183.77"/>
 </g>
 <!-- VirtualMachine::vm -->
 <g id="node7" class="node">
