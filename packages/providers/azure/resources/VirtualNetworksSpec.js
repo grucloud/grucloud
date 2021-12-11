@@ -11,12 +11,10 @@ const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const {
   compare,
-  isInstanceUp,
   findDependenciesResourceGroup,
   buildTags,
 } = require("../AzureCommon");
 const AzClient = require("../AzClient");
-const AzTag = require("../AzTag");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -58,7 +56,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/virtualNetworks`,
             queryParameters: () => "?api-version=2020-05-01",
-            isInstanceUp,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
             ],
@@ -126,7 +123,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/networkSecurityGroups`,
             queryParameters: () => "?api-version=2020-05-01",
-            isInstanceUp,
             config,
             configDefault: ({ properties }) =>
               defaultsDeep({
@@ -176,7 +172,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/publicIPAddresses`,
             queryParameters: () => "?api-version=2020-05-01",
-            isInstanceUp,
             config,
             configDefault: ({ properties, dependencies }) => {
               return defaultsDeep({
@@ -268,8 +263,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Network/networkInterfaces`,
             queryParameters: () => "?api-version=2020-05-01",
-            isInstanceUp,
-
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
               {
@@ -475,7 +468,6 @@ exports.fnSpecs = ({ config }) => {
             },
             queryParametersCreate: () => "?api-version=2021-02-01",
             queryParameters: () => "?api-version=2021-02-01",
-            isInstanceUp,
             config,
             configDefault: ({ properties, dependencies }) => {
               return defaultsDeep({

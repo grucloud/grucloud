@@ -3,7 +3,8 @@ const path = require("path");
 const { get } = require("rubico");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
-const logger = require("@grucloud/core/logger")({ prefix: "AzClient" });
+
+const { isInstanceUp: isInstanceUpDefault } = require("./AzureCommon");
 
 const BASE_URL = "https://management.azure.com";
 
@@ -14,7 +15,7 @@ module.exports = AzClient = ({
   pathSuffixList,
   queryParametersCreate = () => undefined,
   queryParameters,
-  isInstanceUp,
+  isInstanceUp = isInstanceUpDefault,
   config,
   configDefault,
   isDefault,

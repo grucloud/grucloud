@@ -3,11 +3,7 @@ const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const {
-  isInstanceUp,
-  findDependenciesResourceGroup,
-  buildTags,
-} = require("../AzureCommon");
+const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -47,7 +43,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.OperationalInsights/workspaces`,
             queryParameters: () => "?api-version=2021-06-01",
-            isInstanceUp,
             config,
             decorate: ({ axios }) =>
               pipe([

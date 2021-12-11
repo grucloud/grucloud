@@ -2,10 +2,9 @@ const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compare, isInstanceUp, buildTags } = require("../AzureCommon");
+const { compare, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -82,7 +81,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.Compute/virtualMachines`,
             queryParameters: () => "?api-version=2019-12-01",
-            isInstanceUp,
             config,
             configDefault: ({ properties, dependencies }) => {
               const { networkInterface } = dependencies;
