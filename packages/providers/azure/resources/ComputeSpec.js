@@ -8,7 +8,6 @@ const { compare, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
@@ -73,7 +72,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Compute/virtualMachines`;

@@ -7,7 +7,6 @@ const { buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   const isDefaultResourceGroup = pipe([
     get("live.name"),
@@ -32,8 +31,11 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}/resourcegroups`,
-            pathSuffix: () => "",
+            pathSuffix: () => {
+              return `/resourcegroups/`;
+            },
+            pathSuffixList: () => `/resourcegroups/`,
+            // 2021-04-01
             queryParameters: () => "?api-version=2019-10-01",
             config,
             configDefault: ({ properties }) =>

@@ -12,7 +12,6 @@ const {
 
 exports.fnSpecs = ({ config }) => {
   const { providerName, location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
@@ -63,7 +62,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/kubeEnvironments`;
@@ -189,7 +187,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/containerapps`;

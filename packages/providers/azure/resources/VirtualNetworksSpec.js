@@ -48,7 +48,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks`;
@@ -115,7 +114,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkSecurityGroups`;
@@ -164,7 +162,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/publicIPAddresses`;
@@ -255,7 +252,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({ dependencies: { resourceGroup } }) => {
               assert(resourceGroup, "missing resourceGroup dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkInterfaces`;
@@ -458,7 +454,6 @@ exports.fnSpecs = ({ config }) => {
                   }),
                 ])(),
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
             pathSuffix: ({
               dependencies: { resourceGroup, virtualNetwork },
             }) => {

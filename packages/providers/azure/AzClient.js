@@ -10,7 +10,7 @@ const BASE_URL = "https://management.azure.com";
 
 module.exports = AzClient = ({
   spec,
-  pathBase,
+  pathBase = () => `/subscriptions/${process.env.SUBSCRIPTION_ID}`,
   pathSuffix,
   pathSuffixList,
   queryParametersCreate = () => undefined,
@@ -30,7 +30,6 @@ module.exports = AzClient = ({
   verbUpdate = "PATCH",
   pathUpdate = ({ id }) => `${id}${queryParameters()}`,
 }) => {
-  assert(pathBase);
   assert(spec);
   assert(spec.type);
   assert(config);
@@ -40,7 +39,7 @@ module.exports = AzClient = ({
 
   const pathCreate = ({ dependencies, name }) =>
     `${path.join(
-      pathBase,
+      pathBase(),
       pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : ""
     )}${queryParametersCreate() || queryParameters()}`;
 
@@ -48,7 +47,7 @@ module.exports = AzClient = ({
 
   const pathList = () =>
     `${path.join(
-      pathBase,
+      pathBase(),
       pathSuffixList ? pathSuffixList() : ""
     )}${queryParameters()}`;
 
