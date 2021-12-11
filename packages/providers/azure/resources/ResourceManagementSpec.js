@@ -36,7 +36,7 @@ exports.fnSpecs = ({ config }) => {
             },
             pathSuffixList: () => `/resourcegroups/`,
             // 2021-04-01
-            queryParameters: () => "?api-version=2019-10-01",
+            apiVersion: "2019-10-01",
             config,
             configDefault: ({ properties }) =>
               defaultsDeep({

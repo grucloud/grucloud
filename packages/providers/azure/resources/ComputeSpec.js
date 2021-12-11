@@ -78,7 +78,7 @@ exports.fnSpecs = ({ config }) => {
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Compute/virtualMachines`,
-            queryParameters: () => "?api-version=2019-12-01",
+            apiVersion: "2019-12-01",
             config,
             configDefault: ({ properties, dependencies }) => {
               const { networkInterface } = dependencies;

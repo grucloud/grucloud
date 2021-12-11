@@ -8,13 +8,14 @@ const { isInstanceUp: isInstanceUpDefault } = require("./AzureCommon");
 
 const BASE_URL = "https://management.azure.com";
 
+const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
+
 module.exports = AzClient = ({
   spec,
   pathBase = () => `/subscriptions/${process.env.SUBSCRIPTION_ID}`,
   pathSuffix,
   pathSuffixList,
-  queryParametersCreate = () => undefined,
-  queryParameters,
+  apiVersion,
   isInstanceUp = isInstanceUpDefault,
   config,
   configDefault,
@@ -28,28 +29,29 @@ module.exports = AzClient = ({
   decorate,
   verbCreate = "PUT",
   verbUpdate = "PATCH",
-  pathUpdate = ({ id }) => `${id}${queryParameters()}`,
+  pathUpdate = ({ id }) => `${id}${queryParameters(apiVersion)}`,
 }) => {
   assert(spec);
   assert(spec.type);
+  assert(apiVersion);
   assert(config);
   assert(config.bearerToken);
 
-  const pathGet = ({ id }) => `${id}${queryParameters()}`;
+  const pathGet = ({ id }) => `${id}${queryParameters(apiVersion)}`;
 
   const pathCreate = ({ dependencies, name }) =>
     `${path.join(
       pathBase(),
       pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : ""
-    )}${queryParametersCreate() || queryParameters()}`;
+    )}${queryParameters(apiVersion)}`;
 
-  const pathDelete = ({ id }) => `${id}${queryParameters()}`;
+  const pathDelete = ({ id }) => `${id}${queryParameters(apiVersion)}`;
 
   const pathList = () =>
     `${path.join(
       pathBase(),
       pathSuffixList ? pathSuffixList() : ""
-    )}${queryParameters()}`;
+    )}${queryParameters(apiVersion)}`;
 
   const axios = AxiosMaker({
     baseURL: BASE_URL,

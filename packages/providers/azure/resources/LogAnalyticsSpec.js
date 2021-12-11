@@ -41,7 +41,7 @@ exports.fnSpecs = ({ config }) => {
             },
             pathSuffixList: () =>
               `/providers/Microsoft.OperationalInsights/workspaces`,
-            queryParameters: () => "?api-version=2021-06-01",
+            apiVersion: "2021-06-01",
             config,
             decorate: ({ axios }) =>
               pipe([

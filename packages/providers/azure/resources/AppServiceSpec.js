@@ -67,7 +67,7 @@ exports.fnSpecs = ({ config }) => {
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/kubeEnvironments`;
             },
             pathSuffixList: () => `/providers/Microsoft.Web/kubeEnvironments`,
-            queryParameters: () => "?api-version=2021-02-01",
+            apiVersion: "2021-02-01",
             config,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
@@ -193,7 +193,7 @@ exports.fnSpecs = ({ config }) => {
             },
             verbUpdate: "PUT",
             pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
-            queryParameters: () => "?api-version=2021-03-01",
+            apiVersion: "2021-03-01",
             config,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
