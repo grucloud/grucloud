@@ -461,7 +461,6 @@ exports.fnSpecs = ({ config }) => {
               assert(virtualNetwork, "missing virtualNetwork dependency");
               return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${virtualNetwork.name}/subnets`;
             },
-            queryParametersCreate: () => "?api-version=2021-02-01",
             apiVersion: "2021-02-01",
             config,
             configDefault: ({ properties, dependencies }) => {
