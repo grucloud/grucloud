@@ -17,7 +17,6 @@ exports.fnSpecs = ({ config }) => {
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
-        group: "AppService",
         type: "KubeEnvironment",
         dependsOn: ["Resources::ResourceGroup", "LogAnalytics::Workspace"],
         dependsOnList: ["Resources::ResourceGroup"],
@@ -59,9 +58,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/kubeEnvironments`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
+              },
             },
             pathSuffixList: () => `/providers/Microsoft.Web/kubeEnvironments`,
             apiVersion: "2021-02-01",
@@ -130,9 +130,8 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
-        group: "AppService",
         type: "ContainerApp",
-        dependsOn: ["Resources::ResourceGroup", "AppService::KubeEnvironment"],
+        dependsOn: ["Resources::ResourceGroup", "Web::KubeEnvironment"],
         dependsOnList: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
@@ -141,7 +140,7 @@ exports.fnSpecs = ({ config }) => {
           },
           kubeEnvironment: {
             type: "KubeEnvironment",
-            group: "AppService",
+            group: "Web",
           },
         }),
         compare: compare({
@@ -181,9 +180,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/containerapps`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
+              },
             },
             verbUpdate: "PUT",
             pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
@@ -193,7 +193,7 @@ exports.fnSpecs = ({ config }) => {
               findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "KubeEnvironment",
-                group: "AppService",
+                group: "Web",
                 ids: [
                   pipe([() => live, get("properties.kubeEnvironmentId")])(),
                 ],
@@ -219,5 +219,6 @@ exports.fnSpecs = ({ config }) => {
           }),
       },
     ],
+    map(defaultsDeep({ group: "Web" })),
   ])();
 };

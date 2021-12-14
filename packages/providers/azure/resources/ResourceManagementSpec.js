@@ -31,8 +31,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: () => {
-              return `/resourcegroups/`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
+              },
             },
             pathSuffixList: () => `/resourcegroups/`,
             // 2021-04-01

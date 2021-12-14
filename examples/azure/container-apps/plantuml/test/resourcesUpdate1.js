@@ -3,7 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.AppService.makeContainerApp({
+  provider.Web.makeContainerApp({
     name: "plantuml",
     properties: ({ config }) => ({
       properties: {
@@ -32,7 +32,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
-      kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
+      kubeEnvironment: resources.Web.KubeEnvironment["dev"],
     }),
   });
 };

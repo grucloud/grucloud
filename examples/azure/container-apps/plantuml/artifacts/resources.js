@@ -22,7 +22,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.AppService.makeKubeEnvironment({
+  provider.Web.makeKubeEnvironment({
     name: "dev",
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
@@ -30,7 +30,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.AppService.makeContainerApp({
+  provider.Web.makeContainerApp({
     name: "plantuml",
     properties: ({ config }) => ({
       properties: {
@@ -59,7 +59,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
-      kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
+      kubeEnvironment: resources.Web.KubeEnvironment["dev"],
     }),
   });
 };

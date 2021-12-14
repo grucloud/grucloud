@@ -48,9 +48,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Network/virtualNetworks`,
@@ -114,9 +115,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkSecurityGroups`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{name}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Network/networkSecurityGroups`,
@@ -162,9 +164,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/publicIPAddresses`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{name}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Network/publicIPAddresses`,
@@ -252,9 +255,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkInterfaces`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{name}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Network/networkInterfaces`,
@@ -454,12 +458,10 @@ exports.fnSpecs = ({ config }) => {
                   }),
                 ])(),
             spec,
-            pathSuffix: ({
-              dependencies: { resourceGroup, virtualNetwork },
-            }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              assert(virtualNetwork, "missing virtualNetwork dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${virtualNetwork.name}/subnets`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}",
+              },
             },
             apiVersion: "2021-02-01",
             config,

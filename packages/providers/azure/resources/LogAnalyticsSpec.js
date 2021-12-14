@@ -35,9 +35,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourcegroups/${resourceGroup.name}/providers/Microsoft.OperationalInsights/workspaces`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.OperationalInsights/workspaces`,

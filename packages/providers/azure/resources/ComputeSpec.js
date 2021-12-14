@@ -69,9 +69,10 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Compute/virtualMachines`;
+            methods: {
+              get: {
+                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{name}",
+              },
             },
             pathSuffixList: () =>
               `/providers/Microsoft.Compute/virtualMachines`,

@@ -1,6 +1,7 @@
 const assert = require("assert");
 const path = require("path");
-const { get } = require("rubico");
+const { tap, get, eq, reduce, pipe, switchCase, map } = require("rubico");
+const { callProp, identity, last, append, values, find } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
@@ -13,7 +14,6 @@ const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 module.exports = AzClient = ({
   spec,
   pathBase = () => `/subscriptions/${process.env.SUBSCRIPTION_ID}`,
-  pathSuffix,
   pathSuffixList,
   apiVersion,
   isInstanceUp = isInstanceUpDefault,
@@ -30,6 +30,7 @@ module.exports = AzClient = ({
   verbCreate = "PUT",
   verbUpdate = "PATCH",
   pathUpdate = ({ id }) => `${id}${queryParameters(apiVersion)}`,
+  methods,
 }) => {
   assert(spec);
   assert(spec.type);
@@ -39,11 +40,62 @@ module.exports = AzClient = ({
 
   const pathGet = ({ id }) => `${id}${queryParameters(apiVersion)}`;
 
+  const substituteDependency =
+    ({ dependencies }) =>
+    (paramName) =>
+      pipe([
+        tap(() => {
+          assert(dependencies);
+        }),
+        () => dependencies,
+        map.entries(([varName, resource]) => [varName, { varName, resource }]),
+        values,
+        find(eq(pipe([({ varName }) => `{${varName}Name}`]), paramName)),
+        tap((resource) => {
+          assert(resource);
+        }),
+        get("resource.name"),
+      ])();
+
+  const isSubstituable = callProp("startsWith", "{");
+
   const pathCreate = ({ dependencies, name }) =>
-    `${path.join(
-      pathBase(),
-      pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : ""
-    )}${queryParameters(apiVersion)}`;
+    pipe([
+      () => methods,
+      get("get.path"),
+      tap((path) => {
+        assert(name);
+        assert(path);
+      }),
+      callProp("split", "/"),
+      tap(
+        pipe([last, isSubstituable], (isParam) => {
+          assert(isParam, "last part of the path must be a substituable");
+        })
+      ),
+      callProp("slice", 0, -1),
+      reduce(
+        (acc, key) =>
+          pipe([
+            () => key,
+            switchCase([
+              eq(key, "{subscriptionId}"),
+              () => process.env.SUBSCRIPTION_ID,
+              isSubstituable,
+              substituteDependency({ dependencies }),
+              identity,
+            ]),
+            (value) => [...acc, value],
+          ])(),
+        []
+      ),
+      callProp("join", "/"),
+      append(`/${name}`),
+      append(queryParameters(apiVersion)),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const pathDelete = ({ id }) => `${id}${queryParameters(apiVersion)}`;
 
