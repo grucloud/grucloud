@@ -16,7 +16,6 @@ const {
   filter,
 } = require("rubico");
 const {
-  when,
   first,
   unless,
   pluck,
@@ -26,6 +25,7 @@ const {
   find,
   last,
   append,
+  defaultsDeep,
 } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion, DecodeUserData } = require("../AwsCommon");
@@ -60,7 +60,6 @@ const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "EC2";
 

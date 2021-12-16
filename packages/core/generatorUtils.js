@@ -176,6 +176,9 @@ const buildProperties = ({
     (props) =>
       pipe([
         () => environmentVariables,
+        tap.if(not(isEmpty), (params) => {
+          assert(true);
+        }),
         reduce(
           (acc, { path, suffix }) =>
             set(
@@ -263,7 +266,7 @@ exports.hasDependency = ({ type, group }) =>
     not(isEmpty),
   ]);
 
-const envTpl = ({ resource, environmentVariables }) =>
+const envTpl = ({ resource, environmentVariables = [] }) =>
   pipe([
     () => environmentVariables,
     map(({ suffix }) => `${envVarName({ resource, suffix })}=\n`),

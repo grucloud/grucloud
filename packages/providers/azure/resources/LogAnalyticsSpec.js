@@ -1,13 +1,12 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const AzClient = require("../AzClient");
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
@@ -39,9 +38,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/workspaces`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.OperationalInsights/workspaces`,
             apiVersion: "2021-06-01",
             config,
             decorate: ({ axios }) =>

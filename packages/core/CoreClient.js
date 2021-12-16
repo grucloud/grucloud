@@ -10,7 +10,7 @@ const {
   map,
   not,
 } = require("rubico");
-const { isEmpty, defaultsDeep } = require("rubico/x");
+const { isEmpty, defaultsDeep, flatten, unless } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreClient" });
 const { tos } = require("./tos");
@@ -143,21 +143,31 @@ module.exports = CoreClient = ({
             logger.debug(`getList ${spec.type}`);
           }),
           pathList,
-          (path) =>
-            retryCallOnError({
-              name: `getList type: ${spec.type}, path ${path}`,
-              fn: () =>
-                axios.request(path, {
-                  method: verbList,
-                }),
-              config,
-            }),
-          get("data"),
-          tap((data) => {
-            logger.debug(`getList ${spec.type}, ${tos(data)}`);
+          tap((params) => {
+            assert(true);
           }),
-          onResponseList({ axios }),
-          map(decorate({ axios })),
+          unless(Array.isArray, (path) => [path]),
+          map.pool(
+            50,
+            pipe([
+              (path) =>
+                retryCallOnError({
+                  name: `getList type: ${spec.type}, path ${path}`,
+                  fn: () =>
+                    axios.request(path, {
+                      method: verbList,
+                    }),
+                  config,
+                }),
+              get("data"),
+              tap((data) => {
+                logger.debug(`getList ${spec.type}, ${tos(data)}`);
+              }),
+              onResponseList({ axios }),
+              map(decorate({ axios })),
+            ])
+          ),
+          flatten,
           tap((params) => {
             assert(true);
           }),

@@ -35,8 +35,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/resourcegroups`,
+              },
             },
-            pathSuffixList: () => `/resourcegroups/`,
             // 2021-04-01
             apiVersion: "2019-10-01",
             config,

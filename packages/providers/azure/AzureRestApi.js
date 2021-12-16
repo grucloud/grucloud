@@ -39,9 +39,14 @@ const {
 const path = require("path");
 const fs = require("fs").promises;
 const pluralize = require("pluralize");
+const { snakeCase } = require("change-case");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
+const formatGroup = callProp("replace", "Microsoft.", "");
+
+//TODO do we still need this ?
 const selectMethod = (methods) =>
   pipe([
     () => methods,
@@ -63,12 +68,11 @@ const resourceNameFromOperationId = ({ operationId }) =>
     }),
     callProp("split", "_"),
     fork({
-      parentName: pipe([first /*singularize*/]),
+      parentName: pipe([first, pluralize.singular]),
       subName: pipe([last, callProp("replace", "Get", "")]),
     }),
     tap(({ parentName, subName }) => {
       assert(parentName);
-      //assert(subName);
     }),
     assign({
       shortName: switchCase([
@@ -76,20 +80,19 @@ const resourceNameFromOperationId = ({ operationId }) =>
         get("subName"),
         get("parentName"),
       ]),
-      name: switchCase([
+      type: switchCase([
         ({ parentName, subName }) =>
           subName && includes(pluralize.singular(parentName))(subName),
         ({ subName }) => subName,
         ({ parentName, subName }) => `${parentName}${subName}`,
       ]),
     }),
-    tap(({ name }) => {
-      assert(name);
+    tap(({ type }) => {
+      assert(type);
     }),
-    assign({ singular: pipe([get("name"), pluralize.singular]) }),
   ])();
 
-const getSwaggerPaths = pipe([
+const assignSwaggerPaths = pipe([
   get("paths"),
   map.entries(([path, methods]) => [
     path,
@@ -97,9 +100,10 @@ const getSwaggerPaths = pipe([
   ]),
 ]);
 
-const findResources = ({ paths, swagger, group, groupDir, versionDir }) =>
+const findResources = ({ paths, group, groupDir, versionDir }) =>
   pipe([
     () => paths,
+    //TODO filter where path depends on subscription and resourceGroup
     filter(
       or([and([get("get"), get("put")]), and([get("get"), get("delete")])])
     ),
@@ -110,7 +114,7 @@ const findResources = ({ paths, swagger, group, groupDir, versionDir }) =>
       pipe([
         () => ({
           ...resourceNameFromOperationId(methods.get),
-          group,
+          group: formatGroup(group),
           groupDir,
           versionDir,
           methods: pipe([
@@ -164,19 +168,11 @@ const processSwagger =
         assert(name);
       }),
       () => path.resolve(dir, name),
-      (filename) =>
-        SwaggerParser.dereference(filename, {
-          dereference: {
-            //circular: "ignore",
-          },
-        }),
-      tap((params) => {
-        assert(true);
-      }),
+      (filename) => SwaggerParser.dereference(filename, {}),
       (swagger) =>
         pipe([
           () => swagger,
-          getSwaggerPaths,
+          assignSwaggerPaths,
           (paths) =>
             findResources({ paths, swagger, group, groupDir, versionDir }),
           (resources) => ({
@@ -184,7 +180,6 @@ const processSwagger =
             group,
             groupDir,
             versionDir,
-            //swagger,
             resources,
           }),
         ])(),
@@ -268,84 +263,16 @@ const addResourceGroupDependency = pipe([
   filter(get("required")),
   switchCase([
     find(eq(get("name"), "resourceGroupName")),
-    () => ({ resourceGroup: { type: "ResourceGroup", group: "Resources" } }),
+    () => ({
+      resourceGroup: {
+        type: "ResourceGroup",
+        group: "Resources",
+        name: "resourceGroupName",
+      },
+    }),
     () => undefined,
   ]),
 ]);
-
-const findByOperationId = ({ operationId }) =>
-  pipe([
-    filter(({ name }) =>
-      pipe([() => operationId, callProp("split", "_"), eq(first, name)])()
-    ),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
-const findByParamType = ({ paramType }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    filter(({ singular }) => paramType.match(new RegExp(`${singular}$`, "gi"))),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
-const findByParamTypeIncluded = ({ paramType }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    filter(({ singular }) => singular.match(new RegExp(`${paramType}$`, "gi"))),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
-const findResourceByParameter =
-  ({ resources, name, path, operationId }) =>
-  (paramType = "") =>
-    pipe([
-      () => {
-        assert(resources);
-        const fns = [
-          findByParamType({ paramType }),
-          findByParamTypeIncluded({ paramType }),
-          findByOperationId({ operationId }),
-        ];
-        for (fn of fns) {
-          const results = fn(resources);
-          if (size(results) > 1) {
-            console.info(
-              `Multiple dependencies ${paramType} ${name}, ${path}, ${operationId}, #results ${size(
-                results
-              )}`
-            );
-          }
-          if (!isEmpty(results)) {
-            return pipe([
-              () => results,
-              first,
-              pick(["name", "singular", "group"]),
-              tap((params) => {
-                assert(true);
-              }),
-            ])();
-          }
-        }
-      },
-      tap((params) => {
-        assert(true);
-      }),
-      tap.if(isEmpty, () => {
-        console.info(
-          `Cannot find the dependency ${paramType} ${name}, ${path}, ${operationId}`
-        );
-      }),
-    ])();
 
 const findParameterTypeFromPath =
   ({ resources, method: { path, operationId } }) =>
@@ -372,9 +299,6 @@ const findParameterTypeFromPath =
               }),
               (pathParent) =>
                 pipe([
-                  tap((params) => {
-                    assert(pathParent);
-                  }),
                   () => resources,
                   find(eq(get("methods.get.path"), pathParent)),
                   tap.if(isEmpty, () => {
@@ -385,13 +309,7 @@ const findParameterTypeFromPath =
                   }),
                 ])(),
             ])(),
-          // (index) => splitted[index - 1],
-          // tap((param) => {
-          //   //assert(param, `no param ${name}, ${path}`);
-          // }),
-          // pluralize.singular,
-          // findResourceByParameter({ name, path, resources, operationId }),
-          //
+
           tap((params) => {
             assert(true);
           }),
@@ -462,8 +380,9 @@ const addDependencyFromPath = ({
               (varName) => ({
                 ...acc,
                 [varName]: {
-                  type: parameterType.singular,
+                  type: parameterType.type,
                   group: parameterType.group,
+                  name,
                 },
               }),
             ])(),
@@ -493,19 +412,147 @@ const addDependencies = ({ resources }) =>
         }),
       ])(),
   });
+
+const buildOmitReadOnly =
+  ({ parentPath = [], accumulator = [] }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      map.entries(([key, obj]) => [
+        key,
+        pipe([
+          () => obj,
+          switchCase([
+            or([get("readOnly"), () => key.endsWith("Id"), get("x-ms-secret")]),
+            pipe([() => [[...parentPath, key]]]),
+            pipe([
+              get("properties"),
+              buildOmitReadOnly({
+                parentPath: [...parentPath, key],
+                accumulator,
+              }),
+            ]),
+          ]),
+        ])(),
+      ]),
+      values,
+      filter(not(isEmpty)),
+      flatten,
+      (results) => [...accumulator, ...results],
+    ])();
+
+const buildEnvironmentVariables =
+  ({ parentPath = [], accumulator = [] }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      map.entries(([key, obj]) => [
+        key,
+        pipe([
+          () => obj,
+          switchCase([
+            or([get("x-ms-secret")]),
+            pipe([() => [[...parentPath, key]]]),
+            pipe([
+              get("properties"),
+              buildEnvironmentVariables({
+                parentPath: [...parentPath, key],
+                accumulator,
+              }),
+            ]),
+          ]),
+        ])(),
+      ]),
+      values,
+      filter(not(isEmpty)),
+      flatten,
+      (results) => [...accumulator, ...results],
+    ])();
+
+const buildPropertiesDefault =
+  ({ accumulator = {} }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      map.entries(([key, obj]) => [
+        key,
+        pipe([
+          tap((params) => {
+            assert(obj);
+            assert(key);
+          }),
+          () => obj,
+          switchCase([
+            //TODO hasOwnProperty
+            get("default"),
+            pipe([
+              get("default"),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+            pipe([
+              get("properties"),
+              buildPropertiesDefault({
+                accumulator,
+              }),
+            ]),
+          ]),
+        ])(),
+      ]),
+      filter(not(isEmpty)),
+      when(isEmpty, () => undefined),
+    ])();
+
+const getSchemaFromMethods = pipe([
+  get("methods.get"),
+  tap((method) => {
+    assert(method);
+  }),
+  get("responses.200.schema"),
+  tap((schema) => {
+    assert(schema);
+  }),
+]);
 const pickResourceInfo = pipe([
-  pick(["name", "dependencies", "group", "methods"]),
+  tap((params) => {
+    assert(true);
+  }),
+  pick(["type", "group", "versionDir", "dependencies", "methods"]),
   assign({
+    omitProperties: pipe([
+      getSchemaFromMethods,
+      get("properties"),
+      buildOmitReadOnly({}),
+      map(callProp("join", ".")),
+    ]),
+    environmentVariables: pipe([
+      getSchemaFromMethods,
+      get("properties"),
+      buildEnvironmentVariables({}),
+      map(
+        fork({
+          path: pipe([callProp("join", ".")]),
+          suffix: pipe([last, snakeCase, callProp("toUpperCase")]),
+        })
+      ),
+    ]),
+    propertiesDefault: pipe([
+      getSchemaFromMethods,
+      get("properties"),
+      buildPropertiesDefault({}),
+    ]),
     methods: pipe([
       get("methods"),
       map.entries(([key, value]) => [
         key,
         pipe([() => value, pick(["path", "operationId"])])(),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
+  }),
+  omitIfEmpty(["environmentVariables", "omitProperties", "propertiesDefault"]),
+  tap((params) => {
+    assert(true);
   }),
 ]);
 
@@ -545,7 +592,7 @@ const listSwaggerFiles = ({
         }),
         (json) => JSON.stringify(json, null, 4),
         (content) =>
-          fs.writeFile(path.resolve(directory, "AzureSwagger.json"), content),
+          fs.writeFile(path.resolve(directory, "AzureSchema.json"), content),
       ])(),
   ])();
 

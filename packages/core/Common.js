@@ -412,17 +412,18 @@ const removeOurTags = pipe([
 
 exports.removeOurTags = removeOurTags;
 
+//TODO this is for AWS only
 const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = identity;
 
 exports.compare = ({
   filterAll = identity,
-  filterTarget = filterTargetDefault,
+  filterTarget = identity,
   filterLive = filterLiveDefault,
 } = {}) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(filterTarget);
     }),
     assign({
       target: ({ target = {}, propertiesDefault }) =>
@@ -435,6 +436,9 @@ exports.compare = ({
           removeOurTags,
           filterTarget,
           filterAll,
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
       live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
     }),

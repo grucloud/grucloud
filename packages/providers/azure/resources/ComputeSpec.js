@@ -3,8 +3,8 @@ const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compare, buildTags } = require("../AzureCommon");
+const { omitIfEmpty, compare } = require("@grucloud/core/Common");
+const { buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -73,9 +73,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Compute/virtualMachines`,
             apiVersion: "2019-12-01",
             config,
             configDefault: ({ properties, dependencies }) => {

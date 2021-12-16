@@ -7,7 +7,7 @@ skinparam monochrome true
 ++++ ResourceGroup (1)
 +++ LogAnalytics
 ++++ Workspace (1)
-+++ AppService
++++ Web
 ++++ KubeEnvironment (1)
 ++++ ContainerApp (1)
 @endmindmap

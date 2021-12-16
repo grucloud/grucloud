@@ -1,0 +1,192 @@
+[
+    {
+        "type": "Database",
+        "group": "DBforPostgreSQL",
+        "versionDir": "2021-06-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "server": {
+                "type": "Server",
+                "group": "DBforPostgreSQL",
+                "name": "serverName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/databases/{databaseName}",
+                "operationId": "Databases_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/databases/{databaseName}",
+                "operationId": "Databases_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/databases/{databaseName}",
+                "operationId": "Databases_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/databases",
+                "operationId": "Databases_ListByServer"
+            }
+        },
+        "omitProperties": [
+            "systemData"
+        ]
+    },
+    {
+        "type": "Server",
+        "group": "DBforPostgreSQL",
+        "versionDir": "2021-06-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}",
+                "operationId": "Servers_Create"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}",
+                "operationId": "Servers_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}",
+                "operationId": "Servers_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}",
+                "operationId": "Servers_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers",
+                "operationId": "Servers_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.administratorLoginPassword",
+            "properties.minorVersion",
+            "properties.state",
+            "properties.fullyQualifiedDomainName",
+            "properties.backup.earliestRestoreDate",
+            "properties.network.publicNetworkAccess",
+            "properties.network.delegatedSubnetResourceId",
+            "properties.network.privateDnsZoneArmResourceId",
+            "properties.highAvailability.state",
+            "properties.sourceServerResourceId",
+            "systemData"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.administratorLoginPassword",
+                "suffix": "ADMINISTRATOR_LOGIN_PASSWORD"
+            }
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "backup": {
+                    "backupRetentionDays": 7,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "highAvailability": {
+                    "mode": "Disabled"
+                },
+                "maintenanceWindow": {
+                    "customWindow": "Disabled"
+                }
+            }
+        }
+    },
+    {
+        "type": "FirewallRule",
+        "group": "DBforPostgreSQL",
+        "versionDir": "2021-06-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "server": {
+                "type": "Server",
+                "group": "DBforPostgreSQL",
+                "name": "serverName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/firewallRules/{firewallRuleName}",
+                "operationId": "FirewallRules_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/firewallRules/{firewallRuleName}",
+                "operationId": "FirewallRules_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/firewallRules/{firewallRuleName}",
+                "operationId": "FirewallRules_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/firewallRules",
+                "operationId": "FirewallRules_ListByServer"
+            }
+        },
+        "omitProperties": [
+            "systemData"
+        ]
+    },
+    {
+        "type": "Configuration",
+        "group": "DBforPostgreSQL",
+        "versionDir": "2021-06-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "server": {
+                "type": "Server",
+                "group": "DBforPostgreSQL",
+                "name": "serverName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/configurations/{configurationName}",
+                "operationId": "Configurations_Get"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/configurations/{configurationName}",
+                "operationId": "Configurations_Update"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/configurations/{configurationName}",
+                "operationId": "Configurations_Put"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/configurations",
+                "operationId": "Configurations_ListByServer"
+            }
+        },
+        "omitProperties": [
+            "properties.description",
+            "properties.defaultValue",
+            "properties.dataType",
+            "properties.allowedValues",
+            "properties.isDynamicConfig",
+            "properties.isReadOnly",
+            "properties.isConfigPendingRestart",
+            "properties.unit",
+            "properties.documentationLink",
+            "systemData"
+        ]
+    }
+]

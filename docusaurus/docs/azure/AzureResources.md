@@ -12,5 +12,5 @@ List of resources for provider azure:
 [VirtualMachine](./resources/compute/VirtualMachine.md)
 * LogAnalytics: 
 [Workspace](./resources/LogAnalytics/Workspace.md)
-* AppService: 
-[KubeEnvironment](./resources/AppService/KubeEnvironment.md), [ContainerApp](./resources/AppService/ContainerApp.md)
+* Web: 
+[KubeEnvironment](./resources/Web/KubeEnvironment.md), [ContainerApp](./resources/Web/ContainerApp.md)

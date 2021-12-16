@@ -2,13 +2,10 @@ const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const AzClient = require("../AzClient");
-const {
-  findDependenciesResourceGroup,
-  compare,
-  buildTags,
-} = require("../AzureCommon");
+const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { providerName, location } = config;
@@ -43,6 +40,7 @@ exports.fnSpecs = ({ config }) => {
             tap((params) => {
               assert(true);
             }),
+            pick(["properties", "sku"]),
             omit([
               "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
             ]),
@@ -62,8 +60,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
+              },
             },
-            pathSuffixList: () => `/providers/Microsoft.Web/kubeEnvironments`,
             apiVersion: "2021-02-01",
             config,
             findDependencies: ({ live, lives }) => [
@@ -184,9 +184,11 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerapps`,
+              },
             },
             verbUpdate: "PUT",
-            pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
             apiVersion: "2021-03-01",
             config,
             findDependencies: ({ live, lives }) => [

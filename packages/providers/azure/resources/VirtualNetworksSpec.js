@@ -9,11 +9,7 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
-const {
-  compare,
-  findDependenciesResourceGroup,
-  buildTags,
-} = require("../AzureCommon");
+const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 const AzClient = require("../AzClient");
 
 exports.fnSpecs = ({ config }) => {
@@ -52,9 +48,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Network/virtualNetworks`,
             apiVersion: "2020-05-01",
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
@@ -119,9 +116,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Network/networkSecurityGroups`,
             apiVersion: "2020-05-01",
             config,
             configDefault: ({ properties }) =>
@@ -168,9 +166,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Network/publicIPAddresses`,
             apiVersion: "2020-05-01",
             config,
             configDefault: ({ properties, dependencies }) => {
@@ -240,18 +239,18 @@ exports.fnSpecs = ({ config }) => {
           securityGroup: { type: "SecurityGroup", group: "Network" },
           subnet: { type: "Subnet", group: "Network" },
         }),
-        compare: compare({
-          filterTarget: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-          filterLive: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        }),
+        // compare: compare({
+        //   filterTarget: pipe([
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //   ]),
+        //   filterLive: pipe([
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //   ]),
+        // }),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -259,9 +258,10 @@ exports.fnSpecs = ({ config }) => {
               get: {
                 path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{name}",
               },
+              getAll: {
+                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces`,
+              },
             },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Network/networkInterfaces`,
             apiVersion: "2020-05-01",
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),

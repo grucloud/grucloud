@@ -51,7 +51,6 @@ const useParams = ({ params, provider, programOptions, spec }) => ({
 });
 
 const SpecDefault = ({ providerName }) => ({
-  compare: compare(),
   providerName,
   listOnly: false,
   isOurMinion: () => false,
