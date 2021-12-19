@@ -35,24 +35,6 @@ exports.fnSpecs = ({ config }) => {
             },
           },
         },
-        compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["properties", "sku"]),
-            omit([
-              "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
-            ]),
-          ]),
-        }),
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            assign({
-              properties: pipe([get("properties"), pick([])]),
-            }),
-          ]),
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -144,7 +126,18 @@ exports.fnSpecs = ({ config }) => {
           },
         }),
         compare: compare({
-          filterAll: pipe([omit(["location"])]),
+          filterAll: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["properties", "sku"]),
+            omit([
+              "properties.provisioningState",
+              "properties.latestRevisionName",
+              "properties.latestRevisionFqdn",
+              "properties.configuration.ingress.fqdn",
+            ]),
+          ]),
         }),
         propertiesDefault: {
           properties: {

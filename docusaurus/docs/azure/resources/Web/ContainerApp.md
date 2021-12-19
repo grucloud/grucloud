@@ -6,7 +6,7 @@ title: Container App
 Provides a Container App:
 
 ```js
-provider.AppService.makeContainerApp({
+provider.Web.makeContainerApp({
   name: "plantuml",
   properties: ({ config }) => ({
     properties: {
@@ -35,7 +35,7 @@ provider.AppService.makeContainerApp({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["rg"],
-    kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
+    kubeEnvironment: resources.Web.KubeEnvironment["dev"],
   }),
 });
 ```

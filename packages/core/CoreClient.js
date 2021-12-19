@@ -47,7 +47,7 @@ module.exports = CoreClient = ({
     }),
   ]),
   findId = get("live.id"),
-  findTargetId = get("id"),
+  findTargetId = () => get("id"),
   decorate = () => identity,
   //TODO curry
   onResponseGet = get("data"),
@@ -208,55 +208,70 @@ module.exports = CoreClient = ({
                 logger.info(`create ${spec.type}/${name}, path: ${path}`);
               }),
               (path) =>
-                retryCallOnError({
-                  name: `create ${spec.type}/${name}`,
-                  isExpectedException: onCreateExpectedException,
-                  shouldRetryOnException,
-                  fn: () =>
-                    axios.request(path, {
-                      method: verbCreate,
-                      data: payload,
-                    }),
-                  config: { ...config, repeatCount: 0 },
-                }),
-              tap((result) => {
-                logger.info(
-                  `created ${spec.type}/${name}, status: ${
-                    result.status
-                  }, data: ${tos(result.data)}`
-                );
-              }),
-              switchCase([
-                eq(get("response.status"), 409),
-                () => {
-                  logger.error(`create: already created ${type}/${name}, 409`);
-                  //TODO get by id ?
-                },
                 pipe([
+                  () =>
+                    retryCallOnError({
+                      name: `create ${spec.type}/${name}`,
+                      isExpectedException: onCreateExpectedException,
+                      shouldRetryOnException,
+                      fn: () =>
+                        axios.request(path, {
+                          method: verbCreate,
+                          data: payload,
+                        }),
+                      config: { ...config, repeatCount: 0 },
+                    }),
                   tap((result) => {
-                    assert(result.data, "result.data");
+                    logger.info(
+                      `created ${spec.type}/${name}, status: ${
+                        result.status
+                      }, data: ${tos(result.data)}`
+                    );
                   }),
-                  get("data"),
-                  onResponseCreate,
-                  (data) =>
+                  switchCase([
+                    eq(get("response.status"), 409),
+                    () => {
+                      logger.error(
+                        `create: already created ${type}/${name}, 409`
+                      );
+                      //TODO get by id ?
+                    },
                     pipe([
-                      () => findTargetId(data),
-                      tap((id) => {
-                        assert(id, `no target id from result: ${tos(data)}`);
+                      tap((result) => {
+                        assert(result.data, "result.data");
                       }),
-                      (id) =>
+                      get("data"),
+                      onResponseCreate,
+                      (data) =>
                         pipe([
-                          () =>
-                            retryCall({
-                              name: `create isUpById ${spec.type}/${name}, id: ${id}`,
-                              fn: () => isUpById({ type: spec.type, name, id }),
-                              config,
-                            }),
-                          () => onResponseGet({ id, data }),
+                          () => data,
+                          findTargetId({ path }),
+                          tap((id) => {
+                            logger.debug(
+                              `create: ${spec.type}/${name} findTargetId ${id}`
+                            );
+                            if (!id) {
+                              assert(
+                                id,
+                                `no target id from result: ${tos(data)}`
+                              );
+                            }
+                          }),
+                          (id) =>
+                            pipe([
+                              () =>
+                                retryCall({
+                                  name: `create isUpById ${spec.type}/${name}, id: ${id}`,
+                                  fn: () =>
+                                    isUpById({ type: spec.type, name, id }),
+                                  config,
+                                }),
+                              () => onResponseGet({ id, data }),
+                            ])(),
                         ])(),
-                    ])(),
-                ]),
-              ]),
+                    ]),
+                  ]),
+                ])(),
             ]),
             (error) => {
               logError(`create ${type}/${name}`, error);

@@ -7,7 +7,7 @@ const createResources = ({ provider }) => {
     name: "rg",
   });
 
-  provider.LogAnalytics.makeWorkspace({
+  provider.OperationalInsights.makeWorkspace({
     name: "logs",
     properties: ({ config }) => ({
       properties: {
@@ -26,7 +26,7 @@ const createResources = ({ provider }) => {
     name: "dev",
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
-      workspace: resources.LogAnalytics.Workspace["logs"],
+      workspace: resources.OperationalInsights.Workspace["logs"],
     }),
   });
 

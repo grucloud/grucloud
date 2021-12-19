@@ -213,7 +213,7 @@ const displayClientsType = pipe([
 const findClientByGroupType = (clients) => (groupType) =>
   pipe([
     tap(() => {
-      assert(clients);
+      assert(Array.isArray(clients));
       assert(groupType);
     }),
     () => clients,

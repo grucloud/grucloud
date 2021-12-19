@@ -11,16 +11,15 @@ const {
   flatMap,
   not,
   assign,
-  any,
   and,
   fork,
   switchCase,
   pick,
   reduce,
-  gt,
   gte,
 } = require("rubico");
 const {
+  groupBy,
   pluck,
   when,
   callProp,
@@ -31,6 +30,7 @@ const {
   last,
   flatten,
   includes,
+  keys,
   values,
   size,
   defaultsDeep,
@@ -40,9 +40,12 @@ const path = require("path");
 const fs = require("fs").promises;
 const pluralize = require("pluralize");
 const { snakeCase } = require("change-case");
+const SwaggerParser = require("@apidevtools/swagger-parser");
+
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const SwaggerParser = require("@apidevtools/swagger-parser");
+const { isSubstituable } = require("./AzureCommon");
+const identity = require("rubico/x/identity");
 
 const formatGroup = callProp("replace", "Microsoft.", "");
 
@@ -62,10 +65,10 @@ const selectMethod = (methods) =>
 
 const resourceNameFromOperationId = ({ operationId }) =>
   pipe([
-    () => operationId,
     tap((params) => {
-      assert(true);
+      assert(operationId);
     }),
+    () => operationId,
     callProp("split", "_"),
     fork({
       parentName: pipe([first, pluralize.singular]),
@@ -100,10 +103,166 @@ const assignSwaggerPaths = pipe([
   ]),
 ]);
 
+const findGetAllByOutputSchema =
+  ({ paths }) =>
+  (methods) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        //console.log(`findGetAllByOutputSchema ${methods.get.operationId}`);
+      }),
+      () => methods,
+      get("get.responses.200.schema"),
+      tap((schema) => {
+        if (!schema.description) {
+          assert(true);
+        }
+      }),
+      (schema) =>
+        pipe([
+          () => paths,
+          filter(
+            get("get.responses.200.schema.properties.value.items.description")
+          ),
+          tap((params) => {
+            // console.log("description:", size(schema.description));
+            // console.log(schema.description);
+            // console.log("descriptions:");
+          }),
+          // tap(
+          //   forEach(
+          //     pipe([
+          //       get(
+          //         "get.responses.200.schema.properties.value.items.description"
+          //       ),
+          //       tap(console.log),
+          //       tap(pipe([size, console.log])),
+          //     ])
+          //   )
+          // ),
+          filter(
+            eq(
+              get(
+                "get.responses.200.schema.properties.value.items.description"
+              ),
+              schema.description
+            )
+          ),
+          tap.if(gte(size, 1), (results) => {
+            assert(true);
+            // console.log(
+            //   `findGetAllByOutputSchema: multiple ${methods.get.operationId}`
+            // );
+          }),
+          keys,
+          first,
+          get("get"),
+          tap.if(isEmpty, () => {
+            assert(true);
+            // console.error(
+            //   `findGetAllByOutputSchema cannot find getAll: ${methods.get.operationId}, description:`
+            // );
+            // console.error(schema.description);
+            // forEach(
+            //   pipe([
+            //     tap((params) => {
+            //       assert(true);
+            //     }),
+            //     get(
+            //       "get.responses.200.schema.properties.value.items.description"
+            //     ),
+            //     tap(console.log),
+            //     tap(pipe([size, console.log])),
+            //   ])
+            // )(paths);
+            //console.log(`done`);
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          ,
+        ])(),
+    ])();
+
+const findGetAllByOperationId =
+  ({ paths }) =>
+  (methods) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(paths);
+      }),
+      () => methods.get.operationId,
+      callProp("replace", "Get", "List"),
+      (operationId) =>
+        pipe([
+          () => paths,
+          filter(
+            pipe([
+              get("get.operationId", ""),
+              callProp("match", new RegExp(`^${operationId}$`, "ig")),
+            ])
+          ),
+          tap.if(gte(size, 2), (results) => {
+            assert(true);
+            console.log(
+              `findGetAllByOperationId: multiple ${operationId}: ${pipe([
+                () => results,
+                values,
+                map(get("get.operationId")),
+                tap((params) => {
+                  assert(true);
+                }),
+                callProp("join", ", "),
+              ])()}`
+            );
+          }),
+          values,
+          first,
+          get("get"),
+          // tap.if(isEmpty, () => {
+          //   assert(true);
+          //   console.log(
+          //     `findGetAllByOperationId cannot find getAll: ${methods.get.operationId}`
+          //   );
+          // }),
+        ])(),
+    ])();
+
+const findGetAllByParentPath =
+  ({ paths }) =>
+  (methods) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(paths);
+      }),
+      () => methods.get.path,
+      callProp("split", "/"),
+      switchCase([
+        pipe([last, isSubstituable]),
+        pipe([
+          callProp("slice", 0, -1), // Remove the last one
+          callProp("join", "/"),
+          (getAllPath) =>
+            pipe([
+              () => paths,
+              find(eq(get("get.path"), getAllPath)),
+              // tap.if(isEmpty, () => {
+              //   console.log(
+              //     `findGetAllByParentPath cannot find getAll: ${methods.get.path}, ${methods.get.operationId}`
+              //   );
+              // }),
+              get("get"),
+            ])(),
+        ]),
+        () => undefined,
+      ]),
+    ])();
+
 const findResources = ({ paths, group, groupDir, versionDir }) =>
   pipe([
     () => paths,
-    //TODO filter where path depends on subscription and resourceGroup
     filter(
       or([and([get("get"), get("put")]), and([get("get"), get("delete")])])
     ),
@@ -120,34 +279,23 @@ const findResources = ({ paths, group, groupDir, versionDir }) =>
           methods: pipe([
             () => methods,
             assign({
-              getAll: (ops) =>
+              getAll: (methods) =>
                 pipe([
-                  tap((params) => {
-                    assert(ops);
+                  () => methods,
+                  findGetAllByOperationId({ paths }),
+                  when(isEmpty, () =>
+                    findGetAllByOutputSchema({ paths })(methods)
+                  ),
+                  when(isEmpty, () =>
+                    findGetAllByParentPath({ paths })(methods)
+                  ),
+                  tap.if(isEmpty, (params) => {
+                    // console.log(
+                    //   "no getAll for ",
+                    //   methods.get.operationId,
+                    //   methods.get.path
+                    // );
                   }),
-                  () => ops.get.operationId,
-                  callProp("replace", "Get", "List"),
-                  (operationId) =>
-                    pipe([
-                      () => paths,
-                      filter(
-                        pipe([get("get.operationId"), includes(operationId)])
-                      ),
-                      tap.if(gte(size, 2), (results) => {
-                        assert(true);
-                      }),
-                      values,
-                      first,
-                      get("get"),
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      tap.if(isEmpty, () => {
-                        assert(true);
-                        //console.log(`cannot find getAll: ${operationId}`);
-                        //assert(getAll, `cannot find ${operationId}`);
-                      }),
-                    ])(),
                 ])(),
             }),
           ])(),
@@ -155,6 +303,9 @@ const findResources = ({ paths, group, groupDir, versionDir }) =>
       ])()
     ),
     values,
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const processSwagger =
@@ -168,6 +319,9 @@ const processSwagger =
         assert(name);
       }),
       () => path.resolve(dir, name),
+      tap((filename) => {
+        console.log(`parsing ${filename}`);
+      }),
       (filename) => SwaggerParser.dereference(filename, {}),
       (swagger) =>
         pipe([
@@ -187,6 +341,72 @@ const processSwagger =
 
 exports.processSwagger = processSwagger;
 
+const listPerVerion = ({ dir, group, groupDir }) =>
+  pipe([
+    tap(({ name }) => {
+      assert(name);
+      assert(dir);
+      assert(group);
+    }),
+    ({ name }) => path.resolve(dir, group, name),
+    (dir) =>
+      pipe([
+        () => fs.readdir(dir, { withFileTypes: true }),
+        filter(callProp("isDirectory")),
+
+        flatMap(({ name: versionDir }) =>
+          pipe([
+            () => path.resolve(dir, versionDir),
+            (dir) =>
+              pipe([
+                () => fs.readdir(dir, { withFileTypes: true }),
+                filter(callProp("isFile")),
+                tap((params) => {
+                  assert(true);
+                }),
+                filter(pipe([get("name"), callProp("endsWith", ".json")])),
+                map(
+                  processSwagger({
+                    dir,
+                    group,
+                    groupDir,
+                    versionDir,
+                  })
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+          ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        pluck("resources"),
+        tap((params) => {
+          assert(true);
+        }),
+        flatten,
+        groupBy("type"),
+        tap((params) => {
+          assert(true);
+        }),
+        map(
+          pipe([
+            callProp("sort", (a, b) =>
+              a.versionDir.localeCompare(b.versionDir)
+            ),
+            last,
+          ])
+        ),
+        values,
+        tap((params) => {
+          assert(true);
+        }),
+        callProp("sort", (a, b) => a.type.localeCompare(b.type)),
+      ])(),
+  ]);
+
 const listPerGroup =
   ({ baseDir }) =>
   (groupDir) =>
@@ -201,56 +421,21 @@ const listPerGroup =
           pipe([
             () => fs.readdir(dir, { withFileTypes: true }),
             filter(callProp("isDirectory")),
-            tap((params) => {
-              assert(true);
-            }),
             filter(pipe([get("name"), callProp("startsWith", "Microsoft.")])),
             flatMap(({ name: group }) =>
               pipe([
                 () => path.resolve(dir, group),
                 (specDir) => fs.readdir(specDir, { withFileTypes: true }),
                 find(eq(get("name"), "stable")),
-                unless(
-                  isEmpty,
-                  pipe([
-                    ({ name }) => path.resolve(dir, group, name),
-                    (dir) =>
-                      pipe([
-                        () => fs.readdir(dir, { withFileTypes: true }),
-                        filter(callProp("isDirectory")),
-                        last,
-                        ({ name: versionDir }) =>
-                          pipe([
-                            () => path.resolve(dir, versionDir),
-                            (dir) =>
-                              pipe([
-                                () => fs.readdir(dir, { withFileTypes: true }),
-                                filter(callProp("isFile")),
-                                filter(
-                                  pipe([
-                                    get("name"),
-                                    callProp("endsWith", ".json"),
-                                  ])
-                                ),
-                                map(
-                                  processSwagger({
-                                    dir,
-                                    group,
-                                    groupDir,
-                                    versionDir,
-                                  })
-                                ),
-                              ])(),
-                          ])(),
-                      ])(),
-                  ])
-                ),
+                unless(isEmpty, listPerVerion({ dir, group, groupDir })),
               ])()
             ),
             filter(not(isEmpty)),
           ]),
           (error) => {
             console.error(error);
+            console.error(error.stack);
+            throw error;
           }
         )(),
     ])();
@@ -273,44 +458,78 @@ const addResourceGroupDependency = pipe([
     () => undefined,
   ]),
 ]);
+const findIndexOfParams = ({ name }) =>
+  pipe([
+    tap((path) => {
+      assert(path);
+      assert(name);
+    }),
+    callProp("split", "/"),
+    findIndex(includes(`{${name}}`)),
+  ]);
+
+const findResourcesByParentPath = ({ path, resources, index }) =>
+  pipe([
+    () => path,
+    callProp("split", "/"),
+    callProp("slice", 0, index + 1),
+    callProp("join", "/"),
+    tap((params) => {
+      assert(true);
+    }),
+    (pathParent) =>
+      pipe([() => resources, find(eq(get("methods.get.path"), pathParent))])(),
+  ])();
+
+const findResourcesByParameterType = ({ path, resources, index }) =>
+  pipe([
+    tap(() => {
+      assert(index > 0);
+      //console.log(`findResourcesByParameterType ${path}`);
+    }),
+    () => path,
+    callProp("split", "/"),
+    (arr) => arr[index - 1],
+    tap((paramType) => {
+      assert(paramType);
+    }),
+    pluralize.singular,
+    (paramType) =>
+      pipe([
+        () => resources,
+        filter(
+          pipe([
+            get("parentName"),
+            callProp("match", new RegExp(paramType, "gi")),
+          ])
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        first,
+      ])(),
+  ])();
 
 const findParameterTypeFromPath =
   ({ resources, method: { path, operationId } }) =>
   ({ name }) =>
     pipe([
       tap(() => {
-        assert(path);
-        assert(name);
         assert(resources);
+        assert(operationId);
       }),
       () => path,
-      callProp("split", "/"),
-      (splitted) =>
+      findIndexOfParams({ name }),
+      (index) =>
         pipe([
-          () => splitted,
-          findIndex(includes(`{${name}}`)),
-          (index) =>
-            pipe([
-              () => splitted,
-              callProp("slice", 0, index + 1),
-              callProp("join", "/"),
-              tap((params) => {
-                assert(true);
-              }),
-              (pathParent) =>
-                pipe([
-                  () => resources,
-                  find(eq(get("methods.get.path"), pathParent)),
-                  tap.if(isEmpty, () => {
-                    // assert(false);
-                    console.error(
-                      `Cannot find path ${pathParent}, original path: ${path}`
-                    );
-                  }),
-                ])(),
-            ])(),
-
+          () => findResourcesByParentPath({ path, resources, index }),
           tap((params) => {
+            assert(true);
+          }),
+          when(isEmpty, () =>
+            findResourcesByParameterType({ path, resources, index })
+          ),
+          tap.if(isEmpty, (params) => {
             assert(true);
           }),
         ])(),
@@ -413,6 +632,19 @@ const addDependencies = ({ resources }) =>
       ])(),
   });
 
+const isOmit = (key) =>
+  or([
+    get("readOnly"),
+    () => key.match(new RegExp("Id$", "gi")),
+    () => key.match(new RegExp("status", "gi")),
+    () => key.match(new RegExp("state", "gi")),
+    get("x-ms-secret"),
+    get("x-ms-mutability"),
+  ]);
+
+const isPreviousProperties = ({ parentPath, key }) =>
+  and([not(eq(key, "properties")), pipe([() => parentPath, includes(key)])]);
+
 const buildOmitReadOnly =
   ({ parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
@@ -423,11 +655,45 @@ const buildOmitReadOnly =
         pipe([
           () => obj,
           switchCase([
-            or([get("readOnly"), () => key.endsWith("Id"), get("x-ms-secret")]),
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            isOmit(key),
             pipe([() => [[...parentPath, key]]]),
             pipe([
               get("properties"),
               buildOmitReadOnly({
+                parentPath: [...parentPath, key],
+                accumulator,
+              }),
+            ]),
+          ]),
+        ])(),
+      ]),
+      values,
+      filter(not(isEmpty)),
+      flatten,
+      (results) => [...accumulator, ...results],
+    ])();
+
+const buildPickProperties =
+  ({ parentPath = [], accumulator = [] }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      map.entries(([key, obj]) => [
+        key,
+        pipe([
+          () => obj,
+          switchCase([
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            isOmit(key),
+            () => undefined,
+            and([not(isOmit(key)), not(get("properties"))]),
+            pipe([() => [[...parentPath, key]]]),
+            pipe([
+              get("properties"),
+              buildPickProperties({
                 parentPath: [...parentPath, key],
                 accumulator,
               }),
@@ -453,6 +719,8 @@ const buildEnvironmentVariables =
           switchCase([
             or([get("x-ms-secret")]),
             pipe([() => [[...parentPath, key]]]),
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
             pipe([
               get("properties"),
               buildEnvironmentVariables({
@@ -469,8 +737,9 @@ const buildEnvironmentVariables =
       (results) => [...accumulator, ...results],
     ])();
 
+//TODO remove readOnly props
 const buildPropertiesDefault =
-  ({ accumulator = {} }) =>
+  ({ parentPath = [], accumulator = {} }) =>
   (properties = {}) =>
     pipe([
       () => properties,
@@ -483,8 +752,9 @@ const buildPropertiesDefault =
           }),
           () => obj,
           switchCase([
-            //TODO hasOwnProperty
-            get("default"),
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            callProp("hasOwnProperty", "default"),
             pipe([
               get("default"),
               tap((params) => {
@@ -494,6 +764,7 @@ const buildPropertiesDefault =
             pipe([
               get("properties"),
               buildPropertiesDefault({
+                parentPath: [...parentPath, key],
                 accumulator,
               }),
             ]),
@@ -526,10 +797,25 @@ const pickResourceInfo = pipe([
       buildOmitReadOnly({}),
       map(callProp("join", ".")),
     ]),
+    pickProperties: pipe([
+      getSchemaFromMethods,
+      get("properties"),
+      buildPickProperties({}),
+      map(callProp("join", ".")),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
     environmentVariables: pipe([
       getSchemaFromMethods,
       get("properties"),
+      tap((params) => {
+        assert(true);
+      }),
       buildEnvironmentVariables({}),
+      tap((params) => {
+        assert(true);
+      }),
       map(
         fork({
           path: pipe([callProp("join", ".")]),
@@ -546,8 +832,17 @@ const pickResourceInfo = pipe([
       get("methods"),
       map.entries(([key, value]) => [
         key,
-        pipe([() => value, pick(["path", "operationId"])])(),
+        pipe([
+          () => value,
+          tap((params) => {
+            assert(true);
+          }),
+          pick(["path", "operationId"]),
+        ])(),
       ]),
+      tap((params) => {
+        assert(true);
+      }),
     ]),
   }),
   omitIfEmpty(["environmentVariables", "omitProperties", "propertiesDefault"]),
@@ -555,6 +850,58 @@ const pickResourceInfo = pipe([
     assert(true);
   }),
 ]);
+
+const filterGetAll = ({ name, dependencies, methods }) =>
+  pipe([
+    fork({
+      dependenciesCountComputed: pipe([() => dependencies, size]),
+      dependenciesCountInPath: pipe([
+        () => methods,
+        get("getAll.parameters"),
+        when(isEmpty, () => get("get.parameters")(methods)),
+        tap.if(isEmpty, () => {
+          assert(false, "no get or getAll parameter");
+        }),
+        filter(
+          and([
+            eq(get("in"), "path"),
+            get("required"),
+            not(eq(get("name"), "subscriptionId")),
+          ])
+        ),
+        size,
+      ]),
+    }),
+    ({ dependenciesCountComputed, dependenciesCountInPath }) =>
+      dependenciesCountComputed >= dependenciesCountInPath,
+    tap.if(eq(identity, false), () => {
+      console.log(
+        `filterGetAll mismatch deps ${methods.get.operationId}, ${methods.get.path} `
+      );
+    }),
+  ])();
+
+const filterNoDependency = pipe([get("dependencies"), not(isEmpty)]);
+
+const filterExclusion = ({ group, type }) =>
+  pipe([
+    tap(() => {
+      assert(group);
+      assert(type);
+    }),
+    () => [
+      "Compute::VirtualMachineScaleSetVMExtension",
+      "Compute::VirtualMachineScaleSetVMRunCommand",
+      "Network::ExpressRouteCrossConnection",
+      "Network::ExpressRoutePort",
+      "Network::InterfaceEndpoint",
+      "Web::CertificateCsr",
+      "Web::ClassicMobileService",
+      "Web::Domain",
+      "Web::ManagedHostingEnvironment",
+    ],
+    not(includes(`${group}::${type}`)),
+  ])();
 
 const listSwaggerFiles = ({
   directory,
@@ -576,13 +923,21 @@ const listSwaggerFiles = ({
             ({ name }) => pipe([() => filterDirs, includes(name)])(),
           ])
         ),
-        map(pipe([get("name"), listPerGroup({ baseDir })])),
-        flatten,
-        filter(pipe([get("resources"), not(isEmpty)])),
-        pluck("resources"),
-        flatten,
+        flatMap(pipe([get("name"), listPerGroup({ baseDir })])),
+        tap((params) => {
+          assert(true);
+        }),
+        tap((params) => {
+          assert(true);
+        }),
         (resources) =>
           pipe([() => resources, map(addDependencies({ resources }))])(),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(filterNoDependency),
+        filter(filterGetAll),
+        filter(filterExclusion),
         tap((params) => {
           assert(true);
         }),

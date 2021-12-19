@@ -12,6 +12,7 @@ const {
   assign,
   omit,
   pick,
+  or,
 } = require("rubico");
 
 const { defaultsDeep, callProp, find, values, isEmpty } = require("rubico/x");
@@ -21,9 +22,9 @@ const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const ResourceManagementSpec = require("./resources/ResourceManagementSpec");
 const VirtualNetworkSpec = require("./resources/VirtualNetworksSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
-const LogAnalyticsSpec = require("./resources/LogAnalyticsSpec");
+const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const AppServiceSpec = require("./resources/AppServiceSpec");
-const DBForPortgreSQLSpec = require("./resources/DBForPortgreSQLSpec");
+const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 
 const { buildTags } = require("./AzureCommon");
 const AzTag = require("./AzTag");
@@ -36,12 +37,11 @@ const overideSpec = (config) =>
       ResourceManagementSpec,
       VirtualNetworkSpec,
       ComputeSpec,
-      LogAnalyticsSpec,
+      OperationalInsightsSpec,
       AppServiceSpec,
       DBForPortgreSQLSpec,
     ],
     flatMap(callProp("fnSpecs", { config })),
-
     tap((params) => {
       assert(true);
     }),
@@ -82,7 +82,12 @@ const transformSchemaToSpec = ({}) =>
         }),
         assign({
           Client:
-            ({ versionDir, methods, dependencies }) =>
+            ({
+              versionDir,
+              methods,
+              dependencies,
+              cannotBeDeleted = () => false,
+            }) =>
             ({ spec, config }) =>
               AzClient({
                 spec,
@@ -90,21 +95,21 @@ const transformSchemaToSpec = ({}) =>
                 dependencies,
                 apiVersion: versionDir,
                 config,
-                cannotBeDeleted: pipe([() => methods, get("delete"), isEmpty]),
+                cannotBeDeleted: or([
+                  cannotBeDeleted,
+                  pipe([() => methods, get("delete"), isEmpty]),
+                ]),
                 configDefault: ({ properties }) =>
                   defaultsDeep({
                     location: config.location,
                     tags: buildTags(config),
                   })(properties),
               }),
-          compare: ({ omitProperties = [], propertiesDefault = {} }) =>
+          compare: ({ pickProperties, propertiesDefault = {} }) =>
             compare({
+              //TODO filterAll
               filterTarget: pipe([
-                tap((params) => {
-                  assert(omitProperties);
-                }),
-                pick(["properties", "sku"]),
-                omit(omitProperties),
+                pick(pickProperties),
                 defaultsDeep(propertiesDefault),
                 tap((params) => {
                   assert(true);
@@ -114,23 +119,20 @@ const transformSchemaToSpec = ({}) =>
                 tap((params) => {
                   assert(true);
                 }),
-                pick(["properties", "sku"]),
-                omit(omitProperties),
+                pick(pickProperties),
                 defaultsDeep(propertiesDefault),
+                omit(["properties.provisioningState"]),
                 tap((params) => {
                   assert(true);
                 }),
               ]),
             }),
           filterLive:
-            ({ omitProperties }) =>
+            ({ omitProperties, pickProperties }) =>
             () =>
               pipe([
-                tap((params) => {
-                  assert(omitProperties);
-                }),
-                omit(omitProperties),
-                pick(["properties", "sku"]),
+                pick(pickProperties),
+                omit(["properties.provisioningState"]),
               ]),
         }),
       ])
@@ -144,7 +146,6 @@ const findByGroupAndType = ({ group, type }) =>
   pipe([
     tap((params) => {
       assert(type);
-
       assert(group);
     }),
     find(and([eq(get("group"), group), eq(get("type"), type)])),

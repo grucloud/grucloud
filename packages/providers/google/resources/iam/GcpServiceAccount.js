@@ -62,7 +62,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
     })(properties);
 
   const findId = get("live.uniqueId");
-  const findTargetId = get("uniqueId");
+  const findTargetId = () => get("uniqueId");
 
   const onResponseGet = ({ data }) =>
     pipe([

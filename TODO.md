@@ -1,5 +1,10 @@
 ## Bugs
 
+RestorePoint
+AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRolePool
+
+- missing getAll for WebApps_ListConfigurations => WebApps_GetConfiguration
+  WebAppInstanceProcess missing dependency
 - check stage for all providers
 - compare refactor
 - compare Tags

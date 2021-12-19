@@ -40,20 +40,6 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DBforPostgreSQL.makeFirewallRule({
-    name: "ClientIPAddress_2021-12-15_11-18-52",
-    properties: ({ config }) => ({
-      properties: {
-        startIpAddress: "190.84.119.132",
-        endIpAddress: "190.84.119.132",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-    }),
-  });
-
   provider.DBforPostgreSQL.makeConfiguration({
     name: "application_name",
     properties: ({ config }) => ({
@@ -82,23 +68,19 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DBforPostgreSQL.makeDatabase({
-    name: "postgres",
-    properties: ({ config }) => ({
-      properties: {
-        charset: "UTF8",
-        collation: "en_US.utf8",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-    }),
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "resource-group",
-  });
+  // provider.DBforPostgreSQL.makeDatabase({
+  //   name: "postgres",
+  //   properties: ({ config }) => ({
+  //     properties: {
+  //       charset: "UTF8",
+  //       collation: "en_US.utf8",
+  //     },
+  //   }),
+  //   dependencies: ({ resources }) => ({
+  //     resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+  //     server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
+  //   }),
+  // });
 
   provider.Resources.makeResourceGroup({
     name: "rg-postgres",

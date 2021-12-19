@@ -24,7 +24,7 @@ module.exports = GoogleClient = ({
   pathCreate,
   pathUpdate,
   verbUpdate,
-  findTargetId = get("targetId"),
+  findTargetId = () => get("targetId"),
   configDefault,
   isInstanceUp,
   isInstanceDown,

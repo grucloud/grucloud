@@ -39,8 +39,7 @@ exports.fnSpecs = ({ config }) => {
                 path: `/subscriptions/{subscriptionId}/resourcegroups`,
               },
             },
-            // 2021-04-01
-            apiVersion: "2019-10-01",
+            apiVersion: "2021-04-01",
             config,
             configDefault: ({ properties }) =>
               defaultsDeep({

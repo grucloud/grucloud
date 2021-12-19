@@ -68,11 +68,12 @@ describe("AzureRestApi", function () {
       () => ({
         directory: process.cwd(),
         filterDirs: [
-          //"compute",
+          "compute",
+          "containerservice",
+          "operationalinsights",
           "postgresql",
-          //"network",
-          // "resources",
-          //"web",
+          "network",
+          "web",
         ],
       }),
       listSwaggerFiles,

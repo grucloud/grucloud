@@ -1,9 +1,20 @@
 const assert = require("assert");
 const path = require("path");
-const { tap, get, eq, reduce, pipe, switchCase, map } = require("rubico");
+const {
+  tap,
+  get,
+  eq,
+  reduce,
+  pipe,
+  switchCase,
+  map,
+  not,
+  and,
+} = require("rubico");
 const {
   callProp,
   identity,
+  first,
   last,
   append,
   values,
@@ -12,6 +23,7 @@ const {
   size,
   prepend,
   findIndex,
+  isEmpty,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -19,6 +31,7 @@ const AxiosMaker = require("@grucloud/core/AxiosMaker");
 const {
   isInstanceUp: isInstanceUpDefault,
   AZURE_MANAGEMENT_BASE_URL,
+  isSubstituable,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
@@ -32,7 +45,16 @@ module.exports = AzClient = ({
   isDefault,
   cannotBeDeleted,
   findDependencies,
-  findTargetId,
+  findTargetId = ({ path }) =>
+    (result) =>
+      pipe([
+        () => result,
+        get("id"),
+        when(
+          isEmpty,
+          pipe([() => path, callProp("split", "?api-version"), first])
+        ),
+      ])(),
   getList = () => undefined,
   getByName = () => undefined,
   onResponseList = () => get("value", []),
@@ -119,8 +141,6 @@ module.exports = AzClient = ({
         get("resource.name"),
       ])();
 
-  const isSubstituable = callProp("startsWith", "{");
-
   const substituteSubscriptionId = () =>
     map(
       when(eq(identity, "{subscriptionId}"), () => process.env.SUBSCRIPTION_ID)
@@ -160,7 +180,6 @@ module.exports = AzClient = ({
     pipe([
       tap(() => {
         assert(methods.getAll);
-        //assert(axios);
       }),
       () => methods,
       get("getAll.path"),
@@ -199,9 +218,9 @@ module.exports = AzClient = ({
             assert(id);
           }),
           () => methods,
-          get("getAll.path"),
+          get("getAll.path", methods.get.path),
           tap((path) => {
-            assert(path);
+            assert(path, `no getAll or get`);
           }),
           callProp("split", "/"),
           callProp("slice", size(id.split("/"))),
@@ -215,22 +234,53 @@ module.exports = AzClient = ({
       }),
     ]);
 
-  const pathList = ({ lives }) =>
+  const numberOfDependenciesInPath = (path = "") =>
     pipe([
-      tap((params) => {
-        assert(lives);
-        assert(dependencies);
-      }),
-      dependencies,
+      () => path,
+      callProp("split", "/"),
+      reduce(
+        (acc, value) =>
+          pipe([
+            () => value,
+            switchCase([
+              and([
+                not(eq(value, "{subscriptionId}")),
+                callProp("startsWith", "{"),
+              ]),
+              () => acc + 1,
+              () => acc,
+            ]),
+          ])(),
+        0
+      ),
       tap((params) => {
         assert(true);
       }),
-      values,
-      last,
+    ])();
+
+  const pathList = ({ lives }) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(lives);
+        assert(dependencies);
+      }),
+      () => methods,
       switchCase([
-        isEmpty,
+        and([
+          get("getAll.path"),
+          pipe([get("getAll.path"), eq(numberOfDependenciesInPath, 0)]),
+        ]),
         getPathsListNoDeps({ methods }),
-        getPathsListWithDeps({ lives, config, methods }),
+        pipe([
+          dependencies,
+          values,
+          last,
+          tap((dep) => {
+            assert(dep);
+          }),
+          getPathsListWithDeps({ lives, config, methods }),
+        ]),
       ]),
       tap((params) => {
         assert(true);

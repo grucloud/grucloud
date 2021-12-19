@@ -12,7 +12,7 @@ exports.fnSpecs = ({ config }) => {
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
-        group: "LogAnalytics",
+        group: "OperationalInsights",
         type: "Workspace",
         dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
@@ -21,16 +21,14 @@ exports.fnSpecs = ({ config }) => {
             group: "Resources",
           },
         }),
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                pick(["sku.name", "retentionInDays"]),
-              ]),
-            }),
-          ]),
+        propertiesDefault: {
+          properties: {
+            publicNetworkAccessForIngestion: "Enabled",
+            publicNetworkAccessForQuery: "Enabled",
+            workspaceCapping: { dailyQuotaGb: -1 },
+            features: { enableLogAccessUsingOnlyResourcePermissions: true },
+          },
+        },
         Client: ({ spec }) =>
           AzClient({
             spec,
