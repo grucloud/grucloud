@@ -12,7 +12,6 @@ const {
   assign,
   omit,
   pick,
-  or,
 } = require("rubico");
 
 const {
@@ -89,11 +88,6 @@ const transformSchemaToSpec = ({}) =>
                 config,
                 isDefault: eq(get("live.name"), "default"),
                 managedByOther: eq(get("live.name"), "default"),
-                configDefault: ({ properties }) =>
-                  defaultsDeep({
-                    location: config.location,
-                    tags: buildTags(config),
-                  })(properties),
               }),
           ignoreResource: () => () => pipe([get("isDefault")]),
           //TODO move to assignDependsOn, remove filterLive and replace with pickPropertiesCreate

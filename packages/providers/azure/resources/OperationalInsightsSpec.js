@@ -46,11 +46,6 @@ exports.fnSpecs = ({ config }) => {
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
             ],
-            configDefault: ({ properties }) =>
-              defaultsDeep({
-                location,
-                tags: buildTags(config),
-              })(properties),
           }),
       },
     ],

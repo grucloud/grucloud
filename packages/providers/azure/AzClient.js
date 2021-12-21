@@ -24,6 +24,7 @@ const {
   prepend,
   findIndex,
   isEmpty,
+  defaultsDeep,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -32,6 +33,7 @@ const {
   isInstanceUp: isInstanceUpDefault,
   AZURE_MANAGEMENT_BASE_URL,
   isSubstituable,
+  buildTags,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
@@ -40,7 +42,20 @@ module.exports = AzClient = ({
   spec,
   isInstanceUp = isInstanceUpDefault,
   config,
-  configDefault,
+  configDefault = ({ properties }) =>
+    pipe([
+      tap(() => {
+        assert(config.location);
+      }),
+      () => properties,
+      defaultsDeep({
+        location: config.location,
+        tags: buildTags(config),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
   isDefault,
   findDependencies,
   findTargetId = ({ path }) =>

@@ -46,11 +46,6 @@ exports.fnSpecs = ({ config }) => {
           AzClient({
             spec,
             config,
-            configDefault: ({ properties }) =>
-              defaultsDeep({
-                location,
-                tags: buildTags(config),
-              })(properties),
             onResponseList: () =>
               pipe([
                 get("value", []),

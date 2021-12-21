@@ -54,11 +54,6 @@ exports.fnSpecs = ({ config }) => {
               findDependenciesResourceGroup({ live, lives, config }),
             ],
             config,
-            configDefault: ({ properties }) =>
-              defaultsDeep({
-                location,
-                tags: buildTags(config),
-              })(properties),
           }),
       },
       {
@@ -104,11 +99,6 @@ exports.fnSpecs = ({ config }) => {
           AzClient({
             spec,
             config,
-            configDefault: ({ properties }) =>
-              defaultsDeep({
-                location,
-                tags: buildTags(config),
-              })(properties),
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
             ],
@@ -140,13 +130,6 @@ exports.fnSpecs = ({ config }) => {
           AzClient({
             spec,
             config,
-            configDefault: ({ properties, dependencies }) => {
-              return defaultsDeep({
-                location,
-                tags: buildTags(config),
-                properties: {},
-              })(properties);
-            },
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
             ],

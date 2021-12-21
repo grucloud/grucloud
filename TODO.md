@@ -45,6 +45,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Azure
 
+- delete NSG : failed with status code 429 A retry
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
 - gc new :
