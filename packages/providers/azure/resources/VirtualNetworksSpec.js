@@ -50,9 +50,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-            ],
             config,
           }),
       },
@@ -99,9 +96,6 @@ exports.fnSpecs = ({ config }) => {
           AzClient({
             spec,
             config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-            ],
           }),
       },
       {
@@ -130,9 +124,6 @@ exports.fnSpecs = ({ config }) => {
           AzClient({
             spec,
             config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-            ],
           }),
       },
       {

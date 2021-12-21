@@ -43,9 +43,6 @@ exports.fnSpecs = ({ config }) => {
                   ]),
                 }),
               ]),
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-            ],
           }),
       },
     ],
