@@ -24,6 +24,7 @@ exports.fnSpecs = ({ config }) => {
           workspace: {
             type: "Workspace",
             group: "OperationalInsights",
+            createOnly: true,
           },
         }),
         propertiesDefault: {
@@ -42,42 +43,42 @@ exports.fnSpecs = ({ config }) => {
             path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
           },
         },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "Workspace",
+            group: "OperationalInsights",
+            ids: [
+              pipe([
+                () => live,
+                get(
+                  "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId"
+                ),
+                (customerId) =>
+                  pipe([
+                    tap((params) => {
+                      assert(customerId);
+                    }),
+                    () =>
+                      lives.getByType({
+                        providerName,
+                        type: "Workspace",
+                        group: "OperationalInsights",
+                      }),
+                    find(eq(get("live.properties.customerId"), customerId)),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    get("id"),
+                  ])(),
+              ])(),
+            ],
+          },
+        ],
         Client: ({ spec }) =>
           AzClient({
             spec,
             config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "Workspace",
-                group: "OperationalInsights",
-                ids: [
-                  pipe([
-                    () => live,
-                    get(
-                      "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId"
-                    ),
-                    (customerId) =>
-                      pipe([
-                        tap((params) => {
-                          assert(customerId);
-                        }),
-                        () =>
-                          lives.getByType({
-                            providerName,
-                            type: "Workspace",
-                            group: "OperationalInsights",
-                          }),
-                        find(eq(get("live.properties.customerId"), customerId)),
-                        tap((params) => {
-                          assert(true);
-                        }),
-                        get("id"),
-                      ])(),
-                  ])(),
-                ],
-              },
-            ],
             configDefault: ({ properties, dependencies: { workspace } }) =>
               pipe([
                 tap(() => {
@@ -165,6 +166,14 @@ exports.fnSpecs = ({ config }) => {
             },
           },
         },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "KubeEnvironment",
+            group: "Web",
+            ids: [pipe([() => live, get("properties.kubeEnvironmentId")])()],
+          },
+        ],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -181,16 +190,6 @@ exports.fnSpecs = ({ config }) => {
             spec,
             verbUpdate: "PUT",
             config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "KubeEnvironment",
-                group: "Web",
-                ids: [
-                  pipe([() => live, get("properties.kubeEnvironmentId")])(),
-                ],
-              },
-            ],
             configDefault: ({
               properties,
               dependencies: { kubeEnvironment },

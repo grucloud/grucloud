@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -14,12 +12,13 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
         group: "OperationalInsights",
         type: "Workspace",
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-        }),
+        //TODO starts with LogManagement(logs)_
+        cannotBeDeleted: () => true,
+      },
+      {
+        // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
+        group: "OperationalInsights",
+        type: "Workspace",
         propertiesDefault: {
           properties: {
             publicNetworkAccessForIngestion: "Enabled",

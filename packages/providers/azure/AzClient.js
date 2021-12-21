@@ -57,7 +57,6 @@ module.exports = AzClient = ({
       }),
     ])(),
   isDefault,
-  findDependencies,
   findTargetId = ({ path }) =>
     (result) =>
       pipe([
@@ -105,7 +104,7 @@ module.exports = AzClient = ({
     pipe([
       tap((params) => {
         assert(path);
-        assert(name);
+        assert(name, `no name in path ${path}, id ${id}`);
         assert(id);
       }),
       () => path,
@@ -330,7 +329,7 @@ module.exports = AzClient = ({
     type: "azure",
     spec,
     config,
-    findDependencies: findDependencies || findDependenciesDefault,
+    findDependencies: spec.findDependencies || findDependenciesDefault,
     onResponseList,
     decorate,
     configDefault,

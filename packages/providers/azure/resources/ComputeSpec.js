@@ -19,10 +19,12 @@ exports.fnSpecs = ({ config }) => {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
+            name: "resourceGroupName",
           },
           networkInterface: {
             type: "NetworkInterface",
             group: "Network",
+            createOnly: true,
           },
         }),
         environmentVariables: () => [
@@ -55,6 +57,30 @@ exports.fnSpecs = ({ config }) => {
           "properties.storageProfile",
           "properties.osProfile",
         ],
+        findDependencies: ({ live }) => [
+          {
+            //TODO replace with findDependenciesResourceGroup
+            type: "ResourceGroup",
+            group: "Resources",
+            ids: pipe([
+              () => [
+                live.id
+                  .replace(`/providers/${live.type}/${live.name}`, "")
+                  .toLowerCase()
+                  .replace("resourcegroups", "resourceGroups"),
+              ],
+            ])(),
+          },
+          {
+            type: "NetworkInterface",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.networkProfile.networkInterfaces"),
+              pluck("id"),
+            ])(),
+          },
+        ],
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -79,29 +105,6 @@ exports.fnSpecs = ({ config }) => {
                 },
               })(properties);
             },
-            findDependencies: ({ live }) => [
-              {
-                type: "ResourceGroup",
-                group: "Resources",
-                ids: pipe([
-                  () => [
-                    live.id
-                      .replace(`/providers/${live.type}/${live.name}`, "")
-                      .toLowerCase()
-                      .replace("resourcegroups", "resourceGroups"),
-                  ],
-                ])(),
-              },
-              {
-                type: "NetworkInterface",
-                group: "Network",
-                ids: pipe([
-                  () => live,
-                  get("properties.networkProfile.networkInterfaces"),
-                  pluck("id"),
-                ])(),
-              },
-            ],
           }),
       },
     ],

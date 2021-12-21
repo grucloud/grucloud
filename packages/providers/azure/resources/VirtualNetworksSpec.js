@@ -156,6 +156,50 @@ exports.fnSpecs = ({ config }) => {
         }),
         propertiesDefault: {},
         pickProperties: [],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "VirtualNetwork",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              map(
+                pipe([
+                  get("properties.subnet.id"),
+                  (id) => id.replace(/\/subnet.+$/g, ""),
+                ])
+              ),
+            ])(),
+          },
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            ids: [get("properties.networkSecurityGroup.id")(live)],
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("subnet"),
+              pluck("id"),
+            ])(),
+          },
+        ],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -185,50 +229,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "VirtualNetwork",
-                group: "Network",
-                ids: pipe([
-                  () => live,
-                  get("properties.ipConfigurations"),
-                  map(
-                    pipe([
-                      get("properties.subnet.id"),
-                      (id) => id.replace(/\/subnet.+$/g, ""),
-                    ])
-                  ),
-                ])(),
-              },
-              {
-                type: "PublicIPAddress",
-                group: "Network",
-                ids: pipe([
-                  () => live,
-                  get("properties.ipConfigurations"),
-                  pluck("properties"),
-                  pluck("publicIPAddress"),
-                  pluck("id"),
-                ])(),
-              },
-              {
-                type: "NetworkSecurityGroup",
-                group: "Network",
-                ids: [get("properties.networkSecurityGroup.id")(live)],
-              },
-              {
-                type: "Subnet",
-                group: "Network",
-                ids: pipe([
-                  () => live,
-                  get("properties.ipConfigurations"),
-                  pluck("properties"),
-                  pluck("subnet"),
-                  pluck("id"),
-                ])(),
-              },
-            ],
             config,
             configDefault: async ({ properties, dependencies }) => {
               const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
@@ -283,16 +283,6 @@ exports.fnSpecs = ({ config }) => {
         group: "Network",
         type: "Subnet",
         dependsOnList: ["Network::VirtualNetwork"],
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-          virtualNetwork: {
-            type: "VirtualNetwork",
-            group: "Network",
-          },
-        }),
         isOurMinion: ({ live, lives }) =>
           pipe([
             () =>
@@ -317,31 +307,31 @@ exports.fnSpecs = ({ config }) => {
             }),
           ]),
         pickProperties: [],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "VirtualNetwork",
+            group: "Network",
+            ids: [
+              pipe([
+                () => live,
+                get("id"),
+                callProp("split", "/"),
+                (arr) => arr[8],
+                (virtualNetwork) =>
+                  lives.getByName({
+                    name: virtualNetwork,
+                    providerName: config.providerName,
+                    type: "VirtualNetwork",
+                    group: "Network",
+                  }),
+                get("id"),
+              ])(),
+            ],
+          },
+        ],
         Client: ({ spec, config }) =>
           AzClient({
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "VirtualNetwork",
-                group: "Network",
-                ids: [
-                  pipe([
-                    () => live,
-                    get("id"),
-                    callProp("split", "/"),
-                    (arr) => arr[8],
-                    (virtualNetwork) =>
-                      lives.getByName({
-                        name: virtualNetwork,
-                        providerName: config.providerName,
-                        type: "VirtualNetwork",
-                        group: "Network",
-                      }),
-                    get("id"),
-                  ])(),
-                ],
-              },
-            ],
             getList: ({ axios }) =>
               pipe([
                 tap((params) => {
@@ -388,6 +378,11 @@ exports.fnSpecs = ({ config }) => {
               })(properties);
             },
           }),
+      },
+      {
+        group: "Network",
+        type: "NetworkWatcher",
+        cannotBeDeleted: () => true,
       },
     ],
   ])();
