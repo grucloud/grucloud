@@ -224,7 +224,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   };
 
   const isInstanceUp = eq(get("status"), "RUNNING");
-  const isInstanceDown = pipe([eq(get("status"), "TERMINATED")]);
+  const isInstanceDown = or([isEmpty, eq(get("status"), "TERMINATED")]);
 
   const client = GoogleClient({
     spec,
