@@ -22,7 +22,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makeSecurityGroup({
+  provider.Network.makeNetworkSecurityGroup({
     name: "security-group",
     properties: ({ config }) => ({
       properties: {
@@ -61,7 +61,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makePublicIpAddress({
+  provider.Network.makePublicIPAddress({
     name: "ip",
     properties: ({ config }) => ({
       properties: {
@@ -92,8 +92,8 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
       virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
-      publicIpAddress: resources.Network.PublicIpAddress["ip"],
-      securityGroup: resources.Network.SecurityGroup["security-group"],
+      publicIpAddress: resources.Network.PublicIPAddress["ip"],
+      securityGroup: resources.Network.NetworkSecurityGroup["security-group"],
       subnet: resources.Network.Subnet["subnet"],
     }),
   });
@@ -111,7 +111,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.compute.makeVirtualMachine({
+  provider.Compute.makeVirtualMachine({
     name: "vm",
     properties: ({ config }) => ({
       properties: {

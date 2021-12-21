@@ -19,6 +19,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/resources/resource-groups
         group: "Resources",
         type: "ResourceGroup",
+        dependencies: () => ({}),
         filterLive: () => pipe([pick(["tags"])]),
         ignoreResource: () =>
           pipe([
@@ -28,18 +29,22 @@ exports.fnSpecs = ({ config }) => {
             get("name"),
             callProp("startsWith", "DefaultResourceGroup"),
           ]),
+        methods: {
+          get: {
+            path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
+          },
+          delete: {
+            path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
+          },
+          getAll: {
+            path: `/subscriptions/{subscriptionId}/resourcegroups`,
+          },
+        },
+        apiVersion: "2021-04-01",
+        cannotBeDeleted: isDefaultResourceGroup,
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/resourcegroups`,
-              },
-            },
-            apiVersion: "2021-04-01",
             config,
             configDefault: ({ properties }) =>
               defaultsDeep({

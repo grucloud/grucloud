@@ -3,7 +3,7 @@ const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty, compare } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
@@ -13,11 +13,8 @@ exports.fnSpecs = ({ config }) => {
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
-        // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2019-12-01
-        // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
-        group: "compute",
+        group: "Compute",
         type: "VirtualMachine",
-        dependsOn: ["Resources::ResourceGroup", "Network::NetworkInterface"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -53,31 +50,14 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        compare: compare({
-          filterTarget: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["properties.osProfile.adminPassword"]),
-          ]),
-          filterLive: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        }),
+        omitProperties: [
+          "properties.osProfile.adminPassword",
+          "properties.storageProfile",
+          "properties.osProfile",
+        ],
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines`,
-              },
-            },
-            apiVersion: "2019-12-01",
             config,
             configDefault: ({ properties, dependencies }) => {
               const { networkInterface } = dependencies;

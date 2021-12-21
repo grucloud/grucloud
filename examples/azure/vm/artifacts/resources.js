@@ -22,7 +22,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makeSecurityGroup({
+  provider.Network.makeNetworkSecurityGroup({
     name: "security-group",
     properties: ({ config }) => ({
       properties: {
@@ -61,7 +61,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makePublicIpAddress({
+  provider.Network.makePublicIPAddress({
     name: "ip",
     properties: ({ config }) => ({
       properties: {
@@ -111,7 +111,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.compute.makeVirtualMachine({
+  provider.Compute.makeVirtualMachine({
     name: "vm",
     properties: ({ config }) => ({
       properties: {

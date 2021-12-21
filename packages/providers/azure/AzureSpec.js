@@ -15,7 +15,14 @@ const {
   or,
 } = require("rubico");
 
-const { defaultsDeep, callProp, find, values, isEmpty } = require("rubico/x");
+const {
+  defaultsDeep,
+  callProp,
+  find,
+  values,
+  isEmpty,
+  isFunction,
+} = require("rubico/x");
 
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -55,20 +62,12 @@ const transformSchemaToSpec = ({}) =>
     map(
       pipe([
         assign({
-          dependsOn: ({ dependencies }) =>
-            pipe([
-              () => dependencies,
-              values,
-              map(({ group, type }) => `${group}::${type}`),
-            ])(),
           dependsOnList: ({ dependencies }) =>
             pipe([
               () => dependencies,
               values,
               map(({ group, type }) => `${group}::${type}`),
             ])(),
-        }),
-        assign({
           environmentVariables:
             ({ environmentVariables }) =>
             () =>
@@ -82,57 +81,28 @@ const transformSchemaToSpec = ({}) =>
         }),
         assign({
           Client:
-            ({
-              versionDir,
-              methods,
-              dependencies,
-              cannotBeDeleted = () => false,
-            }) =>
+            ({ dependencies }) =>
             ({ spec, config }) =>
               AzClient({
                 spec,
-                methods,
                 dependencies,
-                apiVersion: versionDir,
                 config,
-                cannotBeDeleted: or([
-                  cannotBeDeleted,
-                  pipe([() => methods, get("delete"), isEmpty]),
-                ]),
+                isDefault: eq(get("live.name"), "default"),
+                managedByOther: eq(get("live.name"), "default"),
                 configDefault: ({ properties }) =>
                   defaultsDeep({
                     location: config.location,
                     tags: buildTags(config),
                   })(properties),
               }),
-          compare: ({ pickProperties, propertiesDefault = {} }) =>
-            compare({
-              //TODO filterAll
-              filterTarget: pipe([
-                pick(pickProperties),
-                defaultsDeep(propertiesDefault),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-              filterLive: pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                pick(pickProperties),
-                defaultsDeep(propertiesDefault),
-                omit(["properties.provisioningState"]),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-            }),
+          ignoreResource: () => () => pipe([get("isDefault")]),
+          //TODO move to assignDependsOn, remove filterLive and replace with pickPropertiesCreate
           filterLive:
-            ({ omitProperties, pickProperties }) =>
+            ({ pickPropertiesCreate }) =>
             () =>
               pipe([
-                pick(pickProperties),
-                omit(["properties.provisioningState"]),
+                pick(pickPropertiesCreate),
+                omit(["properties.provisioningState", "etag"]),
               ]),
         }),
       ])
@@ -140,6 +110,55 @@ const transformSchemaToSpec = ({}) =>
     tap((params) => {
       assert(true);
     }),
+  ]);
+const assignDependsOn = ({}) =>
+  pipe([
+    map(
+      pipe([
+        assign({
+          dependsOn: ({ dependencies = () => ({}), type }) =>
+            pipe([
+              tap((params) => {
+                assert(type);
+                if (!isFunction(dependencies)) {
+                  assert(isFunction(dependencies));
+                }
+              }),
+              dependencies,
+              values,
+              map(({ group, type }) => `${group}::${type}`),
+            ])(),
+          compare: ({
+            pickProperties = [],
+            omitProperties = [],
+            propertiesDefault = {},
+          }) =>
+            compare({
+              //TODO filterAll
+              filterTarget: pipe([
+                tap((params) => {
+                  assert(pickProperties);
+                }),
+                pick(pickProperties),
+                defaultsDeep(propertiesDefault),
+                omit(omitProperties),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+              filterLive: pipe([
+                pick(pickProperties),
+                defaultsDeep(propertiesDefault),
+                omit(omitProperties),
+                omit(["type", "name", "properties.provisioningState", "etag"]),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+            }),
+        }),
+      ])
+    ),
   ]);
 
 const findByGroupAndType = ({ group, type }) =>
@@ -160,14 +179,11 @@ const mergeSpec = ({ specsGen, overideSpecs }) =>
     map((overideSpec) =>
       pipe([
         () => specsGen,
-        tap((params) => {
-          assert(overideSpec);
-        }),
         findByGroupAndType(overideSpec),
-        tap.if(not(isEmpty), (found) => {
+        (found) => ({ ...found, ...overideSpec }),
+        tap((params) => {
           assert(true);
         }),
-        (found) => defaultsDeep(found)(overideSpec),
       ])()
     ),
     map(
@@ -176,17 +192,29 @@ const mergeSpec = ({ specsGen, overideSpecs }) =>
         isOurMinion: AzTag.isOurMinion,
         compare: compare({
           filterTarget: pipe([
+            tap((params) => {
+              assert(true);
+            }),
             pick(["properties", "sku"]),
             omitIfEmpty(["properties"]),
           ]),
           filterLive: pipe([
+            tap((params) => {
+              assert(true);
+            }),
             omit(["properties.provisioningState"]),
             pick(["properties", "sku"]),
             omitIfEmpty(["properties"]),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
         }),
       })
     ),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.fnSpecs = (config) =>
@@ -213,4 +241,5 @@ exports.fnSpecs = (config) =>
     tap((params) => {
       assert(true);
     }),
+    assignDependsOn({}),
   ])();

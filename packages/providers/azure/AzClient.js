@@ -1,11 +1,11 @@
 const assert = require("assert");
-const path = require("path");
 const {
   tap,
   get,
   eq,
   reduce,
   pipe,
+  or,
   switchCase,
   map,
   not,
@@ -38,12 +38,10 @@ const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 module.exports = AzClient = ({
   spec,
-  apiVersion,
   isInstanceUp = isInstanceUpDefault,
   config,
   configDefault,
   isDefault,
-  cannotBeDeleted,
   findDependencies,
   findTargetId = ({ path }) =>
     (result) =>
@@ -61,14 +59,30 @@ module.exports = AzClient = ({
   decorate,
   verbCreate = "PUT",
   verbUpdate = "PATCH",
-  pathUpdate = ({ id }) => `${id}${queryParameters(apiVersion)}`,
-  methods,
-  dependencies = () => ({}),
+  pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
-  assert(methods);
   assert(spec);
-  assert(spec.type);
+  const { methods, apiVersion, dependencies } = spec;
+  if (!methods) {
+    assert(methods);
+  }
+  if (!dependencies) {
+    assert(dependencies);
+  }
   assert(apiVersion);
+  assert(spec.cannotBeDeleted);
+
+  const cannotBeDeleted = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    or([spec.cannotBeDeleted, pipe([() => methods, get("delete"), isEmpty])]),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+  assert(spec.type);
   assert(config);
   assert(config.bearerToken);
 
@@ -277,6 +291,9 @@ module.exports = AzClient = ({
           values,
           last,
           tap((dep) => {
+            if (!dep) {
+              assert(dep);
+            }
             assert(dep);
           }),
           getPathsListWithDeps({ lives, config, methods }),

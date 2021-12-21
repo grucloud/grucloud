@@ -14,7 +14,6 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
         group: "OperationalInsights",
         type: "Workspace",
-        dependsOn: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
             type: "ResourceGroup",
@@ -32,15 +31,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/workspaces`,
-              },
-            },
-            apiVersion: "2021-06-01",
             config,
             decorate: ({ axios }) =>
               pipe([

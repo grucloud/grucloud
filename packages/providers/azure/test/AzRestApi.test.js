@@ -21,7 +21,7 @@ describe("AzureRestApi", function () {
         ),
         group: "Microsoft.Compute",
         groupDir: "compute",
-        versionDir: "2021-07-01",
+        apiVersion: "2021-07-01",
       }),
       tap((params) => {
         assert(true);
@@ -41,14 +41,14 @@ describe("AzureRestApi", function () {
         ),
         group: "Microsoft.Web",
         groupDir: "web",
-        versionDir: "2021-02-01",
+        apiVersion: "2021-02-01",
       }),
       tap((params) => {
         assert(true);
       }),
     ])();
   });
-  it("listSwaggerFiles all", async function () {
+  it.skip("listSwaggerFiles all", async function () {
     await pipe([
       () => ({
         directory: process.cwd(),
@@ -63,17 +63,22 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it.only("listSwaggerFiles", async function () {
+  it.skip("listSwaggerFiles", async function () {
     await pipe([
       () => ({
         directory: process.cwd(),
         filterDirs: [
+          //"apimanagement",
+          //"appconfiguration",
+          //"dns",
           "compute",
           "containerservice",
           "operationalinsights",
           "postgresql",
           "network",
+          "storage",
           "web",
+          //"webpubsub",
         ],
       }),
       listSwaggerFiles,

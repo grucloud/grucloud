@@ -15,7 +15,6 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "KubeEnvironment",
-        dependsOn: ["Resources::ResourceGroup", "LogAnalytics::Workspace"],
         dependsOnList: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
@@ -24,7 +23,7 @@ exports.fnSpecs = ({ config }) => {
           },
           workspace: {
             type: "Workspace",
-            group: "LogAnalytics",
+            group: "OperationalInsights",
           },
         }),
         propertiesDefault: {
@@ -35,24 +34,23 @@ exports.fnSpecs = ({ config }) => {
             },
           },
         },
+        methods: {
+          get: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
+          },
+          getAll: {
+            path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
+          },
+        },
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
-              },
-            },
-            apiVersion: "2021-02-01",
             config,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
               {
                 type: "Workspace",
-                group: "LogAnalytics",
+                group: "OperationalInsights",
                 ids: [
                   pipe([
                     () => live,
@@ -68,7 +66,7 @@ exports.fnSpecs = ({ config }) => {
                           lives.getByType({
                             providerName,
                             type: "Workspace",
-                            group: "LogAnalytics",
+                            group: "OperationalInsights",
                           }),
                         find(eq(get("live.properties.customerId"), customerId)),
                         tap((params) => {
@@ -113,7 +111,6 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "ContainerApp",
-        dependsOn: ["Resources::ResourceGroup", "Web::KubeEnvironment"],
         dependsOnList: ["Resources::ResourceGroup"],
         dependencies: () => ({
           resourceGroup: {
@@ -125,6 +122,15 @@ exports.fnSpecs = ({ config }) => {
             group: "Web",
           },
         }),
+        methods: {
+          get: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
+          },
+          getAll: {
+            path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerapps`,
+          },
+        },
+        apiVersion: "2021-03-01",
         compare: compare({
           filterAll: pipe([
             tap((params) => {
@@ -173,16 +179,7 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerapps`,
-              },
-            },
             verbUpdate: "PUT",
-            apiVersion: "2021-03-01",
             config,
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),

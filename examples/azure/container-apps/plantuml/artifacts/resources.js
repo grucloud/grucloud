@@ -3,11 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Resources.makeResourceGroup({
-    name: "rg",
-  });
-
-  provider.LogAnalytics.makeWorkspace({
+  provider.OperationalInsights.makeWorkspace({
     name: "logs",
     properties: ({ config }) => ({
       properties: {
@@ -24,9 +20,20 @@ const createResources = ({ provider }) => {
 
   provider.Web.makeKubeEnvironment({
     name: "dev",
+    properties: ({ config }) => ({
+      properties: {
+        arcConfiguration: {
+          kubeConfig: process.env.DEV_KUBE_CONFIG,
+        },
+        appLogsConfiguration: {
+          logAnalyticsConfiguration: {
+            sharedKey: process.env.DEV_SHARED_KEY,
+          },
+        },
+      },
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
-      workspace: resources.LogAnalytics.Workspace["logs"],
     }),
   });
 
@@ -61,6 +68,10 @@ const createResources = ({ provider }) => {
       resourceGroup: resources.Resources.ResourceGroup["rg"],
       kubeEnvironment: resources.Web.KubeEnvironment["dev"],
     }),
+  });
+
+  provider.Resources.makeResourceGroup({
+    name: "rg",
   });
 };
 

@@ -17,7 +17,12 @@ exports.fnSpecs = ({ config }) =>
         type: "Database",
         ignoreResource: () =>
           pipe([get("name"), callProp("startsWith", "azure_")]),
-        cannotBeDeleted: () => true,
+        cannotBeDeleted: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => true,
+        ]),
       },
       {
         type: "Server",

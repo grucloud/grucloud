@@ -24,13 +24,7 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
         group: "Network",
         type: "VirtualNetwork",
-        dependsOn: ["Resources::ResourceGroup"],
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-        }),
+        //TODO remove filterLive and replace with pickPropertiesCreate
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -41,18 +35,21 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
+        pickProperties: [
+          "extendedLocation.name",
+          "extendedLocation.type",
+          "properties.addressSpace.addressPrefixes",
+          "properties.dhcpOptions.dnsServers",
+          "properties.flowTimeoutInMinutes",
+          "properties.enableDdosProtection",
+          "properties.enableVmProtection",
+          "properties.bgpCommunities.virtualNetworkCommunity",
+          "properties.encryption.enabled",
+          "properties.encryption.enforcement",
+        ],
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks`,
-              },
-            },
-            apiVersion: "2020-05-01",
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
             ],
@@ -69,14 +66,8 @@ exports.fnSpecs = ({ config }) => {
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
         group: "Network",
-        type: "SecurityGroup",
-        dependsOn: ["Resources::ResourceGroup"],
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-        }),
+        type: "NetworkSecurityGroup",
+        omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -112,15 +103,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups`,
-              },
-            },
-            apiVersion: "2020-05-01",
             config,
             configDefault: ({ properties }) =>
               defaultsDeep({
@@ -137,14 +119,9 @@ exports.fnSpecs = ({ config }) => {
         // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
         // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
         group: "Network",
-        type: "PublicIpAddress",
-        dependsOn: ["Resources::ResourceGroup"],
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-        }),
+        type: "PublicIPAddress",
+        propertiesDefault: {},
+        pickProperties: [],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -162,15 +139,6 @@ exports.fnSpecs = ({ config }) => {
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses`,
-              },
-            },
-            apiVersion: "2020-05-01",
             config,
             configDefault: ({ properties, dependencies }) => {
               return defaultsDeep({
@@ -190,13 +158,30 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
         group: "Network",
         type: "NetworkInterface",
-        dependsOn: [
-          "Resources::ResourceGroup",
-          "Network::VirtualNetwork",
-          "Network::SecurityGroup",
-          "Network::PublicIpAddress",
-          "Network::Subnet",
-        ],
+        dependencies: () => ({
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+          },
+          virtualNetwork: {
+            type: "VirtualNetwork",
+            group: "Network",
+            createOnly: true,
+          },
+          publicIpAddress: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+          },
+          securityGroup: {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            createOnly: true,
+          },
+          subnet: { type: "Subnet", group: "Network", createOnly: true },
+        }),
+        propertiesDefault: {},
+        pickProperties: [],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -223,46 +208,9 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-          },
-          virtualNetwork: {
-            type: "VirtualNetwork",
-            group: "Network",
-          },
-          publicIpAddress: {
-            type: "PublicIpAddress",
-            group: "Network",
-          },
-          securityGroup: { type: "SecurityGroup", group: "Network" },
-          subnet: { type: "Subnet", group: "Network" },
-        }),
-        // compare: compare({
-        //   filterTarget: pipe([
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //   ]),
-        //   filterLive: pipe([
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //   ]),
-        // }),
         Client: ({ spec }) =>
           AzClient({
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{name}",
-              },
-              getAll: {
-                path: `/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces`,
-              },
-            },
-            apiVersion: "2020-05-01",
             findDependencies: ({ live, lives }) => [
               findDependenciesResourceGroup({ live, lives, config }),
               {
@@ -280,7 +228,7 @@ exports.fnSpecs = ({ config }) => {
                 ])(),
               },
               {
-                type: "PublicIpAddress",
+                type: "PublicIPAddress",
                 group: "Network",
                 ids: pipe([
                   () => live,
@@ -291,7 +239,7 @@ exports.fnSpecs = ({ config }) => {
                 ])(),
               },
               {
-                type: "SecurityGroup",
+                type: "NetworkSecurityGroup",
                 group: "Network",
                 ids: [get("properties.networkSecurityGroup.id")(live)],
               },
@@ -329,6 +277,7 @@ exports.fnSpecs = ({ config }) => {
                 location,
                 tags: buildTags(config),
                 properties: {
+                  //TODO securityGroup => networkSecurityGroup
                   ...(securityGroup && {
                     networkSecurityGroup: {
                       id: getField(securityGroup, "id"),
@@ -340,6 +289,7 @@ exports.fnSpecs = ({ config }) => {
                         subnet: {
                           id: getField(subnet, "id"),
                         },
+                        //TODO
                         ...(publicIpAddress && {
                           publicIPAddress: {
                             id: getField(publicIpAddress, "id"),
@@ -358,7 +308,6 @@ exports.fnSpecs = ({ config }) => {
       {
         group: "Network",
         type: "Subnet",
-        dependsOn: ["Network::VirtualNetwork"],
         dependsOnList: ["Network::VirtualNetwork"],
         dependencies: () => ({
           resourceGroup: {
@@ -386,7 +335,6 @@ exports.fnSpecs = ({ config }) => {
             ),
             get("managedByUs"),
           ])(),
-
         filterLive: () =>
           pipe([
             pick(["properties"]),
@@ -394,6 +342,7 @@ exports.fnSpecs = ({ config }) => {
               properties: pipe([get("properties"), pick(["addressPrefix"])]),
             }),
           ]),
+        pickProperties: [],
         Client: ({ spec, config }) =>
           AzClient({
             findDependencies: ({ live, lives }) => [
@@ -458,12 +407,6 @@ exports.fnSpecs = ({ config }) => {
                   }),
                 ])(),
             spec,
-            methods: {
-              get: {
-                path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}",
-              },
-            },
-            apiVersion: "2021-02-01",
             config,
             configDefault: ({ properties, dependencies }) => {
               return defaultsDeep({

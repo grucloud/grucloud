@@ -5,6 +5,9 @@ AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRole
 
 - missing getAll for WebApps_ListConfigurations => WebApps_GetConfiguration
   WebAppInstanceProcess missing dependency
+
+az::Storage::FileShare pickProperties: "properties.metadata",
+
 - check stage for all providers
 - compare refactor
 - compare Tags

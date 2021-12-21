@@ -238,7 +238,7 @@ module.exports = CoreClient = ({
                     },
                     pipe([
                       tap((result) => {
-                        assert(result.data, "result.data");
+                        assert(result);
                       }),
                       get("data"),
                       onResponseCreate,
