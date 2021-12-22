@@ -32,7 +32,6 @@ const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const AppServiceSpec = require("./resources/AppServiceSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 
-const { buildTags } = require("./AzureCommon");
 const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
@@ -40,12 +39,12 @@ const Schema = require("./AzureSchema.json");
 const overideSpec = (config) =>
   pipe([
     () => [
-      ResourceManagementSpec,
-      VirtualNetworkSpec,
-      ComputeSpec,
-      OperationalInsightsSpec,
       AppServiceSpec,
+      ComputeSpec,
       DBForPortgreSQLSpec,
+      ResourceManagementSpec,
+      OperationalInsightsSpec,
+      VirtualNetworkSpec,
     ],
     flatMap(callProp("fnSpecs", { config })),
     tap((params) => {
@@ -235,5 +234,9 @@ exports.fnSpecs = (config) =>
     tap((params) => {
       assert(true);
     }),
+    map(
+      assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
+    ),
+    callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
     assignDependsOn({}),
   ])();

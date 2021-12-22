@@ -42,21 +42,6 @@ module.exports = AzClient = ({
   spec,
   isInstanceUp = isInstanceUpDefault,
   config,
-  configDefault = ({ properties }) =>
-    pipe([
-      tap(() => {
-        assert(config.location);
-      }),
-      () => properties,
-      defaultsDeep({
-        location: config.location,
-        tags: buildTags(config),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-  isDefault,
   findTargetId = ({ path }) =>
     (result) =>
       pipe([
@@ -85,6 +70,21 @@ module.exports = AzClient = ({
   }
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
+
+  const configDefaultGeneric = ({ properties }) =>
+    pipe([
+      tap(() => {
+        assert(config.location);
+      }),
+      () => properties,
+      defaultsDeep({
+        location: config.location,
+        tags: buildTags(config),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const cannotBeDeleted = pipe([
     tap((params) => {
@@ -119,6 +119,7 @@ module.exports = AzClient = ({
           callProp("split", "/"),
           callProp("slice", 0, index + 1),
           callProp("join", "/"),
+          callProp("replace", "resourcegroups", "resourceGroups"),
         ])(),
       tap((params) => {
         assert(true);
@@ -308,7 +309,6 @@ module.exports = AzClient = ({
             if (!dep) {
               assert(dep);
             }
-            assert(dep);
           }),
           getPathsListWithDeps({ lives, config, methods }),
         ]),
@@ -332,7 +332,7 @@ module.exports = AzClient = ({
     findDependencies: spec.findDependencies || findDependenciesDefault,
     onResponseList,
     decorate,
-    configDefault,
+    configDefault: spec.configDefault || configDefaultGeneric,
     pathGet,
     pathCreate,
     pathUpdate,
@@ -342,8 +342,9 @@ module.exports = AzClient = ({
     verbCreate,
     verbUpdate,
     isInstanceUp,
-    isDefault,
+    isDefault: spec.isDefault,
     cannotBeDeleted,
+    managedByOther: spec.managedByOther,
     axios,
     getList: getList({ axios }),
     getByName: getByName({ axios }),

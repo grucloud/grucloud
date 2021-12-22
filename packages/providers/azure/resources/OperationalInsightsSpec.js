@@ -1,19 +1,27 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
+const { pipe, get, tap, assign } = require("rubico");
+const { callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
 
-exports.fnSpecs = ({ config }) => {
-  const { location } = config;
+const isDefaultSavedSearch = pipe([
+  tap((params) => {
+    assert(params.live);
+  }),
+  get("live.name"),
+  callProp("startsWith", "LogManagement(logs)_"),
+]);
 
+exports.fnSpecs = ({ config }) => {
   return pipe([
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces
         group: "OperationalInsights",
-        type: "Workspace",
-        //TODO starts with LogManagement(logs)_
-        cannotBeDeleted: () => true,
+        type: "SavedSearch",
+        ignoreResource: () => () => true,
+        managedByOther: isDefaultSavedSearch,
+        cannotBeDeleted: isDefaultSavedSearch,
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces

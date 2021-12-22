@@ -5,7 +5,7 @@ skinparam monochrome true
 ++ azure
 +++ Resources
 ++++ ResourceGroup (1)
-+++ LogAnalytics
++++ OperationalInsights
 ++++ Workspace (1)
 +++ Web
 ++++ KubeEnvironment (1)

@@ -3,20 +3,6 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.DBforPostgreSQL.makeFirewallRule({
-    name: "AllowAllAzureServicesAndResourcesWithinAzureIps_2021-12-15_11-18-53",
-    properties: ({ config }) => ({
-      properties: {
-        startIpAddress: "0.0.0.0",
-        endIpAddress: "0.0.0.0",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-    }),
-  });
-
   provider.DBforPostgreSQL.makeConfiguration({
     name: "application_name",
     properties: ({ config }) => ({
@@ -37,6 +23,20 @@ const createResources = ({ provider }) => {
       properties: {
         value: "pg_cron,pg_stat_statements",
         source: "user-override",
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
+    }),
+  });
+
+  provider.DBforPostgreSQL.makeFirewallRule({
+    name: "AllowAllAzureServicesAndResourcesWithinAzureIps_2021-12-15_11-18-53",
+    properties: ({ config }) => ({
+      properties: {
+        startIpAddress: "0.0.0.0",
+        endIpAddress: "0.0.0.0",
       },
     }),
     dependencies: ({ resources }) => ({

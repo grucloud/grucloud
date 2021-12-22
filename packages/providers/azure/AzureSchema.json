@@ -10519,52 +10519,6 @@
         ]
     },
     {
-        "type": "DataSource",
-        "group": "OperationalInsights",
-        "apiVersion": "2020-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "name": "workspaceName"
-            }
-        },
-        "methods": {
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataSources/{dataSourceName}",
-                "operationId": "DataSources_CreateOrUpdate"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataSources/{dataSourceName}",
-                "operationId": "DataSources_Delete"
-            },
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataSources/{dataSourceName}",
-                "operationId": "DataSources_Get"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataSources",
-                "operationId": "DataSources_ListByWorkspace"
-            }
-        },
-        "omitProperties": [
-            "tags"
-        ],
-        "pickProperties": [
-            "etag",
-            "kind"
-        ],
-        "pickPropertiesCreate": [
-            "etag",
-            "kind"
-        ]
-    },
-    {
         "type": "LinkedService",
         "group": "OperationalInsights",
         "apiVersion": "2020-08-01",
@@ -10763,53 +10717,6 @@
             "properties.tables",
             "properties.storageAccount.key",
             "eTag"
-        ]
-    },
-    {
-        "type": "Table",
-        "group": "OperationalInsights",
-        "apiVersion": "2021-06-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "name": "workspaceName"
-            }
-        },
-        "methods": {
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
-                "operationId": "Tables_Update"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
-                "operationId": "Tables_Create"
-            },
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables/{tableName}",
-                "operationId": "Tables_Get"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/tables",
-                "operationId": "Tables_ListByWorkspace"
-            }
-        },
-        "omitProperties": [
-            "properties.isTroubleshootingAllowed",
-            "properties.lastTroubleshootDate"
-        ],
-        "pickProperties": [
-            "properties.retentionInDays",
-            "properties.isTroubleshootEnabled"
-        ],
-        "pickPropertiesCreate": [
-            "properties.retentionInDays",
-            "properties.isTroubleshootEnabled"
         ]
     },
     {

@@ -7,10 +7,10 @@ skinparam monochrome true
 ++++ ResourceGroup (1)
 +++ Network
 ++++ VirtualNetwork (1)
-++++ SecurityGroup (1)
-++++ PublicIpAddress (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
 ++++ NetworkInterface (1)
 ++++ Subnet (1)
-+++ compute
++++ Compute
 ++++ VirtualMachine (1)
 @endmindmap

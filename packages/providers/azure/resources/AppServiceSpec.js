@@ -43,6 +43,12 @@ exports.fnSpecs = ({ config }) => {
             path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
           },
         },
+        pickPropertiesCreate: [
+          "properties.arcConfiguration.frontEndServiceConfiguration.kind",
+          "properties.appLogsConfiguration.destination",
+          "extendedLocation.name",
+        ],
+        environmentVariables: () => [],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -75,38 +81,35 @@ exports.fnSpecs = ({ config }) => {
             ],
           },
         ],
+        configDefault: ({ properties, dependencies: { workspace } }) =>
+          pipe([
+            tap(() => {
+              assert(workspace);
+            }),
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                appLogsConfiguration: {
+                  logAnalyticsConfiguration: {
+                    customerId: getField(workspace, "properties.customerId"),
+                    sharedKey: getField(
+                      workspace,
+                      "sharedKeys.primarySharedKey"
+                    ),
+                  },
+                },
+              },
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
         Client: ({ spec }) =>
           AzClient({
             spec,
             config,
-            configDefault: ({ properties, dependencies: { workspace } }) =>
-              pipe([
-                tap(() => {
-                  assert(workspace);
-                }),
-                () => properties,
-                defaultsDeep({
-                  location,
-                  tags: buildTags(config),
-                  properties: {
-                    appLogsConfiguration: {
-                      logAnalyticsConfiguration: {
-                        customerId: getField(
-                          workspace,
-                          "properties.customerId"
-                        ),
-                        sharedKey: getField(
-                          workspace,
-                          "sharedKeys.primarySharedKey"
-                        ),
-                      },
-                    },
-                  },
-                }),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])(),
           }),
       },
       {
@@ -185,28 +188,25 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
+        configDefault: ({ properties, dependencies: { kubeEnvironment } }) =>
+          pipe([
+            tap(() => {
+              assert(kubeEnvironment);
+            }),
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                kubeEnvironmentId: getField(kubeEnvironment, "id"),
+              },
+            }),
+          ])(),
         Client: ({ spec }) =>
           AzClient({
             spec,
             verbUpdate: "PUT",
             config,
-            configDefault: ({
-              properties,
-              dependencies: { kubeEnvironment },
-            }) =>
-              pipe([
-                tap(() => {
-                  assert(kubeEnvironment);
-                }),
-                () => properties,
-                defaultsDeep({
-                  location,
-                  tags: buildTags(config),
-                  properties: {
-                    kubeEnvironmentId: getField(kubeEnvironment, "id"),
-                  },
-                }),
-              ])(),
           }),
       },
     ],

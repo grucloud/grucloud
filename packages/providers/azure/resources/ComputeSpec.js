@@ -81,30 +81,30 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
+        configDefault: ({ properties, dependencies }) => {
+          const { networkInterface } = dependencies;
+          assert(
+            networkInterface,
+            "networkInterfaces is missing VirtualMachine"
+          );
+          return defaultsDeep({
+            location,
+            tags: buildTags(config),
+            properties: {
+              networkProfile: {
+                networkInterfaces: [
+                  {
+                    id: getField(networkInterface, "id"),
+                  },
+                ],
+              },
+            },
+          })(properties);
+        },
         Client: ({ spec }) =>
           AzClient({
             spec,
             config,
-            configDefault: ({ properties, dependencies }) => {
-              const { networkInterface } = dependencies;
-              assert(
-                networkInterface,
-                "networkInterfaces is missing VirtualMachine"
-              );
-              return defaultsDeep({
-                location,
-                tags: buildTags(config),
-                properties: {
-                  networkProfile: {
-                    networkInterfaces: [
-                      {
-                        id: getField(networkInterface, "id"),
-                      },
-                    ],
-                  },
-                },
-              })(properties);
-            },
           }),
       },
     ],

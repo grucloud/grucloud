@@ -226,55 +226,52 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
+        configDefault: async ({ properties, dependencies }) => {
+          const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
+            dependencies;
+          assert(virtualNetwork, "dependencies is missing virtualNetwork");
+          assert(subnet, "dependencies is missing subnet");
+          assert(publicIpAddress, "dependencies is missing publicIpAddress");
+          logger.debug(
+            `NetworkInterface configDefault ${tos({
+              properties,
+              subnet,
+              virtualNetwork,
+            })}`
+          );
+
+          return defaultsDeep({
+            location,
+            tags: buildTags(config),
+            properties: {
+              //TODO securityGroup => networkSecurityGroup
+              ...(securityGroup && {
+                networkSecurityGroup: {
+                  id: getField(securityGroup, "id"),
+                },
+              }),
+              ipConfigurations: [
+                {
+                  properties: {
+                    subnet: {
+                      id: getField(subnet, "id"),
+                    },
+                    //TODO
+                    ...(publicIpAddress && {
+                      publicIPAddress: {
+                        id: getField(publicIpAddress, "id"),
+                      },
+                    }),
+                  },
+                },
+              ],
+            },
+          })(properties);
+        },
         Client: ({ spec }) =>
           AzClient({
             spec,
             config,
-            configDefault: async ({ properties, dependencies }) => {
-              const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
-                dependencies;
-              assert(virtualNetwork, "dependencies is missing virtualNetwork");
-              assert(subnet, "dependencies is missing subnet");
-              assert(
-                publicIpAddress,
-                "dependencies is missing publicIpAddress"
-              );
-              logger.debug(
-                `NetworkInterface configDefault ${tos({
-                  properties,
-                  subnet,
-                  virtualNetwork,
-                })}`
-              );
-
-              return defaultsDeep({
-                location,
-                tags: buildTags(config),
-                properties: {
-                  //TODO securityGroup => networkSecurityGroup
-                  ...(securityGroup && {
-                    networkSecurityGroup: {
-                      id: getField(securityGroup, "id"),
-                    },
-                  }),
-                  ipConfigurations: [
-                    {
-                      properties: {
-                        subnet: {
-                          id: getField(subnet, "id"),
-                        },
-                        //TODO
-                        ...(publicIpAddress && {
-                          publicIPAddress: {
-                            id: getField(publicIpAddress, "id"),
-                          },
-                        }),
-                      },
-                    },
-                  ],
-                },
-              })(properties);
-            },
           }),
       },
       // GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/Network/{virtualNetworkName}/subnets?api-version=2021-02-01
@@ -330,6 +327,11 @@ exports.fnSpecs = ({ config }) => {
             ],
           },
         ],
+        configDefault: ({ properties, dependencies }) => {
+          return defaultsDeep({
+            properties: {},
+          })(properties);
+        },
         Client: ({ spec, config }) =>
           AzClient({
             getList: ({ axios }) =>
@@ -372,16 +374,13 @@ exports.fnSpecs = ({ config }) => {
                 ])(),
             spec,
             config,
-            configDefault: ({ properties, dependencies }) => {
-              return defaultsDeep({
-                properties: {},
-              })(properties);
-            },
           }),
       },
       {
         group: "Network",
         type: "NetworkWatcher",
+        ignoreResource: () => () => true,
+        managedByOther: () => true,
         cannotBeDeleted: () => true,
       },
     ],

@@ -114,6 +114,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
+
 - fix cannotBeDeleted for Disk:
 
 - ✖ Destroying  
