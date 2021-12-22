@@ -27,7 +27,6 @@ const {
 const {
   mapPoolSize,
   getByNameCore,
-  isUpByIdCore,
   isDownByIdCore,
 } = require("@grucloud/core/Common");
 

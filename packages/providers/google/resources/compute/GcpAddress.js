@@ -2,11 +2,8 @@ const assert = require("assert");
 const { get, pipe, eq, map, tap } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "GcpAddress" });
-const { tos } = require("@grucloud/core/tos");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
-const { isUpByIdCore } = require("@grucloud/core/Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/addresses
 exports.GcpAddress = ({ spec, config }) => {
@@ -23,19 +20,12 @@ exports.GcpAddress = ({ spec, config }) => {
 
   const isInstanceUp = get("address");
 
-  const isUpByIdFactory = ({ getById }) =>
-    isUpByIdCore({
-      isInstanceUp,
-      getById,
-    });
-
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId}/regions/${region}/addresses/`,
     config,
     isInstanceUp,
-    isUpByIdFactory,
     configDefault,
   });
 };

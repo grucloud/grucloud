@@ -33,11 +33,7 @@ const GoogleClient = require("../../GoogleClient");
 const { buildLabel, createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { toTagName } = require("@grucloud/core/TagName");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  isUpByIdCore,
-  isDownByIdCore,
-  axiosErrorToJSON,
-} = require("@grucloud/core/Common");
+const { axiosErrorToJSON } = require("@grucloud/core/Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 const { retryCall } = require("@grucloud/core//Retry");
 
@@ -230,25 +226,13 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   const isInstanceUp = eq(get("status"), "RUNNING");
   const isInstanceDown = pipe([eq(get("status"), "TERMINATED")]);
 
-  const isUpByIdFactory = ({ getById }) =>
-    isUpByIdCore({
-      isInstanceUp,
-      getById,
-    });
-
-  const isDownByIdFactory = ({ getById }) =>
-    isDownByIdCore({
-      isInstanceDown,
-      getById,
-    });
-
   const client = GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId}/zones/${zone}/instances`,
     config: configProvider,
-    isUpByIdFactory,
-    isDownByIdFactory,
+    isInstanceUp,
+    isInstanceDown,
     configDefault,
     findDependencies,
   });
@@ -323,7 +307,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       }),
     ])();
 
-  const create = async ({ name, payload, dependencies }) =>
+  const create = ({ name, payload, dependencies }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -340,7 +324,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       }
     )();
 
-  const update = async ({ name, payload, dependencies, diff, live, id }) =>
+  const update = ({ name, payload, dependencies, diff, live, id }) =>
     tryCatch(
       pipe([
         tap(() => {

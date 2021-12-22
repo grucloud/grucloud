@@ -6,7 +6,7 @@ const { callProp } = require("rubico/x");
 const { K8sProvider } = require("../K8sProvider");
 
 describe("K8sResourcesList", async function () {
-  it.only("resourcesList", async function () {
+  it("resourcesList", async function () {
     pipe([
       () =>
         K8sProvider({

@@ -1,13 +1,11 @@
 const assert = require("assert");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
-const logger = require("@grucloud/core/logger")({ prefix: "OpenStack" });
 
 module.exports = OpenStackClient = ({
   spec,
   pathBase,
   pathSuffixList,
-  isUpByIdFactory,
   isInstanceUp,
   config,
   configDefault,
@@ -47,7 +45,6 @@ module.exports = OpenStackClient = ({
     pathCreate,
     pathDelete,
     pathList,
-    isUpByIdFactory,
     isInstanceUp,
     isDefault,
     cannotBeDeleted,

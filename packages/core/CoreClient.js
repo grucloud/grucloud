@@ -8,6 +8,7 @@ const {
   eq,
   get,
   map,
+  not,
 } = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
@@ -15,13 +16,7 @@ const logger = require("./logger")({ prefix: "CoreClient" });
 const { tos } = require("./tos");
 const identity = (x) => x;
 const { retryCall, retryCallOnError } = require("./Retry");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-  logError,
-  axiosErrorToJSON,
-} = require("./Common");
+const { getByNameCore, logError, axiosErrorToJSON } = require("./Common");
 
 module.exports = CoreClient = ({
   spec,
@@ -37,11 +32,10 @@ module.exports = CoreClient = ({
   verbList = "GET",
   verbCreate = "POST",
   verbUpdate = "PATCH",
-  isInstanceUp,
+  isInstanceUp = not(isEmpty),
+  isInstanceDown = isEmpty,
   isDefault,
   managedByOther,
-  isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
-  isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   configDefault = ({ name, properties }) => ({
     name,
     ...properties,
@@ -86,6 +80,7 @@ module.exports = CoreClient = ({
       findId,
       findDependencies,
       isInstanceUp,
+      isInstanceDown,
       findName,
       isDefault,
       managedByOther,
@@ -178,8 +173,8 @@ module.exports = CoreClient = ({
         () => client,
         defaultsDeep({
           getByName: getByNameCore(client),
-          isUpById: isUpByIdFactory(client),
-          isDownById: isDownByIdFactory(client),
+          isUpById: pipe([client.getById, isInstanceUp]),
+          isDownById: pipe([client.getById, isInstanceDown]),
         }),
       ])(),
     assign({
@@ -247,7 +242,7 @@ module.exports = CoreClient = ({
                               fn: () => isUpById({ type: spec.type, name, id }),
                               config,
                             }),
-                          (resource) => onResponseGet({ id, data: resource }),
+                          () => onResponseGet({ id, data }),
                         ])(),
                     ])(),
                 ]),

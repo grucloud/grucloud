@@ -4,7 +4,6 @@ const { defaultsDeep, callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
 const {
-  isUpByIdFactory,
   isInstanceUp,
   findDependenciesResourceGroup,
   buildTags,
@@ -48,7 +47,6 @@ exports.fnSpecs = ({ config }) => {
             pathSuffixList: () =>
               `/providers/Microsoft.OperationalInsights/workspaces`,
             queryParameters: () => "?api-version=2021-06-01",
-            isUpByIdFactory,
             isInstanceUp,
             config,
             decorate: ({ axios }) =>

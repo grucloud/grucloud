@@ -67,6 +67,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   const onResponseGet = ({ data }) =>
     pipe([
       tap(() => {
+        assert(data);
         assert(data.name);
       }),
       () => data,

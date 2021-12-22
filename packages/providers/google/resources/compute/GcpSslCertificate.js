@@ -3,7 +3,6 @@ const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
-const { isUpByIdCore } = require("@grucloud/core/Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/sslCertificates
 exports.GcpSslCertificate = ({ spec, config }) => {
@@ -13,12 +12,6 @@ exports.GcpSslCertificate = ({ spec, config }) => {
   const { projectId, managedByDescription } = config;
 
   const isInstanceUp = get("selfLink");
-
-  const isUpByIdFactory = ({ getById }) =>
-    isUpByIdCore({
-      isInstanceUp,
-      getById,
-    });
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -34,6 +27,5 @@ exports.GcpSslCertificate = ({ spec, config }) => {
     config,
     configDefault,
     isInstanceUp,
-    isUpByIdFactory,
   });
 };

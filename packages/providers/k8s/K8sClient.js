@@ -8,35 +8,23 @@ const {
   tryCatch,
   get,
   switchCase,
-  pick,
-  filter,
   eq,
-  or,
   omit,
   assign,
   fork,
+  not,
 } = require("rubico");
 const {
-  first,
   size,
-  find,
   defaultsDeep,
   isEmpty,
-  forEach,
-  pluck,
-  flatten,
   includes,
   isFunction,
 } = require("rubico/x");
 
 const { retryCall, retryCallOnError } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  isUpByIdCore,
-  isDownByIdCore,
-  logError,
-  axiosErrorToJSON,
-} = require("@grucloud/core/Common");
+const { logError, axiosErrorToJSON } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "K8sClient" });
 const {
@@ -60,8 +48,6 @@ module.exports = K8sClient = ({
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
   isInstanceUp,
-  isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
-  isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
   findDependencies,
 }) => {
@@ -222,8 +208,8 @@ module.exports = K8sClient = ({
       namespace: get("namespace")(findMeta({ live })),
     });
 
-  const isUpById = isUpByIdFactory({ getById });
-  const isDownById = isDownByIdFactory({ getById });
+  const isUpById = pipe([getById, not(isEmpty)]);
+  const isDownById = pipe([getById, isEmpty]);
 
   const create = ({ name, payload, dependencies }) =>
     tryCatch(
@@ -382,7 +368,6 @@ module.exports = K8sClient = ({
     destroy,
     cannotBeDeleted,
     configDefault,
-    isInstanceUp,
     findDependencies,
     findNamespace,
     findNamespaceFromTarget,
