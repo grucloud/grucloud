@@ -19,12 +19,12 @@ The exact procedure depends on the provider, however, most of them perform the f
 
 ### AWS
 
-![gc-init-aws](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-init-aws.svg)
+![gc-init-aws](../../plantuml/gc-init-aws.svg)
 
 ### Azure
 
-![gc-init-azure](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-init-azure.svg)
+![gc-init-azure](../../plantuml/gc-init-azure.svg)
 
 ### Google
 
-![gc-init-google](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-init-google.svg)
+![gc-init-google](../../plantuml/gc-init-google.svg)

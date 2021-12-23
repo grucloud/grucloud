@@ -33,13 +33,18 @@ partition "Select Subscription Id" {
 }
 
 partition "Create a Service Principal" {
-: ""az ad sp create-for-rbac -n sp1"";
+: Prompt for Service Principal Name;
+: ""az ad sp create-for-rbac -n sp-my-project"";
 }
 
 partition "Select Region " {
   :""az account list-locations"";
 : Prompt for region from list;
 }
+
+partition "Register namespaces" {
+:""az provider register --namespace Microsoft.Network"";
+:""az provider register --namespace Microsoft.Compute"";
 
 : Create ""auth.env"";
 note right
