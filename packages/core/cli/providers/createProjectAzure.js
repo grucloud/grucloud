@@ -82,6 +82,21 @@ const fetchAppIdPassword = pipe([
     assert(password);
   }),
 ]);
+const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
+
+const registerNamespaces = () =>
+  pipe([
+    () => NamespacesDefault,
+    map.series((namespace) =>
+      pipe([
+        tap(() => {
+          assert(namespace);
+        }),
+        () => `az provider register --namespace ${namespace}`,
+        execCommandShell(),
+      ])()
+    ),
+  ])();
 
 const writeEnv = ({ dirs, app, account }) =>
   pipe([
@@ -166,5 +181,6 @@ exports.createProjectAzure = pipe([
   assign({ app: fetchAppIdPassword }),
   assign({ location: promptLocation }),
   assign({ config: createConfig }),
+  tap(registerNamespaces),
   tap(writeEnv),
 ]);

@@ -48,12 +48,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - delete NSG : failed with status code 429 A retry
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
-- g init: choose the service provider name depending on the project name
-- gc new :
-  az provider register --namespace Microsoft.Network
-  az provider register --namespace Microsoft.Compute
-
-- remove NetworkWatcherRG from list
+- gc init: choose the service provider name depending on the project name
 - doc
 
 ## Aws2gc
