@@ -3322,6 +3322,234 @@
         }
     },
     {
+        "type": "Key",
+        "group": "KeyVault",
+        "apiVersion": "2019-09-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "name": "vaultName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}",
+                "operationId": "Keys_CreateIfNotExist"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}",
+                "operationId": "Keys_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys",
+                "operationId": "Keys_List"
+            }
+        },
+        "omitProperties": [
+            "properties.keyUri",
+            "properties.keyUriWithVersion"
+        ],
+        "pickProperties": [
+            "properties.attributes",
+            "properties.kty",
+            "properties.keyOps",
+            "properties.keySize",
+            "properties.curveName"
+        ],
+        "pickPropertiesCreate": [
+            "tags",
+            "properties.attributes",
+            "properties.kty",
+            "properties.keyOps",
+            "properties.keySize",
+            "properties.curveName"
+        ]
+    },
+    {
+        "type": "Secret",
+        "group": "KeyVault",
+        "apiVersion": "2019-09-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "name": "vaultName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}",
+                "operationId": "Secrets_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}",
+                "operationId": "Secrets_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}",
+                "operationId": "Secrets_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets",
+                "operationId": "Secrets_List"
+            }
+        },
+        "omitProperties": [
+            "properties.secretUri",
+            "properties.secretUriWithVersion"
+        ],
+        "pickProperties": [
+            "properties.value",
+            "properties.contentType",
+            "properties.attributes"
+        ],
+        "pickPropertiesCreate": [
+            "tags",
+            "properties.value",
+            "properties.contentType",
+            "properties.attributes"
+        ]
+    },
+    {
+        "type": "Vault",
+        "group": "KeyVault",
+        "apiVersion": "2019-09-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
+                "operationId": "Vaults_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
+                "operationId": "Vaults_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
+                "operationId": "Vaults_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
+                "operationId": "Vaults_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults",
+                "operationId": "Vaults_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name",
+            "type",
+            "properties.tenantId",
+            "properties.hsmPoolResourceId",
+            "properties.createMode",
+            "properties.provisioningState",
+            "properties.privateEndpointConnections"
+        ],
+        "pickProperties": [
+            "location",
+            "tags",
+            "properties.sku.family",
+            "properties.sku.name",
+            "properties.accessPolicies",
+            "properties.vaultUri",
+            "properties.enabledForDeployment",
+            "properties.enabledForDiskEncryption",
+            "properties.enabledForTemplateDeployment",
+            "properties.enableSoftDelete",
+            "properties.softDeleteRetentionInDays",
+            "properties.enableRbacAuthorization",
+            "properties.enablePurgeProtection",
+            "properties.networkAcls.bypass",
+            "properties.networkAcls.defaultAction",
+            "properties.networkAcls.ipRules",
+            "properties.networkAcls.virtualNetworkRules"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "tags",
+            "properties.sku.family",
+            "properties.sku.name",
+            "properties.accessPolicies",
+            "properties.vaultUri",
+            "properties.enabledForDeployment",
+            "properties.enabledForDiskEncryption",
+            "properties.enabledForTemplateDeployment",
+            "properties.enableSoftDelete",
+            "properties.softDeleteRetentionInDays",
+            "properties.enableRbacAuthorization",
+            "properties.enablePurgeProtection",
+            "properties.networkAcls.bypass",
+            "properties.networkAcls.defaultAction",
+            "properties.networkAcls.ipRules",
+            "properties.networkAcls.virtualNetworkRules"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": false
+            }
+        }
+    },
+    {
+        "type": "UserAssignedIdentity",
+        "group": "ManagedIdentity",
+        "apiVersion": "2018-11-30",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities",
+                "operationId": "UserAssignedIdentities_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
         "type": "ApplicationGateway",
         "group": "Network",
         "apiVersion": "2021-05-01",

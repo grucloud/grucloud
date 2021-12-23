@@ -84,14 +84,14 @@ const promptSubscribtionId = (params) =>
   ])();
 
 const fetchAppIdPassword = pipe([
-  tap(({ config }) => {
-    assert(config.projectName);
+  tap(({ projectName }) => {
+    assert(projectName);
   }),
-  ({ config }) => ({
+  ({ projectName }) => ({
     type: "text",
     name: "servicePrincipal",
     message: "Service Principal",
-    initial: `sp-${config.projectName}`,
+    initial: `sp-${projectName}`,
     validate: (servicePrincipal) =>
       isEmpty(servicePrincipal) ? `should not be empty` : true,
   }),

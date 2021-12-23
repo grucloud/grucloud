@@ -74,6 +74,8 @@ describe("AzureRestApi", function () {
           "compute",
           "containerservice",
           "containerregistry",
+          "keyvault",
+          "msi",
           "operationalinsights",
           "postgresql",
           "network",
