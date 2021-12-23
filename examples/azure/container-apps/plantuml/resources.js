@@ -3,10 +3,6 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Resources.makeResourceGroup({
-    name: "rg",
-  });
-
   provider.OperationalInsights.makeWorkspace({
     name: "logs",
     properties: ({ config }) => ({
@@ -22,12 +18,8 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Web.makeKubeEnvironment({
-    name: "dev",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
-      workspace: resources.OperationalInsights.Workspace["logs"],
-    }),
+  provider.Resources.makeResourceGroup({
+    name: "rg",
   });
 
   provider.Web.makeContainerApp({
@@ -60,6 +52,14 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg"],
       kubeEnvironment: resources.Web.KubeEnvironment["dev"],
+    }),
+  });
+
+  provider.Web.makeKubeEnvironment({
+    name: "dev",
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
+      workspace: resources.OperationalInsights.Workspace["logs"],
     }),
   });
 };

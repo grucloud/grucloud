@@ -37,8 +37,8 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pipe([pick(["retentionInDays"])]),
-      dependencies: () => ({
+      dependencies: {
         kmsKey: { type: "Key", group: "kms" },
-      }),
+      },
     },
   ]);

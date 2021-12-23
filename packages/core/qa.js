@@ -92,6 +92,7 @@ exports.testEnd2End = ({
               commandOptions: {
                 inventory: "artifacts/inventory.json",
                 outputCode: "artifacts/resources.js",
+                outputEnv: "default.template.env",
                 prompt: false,
               },
             }),
@@ -137,7 +138,11 @@ exports.testEnd2End = ({
                     retryCall({
                       name: `planQuery`,
                       fn: pipe([() => ({}), cliNext.planQuery]),
-                      config: { repeatCount: 1, retryDelay: 5e3 },
+                      config: {
+                        repeatCount: 1,
+                        retryCount: 6 * 5,
+                        retryDelay: 10e3,
+                      },
                       isExpectedResult: isEmptyPlan,
                     }),
                 ])(),

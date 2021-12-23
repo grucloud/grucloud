@@ -51,9 +51,9 @@ module.exports = () =>
             omit(["ApiMappingSelectionExpression"])
           ),
         ]),
-      dependencies: () => ({
+      dependencies: {
         certificate: { type: "Certificate", group: "ACM" },
-      }),
+      },
     },
     {
       type: "Api",
@@ -122,10 +122,10 @@ module.exports = () =>
           omitIfEmpty(["StageVariables"]),
           omit(["AccessLogSettings.DestinationArn"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
-      }),
+      },
     },
     {
       type: "Authorizer",
@@ -159,9 +159,9 @@ module.exports = () =>
           "IdentityValidationExpression",
           "JwtConfiguration",
         ]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
-      }),
+      },
     },
     {
       type: "ApiMapping",
@@ -208,11 +208,11 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
         domainName: { type: "DomainName", group: "ApiGatewayV2" },
         stage: { type: "Stage", group: "ApiGatewayV2" },
-      }),
+      },
     },
     {
       type: "Integration",
@@ -266,10 +266,10 @@ module.exports = () =>
           "IntegrationType",
           "PayloadFormatVersion",
         ]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
         lambdaFunction: { type: "Function", group: "Lambda" },
-      }),
+      },
     },
     {
       type: "Route",
@@ -311,11 +311,11 @@ module.exports = () =>
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
         integration: { type: "Integration", group: "ApiGatewayV2" },
         authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
-      }),
+      },
     },
     {
       type: "Deployment",
@@ -360,9 +360,9 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["Description"]),
-      dependencies: () => ({
+      dependencies: {
         api: { type: "Api", group: "ApiGatewayV2" },
         stage: { type: "Stage", group: "ApiGatewayV2" },
-      }),
+      },
     },
   ]);

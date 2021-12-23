@@ -6,7 +6,7 @@ skinparam monochrome true
 +++ DBforPostgreSQL
 ++++ Server (1)
 ++++ FirewallRule (1)
-++++ Configuration (2)
+++++ Configuration (1)
 +++ Resources
 ++++ ResourceGroup (1)
 @endmindmap

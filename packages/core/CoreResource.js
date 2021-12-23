@@ -32,7 +32,6 @@ const {
   size,
   identity,
   unless,
-  when,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -40,6 +39,7 @@ const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { decorateLive } = require("./Client");
+
 exports.ResourceMaker = ({
   name: resourceName,
   namespace = "",
@@ -305,13 +305,8 @@ exports.ResourceMaker = ({
     pipe([
       tap(() => {
         assert(isFunction(dependencies));
-        // logger.info(
-        //   `resolveDependencies for ${toString()}: ${Object.keys(
-        //     dependencies()
-        //   )}, mustBeUp: ${dependenciesMustBeUp}`
-        // );
       }),
-      () => dependencies(),
+      dependencies,
       filter(or([isEmpty, not(eq(callProp("toString"), toString))])),
       tap((params) => {
         assert(true);

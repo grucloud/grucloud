@@ -77,9 +77,9 @@ const writersSpec = [
         properties: ({ resource }) => ({
           ipCidrRange: resource.live.cidr,
         }),
-        dependencies: () => ({
+        dependencies: {
           network: { type: "Network", group: "compute" },
-        }),
+        },
         ignoreResource: () => not(and([isIpv4, isSubnetPrivate])),
       },
       {
@@ -117,7 +117,7 @@ const writersSpec = [
                 diskSizeGb < 20 ? 20 : diskSizeGb,
             }),
           ])(),
-        dependencies: () => ({
+        dependencies: {
           disks: {
             type: "Disk",
             group: "compute",
@@ -182,7 +182,7 @@ const writersSpec = [
                   ])(),
               ])(),
           },
-        }),
+        },
       },
     ],
   },

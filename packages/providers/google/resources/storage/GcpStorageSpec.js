@@ -34,9 +34,9 @@ module.exports = () =>
     {
       type: "Object",
       dependsOn: ["storage::Bucket"],
-      dependencies: () => ({
+      dependencies: {
         bucket: { type: "Bucket", group: "storage" },
-      }),
+      },
       Client: GcpObject,
       filterLive: () => pipe([pick(["contentType", "storageClass"])]),
       compare: async ({ target, live }) => {

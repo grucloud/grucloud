@@ -3,14 +3,14 @@ title Resources for project Azure VM
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Resources
-++++ ResourceGroup (1)
-+++ Network
-++++ VirtualNetwork (1)
-++++ NetworkSecurityGroup (1)
-++++ PublicIPAddress (1)
-++++ NetworkInterface (1)
-++++ Subnet (1)
 +++ Compute
 ++++ VirtualMachine (1)
++++ Network
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
 @endmindmap

@@ -86,9 +86,9 @@ module.exports = () =>
           }),
           omit(["DomainName"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         certificate: { type: "Certificate", group: "ACM" },
-      }),
+      },
     },
     {
       type: "Account",
@@ -120,9 +120,9 @@ module.exports = () =>
             "cloudwatchRoleArn",
           ]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         cloudwatchRole: { type: "Role", group: "IAM" },
-      }),
+      },
     },
     {
       type: "ApiKey",
@@ -257,9 +257,9 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-      dependencies: () => ({
+      dependencies: {
         restApi: { type: "RestApi", group: "APIGateway" },
-      }),
+      },
     },
     {
       type: "Authorizer",
@@ -287,10 +287,10 @@ module.exports = () =>
           }),
           omit(["id", "name", "restApiId", "providerARNs"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         restApi: { type: "RestApi", group: "APIGateway" },
         lambdaFunction: { type: "Function", group: "Lambda" },
         userPool: { type: "UserPool", group: "Cognito" },
-      }),
+      },
     },
   ]);

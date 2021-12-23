@@ -53,10 +53,10 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["ClientIDList"]),
-      dependencies: () => ({
+      dependencies: {
         cluster: { type: "Cluster", group: "EKS" },
         role: { type: "Role", group: "IAM" },
-      }),
+      },
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
@@ -85,10 +85,10 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["Path"]),
-      dependencies: () => ({
+      dependencies: {
         iamGroups: { type: "Group", group: "IAM", list: true },
         policies: { type: "Policy", group: "IAM", list: true },
-      }),
+      },
     },
     {
       type: "Group",
@@ -108,9 +108,9 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["Path"]),
-      dependencies: () => ({
+      dependencies: {
         policies: { type: "Policy", group: "IAM", list: true },
-      }),
+      },
     },
     {
       type: "Role",
@@ -183,7 +183,7 @@ module.exports = () =>
           omitIfEmpty(["Description", "Policies"]),
         ]),
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         policies: {
           type: "Policy",
           group: "IAM",
@@ -220,7 +220,7 @@ module.exports = () =>
           type: "OpenIDConnectProvider",
           group: "IAM",
         },
-      }),
+      },
       hasNoProperty: ({ resource }) =>
         pipe([
           () => resource,
@@ -258,8 +258,8 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
-      dependencies: () => ({
+      dependencies: {
         roles: { type: "Role", group: "IAM", list: true },
-      }),
+      },
     },
   ]);

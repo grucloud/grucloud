@@ -4,20 +4,6 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.DBforPostgreSQL.makeConfiguration({
-    name: "application_name",
-    properties: ({ config }) => ({
-      properties: {
-        value: "starhackit",
-        source: "user-override",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-    }),
-  });
-
-  provider.DBforPostgreSQL.makeConfiguration({
     name: "shared_preload_libraries",
     properties: ({ config }) => ({
       properties: {

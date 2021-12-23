@@ -35,6 +35,8 @@ exports.fnSpecs = ({ config }) => {
             features: { enableLogAccessUsingOnlyResourcePermissions: true },
           },
         },
+        //TODO the generated environmentVariables should be empty
+        environmentVariables: [],
         Client: ({ spec }) =>
           AzClient({
             spec,

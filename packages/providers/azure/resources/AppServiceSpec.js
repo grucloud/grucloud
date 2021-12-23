@@ -16,7 +16,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "KubeEnvironment",
         dependsOnList: ["Resources::ResourceGroup"],
-        dependencies: () => ({
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
@@ -26,7 +26,7 @@ exports.fnSpecs = ({ config }) => {
             group: "OperationalInsights",
             createOnly: true,
           },
-        }),
+        },
         propertiesDefault: {
           properties: {
             type: "managed",
@@ -48,7 +48,7 @@ exports.fnSpecs = ({ config }) => {
           "properties.appLogsConfiguration.destination",
           "extendedLocation.name",
         ],
-        environmentVariables: () => [],
+        environmentVariables: [],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -116,7 +116,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "ContainerApp",
         dependsOnList: ["Resources::ResourceGroup"],
-        dependencies: () => ({
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
@@ -125,7 +125,7 @@ exports.fnSpecs = ({ config }) => {
             type: "KubeEnvironment",
             group: "Web",
           },
-        }),
+        },
         methods: {
           get: {
             path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",

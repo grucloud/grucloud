@@ -25,6 +25,7 @@ const {
   findIndex,
   isEmpty,
   defaultsDeep,
+  isObject,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -61,7 +62,7 @@ module.exports = AzClient = ({
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
   assert(spec);
-  const { methods, apiVersion, dependencies } = spec;
+  const { methods, apiVersion, dependencies = {} } = spec;
   if (!methods) {
     assert(methods);
   }
@@ -128,7 +129,10 @@ module.exports = AzClient = ({
 
   const findDependenciesDefault = ({ live, lives }) =>
     pipe([
-      dependencies,
+      tap((params) => {
+        assert(dependencies);
+      }),
+      () => dependencies,
       map.entries(([key, { group, type, name }]) => [
         key,
         {
@@ -302,7 +306,7 @@ module.exports = AzClient = ({
         ]),
         getPathsListNoDeps({ methods }),
         pipe([
-          dependencies,
+          () => dependencies,
           values,
           last,
           tap((dep) => {

@@ -77,8 +77,8 @@ module.exports = () =>
             ])
           ),
         ]),
-      dependencies: () => ({
+      dependencies: {
         kmsKey: { type: "Key", group: "KMS" },
-      }),
+      },
     },
   ]);

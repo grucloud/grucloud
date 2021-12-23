@@ -67,7 +67,7 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["version"]),
-      dependencies: () => ({
+      dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: {
           type: "SecurityGroup",
@@ -89,7 +89,7 @@ module.exports = () =>
         },
         role: { type: "Role", group: "IAM" },
         key: { type: "Key", group: "KMS" },
-      }),
+      },
     },
     {
       type: "NodeGroup",
@@ -146,11 +146,11 @@ module.exports = () =>
           ),
           omit(["launchTemplate"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         cluster: { type: "Cluster", group: "EKS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         role: { type: "Role", group: "IAM" },
         launchTemplate: { type: "LaunchTemplate", group: "EC2" },
-      }),
+      },
     },
   ]);

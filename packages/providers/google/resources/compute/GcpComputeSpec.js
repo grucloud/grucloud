@@ -52,26 +52,26 @@ module.exports = pipe([
     {
       type: "UrlMap",
       dependsOn: ["compute::BackendBucket"],
-      dependencies: () => ({
+      dependencies: {
         backendBucket: { type: "BackendBucket", group: "compute" },
-      }),
+      },
       Client: GcpUrlMap,
     },
     {
       type: "HttpsTargetProxy",
       dependsOn: ["compute::UrlMap", "compute::SslCertificate"],
-      dependencies: () => ({
+      dependencies: {
         urlMap: { type: "UrlMap", group: "compute" },
         certificate: { type: "SslCertificate", group: "compute" },
-      }),
+      },
       Client: GcpHttpsTargetProxy,
     },
     {
       type: "GlobalForwardingRule",
       dependsOn: ["compute::HttpsTargetProxy"],
-      dependencies: () => ({
+      dependencies: {
         httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
-      }),
+      },
       Client: GcpGlobalForwardingRule,
     },
     {
@@ -91,9 +91,9 @@ module.exports = pipe([
           }),
         ]),
       Client: GcpSubNetwork,
-      dependencies: () => ({
+      dependencies: {
         network: { type: "Network", group: "compute" },
-      }),
+      },
       resourceVarName: ResourceVarNameSubnet,
       resourceName: ResourceNameSubnet,
     },
@@ -101,9 +101,9 @@ module.exports = pipe([
       type: "Firewall",
       dependsOn: ["compute::Network"],
       Client: GcpFirewall,
-      dependencies: () => ({
+      dependencies: {
         network: { type: "Network", group: "compute" },
-      }),
+      },
       compare: compare({
         filterTarget: pipe([
           tap((params) => {
@@ -166,13 +166,13 @@ module.exports = pipe([
       ],
       Client: GoogleVmInstance,
       compare: compareVmInstance,
-      dependencies: () => ({
+      dependencies: {
         ip: { type: "Address", group: "compute" },
         subNetwork: { type: "SubNetwork", group: "compute" },
         disks: { type: "Disk", group: "compute", list: true },
         frewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
-      }),
+      },
       propertiesDefault: {
         diskSizeGb: "10",
         diskType: "pd-standard",

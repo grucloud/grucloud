@@ -1,20 +1,17 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
-
-const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
+const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
+const { defaultsDeep, pluck, isObject } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
-const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 const AzClient = require("../AzClient");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
@@ -24,22 +21,17 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
         group: "Network",
         type: "VirtualNetwork",
-        //TODO remove filterLive and replace with pickPropertiesCreate
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                pick(["addressSpace", "enableDdosProtection"]),
-              ]),
-            }),
-          ]),
-        pickProperties: [
-          "extendedLocation.name",
-          "extendedLocation.type",
+        pickPropertiesCreate: [
           "properties.addressSpace.addressPrefixes",
-          "properties.dhcpOptions.dnsServers",
+          "properties.flowTimeoutInMinutes",
+          "properties.enableDdosProtection",
+          "properties.enableVmProtection",
+          "properties.bgpCommunities.virtualNetworkCommunity",
+          "properties.encryption.enabled",
+          "properties.encryption.enforcement",
+        ],
+        pickProperties: [
+          "properties.addressSpace.addressPrefixes",
           "properties.flowTimeoutInMinutes",
           "properties.enableDdosProtection",
           "properties.enableVmProtection",
@@ -104,22 +96,22 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
         group: "Network",
         type: "PublicIPAddress",
-        propertiesDefault: {},
+        propertiesDefault: {
+          sku: { name: "Basic", tier: "Regional" },
+          properties: {
+            publicIPAddressVersion: "IPv4",
+            publicIPAllocationMethod: "Dynamic",
+            idleTimeoutInMinutes: 4,
+          },
+        },
         pickProperties: [],
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                pick([
-                  "publicIPAddressVersion",
-                  "publicIPAllocationMethod",
-                  "idleTimeoutInMinutes",
-                ]),
-              ]),
-            }),
-          ]),
+        pickPropertiesCreate: [
+          "sku.name",
+          "sku.tier",
+          "properties.publicIPAllocationMethod",
+          "properties.publicIPAddressVersion",
+          "properties.dnsSettings.domainNameLabel",
+        ],
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -132,7 +124,7 @@ exports.fnSpecs = ({ config }) => {
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
         group: "Network",
         type: "NetworkInterface",
-        dependencies: () => ({
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
@@ -153,9 +145,17 @@ exports.fnSpecs = ({ config }) => {
             createOnly: true,
           },
           subnet: { type: "Subnet", group: "Network", createOnly: true },
-        }),
-        propertiesDefault: {},
-        pickProperties: [],
+        },
+        propertiesDefault: {
+          properties: {
+            enableAcceleratedNetworking: false,
+            enableIPForwarding: false,
+          },
+        },
+        pickProperties: [
+          "properties.enableAcceleratedNetworking",
+          "properties.enableIPForwarding",
+        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -227,6 +227,7 @@ exports.fnSpecs = ({ config }) => {
             }),
           ]),
         configDefault: async ({ properties, dependencies }) => {
+          assert(isObject(dependencies));
           const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
             dependencies;
           assert(virtualNetwork, "dependencies is missing virtualNetwork");
@@ -274,107 +275,33 @@ exports.fnSpecs = ({ config }) => {
             config,
           }),
       },
-      // GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/Network/{virtualNetworkName}/subnets?api-version=2021-02-01
-      // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/Network/{virtualNetworkName}/subnets/{subnetName}?api-version=2021-04-01
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {
         group: "Network",
         type: "Subnet",
-        dependsOnList: ["Network::VirtualNetwork"],
-        isOurMinion: ({ live, lives }) =>
-          pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "VirtualNetwork",
-                group: "Network",
-              }),
-            find(
-              pipe([
-                get("live.properties.subnets"),
-                any(eq(get("id"), live.id)),
-              ])
-            ),
-            get("managedByUs"),
-          ])(),
-        filterLive: () =>
-          pipe([
-            pick(["properties"]),
-            assign({
-              properties: pipe([get("properties"), pick(["addressPrefix"])]),
-            }),
-          ]),
-        pickProperties: [],
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "VirtualNetwork",
-            group: "Network",
-            ids: [
-              pipe([
-                () => live,
-                get("id"),
-                callProp("split", "/"),
-                (arr) => arr[8],
-                (virtualNetwork) =>
-                  lives.getByName({
-                    name: virtualNetwork,
-                    providerName: config.providerName,
-                    type: "VirtualNetwork",
-                    group: "Network",
-                  }),
-                get("id"),
-              ])(),
-            ],
-          },
+        pickProperties: [
+          "properties.addressPrefix",
+          "properties.addressPrefixes",
+          "properties.serviceEndpoints",
+          "properties.serviceEndpointPolicies",
+          "properties.privateEndpointNetworkPolicies",
+          "properties.privateLinkServiceNetworkPolicies",
+          "properties.applicationGatewayIpConfigurations",
+        ],
+        pickPropertiesCreate: [
+          "properties.addressPrefix",
+          "properties.addressPrefixes",
+          "properties.serviceEndpoints",
+          "properties.serviceEndpointPolicies",
+          "properties.privateEndpointNetworkPolicies",
+          "properties.privateLinkServiceNetworkPolicies",
+          "properties.applicationGatewayIpConfigurations",
         ],
         configDefault: ({ properties, dependencies }) => {
           return defaultsDeep({
             properties: {},
           })(properties);
         },
-        Client: ({ spec, config }) =>
-          AzClient({
-            getList: ({ axios }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                ({ lives }) =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "VirtualNetwork",
-                    group: "Network",
-                  }),
-                pluck("live"),
-                pluck("properties"),
-                pluck("subnets"),
-                flatten,
-              ]),
-            getByName:
-              ({ axios }) =>
-              ({ name, dependencies }) =>
-                pipe([
-                  dependencies,
-                  tap(({ resourceGroup, virtualNetwork }) => {
-                    assert(resourceGroup);
-                    assert(virtualNetwork);
-                  }),
-                  ({ resourceGroup, virtualNetwork }) =>
-                    `https://management.azure.com/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${virtualNetwork.name}/subnets/${name}?api-version=2021-02-01`,
-                  (path) =>
-                    retryCallOnError({
-                      name: `getByName subnet ${path}`,
-                      fn: () => axios.get(path),
-                      config,
-                    }),
-                  get("data"),
-                  tap((data) => {
-                    logger.debug(`getByName subnet ${tos(data)}`);
-                  }),
-                ])(),
-            spec,
-            config,
-          }),
       },
       {
         group: "Network",

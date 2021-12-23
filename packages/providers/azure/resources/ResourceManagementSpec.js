@@ -19,8 +19,8 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/resources/resource-groups
         group: "Resources",
         type: "ResourceGroup",
-        dependencies: () => ({}),
-        filterLive: () => pipe([pick(["tags"])]),
+        dependencies: {},
+        pickPropertiesCreate: ["tags"],
         ignoreResource: () =>
           pipe([
             tap((params) => {
@@ -42,6 +42,8 @@ exports.fnSpecs = ({ config }) => {
         },
         apiVersion: "2021-04-01",
         cannotBeDeleted: isDefaultResourceGroup,
+        isDefault: isDefaultResourceGroup,
+        managedByOther: isDefaultResourceGroup,
         Client: ({ spec }) =>
           AzClient({
             spec,
@@ -51,9 +53,6 @@ exports.fnSpecs = ({ config }) => {
                 get("value", []),
                 filter(not(eq(get("name"), "NetworkWatcherRG"))),
               ]),
-            isDefault: isDefaultResourceGroup,
-            managedByOther: isDefaultResourceGroup,
-            cannotBeDeleted: isDefaultResourceGroup,
           }),
       },
     ],

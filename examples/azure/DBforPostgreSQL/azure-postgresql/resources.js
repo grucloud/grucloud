@@ -40,19 +40,19 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DBforPostgreSQL.makeConfiguration({
-    name: "application_name",
-    properties: ({ config }) => ({
-      properties: {
-        value: "starhackit",
-        source: "user-override",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-    }),
-  });
+  // provider.DBforPostgreSQL.makeConfiguration({
+  //   name: "application_name",
+  //   properties: ({ config }) => ({
+  //     properties: {
+  //       value: "starhackit",
+  //       source: "user-override",
+  //     },
+  //   }),
+  //   dependencies: ({ resources }) => ({
+  //     resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+  //     server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
+  //   }),
+  // });
 
   provider.DBforPostgreSQL.makeConfiguration({
     name: "shared_preload_libraries",
@@ -67,20 +67,6 @@ const createResources = ({ provider }) => {
       server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
     }),
   });
-
-  // provider.DBforPostgreSQL.makeDatabase({
-  //   name: "postgres",
-  //   properties: ({ config }) => ({
-  //     properties: {
-  //       charset: "UTF8",
-  //       collation: "en_US.utf8",
-  //     },
-  //   }),
-  //   dependencies: ({ resources }) => ({
-  //     resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-  //     server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
-  //   }),
-  // });
 
   provider.Resources.makeResourceGroup({
     name: "rg-postgres",

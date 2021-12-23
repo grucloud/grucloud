@@ -41,9 +41,9 @@ module.exports = () =>
           pick(["autoScalingGroupProvider"]),
           omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
-      }),
+      },
     },
     {
       type: "Cluster",
@@ -75,7 +75,7 @@ module.exports = () =>
           pick(["settings", "defaultCapacityProviderStrategy"]),
           omitIfEmpty(["defaultCapacityProviderStrategy"]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         capacityProviders: {
           type: "CapacityProvider",
           group: "ECS",
@@ -85,7 +85,7 @@ module.exports = () =>
           type: "Key",
           group: "KMS",
         },
-      }),
+      },
     },
     {
       type: "TaskDefinition",
@@ -159,11 +159,11 @@ module.exports = () =>
           ]),
           when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
         ]),
-      dependencies: () => ({
+      dependencies: {
         cluster: { type: "Cluster", group: "ECS" },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
         loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
-      }),
+      },
     },
     {
       type: "TaskSet",
@@ -194,12 +194,12 @@ module.exports = () =>
       }),
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
-      dependencies: () => ({
+      dependencies: {
         cluster: { type: "Cluster", group: "ECS" },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-      }),
+      },
     },
     {
       type: "ContainerInstance",

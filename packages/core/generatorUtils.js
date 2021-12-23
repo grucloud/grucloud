@@ -127,6 +127,7 @@ const buildProperties = ({
   pipe([
     tap(() => {
       assert(environmentVariables);
+      assert(filterLive);
     }),
     () => resource,
     get("live"),
@@ -306,6 +307,7 @@ const buildDependencies = ({
         assert(resource);
         assert(lives);
         //console.log(`${resource.name} : ${JSON.stringify(dependencies)}`);
+        assert(dependencies);
       }),
       () => dependencies,
       map.entries(([key, dependency]) => [
@@ -600,7 +602,7 @@ const findDependencySpec =
       switchCase([
         get("dependencies"),
         pipe([
-          callProp("dependencies"),
+          get("dependencies"),
           values,
           filter(
             and([
@@ -646,7 +648,7 @@ const findUsedBy =
           switchCase([
             get("dependencies"),
             pipe([
-              callProp("dependencies"),
+              get("dependencies"),
               values,
               any(
                 and([
@@ -932,6 +934,7 @@ const writeEnv =
             assert(filename);
           }),
           () => path.resolve(programOptions.workingDirectory, filename),
+          //TODO do not override
           tap((filenameResolved) => {
             console.log(`Env file written to ${filenameResolved}`);
           }),
@@ -1004,9 +1007,9 @@ const writeResource =
     hasNoProperty,
     inferName,
     properties = always({}),
-    dependencies = always({}),
+    dependencies = {},
     addCode = always(""),
-    environmentVariables = always([]),
+    environmentVariables = [],
     ignoreResource = () => () => false,
     options,
     commandOptions,
@@ -1039,8 +1042,8 @@ const writeResource =
                   resource,
                   filterLive,
                   propertiesDefault,
-                  dependencies: dependencies(),
-                  environmentVariables: environmentVariables(),
+                  dependencies,
+                  environmentVariables,
                   commandOptions,
                   programOptions,
                 }),
@@ -1060,7 +1063,7 @@ const writeResource =
             env: envTpl({
               options,
               resource,
-              environmentVariables: environmentVariables(),
+              environmentVariables,
             }),
             code: codeTpl({
               providerName,
@@ -1070,7 +1073,7 @@ const writeResource =
               resourceVarName,
               resourceName,
               inferName,
-              dependencies: dependencies(),
+              dependencies,
               lives,
               hasNoProperty,
               properties,
@@ -1179,69 +1182,76 @@ exports.generatorMain = ({
   iacTpl,
   filterModel,
 }) =>
-  pipe([
-    tap((xxx) => {
-      //console.log(name, commandOptions, programOptions);
-    }),
-    fork({
-      lives: readModel({
-        commandOptions,
-        programOptions,
-        writersSpec,
-        filterModel,
+  tryCatch(
+    pipe([
+      tap((xxx) => {
+        assert(writersSpec);
       }),
-      mapping: readMapping({ commandOptions, programOptions }),
-    }),
-    ({ lives, mapping }) =>
-      pipe([
-        () => writersSpec,
-        tap((params) => {
-          assert(true);
+      fork({
+        lives: readModel({
+          commandOptions,
+          programOptions,
+          writersSpec,
+          filterModel,
         }),
-        map(({ group, types }) => ({
-          group,
-          types: pipe([
-            () => types,
-            tap((params) => {
-              assert(true);
+        mapping: readMapping({ commandOptions, programOptions }),
+      }),
+      ({ lives, mapping }) =>
+        pipe([
+          () => writersSpec,
+          tap((params) => {
+            assert(true);
+          }),
+          map(({ group, types }) => ({
+            group,
+            types: pipe([
+              () => types,
+              tap((params) => {
+                assert(true);
+              }),
+              map((spec) => ({
+                type: spec.type,
+                typeTarget: spec.typeTarget,
+                resources: pipe([
+                  () => ({ lives, mapping }),
+                  writeResources({
+                    providerConfig,
+                    mapping,
+                    commandOptions,
+                    programOptions,
+                    group,
+                    providerName: providerType, //TODO
+                    ...spec,
+                  }),
+                  filter(not(isEmpty)),
+                ])(),
+              })),
+            ])(),
+          })),
+          tap((params) => {
+            assert(true);
+          }),
+          fork({
+            resources: writeResourcesToFile({
+              filename: commandOptions.outputCode,
+              resourcesTpl,
+              programOptions,
+              commandOptions,
             }),
-            map((spec) => ({
-              type: spec.type,
-              typeTarget: spec.typeTarget,
-              resources: pipe([
-                () => ({ lives, mapping }),
-                writeResources({
-                  providerConfig,
-                  mapping,
-                  commandOptions,
-                  programOptions,
-                  group,
-                  providerName: providerType, //TODO
-                  ...spec,
-                }),
-                filter(not(isEmpty)),
-              ])(),
-            })),
-          ])(),
-        })),
-        tap((params) => {
-          assert(true);
-        }),
-        fork({
-          resources: writeResourcesToFile({
-            filename: commandOptions.outputCode,
-            resourcesTpl,
-            programOptions,
-            commandOptions,
+            env: writeEnv({
+              filename: commandOptions.outputEnv,
+              programOptions,
+              commandOptions,
+            }),
           }),
-          env: writeEnv({
-            filename: commandOptions.outputEnv,
-            programOptions,
-            commandOptions,
+          tap((params) => {
+            assert(true);
           }),
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-  ])();
+        ])(),
+    ]),
+    (error) => {
+      //TODO handle that upper in the stack
+      error.stack && console.log(error.stack);
+      throw error;
+    }
+  )();

@@ -98,10 +98,10 @@ module.exports = () =>
               ])
             ),
           ])(),
-      dependencies: () => ({
+      dependencies: {
         layers: { type: "Layer", group: "Lambda", list: true },
         role: { type: "Role", group: "IAM" },
-      }),
+      },
     },
     {
       type: "EventSourceMapping",
@@ -136,6 +136,7 @@ module.exports = () =>
             "BisectBatchOnFunctionError",
             "MaximumRetryAttempts",
             "TumblingWindowInSeconds",
+            "FunctionResponseTypes",
           ]),
         ]), //TODO
       }),
@@ -161,10 +162,10 @@ module.exports = () =>
               "FunctionResponseTypes",
             ]),
           ])(),
-      dependencies: () => ({
+      dependencies: {
         lambdaFunction: { type: "Function", group: "Lambda" },
         sqsQueue: { type: "Queue", group: "SQS" },
         //TODO other event source
-      }),
+      },
     },
   ]);

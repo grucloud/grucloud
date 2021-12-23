@@ -15,7 +15,7 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
         group: "Compute",
         type: "VirtualMachine",
-        dependencies: () => ({
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
@@ -26,15 +26,33 @@ exports.fnSpecs = ({ config }) => {
             group: "Network",
             createOnly: true,
           },
-        }),
-        environmentVariables: () => [
+        },
+        environmentVariables: [
           {
             path: "properties.osProfile.adminPassword",
             suffix: "ADMIN_PASSWORD",
           },
         ],
+        propertiesDefault: {
+          properties: {
+            osProfile: {
+              linuxConfiguration: {
+                disablePasswordAuthentication: false,
+                provisionVMAgent: true,
+                patchSettings: {
+                  patchMode: "ImageDefault",
+                  assessmentMode: "ImageDefault",
+                },
+              },
+              allowExtensionOperations: true,
+            },
+          },
+        },
         filterLive: () =>
           pipe([
+            tap((params) => {
+              assert(true);
+            }),
             pick(["tags", "properties"]),
             assign({
               properties: pipe([

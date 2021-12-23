@@ -12,18 +12,12 @@ const {
   assign,
   omit,
   pick,
+  fork,
 } = require("rubico");
 
-const {
-  defaultsDeep,
-  callProp,
-  find,
-  values,
-  isEmpty,
-  isFunction,
-} = require("rubico/x");
+const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compare } = require("@grucloud/core/Common");
 
 const ResourceManagementSpec = require("./resources/ResourceManagementSpec");
 const VirtualNetworkSpec = require("./resources/VirtualNetworksSpec");
@@ -52,106 +46,89 @@ const overideSpec = (config) =>
     }),
   ]);
 
-const transformSchemaToSpec = ({}) =>
+const buildDefaultSpec = fork({
+  isDefault: () => eq(get("live.name"), "default"),
+  managedByOther: () => eq(get("live.name"), "default"),
+  ignoreResource: () => () => pipe([get("isDefault")]),
+  dependsOn: ({ dependencies, type }) =>
+    pipe([
+      tap((params) => {
+        assert(type);
+        if (!dependencies) {
+          assert(dependencies);
+        }
+      }),
+      () => dependencies,
+      values,
+      map(({ group, type }) => `${group}::${type}`),
+    ])(),
+  dependsOnList: ({ dependencies }) =>
+    pipe([
+      tap(() => {
+        assert(dependencies);
+      }),
+      () => dependencies,
+      values,
+      map(({ group, type }) => `${group}::${type}`),
+    ])(),
+  Client:
+    ({ dependencies }) =>
+    ({ spec, config }) =>
+      AzClient({
+        spec,
+        dependencies,
+        config,
+      }),
+  filterLive:
+    ({ pickPropertiesCreate = [] }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        pick(pickPropertiesCreate),
+        omit(["properties.provisioningState", "etag", "name", "type"]),
+      ]),
+  compare: ({
+    pickProperties = [],
+    omitProperties = [],
+    propertiesDefault = {},
+  }) =>
+    compare({
+      //TODO filterAll
+      filterTarget: pipe([
+        tap((params) => {
+          assert(pickProperties);
+        }),
+        pick(pickProperties),
+        defaultsDeep(propertiesDefault),
+        omit(omitProperties),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      filterLive: pipe([
+        pick(pickProperties),
+        defaultsDeep(propertiesDefault),
+        omit(omitProperties),
+        omit(["type", "name", "properties.provisioningState", "etag"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
+  isOurMinion: () => AzTag.isOurMinion,
+});
+
+const addDefaultSpecs = ({}) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
-    map(
-      pipe([
-        assign({
-          dependsOnList: ({ dependencies }) =>
-            pipe([
-              () => dependencies,
-              values,
-              map(({ group, type }) => `${group}::${type}`),
-            ])(),
-          environmentVariables:
-            ({ environmentVariables }) =>
-            () =>
-              environmentVariables,
-        }),
-        assign({
-          dependencies:
-            ({ dependencies }) =>
-            () =>
-              dependencies,
-        }),
-        assign({
-          Client:
-            ({ dependencies }) =>
-            ({ spec, config }) =>
-              AzClient({
-                spec,
-                dependencies,
-                config,
-                isDefault: eq(get("live.name"), "default"),
-                managedByOther: eq(get("live.name"), "default"),
-              }),
-          ignoreResource: () => () => pipe([get("isDefault")]),
-          //TODO move to assignDependsOn, remove filterLive and replace with pickPropertiesCreate
-          filterLive:
-            ({ pickPropertiesCreate }) =>
-            () =>
-              pipe([
-                pick(pickPropertiesCreate),
-                omit(["properties.provisioningState", "etag"]),
-              ]),
-        }),
-      ])
-    ),
+    map((spec) => ({ ...buildDefaultSpec(spec), ...spec })),
     tap((params) => {
       assert(true);
     }),
-  ]);
-const assignDependsOn = ({}) =>
-  pipe([
-    map(
-      pipe([
-        assign({
-          dependsOn: ({ dependencies = () => ({}), type }) =>
-            pipe([
-              tap((params) => {
-                assert(type);
-                if (!isFunction(dependencies)) {
-                  assert(isFunction(dependencies));
-                }
-              }),
-              dependencies,
-              values,
-              map(({ group, type }) => `${group}::${type}`),
-            ])(),
-          compare: ({
-            pickProperties = [],
-            omitProperties = [],
-            propertiesDefault = {},
-          }) =>
-            compare({
-              //TODO filterAll
-              filterTarget: pipe([
-                tap((params) => {
-                  assert(pickProperties);
-                }),
-                pick(pickProperties),
-                defaultsDeep(propertiesDefault),
-                omit(omitProperties),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-              filterLive: pipe([
-                pick(pickProperties),
-                defaultsDeep(propertiesDefault),
-                omit(omitProperties),
-                omit(["type", "name", "properties.provisioningState", "etag"]),
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
-            }),
-        }),
-      ])
-    ),
   ]);
 
 const findByGroupAndType = ({ group, type }) =>
@@ -179,32 +156,6 @@ const mergeSpec = ({ specsGen, overideSpecs }) =>
         }),
       ])()
     ),
-    map(
-      defaultsDeep({
-        //TODO filterAll
-        isOurMinion: AzTag.isOurMinion,
-        compare: compare({
-          filterTarget: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["properties", "sku"]),
-            omitIfEmpty(["properties"]),
-          ]),
-          filterLive: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["properties.provisioningState"]),
-            pick(["properties", "sku"]),
-            omitIfEmpty(["properties"]),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        }),
-      })
-    ),
     tap((params) => {
       assert(true);
     }),
@@ -214,7 +165,7 @@ exports.fnSpecs = (config) =>
   pipe([
     assign({
       overideSpecs: overideSpec(config),
-      specsGen: pipe([() => Schema, transformSchemaToSpec({})]),
+      specsGen: pipe([() => Schema]),
     }),
     assign({
       overideSpecs: mergeSpec,
@@ -231,12 +182,9 @@ exports.fnSpecs = (config) =>
         ])(),
     }),
     ({ specsGen, overideSpecs }) => [...specsGen, ...overideSpecs],
-    tap((params) => {
-      assert(true);
-    }),
     map(
       assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
     ),
     callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
-    assignDependsOn({}),
+    addDefaultSpecs({}),
   ])();

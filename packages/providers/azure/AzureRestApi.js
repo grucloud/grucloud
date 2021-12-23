@@ -56,6 +56,7 @@ const ResourcesExcludes = [
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
   "Network::InterfaceEndpoint",
+  "Network::SecurityRule",
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
   "Web::CertificateCsr",

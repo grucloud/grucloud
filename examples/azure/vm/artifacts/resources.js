@@ -21,15 +21,6 @@ const createResources = ({ provider }) => {
         osProfile: {
           computerName: "myVM",
           adminUsername: "ops",
-          linuxConfiguration: {
-            disablePasswordAuthentication: false,
-            provisionVMAgent: true,
-            patchSettings: {
-              patchMode: "ImageDefault",
-              assessmentMode: "ImageDefault",
-            },
-          },
-          allowExtensionOperations: true,
           adminPassword: process.env.VM_ADMIN_PASSWORD,
         },
       },
@@ -104,13 +95,6 @@ const createResources = ({ provider }) => {
 
   provider.Network.makePublicIPAddress({
     name: "ip",
-    properties: ({ config }) => ({
-      properties: {
-        publicIPAddressVersion: "IPv4",
-        publicIPAllocationMethod: "Dynamic",
-        idleTimeoutInMinutes: 4,
-      },
-    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),

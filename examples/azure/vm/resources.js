@@ -3,22 +3,54 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Resources.makeResourceGroup({
-    name: "resource-group",
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "virtual-network",
+  provider.Compute.makeVirtualMachine({
+    name: "vm",
     properties: ({ config }) => ({
       properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
+        hardwareProfile: {
+          vmSize: "Standard_A1_v2",
         },
-        enableDdosProtection: false,
+        storageProfile: {
+          imageReference: {
+            publisher: "Canonical",
+            offer: "UbuntuServer",
+            sku: "18.04-LTS",
+            version: "latest",
+          },
+        },
+        osProfile: {
+          computerName: "myVM",
+          adminUsername: "ops",
+          adminPassword: process.env.VM_ADMIN_PASSWORD,
+        },
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      networkInterface: resources.Network.NetworkInterface["network-interface"],
+    }),
+  });
+
+  provider.Network.makeNetworkInterface({
+    name: "network-interface",
+    properties: ({ config }) => ({
+      properties: {
+        ipConfigurations: [
+          {
+            name: "ipconfig",
+            properties: {
+              privateIPAllocationMethod: "Dynamic",
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
+      publicIpAddress: resources.Network.PublicIPAddress["ip"],
+      securityGroup: resources.Network.NetworkSecurityGroup["security-group"],
+      subnet: resources.Network.Subnet["subnet"],
     }),
   });
 
@@ -63,38 +95,8 @@ const createResources = ({ provider }) => {
 
   provider.Network.makePublicIPAddress({
     name: "ip",
-    properties: ({ config }) => ({
-      properties: {
-        publicIPAddressVersion: "IPv4",
-        publicIPAllocationMethod: "Dynamic",
-        idleTimeoutInMinutes: 4,
-      },
-    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-    }),
-  });
-
-  provider.Network.makeNetworkInterface({
-    name: "network-interface",
-    properties: ({ config }) => ({
-      properties: {
-        ipConfigurations: [
-          {
-            name: "ipconfig",
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["ip"],
-      securityGroup: resources.Network.NetworkSecurityGroup["security-group"],
-      subnet: resources.Network.Subnet["subnet"],
     }),
   });
 
@@ -111,37 +113,22 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Compute.makeVirtualMachine({
-    name: "vm",
+  provider.Network.makeVirtualNetwork({
+    name: "virtual-network",
     properties: ({ config }) => ({
       properties: {
-        hardwareProfile: {
-          vmSize: "Standard_A1_v2",
-        },
-        storageProfile: {
-          imageReference: {
-            publisher: "Canonical",
-            offer: "UbuntuServer",
-            sku: "18.04-LTS",
-            version: "latest",
-          },
-        },
-        osProfile: {
-          computerName: "myVM",
-          adminUsername: "ops",
-          linuxConfiguration: {
-            disablePasswordAuthentication: false,
-            provisionVMAgent: true,
-          },
-          allowExtensionOperations: true,
-          adminPassword: process.env.VM_ADMIN_PASSWORD,
+        addressSpace: {
+          addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterface: resources.Network.NetworkInterface["network-interface"],
     }),
+  });
+
+  provider.Resources.makeResourceGroup({
+    name: "resource-group",
   });
 };
 

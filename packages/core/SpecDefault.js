@@ -15,7 +15,6 @@ const logger = require("./logger")({
 });
 
 const { ResourceMaker } = require("./CoreResource");
-const { compare } = require("./Common");
 
 const buildGroupKey = unless(isEmpty, prepend("::"));
 
