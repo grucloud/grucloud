@@ -41,6 +41,8 @@ const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
 
+const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
+
 module.exports = AzClient = ({
   spec,
   isInstanceUp = isInstanceUpDefault,
@@ -57,8 +59,6 @@ module.exports = AzClient = ({
       ])(),
   getList = () => undefined,
   getByName = () => undefined,
-  verbCreate = "PUT",
-  verbUpdate = "PATCH",
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
   assert(spec);
@@ -343,8 +343,8 @@ module.exports = AzClient = ({
     pathDelete,
     pathList,
     findTargetId,
-    verbCreate,
-    verbUpdate,
+    verbCreate: "PUT",
+    verbUpdate: verbUpdateFromMethods(methods),
     isInstanceUp,
     isDefault: spec.isDefault,
     cannotBeDeleted,

@@ -197,12 +197,6 @@ exports.fnSpecs = ({ config }) => {
               },
             }),
           ])(),
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            verbUpdate: "PUT",
-            config,
-          }),
       },
     ],
     map(defaultsDeep({ group: "Web" })),
