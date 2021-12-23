@@ -73,6 +73,7 @@ describe("AzureRestApi", function () {
           //"dns",
           "compute",
           "containerservice",
+          "containerregistry",
           "operationalinsights",
           "postgresql",
           "network",
