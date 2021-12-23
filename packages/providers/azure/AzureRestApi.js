@@ -1056,27 +1056,13 @@ const listSwaggerFiles = ({
           ])
         ),
         flatMap(pipe([get("name"), listPerGroup({ baseDir })])),
-        tap((params) => {
-          assert(true);
-        }),
         filter(not(isEmpty)),
-        tap((params) => {
-          assert(true);
-        }),
         //filter(filterNoSubscription),
         (resources) =>
           pipe([() => resources, map(addDependencies({ resources }))])(),
-        tap((params) => {
-          assert(true);
-        }),
         filter(filterExclusion),
-
         filter(filterNoDependency),
         filter(filterGetAll),
-
-        tap((params) => {
-          assert(true);
-        }),
         map(pickResourceInfo),
         tap((params) => {
           assert(true);

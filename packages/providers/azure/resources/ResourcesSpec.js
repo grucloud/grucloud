@@ -1,13 +1,10 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { callProp } = require("rubico/x");
 
 const AzClient = require("../AzClient");
-const { buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
-  const { location } = config;
-
   const isDefaultResourceGroup = pipe([
     get("live.name"),
     callProp("startsWith", "DefaultResourceGroup"),

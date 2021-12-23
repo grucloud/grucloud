@@ -19,11 +19,11 @@ const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
-const ResourceManagementSpec = require("./resources/ResourceManagementSpec");
-const VirtualNetworkSpec = require("./resources/VirtualNetworksSpec");
+const ResourceManagementSpec = require("./resources/ResourcesSpec");
+const NetworkSpec = require("./resources/NetworkSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
-const AppServiceSpec = require("./resources/AppServiceSpec");
+const WebSpec = require("./resources/WebSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 
 const AzTag = require("./AzTag");
@@ -33,12 +33,12 @@ const Schema = require("./AzureSchema.json");
 const overideSpec = (config) =>
   pipe([
     () => [
-      AppServiceSpec,
       ComputeSpec,
       DBForPortgreSQLSpec,
-      ResourceManagementSpec,
+      NetworkSpec,
       OperationalInsightsSpec,
-      VirtualNetworkSpec,
+      ResourceManagementSpec,
+      WebSpec,
     ],
     flatMap(callProp("fnSpecs", { config })),
     tap((params) => {
