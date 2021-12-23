@@ -6,11 +6,11 @@ title: Kube Environment
 Provides a Kube Environment:
 
 ```js
-provider.AppService.makeKubeEnvironment({
+provider.Web.makeKubeEnvironment({
   name: "dev",
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
-    workspace: resources.LogAnalytics.Workspace["logs"],
+    resourceGroup: resources.Resources.ResourceGroup["rg"],
+    workspace: resources.OperationalInsights.Workspace["logs"],
   }),
 });
 ```
@@ -25,5 +25,5 @@ provider.AppService.makeKubeEnvironment({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../LogAnalytics/Workspace.md)

@@ -17,7 +17,7 @@ provider.LogAnalytics.makeWorkspace({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+    resourceGroup: resources.Resources.ResourceGroup["rg"],
   }),
 });
 ```
@@ -33,4 +33,4 @@ provider.LogAnalytics.makeWorkspace({
 ### Used By
 
 - [KubeEnvironment](../AppService/KubeEnvironment.md)
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)

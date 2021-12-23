@@ -1,5 +1,13 @@
 ## Bugs
 
+RestorePoint
+AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRolePool
+
+- missing getAll for WebApps_ListConfigurations => WebApps_GetConfiguration
+  WebAppInstanceProcess missing dependency
+
+az::Storage::FileShare pickProperties: "properties.metadata",
+
 - check stage for all providers
 - compare refactor
 - compare Tags
@@ -37,13 +45,14 @@
 
 ## Azure
 
+- delete NSG : failed with status code 429 A retry
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
 - gc new :
   az provider register --namespace Microsoft.Network
   az provider register --namespace Microsoft.Compute
 
-- virtualNetworks::Subnet 0/1 Request failed with status code 400 Subnet subnet is in use by /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups
+- Network::Subnet 0/1 Request failed with status code 400 Subnet subnet is in use by /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups
   /resource-group/providers/Microsoft.Network/networkInterfaces/network-interface/ipConfigurations/ipconfig and cannot be deleted. In order to delete the subnet, delete
   all the resources within the subnet. See aka.ms/deletesubnet.
 
@@ -104,6 +113,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+- discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
 
 - fix cannotBeDeleted for Disk:
 

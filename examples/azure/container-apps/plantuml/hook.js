@@ -11,7 +11,7 @@ module.exports = ({ provider }) => {
     onDeployed: {
       init: async () => {
         const resources = provider.resources();
-        const containerApp = await resources.AppService.ContainerApp[
+        const containerApp = await resources.Web.ContainerApp[
           "plantuml"
         ].getLive();
         assert(containerApp);

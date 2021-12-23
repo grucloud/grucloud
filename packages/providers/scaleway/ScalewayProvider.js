@@ -38,7 +38,7 @@ const fnSpecs = (config) => {
               organization,
             })(properties),
           findName: (item) => item.address,
-          findTargetId: (item) => {
+          findTargetId: () => (item) => {
             return item.ip?.id;
           },
         }),
@@ -108,7 +108,7 @@ const fnSpecs = (config) => {
             () =>
             ({ servers }) =>
               servers,
-          findTargetId: (item) => {
+          findTargetId: () => (item) => {
             return item.server?.id;
           },
           configDefault: async ({

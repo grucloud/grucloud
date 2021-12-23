@@ -1,26 +1,190 @@
 const assert = require("assert");
-const { pipe, map, tap, flatMap } = require("rubico");
+const {
+  pipe,
+  map,
+  tap,
+  flatMap,
+  filter,
+  not,
+  eq,
+  get,
+  and,
+  assign,
+  omit,
+  pick,
+  fork,
+} = require("rubico");
 
-const { defaultsDeep, callProp } = require("rubico/x");
+const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
-const AzTag = require("./AzTag");
-const { compare } = require("./AzureCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const ResourceManagementSpec = require("./resources/ResourceManagementSpec");
 const VirtualNetworkSpec = require("./resources/VirtualNetworksSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
-const LogAnalyticsSpec = require("./resources/LogAnalyticsSpec");
+const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const AppServiceSpec = require("./resources/AppServiceSpec");
+const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
+
+const AzTag = require("./AzTag");
+
+const Schema = require("./AzureSchema.json");
+
+const overideSpec = (config) =>
+  pipe([
+    () => [
+      AppServiceSpec,
+      ComputeSpec,
+      DBForPortgreSQLSpec,
+      ResourceManagementSpec,
+      OperationalInsightsSpec,
+      VirtualNetworkSpec,
+    ],
+    flatMap(callProp("fnSpecs", { config })),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const buildDefaultSpec = fork({
+  isDefault: () => eq(get("live.name"), "default"),
+  managedByOther: () => eq(get("live.name"), "default"),
+  ignoreResource: () => () => pipe([get("isDefault")]),
+  dependsOn: ({ dependencies, type }) =>
+    pipe([
+      tap((params) => {
+        assert(type);
+        if (!dependencies) {
+          assert(dependencies);
+        }
+      }),
+      () => dependencies,
+      values,
+      map(({ group, type }) => `${group}::${type}`),
+    ])(),
+  dependsOnList: ({ dependencies }) =>
+    pipe([
+      tap(() => {
+        assert(dependencies);
+      }),
+      () => dependencies,
+      values,
+      map(({ group, type }) => `${group}::${type}`),
+    ])(),
+  Client:
+    ({ dependencies }) =>
+    ({ spec, config }) =>
+      AzClient({
+        spec,
+        dependencies,
+        config,
+      }),
+  filterLive:
+    ({ pickPropertiesCreate = [] }) =>
+    () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        pick(pickPropertiesCreate),
+        omit(["properties.provisioningState", "etag", "name", "type"]),
+      ]),
+  compare: ({
+    pickProperties = [],
+    omitProperties = [],
+    propertiesDefault = {},
+  }) =>
+    compare({
+      //TODO filterAll
+      filterTarget: pipe([
+        tap((params) => {
+          assert(pickProperties);
+        }),
+        pick(pickProperties),
+        defaultsDeep(propertiesDefault),
+        omit(omitProperties),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      filterLive: pipe([
+        pick(pickProperties),
+        defaultsDeep(propertiesDefault),
+        omit(omitProperties),
+        omit(["type", "name", "properties.provisioningState", "etag"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
+  isOurMinion: () => AzTag.isOurMinion,
+});
+
+const addDefaultSpecs = ({}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    map((spec) => ({ ...buildDefaultSpec(spec), ...spec })),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const findByGroupAndType = ({ group, type }) =>
+  pipe([
+    tap((params) => {
+      assert(type);
+      assert(group);
+    }),
+    find(and([eq(get("group"), group), eq(get("type"), type)])),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const mergeSpec = ({ specsGen, overideSpecs }) =>
+  pipe([
+    () => overideSpecs,
+    map((overideSpec) =>
+      pipe([
+        () => specsGen,
+        findByGroupAndType(overideSpec),
+        (found) => ({ ...found, ...overideSpec }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])()
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 exports.fnSpecs = (config) =>
   pipe([
-    () => [
-      ResourceManagementSpec,
-      VirtualNetworkSpec,
-      ComputeSpec,
-      LogAnalyticsSpec,
-      AppServiceSpec,
-    ],
-    flatMap(callProp("fnSpecs", { config })),
-    map(defaultsDeep({ isOurMinion: AzTag.isOurMinion, compare: compare() })),
+    assign({
+      overideSpecs: overideSpec(config),
+      specsGen: pipe([() => Schema]),
+    }),
+    assign({
+      overideSpecs: mergeSpec,
+    }),
+    assign({
+      specsGen: ({ specsGen, overideSpecs }) =>
+        pipe([
+          () => specsGen,
+          filter(
+            not((spec) =>
+              pipe([() => overideSpecs, findByGroupAndType(spec)])()
+            )
+          ),
+        ])(),
+    }),
+    ({ specsGen, overideSpecs }) => [...specsGen, ...overideSpecs],
+    map(
+      assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
+    ),
+    callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
+    addDefaultSpecs({}),
   ])();

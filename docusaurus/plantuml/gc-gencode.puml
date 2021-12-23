@@ -13,7 +13,7 @@ if (in-memory resource.js equals to current resource.js ) then (yes)
 else (no)
   :Display a "diff" to the terminal;
   if (User accepts changes ?) then (yes)
-  : Write new ""resource.js"";
+  : Write new ""resources.js"";
 else (no)
 endif
 endif

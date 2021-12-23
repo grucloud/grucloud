@@ -3,7 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.compute.makeVirtualMachine({
+  provider.Compute.makeVirtualMachine({
     name: "vm",
     properties: ({ config }) => ({
       properties: {
@@ -31,10 +31,8 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.resourceManagement.ResourceGroup["resource-group"],
-      networkInterface:
-        resources.virtualNetworks.NetworkInterface["network-interface"],
+      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      networkInterface: resources.Network.NetworkInterface["network-interface"],
     }),
   });
 };

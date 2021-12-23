@@ -13,7 +13,7 @@ exports.GcpRunService = ({ spec, config }) => {
 
   const findName = get("live.metadata.name");
   const findId = findName;
-  const findTargetId = get("metadata.name");
+  const findTargetId = () => get("metadata.name");
 
   const configDefault = ({ name, properties }) => defaultsDeep({})(properties);
 

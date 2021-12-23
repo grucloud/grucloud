@@ -6,7 +6,7 @@ title: Subnet
 Provides a subnet.
 
 ```js
-provider.virtualNetworks.makeSubnet({
+provider.Network.makeSubnet({
   name: "subnet",
   properties: ({ config }) => ({
     properties: {
@@ -14,8 +14,8 @@ provider.virtualNetworks.makeSubnet({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["resource-group"],
-    virtualNetwork: resources.virtualNetworks.VirtualNetwork["virtual-network"],
+    resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+    virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
   }),
 });
 ```
@@ -30,7 +30,7 @@ provider.virtualNetworks.makeSubnet({
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
 - [Virtual Network](./VirtualNetwork.md)
 
 ### Used By

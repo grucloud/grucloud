@@ -98,9 +98,9 @@ module.exports = () =>
             apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
           }),
         ])(),
-      dependencies: () => ({
+      dependencies: {
         cloudWatchLogsRole: { type: "Role", group: "IAM" },
-      }),
+      },
     },
     {
       type: "DataSource",
@@ -132,7 +132,7 @@ module.exports = () =>
             "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
           ]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         serviceRole: { type: "Role", group: "IAM" },
         graphqlApi: { type: "GraphqlApi", group: "AppSync" },
         dbCluster: { type: "DBCluster", group: "RDS" },
@@ -140,7 +140,7 @@ module.exports = () =>
         //TODO
         //elasticsearch => opensearch
         dynamoDbTable: { type: "Table", group: "DynamoDB" },
-      }),
+      },
     },
     {
       type: "Resolver",
@@ -182,11 +182,11 @@ module.exports = () =>
           "responseMappingTemplate",
           "kind",
         ]),
-      dependencies: () => ({
+      dependencies: {
         graphqlApi: { type: "GraphqlApi", group: "AppSync" },
         type: { type: "Type", group: "AppSync" },
         dataSource: { type: "DataSource", group: "AppSync" },
         dynamoDbTable: { type: "Table", group: "DynamoDB" },
-      }),
+      },
     },
   ]);

@@ -15,7 +15,6 @@ const logger = require("./logger")({
 });
 
 const { ResourceMaker } = require("./CoreResource");
-const { compare } = require("./Common");
 
 const buildGroupKey = unless(isEmpty, prepend("::"));
 
@@ -51,7 +50,6 @@ const useParams = ({ params, provider, programOptions, spec }) => ({
 });
 
 const SpecDefault = ({ providerName }) => ({
-  compare: compare(),
   providerName,
   listOnly: false,
   isOurMinion: () => false,
@@ -59,6 +57,7 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
+  cannotBeDeleted: () => false,
   findResource: ({ resources, name, lives }) =>
     pipe([
       tap((params) => {

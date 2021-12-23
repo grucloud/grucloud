@@ -69,6 +69,7 @@ const createResources = ({ provider }) => {
     properties: ({ config }) => ({
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
+      FunctionResponseTypes: [],
     }),
     dependencies: ({ resources }) => ({
       lambdaFunction: resources.Lambda.Function["lambda-hello-world"],
@@ -79,13 +80,6 @@ const createResources = ({ provider }) => {
   provider.SQS.makeQueue({
     name: "my-queue-lambda",
     properties: ({ config }) => ({
-      Attributes: {
-        VisibilityTimeout: "30",
-        MaximumMessageSize: "262144",
-        MessageRetentionPeriod: "345600",
-        DelaySeconds: "0",
-        ReceiveMessageWaitTimeSeconds: "0",
-      },
       tags: {
         "my-tag": "my-value",
       },

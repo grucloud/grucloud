@@ -12,5 +12,5 @@ describe(title, async function () {
       title,
       steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(10 * 60e3);
+  }).timeout(15 * 60e3);
 });

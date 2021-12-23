@@ -79,9 +79,9 @@ module.exports = () =>
       isOurMinion: isOurMinionIamBinding,
       compare: compareIamBinding,
       filterLive: () => pipe([pick(["members"])]),
-      dependencies: () => ({
+      dependencies: {
         serviceAccounts: { type: "ServiceAccount", group: "iam", list: true },
-      }),
+      },
       ignoreResource:
         ({ lives }) =>
         ({ dependencies, live, name }) =>

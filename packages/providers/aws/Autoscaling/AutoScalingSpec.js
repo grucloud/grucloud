@@ -90,7 +90,7 @@ module.exports = () =>
           "HealthCheckType",
           "HealthCheckGracePeriod",
         ]),
-      dependencies: () => ({
+      dependencies: {
         targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
         launchTemplate: { type: "LaunchTemplate", group: "EC2" },
@@ -114,7 +114,7 @@ module.exports = () =>
                 not(includes("AWSServiceRoleForAutoScaling")),
               ])(),
         },
-      }),
+      },
     },
     {
       type: "AutoScalingAttachment",
@@ -139,10 +139,10 @@ module.exports = () =>
         ])(),
 
       filterLive: () => pipe([pick([])]),
-      dependencies: () => ({
+      dependencies: {
         autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
-      }),
+      },
     },
     {
       type: "LaunchConfiguration",
@@ -190,11 +190,11 @@ module.exports = () =>
           omitIfEmpty(["KernelId", "RamdiskId"]),
           DecodeUserData,
         ]),
-      dependencies: () => ({
+      dependencies: {
         instanceProfile: { type: "InstanceProfile", group: "IAM" },
         keyPair: { type: "KeyPair", group: "EC2" },
         image: { type: "Image", group: "EC2" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-      }),
+      },
     },
   ]);

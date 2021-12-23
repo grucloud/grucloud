@@ -25,9 +25,9 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick(["DBSubnetGroupDescription"]),
-      dependencies: () => ({
+      dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
-      }),
+      },
     },
     {
       type: "DBCluster",
@@ -107,18 +107,18 @@ module.exports = () =>
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
           omit(["ScalingConfigurationInfo"]),
         ]),
-      environmentVariables: () => [
+      environmentVariables: [
         { path: "MasterUsername", suffix: "MASTER_USERNAME" },
         { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
       ],
-      dependencies: () => ({
+      dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         key: {
           type: "Key",
           group: "KMS",
         },
-      }),
+      },
     },
     {
       type: "DBInstance",
@@ -204,13 +204,13 @@ module.exports = () =>
           "PreferredMaintenanceWindow",
           "BackupRetentionPeriod",
         ]),
-      environmentVariables: () => [
+      environmentVariables: [
         { path: "MasterUsername", suffix: "MASTER_USERNAME" },
         { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
       ],
-      dependencies: () => ({
+      dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-      }),
+      },
     },
   ]);

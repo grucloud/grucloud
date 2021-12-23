@@ -3,11 +3,11 @@ title Resources for project plantuml
 skinparam monochrome true
 + Infra
 ++ azure
-+++ resourceManagement
-++++ ResourceGroup (1)
-+++ LogAnalytics
++++ OperationalInsights
 ++++ Workspace (1)
-+++ AppService
-++++ KubeEnvironment (1)
++++ Resources
+++++ ResourceGroup (1)
++++ Web
 ++++ ContainerApp (1)
+++++ KubeEnvironment (1)
 @endmindmap

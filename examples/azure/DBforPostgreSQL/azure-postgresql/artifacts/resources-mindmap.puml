@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project azure-postgresql
+skinparam monochrome true
++ Infra
+++ azure
++++ DBforPostgreSQL
+++++ Server (1)
+++++ FirewallRule (1)
+++++ Configuration (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

@@ -3,11 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.resourceManagement.makeResourceGroup({
-    name: "rg",
-  });
-
-  provider.LogAnalytics.makeWorkspace({
+  provider.OperationalInsights.makeWorkspace({
     name: "logs",
     properties: ({ config }) => ({
       properties: {
@@ -18,19 +14,15 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
     }),
   });
 
-  provider.AppService.makeKubeEnvironment({
-    name: "dev",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
-      workspace: resources.LogAnalytics.Workspace["logs"],
-    }),
+  provider.Resources.makeResourceGroup({
+    name: "rg",
   });
 
-  provider.AppService.makeContainerApp({
+  provider.Web.makeContainerApp({
     name: "plantuml",
     properties: ({ config }) => ({
       properties: {
@@ -58,8 +50,16 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.resourceManagement.ResourceGroup["rg"],
-      kubeEnvironment: resources.AppService.KubeEnvironment["dev"],
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
+      kubeEnvironment: resources.Web.KubeEnvironment["dev"],
+    }),
+  });
+
+  provider.Web.makeKubeEnvironment({
+    name: "dev",
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg"],
+      workspace: resources.OperationalInsights.Workspace["logs"],
     }),
   });
 };

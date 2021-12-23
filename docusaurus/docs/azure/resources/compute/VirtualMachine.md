@@ -34,9 +34,8 @@ provider.compute.makeVirtualMachine({
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.resourceManagement.ResourceGroup["resource-group"],
-    networkInterface:
-      resources.virtualNetworks.NetworkInterface["network-interface"],
+    resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+    networkInterface: resources.Network.NetworkInterface["network-interface"],
   }),
 });
 ```
@@ -63,5 +62,5 @@ az vm image list  --output table
 
 ### Dependencies
 
-- [ResourceGroup](../resourceManagement/ResourceGroup.md)
-- [NetworkInterface](../virtualNetworks/NetworkInterface.md)
+- [ResourceGroup](../Resources/ResourceGroup.md)
+- [NetworkInterface](../Network/NetworkInterface.md)

@@ -16,7 +16,6 @@ const {
   filter,
 } = require("rubico");
 const {
-  when,
   first,
   unless,
   pluck,
@@ -26,6 +25,7 @@ const {
   find,
   last,
   append,
+  defaultsDeep,
 } = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinion, DecodeUserData } = require("../AwsCommon");
@@ -60,7 +60,6 @@ const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "EC2";
 
@@ -281,7 +280,7 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
-      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      dependencies: { vpc: { type: "Vpc", group: "EC2" } },
     },
     {
       type: "NatGateway",
@@ -303,10 +302,10 @@ module.exports = () =>
         ]),
       }),
       filterLive: () => pick([]),
-      dependencies: () => ({
+      dependencies: {
         subnet: { type: "Subnet", group: "EC2" },
         eip: { type: "ElasticIpAddress", group: "EC2" },
-      }),
+      },
       //TODO remove ?
       ignoreResource: () => get("isDefault"),
     },
@@ -358,7 +357,7 @@ module.exports = () =>
             AvailabilityZone: buildAvailabilityZone,
           }),
         ]),
-      dependencies: () => ({ vpc: { type: "Vpc", group: "EC2" } }),
+      dependencies: { vpc: { type: "Vpc", group: "EC2" } },
       //TODO remove ?
       ignoreResource: () => get("isDefault"),
     },
@@ -399,9 +398,9 @@ module.exports = () =>
             ]),
           ]),
         ]),
-      dependencies: () => ({
+      dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
-      }),
+      },
     },
     {
       type: "RouteTableAssociation",
@@ -429,10 +428,10 @@ module.exports = () =>
         ])(),
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         routeTable: { type: "RouteTable", group: "EC2" },
         subnet: { type: "Subnet", group: "EC2" },
-      }),
+      },
     },
     {
       type: "Route",
@@ -476,11 +475,11 @@ module.exports = () =>
             ])(),
         ])(),
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         routeTable: { type: "RouteTable", group: "EC2" },
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
-      }),
+      },
     },
     {
       type: "SecurityGroup",
@@ -494,13 +493,13 @@ module.exports = () =>
         filterLive: pipe([pick(["Description"])]),
       }),
       filterLive: () => pick(["Description"]),
-      dependencies: () => ({
+      dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
         eksCluster: {
           type: "Cluster",
           group: "EKS",
         },
-      }),
+      },
       addCode: ({ resource, lives }) =>
         pipe([
           () => resource,
@@ -546,7 +545,7 @@ module.exports = () =>
       isOurMinion,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         securityGroup: {
           type: "SecurityGroup",
           group: "EC2",
@@ -574,7 +573,7 @@ module.exports = () =>
                 eq(identity, dependency.live.GroupId),
               ])(),
         },
-      }),
+      },
     },
     {
       type: "SecurityGroupRuleEgress",
@@ -585,9 +584,9 @@ module.exports = () =>
       isOurMinion,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         securityGroup: { type: "SecurityGroup", group: "EC2" },
-      }),
+      },
     },
     {
       type: "ElasticIpAddress",

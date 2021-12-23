@@ -51,12 +51,12 @@ module.exports = () =>
       }),
       includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
-      dependencies: () => ({
+      dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         role: { type: "Role", group: "IAM" },
         key: { type: "Key", group: "KMS" },
-      }),
+      },
     },
     {
       type: "TargetGroup",
@@ -103,14 +103,14 @@ module.exports = () =>
           "TargetType",
           "ProtocolVersion",
         ]),
-      dependencies: () => ({
+      dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
         nodeGroup: {
           type: "NodeGroup",
           group: "EKS",
         },
         //TODO autoScalingGroup
-      }),
+      },
     },
     {
       type: "Listener",
@@ -164,11 +164,11 @@ module.exports = () =>
               pick(["Port", "Protocol", "DefaultActions"]),
             ])(),
       ]),
-      dependencies: () => ({
+      dependencies: {
         loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
-      }),
+      },
     },
     {
       type: "Rule",
@@ -257,9 +257,9 @@ module.exports = () =>
           () =>
             `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
         ])(),
-      dependencies: () => ({
+      dependencies: {
         listener: { type: "Listener", group: "ELBv2" },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
-      }),
+      },
     },
   ]);

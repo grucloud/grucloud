@@ -23,9 +23,9 @@ module.exports = () =>
           "Comment",
           "Logging",
         ]),
-      dependencies: () => ({
+      dependencies: {
         bucket: { type: "Bucket", group: "S3" },
         certificate: { type: "Certificate", group: "ACM" },
-      }),
+      },
     },
   ]);

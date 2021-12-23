@@ -2,45 +2,57 @@ const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compare, isInstanceUp, buildTags } = require("../AzureCommon");
+const { buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
-        // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2019-12-01
-        // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
-        group: "compute",
+        group: "Compute",
         type: "VirtualMachine",
-        dependsOn: [
-          "resourceManagement::ResourceGroup",
-          "virtualNetworks::NetworkInterface",
-        ],
-        dependencies: () => ({
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
+            name: "resourceGroupName",
           },
           networkInterface: {
             type: "NetworkInterface",
-            group: "virtualNetworks",
+            group: "Network",
+            createOnly: true,
           },
-        }),
-        environmentVariables: () => [
+        },
+        environmentVariables: [
           {
             path: "properties.osProfile.adminPassword",
             suffix: "ADMIN_PASSWORD",
           },
         ],
+        propertiesDefault: {
+          properties: {
+            osProfile: {
+              linuxConfiguration: {
+                disablePasswordAuthentication: false,
+                provisionVMAgent: true,
+                patchSettings: {
+                  patchMode: "ImageDefault",
+                  assessmentMode: "ImageDefault",
+                },
+              },
+              allowExtensionOperations: true,
+            },
+          },
+        },
         filterLive: () =>
           pipe([
+            tap((params) => {
+              assert(true);
+            }),
             pick(["tags", "properties"]),
             assign({
               properties: pipe([
@@ -58,75 +70,59 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        compare: compare({
-          filterTarget: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["properties.osProfile.adminPassword"]),
-          ]),
-          filterLive: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        }),
+        omitProperties: [
+          "properties.osProfile.adminPassword",
+          "properties.storageProfile",
+          "properties.osProfile",
+        ],
+        findDependencies: ({ live }) => [
+          {
+            //TODO replace with findDependenciesResourceGroup
+            type: "ResourceGroup",
+            group: "Resources",
+            ids: pipe([
+              () => [
+                live.id
+                  .replace(`/providers/${live.type}/${live.name}`, "")
+                  .toLowerCase()
+                  .replace("resourcegroups", "resourceGroups"),
+              ],
+            ])(),
+          },
+          {
+            type: "NetworkInterface",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.networkProfile.networkInterfaces"),
+              pluck("id"),
+            ])(),
+          },
+        ],
+        configDefault: ({ properties, dependencies }) => {
+          const { networkInterface } = dependencies;
+          assert(
+            networkInterface,
+            "networkInterfaces is missing VirtualMachine"
+          );
+          return defaultsDeep({
+            location,
+            tags: buildTags(config),
+            properties: {
+              networkProfile: {
+                networkInterfaces: [
+                  {
+                    id: getField(networkInterface, "id"),
+                  },
+                ],
+              },
+            },
+          })(properties);
+        },
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Compute/virtualMachines`;
-            },
-            pathSuffixList: () =>
-              `/providers/Microsoft.Compute/virtualMachines`,
-            queryParameters: () => "?api-version=2019-12-01",
-            isInstanceUp,
             config,
-            configDefault: ({ properties, dependencies }) => {
-              const { networkInterface } = dependencies;
-              assert(
-                networkInterface,
-                "networkInterfaces is missing VirtualMachine"
-              );
-              return defaultsDeep({
-                location,
-                tags: buildTags(config),
-                properties: {
-                  networkProfile: {
-                    networkInterfaces: [
-                      {
-                        id: getField(networkInterface, "id"),
-                      },
-                    ],
-                  },
-                },
-              })(properties);
-            },
-            findDependencies: ({ live }) => [
-              {
-                type: "ResourceGroup",
-                group: "resourceManagement",
-                ids: pipe([
-                  () => [
-                    live.id
-                      .replace(`/providers/${live.type}/${live.name}`, "")
-                      .toLowerCase()
-                      .replace("resourcegroups", "resourceGroups"),
-                  ],
-                ])(),
-              },
-              {
-                type: "NetworkInterface",
-                group: "virtualNetworks",
-                ids: pipe([
-                  () => live,
-                  get("properties.networkProfile.networkInterfaces"),
-                  pluck("id"),
-                ])(),
-              },
-            ],
           }),
       },
     ],

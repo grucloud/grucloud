@@ -21,8 +21,8 @@ const resourceGroup = provider.makeResourceGroup({
 
 ### Used By
 
-- [VirtualNetwork](../virtualNetworks/VirtualNetwork.md)
-- [SecurityGroup](../virtualNetworks/SecurityGroup.md)
-- [NetworkInterface](../virtualNetworks/NetworkInterface.md)
-- [PublicIpAddress](../virtualNetworks/PublicIpAddress.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+- [SecurityGroup](../Network/SecurityGroup.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
+- [PublicIpAddress](../Network/PublicIpAddress.md)
 - [VirtualMachine](../compute/VirtualMachine.md)

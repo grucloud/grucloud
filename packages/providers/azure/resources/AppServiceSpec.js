@@ -2,40 +2,31 @@ const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { compare } = require("@grucloud/core/Common");
 
 const AzClient = require("../AzClient");
-const {
-  isInstanceUp,
-  findDependenciesResourceGroup,
-  compare,
-  buildTags,
-} = require("../AzureCommon");
+const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {
   const { providerName, location } = config;
-  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   return pipe([
     () => [
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
-        group: "AppService",
         type: "KubeEnvironment",
-        dependsOn: [
-          "resourceManagement::ResourceGroup",
-          "LogAnalytics::Workspace",
-        ],
-        dependsOnList: ["resourceManagement::ResourceGroup"],
-        dependencies: () => ({
+        dependsOnList: ["Resources::ResourceGroup"],
+        dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
-            group: "resourceManagement",
+            group: "Resources",
           },
           workspace: {
             type: "Workspace",
-            group: "LogAnalytics",
+            group: "OperationalInsights",
+            createOnly: true,
           },
-        }),
+        },
         propertiesDefault: {
           properties: {
             type: "managed",
@@ -44,118 +35,119 @@ exports.fnSpecs = ({ config }) => {
             },
           },
         },
+        methods: {
+          get: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
+          },
+          getAll: {
+            path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
+          },
+        },
+        pickPropertiesCreate: [
+          "properties.arcConfiguration.frontEndServiceConfiguration.kind",
+          "properties.appLogsConfiguration.destination",
+          "extendedLocation.name",
+        ],
+        environmentVariables: [],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "Workspace",
+            group: "OperationalInsights",
+            ids: [
+              pipe([
+                () => live,
+                get(
+                  "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId"
+                ),
+                (customerId) =>
+                  pipe([
+                    tap((params) => {
+                      assert(customerId);
+                    }),
+                    () =>
+                      lives.getByType({
+                        providerName,
+                        type: "Workspace",
+                        group: "OperationalInsights",
+                      }),
+                    find(eq(get("live.properties.customerId"), customerId)),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    get("id"),
+                  ])(),
+              ])(),
+            ],
+          },
+        ],
+        configDefault: ({ properties, dependencies: { workspace } }) =>
+          pipe([
+            tap(() => {
+              assert(workspace);
+            }),
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                appLogsConfiguration: {
+                  logAnalyticsConfiguration: {
+                    customerId: getField(workspace, "properties.customerId"),
+                    sharedKey: getField(
+                      workspace,
+                      "sharedKeys.primarySharedKey"
+                    ),
+                  },
+                },
+              },
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+        Client: ({ spec }) =>
+          AzClient({
+            spec,
+            config,
+          }),
+      },
+      {
+        // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
+        type: "ContainerApp",
+        dependsOnList: ["Resources::ResourceGroup"],
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+          },
+          kubeEnvironment: {
+            type: "KubeEnvironment",
+            group: "Web",
+          },
+        },
+        methods: {
+          get: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
+          },
+          getAll: {
+            path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerapps`,
+          },
+        },
+        apiVersion: "2021-03-01",
         compare: compare({
           filterAll: pipe([
             tap((params) => {
               assert(true);
             }),
+            pick(["properties", "sku"]),
             omit([
-              "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
+              "properties.provisioningState",
+              "properties.latestRevisionName",
+              "properties.latestRevisionFqdn",
+              "properties.configuration.ingress.fqdn",
             ]),
           ]),
-        }),
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            assign({
-              properties: pipe([get("properties"), pick([])]),
-            }),
-          ]),
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/kubeEnvironments`;
-            },
-            pathSuffixList: () => `/providers/Microsoft.Web/kubeEnvironments`,
-            queryParameters: () => "?api-version=2021-02-01",
-            isInstanceUp,
-            config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "Workspace",
-                group: "LogAnalytics",
-                ids: [
-                  pipe([
-                    () => live,
-                    get(
-                      "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId"
-                    ),
-                    (customerId) =>
-                      pipe([
-                        tap((params) => {
-                          assert(customerId);
-                        }),
-                        () =>
-                          lives.getByType({
-                            providerName,
-                            type: "Workspace",
-                            group: "LogAnalytics",
-                          }),
-                        find(eq(get("live.properties.customerId"), customerId)),
-                        tap((params) => {
-                          assert(true);
-                        }),
-                        get("id"),
-                      ])(),
-                  ])(),
-                ],
-              },
-            ],
-            configDefault: ({ properties, dependencies: { workspace } }) =>
-              pipe([
-                tap(() => {
-                  assert(workspace);
-                }),
-                () => properties,
-                defaultsDeep({
-                  location,
-                  tags: buildTags(config),
-                  properties: {
-                    appLogsConfiguration: {
-                      logAnalyticsConfiguration: {
-                        customerId: getField(
-                          workspace,
-                          "properties.customerId"
-                        ),
-                        sharedKey: getField(
-                          workspace,
-                          "sharedKeys.primarySharedKey"
-                        ),
-                      },
-                    },
-                  },
-                }),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])(),
-          }),
-      },
-      {
-        // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
-        group: "AppService",
-        type: "ContainerApp",
-        dependsOn: [
-          "resourceManagement::ResourceGroup",
-          "AppService::KubeEnvironment",
-        ],
-        dependsOnList: ["resourceManagement::ResourceGroup"],
-        dependencies: () => ({
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "resourceManagement",
-          },
-          kubeEnvironment: {
-            type: "KubeEnvironment",
-            group: "AppService",
-          },
-        }),
-        compare: compare({
-          filterAll: pipe([omit(["location"])]),
         }),
         propertiesDefault: {
           properties: {
@@ -177,6 +169,14 @@ exports.fnSpecs = ({ config }) => {
             },
           },
         },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "KubeEnvironment",
+            group: "Web",
+            ids: [pipe([() => live, get("properties.kubeEnvironmentId")])()],
+          },
+        ],
         filterLive: () =>
           pipe([
             pick(["tags", "properties"]),
@@ -188,48 +188,28 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
+        configDefault: ({ properties, dependencies: { kubeEnvironment } }) =>
+          pipe([
+            tap(() => {
+              assert(kubeEnvironment);
+            }),
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                kubeEnvironmentId: getField(kubeEnvironment, "id"),
+              },
+            }),
+          ])(),
         Client: ({ spec }) =>
           AzClient({
             spec,
-            pathBase: `/subscriptions/${subscriptionId}`,
-            pathSuffix: ({ dependencies: { resourceGroup } }) => {
-              assert(resourceGroup, "missing resourceGroup dependency");
-              return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Web/containerapps`;
-            },
             verbUpdate: "PUT",
-            pathSuffixList: () => `/providers/Microsoft.Web/containerapps`,
-            queryParameters: () => "?api-version=2021-03-01",
-            isInstanceUp,
             config,
-            findDependencies: ({ live, lives }) => [
-              findDependenciesResourceGroup({ live, lives, config }),
-              {
-                type: "KubeEnvironment",
-                group: "AppService",
-                ids: [
-                  pipe([() => live, get("properties.kubeEnvironmentId")])(),
-                ],
-              },
-            ],
-            configDefault: ({
-              properties,
-              dependencies: { kubeEnvironment },
-            }) =>
-              pipe([
-                tap(() => {
-                  assert(kubeEnvironment);
-                }),
-                () => properties,
-                defaultsDeep({
-                  location,
-                  tags: buildTags(config),
-                  properties: {
-                    kubeEnvironmentId: getField(kubeEnvironment, "id"),
-                  },
-                }),
-              ])(),
           }),
       },
     ],
+    map(defaultsDeep({ group: "Web" })),
   ])();
 };

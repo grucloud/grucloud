@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project txt-record
+skinparam monochrome true
++ Infra
+++ aws
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

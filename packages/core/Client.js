@@ -12,7 +12,6 @@ const {
   not,
   and,
   pick,
-  fork,
   any,
   or,
 } = require("rubico");
@@ -252,6 +251,7 @@ const createClient = ({
   pipe([
     tap((params) => {
       assert(getListHof);
+      assert(spec.Client);
     }),
     () => spec.Client({ providerName, spec, config }),
     tap((client) => {

@@ -20,7 +20,7 @@ const { tos } = require("@grucloud/core/tos");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 const { mapPoolSize } = require("@grucloud/core/Common");
 
-const findTargetId = get("id");
+const findTargetId = () => get("id");
 
 // https://cloud.google.com/storage/docs/json_api/v1/buckets
 // https://cloud.google.com/storage/docs/json_api/v1/buckets/insert

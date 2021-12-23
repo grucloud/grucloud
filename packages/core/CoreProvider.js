@@ -361,13 +361,6 @@ function CoreProvider({
         //assert(group);
       }),
       () => mapTypeToResources.get(JSON.stringify({ type, group })) || [],
-      // () => ({ type, group }),
-      // JSON.stringify,
-      // tap((params) => {
-      //   assert(true);
-      // }),
-      // mapTypeToResources.get,
-      // when(isEmpty, () => []),
       tap((params) => {
         assert(true);
       }),
@@ -375,6 +368,7 @@ function CoreProvider({
 
   const createClientFromSpec = (spec) =>
     createClient({
+      getTargetResources,
       getResourcesByType,
       getResourceFromLive,
       spec,

@@ -29,10 +29,10 @@ describe("AzProvider", async function () {
       name: "azure",
       config: () => ({ location: "uksouth" }),
     });
-    resourceGroup = provider.resourceManagement.makeResourceGroup({
+    resourceGroup = provider.Resources.makeResourceGroup({
       name: rgName,
     });
-    virtualNetwork = provider.virtualNetworks.makeVirtualNetwork({
+    virtualNetwork = provider.Network.makeVirtualNetwork({
       name: vnName,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -47,7 +47,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    securityGroup = provider.virtualNetworks.makeSecurityGroup({
+    securityGroup = provider.Network.makeNetworkSecurityGroup({
       name: `security-group`,
       dependencies: { resourceGroup },
       properties: () => ({
@@ -70,7 +70,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const publicIpAddress = provider.virtualNetworks.makePublicIpAddress({
+    const publicIpAddress = provider.Network.makePublicIPAddress({
       name: `ip`,
       dependencies: {
         resourceGroup,
@@ -81,7 +81,7 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const networkInterface = provider.virtualNetworks.makeNetworkInterface({
+    const networkInterface = provider.Network.makeNetworkInterface({
       name: `network-interface`,
       dependencies: {
         resourceGroup,
@@ -108,7 +108,7 @@ describe("AzProvider", async function () {
     // assert(MACHINE_ADMIN_USERNAME);
     // assert(MACHINE_ADMIN_PASSWORD);
 
-    const vm = provider.compute.makeVirtualMachine({
+    const vm = provider.Compute.makeVirtualMachine({
       name: `vm`,
       dependencies: {
         resourceGroup,

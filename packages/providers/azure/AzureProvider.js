@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, fork, tryCatch } = require("rubico");
+const { pipe, get, tap, fork, tryCatch, map } = require("rubico");
 const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
@@ -12,7 +12,7 @@ const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { checkEnv } = require("@grucloud/core/Utils");
 const { generateCode } = require("./Az2gc");
-
+//const { AZURE_MANAGEMENT_BASE_URL } = require("./AzureCommon");
 const { fnSpecs } = require("./AzureSpec");
 
 exports.AzureProvider = ({
@@ -85,22 +85,49 @@ exports.AzureProvider = ({
       writeConfigToFile,
     ])();
 
-  return CoreProvider({
-    ...other,
-    type: "azure",
-    name,
-    mandatoryConfigKeys: ["location"],
-    makeConfig,
-    fnSpecs,
-    start,
-    info,
-    init,
-    generateCode: ({ commandOptions, programOptions }) =>
-      generateCode({
-        providerConfig: makeConfig(),
-        specs: fnSpecs(makeConfig()),
-        commandOptions,
-        programOptions,
-      }),
-  });
+  // GET https://management.azure.com/subscriptions/{subscriptionId}/resources?api-version=2021-04-01
+  // const axios = AxiosMaker({
+  //   baseURL: AZURE_MANAGEMENT_BASE_URL,
+  //   onHeaders: () => ({
+  //     Authorization: `Bearer ${_bearerToken}`,
+  //   }),
+  // });
+
+  // const listLives = ({
+  //   onStateChange = identity,
+  //   options = {},
+  //   title = "TT",
+  //   readWrite = false,
+  // } = {}) =>
+  //   pipe([
+  //     tap(() => {
+  //       assert(options);
+  //     }),
+  //     () =>
+  //       `/subscriptions/${process.env.SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
+  //     axios.get,
+  //     get("data.value"),
+  //   ])();
+
+  return {
+    ...CoreProvider({
+      ...other,
+      type: "azure",
+      name,
+      mandatoryConfigKeys: ["location"],
+      makeConfig,
+      fnSpecs,
+      start,
+      info,
+      init,
+      generateCode: ({ commandOptions, programOptions }) =>
+        generateCode({
+          providerConfig: makeConfig(),
+          specs: fnSpecs(makeConfig()),
+          commandOptions,
+          programOptions,
+        }),
+    }),
+    //listLives,
+  };
 };

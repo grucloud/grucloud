@@ -30,10 +30,10 @@ module.exports = () =>
       compare: compareHostedZone,
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
-      dependencies: () => ({
+      dependencies: {
         domain: { type: "Domain", group: "Route53Domains" },
         hostedZone: { type: "HostedZone", group: "Route53" },
-      }),
+      },
     },
     {
       type: "Record",
@@ -91,14 +91,14 @@ module.exports = () =>
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
           ]),
         ])(),
-      dependencies: () => ({
+      dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53" },
         loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
         apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
-      }),
+      },
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },

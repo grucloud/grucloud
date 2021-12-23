@@ -40,14 +40,13 @@ module.exports = ({ provider }) => {
       init: async () => {
         //console.log("azure onDeployed");
         const resources = provider.resources();
-        const publicIpAddress = await resources.virtualNetworks.PublicIpAddress[
+        const publicIpAddress = await resources.Network.PublicIPAddress[
           "ip"
         ].getLive();
-        const networkInterface =
-          await resources.virtualNetworks.NetworkInterface[
-            "network-interface"
-          ].getLive();
-        const vm = await resources.compute.VirtualMachine["vm"].getLive();
+        const networkInterface = await resources.Network.NetworkInterface[
+          "network-interface"
+        ].getLive();
+        const vm = await resources.Compute.VirtualMachine["vm"].getLive();
         assert(vm, "vm not up");
         //Check network interface id of the vm
         assert.equal(
