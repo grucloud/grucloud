@@ -8,7 +8,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
-const AzClient = require("../AzClient");
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -39,11 +38,6 @@ exports.fnSpecs = ({ config }) => {
           "properties.encryption.enabled",
           "properties.encryption.enforcement",
         ],
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups
@@ -84,11 +78,6 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
@@ -112,11 +101,6 @@ exports.fnSpecs = ({ config }) => {
           "properties.publicIPAddressVersion",
           "properties.dnsSettings.domainNameLabel",
         ],
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
@@ -269,11 +253,6 @@ exports.fnSpecs = ({ config }) => {
             },
           })(properties);
         },
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {

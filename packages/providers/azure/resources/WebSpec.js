@@ -106,11 +106,6 @@ exports.fnSpecs = ({ config }) => {
               assert(true);
             }),
           ])(),
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments

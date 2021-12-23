@@ -41,16 +41,11 @@ exports.fnSpecs = ({ config }) => {
         cannotBeDeleted: isDefaultResourceGroup,
         isDefault: isDefaultResourceGroup,
         managedByOther: isDefaultResourceGroup,
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-            onResponseList: () =>
-              pipe([
-                get("value", []),
-                filter(not(eq(get("name"), "NetworkWatcherRG"))),
-              ]),
-          }),
+        onResponseList: () =>
+          pipe([
+            get("value", []),
+            filter(not(eq(get("name"), "NetworkWatcherRG"))),
+          ]),
       },
     ],
   ])();

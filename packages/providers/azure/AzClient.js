@@ -39,6 +39,8 @@ const {
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
+const onResponseListDefault = () => get("value", []);
+
 module.exports = AzClient = ({
   spec,
   isInstanceUp = isInstanceUpDefault,
@@ -55,8 +57,6 @@ module.exports = AzClient = ({
       ])(),
   getList = () => undefined,
   getByName = () => undefined,
-  onResponseList = () => get("value", []),
-  decorate,
   verbCreate = "PUT",
   verbUpdate = "PATCH",
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
@@ -334,8 +334,8 @@ module.exports = AzClient = ({
     spec,
     config,
     findDependencies: spec.findDependencies || findDependenciesDefault,
-    onResponseList,
-    decorate,
+    onResponseList: spec.onResponseList || onResponseListDefault,
+    decorate: spec.decorate,
     configDefault: spec.configDefault || configDefaultGeneric,
     pathGet,
     pathCreate,

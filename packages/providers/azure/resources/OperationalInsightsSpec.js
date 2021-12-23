@@ -37,22 +37,17 @@ exports.fnSpecs = ({ config }) => {
         },
         //TODO the generated environmentVariables should be empty
         environmentVariables: [],
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-            decorate: ({ axios }) =>
-              pipe([
-                assign({
-                  sharedKeys: pipe([
-                    get("id"),
-                    (id) => `${id}/sharedKeys?api-version=2020-08-01`,
-                    axios.post,
-                    get("data"),
-                  ]),
-                }),
+        decorate: ({ axios }) =>
+          pipe([
+            assign({
+              sharedKeys: pipe([
+                get("id"),
+                (id) => `${id}/sharedKeys?api-version=2020-08-01`,
+                axios.post,
+                get("data"),
               ]),
-          }),
+            }),
+          ]),
       },
     ],
   ])();

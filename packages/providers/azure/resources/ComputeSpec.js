@@ -119,11 +119,6 @@ exports.fnSpecs = ({ config }) => {
             },
           })(properties);
         },
-        Client: ({ spec }) =>
-          AzClient({
-            spec,
-            config,
-          }),
       },
     ],
   ])();
