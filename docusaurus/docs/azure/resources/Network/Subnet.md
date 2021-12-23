@@ -22,7 +22,7 @@ provider.Network.makeSubnet({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/vm/resources.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Compute/vm/resources.js)
 
 ### Properties
 

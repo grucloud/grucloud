@@ -32,7 +32,7 @@ provider.Network.makeNetworkInterface({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/vm/iac.js#70)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Compute/vm/iac.js)
 
 ### Properties
 

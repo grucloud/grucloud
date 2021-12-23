@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project grucloud-example-azure-app-service
+skinparam monochrome true
++ Infra
+++ azure
++++ Storage
+++++ BlobContainer (1)
+++++ FileShare (1)
+++++ Queue (1)
+++++ StorageAccount (1)
+++++ Table (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

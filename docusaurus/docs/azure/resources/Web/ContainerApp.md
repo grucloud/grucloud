@@ -42,7 +42,7 @@ provider.Web.makeContainerApp({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/container-apps/plantuml/resources.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Web/containerapps/plantuml/resources.js)
 
 ### Properties
 
