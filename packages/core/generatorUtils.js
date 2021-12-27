@@ -944,11 +944,16 @@ const writeEnv =
     ])();
 
 const isEqualById = ({ type, group, providerName, id }) =>
-  and([
-    or([eq(get("id"), id), eq(get("id"), id?.id)]),
-    eq(get("type"), type),
-    eq(get("group"), group),
-    eq(get("providerName"), providerName),
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    and([
+      or([eq(get("id"), id), eq(get("id"), id?.id)]),
+      eq(get("type"), type),
+      eq(get("group"), group),
+      eq(get("providerName"), providerName),
+    ]),
   ]);
 
 const findLiveById =

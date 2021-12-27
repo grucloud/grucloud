@@ -14,10 +14,8 @@
 
 ## Common:
 
-- TODO add client.toString()
 - https://stackshare.io/terraform/alternatives
--
-- add projectName and use it as the title of the graph
+
 - destroy: use live instead of id
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
@@ -33,10 +31,12 @@
 - APIService problem deleting some
 - gc graph: wrong namespace, it is default, should be myapp
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
-- kubectl cluster-info
 
 ## Azure
 
+- managedIdentity: create association with vm
+- Compute::SshPublicKey saves keys
+- Compute::VirtualMachine deps to Compute::SshPublicKey
 - RestorePoint
   AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRolePool
 
@@ -161,3 +161,18 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 }
 
 ## Nice to have
+
+## Bugs
+
+az aks-basic
+✖ ContainerService::AgentPool 0/1 There has to be at least one agent pool.  
+ ✓ ContainerService::ManagedCluster 1/1
+✓ Network::LoadBalancer 1/1
+✓ Network::LoadBalancerBackendAddressPool 1/1
+✖ Network::NetworkSecurityGroup 0/1 Request failed with status code 400 Network security group /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-31319825-nsg cannot be deleted because it is in use by the following resources: /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/virtualNetworks/aks-vnet-31319825/subnets/aks-subnet. In order to delete the Network security group, remove the association with the resource(s). To learn how to do this, see aka.ms/deletensg.
+✖ Network::PublicIPAddress 0/1 Request failed with status code 400 Public IP address /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/publicIPAddresses/c6c8863f-86ff-4644-b7bf-809d04f0b1e4 can not be deleted since it is still allocated to resource /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/loadBalancers/kubernetes/frontendIPConfigurations/c6c8863f-86ff-4644-b7bf-809d04f0b1e4. In order to delete the public IP, disassociate/detach the Public IP address from the resource. To learn how to do this, see aka.ms/deletepublicip.
+✓ Network::Route 1/1
+✓ Network::RouteTable 1/1
+✖ Network::Subnet 0/1 Request failed with status code 400 Subnet aks-subnet is in use by /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkInterfaces/|providers|Microsoft.Compute|virtualMachineScaleSets|aks-agentpool-29972251-vmss|virtualMachines|0|networkInterfaces|aks-agentpool-29972251-vmss/ipConfigurations/ipconfig1 and cannot be deleted. In order to delete the subnet, delete all the resources within the subnet. See aka.ms/deletesubnet.
+✖ Network::VirtualNetwork 0/1 Request failed with status code 400 Subnet aks-subnet is in use by /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkInterfaces/|providers|Microsoft.Compute|virtualMachineScaleSets|aks-agentpool-29972251-vmss|virtualMachines|0|networkInterfaces|aks-agentpool-29972251-vmss/ipConfigurations/ipconfig1 and cannot be deleted. In order to delete the subnet, delete all the resources within the subnet. See aka.ms/deletesubnet.
+✓ Resources::ResourceGroup 2/2

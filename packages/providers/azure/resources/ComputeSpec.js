@@ -1,19 +1,22 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
-const { defaultsDeep, pluck, flatten, find, callProp } = require("rubico/x");
+const { pipe, not, get, tap, pick, map, assign, omit } = require("rubico");
+const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTags } = require("../AzureCommon");
 
-exports.fnSpecs = ({ config }) => {
-  const { location } = config;
+const group = "Compute";
 
-  return pipe([
+exports.fnSpecs = ({ config }) =>
+  pipe([
     () => [
       {
+        type: "Disk",
+        managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
+      },
+      {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
-        group: "Compute",
         type: "VirtualMachine",
         dependencies: {
           resourceGroup: {
@@ -21,6 +24,9 @@ exports.fnSpecs = ({ config }) => {
             group: "Resources",
             name: "resourceGroupName",
           },
+          //TODO
+          // CapacityGroup
+          // ManagedIdentities
           networkInterface: {
             type: "NetworkInterface",
             group: "Network",
@@ -75,7 +81,7 @@ exports.fnSpecs = ({ config }) => {
           "properties.storageProfile",
           "properties.osProfile",
         ],
-        findDependencies: ({ live }) => [
+        findDependencies: ({ live, lives }) => [
           {
             //TODO replace with findDependenciesResourceGroup
             type: "ResourceGroup",
@@ -98,6 +104,16 @@ exports.fnSpecs = ({ config }) => {
               pluck("id"),
             ])(),
           },
+          {
+            type: "Disk",
+            group: "Compute",
+            ids: [
+              pipe([
+                () => live,
+                get("properties.storageProfile.osDisk.managedDisk.id"),
+              ])(),
+            ],
+          },
         ],
         configDefault: ({ properties, dependencies }) => {
           const { networkInterface } = dependencies;
@@ -106,7 +122,7 @@ exports.fnSpecs = ({ config }) => {
             "networkInterfaces is missing VirtualMachine"
           );
           return defaultsDeep({
-            location,
+            location: config.location,
             tags: buildTags(config),
             properties: {
               networkProfile: {
@@ -121,5 +137,5 @@ exports.fnSpecs = ({ config }) => {
         },
       },
     ],
+    map(defaultsDeep({ group })),
   ])();
-};
