@@ -9,6 +9,8 @@ const { tos } = require("@grucloud/core/tos");
 
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
+const group = "Network";
+
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
 
@@ -18,7 +20,6 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
-        group: "Network",
         type: "VirtualNetwork",
         pickPropertiesCreate: [
           "properties.addressSpace.addressPrefixes",
@@ -43,7 +44,6 @@ exports.fnSpecs = ({ config }) => {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
-        group: "Network",
         type: "NetworkSecurityGroup",
         omitProperties: ["properties.securityRules"],
         filterLive: () =>
@@ -81,9 +81,6 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
-        // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
-        // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
-        group: "Network",
         type: "PublicIPAddress",
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
@@ -104,9 +101,6 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
-        // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
-        // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
-        group: "Network",
         type: "NetworkInterface",
         dependencies: {
           resourceGroup: {
@@ -256,7 +250,6 @@ exports.fnSpecs = ({ config }) => {
       },
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {
-        group: "Network",
         type: "Subnet",
         pickProperties: [
           "properties.addressPrefix",
@@ -290,5 +283,6 @@ exports.fnSpecs = ({ config }) => {
         cannotBeDeleted: () => true,
       },
     ],
+    map(defaultsDeep({ group })),
   ])();
 };
