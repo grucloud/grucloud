@@ -2,8 +2,7 @@ const assert = require("assert");
 const path = require("path");
 
 const { pipe, tap } = require("rubico");
-const { groupBy } = require("rubico/x");
-const { listSwaggerFiles, processSwagger } = require("../AzureRestApi");
+const { processSwaggerFiles, processSwagger } = require("../AzureRestApi");
 
 describe("AzureRestApi", function () {
   before(async function () {});
@@ -48,25 +47,33 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it.skip("listSwaggerFiles all", async function () {
+  // it.skip("processSwaggerFiles all", async function () {
+  //   await pipe([
+  //     () => ({
+  //       directory: process.cwd(),
+  //     }),
+  //     processSwaggerFiles,
+  //     tap((params) => {
+  //       assert(true);
+  //     }),
+  //     //groupBy("group"),
+  //     tap((params) => {
+  //       assert(true);
+  //     }),
+  //   ])();
+  // });
+  it("processSwaggerFiles", async function () {
     await pipe([
       () => ({
-        directory: process.cwd(),
-      }),
-      listSwaggerFiles,
-      tap((params) => {
-        assert(true);
-      }),
-      //groupBy("group"),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-  });
-  it.skip("listSwaggerFiles", async function () {
-    await pipe([
-      () => ({
-        directory: process.cwd(),
+        directorySpec: path.resolve(
+          process.cwd(),
+          "azure-rest-api-specs/specification"
+        ),
+        directoryDoc: path.resolve(
+          process.cwd(),
+          "../../../docusaurus/docs/azure/resources/"
+        ),
+        outputSchemaFile: path.resolve(process.cwd(), "AzureSchema.json"),
         filterDirs: [
           //"apimanagement",
           //"appconfiguration",
@@ -84,7 +91,7 @@ describe("AzureRestApi", function () {
           //"webpubsub",
         ],
       }),
-      listSwaggerFiles,
+      processSwaggerFiles,
       tap((params) => {
         assert(true);
       }),

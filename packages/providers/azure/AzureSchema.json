@@ -8,6 +8,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -66,7 +71,8 @@
             "capacityReservationGroup": {
                 "type": "CapacityReservationGroup",
                 "group": "Compute",
-                "name": "capacityReservationGroupName"
+                "name": "capacityReservationGroupName",
+                "createOnly": true
             }
         },
         "methods": {
@@ -165,6 +171,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -324,6 +335,11 @@
                 "type": "DedicatedHostGroup",
                 "group": "Compute",
                 "name": "hostGroupName"
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -429,6 +445,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "storageAccount": {
+                "type": "StorageAccount",
+                "group": "Storage",
+                "createOnly": true
+            },
+            "image": {
+                "type": "Image",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "diskAccess": {
+                "type": "DiskAccess",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -606,6 +652,11 @@
                 "type": "DiskAccess",
                 "group": "Compute",
                 "name": "diskAccessName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -646,6 +697,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1015,6 +1071,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1108,6 +1169,65 @@
         ]
     },
     {
+        "type": "RestorePoint",
+        "group": "Compute",
+        "apiVersion": "2021-07-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "restorePointCollection": {
+                "type": "RestorePointCollection",
+                "group": "Compute",
+                "name": "restorePointCollectionName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "disk": {
+                "type": "Disk",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "virtualMachineScaleSetVm": {
+                "type": "VirtualMachineScaleSetVM",
+                "group": "Compute",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
+                "operationId": "RestorePoints_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
+                "operationId": "RestorePoints_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
+                "operationId": "RestorePoints_Get"
+            }
+        },
+        "omitProperties": [
+            "properties.sourceMetadata",
+            "properties.provisioningState",
+            "properties.consistencyMode"
+        ],
+        "pickProperties": [
+            "properties.excludeDisks",
+            "properties.timeCreated"
+        ],
+        "pickPropertiesCreate": [
+            "properties.excludeDisks",
+            "properties.timeCreated"
+        ]
+    },
+    {
         "type": "RestorePointCollection",
         "group": "Compute",
         "apiVersion": "2021-07-01",
@@ -1116,6 +1236,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "restorePoint": {
+                "type": "RestorePoint",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "virtualMachineScaleSetVm": {
+                "type": "VirtualMachineScaleSetVM",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1159,6 +1294,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "storageAccount": {
+                "type": "StorageAccount",
+                "group": "Storage",
+                "createOnly": true
+            },
+            "image": {
+                "type": "Image",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "diskAccess": {
+                "type": "DiskAccess",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1305,6 +1470,56 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "networkSecurityGroup": {
+                "type": "NetworkSecurityGroup",
+                "group": "Network",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "availabilitySet": {
+                "type": "AvailabilitySet",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "virtualMachineScaleSet": {
+                "type": "VirtualMachineScaleSet",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "virtualMachineScaleSetVm": {
+                "type": "VirtualMachineScaleSetVM",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1654,6 +1869,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "networkSecurityGroup": {
+                "type": "NetworkSecurityGroup",
+                "group": "Network",
+                "createOnly": true
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1954,6 +2199,41 @@
                 "type": "VirtualMachineScaleSet",
                 "group": "Compute",
                 "name": "vmScaleSetName"
+            },
+            "cloudServiceRoleInstance": {
+                "type": "CloudServiceRoleInstance",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "networkSecurityGroup": {
+                "type": "NetworkSecurityGroup",
+                "group": "Network",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "availabilitySet": {
+                "type": "AvailabilitySet",
+                "group": "Compute",
+                "createOnly": true
             }
         },
         "methods": {
@@ -2193,6 +2473,478 @@
         }
     },
     {
+        "type": "AgentPool",
+        "group": "ContainerRegistry",
+        "apiVersion": "2019-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools",
+                "operationId": "AgentPools_List"
+            }
+        },
+        "omitProperties": [
+            "properties.virtualNetworkSubnetResourceId",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.count",
+            "properties.tier",
+            "properties.os"
+        ],
+        "pickPropertiesCreate": [
+            "properties.count",
+            "properties.tier",
+            "properties.os"
+        ]
+    },
+    {
+        "type": "BuildStep",
+        "group": "ContainerRegistry",
+        "apiVersion": "2018-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            },
+            "buildTask": {
+                "type": "BuildTask",
+                "group": "ContainerRegistry",
+                "name": "buildTaskName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps",
+                "operationId": "BuildSteps_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.type"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "BuildTask",
+        "group": "ContainerRegistry",
+        "apiVersion": "2018-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks",
+                "operationId": "BuildTasks_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.creationDate",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.alias",
+            "properties.sourceRepository.sourceControlType",
+            "properties.sourceRepository.repositoryUrl",
+            "properties.sourceRepository.isCommitTriggerEnabled",
+            "properties.sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.sourceRepository.sourceControlAuthProperties.token",
+            "properties.sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.sourceRepository.sourceControlAuthProperties.scope",
+            "properties.sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.platform.osType",
+            "properties.platform.cpu",
+            "properties.timeout"
+        ],
+        "pickPropertiesCreate": [
+            "properties.alias",
+            "properties.sourceRepository.sourceControlType",
+            "properties.sourceRepository.repositoryUrl",
+            "properties.sourceRepository.isCommitTriggerEnabled",
+            "properties.sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.sourceRepository.sourceControlAuthProperties.token",
+            "properties.sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.sourceRepository.sourceControlAuthProperties.scope",
+            "properties.sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.platform.osType",
+            "properties.platform.cpu",
+            "properties.timeout"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "sourceRepository": {
+                    "isCommitTriggerEnabled": false
+                },
+                "timeout": 3600
+            }
+        }
+    },
+    {
+        "type": "ConnectedRegistry",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
+                "operationId": "ConnectedRegistries_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
+                "operationId": "ConnectedRegistries_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
+                "operationId": "ConnectedRegistries_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
+                "operationId": "ConnectedRegistries_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries",
+                "operationId": "ConnectedRegistries_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.version",
+            "properties.connectionState",
+            "properties.lastActivityTime",
+            "properties.activation",
+            "properties.parent.id",
+            "properties.parent.syncProperties.tokenId",
+            "properties.parent.syncProperties.lastSyncTime",
+            "properties.parent.syncProperties.gatewayEndpoint",
+            "properties.loginServer.host",
+            "properties.loginServer.tls",
+            "properties.logging.auditLogStatus",
+            "properties.statusDetails"
+        ],
+        "pickProperties": [
+            "properties.mode",
+            "properties.parent.syncProperties.schedule",
+            "properties.parent.syncProperties.syncWindow",
+            "properties.parent.syncProperties.messageTtl",
+            "properties.clientTokenIds",
+            "properties.logging.logLevel",
+            "properties.notificationsList"
+        ],
+        "pickPropertiesCreate": [
+            "properties.mode",
+            "properties.parent.syncProperties.schedule",
+            "properties.parent.syncProperties.syncWindow",
+            "properties.parent.syncProperties.messageTtl",
+            "properties.clientTokenIds",
+            "properties.logging.logLevel",
+            "properties.notificationsList"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "logging": {
+                    "logLevel": "Information",
+                    "auditLogStatus": "Disabled"
+                }
+            }
+        }
+    },
+    {
+        "type": "ExportPipeline",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines",
+                "operationId": "ExportPipelines_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "location",
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.target.type",
+            "properties.target.uri",
+            "properties.target.keyVaultUri",
+            "properties.options"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.target.type",
+            "properties.target.uri",
+            "properties.target.keyVaultUri",
+            "properties.options"
+        ]
+    },
+    {
+        "type": "ImportPipeline",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines",
+                "operationId": "ImportPipelines_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.trigger.sourceTrigger.status",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "location",
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.source.type",
+            "properties.source.uri",
+            "properties.source.keyVaultUri",
+            "properties.options"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.source.type",
+            "properties.source.uri",
+            "properties.source.keyVaultUri",
+            "properties.options"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "source": {
+                    "type": "AzureStorageBlobContainer"
+                },
+                "trigger": {
+                    "sourceTrigger": {
+                        "status": "Enabled"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "PipelineRun",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns",
+                "operationId": "PipelineRuns_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.request.pipelineResourceId",
+            "properties.response"
+        ],
+        "pickProperties": [
+            "properties.request.artifacts",
+            "properties.request.source.type",
+            "properties.request.source.name",
+            "properties.request.target.type",
+            "properties.request.target.name",
+            "properties.request.catalogDigest",
+            "properties.forceUpdateTag"
+        ],
+        "pickPropertiesCreate": [
+            "properties.request.artifacts",
+            "properties.request.source.type",
+            "properties.request.source.name",
+            "properties.request.target.type",
+            "properties.request.target.name",
+            "properties.request.catalogDigest",
+            "properties.forceUpdateTag"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "request": {
+                    "source": {
+                        "type": "AzureStorageBlob"
+                    },
+                    "target": {
+                        "type": "AzureStorageBlob"
+                    }
+                },
+                "response": {
+                    "source": {
+                        "type": "AzureStorageBlobContainer"
+                    }
+                }
+            }
+        }
+    },
+    {
         "type": "PrivateEndpointConnection",
         "group": "ContainerRegistry",
         "apiVersion": "2021-09-01",
@@ -2206,6 +2958,11 @@
                 "type": "Registry",
                 "group": "ContainerRegistry",
                 "name": "registryName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -2243,6 +3000,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "privateEndpointConnection": {
+                "type": "PrivateEndpointConnection",
+                "group": "ContainerRegistry",
+                "createOnly": true
             }
         },
         "methods": {
@@ -2348,6 +3110,59 @@
         }
     },
     {
+        "type": "RegistryProperties",
+        "group": "ContainerRegistry",
+        "apiVersion": "2016-06-27-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_GetProperties"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries",
+                "operationId": "Registries_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.loginServer",
+            "properties.creationDate"
+        ],
+        "pickProperties": [
+            "properties.adminUserEnabled",
+            "properties.storageAccount.name",
+            "properties.storageAccount.accessKey"
+        ],
+        "pickPropertiesCreate": [
+            "properties.adminUserEnabled",
+            "properties.storageAccount.name",
+            "properties.storageAccount.accessKey"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "adminUserEnabled": false
+            }
+        }
+    },
+    {
         "type": "Replication",
         "group": "ContainerRegistry",
         "apiVersion": "2021-09-01",
@@ -2405,9 +3220,61 @@
         }
     },
     {
+        "type": "ScopeMap",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps",
+                "operationId": "ScopeMaps_List"
+            }
+        },
+        "omitProperties": [
+            "properties.type",
+            "properties.creationDate",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.description",
+            "properties.actions"
+        ],
+        "pickPropertiesCreate": [
+            "properties.description",
+            "properties.actions"
+        ]
+    },
+    {
         "type": "Task",
         "group": "ContainerRegistry",
-        "apiVersion": "2019-04-01",
+        "apiVersion": "2019-06-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -2458,6 +3325,7 @@
             "properties.platform.architecture",
             "properties.platform.variant",
             "properties.agentConfiguration.cpu",
+            "properties.agentPoolName",
             "properties.timeout",
             "properties.step.type",
             "properties.step.contextPath",
@@ -2465,9 +3333,13 @@
             "properties.trigger.timerTriggers",
             "properties.trigger.sourceTriggers",
             "properties.trigger.baseImageTrigger.baseImageTriggerType",
+            "properties.trigger.baseImageTrigger.updateTriggerEndpoint",
+            "properties.trigger.baseImageTrigger.updateTriggerPayloadType",
             "properties.trigger.baseImageTrigger.name",
             "properties.credentials.sourceRegistry.loginMode",
-            "properties.credentials.customRegistries"
+            "properties.credentials.customRegistries",
+            "properties.logTemplate",
+            "properties.isSystemTask"
         ],
         "pickPropertiesCreate": [
             "identity.type",
@@ -2476,6 +3348,7 @@
             "properties.platform.architecture",
             "properties.platform.variant",
             "properties.agentConfiguration.cpu",
+            "properties.agentPoolName",
             "properties.timeout",
             "properties.step.type",
             "properties.step.contextPath",
@@ -2483,9 +3356,13 @@
             "properties.trigger.timerTriggers",
             "properties.trigger.sourceTriggers",
             "properties.trigger.baseImageTrigger.baseImageTriggerType",
+            "properties.trigger.baseImageTrigger.updateTriggerEndpoint",
+            "properties.trigger.baseImageTrigger.updateTriggerPayloadType",
             "properties.trigger.baseImageTrigger.name",
             "properties.credentials.sourceRegistry.loginMode",
-            "properties.credentials.customRegistries"
+            "properties.credentials.customRegistries",
+            "properties.logTemplate",
+            "properties.isSystemTask"
         ],
         "propertiesDefault": {
             "properties": {
@@ -2494,9 +3371,155 @@
                     "baseImageTrigger": {
                         "status": "Enabled"
                     }
+                },
+                "isSystemTask": false
+            }
+        }
+    },
+    {
+        "type": "TaskRun",
+        "group": "ContainerRegistry",
+        "apiVersion": "2019-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            },
+            "pipelineRun": {
+                "type": "PipelineRun",
+                "group": "ContainerRegistry",
+                "createOnly": true
+            },
+            "image": {
+                "type": "Image",
+                "group": "Compute",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns",
+                "operationId": "TaskRuns_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState",
+            "properties.runResult"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.runRequest.type",
+            "properties.runRequest.isArchiveEnabled",
+            "properties.runRequest.agentPoolName",
+            "properties.runRequest.logTemplate",
+            "properties.forceUpdateTag",
+            "location"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.runRequest.type",
+            "properties.runRequest.isArchiveEnabled",
+            "properties.runRequest.agentPoolName",
+            "properties.runRequest.logTemplate",
+            "properties.forceUpdateTag",
+            "location"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "runRequest": {
+                    "isArchiveEnabled": false
+                },
+                "runResult": {
+                    "properties": {
+                        "isArchiveEnabled": false
+                    }
                 }
             }
         }
+    },
+    {
+        "type": "Token",
+        "group": "ContainerRegistry",
+        "apiVersion": "2021-08-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName"
+            },
+            "scopeMap": {
+                "type": "ScopeMap",
+                "group": "ContainerRegistry",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens",
+                "operationId": "Tokens_List"
+            }
+        },
+        "omitProperties": [
+            "properties.creationDate",
+            "properties.provisioningState",
+            "properties.scopeMapId",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.credentials.certificates",
+            "properties.credentials.passwords"
+        ],
+        "pickPropertiesCreate": [
+            "properties.credentials.certificates",
+            "properties.credentials.passwords"
+        ]
     },
     {
         "type": "Webhook",
@@ -2891,6 +3914,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "server": {
+                "type": "Server",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "disk": {
+                "type": "Disk",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3137,90 +4175,6 @@
         }
     },
     {
-        "type": "OpenShiftManagedCluster",
-        "group": "ContainerService",
-        "apiVersion": "2019-04-30",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/openShiftManagedClusters/{resourceName}",
-                "operationId": "OpenShiftManagedClusters_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/openShiftManagedClusters/{resourceName}",
-                "operationId": "OpenShiftManagedClusters_CreateOrUpdate"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/openShiftManagedClusters/{resourceName}",
-                "operationId": "OpenShiftManagedClusters_UpdateTags"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/openShiftManagedClusters/{resourceName}",
-                "operationId": "OpenShiftManagedClusters_Delete"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/openShiftManagedClusters",
-                "operationId": "OpenShiftManagedClusters_List"
-            }
-        },
-        "omitProperties": [
-            "properties.provisioningState",
-            "properties.clusterVersion",
-            "properties.publicHostname",
-            "properties.fqdn",
-            "properties.networkProfile.peerVnetId",
-            "properties.networkProfile.vnetId"
-        ],
-        "pickProperties": [
-            "plan.name",
-            "plan.product",
-            "plan.promotionCode",
-            "plan.publisher",
-            "properties.openShiftVersion",
-            "properties.networkProfile.vnetCidr",
-            "properties.routerProfiles",
-            "properties.masterPoolProfile.name",
-            "properties.masterPoolProfile.count",
-            "properties.masterPoolProfile.vmSize",
-            "properties.masterPoolProfile.subnetCidr",
-            "properties.masterPoolProfile.osType",
-            "properties.agentPoolProfiles",
-            "properties.authProfile.identityProviders"
-        ],
-        "pickPropertiesCreate": [
-            "plan.name",
-            "plan.product",
-            "plan.promotionCode",
-            "plan.publisher",
-            "properties.openShiftVersion",
-            "properties.networkProfile.vnetCidr",
-            "properties.routerProfiles",
-            "properties.masterPoolProfile.name",
-            "properties.masterPoolProfile.count",
-            "properties.masterPoolProfile.vmSize",
-            "properties.masterPoolProfile.subnetCidr",
-            "properties.masterPoolProfile.osType",
-            "properties.agentPoolProfiles",
-            "properties.authProfile.identityProviders"
-        ],
-        "propertiesDefault": {
-            "properties": {
-                "networkProfile": {
-                    "vnetCidr": "10.0.0.0/8"
-                },
-                "masterPoolProfile": {
-                    "osType": "Linux"
-                }
-            }
-        }
-    },
-    {
         "type": "PrivateEndpointConnection",
         "group": "ContainerService",
         "apiVersion": "2021-10-01",
@@ -3234,6 +4188,11 @@
                 "type": "ManagedCluster",
                 "group": "ContainerService",
                 "name": "resourceName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3324,7 +4283,7 @@
     {
         "type": "Key",
         "group": "KeyVault",
-        "apiVersion": "2019-09-01",
+        "apiVersion": "2021-06-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3352,29 +4311,235 @@
             }
         },
         "omitProperties": [
+            "properties.attributes.created",
+            "properties.attributes.updated",
+            "properties.attributes.recoveryLevel",
             "properties.keyUri",
-            "properties.keyUriWithVersion"
+            "properties.keyUriWithVersion",
+            "properties.rotationPolicy.attributes.created",
+            "properties.rotationPolicy.attributes.updated"
         ],
         "pickProperties": [
-            "properties.attributes",
+            "properties.attributes.enabled",
+            "properties.attributes.nbf",
+            "properties.attributes.exp",
+            "properties.attributes.exportable",
             "properties.kty",
             "properties.keyOps",
             "properties.keySize",
-            "properties.curveName"
+            "properties.curveName",
+            "properties.rotationPolicy.attributes.expiryTime",
+            "properties.rotationPolicy.lifetimeActions",
+            "properties.release_policy.contentType",
+            "properties.release_policy.data"
         ],
         "pickPropertiesCreate": [
             "tags",
-            "properties.attributes",
+            "properties.attributes.enabled",
+            "properties.attributes.nbf",
+            "properties.attributes.exp",
+            "properties.attributes.exportable",
             "properties.kty",
             "properties.keyOps",
             "properties.keySize",
-            "properties.curveName"
+            "properties.curveName",
+            "properties.rotationPolicy.attributes.expiryTime",
+            "properties.rotationPolicy.lifetimeActions",
+            "properties.release_policy.contentType",
+            "properties.release_policy.data"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "release_policy": {
+                    "contentType": "application/json; charset=utf-8"
+                }
+            }
+        }
+    },
+    {
+        "type": "ManagedHsm",
+        "group": "KeyVault",
+        "apiVersion": "2021-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}",
+                "operationId": "ManagedHsms_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}",
+                "operationId": "ManagedHsms_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}",
+                "operationId": "ManagedHsms_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}",
+                "operationId": "ManagedHsms_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/managedHSMs",
+                "operationId": "ManagedHsms_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.tenantId",
+            "properties.hsmUri",
+            "properties.statusMessage",
+            "properties.provisioningState",
+            "properties.privateEndpointConnections",
+            "properties.scheduledPurgeDate"
+        ],
+        "pickProperties": [
+            "properties.initialAdminObjectIds",
+            "properties.enableSoftDelete",
+            "properties.softDeleteRetentionInDays",
+            "properties.enablePurgeProtection",
+            "properties.createMode",
+            "properties.networkAcls.bypass",
+            "properties.networkAcls.defaultAction",
+            "properties.networkAcls.ipRules",
+            "properties.networkAcls.virtualNetworkRules",
+            "properties.publicNetworkAccess"
+        ],
+        "pickPropertiesCreate": [
+            "properties.initialAdminObjectIds",
+            "properties.enableSoftDelete",
+            "properties.softDeleteRetentionInDays",
+            "properties.enablePurgeProtection",
+            "properties.createMode",
+            "properties.networkAcls.bypass",
+            "properties.networkAcls.defaultAction",
+            "properties.networkAcls.ipRules",
+            "properties.networkAcls.virtualNetworkRules",
+            "properties.publicNetworkAccess"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enablePurgeProtection": true
+            }
+        }
+    },
+    {
+        "type": "MHSMPrivateEndpointConnection",
+        "group": "KeyVault",
+        "apiVersion": "2021-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "name": {
+                "type": "ManagedHsm",
+                "group": "KeyVault",
+                "name": "name"
+            },
+            "privateEndpointConnection": {
+                "type": "PrivateEndpointConnection",
+                "group": "KeyVault",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "MHSMPrivateEndpointConnections_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "MHSMPrivateEndpointConnections_Put"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "MHSMPrivateEndpointConnections_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}/privateEndpointConnections",
+                "operationId": "MHSMPrivateEndpointConnections_ListByResource"
+            }
+        },
+        "omitProperties": [
+            "properties.privateEndpoint.id",
+            "properties.privateLinkServiceConnectionState",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "etag"
+        ],
+        "pickPropertiesCreate": [
+            "etag"
+        ]
+    },
+    {
+        "type": "PrivateEndpointConnection",
+        "group": "KeyVault",
+        "apiVersion": "2021-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "name": "vaultName"
+            },
+            "mhsmPrivateEndpointConnection": {
+                "type": "MHSMPrivateEndpointConnection",
+                "group": "KeyVault",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_Put"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections",
+                "operationId": "PrivateEndpointConnections_ListByResource"
+            }
+        },
+        "omitProperties": [
+            "properties.privateEndpoint.id",
+            "properties.privateLinkServiceConnectionState",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "etag"
+        ],
+        "pickPropertiesCreate": [
+            "etag"
         ]
     },
     {
         "type": "Secret",
         "group": "KeyVault",
-        "apiVersion": "2019-09-01",
+        "apiVersion": "2021-06-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3424,7 +4589,7 @@
     {
         "type": "Vault",
         "group": "KeyVault",
-        "apiVersion": "2019-09-01",
+        "apiVersion": "2021-06-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3458,6 +4623,7 @@
             "id",
             "name",
             "type",
+            "systemData",
             "properties.tenantId",
             "properties.hsmPoolResourceId",
             "properties.createMode",
@@ -3481,7 +4647,8 @@
             "properties.networkAcls.bypass",
             "properties.networkAcls.defaultAction",
             "properties.networkAcls.ipRules",
-            "properties.networkAcls.virtualNetworkRules"
+            "properties.networkAcls.virtualNetworkRules",
+            "properties.publicNetworkAccess"
         ],
         "pickPropertiesCreate": [
             "location",
@@ -3500,13 +4667,15 @@
             "properties.networkAcls.bypass",
             "properties.networkAcls.defaultAction",
             "properties.networkAcls.ipRules",
-            "properties.networkAcls.virtualNetworkRules"
+            "properties.networkAcls.virtualNetworkRules",
+            "properties.publicNetworkAccess"
         ],
         "propertiesDefault": {
             "properties": {
                 "enableSoftDelete": true,
                 "softDeleteRetentionInDays": 90,
-                "enableRbacAuthorization": false
+                "enableRbacAuthorization": false,
+                "publicNetworkAccess": "enabled"
             }
         }
     },
@@ -3558,6 +4727,46 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "certificate": {
+                "type": "Certificate",
+                "group": "Web",
+                "createOnly": true
+            },
+            "firewallPolicy": {
+                "type": "FirewallPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3705,6 +4914,41 @@
                 "type": "ApplicationGateway",
                 "group": "Network",
                 "name": "applicationGatewayName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "privateLinkService": {
+                "type": "PrivateLinkService",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3804,6 +5048,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
+            },
+            "firewallPolicy": {
+                "type": "FirewallPolicy",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3881,6 +5145,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -3958,6 +5232,11 @@
                 "type": "NetworkWatcher",
                 "group": "Network",
                 "name": "networkWatcherName"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4131,6 +5410,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4186,6 +5480,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "routeFilter": {
+                "type": "RouteFilter",
+                "group": "Network",
+                "createOnly": true
+            },
+            "expressRouteConnection": {
+                "type": "ExpressRouteConnection",
+                "group": "Network",
+                "createOnly": true
+            },
+            "route": {
+                "type": "Route",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4319,6 +5628,11 @@
                 "type": "ExpressRouteCircuitPeering",
                 "group": "Network",
                 "name": "peeringName"
+            },
+            "expressRouteCircuitPeering": {
+                "type": "ExpressRouteCircuitPeering",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4375,6 +5689,21 @@
                 "type": "ExpressRouteCircuit",
                 "group": "Network",
                 "name": "circuitName"
+            },
+            "routeFilter": {
+                "type": "RouteFilter",
+                "group": "Network",
+                "createOnly": true
+            },
+            "expressRouteConnection": {
+                "type": "ExpressRouteConnection",
+                "group": "Network",
+                "createOnly": true
+            },
+            "expressRouteCircuit": {
+                "type": "ExpressRouteCircuit",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4483,6 +5812,16 @@
                 "type": "ExpressRouteGateway",
                 "group": "Network",
                 "name": "expressRouteGatewayName"
+            },
+            "expressRouteCircuitPeering": {
+                "type": "ExpressRouteCircuitPeering",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4539,6 +5878,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "expressRouteCircuitPeering": {
+                "type": "ExpressRouteCircuitPeering",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4587,6 +5941,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4684,6 +6048,11 @@
                 "type": "FirewallPolicy",
                 "group": "Network",
                 "name": "firewallPolicyName"
+            },
+            "securityPartnerProvider": {
+                "type": "SecurityPartnerProvider",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4832,6 +6201,11 @@
                 "type": "NetworkWatcher",
                 "group": "Network",
                 "name": "networkWatcherName"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -4963,6 +6337,16 @@
                 "type": "VirtualHub",
                 "group": "Network",
                 "name": "virtualHubName"
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5022,7 +6406,48 @@
             "loadBalancer": {
                 "type": "LoadBalancer",
                 "group": "Network",
-                "name": "loadBalancerName"
+                "name": "loadBalancerName",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5172,6 +6597,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5277,6 +6712,31 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5346,7 +6806,38 @@
             "loadBalancer": {
                 "type": "LoadBalancer",
                 "group": "Network",
-                "name": "loadBalancerName"
+                "name": "loadBalancerName",
+                "createOnly": true
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "networkInterface": {
+                "type": "NetworkInterface",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5399,6 +6890,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5515,6 +7011,11 @@
                 "type": "VpnGateway",
                 "group": "Network",
                 "name": "gatewayName"
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5567,6 +7068,46 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "privateLinkService": {
+                "type": "PrivateLinkService",
+                "group": "Network",
+                "createOnly": true
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -5690,6 +7231,51 @@
                 "type": "NetworkInterface",
                 "group": "Network",
                 "name": "networkInterfaceName"
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -6642,6 +8228,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -6691,6 +8297,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -6800,6 +8411,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
+            },
+            "vpnServerConfiguration": {
+                "type": "VpnServerConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7017,6 +8643,41 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "privateLinkService": {
+                "type": "PrivateLinkService",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7130,6 +8791,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7192,6 +8883,41 @@
                 "type": "PrivateLinkService",
                 "group": "Network",
                 "name": "serviceName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "privateLinkService": {
+                "type": "PrivateLinkService",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7250,6 +8976,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7635,6 +9391,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true
+            },
+            "customIpPrefix": {
+                "type": "CustomIPPrefix",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7767,6 +9533,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "route": {
+                "type": "Route",
+                "group": "Network",
+                "createOnly": true
+            },
+            "expressRouteConnection": {
+                "type": "ExpressRouteConnection",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7866,6 +9642,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -7962,6 +9743,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8008,6 +9794,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8117,6 +9908,36 @@
                 "type": "VirtualNetwork",
                 "group": "Network",
                 "name": "virtualNetworkName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8261,6 +10082,36 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualWan": {
+                "type": "VirtualWan",
+                "group": "Network",
+                "createOnly": true
+            },
+            "vpnGateway": {
+                "type": "VpnGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "p2sVpnGateway": {
+                "type": "P2sVpnGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "expressRouteGateway": {
+                "type": "ExpressRouteGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "azureFirewall": {
+                "type": "AzureFirewall",
+                "group": "Network",
+                "createOnly": true
+            },
+            "securityPartnerProvider": {
+                "type": "SecurityPartnerProvider",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8336,6 +10187,11 @@
                 "type": "VirtualHub",
                 "group": "Network",
                 "name": "virtualHubName"
+            },
+            "hubVirtualNetworkConnection": {
+                "type": "HubVirtualNetworkConnection",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8388,6 +10244,36 @@
                 "type": "VirtualHub",
                 "group": "Network",
                 "name": "virtualHubName"
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8885,6 +10771,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosProtectionPlan": {
+                "type": "DdosProtectionPlan",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -8962,6 +10858,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true
+            },
+            "site": {
+                "type": "Site",
+                "group": "Web",
+                "createOnly": true
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -9073,6 +10989,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true
+            },
+            "site": {
+                "type": "Site",
+                "group": "Web",
+                "createOnly": true
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -9348,6 +11284,11 @@
                 "type": "VirtualNetworkGateway",
                 "group": "Network",
                 "name": "virtualNetworkGatewayName"
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -9402,7 +11343,8 @@
             "virtualNetwork": {
                 "type": "VirtualNetwork",
                 "group": "Network",
-                "name": "virtualNetworkName"
+                "name": "virtualNetworkName",
+                "createOnly": true
             }
         },
         "methods": {
@@ -9468,6 +11410,51 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true
+            },
+            "ddosCustomPolicy": {
+                "type": "DdosCustomPolicy",
+                "group": "Network",
+                "createOnly": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true
+            },
+            "configuration": {
+                "type": "Configuration",
+                "group": "DBforPostgreSQL",
+                "createOnly": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true
+            },
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
+                "group": "Network",
+                "createOnly": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10369,6 +12356,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10509,52 +12501,6 @@
         ]
     },
     {
-        "type": "VirtualWAN",
-        "group": "Network",
-        "apiVersion": "2018-07-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualWans/{VirtualWANName}",
-                "operationId": "VirtualWANs_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualWans/{VirtualWANName}",
-                "operationId": "VirtualWANs_CreateOrUpdate"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualWans/{VirtualWANName}",
-                "operationId": "VirtualWANs_UpdateTags"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualWans/{VirtualWANName}",
-                "operationId": "VirtualWANs_Delete"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualWans",
-                "operationId": "VirtualWANs_List"
-            }
-        },
-        "omitProperties": [
-            "properties.virtualHubs",
-            "properties.vpnSites",
-            "properties.provisioningState",
-            "etag"
-        ],
-        "pickProperties": [
-            "properties.disableVpnEncryption"
-        ],
-        "pickPropertiesCreate": [
-            "properties.disableVpnEncryption"
-        ]
-    },
-    {
         "type": "VpnConnection",
         "group": "Network",
         "apiVersion": "2021-05-01",
@@ -10568,6 +12514,16 @@
                 "type": "VpnGateway",
                 "group": "Network",
                 "name": "gatewayName"
+            },
+            "vpnSite": {
+                "type": "VpnSite",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10646,6 +12602,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
+            },
+            "vpnSite": {
+                "type": "VpnSite",
+                "group": "Network",
+                "createOnly": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10708,6 +12684,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualHub": {
+                "type": "VirtualHub",
+                "group": "Network",
+                "createOnly": true
+            },
+            "p2sVpnServerConfiguration": {
+                "type": "P2sVpnServerConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10782,6 +12768,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualWan": {
+                "type": "VirtualWan",
+                "group": "Network",
+                "createOnly": true
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10855,6 +12851,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "firewallPolicy": {
+                "type": "FirewallPolicy",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10912,6 +12913,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -10972,6 +12978,43 @@
             "properties.keyVaultProperties.keyVersion",
             "properties.keyVaultProperties.keyRsaSize",
             "properties.associatedWorkspaces"
+        ]
+    },
+    {
+        "type": "DataCollectorLog",
+        "group": "OperationalInsights",
+        "apiVersion": "2020-03-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName"
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs/{tableName}",
+                "operationId": "DataCollectorLogs_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs/{tableName}",
+                "operationId": "DataCollectorLogs_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs",
+                "operationId": "DataCollectorLogs_ListByWorkspace"
+            }
+        },
+        "pickProperties": [
+            "properties.name"
+        ],
+        "pickPropertiesCreate": [
+            "properties.name"
         ]
     },
     {
@@ -11072,6 +13115,118 @@
         "pickPropertiesCreate": []
     },
     {
+        "type": "Query",
+        "group": "OperationalInsights",
+        "apiVersion": "2019-09-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "queryPack": {
+                "type": "QueryPack",
+                "group": "OperationalInsights",
+                "name": "queryPackName"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Put"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries",
+                "operationId": "Queries_List"
+            }
+        },
+        "omitProperties": [
+            "properties.id",
+            "properties.timeCreated",
+            "properties.timeModified",
+            "properties.author"
+        ],
+        "pickProperties": [
+            "properties.displayName",
+            "properties.description",
+            "properties.body",
+            "properties.related.categories",
+            "properties.related.resourceTypes",
+            "properties.related.solutions",
+            "properties.tags",
+            "properties.properties"
+        ],
+        "pickPropertiesCreate": [
+            "properties.displayName",
+            "properties.description",
+            "properties.body",
+            "properties.related.categories",
+            "properties.related.resourceTypes",
+            "properties.related.solutions",
+            "properties.tags",
+            "properties.properties"
+        ]
+    },
+    {
+        "type": "QueryPack",
+        "group": "OperationalInsights",
+        "apiVersion": "2019-09-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName"
+            },
+            "query": {
+                "type": "Query",
+                "group": "OperationalInsights",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_UpdateTags"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/queryPacks",
+                "operationId": "QueryPacks_List"
+            }
+        },
+        "omitProperties": [
+            "properties.queryPackId",
+            "properties.timeCreated",
+            "properties.timeModified",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
         "type": "SavedSearch",
         "group": "OperationalInsights",
         "apiVersion": "2020-08-01",
@@ -11140,6 +13295,11 @@
                 "type": "Workspace",
                 "group": "OperationalInsights",
                 "name": "workspaceName"
+            },
+            "linkedStorageAccount": {
+                "type": "LinkedStorageAccount",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -11191,6 +13351,11 @@
                 "type": "Workspace",
                 "group": "OperationalInsights",
                 "name": "workspaceName"
+            },
+            "linkedStorageAccount": {
+                "type": "LinkedStorageAccount",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -11238,6 +13403,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "cluster": {
+                "type": "Cluster",
+                "group": "OperationalInsights",
+                "createOnly": true
             }
         },
         "methods": {
@@ -11469,6 +13639,11 @@
                 "type": "P2sVpnServerConfiguration",
                 "group": "Network",
                 "name": "serverName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -11510,6 +13685,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -11734,6 +13914,11 @@
                 "type": "P2sVpnServerConfiguration",
                 "group": "Network",
                 "name": "serverName"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -12147,6 +14332,11 @@
                 "type": "StorageAccount",
                 "group": "Storage",
                 "name": "accountName"
+            },
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -12269,6 +14459,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -12506,6 +14701,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -12580,6 +14780,11 @@
                 "type": "AppServiceCertificateOrder",
                 "group": "CertificateRegistration",
                 "name": "certificateOrderName"
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -12737,6 +14942,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13031,6 +15241,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "kubeEnvironment": {
+                "type": "KubeEnvironment",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13190,6 +15410,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "serverFarm": {
+                "type": "ServerFarm",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13256,6 +15491,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13379,6 +15619,11 @@
                 "type": "AppServiceCertificateOrder",
                 "group": "CertificateRegistration",
                 "name": "certificateOrderName"
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13617,6 +15862,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true
+            },
+            "globalSubscriptionPublishingCredentials": {
+                "type": "GlobalSubscriptionPublishingCredentials",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -13896,6 +16151,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -14015,6 +16275,21 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "serverFarm": {
+                "type": "ServerFarm",
+                "group": "Web",
+                "createOnly": true
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "webApp": {
+                "type": "WebApp",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -14766,6 +17041,11 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -14825,6 +17105,11 @@
                 "type": "SiteSlot",
                 "group": "Web",
                 "name": "slot"
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -15359,6 +17644,21 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "serverFarm": {
+                "type": "ServerFarm",
+                "group": "Web",
+                "createOnly": true
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "webApp": {
+                "type": "WebApp",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -16066,6 +18366,11 @@
                 "type": "StaticSite",
                 "group": "Web",
                 "name": "name"
+            },
+            "userProvidedFunctionAppForStaticSiteBuild": {
+                "type": "UserProvidedFunctionAppForStaticSiteBuild",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -16116,6 +18421,11 @@
                 "type": "StaticSiteBuild",
                 "group": "Web",
                 "name": "environmentName"
+            },
+            "userProvidedFunctionAppForStaticSite": {
+                "type": "UserProvidedFunctionAppForStaticSite",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -16156,6 +18466,26 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "serverFarm": {
+                "type": "ServerFarm",
+                "group": "Web",
+                "createOnly": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -16542,6 +18872,11 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -16754,6 +19089,11 @@
                 "type": "SiteSlot",
                 "group": "Web",
                 "name": "slot"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -17568,6 +19908,11 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -17621,6 +19966,11 @@
                 "type": "SiteSlot",
                 "group": "Web",
                 "name": "slot"
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
             }
         },
         "methods": {
@@ -19134,6 +21484,31 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "serverFarm": {
+                "type": "ServerFarm",
+                "group": "Web",
+                "createOnly": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "hostingEnvironment": {
+                "type": "HostingEnvironment",
+                "group": "Web",
+                "createOnly": true
+            },
+            "domain": {
+                "type": "Domain",
+                "group": "DomainRegistration",
+                "createOnly": true
+            },
+            "webApp": {
+                "type": "WebApp",
+                "group": "Web",
+                "createOnly": true
             }
         },
         "methods": {
@@ -19558,6 +21933,11 @@
                 "type": "Site",
                 "group": "Web",
                 "name": "name"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {
@@ -19607,6 +21987,11 @@
                 "type": "SiteSlot",
                 "group": "Web",
                 "name": "slot"
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
             }
         },
         "methods": {

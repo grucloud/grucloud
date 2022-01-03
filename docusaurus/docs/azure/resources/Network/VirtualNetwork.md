@@ -1,42 +1,202 @@
 ---
 id: VirtualNetwork
-title: Virtual Network
+title: VirtualNetwork
 ---
-
-Provides a virtual network.
-
+Provides a **VirtualNetwork** from the **Network** group
+## Examples
+### Create virtual network
 ```js
-const virtualNetwork = provider.makeVirtualNetwork({
-  name: `virtual-network`,
-  dependencies: { resourceGroup },
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      flowTimeoutInMinutes: 10,
+    },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
+
+```
+
+### Create virtual network with subnet
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        { name: "test-1", properties: { addressPrefix: "10.0.0.0/24" } },
+      ],
+    },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
+
+```
+
+### Create virtual network with subnet containing address prefixes
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
   properties: () => ({
     properties: {
       addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
       subnets: [
         {
-          name: `subnet`,
+          name: "test-2",
+          properties: { addressPrefixes: ["10.0.0.0/28", "10.0.1.0/28"] },
+        },
+      ],
+    },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
+
+```
+
+### Create virtual network with Bgp Communities
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        { name: "test-1", properties: { addressPrefix: "10.0.0.0/24" } },
+      ],
+      bgpCommunities: { virtualNetworkCommunity: "12076:20000" },
+    },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
+
+```
+
+### Create virtual network with service endpoints
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        {
+          name: "test-1",
           properties: {
-            addressPrefix: "10.0.0.0/24",
+            addressPrefix: "10.0.0.0/16",
+            serviceEndpoints: [{ service: "Microsoft.Storage" }],
           },
         },
       ],
     },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
   }),
 });
+
 ```
 
-### Examples
+### Create virtual network with service endpoints and service endpoint policy
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        {
+          name: "test-1",
+          properties: {
+            addressPrefix: "10.0.0.0/16",
+            serviceEndpoints: [{ service: "Microsoft.Storage" }],
+            serviceEndpointPolicies: [
+              {
+                id: "/subscriptions/subid/resourceGroups/vnetTest/providers/Microsoft.Network/serviceEndpointPolicies/ServiceEndpointPolicy1",
+              },
+            ],
+          },
+        },
+      ],
+    },
+    location: "eastus2euap",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Compute/vm/resources.js)
+```
 
-### Properties
+### Create virtual network with delegated subnets
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        {
+          name: "test-1",
+          properties: {
+            addressPrefix: "10.0.0.0/24",
+            delegations: [
+              {
+                name: "myDelegation",
+                properties: { serviceName: "Microsoft.Sql/managedInstances" },
+              },
+            ],
+          },
+        },
+      ],
+    },
+    location: "westcentralus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
 
-- [all properties](https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body)
+```
 
-### Dependencies
+### Create virtual network with encryption
+```js
+provider.Network.makeVirtualNetwork({
+  name: "myVirtualNetwork",
+  properties: () => ({
+    properties: {
+      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      subnets: [
+        { name: "test-1", properties: { addressPrefix: "10.0.0.0/24" } },
+      ],
+      encryption: { enabled: true, enforcement: "AllowUnencrypted" },
+    },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
 
+```
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Misc
+The resource version is `2021-05-01`.
 
-### Used By
-
-- [NetworkInterface](./NetworkInterface.md)
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/virtualNetwork.json).

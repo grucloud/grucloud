@@ -27,6 +27,7 @@ exports.fnSpecs = ({ config }) =>
           //TODO
           // CapacityGroup
           // ManagedIdentities
+          // GalleryImage
           networkInterface: {
             type: "NetworkInterface",
             group: "Network",

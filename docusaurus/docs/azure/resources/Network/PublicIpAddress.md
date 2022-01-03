@@ -1,36 +1,50 @@
 ---
-id: PublicIpAddress
-title: Public Ip Address
+id: PublicIPAddress
+title: PublicIPAddress
 ---
-
-Provides a Public Ip Address:
-
+Provides a **PublicIPAddress** from the **Network** group
+## Examples
+### Create public IP address defaults
 ```js
-const publicIpAddress = provider.makePublicIpAddress({
-  name: `ip`,
-  dependencies: {
-    resourceGroup,
-  },
-  properties: () => ({
-    properties: {
-      publicIPAllocationMethod: "Dynamic",
-    },
+provider.Network.makePublicIPAddress({
+  name: "myPublicIPAddress",
+  properties: () => ({ location: "eastus" }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
   }),
 });
+
 ```
 
-### Examples
+### Create public IP address allocation method
+```js
+provider.Network.makePublicIPAddress({
+  name: "myPublicIPAddress",
+  properties: () => ["1"],
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Compute/vm/resources.js)
+```
 
-### Properties
+### Create public IP address DNS
+```js
+provider.Network.makePublicIPAddress({
+  name: "myPublicIPAddress",
+  properties: () => ({
+    properties: { dnsSettings: { domainNameLabel: "dnslbl" } },
+    location: "eastus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  }),
+});
 
-- [all properties](https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body)
-
-### Dependencies
-
+```
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Misc
+The resource version is `2021-05-01`.
 
-### Used By
-
-- [NetworkInterface](./NetworkInterface.md)
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/publicIpAddress.json).

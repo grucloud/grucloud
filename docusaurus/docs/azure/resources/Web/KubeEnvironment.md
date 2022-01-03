@@ -1,29 +1,13 @@
 ---
 id: KubeEnvironment
-title: Kube Environment
+title: KubeEnvironment
 ---
-
-Provides a Kube Environment:
-
-```js
-provider.Web.makeKubeEnvironment({
-  name: "dev",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["rg"],
-    workspace: resources.OperationalInsights.Workspace["logs"],
-  }),
-});
-```
-
-### Examples
-
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Web/containerapps/plantuml/resources.js)
-
-### Properties
-
-- [all properties](https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments/create-or-update)
-
-### Dependencies
-
+Provides a **KubeEnvironment** from the **Web** group
+## Examples
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../OperationalInsights/Workspace.md)
+## Misc
+The resource version is `2021-02-01`.
+
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-02-01/KubeEnvironments.json).

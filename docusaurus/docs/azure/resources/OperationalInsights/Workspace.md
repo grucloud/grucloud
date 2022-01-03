@@ -2,35 +2,26 @@
 id: Workspace
 title: Workspace
 ---
-
-Provides a log analytics workspace:
-
+Provides a **Workspace** from the **OperationalInsights** group
+## Examples
+### WorkspacesCreate
 ```js
-provider.LogAnalytics.makeWorkspace({
-  name: "logs",
-  properties: ({ config }) => ({
-    properties: {
-      sku: {
-        name: "pergb2018",
-      },
-      retentionInDays: 30,
-    },
+provider.OperationalInsights.makeWorkspace({
+  name: "myWorkspace",
+  properties: () => ({
+    properties: { sku: { name: "PerGB2018" }, retentionInDays: 30 },
+    location: "australiasoutheast",
+    tags: { tag1: "val1" },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["rg"],
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
   }),
 });
+
 ```
-
-### Examples
-
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/containerapps/plantuml/resources.js)
-
-### Properties
-
-- [all properties](https://docs.microsoft.com/en-us/rest/api/loganalytics/workspaces/create-or-update)
-
-### Used By
-
-- [KubeEnvironment](../AppService/KubeEnvironment.md)
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Misc
+The resource version is `2021-06-01`.
+
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/stable/2021-06-01/Workspaces.json).

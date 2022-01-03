@@ -1,5 +1,22 @@
 ## Bugs
 
+- remove identity from
+  "type": "TaskRun",
+  "group": "ContainerRegistry",
+  "pickPropertiesCreate": [
+  "identity.type",
+  "identity.
+
+- env var for "type": "Token",
+  "group": "ContainerRegistry",
+
+"type": "PrivateEndpointConnection",
+"group": "KeyVault",
+
+"pickPropertiesCreate": [
+"etag"
+]
+
 - check stage for all providers
 - compare refactor
 - compare Tags

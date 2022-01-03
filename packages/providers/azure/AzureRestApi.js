@@ -19,6 +19,7 @@ const {
   gte,
 } = require("rubico");
 const {
+  append,
   prepend,
   groupBy,
   pluck,
@@ -40,18 +41,20 @@ const {
 } = require("rubico/x");
 const path = require("path");
 const fs = require("fs").promises;
+
 const pluralize = require("pluralize");
 const { snakeCase } = require("change-case");
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-
 const { isSubstituable } = require("./AzureCommon");
+const { writeDoc } = require("./AzureDoc");
 
 const ResourcesExcludes = [
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
-  "Storage::BlobInventoryPolicy", //TODO 404 on list
+  "ContainerService::OpenShiftManagedCluster", // 404
+  "Network::PublicIpAddress", // Renamed to PublicIPAddress
   "Network::ExpressRouteCrossConnection",
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
@@ -59,6 +62,7 @@ const ResourcesExcludes = [
   "Network::SecurityRule",
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
+  "Storage::BlobInventoryPolicy", //TODO 404 on list
   "Web::CertificateCsr",
   "Web::ClassicMobileService",
   "Web::Domain",
@@ -337,7 +341,22 @@ const findGetAllByParentPath =
       ]),
     ])();
 
-const findResources = ({ paths, group, groupDir, apiVersion }) =>
+const makeResourceDir = ({ dir, name }) =>
+  pipe([
+    () => dir,
+    callProp("split", "/"),
+    callProp("slice", -5),
+    tap((params) => {
+      assert(true);
+    }),
+    callProp("join", "/"),
+    append(`/${name}`),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+const findResources = ({ dir, name, paths, group, groupDir, apiVersion }) =>
   pipe([
     () => paths,
     filter(
@@ -349,6 +368,9 @@ const findResources = ({ paths, group, groupDir, apiVersion }) =>
     map((methods) =>
       pipe([
         () => resourceNameFromOperationId(methods.get),
+        tap((params) => {
+          assert(true);
+        }),
         (names) => ({
           ...names,
           group: formatGroup(group),
@@ -380,6 +402,7 @@ const findResources = ({ paths, group, groupDir, apiVersion }) =>
                 ])(),
             }),
           ])(),
+          dir: makeResourceDir({ dir, name }),
         }),
       ])()
     ),
@@ -401,7 +424,7 @@ const processSwagger =
       }),
       () => path.resolve(dir, name),
       tap((filename) => {
-        console.log(`parsing ${filename}`);
+        //console.log(`parsing ${filename}`);
       }),
       (filename) => SwaggerParser.dereference(filename, {}),
       (swagger) =>
@@ -409,7 +432,15 @@ const processSwagger =
           () => swagger,
           assignSwaggerPaths,
           (paths) =>
-            findResources({ paths, swagger, group, groupDir, apiVersion }),
+            findResources({
+              dir,
+              name,
+              paths,
+              swagger,
+              group,
+              groupDir,
+              apiVersion,
+            }),
           (resources) => ({
             name,
             group,
@@ -422,7 +453,7 @@ const processSwagger =
 
 exports.processSwagger = processSwagger;
 
-const listPerVerion = ({ dir, group, groupDir }) =>
+const listPerVersion = ({ dir, group, groupDir }) =>
   pipe([
     tap(({ name }) => {
       assert(name);
@@ -434,7 +465,7 @@ const listPerVerion = ({ dir, group, groupDir }) =>
       pipe([
         () => fs.readdir(dir, { withFileTypes: true }),
         filter(callProp("isDirectory")),
-
+        filter(pipe([get("name"), not(includes("private"))])),
         flatMap(({ name: apiVersion }) =>
           pipe([
             () => path.resolve(dir, apiVersion),
@@ -460,43 +491,20 @@ const listPerVerion = ({ dir, group, groupDir }) =>
               ])(),
           ])()
         ),
-        tap((params) => {
-          assert(true);
-        }),
         pluck("resources"),
-        tap((params) => {
-          assert(true);
-        }),
         flatten,
-        groupBy("type"),
-        tap((params) => {
-          assert(true);
-        }),
-        map(
-          pipe([
-            callProp("sort", (a, b) =>
-              a.apiVersion.localeCompare(b.apiVersion)
-            ),
-            last,
-          ])
-        ),
-        values,
-        tap((params) => {
-          assert(true);
-        }),
-        callProp("sort", (a, b) => a.type.localeCompare(b.type)),
       ])(),
   ]);
 
 const listPerGroup =
-  ({ baseDir }) =>
+  ({ directorySpec }) =>
   (groupDir) =>
     pipe([
       tap(() => {
-        assert(baseDir);
+        assert(directorySpec);
         assert(groupDir);
       }),
-      () => path.resolve(baseDir, groupDir, "resource-manager"),
+      () => path.resolve(directorySpec, groupDir, "resource-manager"),
       (dir) =>
         tryCatch(
           pipe([
@@ -507,8 +515,22 @@ const listPerGroup =
               pipe([
                 () => path.resolve(dir, group),
                 (specDir) => fs.readdir(specDir, { withFileTypes: true }),
-                find(eq(get("name"), "stable")),
-                unless(isEmpty, listPerVerion({ dir, group, groupDir })),
+                flatMap(listPerVersion({ dir, group, groupDir })),
+                groupBy("type"),
+                map(
+                  pipe([
+                    // Trick to sort 2021-06-01 greater than 2021-06-01-preview
+                    callProp("sort", (a, b) =>
+                      `${a.apiVersion}-x`.localeCompare(`${b.apiVersion}-x`)
+                    ),
+                    last,
+                  ])
+                ),
+                values,
+                tap((params) => {
+                  assert(true);
+                }),
+                callProp("sort", (a, b) => a.type.localeCompare(b.type)),
               ])()
             ),
             filter(not(isEmpty)),
@@ -1035,42 +1057,52 @@ const filterNoSubscription = ({ methods }) =>
     callProp("startsWith", "/subscription/"),
   ])();
 
-const listSwaggerFiles = ({
-  directory,
-  specPath = "azure-rest-api-specs/specification",
+const writeSchema = ({ outputSchemaFile }) =>
+  pipe([
+    tap((params) => {
+      assert(outputSchemaFile);
+    }),
+    map(pickResourceInfo),
+    tap((params) => {
+      assert(true);
+    }),
+    (json) => JSON.stringify(json, null, 4),
+    (content) => fs.writeFile(outputSchemaFile, content),
+  ]);
+
+const processSwaggerFiles = ({
+  directorySpec,
+  directoryDoc,
+  outputSchemaFile,
   filterDirs = [],
 }) =>
   pipe([
     tap((params) => {
-      assert(directory);
+      assert(directorySpec);
     }),
-    () => path.resolve(directory, specPath),
-    (baseDir) =>
-      pipe([
-        () => fs.readdir(baseDir, { withFileTypes: true }),
-        filter(callProp("isDirectory")),
-        filter(
-          or([
-            () => isEmpty(filterDirs),
-            ({ name }) => pipe([() => filterDirs, includes(name)])(),
-          ])
-        ),
-        flatMap(pipe([get("name"), listPerGroup({ baseDir })])),
-        filter(not(isEmpty)),
-        //filter(filterNoSubscription),
-        (resources) =>
-          pipe([() => resources, map(addDependencies({ resources }))])(),
-        filter(filterExclusion),
-        filter(filterNoDependency),
-        filter(filterGetAll),
-        map(pickResourceInfo),
-        tap((params) => {
-          assert(true);
-        }),
-        (json) => JSON.stringify(json, null, 4),
-        (content) =>
-          fs.writeFile(path.resolve(directory, "AzureSchema.json"), content),
-      ])(),
+    () => fs.readdir(directorySpec, { withFileTypes: true }),
+    filter(callProp("isDirectory")),
+    filter(
+      or([
+        () => isEmpty(filterDirs),
+        ({ name }) => pipe([() => filterDirs, includes(name)])(),
+      ])
+    ),
+    flatMap(pipe([get("name"), listPerGroup({ directorySpec })])),
+    filter(not(isEmpty)),
+    //filter(filterNoSubscription),
+    (resources) =>
+      pipe([() => resources, map(addDependencies({ resources }))])(),
+    filter(filterExclusion),
+    filter(filterNoDependency),
+    filter(filterGetAll),
+    tap((params) => {
+      assert(true);
+    }),
+    fork({
+      doc: writeDoc({ directoryDoc }),
+      schema: writeSchema({ outputSchemaFile }),
+    }),
   ])();
 
-exports.listSwaggerFiles = listSwaggerFiles;
+exports.processSwaggerFiles = processSwaggerFiles;

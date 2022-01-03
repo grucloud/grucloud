@@ -2,37 +2,55 @@
 id: Subnet
 title: Subnet
 ---
-
-Provides a subnet.
-
+Provides a **Subnet** from the **Network** group
+## Examples
+### Create subnet
 ```js
 provider.Network.makeSubnet({
-  name: "subnet",
-  properties: ({ config }) => ({
+  name: "mySubnet",
+  properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  }),
+});
+
+```
+
+### Create subnet with service endpoints
+```js
+provider.Network.makeSubnet({
+  name: "mySubnet",
+  properties: () => ({
     properties: {
-      addressPrefix: "10.0.0.0/24",
+      addressPrefix: "10.0.0.0/16",
+      serviceEndpoints: [{ service: "Microsoft.Storage" }],
     },
   }),
   dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-    virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
   }),
 });
+
 ```
 
-### Examples
+### Create subnet with a delegation
+```js
+provider.Network.makeSubnet({
+  name: "mySubnet",
+  properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  }),
+});
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Compute/vm/resources.js)
-
-### Properties
-
-- [all properties](https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body)
-
-### Dependencies
-
+```
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Virtual Network](./VirtualNetwork.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+## Misc
+The resource version is `2021-05-01`.
 
-### Used By
-
-- [NetworkInterface](./NetworkInterface.md)
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/virtualNetwork.json).

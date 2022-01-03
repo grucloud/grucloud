@@ -30,7 +30,7 @@ const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
 
-const overideSpec = (config) =>
+const createSpecsOveride = (config) =>
   pipe([
     () => [
       ComputeSpec,
@@ -44,7 +44,9 @@ const overideSpec = (config) =>
     tap((params) => {
       assert(true);
     }),
-  ]);
+  ])();
+
+exports.createSpecsOveride = createSpecsOveride;
 
 const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
@@ -87,7 +89,13 @@ const buildDefaultSpec = fork({
           assert(true);
         }),
         pick(pickPropertiesCreate),
-        omit(["properties.provisioningState", "etag", "name", "type"]),
+        omit([
+          "properties.provisioningState",
+          "etag",
+          "name",
+          "type",
+          "identity",
+        ]),
       ]),
   compare: ({
     pickProperties = [],
@@ -142,10 +150,15 @@ const findByGroupAndType = ({ group, type }) =>
       assert(true);
     }),
   ]);
+exports.findByGroupAndType = findByGroupAndType;
 
-const mergeSpec = ({ specsGen, overideSpecs }) =>
+const mergeSpec = ({ specsGen, specsOveride }) =>
   pipe([
-    () => overideSpecs,
+    tap((params) => {
+      assert(Array.isArray(specsGen));
+      assert(Array.isArray(specsOveride));
+    }),
+    () => specsOveride,
     map((overideSpec) =>
       pipe([
         () => specsGen,
@@ -161,27 +174,29 @@ const mergeSpec = ({ specsGen, overideSpecs }) =>
     }),
   ])();
 
+exports.mergeSpec = mergeSpec;
+
 exports.fnSpecs = (config) =>
   pipe([
     assign({
-      overideSpecs: overideSpec(config),
+      specsOveride: () => createSpecsOveride(config),
       specsGen: pipe([() => Schema]),
     }),
     assign({
-      overideSpecs: mergeSpec,
+      specsOveride: mergeSpec,
     }),
     assign({
-      specsGen: ({ specsGen, overideSpecs }) =>
+      specsGen: ({ specsGen, specsOveride }) =>
         pipe([
           () => specsGen,
           filter(
             not((spec) =>
-              pipe([() => overideSpecs, findByGroupAndType(spec)])()
+              pipe([() => specsOveride, findByGroupAndType(spec)])()
             )
           ),
         ])(),
     }),
-    ({ specsGen, overideSpecs }) => [...specsGen, ...overideSpecs],
+    ({ specsGen, specsOveride }) => [...specsGen, ...specsOveride],
     map(
       assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
     ),

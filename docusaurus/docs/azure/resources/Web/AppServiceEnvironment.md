@@ -1,0 +1,12 @@
+---
+id: AppServiceEnvironment
+title: AppServiceEnvironment
+---
+Provides a **AppServiceEnvironment** from the **Web** group
+## Examples
+## Dependencies
+- [ResourceGroup](../Resources/ResourceGroup.md)
+## Misc
+The resource version is `2021-02-01`.
+
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-02-01/AppServiceEnvironments.json).
