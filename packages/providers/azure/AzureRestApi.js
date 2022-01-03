@@ -65,6 +65,7 @@ const ResourcesExcludes = [
   "Network::SecurityRule",
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
+  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, uksouth, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
   "Storage::BlobInventoryPolicy", //TODO 404 on list
   "Web::CertificateCsr",
   "Web::ClassicMobileService",
@@ -564,6 +565,23 @@ const addResourceGroupDependency = pipe([
     () => undefined,
   ]),
 ]);
+
+const addManagedIdentityDependency = pipe([
+  get("put.parameters"),
+  find(eq(get("in"), "body")),
+  get("schema.properties"),
+  get("identity"),
+  get("properties.userAssignedIdentities"),
+  unless(isEmpty, () => ({
+    managedIdenties: {
+      type: "UserAssignedIdentity",
+      group: "ManagedIdentity",
+      createOnly: true,
+      list: true,
+    },
+  })),
+]);
+
 const findIndexOfParams = ({ name }) =>
   pipe([
     tap((path) => {
@@ -930,6 +948,7 @@ const addDependencies = ({ resources }) =>
         }),
         () => ({
           ...addResourceGroupDependency(methods),
+          ...addManagedIdentityDependency(methods),
           ...addDependencyFromBody({
             resources,
             method: methods.put,
@@ -1361,8 +1380,14 @@ const writeSchema = ({ outputSchemaFile }) =>
   ]);
 
 const processSwaggerFiles = ({
-  directorySpec,
-  directoryDoc,
+  directorySpec = path.resolve(
+    process.cwd(),
+    "azure-rest-api-specs/specification"
+  ),
+  directoryDoc = path.resolve(
+    process.cwd(),
+    "../../../docusaurus/docs/azure/resources/"
+  ),
   outputSchemaFile,
   filterDirs = [],
 }) =>

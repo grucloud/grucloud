@@ -25,6 +25,9 @@ provider.ContainerRegistry.makeTaskRun({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     pipelineRun: resources.ContainerRegistry.PipelineRun["myPipelineRun"],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
   }),
@@ -33,6 +36,7 @@ provider.ContainerRegistry.makeTaskRun({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [PipelineRun](../ContainerRegistry/PipelineRun.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema

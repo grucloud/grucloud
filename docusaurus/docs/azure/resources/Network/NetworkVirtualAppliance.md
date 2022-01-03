@@ -38,6 +38,9 @@ provider.Network.makeNetworkVirtualAppliance({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     virtualHub: resources.Network.VirtualHub["myVirtualHub"],
   }),
 });
@@ -45,6 +48,7 @@ provider.Network.makeNetworkVirtualAppliance({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [VirtualHub](../Network/VirtualHub.md)
 ## Swagger Schema
 ```js

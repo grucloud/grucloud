@@ -137,6 +137,7 @@ module.exports = AzClient = ({
         assert(dependencies);
       }),
       () => dependencies,
+      filter(not(get("createOnly"))),
       map.entries(([key, { group, type, name }]) => [
         key,
         {

@@ -62,20 +62,26 @@ const buildProperties = ({ example }) =>
     ]),
   ])();
 
-const buildDependencies = ({ dependencies }) =>
+//TODO search for deps in example
+const buildDependencies = ({ example, dependencies }) =>
   pipe([
     tap((params) => {
       assert(dependencies);
     }),
     () => dependencies,
-    map.entries(([dependencyName, { type, group }]) => [
+    map.entries(([dependencyName, { type, group, list }]) => [
       dependencyName,
       pipe([
         tap(() => {
           assert(type);
           assert(group);
         }),
-        () => `${dependencyName}: resources.${group}.${type}["my${type}"]`,
+        switchCase([
+          () => list,
+          () => `${dependencyName}: [resources.${group}.${type}["my${type}"]]`,
+          () => `${dependencyName}: resources.${group}.${type}["my${type}"]`,
+        ]),
+        ,
       ])(),
     ]),
     values,
@@ -95,7 +101,10 @@ const prettierMakeResource = ({ group, type, example, dependencies }) =>
     () =>
       `provider.${group}.make${type}({
         name: "my${type}",
-        ${buildProperties({ example })}${buildDependencies({ dependencies })}
+        ${buildProperties({ example })}${buildDependencies({
+        example,
+        dependencies,
+      })}
       })`,
     tap((params) => {
       assert(true);

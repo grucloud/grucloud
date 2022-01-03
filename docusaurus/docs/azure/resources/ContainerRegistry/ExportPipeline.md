@@ -22,6 +22,9 @@ provider.ContainerRegistry.makeExportPipeline({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
   }),
 });
@@ -29,6 +32,7 @@ provider.ContainerRegistry.makeExportPipeline({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
 ```js

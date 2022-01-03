@@ -48,21 +48,6 @@ exports.fnSpecs = ({ config }) =>
           },
         },
       },
-      {
-        type: "VirtualNetworkRule",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-          },
-          subnet: {
-            type: "Subnet",
-            group: "Network",
-            createOnly: true,
-          },
-        },
-      },
     ],
     map(defaultsDeep({ group })),
   ])();

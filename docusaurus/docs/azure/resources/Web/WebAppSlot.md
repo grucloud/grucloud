@@ -6,6 +6,7 @@ Provides a **WebAppSlot** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [ServerFarm](../Web/ServerFarm.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
 - [WebApp](../Web/WebApp.md)

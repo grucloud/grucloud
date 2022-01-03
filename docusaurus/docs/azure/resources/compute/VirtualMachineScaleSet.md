@@ -59,6 +59,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -139,6 +142,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -208,6 +214,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -282,6 +291,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -365,6 +377,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -439,6 +454,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -515,6 +533,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -585,6 +606,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -659,6 +683,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -725,6 +752,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -801,6 +831,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -867,6 +900,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -942,6 +978,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1017,6 +1056,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1092,6 +1134,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1162,6 +1207,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1247,6 +1295,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1322,6 +1373,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1413,6 +1467,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1488,6 +1545,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1575,6 +1635,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1648,6 +1711,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1714,6 +1780,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1775,6 +1844,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1845,6 +1917,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1930,6 +2005,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2000,6 +2078,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2091,6 +2172,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2165,6 +2249,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2238,6 +2325,9 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2253,6 +2343,7 @@ provider.Compute.makeVirtualMachineScaleSet({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)

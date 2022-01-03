@@ -82,6 +82,9 @@ provider.Network.makeFirewallPolicy({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
@@ -89,6 +92,7 @@ provider.Network.makeFirewallPolicy({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
 ```js

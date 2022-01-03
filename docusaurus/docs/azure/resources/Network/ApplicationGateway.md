@@ -286,6 +286,9 @@ provider.Network.makeApplicationGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     subnet: resources.Network.Subnet["mySubnet"],
     publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
     firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
@@ -300,6 +303,7 @@ provider.Network.makeApplicationGateway({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)

@@ -16,6 +16,9 @@ provider.ContainerRegistry.makeRegistry({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     privateEndpointConnection:
       resources.ContainerRegistry.PrivateEndpointConnection[
         "myPrivateEndpointConnection"
@@ -37,6 +40,9 @@ provider.ContainerRegistry.makeRegistry({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdenties: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
     privateEndpointConnection:
       resources.ContainerRegistry.PrivateEndpointConnection[
         "myPrivateEndpointConnection"
@@ -47,6 +53,7 @@ provider.ContainerRegistry.makeRegistry({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [PrivateEndpointConnection](../ContainerRegistry/PrivateEndpointConnection.md)
 ## Swagger Schema
 ```js

@@ -18,6 +18,7 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     subnet: resources.Network.Subnet["mySubnet"],
+    server: resources.DBforPostgreSQL.Server["myServer"],
   }),
 });
 
@@ -25,6 +26,7 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
+- [Server](../DBforPostgreSQL/Server.md)
 ## Swagger Schema
 ```js
 {
