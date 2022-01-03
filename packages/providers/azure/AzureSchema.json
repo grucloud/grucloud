@@ -1199,6 +1199,12 @@
         "pickPropertiesCreate": [
             "properties.excludeDisks",
             "properties.timeCreated"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.sourceMetadata.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ]
     },
     {
@@ -1503,6 +1509,7 @@
             "properties.storageProfile.imageReference.sharedGalleryImageId",
             "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
             "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
+            "properties.osProfile.adminPassword",
             "properties.availabilitySet.id",
             "properties.virtualMachineScaleSet.id",
             "properties.proximityPlacementGroup.id",
@@ -1549,7 +1556,6 @@
             "properties.additionalCapabilities.hibernationEnabled",
             "properties.osProfile.computerName",
             "properties.osProfile.adminUsername",
-            "properties.osProfile.adminPassword",
             "properties.osProfile.customData",
             "properties.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -1625,7 +1631,6 @@
             "properties.additionalCapabilities.hibernationEnabled",
             "properties.osProfile.computerName",
             "properties.osProfile.adminUsername",
-            "properties.osProfile.adminPassword",
             "properties.osProfile.customData",
             "properties.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -1667,6 +1672,12 @@
             "zones",
             "extendedLocation.name",
             "extendedLocation.type"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ]
     },
     {
@@ -1781,6 +1792,7 @@
         },
         "omitProperties": [
             "properties.source.commandId",
+            "properties.runAsPassword",
             "properties.provisioningState",
             "properties.instanceView"
         ],
@@ -1791,7 +1803,6 @@
             "properties.protectedParameters",
             "properties.asyncExecution",
             "properties.runAsUser",
-            "properties.runAsPassword",
             "properties.timeoutInSeconds",
             "properties.outputBlobUri",
             "properties.errorBlobUri"
@@ -1803,10 +1814,15 @@
             "properties.protectedParameters",
             "properties.asyncExecution",
             "properties.runAsUser",
-            "properties.runAsPassword",
             "properties.timeoutInSeconds",
             "properties.outputBlobUri",
             "properties.errorBlobUri"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.runAsPassword",
+                "suffix": "RUN_AS_PASSWORD"
+            }
         ],
         "propertiesDefault": {
             "properties": {
@@ -1873,6 +1889,7 @@
             }
         },
         "omitProperties": [
+            "properties.virtualMachineProfile.osProfile.adminPassword",
             "properties.virtualMachineProfile.storageProfile.imageReference.exactVersion",
             "properties.virtualMachineProfile.storageProfile.imageReference.sharedGalleryImageId",
             "properties.virtualMachineProfile.networkProfile.healthProbe.id",
@@ -1905,7 +1922,6 @@
             "properties.automaticRepairsPolicy.gracePeriod",
             "properties.virtualMachineProfile.osProfile.computerNamePrefix",
             "properties.virtualMachineProfile.osProfile.adminUsername",
-            "properties.virtualMachineProfile.osProfile.adminPassword",
             "properties.virtualMachineProfile.osProfile.customData",
             "properties.virtualMachineProfile.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.virtualMachineProfile.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -1995,7 +2011,6 @@
             "properties.automaticRepairsPolicy.gracePeriod",
             "properties.virtualMachineProfile.osProfile.computerNamePrefix",
             "properties.virtualMachineProfile.osProfile.adminUsername",
-            "properties.virtualMachineProfile.osProfile.adminPassword",
             "properties.virtualMachineProfile.osProfile.customData",
             "properties.virtualMachineProfile.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.virtualMachineProfile.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -2063,6 +2078,12 @@
             "zones",
             "extendedLocation.name",
             "extendedLocation.type"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.virtualMachineProfile.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ]
     },
     {
@@ -2208,6 +2229,7 @@
             "properties.storageProfile.imageReference.sharedGalleryImageId",
             "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
             "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
+            "properties.osProfile.adminPassword",
             "properties.availabilitySet.id",
             "properties.provisioningState",
             "properties.modelDefinitionApplied",
@@ -2243,7 +2265,6 @@
             "properties.additionalCapabilities.hibernationEnabled",
             "properties.osProfile.computerName",
             "properties.osProfile.adminUsername",
-            "properties.osProfile.adminPassword",
             "properties.osProfile.customData",
             "properties.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -2309,7 +2330,6 @@
             "properties.additionalCapabilities.hibernationEnabled",
             "properties.osProfile.computerName",
             "properties.osProfile.adminUsername",
-            "properties.osProfile.adminPassword",
             "properties.osProfile.customData",
             "properties.osProfile.windowsConfiguration.provisionVMAgent",
             "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
@@ -2345,6 +2365,12 @@
             "plan.publisher",
             "plan.product",
             "plan.promotionCode"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ]
     },
     {
@@ -2380,6 +2406,7 @@
             "properties.provisioningState",
             "properties.servicePrincipalProfile.clientId",
             "properties.masterProfile.fqdn",
+            "properties.windowsProfile.adminPassword",
             "properties.diagnosticsProfile.vmDiagnostics.storageUri"
         ],
         "pickProperties": [
@@ -2390,7 +2417,6 @@
             "properties.masterProfile.dnsPrefix",
             "properties.agentPoolProfiles",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.diagnosticsProfile.vmDiagnostics.enabled"
@@ -2403,10 +2429,15 @@
             "properties.masterProfile.dnsPrefix",
             "properties.agentPoolProfiles",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.diagnosticsProfile.vmDiagnostics.enabled"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.windowsProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ],
         "propertiesDefault": {
             "properties": {
@@ -3747,6 +3778,7 @@
             "properties.servicePrincipalProfile.keyVaultSecretRef.vaultID",
             "properties.masterProfile.vnetSubnetID",
             "properties.masterProfile.fqdn",
+            "properties.windowsProfile.adminPassword",
             "properties.diagnosticsProfile.vmDiagnostics.storageUri"
         ],
         "pickProperties": [
@@ -3764,7 +3796,6 @@
             "properties.masterProfile.storageProfile",
             "properties.agentPoolProfiles",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.diagnosticsProfile.vmDiagnostics.enabled"
@@ -3784,10 +3815,15 @@
             "properties.masterProfile.storageProfile",
             "properties.agentPoolProfiles",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.diagnosticsProfile.vmDiagnostics.enabled"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.windowsProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ],
         "propertiesDefault": {
             "properties": {
@@ -3886,6 +3922,7 @@
             "properties.fqdn",
             "properties.privateFQDN",
             "properties.azurePortalFQDN",
+            "properties.windowsProfile.adminPassword",
             "properties.servicePrincipalProfile.clientId",
             "properties.aadProfile.clientAppID",
             "properties.aadProfile.serverAppID",
@@ -3907,7 +3944,6 @@
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.windowsProfile.licenseType",
             "properties.windowsProfile.enableCSIProxy",
             "properties.windowsProfile.gmsaProfile.enabled",
@@ -3996,7 +4032,6 @@
             "properties.linuxProfile.adminUsername",
             "properties.linuxProfile.ssh.publicKeys",
             "properties.windowsProfile.adminUsername",
-            "properties.windowsProfile.adminPassword",
             "properties.windowsProfile.licenseType",
             "properties.windowsProfile.enableCSIProxy",
             "properties.windowsProfile.gmsaProfile.enabled",
@@ -4070,6 +4105,12 @@
             "properties.httpProxyConfig.trustedCa",
             "properties.securityProfile.azureDefender.enabled",
             "properties.publicNetworkAccess"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.windowsProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
         ],
         "propertiesDefault": {
             "properties": {
@@ -15266,6 +15307,12 @@
             "properties.keyVaultSecretName",
             "properties.canonicalName",
             "properties.domainValidationMethod"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.password",
+                "suffix": "PASSWORD"
+            }
         ]
     },
     {
@@ -16045,6 +16092,7 @@
             "properties.hostNameSslStates",
             "properties.serverFarmId",
             "properties.lastModifiedTimeUtc",
+            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.autoHealRules.triggers.statusCodes",
             "properties.trafficManagerHostNames",
             "properties.premiumAppDeployed",
@@ -16075,7 +16123,6 @@
             "properties.siteConfig.properties.logsDirectorySizeLimit",
             "properties.siteConfig.properties.detailedErrorLoggingEnabled",
             "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.appSettings",
             "properties.siteConfig.properties.metadata",
             "properties.siteConfig.properties.connectionStrings",
@@ -16149,7 +16196,6 @@
             "properties.siteConfig.properties.logsDirectorySizeLimit",
             "properties.siteConfig.properties.detailedErrorLoggingEnabled",
             "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.appSettings",
             "properties.siteConfig.properties.metadata",
             "properties.siteConfig.properties.connectionStrings",
@@ -16205,6 +16251,12 @@
             "properties.cloningInfo.appSettingsOverrides",
             "properties.cloningInfo.configureLoadBalancing",
             "properties.cloningInfo.trafficManagerProfileName"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.siteConfig.properties.publishingPassword",
+                "suffix": "PUBLISHING_PASSWORD"
+            }
         ]
     },
     {
@@ -16367,6 +16419,7 @@
             }
         },
         "omitProperties": [
+            "properties.publishingPassword",
             "properties.autoHealRules.triggers.statusCodes"
         ],
         "pickProperties": [
@@ -16384,7 +16437,6 @@
             "properties.logsDirectorySizeLimit",
             "properties.detailedErrorLoggingEnabled",
             "properties.publishingUsername",
-            "properties.publishingPassword",
             "properties.appSettings",
             "properties.metadata",
             "properties.connectionStrings",
@@ -16439,7 +16491,6 @@
             "properties.logsDirectorySizeLimit",
             "properties.detailedErrorLoggingEnabled",
             "properties.publishingUsername",
-            "properties.publishingPassword",
             "properties.appSettings",
             "properties.metadata",
             "properties.connectionStrings",
@@ -16478,6 +16529,12 @@
             "properties.autoSwapSlotName",
             "properties.localMySqlEnabled",
             "properties.ipSecurityRestrictions"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.publishingPassword",
+                "suffix": "PUBLISHING_PASSWORD"
+            }
         ]
     },
     {
@@ -16516,6 +16573,7 @@
             }
         },
         "omitProperties": [
+            "properties.publishingPassword",
             "properties.autoHealRules.triggers.statusCodes"
         ],
         "pickProperties": [
@@ -16533,7 +16591,6 @@
             "properties.logsDirectorySizeLimit",
             "properties.detailedErrorLoggingEnabled",
             "properties.publishingUsername",
-            "properties.publishingPassword",
             "properties.appSettings",
             "properties.metadata",
             "properties.connectionStrings",
@@ -16588,7 +16645,6 @@
             "properties.logsDirectorySizeLimit",
             "properties.detailedErrorLoggingEnabled",
             "properties.publishingUsername",
-            "properties.publishingPassword",
             "properties.appSettings",
             "properties.metadata",
             "properties.connectionStrings",
@@ -16627,6 +16683,12 @@
             "properties.autoSwapSlotName",
             "properties.localMySqlEnabled",
             "properties.ipSecurityRestrictions"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.publishingPassword",
+                "suffix": "PUBLISHING_PASSWORD"
+            }
         ]
     },
     {
@@ -17281,6 +17343,7 @@
             "properties.hostNameSslStates",
             "properties.serverFarmId",
             "properties.lastModifiedTimeUtc",
+            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.autoHealRules.triggers.statusCodes",
             "properties.trafficManagerHostNames",
             "properties.premiumAppDeployed",
@@ -17311,7 +17374,6 @@
             "properties.siteConfig.properties.logsDirectorySizeLimit",
             "properties.siteConfig.properties.detailedErrorLoggingEnabled",
             "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.appSettings",
             "properties.siteConfig.properties.metadata",
             "properties.siteConfig.properties.connectionStrings",
@@ -17385,7 +17447,6 @@
             "properties.siteConfig.properties.logsDirectorySizeLimit",
             "properties.siteConfig.properties.detailedErrorLoggingEnabled",
             "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.publishingPassword",
             "properties.siteConfig.properties.appSettings",
             "properties.siteConfig.properties.metadata",
             "properties.siteConfig.properties.connectionStrings",
@@ -17441,6 +17502,12 @@
             "properties.cloningInfo.appSettingsOverrides",
             "properties.cloningInfo.configureLoadBalancing",
             "properties.cloningInfo.trafficManagerProfileName"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.siteConfig.properties.publishingPassword",
+                "suffix": "PUBLISHING_PASSWORD"
+            }
         ]
     },
     {

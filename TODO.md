@@ -1,7 +1,7 @@
 ## Bugs
 
 - key or vault dependencies ?
-
+- DBforPostgreSQL/ServerKey dep key
 - Web::WebAppConfiguration dep Network::Subnet
 
 - ContainerService::ManagedCluster dep OperationalInsights::Workspace

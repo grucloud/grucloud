@@ -62,7 +62,7 @@ describe("AzureRestApi", function () {
   //     }),
   //   ])();
   // });
-  it.only("processSwaggerFiles", async function () {
+  it.skip("processSwaggerFiles", async function () {
     await pipe([
       () => ({
         directorySpec: path.resolve(

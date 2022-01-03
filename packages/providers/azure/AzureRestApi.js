@@ -955,9 +955,12 @@ const isOmit = (key) =>
     () => key.match(new RegExp("Id$", "gi")),
     () => key.match(new RegExp("status", "gi")),
     () => key.match(new RegExp("state", "gi")),
-    get("x-ms-secret"),
     get("x-ms-mutability"),
+    isSecret(key),
   ]);
+
+const isSecret = (key) =>
+  or([() => key.match(new RegExp("password$", "gi")), get("x-ms-secret")]);
 
 const isPreviousProperties = ({ parentPath, key }) =>
   and([not(eq(key, "properties")), pipe([() => parentPath, includes(key)])]);
@@ -1034,7 +1037,7 @@ const buildEnvironmentVariables =
         pipe([
           () => obj,
           switchCase([
-            or([get("x-ms-secret")]),
+            isSecret(key),
             pipe([() => [[...parentPath, key]]]),
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
