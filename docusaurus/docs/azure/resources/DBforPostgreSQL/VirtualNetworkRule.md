@@ -21,7 +21,6 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
       resources.Network.P2sVpnServerConfiguration[
         "myP2sVpnServerConfiguration"
       ],
-    subnet: resources.Network.Subnet["mySubnet"],
   }),
 });
 
@@ -29,7 +28,6 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
-- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2017-12-01`.
 

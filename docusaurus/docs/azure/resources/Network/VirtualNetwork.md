@@ -17,9 +17,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -40,9 +37,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -66,9 +60,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -90,9 +81,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -119,9 +107,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -153,9 +138,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -187,9 +169,6 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
@@ -211,17 +190,12 @@ provider.Network.makeVirtualNetwork({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosProtectionPlan:
-      resources.Network.DdosProtectionPlan["myDdosProtectionPlan"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [NatGateway](../Network/NatGateway.md)
-- [DdosProtectionPlan](../Network/DdosProtectionPlan.md)
 ## Misc
 The resource version is `2021-05-01`.
 

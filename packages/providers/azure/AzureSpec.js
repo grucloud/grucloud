@@ -29,6 +29,7 @@ const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
+const AzClient = require("./AzClient");
 
 const createSpecsOveride = (config) =>
   pipe([

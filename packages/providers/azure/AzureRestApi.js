@@ -798,7 +798,7 @@ const findDependenciesSameGroup = ({ depName, group, type }) =>
 const findDependenciesAllGroup = ({ depName }) =>
   pipe([
     filter((resource) =>
-      pipe([() => depName.match(new RegExp(`${resource.type}$`, "ig"))])()
+      pipe([() => depName.match(new RegExp(`^${resource.type}$`, "ig"))])()
     ),
     tap.if(gte(size, 2), (results) => {
       console.log("findDependenciesAllGroup Mutiple dependencies ", results);
@@ -892,19 +892,16 @@ const addDependencies = ({ resources }) =>
         tap(() => {
           assert(resources);
         }),
-        () => ({}),
-        defaultsDeep(addResourceGroupDependency(methods)),
-        defaultsDeep(
-          addDependencyFromPath({ resources, methods, method: methods.get })
-        ),
-        defaultsDeep(
-          addDependencyFromBody({
+        () => ({
+          ...addResourceGroupDependency(methods),
+          ...addDependencyFromBody({
             resources,
             method: methods.put,
             type,
             group,
-          })
-        ),
+          }),
+          ...addDependencyFromPath({ resources, methods, method: methods.get }),
+        }),
         tap((params) => {
           assert(true);
         }),

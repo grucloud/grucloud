@@ -21,22 +21,22 @@ provider.Network.makeExpressRouteConnection({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    expressRouteGateway:
-      resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
     expressRouteCircuitPeering:
       resources.Network.ExpressRouteCircuitPeering[
         "myExpressRouteCircuitPeering"
       ],
     routeTable: resources.Network.RouteTable["myRouteTable"],
+    expressRouteGateway:
+      resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [RouteTable](../Network/RouteTable.md)
+- [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
 ## Misc
 The resource version is `2021-05-01`.
 

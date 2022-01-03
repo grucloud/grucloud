@@ -6,7 +6,6 @@ Provides a **AppServiceCertificateOrder** from the **CertificateRegistration** g
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Vault](../KeyVault/Vault.md)
 ## Misc
 The resource version is `2021-02-01`.
 

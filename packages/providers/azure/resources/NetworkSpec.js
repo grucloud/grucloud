@@ -21,6 +21,23 @@ exports.fnSpecs = ({ config }) => {
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
         type: "VirtualNetwork",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          // "natGateway": {
+          //     "type": "NatGateway",
+          //     "group": "Network",
+          //     "createOnly": true
+          // },
+          // "ddosProtectionPlan": {
+          //     "type": "DdosProtectionPlan",
+          //     "group": "Network",
+          //     "createOnly": true
+          // }
+        },
         pickPropertiesCreate: [
           "properties.addressSpace.addressPrefixes",
           "properties.flowTimeoutInMinutes",
@@ -45,6 +62,24 @@ exports.fnSpecs = ({ config }) => {
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
         type: "NetworkSecurityGroup",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          //TODO
+          // dscpConfiguration: {
+          //   type: "DscpConfiguration",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          // workspace: {
+          //   type: "Workspace",
+          //   group: "OperationalInsights",
+          //   createOnly: true,
+          // },
+        },
         omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
@@ -82,6 +117,40 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
         type: "PublicIPAddress",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          //TODO
+          // dscpConfiguration: {
+          //   type: "DscpConfiguration",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          // natGateway: {
+          //   type: "NatGateway",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          // workspace: {
+          //   type: "Workspace",
+          //   group: "OperationalInsights",
+          //   createOnly: true,
+          // },
+          //TODO
+          // ddosCustomPolicy: {
+          //   type: "DdosCustomPolicy",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          // publicIpPrefix: {
+          //   type: "PublicIPPrefix",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+        },
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -169,6 +238,7 @@ exports.fnSpecs = ({ config }) => {
           {
             type: "Subnet",
             group: "Network",
+
             ids: pipe([
               () => live,
               get("properties.ipConfigurations"),
@@ -251,6 +321,34 @@ exports.fnSpecs = ({ config }) => {
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {
         type: "Subnet",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          //TODO
+          // workspace: {
+          //   type: "Workspace",
+          //   group: "OperationalInsights",
+          //   createOnly: true,
+          // },
+          // ddosCustomPolicy: {
+          //   type: "DdosCustomPolicy",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          // publicIpPrefix: {
+          //   type: "PublicIPPrefix",
+          //   group: "Network",
+          //   createOnly: true,
+          // },
+          virtualNetwork: {
+            type: "VirtualNetwork",
+            group: "Network",
+            name: "virtualNetworkName",
+          },
+        },
         pickProperties: [
           "properties.addressPrefix",
           "properties.addressPrefixes",

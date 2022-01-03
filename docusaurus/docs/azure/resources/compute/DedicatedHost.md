@@ -16,9 +16,9 @@ provider.Compute.makeDedicatedHost({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    hostGroup: resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     dedicatedHostGroup:
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    hostGroup: resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 

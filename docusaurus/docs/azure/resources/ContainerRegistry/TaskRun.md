@@ -25,16 +25,16 @@ provider.ContainerRegistry.makeTaskRun({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
     pipelineRun: resources.ContainerRegistry.PipelineRun["myPipelineRun"],
+    registry: resources.ContainerRegistry.Registry["myRegistry"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Registry](../ContainerRegistry/Registry.md)
 - [PipelineRun](../ContainerRegistry/PipelineRun.md)
+- [Registry](../ContainerRegistry/Registry.md)
 ## Misc
 The resource version is `2019-06-01-preview`.
 

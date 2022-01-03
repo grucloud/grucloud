@@ -44,7 +44,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -116,7 +115,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -177,7 +175,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -242,7 +239,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -306,7 +302,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -380,7 +375,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -448,7 +442,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -510,7 +503,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -575,7 +567,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -641,7 +632,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -699,7 +689,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -780,7 +769,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -841,7 +829,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -908,7 +895,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -998,7 +984,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1065,7 +1050,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1132,7 +1116,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1199,7 +1182,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1265,7 +1247,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1334,7 +1315,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1400,7 +1380,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1466,7 +1445,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1535,7 +1513,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1603,7 +1580,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1668,7 +1644,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1733,7 +1708,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1802,7 +1776,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1867,7 +1840,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1925,7 +1897,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -1978,7 +1949,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2059,7 +2029,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2128,7 +2097,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2205,7 +2173,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2274,7 +2241,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2346,7 +2312,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2417,7 +2382,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2476,7 +2440,6 @@ provider.Compute.makeVirtualMachine({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
     dscpConfiguration:
@@ -2499,7 +2462,6 @@ provider.Compute.makeVirtualMachine({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [GalleryImage](../Compute/GalleryImage.md)
-- [Vault](../KeyVault/Vault.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)
 - [AvailabilitySet](../Compute/AvailabilitySet.md)

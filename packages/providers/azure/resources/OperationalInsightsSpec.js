@@ -2,8 +2,6 @@ const assert = require("assert");
 const { pipe, get, tap, assign } = require("rubico");
 const { callProp } = require("rubico/x");
 
-const AzClient = require("../AzClient");
-
 const isDefaultSavedSearch = pipe([
   tap((params) => {
     assert(params.live);

@@ -81,7 +81,6 @@ provider.Network.makeVirtualNetworkGateway({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     subnet: resources.Network.Subnet["mySubnet"],
     publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
-    site: resources.Web.Site["mySite"],
     virtualHubIpConfiguration:
       resources.Network.VirtualHubIpConfiguration[
         "myVirtualHubIpConfiguration"
@@ -94,7 +93,6 @@ provider.Network.makeVirtualNetworkGateway({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
-- [Site](../Web/Site.md)
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.

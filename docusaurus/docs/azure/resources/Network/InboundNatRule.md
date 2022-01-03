@@ -24,7 +24,6 @@ provider.Network.makeInboundNatRule({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
     natGateway: resources.Network.NatGateway["myNatGateway"],
     ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
     publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
@@ -43,7 +42,6 @@ provider.Network.makeInboundNatRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
-- [Configuration](../DBforPostgreSQL/Configuration.md)
 - [NatGateway](../Network/NatGateway.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)

@@ -6,14 +6,13 @@ Provides a **VirtualMachineScaleSetVM** from the **Compute** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 - [GalleryImage](../Compute/GalleryImage.md)
-- [Vault](../KeyVault/Vault.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)
 - [AvailabilitySet](../Compute/AvailabilitySet.md)
+- [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
 ## Misc
 The resource version is `2021-07-01`.
 

@@ -6,9 +6,9 @@ Provides a **WebAppHostNameBindingSlot** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Domain](../DomainRegistration/Domain.md)
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
-- [Domain](../DomainRegistration/Domain.md)
 ## Misc
 The resource version is `2021-02-01`.
 

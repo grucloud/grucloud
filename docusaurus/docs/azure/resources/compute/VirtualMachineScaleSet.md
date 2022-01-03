@@ -59,7 +59,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -140,7 +139,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -210,7 +208,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -285,7 +282,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -369,7 +365,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -444,7 +439,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -521,7 +515,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -592,7 +585,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -667,7 +659,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -734,7 +725,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -811,7 +801,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -878,7 +867,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -954,7 +942,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1030,7 +1017,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1106,7 +1092,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1177,7 +1162,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1263,7 +1247,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1339,7 +1322,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1431,7 +1413,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1507,7 +1488,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1595,7 +1575,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1669,7 +1648,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1736,7 +1714,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1798,7 +1775,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1869,7 +1845,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1955,7 +1930,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2026,7 +2000,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2118,7 +2091,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2193,7 +2165,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2267,7 +2238,6 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2283,7 +2253,6 @@ provider.Compute.makeVirtualMachineScaleSet({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Vault](../KeyVault/Vault.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)

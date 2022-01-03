@@ -171,22 +171,22 @@ exports.fnSpecs = ({ config }) =>
       {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
         type: "VirtualMachine",
-        // dependencies: {
-        //   resourceGroup: {
-        //     type: "ResourceGroup",
-        //     group: "Resources",
-        //     name: "resourceGroupName",
-        //   },
-        //   //TODO
-        //   // CapacityGroup
-        //   // ManagedIdentities
-        //   // GalleryImage
-        //   networkInterface: {
-        //     type: "NetworkInterface",
-        //     group: "Network",
-        //     createOnly: true,
-        //   },
-        // },
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          //TODO
+          // CapacityGroup
+          // ManagedIdentities
+          // GalleryImage
+          networkInterface: {
+            type: "NetworkInterface",
+            group: "Network",
+            createOnly: true,
+          },
+        },
         environmentVariables: [
           {
             path: "properties.osProfile.adminPassword",

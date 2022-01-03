@@ -16,7 +16,6 @@ provider.ContainerRegistry.makeAgentPool({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
-    subnet: resources.Network.Subnet["mySubnet"],
   }),
 });
 
@@ -24,7 +23,6 @@ provider.ContainerRegistry.makeAgentPool({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Registry](../ContainerRegistry/Registry.md)
-- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2019-06-01-preview`.
 

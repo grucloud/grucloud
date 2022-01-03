@@ -13,16 +13,16 @@ provider.ContainerService.makePrivateEndpointConnection({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
     privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
+    resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [ManagedCluster](../ContainerService/ManagedCluster.md)
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
+- [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Misc
 The resource version is `2021-10-01`.
 

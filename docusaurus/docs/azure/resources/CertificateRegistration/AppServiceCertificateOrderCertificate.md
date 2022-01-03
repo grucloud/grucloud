@@ -7,7 +7,6 @@ Provides a **AppServiceCertificateOrderCertificate** from the **CertificateRegis
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceCertificateOrder](../CertificateRegistration/AppServiceCertificateOrder.md)
-- [Vault](../KeyVault/Vault.md)
 ## Misc
 The resource version is `2021-02-01`.
 

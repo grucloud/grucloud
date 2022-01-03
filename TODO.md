@@ -2,6 +2,23 @@
 
 - key or vault dependencies ?
 
+- ContainerRegistry::AgentPool dep Network::Subnet
+- DBforPostgreSQL::Server dep Network::Subnet
+- DBforPostgreSQL::VirtualNetworkRule dep Network::Subnet
+- Web::WebApp:: dep Network::Subnet
+- Web::WebAppConfiguration dep Network::Subnet
+
+- ContainerService::ManagedCluster dep OperationalInsights::Workspace
+
+- Network::VirtualNetworkGateway dep Web::Site
+- Network::VirtualNetworkGatewayConnection dep Web::Site
+
+- Network::ApplicationGateway dep certificate and vault/key-
+- Network::FirewallPolicy dep secret
+- CertificateRegistration::AppServiceCertificateOrder dep Vault
+- CertificateRegistration::AppServiceCertificateOrderCertificate dep vault
+- Web::CertificateOrder dep vault
+
 - remove identity from
   "type": "TaskRun",
   "group": "ContainerRegistry",

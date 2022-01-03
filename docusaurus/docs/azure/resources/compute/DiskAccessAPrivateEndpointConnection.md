@@ -18,16 +18,16 @@ provider.Compute.makeDiskAccessAPrivateEndpointConnection({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
     privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
+    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [DiskAccess](../Compute/DiskAccess.md)
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
+- [DiskAccess](../Compute/DiskAccess.md)
 ## Misc
 The resource version is `2021-04-01`.
 

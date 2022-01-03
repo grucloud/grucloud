@@ -22,7 +22,6 @@ provider.Network.makeVirtualNetworkTap({
     natGateway: resources.Network.NatGateway["myNatGateway"],
     ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
     publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
     loadBalancerBackendAddressPool:
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
@@ -41,7 +40,6 @@ provider.Network.makeVirtualNetworkTap({
 - [NatGateway](../Network/NatGateway.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
-- [Configuration](../DBforPostgreSQL/Configuration.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)

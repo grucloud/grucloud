@@ -2,8 +2,6 @@ const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, filter, not, any } = require("rubico");
 const { callProp } = require("rubico/x");
 
-const AzClient = require("../AzClient");
-
 exports.fnSpecs = ({ config }) => {
   const isDefaultResourceGroup = pipe([
     get("live.name"),

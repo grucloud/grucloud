@@ -19,22 +19,20 @@ provider.Compute.makeRestorePoint({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    restorePointCollection:
-      resources.Compute.RestorePointCollection["myRestorePointCollection"],
-    vault: resources.KeyVault.Vault["myVault"],
     disk: resources.Compute.Disk["myDisk"],
     virtualMachineScaleSetVm:
       resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    restorePointCollection:
+      resources.Compute.RestorePointCollection["myRestorePointCollection"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [RestorePointCollection](../Compute/RestorePointCollection.md)
-- [Vault](../KeyVault/Vault.md)
 - [Disk](../Compute/Disk.md)
 - [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
+- [RestorePointCollection](../Compute/RestorePointCollection.md)
 ## Misc
 The resource version is `2021-07-01`.
 

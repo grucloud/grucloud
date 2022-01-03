@@ -6,8 +6,8 @@ Provides a **WebAppSwiftVirtualNetworkConnection** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Site](../Web/Site.md)
 - [Subnet](../Network/Subnet.md)
+- [Site](../Web/Site.md)
 ## Misc
 The resource version is `2021-02-01`.
 

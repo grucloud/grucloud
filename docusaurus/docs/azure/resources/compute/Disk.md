@@ -16,7 +16,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -45,7 +44,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -72,7 +70,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -99,7 +96,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -128,7 +124,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -155,7 +150,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -178,7 +172,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -205,7 +198,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -233,7 +225,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -258,7 +249,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -280,7 +270,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -302,7 +291,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -332,7 +320,6 @@ provider.Compute.makeDisk({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -344,7 +331,6 @@ provider.Compute.makeDisk({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
 - [Image](../Compute/Image.md)
-- [Vault](../KeyVault/Vault.md)
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [DiskAccess](../Compute/DiskAccess.md)
 ## Misc

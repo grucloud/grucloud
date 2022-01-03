@@ -9,6 +9,7 @@ const {
   switchCase,
   map,
   not,
+  filter,
   and,
 } = require("rubico");
 const {
@@ -101,7 +102,7 @@ module.exports = AzClient = ({
   assert(config);
   assert(config.bearerToken);
 
-  const findIdfromPath = ({ path, id, name }) =>
+  const findIdfromPath = ({ path, id, name, type }) =>
     pipe([
       tap((params) => {
         assert(path);
@@ -112,7 +113,10 @@ module.exports = AzClient = ({
       callProp("split", "/"),
       findIndex(eq(identity, `{${name}}`)),
       tap((index) => {
-        assert(index >= 1);
+        assert(
+          index >= 1,
+          `findIdfromPath ${path}, ${id}, ${name}, type ${type}`
+        );
       }),
       (index) =>
         pipe([
@@ -308,6 +312,10 @@ module.exports = AzClient = ({
         pipe([
           () => dependencies,
           values,
+          filter(not(get("createOnly"))),
+          tap((params) => {
+            assert(true);
+          }),
           last,
           tap((dep) => {
             if (!dep) {

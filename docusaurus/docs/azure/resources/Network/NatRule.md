@@ -20,19 +20,19 @@ provider.Network.makeNatRule({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gateway: resources.Network.VpnGateway["myVpnGateway"],
     virtualHubIpConfiguration:
       resources.Network.VirtualHubIpConfiguration[
         "myVirtualHubIpConfiguration"
       ],
+    gateway: resources.Network.VpnGateway["myVpnGateway"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VpnGateway](../Network/VpnGateway.md)
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
+- [VpnGateway](../Network/VpnGateway.md)
 ## Misc
 The resource version is `2021-05-01`.
 

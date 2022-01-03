@@ -4,7 +4,6 @@ const { defaultsDeep, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { compare } = require("@grucloud/core/Common");
 
-const AzClient = require("../AzClient");
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
 
 exports.fnSpecs = ({ config }) => {

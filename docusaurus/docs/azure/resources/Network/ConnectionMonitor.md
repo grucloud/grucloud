@@ -39,8 +39,8 @@ provider.Network.makeConnectionMonitor({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
     workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
   }),
 });
 
@@ -92,16 +92,16 @@ provider.Network.makeConnectionMonitor({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
     workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [NetworkWatcher](../Network/NetworkWatcher.md)
 - [Workspace](../OperationalInsights/Workspace.md)
+- [NetworkWatcher](../Network/NetworkWatcher.md)
 ## Misc
 The resource version is `2021-05-01`.
 

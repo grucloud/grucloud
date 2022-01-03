@@ -45,18 +45,18 @@ provider.Network.makeHubVirtualNetworkConnection({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
     routeTable: resources.Network.RouteTable["myRouteTable"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualHub](../Network/VirtualHub.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
 - [RouteTable](../Network/RouteTable.md)
+- [VirtualHub](../Network/VirtualHub.md)
 ## Misc
 The resource version is `2021-05-01`.
 

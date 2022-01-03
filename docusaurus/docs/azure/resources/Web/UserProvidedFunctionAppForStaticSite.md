@@ -17,19 +17,19 @@ provider.Web.makeUserProvidedFunctionAppForStaticSite({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.StaticSite["myStaticSite"],
     userProvidedFunctionAppForStaticSiteBuild:
       resources.Web.UserProvidedFunctionAppForStaticSiteBuild[
         "myUserProvidedFunctionAppForStaticSiteBuild"
       ],
+    name: resources.Web.StaticSite["myStaticSite"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [StaticSite](../Web/StaticSite.md)
 - [UserProvidedFunctionAppForStaticSiteBuild](../Web/UserProvidedFunctionAppForStaticSiteBuild.md)
+- [StaticSite](../Web/StaticSite.md)
 ## Misc
 The resource version is `2021-02-01`.
 

@@ -6,9 +6,9 @@ Provides a **WebAppSwiftVirtualNetworkConnectionSlot** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
-- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2021-02-01`.
 
