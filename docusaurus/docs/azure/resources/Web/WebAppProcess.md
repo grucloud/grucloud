@@ -7,6 +7,10 @@ Provides a **WebAppProcess** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-02-01`.
 

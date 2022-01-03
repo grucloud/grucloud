@@ -27,6 +27,76 @@ provider.Network.makeVirtualApplianceSite({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkVirtualAppliance](../Network/NetworkVirtualAppliance.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'The properties of the Virtual Appliance Sites.',
+      properties: {
+        addressPrefix: {
+          type: 'string',
+          readOnly: false,
+          description: 'Address Prefix.'
+        },
+        o365Policy: {
+          readOnly: false,
+          description: 'Office 365 Policy.',
+          properties: {
+            breakOutCategories: {
+              readOnly: false,
+              description: 'Office 365 breakout categories.',
+              properties: {
+                allow: {
+                  type: 'boolean',
+                  readOnly: false,
+                  description: 'Flag to control breakout of o365 allow category.'
+                },
+                optimize: {
+                  type: 'boolean',
+                  readOnly: false,
+                  description: 'Flag to control breakout of o365 optimize category.'
+                },
+                default: {
+                  type: 'boolean',
+                  readOnly: false,
+                  description: 'Flag to control breakout of o365 default category.'
+                }
+              }
+            }
+          }
+        },
+        provisioningState: {
+          description: 'The provisioning state of the resource.',
+          readOnly: true,
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'Name of the virtual appliance site.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    },
+    type: { type: 'string', readOnly: true, description: 'Site type.' }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Virtual Appliance Site resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -8,6 +8,10 @@ Provides a **WebAppSiteExtensionSlot** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-02-01`.
 

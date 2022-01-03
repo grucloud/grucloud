@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, switchCase } = require("rubico");
+const { pipe, tap, map, get, switchCase, eq } = require("rubico");
 const {
   append,
   prepend,
@@ -7,11 +7,12 @@ const {
   isEmpty,
   values,
   isObject,
+  find,
 } = require("rubico/x");
 const path = require("path");
 const fse = require("fs-extra");
 const prettier = require("prettier");
-
+const util = require("util");
 const { createSpecsOveride, findByGroupAndType } = require("./AzureSpec");
 
 const buildDocResourceFilename =
@@ -136,6 +137,26 @@ const createExamplesSection = ({ methods, type, group, dependencies }) =>
     prepend("## Examples\n"),
   ])();
 
+const createSchemaSection = ({ methods }) =>
+  pipe([
+    tap((params) => {
+      assert(methods);
+    }),
+    () => methods,
+    get("put.parameters"),
+    find(eq(get("in"), "body")),
+    tap((params) => {
+      assert(true);
+    }),
+    get("schema", ""),
+    (schema) => util.inspect(schema, { depth: 10 }),
+    (content) => `\`\`\`js
+${content}
+\`\`\`
+`,
+    prepend("## Swagger Schema\n"),
+  ])();
+
 const createDependenciesSection = ({ dependencies }) =>
   pipe([
     () => dependencies,
@@ -169,6 +190,7 @@ const createDocContent =
       append(createSummary({ type, group })),
       append(createExamplesSection({ methods, type, group, dependencies })),
       append(createDependenciesSection({ dependencies })),
+      append(createSchemaSection({ methods, type, group, dependencies })),
       append(createMisc({ dir, apiVersion })),
       tap((params) => {
         assert(true);

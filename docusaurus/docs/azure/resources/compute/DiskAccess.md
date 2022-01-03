@@ -17,6 +17,127 @@ provider.Compute.makeDiskAccess({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      properties: {
+        privateEndpointConnections: {
+          type: 'array',
+          readOnly: true,
+          items: {
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Resource properties.',
+                properties: {
+                  privateEndpoint: {
+                    description: 'The resource of private end point.',
+                    readOnly: true,
+                    properties: { id: [Object] }
+                  },
+                  privateLinkServiceConnectionState: {
+                    description: 'A collection of information about the state of the connection between DiskAccess and Virtual Network.',
+                    properties: {
+                      status: [Object],
+                      description: [Object],
+                      actionsRequired: [Object]
+                    }
+                  },
+                  provisioningState: {
+                    description: 'The provisioning state of the private endpoint connection resource.',
+                    type: 'string',
+                    readOnly: true,
+                    enum: [ 'Succeeded', 'Creating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': {
+                      name: 'PrivateEndpointConnectionProvisioningState',
+                      modelAsString: true
+                    }
+                  }
+                },
+                required: [ 'privateLinkServiceConnectionState' ]
+              },
+              id: {
+                readOnly: true,
+                type: 'string',
+                description: 'private endpoint connection Id'
+              },
+              name: {
+                readOnly: true,
+                type: 'string',
+                description: 'private endpoint connection name'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'private endpoint connection type'
+              }
+            },
+            description: 'The Private Endpoint Connection resource.',
+            'x-ms-azure-resource': true
+          },
+          description: 'A readonly collection of private endpoint connections created on the disk. Currently only one endpoint connection is supported.'
+        },
+        provisioningState: {
+          readOnly: true,
+          type: 'string',
+          description: 'The disk access resource provisioning state.'
+        },
+        timeCreated: {
+          readOnly: true,
+          type: 'string',
+          format: 'date-time',
+          description: 'The time when the disk access was created.'
+        }
+      }
+    },
+    extendedLocation: {
+      description: 'The extended location where the disk access will be created. Extended location cannot be changed.',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The name of the extended location.'
+        },
+        type: {
+          description: 'The type of the extended location.',
+          type: 'string',
+          enum: [ 'EdgeZone' ],
+          'x-ms-enum': { name: 'ExtendedLocationTypes', modelAsString: true }
+        }
+      }
+    }
+  },
+  allOf: [
+    {
+      description: 'The Resource model definition.',
+      properties: {
+        id: { readOnly: true, type: 'string', description: 'Resource Id' },
+        name: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource name'
+        },
+        type: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource type'
+        },
+        location: { type: 'string', description: 'Resource location' },
+        tags: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+          description: 'Resource tags'
+        }
+      },
+      required: [ 'location' ],
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'disk access resource.'
+}
+```
 ## Misc
 The resource version is `2021-04-01`.
 

@@ -151,6 +151,89 @@ provider.Network.makeFirewallPolicyRuleCollectionGroup({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'The properties of the firewall policy rule collection group.',
+      properties: {
+        priority: {
+          type: 'integer',
+          format: 'int32',
+          maximum: 65000,
+          exclusiveMaximum: false,
+          minimum: 100,
+          exclusiveMinimum: false,
+          description: 'Priority of the Firewall Policy Rule Collection Group resource.'
+        },
+        ruleCollections: {
+          type: 'array',
+          items: {
+            description: 'Properties of the rule collection.',
+            discriminator: 'ruleCollectionType',
+            required: [ 'ruleCollectionType' ],
+            properties: {
+              ruleCollectionType: {
+                type: 'string',
+                description: 'The type of the rule collection.',
+                enum: [
+                  'FirewallPolicyNatRuleCollection',
+                  'FirewallPolicyFilterRuleCollection'
+                ],
+                'x-ms-enum': {
+                  name: 'FirewallPolicyRuleCollectionType',
+                  modelAsString: true
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the rule collection.'
+              },
+              priority: {
+                type: 'integer',
+                format: 'int32',
+                maximum: 65000,
+                exclusiveMaximum: false,
+                minimum: 100,
+                exclusiveMinimum: false,
+                description: 'Priority of the Firewall Policy Rule Collection resource.'
+              }
+            }
+          },
+          description: 'Group of Firewall Policy rule collections.'
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the firewall policy rule collection group resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    },
+    type: { type: 'string', readOnly: true, description: 'Rule Group type.' }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Rule Collection Group resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

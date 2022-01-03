@@ -7,6 +7,10 @@ Provides a **StaticSiteBuild** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StaticSite](../Web/StaticSite.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-02-01`.
 

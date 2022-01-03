@@ -41,6 +41,86 @@ provider.Network.makeExpressRouteCircuitConnection({
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [ExpressRouteCircuit](../Network/ExpressRouteCircuit.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the express route circuit connection.',
+      properties: {
+        expressRouteCircuitPeering: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true
+        },
+        peerExpressRouteCircuitPeering: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true
+        },
+        addressPrefix: {
+          type: 'string',
+          description: '/29 IP address space to carve out Customer addresses for tunnels.'
+        },
+        authorizationKey: { type: 'string', description: 'The authorization key.' },
+        ipv6CircuitConnectionConfig: {
+          description: 'IPv6 Address PrefixProperties of the express route circuit connection.',
+          properties: {
+            addressPrefix: {
+              type: 'string',
+              description: '/125 IP address space to carve out customer addresses for global reach.'
+            },
+            circuitConnectionStatus: {
+              readOnly: true,
+              description: 'Express Route Circuit connection state.',
+              type: 'string',
+              enum: [ 'Connected', 'Connecting', 'Disconnected' ],
+              'x-ms-enum': { name: 'CircuitConnectionStatus', modelAsString: true }
+            }
+          }
+        },
+        circuitConnectionStatus: {
+          description: 'Express Route Circuit connection state.',
+          type: 'string',
+          readOnly: true,
+          enum: [ 'Connected', 'Connecting', 'Disconnected' ],
+          'x-ms-enum': { name: 'CircuitConnectionStatus', modelAsString: true }
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the express route circuit connection resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+    },
+    etag: {
+      readOnly: true,
+      type: 'string',
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    },
+    type: {
+      readOnly: true,
+      type: 'string',
+      description: 'Type of the resource.'
+    }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Express Route Circuit Connection in an ExpressRouteCircuitPeering resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

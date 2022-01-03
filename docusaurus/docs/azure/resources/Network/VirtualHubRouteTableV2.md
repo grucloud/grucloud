@@ -37,6 +37,72 @@ provider.Network.makeVirtualHubRouteTableV2({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualHub](../Network/VirtualHub.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the virtual hub route table v2.',
+      properties: {
+        routes: {
+          type: 'array',
+          description: 'List of all routes.',
+          items: {
+            properties: {
+              destinationType: {
+                type: 'string',
+                description: 'The type of destinations.'
+              },
+              destinations: {
+                type: 'array',
+                description: 'List of all destinations.',
+                items: { type: 'string' }
+              },
+              nextHopType: { type: 'string', description: 'The type of next hops.' },
+              nextHops: {
+                type: 'array',
+                description: 'NextHops ip address.',
+                items: { type: 'string' }
+              }
+            },
+            description: 'VirtualHubRouteTableV2 route.'
+          }
+        },
+        attachedConnections: {
+          type: 'array',
+          description: 'List of all connections attached to this route table v2.',
+          items: { type: 'string' }
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the virtual hub route table v2 resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'VirtualHubRouteTableV2 Resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

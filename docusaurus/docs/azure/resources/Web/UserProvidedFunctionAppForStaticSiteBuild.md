@@ -32,6 +32,57 @@ provider.Web.makeUserProvidedFunctionAppForStaticSiteBuild({
 - [UserProvidedFunctionAppForStaticSite](../Web/UserProvidedFunctionAppForStaticSite.md)
 - [StaticSite](../Web/StaticSite.md)
 - [StaticSiteBuild](../Web/StaticSiteBuild.md)
+## Swagger Schema
+```js
+{
+  description: 'Static Site User Provided Function App ARM resource.',
+  type: 'object',
+  allOf: [
+    {
+      description: 'Azure proxy only resource. This resource is not tracked by Azure Resource Manager.',
+      type: 'object',
+      properties: {
+        id: { description: 'Resource Id.', type: 'string', readOnly: true },
+        name: {
+          description: 'Resource Name.',
+          type: 'string',
+          readOnly: true
+        },
+        kind: { description: 'Kind of resource.', type: 'string' },
+        type: {
+          description: 'Resource type.',
+          type: 'string',
+          readOnly: true
+        }
+      },
+      'x-ms-azure-resource': true
+    }
+  ],
+  properties: {
+    properties: {
+      description: 'StaticSiteUserProvidedFunctionAppARMResource resource specific properties',
+      type: 'object',
+      properties: {
+        functionAppResourceId: {
+          description: 'The resource id of the function app registered with the static site',
+          type: 'string'
+        },
+        functionAppRegion: {
+          description: 'The region of the function app registered with the static site',
+          type: 'string'
+        },
+        createdOn: {
+          format: 'date-time',
+          description: 'The date and time on which the function app was registered with the static site.',
+          type: 'string',
+          readOnly: true
+        }
+      },
+      'x-ms-client-flatten': true
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2021-02-01`.
 

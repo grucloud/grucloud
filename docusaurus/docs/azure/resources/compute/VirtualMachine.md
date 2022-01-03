@@ -43,22 +43,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -114,22 +99,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -174,22 +144,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -238,22 +193,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -301,22 +241,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -374,22 +299,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -441,22 +351,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -502,22 +397,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -566,22 +446,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -631,22 +496,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -688,22 +538,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -768,22 +603,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -828,22 +648,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -894,22 +699,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -983,22 +773,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1049,22 +824,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1115,22 +875,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1181,22 +926,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1246,22 +976,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1314,22 +1029,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1379,22 +1079,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1444,22 +1129,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1512,22 +1182,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1579,22 +1234,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1643,22 +1283,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1707,22 +1332,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1775,22 +1385,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1839,22 +1434,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1896,22 +1476,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -1948,22 +1513,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2028,22 +1578,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2096,22 +1631,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2172,22 +1692,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2240,22 +1745,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2311,22 +1801,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2381,22 +1856,7 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
@@ -2439,37 +1899,1476 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    virtualMachineScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [GalleryImage](../Compute/GalleryImage.md)
-- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
-- [DscpConfiguration](../Network/DscpConfiguration.md)
-- [AvailabilitySet](../Compute/AvailabilitySet.md)
-- [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
-- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
-- [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
-- [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
-- [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    plan: {
+      description: 'Specifies information about the marketplace image used to create the virtual machine. This element is only used for marketplace images. Before you can use a marketplace image from an API, you must enable the image for programmatic use.  In the Azure portal, find the marketplace image that you want to use and then click **Want to deploy programmatically, Get Started ->**. Enter any required information and then click **Save**.',
+      properties: {
+        name: { type: 'string', description: 'The plan ID.' },
+        publisher: { type: 'string', description: 'The publisher ID.' },
+        product: {
+          type: 'string',
+          description: 'Specifies the product of the image from the marketplace. This is the same value as Offer under the imageReference element.'
+        },
+        promotionCode: { type: 'string', description: 'The promotion code.' }
+      }
+    },
+    properties: {
+      'x-ms-client-flatten': true,
+      properties: {
+        hardwareProfile: {
+          description: 'Specifies the hardware settings for the virtual machine.',
+          properties: {
+            vmSize: {
+              type: 'string',
+              description: 'Specifies the size of the virtual machine. <br><br> The enum data type is currently deprecated and will be removed by December 23rd 2023. <br><br> Recommended way to get the list of available sizes is using these APIs: <br><br> [List all available virtual machine sizes in an availability set](https://docs.microsoft.com/rest/api/compute/availabilitysets/listavailablesizes) <br><br> [List all available virtual machine sizes in a region]( https://docs.microsoft.com/rest/api/compute/resourceskus/list) <br><br> [List all available virtual machine sizes for resizing](https://docs.microsoft.com/rest/api/compute/virtualmachines/listavailablesizes). For more information about virtual machine sizes, see [Sizes for virtual machines](https://docs.microsoft.com/azure/virtual-machines/sizes). <br><br> The available VM sizes depend on region and availability set.',
+              enum: [
+                'Basic_A0',
+                'Basic_A1',
+                'Basic_A2',
+                'Basic_A3',
+                'Basic_A4',
+                'Standard_A0',
+                'Standard_A1',
+                'Standard_A2',
+                'Standard_A3',
+                'Standard_A4',
+                'Standard_A5',
+                'Standard_A6',
+                'Standard_A7',
+                'Standard_A8',
+                'Standard_A9',
+                'Standard_A10',
+                'Standard_A11',
+                'Standard_A1_v2',
+                'Standard_A2_v2',
+                'Standard_A4_v2',
+                'Standard_A8_v2',
+                'Standard_A2m_v2',
+                'Standard_A4m_v2',
+                'Standard_A8m_v2',
+                'Standard_B1s',
+                'Standard_B1ms',
+                'Standard_B2s',
+                'Standard_B2ms',
+                'Standard_B4ms',
+                'Standard_B8ms',
+                'Standard_D1',
+                'Standard_D2',
+                'Standard_D3',
+                'Standard_D4',
+                'Standard_D11',
+                'Standard_D12',
+                'Standard_D13',
+                'Standard_D14',
+                'Standard_D1_v2',
+                'Standard_D2_v2',
+                'Standard_D3_v2',
+                'Standard_D4_v2',
+                'Standard_D5_v2',
+                'Standard_D2_v3',
+                'Standard_D4_v3',
+                'Standard_D8_v3',
+                'Standard_D16_v3',
+                'Standard_D32_v3',
+                'Standard_D64_v3',
+                'Standard_D2s_v3',
+                'Standard_D4s_v3',
+                'Standard_D8s_v3',
+                'Standard_D16s_v3',
+                'Standard_D32s_v3',
+                'Standard_D64s_v3',
+                'Standard_D11_v2',
+                'Standard_D12_v2',
+                'Standard_D13_v2',
+                'Standard_D14_v2',
+                'Standard_D15_v2',
+                'Standard_DS1',
+                'Standard_DS2',
+                'Standard_DS3',
+                'Standard_DS4',
+                'Standard_DS11',
+                'Standard_DS12',
+                'Standard_DS13',
+                'Standard_DS14',
+                'Standard_DS1_v2',
+                'Standard_DS2_v2',
+                'Standard_DS3_v2',
+                'Standard_DS4_v2',
+                'Standard_DS5_v2',
+                'Standard_DS11_v2',
+                'Standard_DS12_v2',
+                'Standard_DS13_v2',
+                'Standard_DS14_v2',
+                'Standard_DS15_v2',
+                'Standard_DS13-4_v2',
+                'Standard_DS13-2_v2',
+                'Standard_DS14-8_v2',
+                'Standard_DS14-4_v2',
+                'Standard_E2_v3',
+                'Standard_E4_v3',
+                'Standard_E8_v3',
+                'Standard_E16_v3',
+                'Standard_E32_v3',
+                'Standard_E64_v3',
+                'Standard_E2s_v3',
+                'Standard_E4s_v3',
+                'Standard_E8s_v3',
+                'Standard_E16s_v3',
+                'Standard_E32s_v3',
+                'Standard_E64s_v3',
+                'Standard_E32-16_v3',
+                'Standard_E32-8s_v3',
+                'Standard_E64-32s_v3',
+                'Standard_E64-16s_v3',
+                'Standard_F1',
+                'Standard_F2',
+                ... 66 more items
+              ],
+              'x-ms-enum': { name: 'VirtualMachineSizeTypes', modelAsString: true }
+            },
+            vmSizeProperties: {
+              description: 'Specifies the properties for customizing the size of the virtual machine. Minimum api-version: 2021-07-01. <br><br> This feature is still in preview mode and is not supported for VirtualMachineScaleSet. <br><br> Please follow the instructions in [VM Customization](https://aka.ms/vmcustomization) for more details.',
+              type: 'object',
+              properties: {
+                vCPUsAvailable: {
+                  type: 'integer',
+                  format: 'int32',
+                  description: 'Specifies the number of vCPUs available for the VM. <br><br> When this property is not specified in the request body the default behavior is to set it to the value of vCPUs available for that VM size exposed in api response of [List all available virtual machine sizes in a region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list) .'
+                },
+                vCPUsPerCore: {
+                  type: 'integer',
+                  format: 'int32',
+                  description: 'Specifies the vCPU to physical core ratio. <br><br> When this property is not specified in the request body the default behavior is set to the value of vCPUsPerCore for the VM Size exposed in api response of [List all available virtual machine sizes in a region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list) <br><br> Setting this property to 1 also means that hyper-threading is disabled.'
+                }
+              }
+            }
+          }
+        },
+        storageProfile: {
+          description: 'Specifies the storage settings for the virtual machine disks.',
+          properties: {
+            imageReference: {
+              description: 'Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.',
+              properties: {
+                publisher: { type: 'string', description: 'The image publisher.' },
+                offer: {
+                  type: 'string',
+                  description: 'Specifies the offer of the platform image or marketplace image used to create the virtual machine.'
+                },
+                sku: { type: 'string', description: 'The image SKU.' },
+                version: {
+                  type: 'string',
+                  description: "Specifies the version of the platform image or marketplace image used to create the virtual machine. The allowed formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time. Even if you use 'latest', the VM image will not automatically update after deploy time even if a new version becomes available."
+                },
+                exactVersion: {
+                  type: 'string',
+                  readOnly: true,
+                  description: "Specifies in decimal numbers, the version of platform image or marketplace image used to create the virtual machine. This readonly field differs from 'version', only if the value specified in 'version' field is 'latest'."
+                },
+                sharedGalleryImageId: {
+                  type: 'string',
+                  description: 'Specified the shared gallery image unique id for vm deployment. This can be fetched from shared gallery image GET call.'
+                }
+              },
+              allOf: [
+                {
+                  properties: {
+                    id: { type: 'string', description: 'Resource Id' }
+                  },
+                  'x-ms-azure-resource': true
+                }
+              ]
+            },
+            osDisk: {
+              description: 'Specifies information about the operating system disk used by the virtual machine. <br><br> For more information about disks, see [About disks and VHDs for Azure virtual machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).',
+              properties: {
+                osType: {
+                  type: 'string',
+                  description: 'This property allows you to specify the type of the OS that is included in the disk if creating a VM from user-image or a specialized VHD. <br><br> Possible values are: <br><br> **Windows** <br><br> **Linux**',
+                  enum: [ 'Windows', 'Linux' ],
+                  'x-ms-enum': {
+                    name: 'OperatingSystemTypes',
+                    modelAsString: false
+                  }
+                },
+                encryptionSettings: {
+                  description: 'Specifies the encryption settings for the OS Disk. <br><br> Minimum api-version: 2015-06-15',
+                  properties: {
+                    diskEncryptionKey: {
+                      description: 'Specifies the location of the disk encryption key, which is a Key Vault Secret.',
+                      properties: [Object],
+                      required: [Array]
+                    },
+                    keyEncryptionKey: {
+                      description: 'Specifies the location of the key encryption key in Key Vault.',
+                      properties: [Object],
+                      required: [Array]
+                    },
+                    enabled: {
+                      type: 'boolean',
+                      description: 'Specifies whether disk encryption should be enabled on the virtual machine.'
+                    }
+                  }
+                },
+                name: { type: 'string', description: 'The disk name.' },
+                vhd: {
+                  description: 'The virtual hard disk.',
+                  properties: {
+                    uri: {
+                      type: 'string',
+                      description: "Specifies the virtual hard disk's uri."
+                    }
+                  }
+                },
+                image: {
+                  description: 'The source user image virtual hard disk. The virtual hard disk will be copied before being attached to the virtual machine. If SourceImage is provided, the destination virtual hard drive must not exist.',
+                  properties: {
+                    uri: {
+                      type: 'string',
+                      description: "Specifies the virtual hard disk's uri."
+                    }
+                  }
+                },
+                caching: {
+                  description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None** for Standard storage. **ReadOnly** for Premium storage.',
+                  type: 'string',
+                  enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                  'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
+                },
+                writeAcceleratorEnabled: {
+                  type: 'boolean',
+                  description: 'Specifies whether writeAccelerator should be enabled or disabled on the disk.'
+                },
+                diffDiskSettings: {
+                  description: 'Specifies the ephemeral Disk Settings for the operating system disk used by the virtual machine.',
+                  properties: {
+                    option: {
+                      description: 'Specifies the ephemeral disk settings for operating system disk.',
+                      type: 'string',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    placement: {
+                      description: 'Specifies the ephemeral disk placement for operating system disk.<br><br> Possible values are: <br><br> **CacheDisk** <br><br> **ResourceDisk** <br><br> Default: **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk** is used.<br><br> Refer to VM size documentation for Windows VM at https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM sizes exposes a cache disk.',
+                      type: 'string',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    }
+                  }
+                },
+                createOption: {
+                  description: 'Specifies how the virtual machine should be created.<br><br> Possible values are:<br><br> **Attach** \\u2013 This value is used when you are using a specialized disk to create the virtual machine.<br><br> **FromImage** \\u2013 This value is used when you are using an image to create the virtual machine. If you are using a platform image, you also use the imageReference element described above. If you are using a marketplace image, you  also use the plan element previously described.',
+                  type: 'string',
+                  enum: [ 'FromImage', 'Empty', 'Attach' ],
+                  'x-ms-enum': {
+                    name: 'DiskCreateOptionTypes',
+                    modelAsString: true
+                  }
+                },
+                diskSizeGB: {
+                  type: 'integer',
+                  format: 'int32',
+                  description: 'Specifies the size of an empty data disk in gigabytes. This element can be used to overwrite the size of the disk in a virtual machine image. <br><br> This value cannot be larger than 1023 GB'
+                },
+                managedDisk: {
+                  description: 'The managed disk parameters.',
+                  properties: {
+                    storageAccountType: {
+                      description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                      type: 'string',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    diskEncryptionSet: {
+                      description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                      allOf: [Array]
+                    }
+                  },
+                  allOf: [
+                    {
+                      properties: [Object],
+                      'x-ms-azure-resource': true
+                    }
+                  ]
+                },
+                deleteOption: {
+                  description: 'Specifies whether OS Disk should be deleted or detached upon VM deletion. <br><br> Possible values: <br><br> **Delete** If this value is used, the OS disk is deleted when VM is deleted.<br><br> **Detach** If this value is used, the os disk is retained after VM is deleted. <br><br> The default value is set to **detach**. For an ephemeral OS Disk, the default value is set to **Delete**. User cannot change the delete option for ephemeral OS Disk.',
+                  type: 'string',
+                  enum: [ 'Delete', 'Detach' ],
+                  'x-ms-enum': {
+                    name: 'DiskDeleteOptionTypes',
+                    modelAsString: true
+                  }
+                }
+              },
+              required: [ 'createOption' ]
+            },
+            dataDisks: {
+              type: 'array',
+              items: {
+                properties: {
+                  lun: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'Specifies the logical unit number of the data disk. This value is used to identify data disks within the VM and therefore must be unique for each data disk attached to a VM.'
+                  },
+                  name: { type: 'string', description: 'The disk name.' },
+                  vhd: {
+                    description: 'The virtual hard disk.',
+                    properties: { uri: [Object] }
+                  },
+                  image: {
+                    description: 'The source user image virtual hard disk. The virtual hard disk will be copied before being attached to the virtual machine. If SourceImage is provided, the destination virtual hard drive must not exist.',
+                    properties: { uri: [Object] }
+                  },
+                  caching: {
+                    description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
+                    type: 'string',
+                    enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                    'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
+                  },
+                  writeAcceleratorEnabled: {
+                    type: 'boolean',
+                    description: 'Specifies whether writeAccelerator should be enabled or disabled on the disk.'
+                  },
+                  createOption: {
+                    description: 'Specifies how the virtual machine should be created.<br><br> Possible values are:<br><br> **Attach** \\u2013 This value is used when you are using a specialized disk to create the virtual machine.<br><br> **FromImage** \\u2013 This value is used when you are using an image to create the virtual machine. If you are using a platform image, you also use the imageReference element described above. If you are using a marketplace image, you  also use the plan element previously described.',
+                    type: 'string',
+                    enum: [ 'FromImage', 'Empty', 'Attach' ],
+                    'x-ms-enum': {
+                      name: 'DiskCreateOptionTypes',
+                      modelAsString: true
+                    }
+                  },
+                  diskSizeGB: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'Specifies the size of an empty data disk in gigabytes. This element can be used to overwrite the size of the disk in a virtual machine image. <br><br> This value cannot be larger than 1023 GB'
+                  },
+                  managedDisk: {
+                    description: 'The managed disk parameters.',
+                    properties: {
+                      storageAccountType: [Object],
+                      diskEncryptionSet: [Object]
+                    },
+                    allOf: [ [Object] ]
+                  },
+                  toBeDetached: {
+                    type: 'boolean',
+                    description: 'Specifies whether the data disk is in process of detachment from the VirtualMachine/VirtualMachineScaleset'
+                  },
+                  diskIOPSReadWrite: {
+                    type: 'integer',
+                    readOnly: true,
+                    format: 'int64',
+                    description: 'Specifies the Read-Write IOPS for the managed disk when StorageAccountType is UltraSSD_LRS. Returned only for VirtualMachine ScaleSet VM disks. Can be updated only via updates to the VirtualMachine Scale Set.'
+                  },
+                  diskMBpsReadWrite: {
+                    type: 'integer',
+                    readOnly: true,
+                    format: 'int64',
+                    description: 'Specifies the bandwidth in MB per second for the managed disk when StorageAccountType is UltraSSD_LRS. Returned only for VirtualMachine ScaleSet VM disks. Can be updated only via updates to the VirtualMachine Scale Set.'
+                  },
+                  detachOption: {
+                    description: "Specifies the detach behavior to be used while detaching a disk or which is already in the process of detachment from the virtual machine. Supported values: **ForceDetach**. <br><br> detachOption: **ForceDetach** is applicable only for managed data disks. If a previous detachment attempt of the data disk did not complete due to an unexpected failure from the virtual machine and the disk is still not released then use force-detach as a last resort option to detach the disk forcibly from the VM. All writes might not have been flushed when using this detach behavior. <br><br> This feature is still in preview mode and is not supported for VirtualMachineScaleSet. To force-detach a data disk update toBeDetached to 'true' along with setting detachOption: 'ForceDetach'.",
+                    type: 'string',
+                    enum: [ 'ForceDetach' ],
+                    'x-ms-enum': {
+                      name: 'DiskDetachOptionTypes',
+                      modelAsString: true
+                    }
+                  },
+                  deleteOption: {
+                    description: 'Specifies whether data disk should be deleted or detached upon VM deletion.<br><br> Possible values: <br><br> **Delete** If this value is used, the data disk is deleted when VM is deleted.<br><br> **Detach** If this value is used, the data disk is retained after VM is deleted.<br><br> The default value is set to **detach**',
+                    type: 'string',
+                    enum: [ 'Delete', 'Detach' ],
+                    'x-ms-enum': {
+                      name: 'DiskDeleteOptionTypes',
+                      modelAsString: true
+                    }
+                  }
+                },
+                required: [ 'lun', 'createOption' ],
+                description: 'Describes a data disk.'
+              },
+              description: 'Specifies the parameters that are used to add a data disk to a virtual machine. <br><br> For more information about disks, see [About disks and VHDs for Azure virtual machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).'
+            }
+          }
+        },
+        additionalCapabilities: {
+          description: 'Specifies additional capabilities enabled or disabled on the virtual machine.',
+          properties: {
+            ultraSSDEnabled: {
+              type: 'boolean',
+              description: 'The flag that enables or disables a capability to have one or more managed data disks with UltraSSD_LRS storage account type on the VM or VMSS. Managed disks with storage account type UltraSSD_LRS can be added to a virtual machine or virtual machine scale set only if this property is enabled.'
+            },
+            hibernationEnabled: {
+              type: 'boolean',
+              description: 'The flag that enables or disables hibernation capability on the VM.'
+            }
+          }
+        },
+        osProfile: {
+          description: 'Specifies the operating system settings used while creating the virtual machine. Some of the settings cannot be changed once VM is provisioned.',
+          properties: {
+            computerName: {
+              type: 'string',
+              description: 'Specifies the host OS name of the virtual machine. <br><br> This name cannot be updated after the VM is created. <br><br> **Max-length (Windows):** 15 characters <br><br> **Max-length (Linux):** 64 characters. <br><br> For naming conventions and restrictions see [Azure infrastructure services implementation guidelines](https://docs.microsoft.com/azure/azure-resource-manager/management/resource-name-rules).'
+            },
+            adminUsername: {
+              type: 'string',
+              description: 'Specifies the name of the administrator account. <br><br> This property cannot be updated after the VM is created. <br><br> **Windows-only restriction:** Cannot end in "." <br><br> **Disallowed values:** "administrator", "admin", "user", "user1", "test", "user2", "test1", "user3", "admin1", "1", "123", "a", "actuser", "adm", "admin2", "aspnet", "backup", "console", "david", "guest", "john", "owner", "root", "server", "sql", "support", "support_388945a0", "sys", "test2", "test3", "user4", "user5". <br><br> **Minimum-length (Linux):** 1  character <br><br> **Max-length (Linux):** 64 characters <br><br> **Max-length (Windows):** 20 characters.'
+            },
+            adminPassword: {
+              type: 'string',
+              description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)'
+            },
+            customData: {
+              type: 'string',
+              description: 'Specifies a base-64 encoded string of custom data. The base-64 encoded string is decoded to a binary array that is saved as a file on the Virtual Machine. The maximum length of the binary array is 65535 bytes. <br><br> **Note: Do not pass any secrets or passwords in customData property** <br><br> This property cannot be updated after the VM is created. <br><br> customData is passed to the VM to be saved as a file, for more information see [Custom Data on Azure VMs](https://azure.microsoft.com/blog/custom-data-and-cloud-init-on-windows-azure/) <br><br> For using cloud-init for your Linux VM, see [Using cloud-init to customize a Linux VM during creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)'
+            },
+            windowsConfiguration: {
+              description: 'Specifies Windows operating system settings on the virtual machine.',
+              properties: {
+                provisionVMAgent: {
+                  type: 'boolean',
+                  description: 'Indicates whether virtual machine agent should be provisioned on the virtual machine. <br><br> When this property is not specified in the request body, default behavior is to set it to true.  This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later.'
+                },
+                enableAutomaticUpdates: {
+                  type: 'boolean',
+                  description: 'Indicates whether Automatic Updates is enabled for the Windows virtual machine. Default value is true. <br><br> For virtual machine scale sets, this property can be updated and updates will take effect on OS reprovisioning.'
+                },
+                timeZone: {
+                  type: 'string',
+                  description: 'Specifies the time zone of the virtual machine. e.g. "Pacific Standard Time". <br><br> Possible values can be [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id) value from time zones returned by [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones).'
+                },
+                additionalUnattendContent: {
+                  type: 'array',
+                  items: {
+                    properties: {
+                      passName: [Object],
+                      componentName: [Object],
+                      settingName: [Object],
+                      content: [Object]
+                    },
+                    description: 'Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.'
+                  },
+                  description: 'Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.'
+                },
+                patchSettings: {
+                  description: '[Preview Feature] Specifies settings related to VM Guest Patching on Windows.',
+                  properties: {
+                    patchMode: {
+                      type: 'string',
+                      description: 'Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true ',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    enableHotpatching: {
+                      type: 'boolean',
+                      description: "Enables customers to patch their Azure VMs without requiring a reboot. For enableHotpatching, the 'provisionVMAgent' must be set to true and 'patchMode' must be set to 'AutomaticByPlatform'."
+                    },
+                    assessmentMode: {
+                      type: 'string',
+                      description: 'Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true. ',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    }
+                  }
+                },
+                winRM: {
+                  description: 'Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell.',
+                  properties: {
+                    listeners: {
+                      type: 'array',
+                      items: [Object],
+                      description: 'The list of Windows Remote Management listeners'
+                    }
+                  }
+                }
+              }
+            },
+            linuxConfiguration: {
+              description: 'Specifies the Linux operating system settings on the virtual machine. <br><br>For a list of supported Linux distributions, see [Linux on Azure-Endorsed Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).',
+              properties: {
+                disablePasswordAuthentication: {
+                  type: 'boolean',
+                  description: 'Specifies whether password authentication should be disabled.'
+                },
+                ssh: {
+                  description: 'Specifies the ssh key configuration for a Linux OS.',
+                  properties: {
+                    publicKeys: {
+                      type: 'array',
+                      items: [Object],
+                      description: 'The list of SSH public keys used to authenticate with linux based VMs.'
+                    }
+                  }
+                },
+                provisionVMAgent: {
+                  type: 'boolean',
+                  description: 'Indicates whether virtual machine agent should be provisioned on the virtual machine. <br><br> When this property is not specified in the request body, default behavior is to set it to true.  This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later.'
+                },
+                patchSettings: {
+                  description: '[Preview Feature] Specifies settings related to VM Guest Patching on Linux.',
+                  properties: {
+                    patchMode: {
+                      type: 'string',
+                      description: "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    assessmentMode: {
+                      type: 'string',
+                      description: 'Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    }
+                  }
+                }
+              }
+            },
+            secrets: {
+              type: 'array',
+              items: {
+                properties: {
+                  sourceVault: {
+                    properties: { id: [Object] },
+                    'x-ms-azure-resource': true,
+                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                  },
+                  vaultCertificates: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the VM.'
+                    },
+                    description: 'The list of key vault references in SourceVault which contain certificates.'
+                  }
+                },
+                description: 'Describes a set of certificates which are all in the same Key Vault.'
+              },
+              description: 'Specifies set of certificates that should be installed onto the virtual machine. To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+            },
+            allowExtensionOperations: {
+              type: 'boolean',
+              description: 'Specifies whether extension operations should be allowed on the virtual machine. <br><br>This may only be set to False when no extensions are present on the virtual machine.'
+            },
+            requireGuestProvisionSignal: {
+              type: 'boolean',
+              description: 'Specifies whether the guest provision signal is required to infer provision success of the virtual machine.  **Note: This property is for private testing only, and all customers must not set the property to false.**'
+            }
+          }
+        },
+        networkProfile: {
+          description: 'Specifies the network interfaces of the virtual machine.',
+          properties: {
+            networkInterfaces: {
+              type: 'array',
+              items: {
+                properties: {
+                  properties: {
+                    'x-ms-client-flatten': true,
+                    properties: { primary: [Object], deleteOption: [Object] },
+                    description: 'Describes a network interface reference properties.'
+                  }
+                },
+                allOf: [
+                  {
+                    properties: { id: [Object] },
+                    'x-ms-azure-resource': true
+                  }
+                ],
+                description: 'Describes a network interface reference.'
+              },
+              description: 'Specifies the list of resource Ids for the network interfaces associated with the virtual machine.'
+            },
+            networkApiVersion: {
+              type: 'string',
+              description: 'specifies the Microsoft.Network API version used when creating networking resources in the Network Interface Configurations',
+              enum: [ '2020-11-01' ],
+              'x-ms-enum': { name: 'NetworkApiVersion', modelAsString: true }
+            },
+            networkInterfaceConfigurations: {
+              type: 'array',
+              items: {
+                properties: {
+                  name: {
+                    type: 'string',
+                    description: 'The network interface configuration name.'
+                  },
+                  properties: {
+                    'x-ms-client-flatten': true,
+                    properties: {
+                      primary: [Object],
+                      deleteOption: [Object],
+                      enableAcceleratedNetworking: [Object],
+                      enableFpga: [Object],
+                      enableIPForwarding: [Object],
+                      networkSecurityGroup: [Object],
+                      dnsSettings: [Object],
+                      ipConfigurations: [Object],
+                      dscpConfiguration: [Object]
+                    },
+                    required: [ 'ipConfigurations' ],
+                    description: "Describes a virtual machine network profile's IP configuration."
+                  }
+                },
+                required: [ 'name' ],
+                description: 'Describes a virtual machine network interface configurations.'
+              },
+              description: 'Specifies the networking configurations that will be used to create the virtual machine networking resources.'
+            }
+          }
+        },
+        securityProfile: {
+          description: 'Specifies the Security related profile settings for the virtual machine.',
+          properties: {
+            uefiSettings: {
+              description: 'Specifies the security settings like secure boot and vTPM used while creating the virtual machine. <br><br>Minimum api-version: 2020-12-01',
+              properties: {
+                secureBootEnabled: {
+                  type: 'boolean',
+                  description: 'Specifies whether secure boot should be enabled on the virtual machine. <br><br>Minimum api-version: 2020-12-01'
+                },
+                vTpmEnabled: {
+                  type: 'boolean',
+                  description: 'Specifies whether vTPM should be enabled on the virtual machine. <br><br>Minimum api-version: 2020-12-01'
+                }
+              }
+            },
+            encryptionAtHost: {
+              type: 'boolean',
+              description: 'This property can be used by user in the request to enable or disable the Host Encryption for the virtual machine or virtual machine scale set. This will enable the encryption for all the disks including Resource/Temp disk at host itself. <br><br> Default: The Encryption at host will be disabled unless this property is set to true for the resource.'
+            },
+            securityType: {
+              type: 'string',
+              description: 'Specifies the SecurityType of the virtual machine. It is set as TrustedLaunch to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set as TrustedLaunch.',
+              enum: [ 'TrustedLaunch' ],
+              'x-ms-enum': { name: 'SecurityTypes', modelAsString: true }
+            }
+          }
+        },
+        diagnosticsProfile: {
+          description: 'Specifies the boot diagnostic settings state. <br><br>Minimum api-version: 2015-06-15.',
+          properties: {
+            bootDiagnostics: {
+              description: 'Boot Diagnostics is a debugging feature which allows you to view Console Output and Screenshot to diagnose VM status. <br>**NOTE**: If storageUri is being specified then ensure that the storage account is in the same region and subscription as the VM. <br><br> You can easily view the output of your console log. <br><br> Azure also enables you to see a screenshot of the VM from the hypervisor.',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether boot diagnostics should be enabled on the Virtual Machine.'
+                },
+                storageUri: {
+                  type: 'string',
+                  description: 'Uri of the storage account to use for placing the console output and screenshot. <br><br>If storageUri is not specified while enabling boot diagnostics, managed storage will be used.'
+                }
+              }
+            }
+          }
+        },
+        availabilitySet: {
+          properties: { id: { type: 'string', description: 'Resource Id' } },
+          'x-ms-azure-resource': true,
+          description: 'Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). <br><br> For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates) <br><br> Currently, a VM can only be added to availability set at creation time. The availability set to which the VM is being added should be under the same resource group as the availability set resource. An existing VM cannot be added to an availability set. <br><br>This property cannot exist along with a non-null properties.virtualMachineScaleSet reference.'
+        },
+        virtualMachineScaleSet: {
+          properties: { id: { type: 'string', description: 'Resource Id' } },
+          'x-ms-azure-resource': true,
+          description: 'Specifies information about the virtual machine scale set that the virtual machine should be assigned to. Virtual machines specified in the same virtual machine scale set are allocated to different nodes to maximize availability. Currently, a VM can only be added to virtual machine scale set at creation time. An existing VM cannot be added to a virtual machine scale set. <br><br>This property cannot exist along with a non-null properties.availabilitySet reference. <br><br>Minimum api‐version: 2019‐03‐01'
+        },
+        proximityPlacementGroup: {
+          properties: { id: { type: 'string', description: 'Resource Id' } },
+          'x-ms-azure-resource': true,
+          description: 'Specifies information about the proximity placement group that the virtual machine should be assigned to. <br><br>Minimum api-version: 2018-04-01.'
+        },
+        priority: {
+          description: 'Specifies the priority for the virtual machine. <br><br>Minimum api-version: 2019-03-01',
+          type: 'string',
+          enum: [ 'Regular', 'Low', 'Spot' ],
+          'x-ms-enum': { name: 'VirtualMachinePriorityTypes', modelAsString: true }
+        },
+        evictionPolicy: {
+          description: "Specifies the eviction policy for the Azure Spot virtual machine and Azure Spot scale set. <br><br>For Azure Spot virtual machines, both 'Deallocate' and 'Delete' are supported and the minimum api-version is 2019-03-01. <br><br>For Azure Spot scale sets, both 'Deallocate' and 'Delete' are supported and the minimum api-version is 2017-10-30-preview.",
+          type: 'string',
+          enum: [ 'Deallocate', 'Delete' ],
+          'x-ms-enum': {
+            name: 'VirtualMachineEvictionPolicyTypes',
+            modelAsString: true
+          }
+        },
+        billingProfile: {
+          description: 'Specifies the billing related details of a Azure Spot virtual machine. <br><br>Minimum api-version: 2019-03-01.',
+          properties: {
+            maxPrice: {
+              type: 'number',
+              format: 'double',
+              description: 'Specifies the maximum price you are willing to pay for a Azure Spot VM/VMSS. This price is in US Dollars. <br><br> This price will be compared with the current Azure Spot price for the VM size. Also, the prices are compared at the time of create/update of Azure Spot VM/VMSS and the operation will only succeed if  the maxPrice is greater than the current Azure Spot price. <br><br> The maxPrice will also be used for evicting a Azure Spot VM/VMSS if the current Azure Spot price goes beyond the maxPrice after creation of VM/VMSS. <br><br> Possible values are: <br><br> - Any decimal value greater than zero. Example: 0.01538 <br><br> -1 – indicates default price to be up-to on-demand. <br><br> You can set the maxPrice to -1 to indicate that the Azure Spot VM/VMSS should not be evicted for price reasons. Also, the default max price is -1 if it is not provided by you. <br><br>Minimum api-version: 2019-03-01.'
+            }
+          }
+        },
+        host: {
+          properties: { id: { type: 'string', description: 'Resource Id' } },
+          'x-ms-azure-resource': true,
+          description: 'Specifies information about the dedicated host that the virtual machine resides in. <br><br>Minimum api-version: 2018-10-01.'
+        },
+        hostGroup: {
+          properties: { id: { type: 'string', description: 'Resource Id' } },
+          'x-ms-azure-resource': true,
+          description: 'Specifies information about the dedicated host group that the virtual machine resides in. <br><br>Minimum api-version: 2020-06-01. <br><br>NOTE: User cannot specify both host and hostGroup properties.'
+        },
+        provisioningState: {
+          readOnly: true,
+          type: 'string',
+          description: 'The provisioning state, which only appears in the response.'
+        },
+        instanceView: {
+          readOnly: true,
+          description: 'The virtual machine instance view.',
+          properties: {
+            platformUpdateDomain: {
+              type: 'integer',
+              format: 'int32',
+              description: 'Specifies the update domain of the virtual machine.'
+            },
+            platformFaultDomain: {
+              type: 'integer',
+              format: 'int32',
+              description: 'Specifies the fault domain of the virtual machine.'
+            },
+            computerName: {
+              type: 'string',
+              description: 'The computer name assigned to the virtual machine.'
+            },
+            osName: {
+              type: 'string',
+              description: 'The Operating System running on the virtual machine.'
+            },
+            osVersion: {
+              type: 'string',
+              description: 'The version of Operating System running on the virtual machine.'
+            },
+            hyperVGeneration: {
+              type: 'string',
+              description: 'Specifies the HyperVGeneration Type associated with a resource',
+              enum: [ 'V1', 'V2' ],
+              'x-ms-enum': { name: 'HyperVGenerationType', modelAsString: true }
+            },
+            rdpThumbPrint: {
+              type: 'string',
+              description: 'The Remote desktop certificate thumbprint.'
+            },
+            vmAgent: {
+              description: 'The VM Agent running on the virtual machine.',
+              properties: {
+                vmAgentVersion: {
+                  type: 'string',
+                  description: 'The VM Agent full version.'
+                },
+                extensionHandlers: {
+                  type: 'array',
+                  items: {
+                    properties: {
+                      type: [Object],
+                      typeHandlerVersion: [Object],
+                      status: [Object]
+                    },
+                    description: 'The instance view of a virtual machine extension handler.'
+                  },
+                  description: 'The virtual machine extension handler instance view.'
+                },
+                statuses: {
+                  type: 'array',
+                  items: {
+                    properties: {
+                      code: [Object],
+                      level: [Object],
+                      displayStatus: [Object],
+                      message: [Object],
+                      time: [Object]
+                    },
+                    description: 'Instance view status.'
+                  },
+                  description: 'The resource status information.'
+                }
+              }
+            },
+            maintenanceRedeployStatus: {
+              description: 'The Maintenance Operation status on the virtual machine.',
+              properties: {
+                isCustomerInitiatedMaintenanceAllowed: {
+                  type: 'boolean',
+                  description: 'True, if customer is allowed to perform Maintenance.'
+                },
+                preMaintenanceWindowStartTime: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'Start Time for the Pre Maintenance Window.'
+                },
+                preMaintenanceWindowEndTime: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'End Time for the Pre Maintenance Window.'
+                },
+                maintenanceWindowStartTime: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'Start Time for the Maintenance Window.'
+                },
+                maintenanceWindowEndTime: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'End Time for the Maintenance Window.'
+                },
+                lastOperationResultCode: {
+                  type: 'string',
+                  description: 'The Last Maintenance Operation Result Code.',
+                  enum: [
+                    'None',
+                    'RetryLater',
+                    'MaintenanceAborted',
+                    'MaintenanceCompleted'
+                  ],
+                  'x-ms-enum': {
+                    name: 'MaintenanceOperationResultCodeTypes',
+                    modelAsString: false
+                  }
+                },
+                lastOperationMessage: {
+                  type: 'string',
+                  description: 'Message returned for the last Maintenance Operation.'
+                }
+              }
+            },
+            disks: {
+              type: 'array',
+              items: {
+                properties: {
+                  name: { type: 'string', description: 'The disk name.' },
+                  encryptionSettings: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Describes a Encryption Settings for a Disk'
+                    },
+                    description: 'Specifies the encryption settings for the OS Disk. <br><br> Minimum api-version: 2015-06-15'
+                  },
+                  statuses: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Instance view status.'
+                    },
+                    description: 'The resource status information.'
+                  }
+                },
+                description: 'The instance view of the disk.'
+              },
+              description: 'The virtual machine disk information.'
+            },
+            extensions: {
+              type: 'array',
+              items: {
+                properties: {
+                  name: {
+                    type: 'string',
+                    description: 'The virtual machine extension name.'
+                  },
+                  type: {
+                    type: 'string',
+                    description: 'Specifies the type of the extension; an example is "CustomScriptExtension".'
+                  },
+                  typeHandlerVersion: {
+                    type: 'string',
+                    description: 'Specifies the version of the script handler.'
+                  },
+                  substatuses: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Instance view status.'
+                    },
+                    description: 'The resource status information.'
+                  },
+                  statuses: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Instance view status.'
+                    },
+                    description: 'The resource status information.'
+                  }
+                },
+                description: 'The instance view of a virtual machine extension.'
+              },
+              description: 'The extensions information.'
+            },
+            vmHealth: {
+              readOnly: true,
+              description: 'The health status for the VM.',
+              properties: {
+                status: {
+                  properties: {
+                    code: { type: 'string', description: 'The status code.' },
+                    level: {
+                      type: 'string',
+                      description: 'The level code.',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    displayStatus: {
+                      type: 'string',
+                      description: 'The short localizable label for the status.'
+                    },
+                    message: {
+                      type: 'string',
+                      description: 'The detailed status message, including for alerts and error messages.'
+                    },
+                    time: {
+                      type: 'string',
+                      format: 'date-time',
+                      description: 'The time of the status.'
+                    }
+                  },
+                  description: 'Instance view status.',
+                  readOnly: true
+                }
+              }
+            },
+            bootDiagnostics: {
+              description: 'Boot Diagnostics is a debugging feature which allows you to view Console Output and Screenshot to diagnose VM status. <br><br> You can easily view the output of your console log. <br><br> Azure also enables you to see a screenshot of the VM from the hypervisor.',
+              properties: {
+                consoleScreenshotBlobUri: {
+                  readOnly: true,
+                  type: 'string',
+                  description: 'The console screenshot blob URI. <br><br>NOTE: This will **not** be set if boot diagnostics is currently enabled with managed storage.'
+                },
+                serialConsoleLogBlobUri: {
+                  readOnly: true,
+                  type: 'string',
+                  description: 'The serial console log blob Uri. <br><br>NOTE: This will **not** be set if boot diagnostics is currently enabled with managed storage.'
+                },
+                status: {
+                  properties: {
+                    code: { type: 'string', description: 'The status code.' },
+                    level: {
+                      type: 'string',
+                      description: 'The level code.',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    displayStatus: {
+                      type: 'string',
+                      description: 'The short localizable label for the status.'
+                    },
+                    message: {
+                      type: 'string',
+                      description: 'The detailed status message, including for alerts and error messages.'
+                    },
+                    time: {
+                      type: 'string',
+                      format: 'date-time',
+                      description: 'The time of the status.'
+                    }
+                  },
+                  description: 'Instance view status.',
+                  readOnly: true
+                }
+              }
+            },
+            assignedHost: {
+              type: 'string',
+              readOnly: true,
+              description: 'Resource id of the dedicated host, on which the virtual machine is allocated through automatic placement, when the virtual machine is associated with a dedicated host group that has automatic placement enabled. <br><br>Minimum api-version: 2020-06-01.'
+            },
+            statuses: {
+              type: 'array',
+              items: {
+                properties: {
+                  code: { type: 'string', description: 'The status code.' },
+                  level: {
+                    type: 'string',
+                    description: 'The level code.',
+                    enum: [ 'Info', 'Warning', 'Error' ],
+                    'x-ms-enum': { name: 'StatusLevelTypes', modelAsString: false }
+                  },
+                  displayStatus: {
+                    type: 'string',
+                    description: 'The short localizable label for the status.'
+                  },
+                  message: {
+                    type: 'string',
+                    description: 'The detailed status message, including for alerts and error messages.'
+                  },
+                  time: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'The time of the status.'
+                  }
+                },
+                description: 'Instance view status.'
+              },
+              description: 'The resource status information.'
+            },
+            patchStatus: {
+              description: '[Preview Feature] The status of virtual machine patch operations.',
+              properties: {
+                availablePatchSummary: {
+                  description: 'The available patch summary of the latest assessment operation for the virtual machine.',
+                  properties: {
+                    status: {
+                      type: 'string',
+                      readOnly: true,
+                      description: 'The overall success or failure status of the operation. It remains "InProgress" until the operation completes. At that point it will become "Unknown", "Failed", "Succeeded", or "CompletedWithWarnings."',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    assessmentActivityId: {
+                      type: 'string',
+                      readOnly: true,
+                      description: 'The activity ID of the operation that produced this result. It is used to correlate across CRP and extension logs.'
+                    },
+                    rebootPending: {
+                      type: 'boolean',
+                      readOnly: true,
+                      description: 'The overall reboot status of the VM. It will be true when partially installed patches require a reboot to complete installation but the reboot has not yet occurred.'
+                    },
+                    criticalAndSecurityPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The number of critical or security patches that have been detected as available and not yet installed.'
+                    },
+                    otherPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The number of all available patches excluding critical and security.'
+                    },
+                    startTime: {
+                      type: 'string',
+                      readOnly: true,
+                      format: 'date-time',
+                      description: 'The UTC timestamp when the operation began.'
+                    },
+                    lastModifiedTime: {
+                      type: 'string',
+                      readOnly: true,
+                      format: 'date-time',
+                      description: 'The UTC timestamp when the operation began.'
+                    },
+                    error: {
+                      properties: [Object],
+                      description: 'Api error.',
+                      readOnly: true
+                    }
+                  }
+                },
+                lastPatchInstallationSummary: {
+                  description: 'The installation summary of the latest installation operation for the virtual machine.',
+                  properties: {
+                    status: {
+                      type: 'string',
+                      readOnly: true,
+                      description: 'The overall success or failure status of the operation. It remains "InProgress" until the operation completes. At that point it will become "Unknown", "Failed", "Succeeded", or "CompletedWithWarnings."',
+                      enum: [Array],
+                      'x-ms-enum': [Object]
+                    },
+                    installationActivityId: {
+                      type: 'string',
+                      readOnly: true,
+                      description: 'The activity ID of the operation that produced this result. It is used to correlate across CRP and extension logs.'
+                    },
+                    maintenanceWindowExceeded: {
+                      type: 'boolean',
+                      readOnly: true,
+                      description: 'Describes whether the operation ran out of time before it completed all its intended actions'
+                    },
+                    notSelectedPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: "The number of all available patches but not going to be installed because it didn't match a classification or inclusion list entry."
+                    },
+                    excludedPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The number of all available patches but excluded explicitly by a customer-specified exclusion list match.'
+                    },
+                    pendingPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The number of all available patches expected to be installed over the course of the patch installation operation.'
+                    },
+                    installedPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The count of patches that successfully installed.'
+                    },
+                    failedPatchCount: {
+                      type: 'integer',
+                      readOnly: true,
+                      format: 'int32',
+                      description: 'The count of patches that failed installation.'
+                    },
+                    startTime: {
+                      type: 'string',
+                      readOnly: true,
+                      format: 'date-time',
+                      description: 'The UTC timestamp when the operation began.'
+                    },
+                    lastModifiedTime: {
+                      type: 'string',
+                      readOnly: true,
+                      format: 'date-time',
+                      description: 'The UTC timestamp when the operation began.'
+                    },
+                    error: {
+                      properties: [Object],
+                      description: 'Api error.',
+                      readOnly: true
+                    }
+                  }
+                },
+                configurationStatuses: {
+                  description: 'The enablement status of the specified patchMode',
+                  readOnly: true,
+                  type: 'array',
+                  items: {
+                    properties: {
+                      code: [Object],
+                      level: [Object],
+                      displayStatus: [Object],
+                      message: [Object],
+                      time: [Object]
+                    },
+                    description: 'Instance view status.'
+                  }
+                }
+              }
+            }
+          }
+        },
+        licenseType: {
+          type: 'string',
+          description: 'Specifies that the image or disk that is being used was licensed on-premises. <br><br> Possible values for Windows Server operating system are: <br><br> Windows_Client <br><br> Windows_Server <br><br> Possible values for Linux Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for Windows Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing) <br><br> [Azure Hybrid Use Benefit for Linux Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux) <br><br> Minimum api-version: 2015-06-15'
+        },
+        vmId: {
+          readOnly: true,
+          type: 'string',
+          description: 'Specifies the VM unique ID which is a 128-bits identifier that is encoded and stored in all Azure IaaS VMs SMBIOS and can be read using platform BIOS commands.'
+        },
+        extensionsTimeBudget: {
+          type: 'string',
+          description: 'Specifies the time alloted for all extensions to start. The time duration should be between 15 minutes and 120 minutes (inclusive) and should be specified in ISO 8601 format. The default value is 90 minutes (PT1H30M). <br><br> Minimum api-version: 2020-06-01'
+        },
+        platformFaultDomain: {
+          type: 'integer',
+          format: 'int32',
+          description: "Specifies the scale set logical fault domain into which the Virtual Machine will be created. By default, the Virtual Machine will by automatically assigned to a fault domain that best maintains balance across available fault domains.<br><li>This is applicable only if the 'virtualMachineScaleSet' property of this Virtual Machine is set.<li>The Virtual Machine Scale Set that is referenced, must have 'platformFaultDomainCount' &gt; 1.<li>This property cannot be updated once the Virtual Machine is created.<li>Fault domain assignment can be viewed in the Virtual Machine Instance View.<br><br>Minimum api‐version: 2020‐12‐01"
+        },
+        scheduledEventsProfile: {
+          description: 'Specifies Scheduled Event related configurations.',
+          type: 'object',
+          properties: {
+            terminateNotificationProfile: {
+              description: 'Specifies Terminate Scheduled Event related configurations.',
+              type: 'object',
+              properties: {
+                notBeforeTimeout: {
+                  type: 'string',
+                  description: 'Configurable length of time a Virtual Machine being deleted will have to potentially approve the Terminate Scheduled Event before the event is auto approved (timed out). The configuration must be specified in ISO 8601 format, the default value is 5 minutes (PT5M)'
+                },
+                enable: {
+                  type: 'boolean',
+                  description: 'Specifies whether the Terminate Scheduled event is enabled or disabled.'
+                }
+              }
+            }
+          }
+        },
+        userData: {
+          type: 'string',
+          description: 'UserData for the VM, which must be base-64 encoded. Customer should not pass any secrets in here. <br><br>Minimum api-version: 2021-03-01'
+        },
+        capacityReservation: {
+          description: 'Specifies information about the capacity reservation that is used to allocate virtual machine. <br><br>Minimum api-version: 2021-04-01.',
+          type: 'object',
+          properties: {
+            capacityReservationGroup: {
+              properties: { id: { type: 'string', description: 'Resource Id' } },
+              'x-ms-azure-resource': true,
+              description: 'Specifies the capacity reservation group resource id that should be used for allocating the virtual machine or scaleset vm instances provided enough capacity has been reserved. Please refer to https://aka.ms/CapacityReservation for more details.'
+            }
+          }
+        },
+        applicationProfile: {
+          description: 'Specifies the gallery applications that should be made available to the VM/VMSS',
+          type: 'object',
+          properties: {
+            galleryApplications: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  tags: {
+                    type: 'string',
+                    description: 'Optional, Specifies a passthrough value for more generic context.'
+                  },
+                  order: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'Optional, Specifies the order in which the packages have to be installed'
+                  },
+                  packageReferenceId: {
+                    type: 'string',
+                    description: 'Specifies the GalleryApplicationVersion resource id on the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{application}/versions/{version}'
+                  },
+                  configurationReference: {
+                    type: 'string',
+                    description: 'Optional, Specifies the uri to an azure blob that will replace the default configuration for the package if provided'
+                  }
+                },
+                required: [ 'packageReferenceId' ],
+                description: 'Specifies the required information to reference a compute gallery application version'
+              },
+              description: 'Specifies the gallery applications that should be made available to the VM/VMSS'
+            }
+          }
+        }
+      },
+      description: 'Describes the properties of a Virtual Machine.'
+    },
+    resources: {
+      readOnly: true,
+      type: 'array',
+      items: {
+        properties: {
+          properties: {
+            'x-ms-client-flatten': true,
+            properties: {
+              forceUpdateTag: {
+                type: 'string',
+                description: 'How the extension handler should be forced to update even if the extension configuration has not changed.'
+              },
+              publisher: {
+                type: 'string',
+                description: 'The name of the extension handler publisher.'
+              },
+              type: {
+                type: 'string',
+                description: 'Specifies the type of the extension; an example is "CustomScriptExtension".'
+              },
+              typeHandlerVersion: {
+                type: 'string',
+                description: 'Specifies the version of the script handler.'
+              },
+              autoUpgradeMinorVersion: {
+                type: 'boolean',
+                description: 'Indicates whether the extension should use a newer minor version if one is available at deployment time. Once deployed, however, the extension will not upgrade minor versions unless redeployed, even with this property set to true.'
+              },
+              enableAutomaticUpgrade: {
+                type: 'boolean',
+                description: 'Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available.'
+              },
+              settings: {
+                type: 'object',
+                description: 'Json formatted public settings for the extension.'
+              },
+              protectedSettings: {
+                type: 'object',
+                description: 'The extension can contain either protectedSettings or protectedSettingsFromKeyVault or no protected settings at all.'
+              },
+              provisioningState: {
+                readOnly: true,
+                type: 'string',
+                description: 'The provisioning state, which only appears in the response.'
+              },
+              instanceView: {
+                description: 'The virtual machine extension instance view.',
+                properties: {
+                  name: {
+                    type: 'string',
+                    description: 'The virtual machine extension name.'
+                  },
+                  type: {
+                    type: 'string',
+                    description: 'Specifies the type of the extension; an example is "CustomScriptExtension".'
+                  },
+                  typeHandlerVersion: {
+                    type: 'string',
+                    description: 'Specifies the version of the script handler.'
+                  },
+                  substatuses: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Instance view status.'
+                    },
+                    description: 'The resource status information.'
+                  },
+                  statuses: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Instance view status.'
+                    },
+                    description: 'The resource status information.'
+                  }
+                }
+              },
+              suppressFailures: {
+                type: 'boolean',
+                description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+              }
+            },
+            description: 'Describes the properties of a Virtual Machine Extension.'
+          }
+        },
+        allOf: [
+          {
+            description: 'The Resource model definition.',
+            properties: {
+              id: {
+                readOnly: true,
+                type: 'string',
+                description: 'Resource Id'
+              },
+              name: {
+                readOnly: true,
+                type: 'string',
+                description: 'Resource name'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'Resource type'
+              },
+              location: { type: 'string', description: 'Resource location' },
+              tags: {
+                type: 'object',
+                additionalProperties: { type: 'string' },
+                description: 'Resource tags'
+              }
+            },
+            required: [ 'location' ],
+            'x-ms-azure-resource': true
+          }
+        ],
+        description: 'Describes a Virtual Machine Extension.'
+      },
+      description: 'The virtual machine child extension resources.'
+    },
+    identity: {
+      description: 'The identity of the virtual machine, if configured.',
+      properties: {
+        principalId: {
+          readOnly: true,
+          type: 'string',
+          description: 'The principal id of virtual machine identity. This property will only be provided for a system assigned identity.'
+        },
+        tenantId: {
+          readOnly: true,
+          type: 'string',
+          description: 'The tenant id associated with the virtual machine. This property will only be provided for a system assigned identity.'
+        },
+        type: {
+          type: 'string',
+          description: "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine.",
+          enum: [
+            'SystemAssigned',
+            'UserAssigned',
+            'SystemAssigned, UserAssigned',
+            'None'
+          ],
+          'x-ms-enum': { name: 'ResourceIdentityType', modelAsString: false }
+        },
+        userAssignedIdentities: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            'x-ms-client-name': 'userAssignedIdentitiesValue',
+            properties: {
+              principalId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The principal id of user assigned identity.'
+              },
+              clientId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The client id of user assigned identity.'
+              }
+            }
+          },
+          description: "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'."
+        }
+      }
+    },
+    zones: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'The virtual machine zones.'
+    },
+    extendedLocation: {
+      description: 'The extended location of the Virtual Machine.',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The name of the extended location.'
+        },
+        type: {
+          description: 'The type of the extended location.',
+          type: 'string',
+          enum: [ 'EdgeZone' ],
+          'x-ms-enum': { name: 'ExtendedLocationTypes', modelAsString: true }
+        }
+      }
+    }
+  },
+  allOf: [
+    {
+      description: 'The Resource model definition.',
+      properties: {
+        id: { readOnly: true, type: 'string', description: 'Resource Id' },
+        name: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource name'
+        },
+        type: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource type'
+        },
+        location: { type: 'string', description: 'Resource location' },
+        tags: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+          description: 'Resource tags'
+        }
+      },
+      required: [ 'location' ],
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Describes a Virtual Machine.'
+}
+```
 ## Misc
 The resource version is `2021-07-01`.
 

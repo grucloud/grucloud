@@ -36,6 +36,178 @@ provider.ContainerRegistry.makeToken({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ScopeMap](../ContainerRegistry/ScopeMap.md)
 - [Registry](../ContainerRegistry/Registry.md)
+## Swagger Schema
+```js
+{
+  description: 'An object that represents a token for a container registry.',
+  type: 'object',
+  allOf: [
+    {
+      description: 'The resource model definition for a ARM proxy resource. It will have everything other than required location and tags.',
+      properties: {
+        id: {
+          description: 'The resource ID.',
+          type: 'string',
+          readOnly: true
+        },
+        name: {
+          description: 'The name of the resource.',
+          type: 'string',
+          readOnly: true
+        },
+        type: {
+          description: 'The type of the resource.',
+          type: 'string',
+          readOnly: true
+        },
+        systemData: {
+          description: 'Metadata pertaining to creation and last modification of the resource.',
+          type: 'object',
+          readOnly: true,
+          properties: {
+            createdBy: {
+              description: 'The identity that created the resource.',
+              type: 'string'
+            },
+            createdByType: {
+              description: 'The type of identity that created the resource.',
+              enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
+              type: 'string',
+              'x-ms-enum': { name: 'createdByType', modelAsString: true }
+            },
+            createdAt: {
+              format: 'date-time',
+              description: 'The timestamp of resource creation (UTC).',
+              type: 'string'
+            },
+            lastModifiedBy: {
+              description: 'The identity that last modified the resource.',
+              type: 'string'
+            },
+            lastModifiedByType: {
+              description: 'The type of identity that last modified the resource.',
+              enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
+              type: 'string',
+              'x-ms-enum': { name: 'lastModifiedByType', modelAsString: true }
+            },
+            lastModifiedAt: {
+              format: 'date-time',
+              description: 'The timestamp of resource modification (UTC).',
+              type: 'string'
+            }
+          }
+        }
+      },
+      'x-ms-azure-resource': true
+    }
+  ],
+  properties: {
+    properties: {
+      description: 'The properties of the token.',
+      'x-ms-client-flatten': true,
+      type: 'object',
+      properties: {
+        creationDate: {
+          format: 'date-time',
+          description: 'The creation date of scope map.',
+          type: 'string',
+          readOnly: true
+        },
+        provisioningState: {
+          description: 'Provisioning state of the resource.',
+          enum: [
+            'Creating',
+            'Updating',
+            'Deleting',
+            'Succeeded',
+            'Failed',
+            'Canceled'
+          ],
+          type: 'string',
+          readOnly: true,
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        },
+        scopeMapId: {
+          description: 'The resource ID of the scope map to which the token will be associated with.',
+          type: 'string'
+        },
+        credentials: {
+          description: 'The credentials that can be used for authenticating the token.',
+          type: 'object',
+          properties: {
+            certificates: {
+              type: 'array',
+              items: {
+                description: 'The properties of a certificate used for authenticating a token.',
+                type: 'object',
+                properties: {
+                  name: {
+                    enum: [ 'certificate1', 'certificate2' ],
+                    type: 'string',
+                    'x-ms-enum': {
+                      name: 'TokenCertificateName',
+                      modelAsString: true
+                    }
+                  },
+                  expiry: {
+                    format: 'date-time',
+                    description: 'The expiry datetime of the certificate.',
+                    type: 'string'
+                  },
+                  thumbprint: {
+                    description: 'The thumbprint of the certificate.',
+                    type: 'string'
+                  },
+                  encodedPemCertificate: {
+                    description: 'Base 64 encoded string of the public certificate1 in PEM format that will be used for authenticating the token.',
+                    type: 'string'
+                  }
+                }
+              }
+            },
+            passwords: {
+              type: 'array',
+              items: {
+                description: 'The password that will be used for authenticating the token of a container registry.',
+                type: 'object',
+                properties: {
+                  creationTime: {
+                    format: 'date-time',
+                    description: 'The creation datetime of the password.',
+                    type: 'string'
+                  },
+                  expiry: {
+                    format: 'date-time',
+                    description: 'The expiry datetime of the password.',
+                    type: 'string'
+                  },
+                  name: {
+                    description: 'The password name "password1" or "password2"',
+                    enum: [ 'password1', 'password2' ],
+                    type: 'string',
+                    'x-ms-enum': { name: 'TokenPasswordName', modelAsString: true }
+                  },
+                  value: {
+                    description: 'The password value.',
+                    type: 'string',
+                    readOnly: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        status: {
+          description: 'The status of the token example enabled or disabled.',
+          enum: [ 'enabled', 'disabled' ],
+          type: 'string',
+          'x-ms-enum': { name: 'TokenStatus', modelAsString: true }
+        }
+      }
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2021-08-01-preview`.
 

@@ -28,6 +28,76 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+## Swagger Schema
+```js
+{
+  description: 'A virtual network rule.',
+  type: 'object',
+  allOf: [
+    {
+      title: 'Proxy Resource',
+      description: 'The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location',
+      type: 'object',
+      allOf: [
+        {
+          title: 'Resource',
+          description: 'Common fields that are returned in the response for all Azure Resource Manager resources',
+          type: 'object',
+          properties: {
+            id: {
+              readOnly: true,
+              type: 'string',
+              description: 'Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}'
+            },
+            name: {
+              readOnly: true,
+              type: 'string',
+              description: 'The name of the resource'
+            },
+            type: {
+              readOnly: true,
+              type: 'string',
+              description: 'The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"'
+            }
+          },
+          'x-ms-azure-resource': true
+        }
+      ]
+    }
+  ],
+  properties: {
+    properties: {
+      description: 'Resource properties.',
+      'x-ms-client-flatten': true,
+      required: [ 'virtualNetworkSubnetId' ],
+      type: 'object',
+      properties: {
+        virtualNetworkSubnetId: {
+          description: 'The ARM resource id of the virtual network subnet.',
+          type: 'string'
+        },
+        ignoreMissingVnetServiceEndpoint: {
+          description: 'Create firewall rule before the virtual network has vnet service endpoint enabled.',
+          type: 'boolean'
+        },
+        state: {
+          description: 'Virtual Network Rule State',
+          enum: [
+            'Initializing',
+            'InProgress',
+            'Ready',
+            'Deleting',
+            'Unknown'
+          ],
+          type: 'string',
+          readOnly: true,
+          'x-ms-enum': { name: 'VirtualNetworkRuleState', modelAsString: true }
+        }
+      }
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2017-12-01`.
 

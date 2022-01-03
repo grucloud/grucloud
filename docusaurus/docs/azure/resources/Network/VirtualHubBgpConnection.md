@@ -32,6 +32,63 @@ provider.Network.makeVirtualHubBgpConnection({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [HubVirtualNetworkConnection](../Network/HubVirtualNetworkConnection.md)
 - [VirtualHub](../Network/VirtualHub.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'The properties of the Bgp connections.',
+      properties: {
+        peerAsn: {
+          type: 'integer',
+          readOnly: false,
+          format: 'int64',
+          minimum: 0,
+          maximum: 4294967295,
+          description: 'Peer ASN.'
+        },
+        peerIp: { type: 'string', readOnly: false, description: 'Peer IP.' },
+        hubVirtualNetworkConnection: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true,
+          readOnly: false
+        },
+        provisioningState: {
+          description: 'The provisioning state of the resource.',
+          readOnly: true,
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        },
+        connectionState: {
+          type: 'string',
+          description: 'The current state of the VirtualHub to Peer.',
+          readOnly: true,
+          enum: [ 'Unknown', 'Connecting', 'Connected', 'NotConnected' ],
+          'x-ms-enum': { name: 'HubBgpConnectionStatus', modelAsString: true }
+        }
+      }
+    },
+    name: { type: 'string', description: 'Name of the connection.' },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    },
+    type: { type: 'string', readOnly: true, description: 'Connection type.' }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Virtual Appliance Site resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

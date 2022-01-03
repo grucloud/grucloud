@@ -9,6 +9,10 @@ Provides a **WebAppInstanceProcessSlot** from the **Web** group
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-02-01`.
 

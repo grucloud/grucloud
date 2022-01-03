@@ -9,6 +9,51 @@ Provides a **WebAppSwiftVirtualNetworkConnectionSlot** from the **Web** group
 - [Subnet](../Network/Subnet.md)
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
+## Swagger Schema
+```js
+{
+  description: 'Swift Virtual Network Contract. This is used to enable the new Swift way of doing virtual network integration.',
+  type: 'object',
+  allOf: [
+    {
+      description: 'Azure proxy only resource. This resource is not tracked by Azure Resource Manager.',
+      type: 'object',
+      properties: {
+        id: { description: 'Resource Id.', type: 'string', readOnly: true },
+        name: {
+          description: 'Resource Name.',
+          type: 'string',
+          readOnly: true
+        },
+        kind: { description: 'Kind of resource.', type: 'string' },
+        type: {
+          description: 'Resource type.',
+          type: 'string',
+          readOnly: true
+        }
+      },
+      'x-ms-azure-resource': true
+    }
+  ],
+  properties: {
+    properties: {
+      description: 'SwiftVirtualNetwork resource specific properties',
+      type: 'object',
+      properties: {
+        subnetResourceId: {
+          description: "The Virtual Network subnet's resource ID. This is the subnet that this Web App will join. This subnet must have a delegation to Microsoft.Web/serverFarms defined first.",
+          type: 'string'
+        },
+        swiftSupported: {
+          description: 'A flag that specifies if the scale unit this Web App is on supports Swift integration.',
+          type: 'boolean'
+        }
+      },
+      'x-ms-client-flatten': true
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2021-02-01`.
 

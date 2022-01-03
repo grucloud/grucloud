@@ -17,6 +17,62 @@ provider.Network.makeApplicationSecurityGroup({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the application security group.',
+      properties: {
+        resourceGuid: {
+          readOnly: true,
+          type: 'string',
+          description: 'The resource GUID property of the application security group resource. It uniquely identifies a resource, even if the user changes its name or migrate the resource across subscriptions or resource groups.'
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the application security group resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    etag: {
+      readOnly: true,
+      type: 'string',
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  },
+  allOf: [
+    {
+      properties: {
+        id: { type: 'string', description: 'Resource ID.' },
+        name: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource name.'
+        },
+        type: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource type.'
+        },
+        location: { type: 'string', description: 'Resource location.' },
+        tags: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+          description: 'Resource tags.'
+        }
+      },
+      description: 'Common resource representation.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'An application security group in a resource group.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

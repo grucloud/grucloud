@@ -7,6 +7,10 @@ Provides a **DataCollectorLog** from the **OperationalInsights** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../OperationalInsights/Workspace.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2020-03-01-preview`.
 

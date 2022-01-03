@@ -22,6 +22,26 @@ provider.Network.makeVirtualNetworkGatewayConnectionSharedKey({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetworkGatewayConnection](../Network/VirtualNetworkGatewayConnection.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    value: {
+      type: 'string',
+      description: 'The virtual network connection shared key value.'
+    }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  required: [ 'value' ],
+  description: 'Response for GetConnectionSharedKey API service call.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

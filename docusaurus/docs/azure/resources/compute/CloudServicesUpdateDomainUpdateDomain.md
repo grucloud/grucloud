@@ -18,6 +18,17 @@ provider.Compute.makeCloudServicesUpdateDomainUpdateDomain({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CloudService](../Compute/CloudService.md)
+## Swagger Schema
+```js
+{
+  description: 'Defines an update domain for the cloud service.',
+  type: 'object',
+  properties: {
+    id: { description: 'Resource Id', type: 'string', readOnly: true },
+    name: { description: 'Resource Name', type: 'string', readOnly: true }
+  }
+}
+```
 ## Misc
 The resource version is `2021-03-01`.
 

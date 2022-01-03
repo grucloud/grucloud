@@ -8,6 +8,10 @@ Provides a **WebAppInstanceProcess** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-02-01`.
 

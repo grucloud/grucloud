@@ -75,6 +75,400 @@ provider.Network.makeVpnServerConfiguration({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualHub](../Network/VirtualHub.md)
 - [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the P2SVpnServer configuration.',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The name of the VpnServerConfiguration that is unique within a resource group.'
+        },
+        vpnProtocols: {
+          type: 'array',
+          items: {
+            type: 'string',
+            description: 'VPN protocol enabled for the VpnServerConfiguration.',
+            enum: [ 'IkeV2', 'OpenVPN' ],
+            'x-ms-enum': {
+              name: 'VpnGatewayTunnelingProtocol',
+              modelAsString: true
+            }
+          },
+          description: 'VPN protocols for the VpnServerConfiguration.'
+        },
+        vpnAuthenticationTypes: {
+          type: 'array',
+          items: {
+            type: 'string',
+            description: 'VPN authentication types enabled for the VpnServerConfiguration.',
+            enum: [ 'Certificate', 'Radius', 'AAD' ],
+            'x-ms-enum': { name: 'VpnAuthenticationType', modelAsString: true }
+          },
+          description: 'VPN authentication types for the VpnServerConfiguration.'
+        },
+        vpnClientRootCertificates: {
+          type: 'array',
+          items: {
+            properties: {
+              name: { type: 'string', description: 'The certificate name.' },
+              publicCertData: {
+                type: 'string',
+                description: 'The certificate public data.'
+              }
+            },
+            description: 'Properties of VPN client root certificate of VpnServerConfiguration.'
+          },
+          description: 'VPN client root certificate of VpnServerConfiguration.'
+        },
+        vpnClientRevokedCertificates: {
+          type: 'array',
+          items: {
+            properties: {
+              name: { type: 'string', description: 'The certificate name.' },
+              thumbprint: {
+                type: 'string',
+                description: 'The revoked VPN client certificate thumbprint.'
+              }
+            },
+            description: 'Properties of the revoked VPN client certificate of VpnServerConfiguration.'
+          },
+          description: 'VPN client revoked certificate of VpnServerConfiguration.'
+        },
+        radiusServerRootCertificates: {
+          type: 'array',
+          items: {
+            properties: {
+              name: { type: 'string', description: 'The certificate name.' },
+              publicCertData: {
+                type: 'string',
+                description: 'The certificate public data.'
+              }
+            },
+            description: 'Properties of Radius Server root certificate of VpnServerConfiguration.'
+          },
+          description: 'Radius Server root certificate of VpnServerConfiguration.'
+        },
+        radiusClientRootCertificates: {
+          type: 'array',
+          items: {
+            properties: {
+              name: { type: 'string', description: 'The certificate name.' },
+              thumbprint: {
+                type: 'string',
+                description: 'The Radius client root certificate thumbprint.'
+              }
+            },
+            description: 'Properties of the Radius client root certificate of VpnServerConfiguration.'
+          },
+          description: 'Radius client root certificate of VpnServerConfiguration.'
+        },
+        vpnClientIpsecPolicies: {
+          type: 'array',
+          items: {
+            properties: {
+              saLifeTimeSeconds: {
+                type: 'integer',
+                format: 'int32',
+                description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) lifetime in seconds for a site to site VPN tunnel.'
+              },
+              saDataSizeKilobytes: {
+                type: 'integer',
+                format: 'int32',
+                description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) payload size in KB for a site to site VPN tunnel.'
+              },
+              ipsecEncryption: {
+                description: 'The IPSec encryption algorithm (IKE phase 1).',
+                type: 'string',
+                enum: [
+                  'None',      'DES',
+                  'DES3',      'AES128',
+                  'AES192',    'AES256',
+                  'GCMAES128', 'GCMAES192',
+                  'GCMAES256'
+                ],
+                'x-ms-enum': { name: 'IpsecEncryption', modelAsString: true }
+              },
+              ipsecIntegrity: {
+                description: 'The IPSec integrity algorithm (IKE phase 1).',
+                type: 'string',
+                enum: [
+                  'MD5',
+                  'SHA1',
+                  'SHA256',
+                  'GCMAES128',
+                  'GCMAES192',
+                  'GCMAES256'
+                ],
+                'x-ms-enum': { name: 'IpsecIntegrity', modelAsString: true }
+              },
+              ikeEncryption: {
+                description: 'The IKE encryption algorithm (IKE phase 2).',
+                type: 'string',
+                enum: [
+                  'DES',
+                  'DES3',
+                  'AES128',
+                  'AES192',
+                  'AES256',
+                  'GCMAES256',
+                  'GCMAES128'
+                ],
+                'x-ms-enum': { name: 'IkeEncryption', modelAsString: true }
+              },
+              ikeIntegrity: {
+                description: 'The IKE integrity algorithm (IKE phase 2).',
+                type: 'string',
+                enum: [
+                  'MD5',
+                  'SHA1',
+                  'SHA256',
+                  'SHA384',
+                  'GCMAES256',
+                  'GCMAES128'
+                ],
+                'x-ms-enum': { name: 'IkeIntegrity', modelAsString: true }
+              },
+              dhGroup: {
+                description: 'The DH Group used in IKE Phase 1 for initial SA.',
+                type: 'string',
+                enum: [
+                  'None',
+                  'DHGroup1',
+                  'DHGroup2',
+                  'DHGroup14',
+                  'DHGroup2048',
+                  'ECP256',
+                  'ECP384',
+                  'DHGroup24'
+                ],
+                'x-ms-enum': { name: 'DhGroup', modelAsString: true }
+              },
+              pfsGroup: {
+                description: 'The Pfs Group used in IKE Phase 2 for new child SA.',
+                type: 'string',
+                enum: [
+                  'None',   'PFS1',
+                  'PFS2',   'PFS2048',
+                  'ECP256', 'ECP384',
+                  'PFS24',  'PFS14',
+                  'PFSMM'
+                ],
+                'x-ms-enum': { name: 'PfsGroup', modelAsString: true }
+              }
+            },
+            required: [
+              'saLifeTimeSeconds',
+              'saDataSizeKilobytes',
+              'ipsecEncryption',
+              'ipsecIntegrity',
+              'ikeEncryption',
+              'ikeIntegrity',
+              'dhGroup',
+              'pfsGroup'
+            ],
+            description: 'An IPSec Policy configuration for a virtual network gateway connection.'
+          },
+          description: 'VpnClientIpsecPolicies for VpnServerConfiguration.'
+        },
+        radiusServerAddress: {
+          type: 'string',
+          description: 'The radius server address property of the VpnServerConfiguration resource for point to site client connection.'
+        },
+        radiusServerSecret: {
+          type: 'string',
+          description: 'The radius secret property of the VpnServerConfiguration resource for point to site client connection.'
+        },
+        radiusServers: {
+          type: 'array',
+          items: {
+            properties: {
+              radiusServerAddress: {
+                type: 'string',
+                description: 'The address of this radius server.'
+              },
+              radiusServerScore: {
+                type: 'integer',
+                format: 'int64',
+                description: 'The initial score assigned to this radius server.'
+              },
+              radiusServerSecret: {
+                type: 'string',
+                description: 'The secret used for this radius server.'
+              }
+            },
+            required: [ 'radiusServerAddress' ],
+            description: 'Radius Server Settings.'
+          },
+          description: 'Multiple Radius Server configuration for VpnServerConfiguration.'
+        },
+        aadAuthenticationParameters: {
+          description: 'The set of aad vpn authentication parameters.',
+          properties: {
+            aadTenant: {
+              type: 'string',
+              description: 'AAD Vpn authentication parameter AAD tenant.'
+            },
+            aadAudience: {
+              type: 'string',
+              description: 'AAD Vpn authentication parameter AAD audience.'
+            },
+            aadIssuer: {
+              type: 'string',
+              description: 'AAD Vpn authentication parameter AAD issuer.'
+            }
+          }
+        },
+        provisioningState: {
+          readOnly: true,
+          type: 'string',
+          description: "The provisioning state of the VpnServerConfiguration resource. Possible values are: 'Updating', 'Deleting', and 'Failed'."
+        },
+        p2SVpnGateways: {
+          type: 'array',
+          readOnly: true,
+          items: {
+            required: [ 'location' ],
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the P2SVpnGateway.',
+                properties: {
+                  virtualHub: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  p2SConnectionConfigurations: {
+                    type: 'array',
+                    description: 'List of all p2s connection configurations of the gateway.',
+                    items: {
+                      properties: [Object],
+                      allOf: [Array],
+                      description: 'P2SConnectionConfiguration Resource.'
+                    }
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the P2S VPN gateway resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  },
+                  vpnGatewayScaleUnit: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'The scale unit for this p2s vpn gateway.'
+                  },
+                  vpnServerConfiguration: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  vpnClientConnectionHealth: {
+                    readOnly: true,
+                    description: "All P2S VPN clients' connection health status.",
+                    properties: {
+                      totalIngressBytesTransferred: [Object],
+                      totalEgressBytesTransferred: [Object],
+                      vpnClientConnectionsCount: [Object],
+                      allocatedIpAddresses: [Object]
+                    }
+                  },
+                  customDnsServers: {
+                    type: 'array',
+                    description: 'List of all customer specified DNS servers IP addresses.',
+                    items: { type: 'string' }
+                  },
+                  isRoutingPreferenceInternet: {
+                    type: 'boolean',
+                    description: 'Enable Routing Preference property for the Public IP Interface of the P2SVpnGateway.'
+                  }
+                }
+              },
+              etag: {
+                type: 'string',
+                readOnly: true,
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              }
+            },
+            allOf: [
+              {
+                properties: {
+                  id: { type: 'string', description: 'Resource ID.' },
+                  name: {
+                    readOnly: true,
+                    type: 'string',
+                    description: 'Resource name.'
+                  },
+                  type: {
+                    readOnly: true,
+                    type: 'string',
+                    description: 'Resource type.'
+                  },
+                  location: { type: 'string', description: 'Resource location.' },
+                  tags: {
+                    type: 'object',
+                    additionalProperties: { type: 'string' },
+                    description: 'Resource tags.'
+                  }
+                },
+                description: 'Common resource representation.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'P2SVpnGateway Resource.'
+          },
+          description: 'List of references to P2SVpnGateways.'
+        },
+        etag: {
+          readOnly: true,
+          type: 'string',
+          description: 'A unique read-only string that changes whenever the resource is updated.'
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  },
+  allOf: [
+    {
+      properties: {
+        id: { type: 'string', description: 'Resource ID.' },
+        name: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource name.'
+        },
+        type: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource type.'
+        },
+        location: { type: 'string', description: 'Resource location.' },
+        tags: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+          description: 'Resource tags.'
+        }
+      },
+      description: 'Common resource representation.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'VpnServerConfiguration Resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -27,6 +27,35 @@ provider.Network.makeFirewallPolicyIdpsSignaturesOverride({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
+## Swagger Schema
+```js
+{
+  'x-ms-azure-resource': true,
+  type: 'object',
+  description: 'Contains all specific policy signatures overrides for the IDPS',
+  properties: {
+    name: {
+      type: 'string',
+      description: 'Contains the name of the resource (default)'
+    },
+    id: {
+      description: 'Will contain the resource id of the signature override resource',
+      type: 'string'
+    },
+    type: {
+      type: 'string',
+      description: 'Will contain the type of the resource: Microsoft.Network/firewallPolicies/intrusionDetectionSignaturesOverrides'
+    },
+    properties: {
+      type: 'object',
+      description: 'Will contain the properties of the resource (the actual signature overrides)',
+      properties: {
+        signatures: { type: 'object', additionalProperties: { type: 'string' } }
+      }
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

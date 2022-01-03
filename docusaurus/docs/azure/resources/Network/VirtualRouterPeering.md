@@ -19,6 +19,53 @@ provider.Network.makeVirtualRouterPeering({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualRouter](../Network/VirtualRouter.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'The properties of the Virtual Router Peering.',
+      properties: {
+        peerAsn: {
+          type: 'integer',
+          readOnly: false,
+          format: 'int64',
+          minimum: 0,
+          maximum: 4294967295,
+          description: 'Peer ASN.'
+        },
+        peerIp: { type: 'string', readOnly: false, description: 'Peer IP.' },
+        provisioningState: {
+          description: 'The provisioning state of the resource.',
+          readOnly: true,
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'Name of the virtual router peering that is unique within a virtual router.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    },
+    type: { type: 'string', readOnly: true, description: 'Peering type.' }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Virtual Router Peering resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

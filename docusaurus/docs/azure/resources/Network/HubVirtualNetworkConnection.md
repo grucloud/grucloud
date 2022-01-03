@@ -57,6 +57,113 @@ provider.Network.makeHubVirtualNetworkConnection({
 - [VirtualNetwork](../Network/VirtualNetwork.md)
 - [RouteTable](../Network/RouteTable.md)
 - [VirtualHub](../Network/VirtualHub.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the hub virtual network connection.',
+      properties: {
+        remoteVirtualNetwork: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true
+        },
+        allowHubToRemoteVnetTransit: {
+          type: 'boolean',
+          description: 'Deprecated: VirtualHub to RemoteVnet transit to enabled or not.'
+        },
+        allowRemoteVnetToUseHubVnetGateways: {
+          type: 'boolean',
+          description: "Deprecated: Allow RemoteVnet to use Virtual Hub's gateways."
+        },
+        enableInternetSecurity: { type: 'boolean', description: 'Enable internet security.' },
+        routingConfiguration: {
+          description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
+          properties: {
+            associatedRouteTable: {
+              properties: { id: { type: 'string', description: 'Resource ID.' } },
+              description: 'Reference to another subresource.',
+              'x-ms-azure-resource': true
+            },
+            propagatedRouteTables: {
+              description: 'The list of RouteTables to advertise the routes to.',
+              properties: {
+                labels: {
+                  type: 'array',
+                  description: 'The list of labels.',
+                  items: { type: 'string' }
+                },
+                ids: {
+                  type: 'array',
+                  description: 'The list of resource ids of all the RouteTables.',
+                  items: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  }
+                }
+              }
+            },
+            vnetRoutes: {
+              description: 'List of routes that control routing from VirtualHub into a virtual network connection.',
+              properties: {
+                staticRoutes: {
+                  type: 'array',
+                  description: 'List of all Static Routes.',
+                  items: {
+                    description: 'List of all Static Routes.',
+                    properties: {
+                      name: [Object],
+                      addressPrefixes: [Object],
+                      nextHopIpAddress: [Object]
+                    }
+                  }
+                },
+                bgpConnections: {
+                  type: 'array',
+                  readOnly: true,
+                  description: 'The list of references to HubBgpConnection objects.',
+                  items: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  }
+                }
+              }
+            }
+          }
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the hub virtual network connection resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        }
+      }
+    },
+    name: {
+      type: 'string',
+      description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  },
+  allOf: [
+    {
+      properties: { id: { type: 'string', description: 'Resource ID.' } },
+      description: 'Reference to another subresource.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'HubVirtualNetworkConnection Resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

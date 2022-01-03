@@ -17,6 +17,57 @@ provider.Network.makeDdosProtectionPlan({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+## Swagger Schema
+```js
+{
+  description: 'A DDoS protection plan in a resource group.',
+  'x-ms-azure-resource': true,
+  properties: {
+    id: { readOnly: true, type: 'string', description: 'Resource ID.' },
+    name: { readOnly: true, type: 'string', description: 'Resource name.' },
+    type: { readOnly: true, type: 'string', description: 'Resource type.' },
+    location: { type: 'string', description: 'Resource location.' },
+    tags: {
+      type: 'object',
+      additionalProperties: { type: 'string' },
+      description: 'Resource tags.'
+    },
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the DDoS protection plan.',
+      properties: {
+        resourceGuid: {
+          readOnly: true,
+          type: 'string',
+          description: 'The resource GUID property of the DDoS protection plan resource. It uniquely identifies the resource, even if the user changes its name or migrate the resource across subscriptions or resource groups.'
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the DDoS protection plan resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        },
+        virtualNetworks: {
+          readOnly: true,
+          type: 'array',
+          items: {
+            properties: { id: { type: 'string', description: 'Resource ID.' } },
+            description: 'Reference to another subresource.',
+            'x-ms-azure-resource': true
+          },
+          description: 'The list of virtual networks associated with the DDoS protection plan resource. This list is read-only.'
+        }
+      }
+    },
+    etag: {
+      readOnly: true,
+      type: 'string',
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  }
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

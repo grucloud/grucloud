@@ -638,6 +638,440 @@ provider.Network.makeAzureFirewall({
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [VirtualHub](../Network/VirtualHub.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
+## Swagger Schema
+```js
+{
+  properties: {
+    properties: {
+      'x-ms-client-flatten': true,
+      description: 'Properties of the azure firewall.',
+      properties: {
+        applicationRuleCollections: {
+          type: 'array',
+          items: {
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the azure firewall application rule collection.',
+                properties: {
+                  priority: {
+                    type: 'integer',
+                    format: 'int32',
+                    maximum: 65000,
+                    exclusiveMaximum: false,
+                    minimum: 100,
+                    exclusiveMinimum: false,
+                    description: 'Priority of the application rule collection resource.'
+                  },
+                  action: {
+                    description: 'The action type of a rule collection.',
+                    properties: { type: [Object] }
+                  },
+                  rules: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Properties of an application rule.'
+                    },
+                    description: 'Collection of rules used by a application rule collection.'
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the application rule collection resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the resource that is unique within the Azure firewall. This name can be used to access the resource.'
+              },
+              etag: {
+                type: 'string',
+                readOnly: true,
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'Application rule collection resource.'
+          },
+          description: 'Collection of application rule collections used by Azure Firewall.'
+        },
+        natRuleCollections: {
+          type: 'array',
+          items: {
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the azure firewall NAT rule collection.',
+                properties: {
+                  priority: {
+                    type: 'integer',
+                    format: 'int32',
+                    maximum: 65000,
+                    exclusiveMaximum: false,
+                    minimum: 100,
+                    exclusiveMinimum: false,
+                    description: 'Priority of the NAT rule collection resource.'
+                  },
+                  action: {
+                    description: 'The action type of a NAT rule collection.',
+                    properties: { type: [Object] }
+                  },
+                  rules: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Properties of a NAT rule.'
+                    },
+                    description: 'Collection of rules used by a NAT rule collection.'
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the NAT rule collection resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the resource that is unique within the Azure firewall. This name can be used to access the resource.'
+              },
+              etag: {
+                type: 'string',
+                readOnly: true,
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'NAT rule collection resource.'
+          },
+          description: 'Collection of NAT rule collections used by Azure Firewall.'
+        },
+        networkRuleCollections: {
+          type: 'array',
+          items: {
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the azure firewall network rule collection.',
+                properties: {
+                  priority: {
+                    type: 'integer',
+                    format: 'int32',
+                    maximum: 65000,
+                    exclusiveMaximum: false,
+                    minimum: 100,
+                    exclusiveMinimum: false,
+                    description: 'Priority of the network rule collection resource.'
+                  },
+                  action: {
+                    description: 'The action type of a rule collection.',
+                    properties: { type: [Object] }
+                  },
+                  rules: {
+                    type: 'array',
+                    items: {
+                      properties: [Object],
+                      description: 'Properties of the network rule.'
+                    },
+                    description: 'Collection of rules used by a network rule collection.'
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the network rule collection resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the resource that is unique within the Azure firewall. This name can be used to access the resource.'
+              },
+              etag: {
+                type: 'string',
+                readOnly: true,
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'Network rule collection resource.'
+          },
+          description: 'Collection of network rule collections used by Azure Firewall.'
+        },
+        ipConfigurations: {
+          type: 'array',
+          items: {
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the azure firewall IP configuration.',
+                properties: {
+                  privateIPAddress: {
+                    type: 'string',
+                    readOnly: true,
+                    description: 'The Firewall Internal Load Balancer IP to be used as the next hop in User Defined Routes.'
+                  },
+                  subnet: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  publicIPAddress: {
+                    properties: { id: [Object] },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the Azure firewall IP configuration resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the resource that is unique within a resource group. This name can be used to access the resource.'
+              },
+              etag: {
+                type: 'string',
+                readOnly: true,
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'Type of the resource.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'IP configuration of an Azure Firewall.'
+          },
+          description: 'IP configuration of the Azure Firewall resource.'
+        },
+        managementIpConfiguration: {
+          properties: {
+            properties: {
+              'x-ms-client-flatten': true,
+              description: 'Properties of the azure firewall IP configuration.',
+              properties: {
+                privateIPAddress: {
+                  type: 'string',
+                  readOnly: true,
+                  description: 'The Firewall Internal Load Balancer IP to be used as the next hop in User Defined Routes.'
+                },
+                subnet: {
+                  properties: {
+                    id: { type: 'string', description: 'Resource ID.' }
+                  },
+                  description: 'Reference to another subresource.',
+                  'x-ms-azure-resource': true
+                },
+                publicIPAddress: {
+                  properties: {
+                    id: { type: 'string', description: 'Resource ID.' }
+                  },
+                  description: 'Reference to another subresource.',
+                  'x-ms-azure-resource': true
+                },
+                provisioningState: {
+                  readOnly: true,
+                  description: 'The provisioning state of the Azure firewall IP configuration resource.',
+                  type: 'string',
+                  enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                  'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                }
+              }
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the resource that is unique within a resource group. This name can be used to access the resource.'
+            },
+            etag: {
+              type: 'string',
+              readOnly: true,
+              description: 'A unique read-only string that changes whenever the resource is updated.'
+            },
+            type: {
+              readOnly: true,
+              type: 'string',
+              description: 'Type of the resource.'
+            }
+          },
+          allOf: [
+            {
+              properties: { id: { type: 'string', description: 'Resource ID.' } },
+              description: 'Reference to another subresource.',
+              'x-ms-azure-resource': true
+            }
+          ],
+          description: 'IP configuration of an Azure Firewall.'
+        },
+        provisioningState: {
+          readOnly: true,
+          description: 'The provisioning state of the Azure firewall resource.',
+          type: 'string',
+          enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+          'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+        },
+        threatIntelMode: {
+          description: 'The operation mode for Threat Intelligence.',
+          type: 'string',
+          enum: [ 'Alert', 'Deny', 'Off' ],
+          'x-ms-enum': { name: 'AzureFirewallThreatIntelMode', modelAsString: true }
+        },
+        virtualHub: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true
+        },
+        firewallPolicy: {
+          properties: { id: { type: 'string', description: 'Resource ID.' } },
+          description: 'Reference to another subresource.',
+          'x-ms-azure-resource': true
+        },
+        hubIPAddresses: {
+          description: 'IP addresses associated with AzureFirewall.',
+          properties: {
+            publicIPs: {
+              description: 'Public IP addresses associated with azure firewall.',
+              properties: {
+                addresses: {
+                  type: 'array',
+                  description: 'The list of Public IP addresses associated with azure firewall or IP addresses to be retained.',
+                  items: {
+                    properties: { address: [Object] },
+                    description: 'Public IP Address associated with azure firewall.'
+                  }
+                },
+                count: {
+                  type: 'integer',
+                  format: 'int32',
+                  description: 'The number of Public IP addresses associated with azure firewall.'
+                }
+              }
+            },
+            privateIPAddress: {
+              type: 'string',
+              description: 'Private IP Address associated with azure firewall.'
+            }
+          }
+        },
+        ipGroups: {
+          readOnly: true,
+          description: 'IpGroups associated with AzureFirewall.',
+          type: 'array',
+          items: {
+            properties: {
+              id: {
+                type: 'string',
+                readOnly: true,
+                description: 'Resource ID.'
+              },
+              changeNumber: {
+                type: 'string',
+                readOnly: true,
+                description: 'The iteration number.'
+              }
+            },
+            description: 'IpGroups associated with azure firewall.'
+          }
+        },
+        sku: {
+          description: 'The Azure Firewall Resource SKU.',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of an Azure Firewall SKU.',
+              enum: [ 'AZFW_VNet', 'AZFW_Hub' ],
+              'x-ms-enum': { name: 'AzureFirewallSkuName', modelAsString: true }
+            },
+            tier: {
+              type: 'string',
+              description: 'Tier of an Azure Firewall.',
+              enum: [ 'Standard', 'Premium', 'Basic' ],
+              'x-ms-enum': { name: 'AzureFirewallSkuTier', modelAsString: true }
+            }
+          }
+        },
+        additionalProperties: {
+          description: 'The additional properties used to further config this azure firewall.',
+          type: 'object',
+          additionalProperties: { type: 'string' }
+        }
+      }
+    },
+    zones: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'A list of availability zones denoting where the resource needs to come from.'
+    },
+    etag: {
+      type: 'string',
+      readOnly: true,
+      description: 'A unique read-only string that changes whenever the resource is updated.'
+    }
+  },
+  allOf: [
+    {
+      properties: {
+        id: { type: 'string', description: 'Resource ID.' },
+        name: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource name.'
+        },
+        type: {
+          readOnly: true,
+          type: 'string',
+          description: 'Resource type.'
+        },
+        location: { type: 'string', description: 'Resource location.' },
+        tags: {
+          type: 'object',
+          additionalProperties: { type: 'string' },
+          description: 'Resource tags.'
+        }
+      },
+      description: 'Common resource representation.',
+      'x-ms-azure-resource': true
+    }
+  ],
+  description: 'Azure Firewall resource.'
+}
+```
 ## Misc
 The resource version is `2021-05-01`.
 

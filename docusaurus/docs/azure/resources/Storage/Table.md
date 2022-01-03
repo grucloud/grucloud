@@ -18,6 +18,10 @@ provider.Storage.makeTable({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
+## Swagger Schema
+```js
+''
+```
 ## Misc
 The resource version is `2021-06-01`.
 
