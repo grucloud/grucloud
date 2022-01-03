@@ -11,6 +11,7 @@ provider.Network.makeRouteTable({
   properties: () => ({ location: "westus" }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
@@ -37,12 +38,14 @@ provider.Network.makeRouteTable({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NatGateway](../Network/NatGateway.md)
 ## Misc
 The resource version is `2021-05-01`.
 

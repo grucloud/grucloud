@@ -22,6 +22,7 @@ provider.DBforPostgreSQL.makePrivateEndpointConnection({
       resources.Network.P2sVpnServerConfiguration[
         "myP2sVpnServerConfiguration"
       ],
+    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
   }),
 });
 
@@ -29,6 +30,7 @@ provider.DBforPostgreSQL.makePrivateEndpointConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 ## Misc
 The resource version is `2018-06-01`.
 

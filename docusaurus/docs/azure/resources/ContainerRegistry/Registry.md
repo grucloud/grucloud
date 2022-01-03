@@ -16,6 +16,10 @@ provider.ContainerRegistry.makeRegistry({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    privateEndpointConnection:
+      resources.ContainerRegistry.PrivateEndpointConnection[
+        "myPrivateEndpointConnection"
+      ],
   }),
 });
 
@@ -33,12 +37,17 @@ provider.ContainerRegistry.makeRegistry({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    privateEndpointConnection:
+      resources.ContainerRegistry.PrivateEndpointConnection[
+        "myPrivateEndpointConnection"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [PrivateEndpointConnection](../ContainerRegistry/PrivateEndpointConnection.md)
 ## Misc
 The resource version is `2021-09-01`.
 

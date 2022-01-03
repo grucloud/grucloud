@@ -43,7 +43,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -99,7 +115,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -144,7 +176,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -193,7 +241,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -241,7 +305,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -299,7 +379,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -351,7 +447,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -397,7 +509,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -446,7 +574,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -496,7 +640,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -538,7 +698,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -603,7 +779,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -648,7 +840,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -699,7 +907,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -773,7 +997,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -824,7 +1064,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -875,7 +1131,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -926,7 +1198,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -976,7 +1264,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1029,7 +1333,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1079,7 +1399,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1129,7 +1465,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1182,7 +1534,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1234,7 +1602,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1283,7 +1667,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1332,7 +1732,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1385,7 +1801,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1434,7 +1866,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1476,7 +1924,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1513,7 +1977,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1578,7 +2058,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1631,7 +2127,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1692,7 +2204,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1745,7 +2273,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1801,7 +2345,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1856,7 +2416,23 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
@@ -1899,14 +2475,39 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [NetworkInterface](../Network/NetworkInterface.md)
+- [GalleryImage](../Compute/GalleryImage.md)
+- [Vault](../KeyVault/Vault.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
+- [AvailabilitySet](../Compute/AvailabilitySet.md)
+- [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
+- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
+- [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
+- [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
+- [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 ## Misc
 The resource version is `2021-07-01`.
 

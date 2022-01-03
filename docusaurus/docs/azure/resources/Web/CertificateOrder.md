@@ -6,6 +6,7 @@ Provides a **CertificateOrder** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
 ## Misc
 The resource version is `2015-08-01`.
 

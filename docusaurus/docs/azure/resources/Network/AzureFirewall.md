@@ -112,6 +112,10 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
@@ -225,6 +229,10 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
@@ -349,6 +357,10 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
@@ -376,6 +388,10 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
@@ -491,6 +507,10 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
@@ -604,12 +624,20 @@ provider.Network.makeAzureFirewall({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
+- [VirtualHub](../Network/VirtualHub.md)
+- [FirewallPolicy](../Network/FirewallPolicy.md)
 ## Misc
 The resource version is `2021-05-01`.
 

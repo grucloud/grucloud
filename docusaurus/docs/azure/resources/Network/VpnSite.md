@@ -35,12 +35,19 @@ provider.Network.makeVpnSite({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualWan: resources.Network.VirtualWan["myVirtualWan"],
+    virtualHubIpConfiguration:
+      resources.Network.VirtualHubIpConfiguration[
+        "myVirtualHubIpConfiguration"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualWan](../Network/VirtualWan.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

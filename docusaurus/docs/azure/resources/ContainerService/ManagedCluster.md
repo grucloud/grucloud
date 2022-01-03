@@ -67,6 +67,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -123,6 +124,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -179,6 +181,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -240,6 +243,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -301,6 +305,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -364,6 +369,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -419,6 +425,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -474,6 +481,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -529,6 +537,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -587,6 +596,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -644,6 +654,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -698,6 +709,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -754,6 +766,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -809,6 +822,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -869,6 +883,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -916,6 +931,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -970,6 +986,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -1023,6 +1040,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -1082,6 +1100,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -1145,6 +1164,7 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -1214,12 +1234,14 @@ provider.ContainerService.makeManagedCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Misc
 The resource version is `2021-10-01`.
 

@@ -54,12 +54,19 @@ provider.Network.makeP2sVpnGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    routeTable: resources.Network.RouteTable["myRouteTable"],
+    vpnServerConfiguration:
+      resources.Network.VpnServerConfiguration["myVpnServerConfiguration"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHub](../Network/VirtualHub.md)
+- [RouteTable](../Network/RouteTable.md)
+- [VpnServerConfiguration](../Network/VpnServerConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

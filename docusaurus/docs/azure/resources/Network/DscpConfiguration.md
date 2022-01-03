@@ -36,12 +36,18 @@ provider.Network.makeDscpConfiguration({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [NatGateway](../Network/NatGateway.md)
+- [Configuration](../DBforPostgreSQL/Configuration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -22,12 +22,14 @@ provider.KeyVault.makeManagedHsm({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 ## Misc
 The resource version is `2021-06-01-preview`.
 

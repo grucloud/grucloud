@@ -71,6 +71,10 @@ const buildDefaultSpec = fork({
       }),
       () => dependencies,
       values,
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(get("createOnly"))),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
   Client:

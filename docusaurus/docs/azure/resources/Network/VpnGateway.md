@@ -75,12 +75,23 @@ provider.Network.makeVpnGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    vpnSite: resources.Network.VpnSite["myVpnSite"],
+    routeTable: resources.Network.RouteTable["myRouteTable"],
+    virtualHubIpConfiguration:
+      resources.Network.VirtualHubIpConfiguration[
+        "myVirtualHubIpConfiguration"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHub](../Network/VirtualHub.md)
+- [VpnSite](../Network/VpnSite.md)
+- [RouteTable](../Network/RouteTable.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

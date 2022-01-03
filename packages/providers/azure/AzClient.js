@@ -142,7 +142,7 @@ module.exports = AzClient = ({
             findIdfromPath({
               id: live.id,
               path: methods.get.path,
-              name,
+              name: name || key,
               group,
               type,
             }),

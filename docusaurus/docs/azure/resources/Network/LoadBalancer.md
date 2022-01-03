@@ -78,6 +78,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -157,6 +165,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -235,6 +251,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -315,6 +339,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -368,6 +400,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -463,6 +503,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -545,6 +593,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -631,6 +687,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -704,12 +768,25 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [Configuration](../DBforPostgreSQL/Configuration.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -28,6 +28,10 @@ provider.Network.makeExpressRouteCircuit({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
+    expressRouteConnection:
+      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
+    route: resources.Network.Route["myRoute"],
   }),
 });
 
@@ -53,12 +57,19 @@ provider.Network.makeExpressRouteCircuit({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
+    expressRouteConnection:
+      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
+    route: resources.Network.Route["myRoute"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [RouteFilter](../Network/RouteFilter.md)
+- [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
+- [Route](../Network/Route.md)
 ## Misc
 The resource version is `2021-05-01`.
 

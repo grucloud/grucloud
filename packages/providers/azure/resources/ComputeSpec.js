@@ -14,26 +14,179 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Disk",
         managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
+        // dependencies: {
+        //   resourceGroup: {
+        //     type: "ResourceGroup",
+        //     group: "Resources",
+        //     name: "resourceGroupName",
+        //   },
+        //   diskAccess: {
+        //     type: "DiskAccess",
+        //     group: "Compute",
+        //     createOnly: true,
+        //     optional: true,
+        //   },
+        //   image: {
+        //     type: "Image",
+        //     group: "Compute",
+        //     createOnly: true,
+        //     optional: true,
+        //   },
+        //   diskEncryptionSet: {
+        //     type: "DiskEncryptionSet",
+        //     group: "Compute",
+        //     createOnly: true,
+        //     optional: true,
+        //   },
+        // },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "DiskAccess",
+            group: "Compute",
+            ids: [pipe([() => live, get("properties.diskAccessId")])()],
+          },
+          {
+            type: "Image",
+            group: "Compute",
+            ids: [
+              pipe([
+                () => live,
+                get("properties.creationData.imageReference.id"),
+              ])(),
+            ],
+          },
+          {
+            type: "DiskEncryptionSet",
+            group: "Compute",
+            ids: [
+              pipe([
+                () => live,
+                get("properties.encryption.diskEncryptionSetId"),
+              ])(),
+            ],
+          },
+        ],
+        configDefault: ({
+          properties,
+          dependencies: { diskAccess, image, diskEncryptionSet },
+        }) =>
+          pipe([
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                ...(diskAccess && { diskAccessId: getField(key, "id") }),
+                ...(image && {
+                  creationData: {
+                    createOption: "FromImage",
+                    imageReference: {
+                      id: getField(image, "id"),
+                    },
+                  },
+                }),
+                ...(diskEncryptionSet && {
+                  encryption: {
+                    diskEncryptionSetId: getField(key, "diskEncryptionSet"),
+                  },
+                }),
+              },
+            }),
+          ])(),
       },
       {
-        // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
-        type: "VirtualMachine",
+        type: "DiskEncryptionSet",
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
           },
-          //TODO
-          // CapacityGroup
-          // ManagedIdentities
-          // GalleryImage
-          networkInterface: {
-            type: "NetworkInterface",
-            group: "Network",
+          vault: {
+            type: "Vault",
+            group: "KeyVault",
+            createOnly: true,
+          },
+          key: {
+            type: "Key",
+            group: "KeyVault",
             createOnly: true,
           },
         },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "Vault",
+            group: "KeyVault",
+            ids: [
+              pipe([() => live, get("properties.activeKey.sourceVault")])(),
+            ],
+          },
+          {
+            type: "Key",
+            group: "KeyVault",
+            ids: [
+              pipe([
+                () => live,
+                get("properties.activeKey.keyUrl"),
+                (keyUrl) =>
+                  pipe([
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    () =>
+                      lives.getByType({
+                        type: "Key",
+                        group: "KeyVault",
+                        providerName: config.providerName,
+                      }),
+                    //TODO check
+                    find(eq(get("live.keyUrl"), keyUrl)),
+                    get("id"),
+                  ])(),
+              ])(),
+            ],
+          },
+        ],
+        configDefault: ({ properties, dependencies: { vault, key } }) =>
+          pipe([
+            () => properties,
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                activeKey: {
+                  ...(vault && {
+                    sourceVault: {
+                      id: getField(vault, "id"),
+                    },
+                  }),
+                  ...(key && { keyUrl: getField(key, "keyUri") }),
+                },
+              },
+            }),
+          ])(),
+      },
+      {
+        // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
+        type: "VirtualMachine",
+        // dependencies: {
+        //   resourceGroup: {
+        //     type: "ResourceGroup",
+        //     group: "Resources",
+        //     name: "resourceGroupName",
+        //   },
+        //   //TODO
+        //   // CapacityGroup
+        //   // ManagedIdentities
+        //   // GalleryImage
+        //   networkInterface: {
+        //     type: "NetworkInterface",
+        //     group: "Network",
+        //     createOnly: true,
+        //   },
+        // },
         environmentVariables: [
           {
             path: "properties.osProfile.adminPassword",

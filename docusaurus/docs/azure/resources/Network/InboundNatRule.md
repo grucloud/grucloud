@@ -24,6 +24,18 @@ provider.Network.makeInboundNatRule({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -31,6 +43,14 @@ provider.Network.makeInboundNatRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
+- [Configuration](../DBforPostgreSQL/Configuration.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Misc
 The resource version is `2021-05-01`.
 

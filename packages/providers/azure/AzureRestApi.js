@@ -38,10 +38,12 @@ const {
   defaultsDeep,
   findIndex,
   identity,
+  isString,
+  isObject,
 } = require("rubico/x");
 const path = require("path");
 const fs = require("fs").promises;
-
+const { camelCase } = require("change-case");
 const pluralize = require("pluralize");
 const { snakeCase } = require("change-case");
 const SwaggerParser = require("@apidevtools/swagger-parser");
@@ -59,6 +61,7 @@ const ResourcesExcludes = [
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
   "Network::InterfaceEndpoint",
+  "Network::VirtualWAN", // Renamed to VirtualWan
   "Network::SecurityRule",
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
@@ -717,9 +720,174 @@ const addDependencyFromPath = ({
     ]),
   ])();
 
+const depIdMap = {
+  galleryImageReference: { type: "gallery", group: "Compute" },
+};
+
+const findDependenciesStatic = ({ depId, group }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => depIdMap[depId],
+  ]);
+
+const findDependenciesSameGroupStrict = ({ depName, group }) =>
+  pipe([
+    filter((resource) =>
+      pipe([
+        and([
+          () => depName.match(new RegExp(`${resource.type}$`, "ig")),
+          eq(group, resource.group),
+        ]),
+      ])()
+    ),
+    tap.if(gte(size, 2), (results) => {
+      console.log(
+        "findDependenciesSameGroupStrict Mutiple dependencies ",
+        results
+      );
+    }),
+    first,
+  ]);
+
+const findDependenciesDepMatchesResource = ({ depName, group, type }) =>
+  pipe([
+    filter((resource) =>
+      pipe([
+        and([
+          () => depName.match(new RegExp(`${resource.type}`, "ig")),
+          eq(group, resource.group),
+        ]),
+      ])()
+    ),
+    tap.if(gte(size, 2), (results) => {
+      console.log(
+        "findDependenciesDepMatchesResource Mutiple dependencies ",
+        depName,
+        group,
+        type,
+        results
+      );
+    }),
+    switchCase([eq(size, 1), first, () => undefined]),
+  ]);
+
+const findDependenciesSameGroup = ({ depName, group, type }) =>
+  pipe([
+    filter((resource) =>
+      pipe([
+        and([
+          or([() => resource.type.match(new RegExp(depName, "ig"))]),
+          eq(group, resource.group),
+        ]),
+      ])()
+    ),
+    tap.if(gte(size, 2), (results) => {
+      console.log(
+        "findDependenciesSameGroup Mutiple dependencies ",
+        depName,
+        group,
+        type,
+        results
+      );
+    }),
+    switchCase([eq(size, 1), first, () => undefined]),
+  ]);
+
+const findDependenciesAllGroup = ({ depName }) =>
+  pipe([
+    filter((resource) =>
+      pipe([() => depName.match(new RegExp(`${resource.type}$`, "ig"))])()
+    ),
+    tap.if(gte(size, 2), (results) => {
+      console.log("findDependenciesAllGroup Mutiple dependencies ", results);
+    }),
+    first,
+  ]);
+
+const addDependencyFromBody = ({ resources, type, group, method }) =>
+  pipe([
+    tap((params) => {
+      assert(resources);
+      assert(group);
+    }),
+    () => method,
+    get("parameters"),
+    find(eq(get("in"), "body")),
+    get("schema"),
+    tap((params) => {
+      assert(true);
+    }),
+    buildDependenciesFromBody({}),
+    tap((deps) => {
+      assert(true);
+      //console.log("addDependencyFromBody", type, deps);
+    }),
+    map((depId) =>
+      pipe([
+        () => depId,
+        callProp("replace", /Id$/g, ""),
+        callProp("replace", /Resource$/i, ""),
+        tap((params) => {
+          assert(true);
+        }),
+        unless(isEmpty, (depName) =>
+          pipe([
+            () => resources,
+            filter(not(eq(get("type"), type))),
+            (resources) => {
+              for (fn of [
+                findDependenciesSameGroupStrict,
+                findDependenciesDepMatchesResource,
+                findDependenciesSameGroup,
+                findDependenciesAllGroup,
+              ]) {
+                const dep = fn({ depName, depId, type, group })(resources);
+                if (!isEmpty(dep)) {
+                  return dep;
+                }
+              }
+            },
+            pick(["group", "type"]),
+            tap((params) => {
+              assert(true);
+            }),
+          ])()
+        ),
+      ])()
+    ),
+    filter(not(isEmpty)),
+    tap((params) => {
+      assert(true);
+    }),
+    reduce(
+      (acc, { group, type }) =>
+        pipe([
+          tap((params) => {
+            assert(group);
+          }),
+          () => type,
+          camelCase,
+          (varName) => ({
+            ...acc,
+            [varName]: {
+              type: type,
+              group: group,
+              createOnly: true,
+            },
+          }),
+        ])(),
+      {}
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 const addDependencies = ({ resources }) =>
   assign({
-    dependencies: ({ methods }) =>
+    dependencies: ({ methods, type, group }) =>
       pipe([
         tap(() => {
           assert(resources);
@@ -728,6 +896,14 @@ const addDependencies = ({ resources }) =>
         defaultsDeep(addResourceGroupDependency(methods)),
         defaultsDeep(
           addDependencyFromPath({ resources, methods, method: methods.get })
+        ),
+        defaultsDeep(
+          addDependencyFromBody({
+            resources,
+            method: methods.put,
+            type,
+            group,
+          })
         ),
         tap((params) => {
           assert(true);
@@ -876,6 +1052,78 @@ const buildPropertiesDefault =
       ]),
       filter(not(isEmpty)),
       when(isEmpty, () => undefined),
+    ])();
+
+const buildDependenciesFromBody =
+  ({ parentPath = [], accumulator = [] }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      tap((params) => {
+        // console.log(
+        //   "buildDependenciesFromBody",
+        //   parentPath,
+        //   JSON.stringify(properties)
+        // );
+      }),
+      map.entries(([key, obj]) => [
+        key,
+        pipe([
+          tap((params) => {
+            //assert(obj);
+            assert(key);
+            //console.log("key:", key, "value:", obj);
+          }),
+          () => key,
+          switchCase([
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            pipe([
+              () => obj,
+              and([
+                get("properties.id"),
+                //not(get("id.readOnly")),
+                //not(eq(key, "properties")),
+              ]),
+            ]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => [key],
+            ]),
+            and([isString, callProp("match", new RegExp("Id$", "gi"))]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              (id) => [id],
+            ]),
+            () => isObject(obj) && !Array.isArray(obj),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => obj,
+              //get("properties"),
+              buildDependenciesFromBody({
+                parentPath: [...parentPath, key],
+                accumulator,
+              }),
+            ]),
+            () => {
+              assert(true);
+            },
+          ]),
+        ])(),
+      ]),
+      values,
+      filter(not(isEmpty)),
+      flatten,
+      tap((params) => {
+        assert(true);
+      }),
+      (results) => [...accumulator, ...results],
     ])();
 
 const getSchemaFromMethods = ({ method }) =>
@@ -1091,9 +1339,9 @@ const processSwaggerFiles = ({
     flatMap(pipe([get("name"), listPerGroup({ directorySpec })])),
     filter(not(isEmpty)),
     //filter(filterNoSubscription),
+    filter(filterExclusion),
     (resources) =>
       pipe([() => resources, map(addDependencies({ resources }))])(),
-    filter(filterExclusion),
     filter(filterNoDependency),
     filter(filterGetAll),
     tap((params) => {

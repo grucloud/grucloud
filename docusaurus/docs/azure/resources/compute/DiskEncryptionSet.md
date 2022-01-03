@@ -23,6 +23,8 @@ provider.Compute.makeDiskEncryptionSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
   }),
 });
 
@@ -45,12 +47,16 @@ provider.Compute.makeDiskEncryptionSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
+- [Key](../KeyVault/Key.md)
 ## Misc
 The resource version is `2021-04-01`.
 

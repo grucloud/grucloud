@@ -7,6 +7,7 @@ Provides a **SiteHostNameBinding** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
+- [Domain](../DomainRegistration/Domain.md)
 ## Misc
 The resource version is `2015-08-01`.
 

@@ -20,6 +20,10 @@ provider.KeyVault.makePrivateEndpointConnection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     vault: resources.KeyVault.Vault["myVault"],
+    mhsmPrivateEndpointConnection:
+      resources.KeyVault.MHSMPrivateEndpointConnection[
+        "myMHSMPrivateEndpointConnection"
+      ],
   }),
 });
 
@@ -27,6 +31,7 @@ provider.KeyVault.makePrivateEndpointConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Vault](../KeyVault/Vault.md)
+- [MHSMPrivateEndpointConnection](../KeyVault/MHSMPrivateEndpointConnection.md)
 ## Misc
 The resource version is `2021-06-01-preview`.
 

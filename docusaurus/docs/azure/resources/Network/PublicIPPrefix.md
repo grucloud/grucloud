@@ -15,6 +15,8 @@ provider.Network.makePublicIPPrefix({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    customIpPrefix: resources.Network.CustomIPPrefix["myCustomIPPrefix"],
   }),
 });
 
@@ -27,12 +29,16 @@ provider.Network.makePublicIPPrefix({
   properties: () => ["1"],
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    customIpPrefix: resources.Network.CustomIPPrefix["myCustomIPPrefix"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
+- [CustomIPPrefix](../Network/CustomIPPrefix.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -11,6 +11,7 @@ provider.OperationalInsights.makeQueryPack({
   properties: () => ({ location: "South Central US", properties: {} }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    query: resources.OperationalInsights.Query["myQuery"],
   }),
 });
 
@@ -27,12 +28,14 @@ provider.OperationalInsights.makeQueryPack({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    query: resources.OperationalInsights.Query["myQuery"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Query](../OperationalInsights/Query.md)
 ## Misc
 The resource version is `2019-09-01-preview`.
 

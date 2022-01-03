@@ -24,6 +24,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -50,6 +51,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -76,6 +78,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -95,6 +98,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -127,6 +131,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -161,6 +166,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -195,6 +201,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -222,6 +229,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -250,6 +258,7 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -278,12 +287,14 @@ provider.Compute.makeImage({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
 ## Misc
 The resource version is `2021-07-01`.
 

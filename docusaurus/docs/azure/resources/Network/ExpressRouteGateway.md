@@ -19,12 +19,21 @@ provider.Network.makeExpressRouteGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    expressRouteCircuitPeering:
+      resources.Network.ExpressRouteCircuitPeering[
+        "myExpressRouteCircuitPeering"
+      ],
+    routeTable: resources.Network.RouteTable["myRouteTable"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
+- [RouteTable](../Network/RouteTable.md)
+- [VirtualHub](../Network/VirtualHub.md)
 ## Misc
 The resource version is `2021-05-01`.
 

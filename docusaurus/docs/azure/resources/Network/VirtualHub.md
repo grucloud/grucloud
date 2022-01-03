@@ -21,12 +21,26 @@ provider.Network.makeVirtualHub({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualWan: resources.Network.VirtualWan["myVirtualWan"],
+    vpnGateway: resources.Network.VpnGateway["myVpnGateway"],
+    p2sVpnGateway: resources.Network.P2sVpnGateway["myP2sVpnGateway"],
+    expressRouteGateway:
+      resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
+    azureFirewall: resources.Network.AzureFirewall["myAzureFirewall"],
+    securityPartnerProvider:
+      resources.Network.SecurityPartnerProvider["mySecurityPartnerProvider"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualWan](../Network/VirtualWan.md)
+- [VpnGateway](../Network/VpnGateway.md)
+- [P2sVpnGateway](../Network/P2sVpnGateway.md)
+- [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
+- [AzureFirewall](../Network/AzureFirewall.md)
+- [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
 ## Misc
 The resource version is `2021-05-01`.
 

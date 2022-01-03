@@ -82,12 +82,16 @@ provider.Network.makeFirewallPolicy({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    secret: resources.KeyVault.Secret["mySecret"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Workspace](../OperationalInsights/Workspace.md)
+- [Secret](../KeyVault/Secret.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -275,6 +275,23 @@ exports.fnSpecs = ({ config }) => {
           })(properties);
         },
       },
+      // {
+      //   group: "Network",
+      //   type: "NatRule",
+      //   dependencies: {
+      //     resourceGroup: {
+      //       type: "ResourceGroup",
+      //       group: "Resources",
+      //       name: "resourceGroupName",
+      //     },
+      //     gateway: {
+      //       type: "VpnGateway",
+      //       group: "Compute",
+      //       createOnly: true,
+      //       optional: true,
+      //     },
+      //   },
+      // },
       {
         group: "Network",
         type: "NetworkWatcher",

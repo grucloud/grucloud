@@ -11,12 +11,16 @@ provider.Network.makeBastionHost({
   properties: () => ({ name: "Standard" }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Misc
 The resource version is `2021-05-01`.
 

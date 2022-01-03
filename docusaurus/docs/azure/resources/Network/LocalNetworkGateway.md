@@ -18,12 +18,17 @@ provider.Network.makeLocalNetworkGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualHubIpConfiguration:
+      resources.Network.VirtualHubIpConfiguration[
+        "myVirtualHubIpConfiguration"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -26,12 +26,17 @@ provider.Network.makeRouteFilter({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    route: resources.Network.Route["myRoute"],
+    expressRouteConnection:
+      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Route](../Network/Route.md)
+- [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
 ## Misc
 The resource version is `2021-05-01`.
 

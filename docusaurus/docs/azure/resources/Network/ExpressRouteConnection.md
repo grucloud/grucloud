@@ -23,6 +23,11 @@ provider.Network.makeExpressRouteConnection({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     expressRouteGateway:
       resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
+    expressRouteCircuitPeering:
+      resources.Network.ExpressRouteCircuitPeering[
+        "myExpressRouteCircuitPeering"
+      ],
+    routeTable: resources.Network.RouteTable["myRouteTable"],
   }),
 });
 
@@ -30,6 +35,8 @@ provider.Network.makeExpressRouteConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
+- [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
+- [RouteTable](../Network/RouteTable.md)
 ## Misc
 The resource version is `2021-05-01`.
 

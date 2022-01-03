@@ -19,6 +19,9 @@ provider.Network.makeExpressRouteCircuitPeering({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     circuit: resources.Network.ExpressRouteCircuit["myExpressRouteCircuit"],
+    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
+    expressRouteConnection:
+      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
   }),
 });
 
@@ -26,6 +29,8 @@ provider.Network.makeExpressRouteCircuitPeering({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ExpressRouteCircuit](../Network/ExpressRouteCircuit.md)
+- [RouteFilter](../Network/RouteFilter.md)
+- [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
 ## Misc
 The resource version is `2021-05-01`.
 

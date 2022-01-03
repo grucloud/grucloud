@@ -22,6 +22,7 @@ provider.Network.makeFlowLog({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -29,6 +30,7 @@ provider.Network.makeFlowLog({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkWatcher](../Network/NetworkWatcher.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Misc
 The resource version is `2021-05-01`.
 

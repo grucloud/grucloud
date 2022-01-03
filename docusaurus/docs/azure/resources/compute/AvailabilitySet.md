@@ -14,12 +14,15 @@ provider.Compute.makeAvailabilitySet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 ## Misc
 The resource version is `2021-07-01`.
 

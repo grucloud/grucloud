@@ -24,6 +24,10 @@ provider.Network.makeVirtualNetworkGatewayNatRule({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetworkGateway:
       resources.Network.VirtualNetworkGateway["myVirtualNetworkGateway"],
+    virtualHubIpConfiguration:
+      resources.Network.VirtualHubIpConfiguration[
+        "myVirtualHubIpConfiguration"
+      ],
   }),
 });
 
@@ -31,6 +35,7 @@ provider.Network.makeVirtualNetworkGatewayNatRule({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetworkGateway](../Network/VirtualNetworkGateway.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

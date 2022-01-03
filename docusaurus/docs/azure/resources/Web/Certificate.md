@@ -14,12 +14,19 @@ provider.Web.makeCertificate({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    hostingEnvironment:
+      resources.Web.HostingEnvironment["myHostingEnvironment"],
+    vault: resources.KeyVault.Vault["myVault"],
+    serverFarm: resources.Web.ServerFarm["myServerFarm"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [HostingEnvironment](../Web/HostingEnvironment.md)
+- [Vault](../KeyVault/Vault.md)
+- [ServerFarm](../Web/ServerFarm.md)
 ## Misc
 The resource version is `2021-02-01`.
 

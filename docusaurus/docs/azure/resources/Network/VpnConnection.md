@@ -34,6 +34,8 @@ provider.Network.makeVpnConnection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     gateway: resources.Network.VpnGateway["myVpnGateway"],
+    vpnSite: resources.Network.VpnSite["myVpnSite"],
+    routeTable: resources.Network.RouteTable["myRouteTable"],
   }),
 });
 
@@ -41,6 +43,8 @@ provider.Network.makeVpnConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VpnGateway](../Network/VpnGateway.md)
+- [VpnSite](../Network/VpnSite.md)
+- [RouteTable](../Network/RouteTable.md)
 ## Misc
 The resource version is `2021-05-01`.
 

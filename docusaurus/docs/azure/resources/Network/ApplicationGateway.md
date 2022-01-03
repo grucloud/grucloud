@@ -286,12 +286,31 @@ provider.Network.makeApplicationGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    secret: resources.KeyVault.Secret["mySecret"],
+    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    certificate: resources.Web.Certificate["myCertificate"],
+    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [Secret](../KeyVault/Secret.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
+- [Configuration](../DBforPostgreSQL/Configuration.md)
+- [Certificate](../Web/Certificate.md)
+- [FirewallPolicy](../Network/FirewallPolicy.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [NatGateway](../Network/NatGateway.md)
 ## Misc
 The resource version is `2021-05-01`.
 

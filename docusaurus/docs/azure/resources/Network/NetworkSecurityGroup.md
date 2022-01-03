@@ -11,6 +11,11 @@ provider.Network.makeNetworkSecurityGroup({
   properties: () => ({ location: "eastus" }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -42,12 +47,21 @@ provider.Network.makeNetworkSecurityGroup({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Misc
 The resource version is `2021-05-01`.
 

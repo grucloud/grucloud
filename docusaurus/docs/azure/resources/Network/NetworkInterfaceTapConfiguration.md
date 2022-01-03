@@ -18,6 +18,19 @@ provider.Network.makeNetworkInterfaceTapConfiguration({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    configuration: resources.DBforPostgreSQL.Configuration["myConfiguration"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
   }),
 });
 
@@ -25,6 +38,15 @@ provider.Network.makeNetworkInterfaceTapConfiguration({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [Configuration](../DBforPostgreSQL/Configuration.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Misc
 The resource version is `2021-05-01`.
 

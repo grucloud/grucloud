@@ -28,6 +28,10 @@ provider.Network.makeExpressRouteCircuitConnection({
       resources.Network.ExpressRouteCircuitPeering[
         "myExpressRouteCircuitPeering"
       ],
+    expressRouteCircuitPeering:
+      resources.Network.ExpressRouteCircuitPeering[
+        "myExpressRouteCircuitPeering"
+      ],
   }),
 });
 
@@ -35,6 +39,7 @@ provider.Network.makeExpressRouteCircuitConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ExpressRouteCircuit](../Network/ExpressRouteCircuit.md)
+- [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 ## Misc
 The resource version is `2021-05-01`.

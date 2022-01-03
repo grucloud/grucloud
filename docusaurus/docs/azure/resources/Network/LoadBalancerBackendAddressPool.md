@@ -35,6 +35,12 @@ provider.Network.makeLoadBalancerBackendAddressPool({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
   }),
 });
 
@@ -42,6 +48,12 @@ provider.Network.makeLoadBalancerBackendAddressPool({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 ## Misc
 The resource version is `2021-05-01`.
 

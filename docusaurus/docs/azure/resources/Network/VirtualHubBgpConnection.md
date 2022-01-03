@@ -20,6 +20,10 @@ provider.Network.makeVirtualHubBgpConnection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    hubVirtualNetworkConnection:
+      resources.Network.HubVirtualNetworkConnection[
+        "myHubVirtualNetworkConnection"
+      ],
   }),
 });
 
@@ -27,6 +31,7 @@ provider.Network.makeVirtualHubBgpConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualHub](../Network/VirtualHub.md)
+- [HubVirtualNetworkConnection](../Network/HubVirtualNetworkConnection.md)
 ## Misc
 The resource version is `2021-05-01`.
 

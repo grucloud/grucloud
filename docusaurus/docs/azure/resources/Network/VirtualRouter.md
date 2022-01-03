@@ -19,12 +19,14 @@ provider.Network.makeVirtualRouter({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2021-05-01`.
 

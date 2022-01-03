@@ -59,6 +59,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -130,6 +140,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -190,6 +210,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -255,6 +285,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -329,6 +369,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -394,6 +444,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -461,6 +521,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -522,6 +592,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -587,6 +667,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -644,6 +734,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -711,6 +811,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -768,6 +878,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -834,6 +954,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -900,6 +1030,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -966,6 +1106,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1027,6 +1177,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1103,6 +1263,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1169,6 +1339,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1251,6 +1431,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1317,6 +1507,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1395,6 +1595,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1459,6 +1669,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1516,6 +1736,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1568,6 +1798,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1629,6 +1869,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1705,6 +1955,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1766,6 +2026,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1848,6 +2118,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1913,6 +2193,16 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
@@ -1977,12 +2267,28 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
+- [GalleryImage](../Compute/GalleryImage.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
+- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
+- [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 ## Misc
 The resource version is `2021-07-01`.
 

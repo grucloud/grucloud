@@ -45,6 +45,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -108,6 +109,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -158,6 +160,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -219,12 +222,14 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
 ## Misc
 The resource version is `2021-03-01`.
 

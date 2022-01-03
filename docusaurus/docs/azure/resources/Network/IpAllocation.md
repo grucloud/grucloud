@@ -21,12 +21,16 @@ provider.Network.makeIpAllocation({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
+    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Misc
 The resource version is `2021-05-01`.
 

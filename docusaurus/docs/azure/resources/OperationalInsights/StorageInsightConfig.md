@@ -21,6 +21,10 @@ provider.OperationalInsights.makeStorageInsightConfig({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    linkedStorageAccount:
+      resources.OperationalInsights.LinkedStorageAccount[
+        "myLinkedStorageAccount"
+      ],
   }),
 });
 
@@ -28,6 +32,7 @@ provider.OperationalInsights.makeStorageInsightConfig({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../OperationalInsights/Workspace.md)
+- [LinkedStorageAccount](../OperationalInsights/LinkedStorageAccount.md)
 ## Misc
 The resource version is `2020-08-01`.
 

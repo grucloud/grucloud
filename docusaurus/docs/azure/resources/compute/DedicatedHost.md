@@ -17,12 +17,15 @@ provider.Compute.makeDedicatedHost({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     hostGroup: resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 ## Misc
 The resource version is `2021-07-01`.

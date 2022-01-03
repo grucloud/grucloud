@@ -456,11 +456,6 @@
                 "group": "Compute",
                 "createOnly": true
             },
-            "gallery": {
-                "type": "Gallery",
-                "group": "Compute",
-                "createOnly": true
-            },
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
@@ -1302,11 +1297,6 @@
             },
             "image": {
                 "type": "Image",
-                "group": "Compute",
-                "createOnly": true
-            },
-            "gallery": {
-                "type": "Gallery",
                 "group": "Compute",
                 "createOnly": true
             },
@@ -3395,11 +3385,6 @@
                 "type": "PipelineRun",
                 "group": "ContainerRegistry",
                 "createOnly": true
-            },
-            "image": {
-                "type": "Image",
-                "group": "Compute",
-                "createOnly": true
             }
         },
         "methods": {
@@ -3914,16 +3899,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "server": {
-                "type": "Server",
-                "group": "DBforPostgreSQL",
-                "createOnly": true
-            },
-            "disk": {
-                "type": "Disk",
-                "group": "Compute",
-                "createOnly": true
             },
             "workspace": {
                 "type": "Workspace",
@@ -4733,8 +4708,8 @@
                 "group": "Network",
                 "createOnly": true
             },
-            "key": {
-                "type": "Key",
+            "secret": {
+                "type": "Secret",
                 "group": "KeyVault",
                 "createOnly": true
             },
@@ -5699,11 +5674,6 @@
                 "type": "ExpressRouteConnection",
                 "group": "Network",
                 "createOnly": true
-            },
-            "expressRouteCircuit": {
-                "type": "ExpressRouteCircuit",
-                "group": "Network",
-                "createOnly": true
             }
         },
         "methods": {
@@ -5947,8 +5917,8 @@
                 "group": "OperationalInsights",
                 "createOnly": true
             },
-            "key": {
-                "type": "Key",
+            "secret": {
+                "type": "Secret",
                 "group": "KeyVault",
                 "createOnly": true
             }
@@ -14459,11 +14429,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "domain": {
-                "type": "Domain",
-                "group": "DomainRegistration",
-                "createOnly": true
             }
         },
         "methods": {
@@ -14702,8 +14667,8 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "key": {
-                "type": "Key",
+            "vault": {
+                "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true
             }
@@ -14781,8 +14746,8 @@
                 "group": "CertificateRegistration",
                 "name": "certificateOrderName"
             },
-            "key": {
-                "type": "Key",
+            "vault": {
+                "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true
             }
@@ -15416,8 +15381,8 @@
                 "group": "Web",
                 "createOnly": true
             },
-            "key": {
-                "type": "Key",
+            "vault": {
+                "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true
             },
@@ -15492,8 +15457,8 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "key": {
-                "type": "Key",
+            "vault": {
+                "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true
             }
@@ -15620,8 +15585,8 @@
                 "group": "CertificateRegistration",
                 "name": "certificateOrderName"
             },
-            "key": {
-                "type": "Key",
+            "vault": {
+                "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true
             }
@@ -18480,11 +18445,6 @@
             "hostingEnvironment": {
                 "type": "HostingEnvironment",
                 "group": "Web",
-                "createOnly": true
-            },
-            "domain": {
-                "type": "Domain",
-                "group": "DomainRegistration",
                 "createOnly": true
             }
         },
@@ -21498,11 +21458,6 @@
             "hostingEnvironment": {
                 "type": "HostingEnvironment",
                 "group": "Web",
-                "createOnly": true
-            },
-            "domain": {
-                "type": "Domain",
-                "group": "DomainRegistration",
                 "createOnly": true
             },
             "webApp": {

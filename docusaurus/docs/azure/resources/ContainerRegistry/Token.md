@@ -27,6 +27,7 @@ provider.ContainerRegistry.makeToken({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
+    scopeMap: resources.ContainerRegistry.ScopeMap["myScopeMap"],
   }),
 });
 
@@ -34,6 +35,7 @@ provider.ContainerRegistry.makeToken({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Registry](../ContainerRegistry/Registry.md)
+- [ScopeMap](../ContainerRegistry/ScopeMap.md)
 ## Misc
 The resource version is `2021-08-01-preview`.
 

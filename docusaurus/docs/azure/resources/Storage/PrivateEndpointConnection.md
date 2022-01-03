@@ -19,6 +19,7 @@ provider.Storage.makePrivateEndpointConnection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     account: resources.Storage.StorageAccount["myStorageAccount"],
+    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
   }),
 });
 
@@ -26,6 +27,7 @@ provider.Storage.makePrivateEndpointConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
+- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 ## Misc
 The resource version is `2021-06-01`.
 

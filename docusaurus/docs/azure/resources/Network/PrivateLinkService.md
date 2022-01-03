@@ -11,12 +11,25 @@ provider.Network.makePrivateLinkService({
   properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

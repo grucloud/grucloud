@@ -6,6 +6,7 @@ Provides a **ServerFarm** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [HostingEnvironment](../Web/HostingEnvironment.md)
 ## Misc
 The resource version is `2015-08-01`.
 

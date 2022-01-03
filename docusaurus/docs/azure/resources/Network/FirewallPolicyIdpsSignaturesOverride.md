@@ -17,6 +17,8 @@ provider.Network.makeFirewallPolicyIdpsSignaturesOverride({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+    securityPartnerProvider:
+      resources.Network.SecurityPartnerProvider["mySecurityPartnerProvider"],
   }),
 });
 
@@ -24,6 +26,7 @@ provider.Network.makeFirewallPolicyIdpsSignaturesOverride({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
+- [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
 ## Misc
 The resource version is `2021-05-01`.
 

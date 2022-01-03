@@ -7,6 +7,7 @@ Provides a **CertificateOrderCertificate** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceCertificateOrder](../CertificateRegistration/AppServiceCertificateOrder.md)
+- [Vault](../KeyVault/Vault.md)
 ## Misc
 The resource version is `2015-08-01`.
 

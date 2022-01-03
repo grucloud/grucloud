@@ -8,6 +8,7 @@ Provides a **WebAppConfigurationSlot** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
 - [SiteSlot](../Web/SiteSlot.md)
+- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2021-02-01`.
 

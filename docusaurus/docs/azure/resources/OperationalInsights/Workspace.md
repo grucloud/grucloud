@@ -15,12 +15,14 @@ provider.OperationalInsights.makeWorkspace({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    cluster: resources.OperationalInsights.Cluster["myCluster"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Cluster](../OperationalInsights/Cluster.md)
 ## Misc
 The resource version is `2021-06-01`.
 

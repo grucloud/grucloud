@@ -1,5 +1,7 @@
 ## Bugs
 
+- key or vault dependencies ?
+
 - remove identity from
   "type": "TaskRun",
   "group": "ContainerRegistry",
@@ -12,10 +14,6 @@
 
 "type": "PrivateEndpointConnection",
 "group": "KeyVault",
-
-"pickPropertiesCreate": [
-"etag"
-]
 
 - check stage for all providers
 - compare refactor

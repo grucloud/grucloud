@@ -12,6 +12,13 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
   }),
 });
 
@@ -30,6 +37,13 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
   }),
 });
 
@@ -43,6 +57,13 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
+    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
   }),
 });
 
@@ -50,6 +71,12 @@ provider.Network.makeSubnet({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
+- [NatGateway](../Network/NatGateway.md)
+- [DscpConfiguration](../Network/DscpConfiguration.md)
+- [Workspace](../OperationalInsights/Workspace.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 ## Misc
 The resource version is `2021-05-01`.
 

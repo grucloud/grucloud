@@ -20,12 +20,14 @@ provider.Network.makeSecurityPartnerProvider({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHub](../Network/VirtualHub.md)
 ## Misc
 The resource version is `2021-05-01`.
 

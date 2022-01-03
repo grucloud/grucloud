@@ -16,12 +16,17 @@ provider.Web.makeAppServicePlan({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    hostingEnvironment:
+      resources.Web.HostingEnvironment["myHostingEnvironment"],
+    kubeEnvironment: resources.Web.KubeEnvironment["myKubeEnvironment"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [HostingEnvironment](../Web/HostingEnvironment.md)
+- [KubeEnvironment](../Web/KubeEnvironment.md)
 ## Misc
 The resource version is `2021-02-01`.
 

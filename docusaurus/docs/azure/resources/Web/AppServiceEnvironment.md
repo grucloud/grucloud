@@ -6,6 +6,7 @@ Provides a **AppServiceEnvironment** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Misc
 The resource version is `2021-02-01`.
 

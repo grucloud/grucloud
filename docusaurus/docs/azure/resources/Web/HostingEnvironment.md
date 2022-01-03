@@ -6,6 +6,8 @@ Provides a **HostingEnvironment** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+- [GlobalSubscriptionPublishingCredentials](../Web/GlobalSubscriptionPublishingCredentials.md)
 ## Misc
 The resource version is `2015-08-01`.
 

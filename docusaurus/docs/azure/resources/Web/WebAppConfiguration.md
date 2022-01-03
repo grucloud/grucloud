@@ -7,6 +7,7 @@ Provides a **WebAppConfiguration** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Site](../Web/Site.md)
+- [Subnet](../Network/Subnet.md)
 ## Misc
 The resource version is `2021-02-01`.
 

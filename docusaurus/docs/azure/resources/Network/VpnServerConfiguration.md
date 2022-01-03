@@ -62,12 +62,19 @@ provider.Network.makeVpnServerConfiguration({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+    p2sVpnServerConfiguration:
+      resources.Network.P2sVpnServerConfiguration[
+        "myP2sVpnServerConfiguration"
+      ],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHub](../Network/VirtualHub.md)
+- [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
 ## Misc
 The resource version is `2021-05-01`.
 

@@ -19,6 +19,10 @@ provider.Web.makeUserProvidedFunctionAppForStaticSiteBuild({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     name: resources.Web.StaticSite["myStaticSite"],
     environment: resources.Web.StaticSiteBuild["myStaticSiteBuild"],
+    userProvidedFunctionAppForStaticSite:
+      resources.Web.UserProvidedFunctionAppForStaticSite[
+        "myUserProvidedFunctionAppForStaticSite"
+      ],
   }),
 });
 
@@ -27,6 +31,7 @@ provider.Web.makeUserProvidedFunctionAppForStaticSiteBuild({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StaticSite](../Web/StaticSite.md)
 - [StaticSiteBuild](../Web/StaticSiteBuild.md)
+- [UserProvidedFunctionAppForStaticSite](../Web/UserProvidedFunctionAppForStaticSite.md)
 ## Misc
 The resource version is `2021-02-01`.
 
