@@ -13502,8 +13502,8 @@
                 "createOnly": true
             },
             "server": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
+                "type": "Server",
+                "group": "DBforPostgreSQL",
                 "name": "serverName"
             }
         },
@@ -13623,8 +13623,8 @@
                 "name": "resourceGroupName"
             },
             "server": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
+                "type": "Server",
+                "group": "DBforPostgreSQL",
                 "name": "serverName"
             }
         },
@@ -13670,8 +13670,8 @@
                 "name": "resourceGroupName"
             },
             "server": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
+                "type": "Server",
+                "group": "DBforPostgreSQL",
                 "name": "serverName"
             }
         },
@@ -13717,8 +13717,8 @@
                 "name": "resourceGroupName"
             },
             "server": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
+                "type": "Server",
+                "group": "DBforPostgreSQL",
                 "name": "serverName"
             }
         },
@@ -13772,8 +13772,8 @@
                 "createOnly": true
             },
             "server": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
+                "type": "Server",
+                "group": "DBforPostgreSQL",
                 "name": "serverName"
             }
         },
@@ -15193,56 +15193,6 @@
         }
     },
     {
-        "type": "AppServicePlanRouteForVnet",
-        "group": "Web",
-        "apiVersion": "2021-02-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "AppServicePlan",
-                "group": "Web",
-                "name": "name"
-            },
-            "vnet": {
-                "type": "HubVirtualNetworkConnection",
-                "group": "Network",
-                "name": "vnetName"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "AppServicePlans_GetRouteForVnet"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "AppServicePlans_CreateOrUpdateVnetRoute"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "AppServicePlans_DeleteVnetRoute"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "AppServicePlans_UpdateVnetRoute"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes",
-                "operationId": "AppServicePlans_ListRoutesForVnet"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.startAddress",
-            "properties.endAddress",
-            "properties.routeType"
-        ]
-    },
-    {
         "type": "Certificate",
         "group": "Web",
         "apiVersion": "2021-02-01",
@@ -16039,57 +15989,6 @@
             "sku.size",
             "sku.family",
             "sku.capacity"
-        ]
-    },
-    {
-        "type": "ServerFarmRouteForVnet",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "AppServicePlan",
-                "group": "Web",
-                "name": "name"
-            },
-            "vnet": {
-                "type": "HubVirtualNetworkConnection",
-                "group": "Network",
-                "name": "vnetName"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "ServerFarms_GetRouteForVnet"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "ServerFarms_CreateOrUpdateVnetRoute"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "ServerFarms_DeleteVnetRoute"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes/{routeName}",
-                "operationId": "ServerFarms_UpdateVnetRoute"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}/virtualNetworkConnections/{vnetName}/routes",
-                "operationId": "ServerFarms_GetRoutesForVnet"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.startAddress",
-            "properties.endAddress",
-            "properties.routeType"
         ]
     },
     {
@@ -16974,139 +16873,6 @@
             "properties.azureResourceType",
             "properties.customHostNameDnsRecordType",
             "properties.hostNameType"
-        ]
-    },
-    {
-        "type": "SiteInstanceDeployment",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_GetInstanceDeployment"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_CreateInstanceDeployment"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_DeleteInstanceDeployment"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/deployments",
-                "operationId": "Sites_GetInstanceDeployments"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status"
-        ],
-        "pickProperties": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ],
-        "pickPropertiesCreate": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ]
-    },
-    {
-        "type": "SiteInstanceDeploymentSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_GetInstanceDeploymentSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_CreateInstanceDeploymentSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/deployments/{id}",
-                "operationId": "Sites_DeleteInstanceDeploymentSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/deployments",
-                "operationId": "Sites_GetInstanceDeploymentsSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status"
-        ],
-        "pickProperties": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ],
-        "pickPropertiesCreate": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
         ]
     },
     {
@@ -19885,328 +19651,6 @@
             "properties.invoke_url_template",
             "properties.language",
             "properties.isDisabled"
-        ]
-    },
-    {
-        "type": "WebAppInstanceMsDeployStatus",
-        "group": "Web",
-        "apiVersion": "2021-02-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/extensions/MSDeploy",
-                "operationId": "WebApps_GetInstanceMsDeployStatus"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/extensions/MSDeploy",
-                "operationId": "WebApps_CreateInstanceMSDeployOperation"
-            }
-        },
-        "omitProperties": [
-            "properties.deployer",
-            "properties.provisioningState",
-            "properties.startTime",
-            "properties.endTime",
-            "properties.complete"
-        ],
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.addOnPackages"
-        ]
-    },
-    {
-        "type": "WebAppInstanceMsDeployStatusSlot",
-        "group": "Web",
-        "apiVersion": "2021-02-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/extensions/MSDeploy",
-                "operationId": "WebApps_GetInstanceMsDeployStatusSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/extensions/MSDeploy",
-                "operationId": "WebApps_CreateInstanceMSDeployOperationSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.deployer",
-            "properties.provisioningState",
-            "properties.startTime",
-            "properties.endTime",
-            "properties.complete"
-        ],
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.addOnPackages"
-        ]
-    },
-    {
-        "type": "WebAppInstanceProcess",
-        "group": "Web",
-        "apiVersion": "2021-02-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/processes/{processId}",
-                "operationId": "WebApps_GetInstanceProcess"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/processes/{processId}",
-                "operationId": "WebApps_DeleteInstanceProcess"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/instances/{instanceId}/processes",
-                "operationId": "WebApps_ListInstanceProcesses"
-            }
-        },
-        "omitProperties": [
-            "properties.identifier"
-        ],
-        "pickProperties": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads",
-            "properties.open_file_handles",
-            "properties.modules",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
-        ],
-        "pickPropertiesCreate": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads",
-            "properties.open_file_handles",
-            "properties.modules",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
-        ]
-    },
-    {
-        "type": "WebAppInstanceProcessSlot",
-        "group": "Web",
-        "apiVersion": "2021-02-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name"
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot"
-            },
-            "instanceId": {
-                "type": "CloudServiceRoleInstance",
-                "group": "Compute",
-                "name": "instanceId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/processes/{processId}",
-                "operationId": "WebApps_GetInstanceProcessSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/processes/{processId}",
-                "operationId": "WebApps_DeleteInstanceProcessSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/instances/{instanceId}/processes",
-                "operationId": "WebApps_ListInstanceProcessesSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.identifier"
-        ],
-        "pickProperties": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads",
-            "properties.open_file_handles",
-            "properties.modules",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
-        ],
-        "pickPropertiesCreate": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads",
-            "properties.open_file_handles",
-            "properties.modules",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
         ]
     },
     {

@@ -1,9 +1,6 @@
 ## Bugs
 
-- Postgres PrivateEndpointConnections dep broken
-
 - key or vault dependencies ?
-- VirtualNetworkRule - dep server ko
 
 - Web::WebAppConfiguration dep Network::Subnet
 

@@ -19,10 +19,7 @@ provider.DBforPostgreSQL.makePrivateEndpointConnection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
-    server:
-      resources.Network.P2sVpnServerConfiguration[
-        "myP2sVpnServerConfiguration"
-      ],
+    server: resources.DBforPostgreSQL.Server["myServer"],
   }),
 });
 
@@ -30,7 +27,7 @@ provider.DBforPostgreSQL.makePrivateEndpointConnection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
-- [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+- [Server](../DBforPostgreSQL/Server.md)
 ## Swagger Schema
 ```js
 {

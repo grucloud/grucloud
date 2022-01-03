@@ -16,17 +16,14 @@ provider.DBforPostgreSQL.makeServerKey({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server:
-      resources.Network.P2sVpnServerConfiguration[
-        "myP2sVpnServerConfiguration"
-      ],
+    server: resources.DBforPostgreSQL.Server["myServer"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+- [Server](../DBforPostgreSQL/Server.md)
 ## Swagger Schema
 ```js
 {

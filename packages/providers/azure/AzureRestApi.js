@@ -587,7 +587,7 @@ const findResourcesByParentPath = ({ path, resources, index }) =>
       pipe([() => resources, find(eq(get("methods.get.path"), pathParent))])(),
   ])();
 
-const findResourcesByParameterType = ({ path, resources, index }) =>
+const findResourcesByParameterType = ({ path, group, resources, index }) =>
   pipe([
     tap(() => {
       assert(index > 0);
@@ -605,8 +605,13 @@ const findResourcesByParameterType = ({ path, resources, index }) =>
         () => resources,
         filter(
           pipe([
-            get("parentName", ""),
-            callProp("match", new RegExp(paramType, "gi")),
+            and([
+              pipe([
+                get("parentName", ""),
+                callProp("match", new RegExp(paramType, "gi")),
+              ]),
+              eq(get("group"), group),
+            ]),
           ])
         ),
         tap((params) => {
@@ -617,7 +622,7 @@ const findResourcesByParameterType = ({ path, resources, index }) =>
   ])();
 
 const findParameterTypeFromPath =
-  ({ resources, method: { path, operationId } }) =>
+  ({ resources, group, method: { path, operationId } }) =>
   ({ name }) =>
     pipe([
       tap(() => {
@@ -633,7 +638,7 @@ const findParameterTypeFromPath =
             assert(true);
           }),
           when(isEmpty, () =>
-            findResourcesByParameterType({ path, resources, index })
+            findResourcesByParameterType({ path, resources, index, group })
           ),
           tap.if(isEmpty, (params) => {
             assert(true);
@@ -657,12 +662,14 @@ const isParamLastOfUrl =
 const addDependencyFromPath = ({
   resources,
   methods,
+  group,
   method: { parameters, path },
 }) =>
   pipe([
     tap((params) => {
       assert(resources);
       assert(path);
+      assert(group);
     }),
     () => parameters,
     filter(get("required")),
@@ -689,6 +696,7 @@ const addDependencyFromPath = ({
           assign({
             parameterType: findParameterTypeFromPath({
               resources,
+              group,
               method: selectMethod(methods),
             }),
           })
@@ -719,18 +727,6 @@ const addDependencyFromPath = ({
       ]),
     ]),
   ])();
-
-const depIdMap = {
-  galleryImageReference: { type: "gallery", group: "Compute" },
-};
-
-const findDependenciesStatic = ({ depId, group }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => depIdMap[depId],
-  ]);
 
 const findDependenciesSameGroupStrict = ({ depName, group }) =>
   pipe([
@@ -940,7 +936,12 @@ const addDependencies = ({ resources }) =>
             type,
             group,
           }),
-          ...addDependencyFromPath({ resources, methods, method: methods.get }),
+          ...addDependencyFromPath({
+            resources,
+            group,
+            methods,
+            method: methods.get,
+          }),
         }),
         tap((params) => {
           assert(true);
@@ -1352,6 +1353,7 @@ const writeSchema = ({ outputSchemaFile }) =>
       assert(true);
     }),
     (json) => JSON.stringify(json, null, 4),
+    //TODO prettier
     (content) => fs.writeFile(outputSchemaFile, content),
   ]);
 
