@@ -15,6 +15,7 @@ provider.ContainerRegistry.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnet: resources.Network.Subnet["mySubnet"],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
   }),
 });
@@ -22,6 +23,7 @@ provider.ContainerRegistry.makeAgentPool({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
 ```js

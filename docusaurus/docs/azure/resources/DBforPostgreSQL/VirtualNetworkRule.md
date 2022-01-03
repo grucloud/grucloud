@@ -17,17 +17,14 @@ provider.DBforPostgreSQL.makeVirtualNetworkRule({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server:
-      resources.Network.P2sVpnServerConfiguration[
-        "myP2sVpnServerConfiguration"
-      ],
+    subnet: resources.Network.Subnet["mySubnet"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [P2sVpnServerConfiguration](../Network/P2sVpnServerConfiguration.md)
+- [Subnet](../Network/Subnet.md)
 ## Swagger Schema
 ```js
 {

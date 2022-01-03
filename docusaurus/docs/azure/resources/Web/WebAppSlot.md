@@ -9,6 +9,7 @@ Provides a **WebAppSlot** from the **Web** group
 - [ServerFarm](../Web/ServerFarm.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
 - [WebApp](../Web/WebApp.md)
+- [Subnet](../Network/Subnet.md)
 - [Site](../Web/Site.md)
 ## Swagger Schema
 ```js

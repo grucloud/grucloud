@@ -805,6 +805,66 @@ const findDependenciesAllGroup = ({ depName }) =>
     }),
     first,
   ]);
+const findDependenciesFromResources = ({ resources, type, group, depId }) =>
+  pipe([
+    tap(() => {
+      assert(type);
+      assert(group);
+      assert(depId);
+      assert(resources);
+    }),
+    () => depId,
+    callProp("replace", /Id$/g, ""),
+    callProp("replace", /Resource$/i, ""),
+    tap((params) => {
+      assert(true);
+    }),
+    unless(isEmpty, (depName) =>
+      pipe([
+        () => resources,
+        filter(not(eq(get("type"), type))),
+        (resources) => {
+          for (fn of [
+            findDependenciesSameGroupStrict,
+            findDependenciesDepMatchesResource,
+            findDependenciesSameGroup,
+            findDependenciesAllGroup,
+          ]) {
+            const dep = fn({ depName, depId, type, group })(resources);
+            if (!isEmpty(dep)) {
+              return dep;
+            }
+          }
+        },
+        pick(["group", "type"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])()
+    ),
+  ])();
+
+const PreDefinedDependenciesMap = {
+  virtualNetworkSubnetResourceId: {
+    type: "Subnet",
+    group: "Network",
+  },
+  virtualNetworkSubnetId: {
+    type: "Subnet",
+    group: "Network",
+  },
+};
+
+const findPreDefinedDependencies = ({ depId }) =>
+  pipe([
+    tap(() => {
+      assert(depId);
+    }),
+    () => PreDefinedDependenciesMap[depId],
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const addDependencyFromBody = ({ resources, type, group, method }) =>
   pipe([
@@ -822,39 +882,19 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
     buildDependenciesFromBody({}),
     tap((deps) => {
       assert(true);
-      //console.log("addDependencyFromBody", type, deps);
     }),
     map((depId) =>
       pipe([
-        () => depId,
-        callProp("replace", /Id$/g, ""),
-        callProp("replace", /Resource$/i, ""),
+        () => findPreDefinedDependencies({ depId }),
         tap((params) => {
           assert(true);
         }),
-        unless(isEmpty, (depName) =>
-          pipe([
-            () => resources,
-            filter(not(eq(get("type"), type))),
-            (resources) => {
-              for (fn of [
-                findDependenciesSameGroupStrict,
-                findDependenciesDepMatchesResource,
-                findDependenciesSameGroup,
-                findDependenciesAllGroup,
-              ]) {
-                const dep = fn({ depName, depId, type, group })(resources);
-                if (!isEmpty(dep)) {
-                  return dep;
-                }
-              }
-            },
-            pick(["group", "type"]),
-            tap((params) => {
-              assert(true);
-            }),
-          ])()
+        when(isEmpty, () =>
+          findDependenciesFromResources({ resources, type, group, depId })
         ),
+        tap((params) => {
+          assert(true);
+        }),
       ])()
     ),
     filter(not(isEmpty)),

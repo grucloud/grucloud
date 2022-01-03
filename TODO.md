@@ -1,11 +1,10 @@
 ## Bugs
 
-- key or vault dependencies ?
+- Postgres PrivateEndpointConnections dep broken
 
-- ContainerRegistry::AgentPool dep Network::Subnet
-- DBforPostgreSQL::Server dep Network::Subnet
-- DBforPostgreSQL::VirtualNetworkRule dep Network::Subnet
-- Web::WebApp:: dep Network::Subnet
+- key or vault dependencies ?
+- VirtualNetworkRule - dep server ko
+
 - Web::WebAppConfiguration dep Network::Subnet
 
 - ContainerService::ManagedCluster dep OperationalInsights::Workspace

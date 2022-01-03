@@ -8,6 +8,7 @@ Provides a **WebApp** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ServerFarm](../Web/ServerFarm.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
+- [Subnet](../Network/Subnet.md)
 ## Swagger Schema
 ```js
 {

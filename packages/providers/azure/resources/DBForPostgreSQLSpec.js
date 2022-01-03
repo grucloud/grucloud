@@ -26,12 +26,40 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "Server",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          subnet: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+          },
+          //private dns zone
+        },
         propertiesDefault: {
           properties: {
             backup: {
               backupRetentionDays: 7,
             },
             highAvailability: { mode: "Disabled" },
+          },
+        },
+      },
+      {
+        type: "VirtualNetworkRule",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          subnet: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
           },
         },
       },
