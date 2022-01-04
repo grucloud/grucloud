@@ -12,6 +12,7 @@ skinparam monochrome true
 ++++ NetworkInterface (1)
 ++++ NetworkSecurityGroup (1)
 ++++ PublicIPAddress (1)
+++++ Subnet (1)
 ++++ VirtualNetwork (1)
 +++ Resources
 ++++ ResourceGroup (1)

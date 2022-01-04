@@ -25,8 +25,6 @@ const {
   prepend,
   findIndex,
   isEmpty,
-  defaultsDeep,
-  isObject,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -35,14 +33,14 @@ const {
   isInstanceUp: isInstanceUpDefault,
   AZURE_MANAGEMENT_BASE_URL,
   isSubstituable,
-  buildTags,
+  configDefaultGeneric,
+  findDependenciesUserAssignedIdentity,
 } = require("./AzureCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
-
+//TODO switchCase ?
 const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
 
 module.exports = AzClient = ({
@@ -73,44 +71,6 @@ module.exports = AzClient = ({
   }
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
-
-  const configDefaultGeneric = ({ properties, dependencies }) =>
-    pipe([
-      tap(() => {
-        assert(config.location);
-        assert(config.location);
-      }),
-      () => properties,
-      defaultsDeep({
-        location: config.location,
-        tags: buildTags(config),
-      }),
-      //TODO
-      when(
-        () => dependencies.managedIdentities,
-        defaultsDeep({
-          identity: {
-            managedIdentities: pipe([
-              () => dependencies.managedIdentities,
-              tap((params) => {
-                assert(true);
-              }),
-              map((managedIdentity) => getField(managedIdentity, id)),
-              tap((params) => {
-                assert(true);
-              }),
-              reduce((acc, id) => ({ ...acc, [id]: {} }), {}),
-              tap((params) => {
-                assert(true);
-              }),
-            ])(),
-          },
-        })
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
 
   const cannotBeDeleted = pipe([
     tap((params) => {
@@ -155,7 +115,7 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const findDependenciesDefault = ({ live, lives }) =>
+  const findDependenciesFromList = ({ live, lives }) =>
     pipe([
       tap((params) => {
         assert(dependencies);
@@ -179,6 +139,18 @@ module.exports = AzClient = ({
         },
       ]),
       values,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const findDependenciesDefault = ({ live, lives }) =>
+    pipe([
+      () => [
+        ...findDependenciesFromList({ live, lives }),
+        findDependenciesUserAssignedIdentity({ live, lives }),
+      ],
+      filter(not(isEmpty)),
       tap((params) => {
         assert(true);
       }),

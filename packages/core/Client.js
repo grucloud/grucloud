@@ -141,6 +141,7 @@ const decorateLive =
             tap((ids) => {
               assert(Array.isArray(ids));
             }),
+            filter(not(isEmpty)),
             map(
               pipe([
                 tap(({ type, group }) => {

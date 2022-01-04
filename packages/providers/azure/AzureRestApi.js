@@ -573,7 +573,7 @@ const addManagedIdentityDependency = pipe([
   get("identity"),
   get("properties.userAssignedIdentities"),
   unless(isEmpty, () => ({
-    managedIdenties: {
+    managedIdentities: {
       type: "UserAssignedIdentity",
       group: "ManagedIdentity",
       createOnly: true,

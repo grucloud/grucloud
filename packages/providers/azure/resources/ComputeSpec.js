@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, not, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, keys } = require("rubico/x");
+const { pipe, eq, not, get, tap, pick, map, assign, omit } = require("rubico");
+const { defaultsDeep, pluck, isEmpty, find } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -8,6 +8,7 @@ const {
   buildTags,
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
+  configDefaultGeneric,
 } = require("../AzureCommon");
 
 const group = "Compute";
@@ -161,11 +162,16 @@ exports.fnSpecs = ({ config }) =>
             group: "Network",
             createOnly: true,
           },
-          managedIdenties: {
+          managedIdentities: {
             type: "UserAssignedIdentity",
             group: "ManagedIdentity",
             createOnly: true,
             list: true,
+          },
+          sshPublicKey: {
+            type: "SshPublicKey",
+            group: "Compute",
+            createOnly: true,
           },
           galleryImage: {
             type: "GalleryImage",
@@ -286,6 +292,26 @@ exports.fnSpecs = ({ config }) =>
             ])(),
           },
           {
+            type: "SshPublicKey",
+            group: "Compute",
+            ids: pipe([
+              () => live,
+              get("properties.osProfile.linuxConfiguration.ssh.publicKeys"),
+              map(({ keyData }) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      providerName: config.providerName,
+                      type: "SshPublicKey",
+                      group: "Compute",
+                    }),
+                  find(eq(get("live.properties.publicKey"), keyData)),
+                  get("id"),
+                ])()
+              ),
+            ])(),
+          },
+          {
             type: "Disk",
             group: "Compute",
             ids: [
@@ -296,26 +322,35 @@ exports.fnSpecs = ({ config }) =>
             ],
           },
         ],
-        configDefault: ({ properties, dependencies }) => {
-          const { networkInterface } = dependencies;
-          assert(
-            networkInterface,
-            "networkInterfaces is missing VirtualMachine"
-          );
-          return defaultsDeep({
-            location: config.location,
-            tags: buildTags(config),
-            properties: {
-              networkProfile: {
-                networkInterfaces: [
-                  {
-                    id: getField(networkInterface, "id"),
-                  },
-                ],
+        configDefault: ({ properties, dependencies, config }) =>
+          pipe([
+            tap(() => {
+              //TODO multiple networkInterface ?
+              assert(
+                dependencies.networkInterface,
+                "networkInterfaces is missing VirtualMachine"
+              );
+            }),
+            () => properties,
+            defaultsDeep({
+              properties: {
+                //TODO ssh key
+                networkProfile: {
+                  networkInterfaces: [
+                    {
+                      id: getField(dependencies.networkInterface, "id"),
+                    },
+                  ],
+                },
               },
-            },
-          })(properties);
-        },
+            }),
+            defaultsDeep(
+              configDefaultGeneric({ properties, dependencies, config })
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       },
     ],
     map(defaultsDeep({ group })),

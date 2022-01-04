@@ -58,6 +58,7 @@ const createResources = ({ provider }) => {
       managedIdentities: [
         resources.ManagedIdentity.UserAssignedIdentity["my-identity"],
       ],
+      sshPublicKey: resources.Compute.SshPublicKey["AdminGruCloud"],
     }),
   });
 

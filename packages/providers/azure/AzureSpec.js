@@ -108,26 +108,17 @@ const buildDefaultSpec = fork({
     propertiesDefault = {},
   }) =>
     compare({
-      //TODO filterAll
-      filterTarget: pipe([
-        tap((params) => {
-          assert(pickProperties);
-        }),
+      filterAll: pipe([
         pick(pickProperties),
         defaultsDeep(propertiesDefault),
         omit(omitProperties),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      filterLive: pipe([
-        pick(pickProperties),
-        defaultsDeep(propertiesDefault),
-        omit(omitProperties),
-        omit(["type", "name", "properties.provisioningState", "etag"]),
-        tap((params) => {
-          assert(true);
-        }),
+        omit([
+          "type",
+          "name",
+          "properties.provisioningState",
+          "etag",
+          "identity", //TODO
+        ]),
       ]),
     }),
   isOurMinion: () => AzTag.isOurMinion,
