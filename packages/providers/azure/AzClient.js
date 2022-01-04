@@ -37,6 +37,7 @@ const {
   isSubstituable,
   buildTags,
 } = require("./AzureCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
@@ -73,9 +74,10 @@ module.exports = AzClient = ({
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
 
-  const configDefaultGeneric = ({ properties }) =>
+  const configDefaultGeneric = ({ properties, dependencies }) =>
     pipe([
       tap(() => {
+        assert(config.location);
         assert(config.location);
       }),
       () => properties,
@@ -83,6 +85,28 @@ module.exports = AzClient = ({
         location: config.location,
         tags: buildTags(config),
       }),
+      //TODO
+      when(
+        () => dependencies.managedIdentities,
+        defaultsDeep({
+          identity: {
+            managedIdentities: pipe([
+              () => dependencies.managedIdentities,
+              tap((params) => {
+                assert(true);
+              }),
+              map((managedIdentity) => getField(managedIdentity, id)),
+              tap((params) => {
+                assert(true);
+              }),
+              reduce((acc, id) => ({ ...acc, [id]: {} }), {}),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          },
+        })
+      ),
       tap((params) => {
         assert(true);
       }),

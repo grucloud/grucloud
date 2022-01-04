@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, or, eq, switchCase } = require("rubico");
-const { callProp, identity } = require("rubico/x");
+const { callProp, keys } = require("rubico/x");
 
 exports.AZURE_MANAGEMENT_BASE_URL = "https://management.azure.com";
 
@@ -27,6 +27,18 @@ exports.findDependenciesResourceGroup = ({ live, lives, config }) => ({
       }),
     ])(),
   ],
+});
+exports.findDependenciesUserAssignedIdentity = ({ live, lives, config }) => ({
+  type: "UserAssignedIdentity",
+  group: "ManagedIdentity",
+  ids: pipe([
+    () => live,
+    get("identity.userAssignedIdentities", []),
+    keys,
+    tap((params) => {
+      assert(true);
+    }),
+  ])(),
 });
 
 const isInstanceUp = switchCase([

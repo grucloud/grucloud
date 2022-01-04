@@ -171,6 +171,7 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
         type: "NetworkInterface",
+        includeDefaultDependencies: true,
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
@@ -238,7 +239,6 @@ exports.fnSpecs = ({ config }) => {
           {
             type: "Subnet",
             group: "Network",
-
             ids: pipe([
               () => live,
               get("properties.ipConfigurations"),
@@ -321,6 +321,8 @@ exports.fnSpecs = ({ config }) => {
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {
         type: "Subnet",
+        isDefault: () => false,
+        managedByOther: () => false,
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

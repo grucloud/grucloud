@@ -1,10 +1,14 @@
 const assert = require("assert");
 const { pipe, not, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isEmpty } = require("rubico/x");
+const { defaultsDeep, pluck, isEmpty, keys } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { buildTags } = require("../AzureCommon");
+const {
+  buildTags,
+  findDependenciesResourceGroup,
+  findDependenciesUserAssignedIdentity,
+} = require("../AzureCommon");
 
 const group = "Compute";
 
@@ -14,31 +18,6 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Disk",
         managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
-        // dependencies: {
-        //   resourceGroup: {
-        //     type: "ResourceGroup",
-        //     group: "Resources",
-        //     name: "resourceGroupName",
-        //   },
-        //   diskAccess: {
-        //     type: "DiskAccess",
-        //     group: "Compute",
-        //     createOnly: true,
-        //     optional: true,
-        //   },
-        //   image: {
-        //     type: "Image",
-        //     group: "Compute",
-        //     createOnly: true,
-        //     optional: true,
-        //   },
-        //   diskEncryptionSet: {
-        //     type: "DiskEncryptionSet",
-        //     group: "Compute",
-        //     createOnly: true,
-        //     optional: true,
-        //   },
-        // },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -177,13 +156,60 @@ exports.fnSpecs = ({ config }) =>
             group: "Resources",
             name: "resourceGroupName",
           },
-          //TODO
-          // CapacityGroup
-          // ManagedIdentities
-          // GalleryImage
           networkInterface: {
             type: "NetworkInterface",
             group: "Network",
+            createOnly: true,
+          },
+          managedIdenties: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          galleryImage: {
+            type: "GalleryImage",
+            group: "Compute",
+            createOnly: true,
+          },
+          networkSecurityGroup: {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            createOnly: true,
+          },
+          dscpConfiguration: {
+            type: "DscpConfiguration",
+            group: "Network",
+            createOnly: true,
+          },
+          availabilitySet: {
+            type: "AvailabilitySet",
+            group: "Compute",
+            createOnly: true,
+          },
+          virtualMachineScaleSet: {
+            type: "VirtualMachineScaleSet",
+            group: "Compute",
+            createOnly: true,
+          },
+          proximityPlacementGroup: {
+            type: "ProximityPlacementGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          dedicatedHostGroup: {
+            type: "DedicatedHostGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          virtualMachineScaleSetVm: {
+            type: "VirtualMachineScaleSetVM",
+            group: "Compute",
+            createOnly: true,
+          },
+          capacityReservationGroup: {
+            type: "CapacityReservationGroup",
+            group: "Compute",
             createOnly: true,
           },
         },
@@ -249,6 +275,7 @@ exports.fnSpecs = ({ config }) =>
               ],
             ])(),
           },
+          findDependenciesUserAssignedIdentity({ live }),
           {
             type: "NetworkInterface",
             group: "Network",

@@ -1,5 +1,6 @@
 ## Bugs
 
+- VirtualMachine deps ssh keys
 - key or vault dependencies ?
 - DBforPostgreSQL/ServerKey dep key
 - Web::WebAppConfiguration dep Network::Subnet
