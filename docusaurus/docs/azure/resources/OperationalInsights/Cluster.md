@@ -15,7 +15,7 @@ provider.OperationalInsights.makeCluster({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     workspace: resources.OperationalInsights.Workspace["myWorkspace"],

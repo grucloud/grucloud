@@ -22,7 +22,7 @@ provider.ContainerRegistry.makeExportPipeline({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     registry: resources.ContainerRegistry.Registry["myRegistry"],

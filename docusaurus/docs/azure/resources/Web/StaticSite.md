@@ -24,7 +24,7 @@ provider.Web.makeStaticSite({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),

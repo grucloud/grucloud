@@ -286,7 +286,7 @@ provider.Network.makeApplicationGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     subnet: resources.Network.Subnet["mySubnet"],

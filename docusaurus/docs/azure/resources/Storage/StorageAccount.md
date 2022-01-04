@@ -39,7 +39,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),
@@ -73,7 +73,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),
@@ -117,7 +117,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),
@@ -147,7 +147,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),
@@ -190,7 +190,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),
@@ -233,7 +233,7 @@ provider.Storage.makeStorageAccount({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
   }),

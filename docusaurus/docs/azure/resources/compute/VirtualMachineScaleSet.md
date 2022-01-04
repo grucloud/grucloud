@@ -59,7 +59,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -142,7 +142,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -214,7 +214,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -291,7 +291,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -377,7 +377,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -454,7 +454,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -533,7 +533,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -606,7 +606,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -683,7 +683,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -752,7 +752,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -831,7 +831,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -900,7 +900,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -978,7 +978,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1056,7 +1056,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1134,7 +1134,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1207,7 +1207,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1295,7 +1295,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1373,7 +1373,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1467,7 +1467,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1545,7 +1545,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1635,7 +1635,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1711,7 +1711,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1780,7 +1780,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1844,7 +1844,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -1917,7 +1917,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -2005,7 +2005,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -2078,7 +2078,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -2172,7 +2172,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -2249,7 +2249,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
@@ -2325,7 +2325,7 @@ provider.Compute.makeVirtualMachineScaleSet({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],

@@ -25,7 +25,7 @@ provider.ContainerRegistry.makeTaskRun({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     pipelineRun: resources.ContainerRegistry.PipelineRun["myPipelineRun"],

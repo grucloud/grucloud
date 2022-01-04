@@ -32,7 +32,7 @@ provider.ContainerRegistry.makeImportPipeline({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdenties: [
+    managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
     registry: resources.ContainerRegistry.Registry["myRegistry"],
