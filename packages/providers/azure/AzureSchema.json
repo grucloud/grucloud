@@ -1436,7 +1436,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -1846,7 +1846,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -2737,7 +2737,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -2801,7 +2801,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -3000,7 +3000,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -3286,7 +3286,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -3397,7 +3397,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -3932,7 +3932,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -4741,7 +4741,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -5936,7 +5936,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -8276,7 +8276,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -12882,7 +12882,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -14429,7 +14429,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -17853,7 +17853,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -18210,7 +18210,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
@@ -20892,7 +20892,7 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "managedIdenties": {
+            "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,

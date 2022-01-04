@@ -569,9 +569,7 @@ const addResourceGroupDependency = pipe([
 const addManagedIdentityDependency = pipe([
   get("put.parameters"),
   find(eq(get("in"), "body")),
-  get("schema.properties"),
-  get("identity"),
-  get("properties.userAssignedIdentities"),
+  get("schema.properties.identity.properties.userAssignedIdentities"),
   unless(isEmpty, () => ({
     managedIdentities: {
       type: "UserAssignedIdentity",
