@@ -1,8 +1,15 @@
 const assert = require("assert");
 const path = require("path");
 
-const { pipe, tap } = require("rubico");
-const { processSwaggerFiles, processSwagger } = require("../AzureRestApi");
+const { pipe, tap, get, eq } = require("rubico");
+const { find } = require("rubico/x");
+
+const {
+  processSwaggerFiles,
+  processSwagger,
+  buildDependenciesFromBody,
+} = require("../AzureRestApi");
+const SwaggerParser = require("@apidevtools/swagger-parser");
 
 describe("AzureRestApi", function () {
   before(async function () {});
@@ -27,6 +34,33 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
+  it("buildDependenciesFromBody", async function () {
+    await pipe([
+      () =>
+        path.resolve(
+          process.cwd(),
+          "azure-rest-api-specs/specification/",
+          "compute/resource-manager/Microsoft.Compute/stable/2021-07-01",
+          "compute.json"
+        ),
+      (filename) => SwaggerParser.dereference(filename, {}),
+      get("paths"),
+      get([
+        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
+      ]),
+      get("put.parameters"),
+      find(eq(get("in"), "body")),
+      get("schema.properties"),
+      tap((params) => {
+        assert(true);
+      }),
+      buildDependenciesFromBody({}),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+  });
+  //
   it("processSwagger webapp", async function () {
     await pipe([
       () => ({
@@ -62,7 +96,7 @@ describe("AzureRestApi", function () {
   //     }),
   //   ])();
   // });
-  it.skip("processSwaggerFiles", async function () {
+  it("processSwaggerFiles", async function () {
     await pipe([
       () => ({
         directorySpec: path.resolve(
