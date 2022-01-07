@@ -837,12 +837,19 @@ const findDependenciesAllGroup = ({ depName }) =>
     }),
     first,
   ]);
-const findDependenciesFromResources = ({ resources, type, group, depId }) =>
+const findDependenciesFromResources = ({
+  resources,
+  type,
+  group,
+  depId,
+  pathId,
+}) =>
   pipe([
     tap(() => {
       assert(type);
       assert(group);
       assert(depId);
+      assert(pathId);
       assert(resources);
     }),
     () => depId,
@@ -872,6 +879,7 @@ const findDependenciesFromResources = ({ resources, type, group, depId }) =>
         tap((params) => {
           assert(true);
         }),
+        unless(isEmpty, defaultsDeep({ pathId })),
       ])()
     ),
   ])();
@@ -905,14 +913,20 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
     tap((deps) => {
       assert(true);
     }),
-    map(({ depId }) =>
+    map(({ depId, pathId }) =>
       pipe([
         () => findPreDefinedDependencies({ depId }),
         tap((params) => {
           assert(true);
         }),
         when(isEmpty, () =>
-          findDependenciesFromResources({ resources, type, group, depId })
+          findDependenciesFromResources({
+            resources,
+            type,
+            group,
+            depId,
+            pathId,
+          })
         ),
         tap((params) => {
           assert(true);
@@ -924,7 +938,7 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
       assert(true);
     }),
     reduce(
-      (acc, { group, type }) =>
+      (acc, { group, type, pathId }) =>
         pipe([
           tap((params) => {
             assert(group);
@@ -937,6 +951,7 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
               type: type,
               group: group,
               createOnly: true,
+              pathId,
             },
           }),
         ])(),
@@ -1129,7 +1144,10 @@ const getParentPath = ({ obj, key, parentPath }) =>
     }),
     () => obj,
     switchCase([
-      get("x-ms-client-flatten"),
+      or([
+        get("x-ms-client-flatten"),
+        and([eq(key, "properties"), () => !isEmpty(parentPath)]),
+      ]),
       () => parentPath,
       () => [...parentPath, key],
     ]),
@@ -1165,9 +1183,9 @@ const buildDependenciesFromBody =
             pipe([
               () => [...parentPath, key],
               callProp("join", "."),
-              (fullPath) => [
+              (pathId) => [
                 {
-                  fullPath,
+                  pathId,
                   depId: key,
                 },
               ],
@@ -1184,9 +1202,9 @@ const buildDependenciesFromBody =
             pipe([
               () => [...parentPath, key, "id"],
               callProp("join", "."),
-              (fullPath) => [
+              (pathId) => [
                 {
-                  fullPath,
+                  pathId,
                   depId: key,
                 },
               ],
@@ -1199,9 +1217,9 @@ const buildDependenciesFromBody =
               }),
               (id) => [...parentPath, id],
               callProp("join", "."),
-              (fullPath) => [
+              (pathId) => [
                 {
-                  fullPath,
+                  pathId,
                   depId: key,
                 },
               ],

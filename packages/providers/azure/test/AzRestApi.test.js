@@ -34,7 +34,7 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it("buildDependenciesFromBody", async function () {
+  it("buildDependenciesFromBody virtualMachines", async function () {
     await pipe([
       () =>
         path.resolve(
@@ -51,9 +51,29 @@ describe("AzureRestApi", function () {
       get("put.parameters"),
       find(eq(get("in"), "body")),
       get("schema.properties"),
+      buildDependenciesFromBody({}),
       tap((params) => {
         assert(true);
       }),
+    ])();
+  });
+  it("buildDependenciesFromBody disk", async function () {
+    await pipe([
+      () =>
+        path.resolve(
+          process.cwd(),
+          "azure-rest-api-specs/specification/",
+          "compute/resource-manager/Microsoft.Compute/stable/2021-04-01",
+          "disk.json"
+        ),
+      (filename) => SwaggerParser.dereference(filename, {}),
+      get("paths"),
+      get([
+        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+      ]),
+      get("put.parameters"),
+      find(eq(get("in"), "body")),
+      get("schema.properties"),
       buildDependenciesFromBody({}),
       tap((params) => {
         assert(true);
@@ -96,7 +116,7 @@ describe("AzureRestApi", function () {
   //     }),
   //   ])();
   // });
-  it("processSwaggerFiles", async function () {
+  it.only("processSwaggerFiles", async function () {
     await pipe([
       () => ({
         directorySpec: path.resolve(
