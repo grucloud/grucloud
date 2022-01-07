@@ -118,7 +118,7 @@ The [graph](../cli/Graph.md) command creates a dependency graph of the target re
 gc graph
 ```
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-target.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/Compute/vm/artifacts/diagram-target.svg)
 
 > The `graph` command requires [graphviz](https://graphviz.org/) to convert the generated `artifacts/diagram-target.dot` into an image such as `artifacts/diagram-target.svg`
 

@@ -19,32 +19,35 @@ const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
-const ResourceManagementSpec = require("./resources/ResourceManagementSpec");
-const VirtualNetworkSpec = require("./resources/VirtualNetworksSpec");
+const ResourceManagementSpec = require("./resources/ResourcesSpec");
+const NetworkSpec = require("./resources/NetworkSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
-const AppServiceSpec = require("./resources/AppServiceSpec");
+const WebSpec = require("./resources/WebSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 
 const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
+const AzClient = require("./AzClient");
 
-const overideSpec = (config) =>
+const createSpecsOveride = (config) =>
   pipe([
     () => [
-      AppServiceSpec,
       ComputeSpec,
       DBForPortgreSQLSpec,
-      ResourceManagementSpec,
+      NetworkSpec,
       OperationalInsightsSpec,
-      VirtualNetworkSpec,
+      ResourceManagementSpec,
+      WebSpec,
     ],
     flatMap(callProp("fnSpecs", { config })),
     tap((params) => {
       assert(true);
     }),
-  ]);
+  ])();
+
+exports.createSpecsOveride = createSpecsOveride;
 
 const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
@@ -69,6 +72,10 @@ const buildDefaultSpec = fork({
       }),
       () => dependencies,
       values,
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(get("createOnly"))),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
   Client:
@@ -87,7 +94,13 @@ const buildDefaultSpec = fork({
           assert(true);
         }),
         pick(pickPropertiesCreate),
-        omit(["properties.provisioningState", "etag", "name", "type"]),
+        omit([
+          "properties.provisioningState",
+          "etag",
+          "name",
+          "type",
+          "identity",
+        ]),
       ]),
   compare: ({
     pickProperties = [],
@@ -95,26 +108,17 @@ const buildDefaultSpec = fork({
     propertiesDefault = {},
   }) =>
     compare({
-      //TODO filterAll
-      filterTarget: pipe([
-        tap((params) => {
-          assert(pickProperties);
-        }),
+      filterAll: pipe([
         pick(pickProperties),
         defaultsDeep(propertiesDefault),
         omit(omitProperties),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      filterLive: pipe([
-        pick(pickProperties),
-        defaultsDeep(propertiesDefault),
-        omit(omitProperties),
-        omit(["type", "name", "properties.provisioningState", "etag"]),
-        tap((params) => {
-          assert(true);
-        }),
+        omit([
+          "type",
+          "name",
+          "properties.provisioningState",
+          "etag",
+          "identity", //TODO
+        ]),
       ]),
     }),
   isOurMinion: () => AzTag.isOurMinion,
@@ -142,10 +146,15 @@ const findByGroupAndType = ({ group, type }) =>
       assert(true);
     }),
   ]);
+exports.findByGroupAndType = findByGroupAndType;
 
-const mergeSpec = ({ specsGen, overideSpecs }) =>
+const mergeSpec = ({ specsGen, specsOveride }) =>
   pipe([
-    () => overideSpecs,
+    tap((params) => {
+      assert(Array.isArray(specsGen));
+      assert(Array.isArray(specsOveride));
+    }),
+    () => specsOveride,
     map((overideSpec) =>
       pipe([
         () => specsGen,
@@ -161,27 +170,29 @@ const mergeSpec = ({ specsGen, overideSpecs }) =>
     }),
   ])();
 
+exports.mergeSpec = mergeSpec;
+
 exports.fnSpecs = (config) =>
   pipe([
     assign({
-      overideSpecs: overideSpec(config),
+      specsOveride: () => createSpecsOveride(config),
       specsGen: pipe([() => Schema]),
     }),
     assign({
-      overideSpecs: mergeSpec,
+      specsOveride: mergeSpec,
     }),
     assign({
-      specsGen: ({ specsGen, overideSpecs }) =>
+      specsGen: ({ specsGen, specsOveride }) =>
         pipe([
           () => specsGen,
           filter(
             not((spec) =>
-              pipe([() => overideSpecs, findByGroupAndType(spec)])()
+              pipe([() => specsOveride, findByGroupAndType(spec)])()
             )
           ),
         ])(),
     }),
-    ({ specsGen, overideSpecs }) => [...specsGen, ...overideSpecs],
+    ({ specsGen, specsOveride }) => [...specsGen, ...specsOveride],
     map(
       assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
     ),

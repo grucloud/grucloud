@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, fork, tryCatch, map } = require("rubico");
+const { pipe, get, tap, fork, tryCatch, assign } = require("rubico");
 const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
@@ -7,12 +7,10 @@ const {
   writeConfigToFile,
 } = require("@grucloud/core/cli/providers/createProjectAzure");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { checkEnv } = require("@grucloud/core/Utils");
 const { generateCode } = require("./Az2gc");
-//const { AZURE_MANAGEMENT_BASE_URL } = require("./AzureCommon");
 const { fnSpecs } = require("./AzureSpec");
 
 exports.AzureProvider = ({
@@ -81,6 +79,7 @@ exports.AzureProvider = ({
           destination: path.resolve(programOptions.workingDirectory),
         }),
       }),
+      assign({ projectName: get("config.projectName") }),
       createProjectAzure,
       writeConfigToFile,
     ])();

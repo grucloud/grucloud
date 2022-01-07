@@ -40,6 +40,9 @@ const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
 
 const ResourceTypesHide = ["Namespace"];
 
+const matchId = (idToMatch) =>
+  pipe([get("id"), callProp("match", new RegExp(`^${idToMatch}$`, "gi"))]);
+
 const nodeNameFromResource = (resource) => resource.name || resource.id;
 
 const buildNode =
@@ -175,7 +178,7 @@ const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
 const findNamespace = ({ type, id, resources }) =>
   pipe([
     () => resources,
-    find(eq(get("id"), id)),
+    find(matchId(id)),
     get("namespace"),
     formatNamespace,
     tap((namespace) => {
@@ -224,7 +227,7 @@ const associationIdString = ({
     }),
     () => resources,
     switchCase([
-      pipe([find(eq(get("id"), idTo)), get("show")]),
+      pipe([find(matchId(idTo)), get("show")]),
       pipe([
         () => ({
           nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom, nameFrom }),
@@ -341,7 +344,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                       () => resourcesPerType,
                       find(eq(get("groupType"), dependency.groupType)),
                       get("resources"),
-                      find(eq(get("id"), idTo)),
+                      find(matchId(idTo)),
                       tap.if(isEmpty, () => {
                         console.error(
                           `no resource for id: ${idTo}, type: ${dependency.groupType}, from ${name}, type: ${type}`

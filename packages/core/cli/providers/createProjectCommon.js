@@ -35,9 +35,12 @@ const execCommand =
             pipe([
               tap((error) => {
                 spinnies.fail(textStart, {
-                  text: `${textError || textStart}, error: ${error.message}`,
+                  text: `${textError || textStart}, error: ${error}`,
                 });
               }),
+              () => {
+                throw error;
+              },
             ])
           ),
         ])(),
@@ -62,13 +65,22 @@ exports.execCommandShell =
                 switchCase([
                   eq(code, 0),
                   pipe([
+                    tap((params) => {
+                      assert(true);
+                    }),
                     () => stdout,
                     pipe([
                       tryCatch(JSON.parse, (error, output) => output),
                       resolve,
                     ]),
                   ]),
-                  pipe([() => stderr, reject]),
+                  pipe([
+                    () => stderr,
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    reject,
+                  ]),
                 ]),
               ])()
           );

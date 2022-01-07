@@ -4,9 +4,12 @@ const {
   findIndex,
   find,
   append,
+  prepend,
   callProp,
   when,
   identity,
+  unless,
+  isEmpty,
 } = require("rubico/x");
 const path = require("path");
 const prompts = require("prompts");
@@ -27,8 +30,14 @@ const isAzPresent = pipe([
 // az account show
 const isAuthenticated = pipe([
   () => "az account show",
-  tryCatch(pipe([execCommandShell()]), (error) =>
-    pipe([azLogin, isAuthenticated])()
+  tryCatch(
+    pipe([
+      execCommandShell(),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+    (error) => pipe([azLogin, isAuthenticated])()
   ),
 ]);
 
@@ -75,13 +84,43 @@ const promptSubscribtionId = (params) =>
   ])();
 
 const fetchAppIdPassword = pipe([
-  () => `az ad sp create-for-rbac -n sp1`,
-  execCommandShell(),
-  tap(({ appId, password }) => {
-    assert(appId);
-    assert(password);
+  tap(({ projectName }) => {
+    assert(projectName);
   }),
+  ({ projectName }) => ({
+    type: "text",
+    name: "servicePrincipal",
+    message: "Service Principal",
+    initial: `sp-${projectName}`,
+    validate: (servicePrincipal) =>
+      isEmpty(servicePrincipal) ? `should not be empty` : true,
+  }),
+  prompts,
+  get("servicePrincipal"),
+  unless(
+    isEmpty,
+    pipe([
+      prepend("az ad sp create-for-rbac -n http://"),
+      execCommandShell(),
+      tap(({ appId, password }) => {
+        assert(appId);
+        assert(password);
+      }),
+    ])
+  ),
 ]);
+const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
+
+const registerNamespaces = () =>
+  pipe([
+    () => NamespacesDefault,
+    map.series((namespace) =>
+      pipe([
+        () => `az provider register --namespace ${namespace}`,
+        execCommandShell(),
+      ])()
+    ),
+  ])();
 
 const writeEnv = ({ dirs, app, account }) =>
   pipe([
@@ -166,5 +205,6 @@ exports.createProjectAzure = pipe([
   assign({ app: fetchAppIdPassword }),
   assign({ location: promptLocation }),
   assign({ config: createConfig }),
+  tap(registerNamespaces),
   tap(writeEnv),
 ]);

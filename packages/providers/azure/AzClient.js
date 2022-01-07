@@ -9,6 +9,7 @@ const {
   switchCase,
   map,
   not,
+  filter,
   and,
 } = require("rubico");
 const {
@@ -24,8 +25,6 @@ const {
   prepend,
   findIndex,
   isEmpty,
-  defaultsDeep,
-  isObject,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
@@ -34,10 +33,15 @@ const {
   isInstanceUp: isInstanceUpDefault,
   AZURE_MANAGEMENT_BASE_URL,
   isSubstituable,
-  buildTags,
+  configDefaultGeneric,
+  findDependenciesUserAssignedIdentity,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
+
+const onResponseListDefault = () => get("value", []);
+//TODO switchCase ?
+const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
 
 module.exports = AzClient = ({
   spec,
@@ -55,10 +59,6 @@ module.exports = AzClient = ({
       ])(),
   getList = () => undefined,
   getByName = () => undefined,
-  onResponseList = () => get("value", []),
-  decorate,
-  verbCreate = "PUT",
-  verbUpdate = "PATCH",
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
   assert(spec);
@@ -71,21 +71,6 @@ module.exports = AzClient = ({
   }
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
-
-  const configDefaultGeneric = ({ properties }) =>
-    pipe([
-      tap(() => {
-        assert(config.location);
-      }),
-      () => properties,
-      defaultsDeep({
-        location: config.location,
-        tags: buildTags(config),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
 
   const cannotBeDeleted = pipe([
     tap((params) => {
@@ -101,7 +86,7 @@ module.exports = AzClient = ({
   assert(config);
   assert(config.bearerToken);
 
-  const findIdfromPath = ({ path, id, name }) =>
+  const findIdfromPath = ({ path, id, name, type }) =>
     pipe([
       tap((params) => {
         assert(path);
@@ -112,7 +97,10 @@ module.exports = AzClient = ({
       callProp("split", "/"),
       findIndex(eq(identity, `{${name}}`)),
       tap((index) => {
-        assert(index >= 1);
+        assert(
+          index >= 1,
+          `findIdfromPath ${path}, ${id}, ${name}, type ${type}`
+        );
       }),
       (index) =>
         pipe([
@@ -127,12 +115,13 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const findDependenciesDefault = ({ live, lives }) =>
+  const findDependenciesFromList = ({ live, lives }) =>
     pipe([
       tap((params) => {
         assert(dependencies);
       }),
       () => dependencies,
+      filter(not(get("createOnly"))),
       map.entries(([key, { group, type, name }]) => [
         key,
         {
@@ -142,7 +131,7 @@ module.exports = AzClient = ({
             findIdfromPath({
               id: live.id,
               path: methods.get.path,
-              name,
+              name: name || key,
               group,
               type,
             }),
@@ -150,6 +139,18 @@ module.exports = AzClient = ({
         },
       ]),
       values,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const findDependenciesDefault = ({ live, lives }) =>
+    pipe([
+      () => [
+        ...findDependenciesFromList({ live, lives }),
+        findDependenciesUserAssignedIdentity({ live, lives }),
+      ],
+      filter(not(isEmpty)),
       tap((params) => {
         assert(true);
       }),
@@ -308,6 +309,10 @@ module.exports = AzClient = ({
         pipe([
           () => dependencies,
           values,
+          filter(not(get("createOnly"))),
+          tap((params) => {
+            assert(true);
+          }),
           last,
           tap((dep) => {
             if (!dep) {
@@ -334,8 +339,8 @@ module.exports = AzClient = ({
     spec,
     config,
     findDependencies: spec.findDependencies || findDependenciesDefault,
-    onResponseList,
-    decorate,
+    onResponseList: spec.onResponseList || onResponseListDefault,
+    decorate: spec.decorate,
     configDefault: spec.configDefault || configDefaultGeneric,
     pathGet,
     pathCreate,
@@ -343,8 +348,8 @@ module.exports = AzClient = ({
     pathDelete,
     pathList,
     findTargetId,
-    verbCreate,
-    verbUpdate,
+    verbCreate: "PUT",
+    verbUpdate: verbUpdateFromMethods(methods),
     isInstanceUp,
     isDefault: spec.isDefault,
     cannotBeDeleted,

@@ -943,12 +943,20 @@ const writeEnv =
       ),
     ])();
 
+const matchId = (id) =>
+  pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]);
+
 const isEqualById = ({ type, group, providerName, id }) =>
-  and([
-    or([eq(get("id"), id), eq(get("id"), id?.id)]),
-    eq(get("type"), type),
-    eq(get("group"), group),
-    eq(get("providerName"), providerName),
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    and([
+      or([matchId(id), matchId(id?.id)]),
+      eq(get("type"), type),
+      eq(get("group"), group),
+      eq(get("providerName"), providerName),
+    ]),
   ]);
 
 const findLiveById =

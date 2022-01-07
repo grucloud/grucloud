@@ -17,6 +17,7 @@
     "change-case": "^4.1.2",
     "deep-object-diff": "^1.1.0",
     "pluralize": "^8.0.0",
+    "prettier": "^2.5.1",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

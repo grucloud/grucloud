@@ -1,0 +1,90 @@
+---
+id: WebAppPrivateEndpointConnectionSlot
+title: WebAppPrivateEndpointConnectionSlot
+---
+Provides a **WebAppPrivateEndpointConnectionSlot** from the **Web** group
+## Examples
+### Approves or rejects a private endpoint connection for a site.
+```js
+provider.Web.makeWebAppPrivateEndpointConnectionSlot({
+  name: "myWebAppPrivateEndpointConnectionSlot",
+  properties: () => ({
+    properties: {
+      privateLinkServiceConnectionState: {
+        status: "Approved",
+        description: "Approved by admin.",
+        actionsRequired: "",
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    name: resources.Web.Site["mySite"],
+    slot: resources.Web.SiteSlot["mySiteSlot"],
+  }),
+});
+
+```
+## Dependencies
+- [ResourceGroup](../Resources/ResourceGroup.md)
+- [Site](../Web/Site.md)
+- [SiteSlot](../Web/SiteSlot.md)
+## Swagger Schema
+```js
+{
+  description: 'Private Endpoint Connection Approval ARM resource.',
+  type: 'object',
+  allOf: [
+    {
+      description: 'Azure proxy only resource. This resource is not tracked by Azure Resource Manager.',
+      type: 'object',
+      properties: {
+        id: { description: 'Resource Id.', type: 'string', readOnly: true },
+        name: {
+          description: 'Resource Name.',
+          type: 'string',
+          readOnly: true
+        },
+        kind: { description: 'Kind of resource.', type: 'string' },
+        type: {
+          description: 'Resource type.',
+          type: 'string',
+          readOnly: true
+        }
+      },
+      'x-ms-azure-resource': true
+    }
+  ],
+  properties: {
+    properties: {
+      description: 'Core resource properties',
+      type: 'object',
+      'x-ms-client-flatten': true,
+      properties: {
+        privateLinkServiceConnectionState: {
+          description: 'The state of a private link connection',
+          type: 'object',
+          properties: {
+            status: {
+              description: 'Status of a private link connection',
+              type: 'string'
+            },
+            description: {
+              description: 'Description of a private link connection',
+              type: 'string'
+            },
+            actionsRequired: {
+              description: 'ActionsRequired for a private link connection',
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+## Misc
+The resource version is `2021-02-01`.
+
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-02-01/WebApps.json).

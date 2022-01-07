@@ -18,6 +18,7 @@ const {
 } = require("rubico");
 
 const {
+  isString,
   isEmpty,
   size,
   pluck,
@@ -117,36 +118,107 @@ const isTypeMatch = ({ type, typeToMatch }) =>
 
 exports.isTypeMatch = isTypeMatch;
 
-const findDependentType = ({ groupType, specs }) =>
-  pipe([
-    tap(() => {
-      assert(groupType);
-    }),
-    () => specs,
-    find(eq(get("groupType"), groupType)),
-    get("dependsOn", []),
-    flatMap((groupType) => findDependentType({ groupType, specs })),
-    prepend(groupType),
-    tap((results) => {
-      //logger.debug(`findDependentTypes ${type}, result: ${results}`);
-    }),
-  ])();
+const findDependentType =
+  ({ groupTypesAcc, specs }) =>
+  (groupType) =>
+    pipe([
+      tap(() => {
+        assert(isString(groupType));
+        assert(Array.isArray(groupTypesAcc));
+        // logger.debug(`findDependentType ${groupType} ${size(groupTypesAcc)}`);
+        //assert(!includes(groupType)(groupTypesAcc));
+      }),
+      pipe([
+        () => specs,
+        find(eq(get("groupType"), groupType)),
+        get("dependsOn", []),
+        filter(not(eq(identity, groupType))),
+        // tap((groupTypes) => {
+        //   logger.debug("groupType", groupType, `, groupTypes: ${groupTypes}`);
+        // }),
+        (groupTypes) =>
+          pipe([
+            () => groupTypes,
+            tap((params) => {
+              assert(true);
+            }),
+            filter(
+              not((groupType) =>
+                pipe([
+                  () => groupTypesAcc,
+                  // tap(() => {
+                  //   logger.debug(
+                  //     `AA ${groupType} ${size(groupTypesAcc)}, ${groupTypesAcc}`
+                  //   );
+                  // }),
+                  any(eq(identity, groupType)),
+                  // tap.if(identity, (params) => {
+                  //   logger.debug("reject ", groupType);
+                  // }),
+                ])()
+              )
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            // tap((groupTypes) => {
+            //   logger.debug(
+            //     "\ngroupType",
+            //     groupType,
+            //     `, updated groupTypes: ${groupTypes}`
+            //   );
+            // }),
+            (groupTypes) =>
+              pipe([
+                () => groupTypes,
+                // tap((params) => {
+                //   logger.debug(
+                //     `BB ${groupType} #groupTypesAcc ${size(
+                //       groupTypesAcc
+                //     )}, #groupTypes ${size(groupTypes)}`
+                //   );
+                // }),
+                flatMap(
+                  findDependentType({
+                    groupTypesAcc: [...groupTypesAcc, ...groupTypes],
+                    specs,
+                  })
+                ),
+              ])(),
+            tap((params) => {
+              assert(true);
+            }),
+            prepend(groupType),
+            // tap((results) => {
+            //   logger.debug(
+            //     `findDependentType ${groupType}, results: ${results}, depth: ${depth}`
+            //   );
+            // }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      ]),
+      // ]),
+    ])();
 
 const findDependentTypes = ({ groupTypes, clients }) =>
   pipe([
-    tap(() => {
-      // logger.debug(
-      //   `findDependentTypes #clients ${size(clients)}, types: ${size(types)}`
-      // );
-    }),
+    // tap(() => {
+    //   logger.debug(
+    //     `\n\n\nfindDependentTypes #clients ${size(clients)}, groupTypes: ${size(
+    //       groupTypes
+    //     )}`
+    //   );
+    // }),
     () => groupTypes,
-    flatMap((groupType) =>
-      findDependentType({ groupType, specs: pluck("spec")(clients) })
+    flatMap(
+      findDependentType({ groupTypesAcc: [], specs: pluck("spec")(clients) })
     ),
     uniq,
-    tap((results) => {
-      // logger.debug(`findDependentTypes results: ${results}`);
-    }),
+    // tap((results) => {
+    //   logger.debug(`\n\nfindDependentTypes results: ${results}`);
+    // }),
   ])();
 
 //TODO targetTypes => targetGroupTypes
@@ -155,7 +227,7 @@ const filterByType =
   (clients) =>
     pipe([
       tap(() => {
-        logger.info(
+        logger.debug(
           `filterByType inputs #clients ${size(clients)}, #targetTypes ${size(
             targetTypes
           )}, #types ${size(types)}, #groups ${size(groups)}`
@@ -223,30 +295,39 @@ const findClientByGroupType = (clients) => (groupType) =>
     }),
   ])();
 
-const findClientDependencies = (clients) => (client) =>
-  pipe([
-    tap(() => {
-      assert(clients);
-      assert(client);
-    }),
-    () => client,
-    get("spec.dependsOn", []),
-    tap((params) => {
-      assert(true);
-    }),
-    map(findClientByGroupType(clients)),
-    tap((params) => {
-      assert(true);
-    }),
-    filter(not(isEmpty)),
-    flatMap(findClientDependencies(clients)),
-    prepend(client),
-  ])();
+const findClientDependencies =
+  ({ clients }) =>
+  (client) =>
+    pipe([
+      tap(() => {
+        assert(clients);
+        assert(client);
+        logger.debug(
+          `findClientDependencies groupType: ${
+            client.spec.groupType
+          }, #clients ${size(clients)}`
+        );
+      }),
+      () => client,
+      get("spec.dependsOnList", []),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(eq(identity, client.spec.groupType))),
+      map(findClientByGroupType(clients)),
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
+      flatMap(findClientDependencies({ clients })),
+      prepend(client),
+    ])();
 
 const addDependentClients = (clientsAll) => (clients) =>
   pipe([
     tap(() => {
       assert(clients);
+      assert(clientsAll);
       logger.debug(
         `addDependentClients #clientsAll ${size(clientsAll)}, #clients ${size(
           clients
@@ -254,7 +335,7 @@ const addDependentClients = (clientsAll) => (clients) =>
       );
     }),
     () => clients,
-    flatMap(findClientDependencies(clientsAll)),
+    flatMap(findClientDependencies({ clients: clientsAll })),
     filter(not(isEmpty)),
     uniq,
     tap((clientsDependents) => {

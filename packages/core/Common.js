@@ -216,7 +216,7 @@ exports.getByNameCore =
   ({ name, resources, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`getByName ${name}`);
+        logger.info(`getByNameCore ${name}`);
         assert(name, "name");
         assert(findName, "findName");
         assert(getList, "getList");
@@ -230,8 +230,8 @@ exports.getByNameCore =
       }),
       find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
       tap((instance) => {
-        logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
-        logger.debug(`getByName ${name}: ${tos({ instance })}`);
+        logger.info(`getByNameCore ${name}: ${instance ? "UP" : "DOWN"}`);
+        logger.debug(`getByNameCore ${name}: ${tos({ instance })}`);
       }),
     ])();
 

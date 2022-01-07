@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project vm-managed-identity
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ SshPublicKey (1)
+++++ VirtualMachine (1)
++++ ManagedIdentity
+++++ UserAssignedIdentity (1)
++++ Network
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap
