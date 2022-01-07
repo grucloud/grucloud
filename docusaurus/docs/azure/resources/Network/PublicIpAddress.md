@@ -47,7 +47,7 @@ provider.Network.makePublicIPAddress({
 ## Swagger Schema
 ```js
 {
-  properties: <ref *1> {
+  properties: <ref *2> {
     extendedLocation: {
       description: 'The extended location of the public ip address.',
       properties: {
@@ -99,7 +99,7 @@ provider.Network.makePublicIPAddress({
         ipConfiguration: {
           readOnly: true,
           description: 'The IP configuration associated with the public IP address.',
-          properties: {
+          properties: <ref *1> {
             properties: {
               'x-ms-client-flatten': true,
               description: 'Properties of the IP configuration.',
@@ -121,7 +121,436 @@ provider.Network.makePublicIPAddress({
                     properties: {
                       'x-ms-client-flatten': true,
                       description: 'Properties of the subnet.',
-                      properties: [Object]
+                      properties: {
+                        addressPrefix: {
+                          type: 'string',
+                          description: 'The address prefix for the subnet.'
+                        },
+                        addressPrefixes: {
+                          type: 'array',
+                          items: { type: 'string' },
+                          description: 'List of address prefixes for the subnet.'
+                        },
+                        networkSecurityGroup: {
+                          description: 'The reference to the NetworkSecurityGroup resource.',
+                          properties: {
+                            properties: {
+                              'x-ms-client-flatten': true,
+                              description: 'Properties of the network security group.',
+                              properties: {
+                                securityRules: [Object],
+                                defaultSecurityRules: [Object],
+                                networkInterfaces: [Object],
+                                subnets: [Object],
+                                flowLogs: [Object],
+                                resourceGuid: [Object],
+                                provisioningState: [Object]
+                              }
+                            },
+                            etag: {
+                              readOnly: true,
+                              type: 'string',
+                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                            }
+                          },
+                          allOf: [
+                            {
+                              properties: {
+                                id: [Object],
+                                name: [Object],
+                                type: [Object],
+                                location: [Object],
+                                tags: [Object]
+                              },
+                              description: 'Common resource representation.',
+                              'x-ms-azure-resource': true
+                            }
+                          ]
+                        },
+                        routeTable: {
+                          description: 'The reference to the RouteTable resource.',
+                          properties: {
+                            properties: {
+                              'x-ms-client-flatten': true,
+                              description: 'Properties of the route table.',
+                              properties: {
+                                routes: [Object],
+                                subnets: [Object],
+                                disableBgpRoutePropagation: [Object],
+                                provisioningState: [Object],
+                                resourceGuid: [Object]
+                              }
+                            },
+                            etag: {
+                              readOnly: true,
+                              type: 'string',
+                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                            }
+                          },
+                          allOf: [
+                            {
+                              properties: {
+                                id: [Object],
+                                name: [Object],
+                                type: [Object],
+                                location: [Object],
+                                tags: [Object]
+                              },
+                              description: 'Common resource representation.',
+                              'x-ms-azure-resource': true
+                            }
+                          ]
+                        },
+                        natGateway: {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource ID.'
+                            }
+                          },
+                          description: 'Reference to another subresource.',
+                          'x-ms-azure-resource': true
+                        },
+                        serviceEndpoints: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              service: {
+                                type: 'string',
+                                description: 'The type of the endpoint service.'
+                              },
+                              locations: {
+                                type: 'array',
+                                items: [Object],
+                                description: 'A list of locations.'
+                              },
+                              provisioningState: {
+                                readOnly: true,
+                                description: 'The provisioning state of the service endpoint resource.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              }
+                            },
+                            description: 'The service endpoint properties.'
+                          },
+                          description: 'An array of service endpoints.'
+                        },
+                        serviceEndpointPolicies: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Properties of the service end point policy.',
+                                properties: [Object]
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              },
+                              kind: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'Kind of service endpoint policy. This is metadata used for the Azure portal experience.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Common resource representation.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'Service End point policy resource.'
+                          },
+                          description: 'An array of service endpoint policies.'
+                        },
+                        privateEndpoints: {
+                          readOnly: true,
+                          type: 'array',
+                          items: {
+                            properties: {
+                              extendedLocation: {
+                                description: 'The extended location of the load balancer.',
+                                properties: [Object]
+                              },
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Properties of the private endpoint.',
+                                properties: [Object]
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Common resource representation.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'Private endpoint resource.'
+                          },
+                          description: 'An array of references to private endpoints.'
+                        },
+                        ipConfigurations: {
+                          readOnly: true,
+                          type: 'array',
+                          items: {
+                            properties: [Circular *1],
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'IP configuration.'
+                          },
+                          description: 'An array of references to the network interface IP configurations using subnet.'
+                        },
+                        ipConfigurationProfiles: {
+                          readOnly: true,
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Properties of the IP configuration profile.',
+                                properties: [Object]
+                              },
+                              name: {
+                                type: 'string',
+                                description: 'The name of the resource. This name can be used to access the resource.'
+                              },
+                              type: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'Sub Resource type.'
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'IP configuration profile child resource.'
+                          },
+                          description: 'Array of IP configuration profiles which reference this subnet.'
+                        },
+                        ipAllocations: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            description: 'Reference to another subresource.',
+                            'x-ms-azure-resource': true
+                          },
+                          description: 'Array of IpAllocation which reference this subnet.'
+                        },
+                        resourceNavigationLinks: {
+                          readOnly: true,
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Resource navigation link properties format.',
+                                properties: [Object]
+                              },
+                              name: {
+                                type: 'string',
+                                description: 'Name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                              },
+                              id: {
+                                type: 'string',
+                                readOnly: true,
+                                description: 'Resource navigation link identifier.'
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              },
+                              type: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'Resource type.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'ResourceNavigationLink resource.'
+                          },
+                          description: 'An array of references to the external resources using subnet.'
+                        },
+                        serviceAssociationLinks: {
+                          readOnly: true,
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Resource navigation link properties format.',
+                                properties: [Object]
+                              },
+                              name: {
+                                type: 'string',
+                                description: 'Name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              },
+                              type: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'Resource type.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'ServiceAssociationLink resource.'
+                          },
+                          description: 'An array of references to services injecting into this subnet.'
+                        },
+                        delegations: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Properties of the subnet.',
+                                properties: [Object]
+                              },
+                              name: {
+                                type: 'string',
+                                description: 'The name of the resource that is unique within a subnet. This name can be used to access the resource.'
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              },
+                              type: {
+                                type: 'string',
+                                description: 'Resource type.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'Details the service to which the subnet is delegated.'
+                          },
+                          description: 'An array of references to the delegations on the subnet.'
+                        },
+                        purpose: {
+                          type: 'string',
+                          readOnly: true,
+                          description: 'A read-only string identifying the intention of use for this subnet based on delegations and other user-defined properties.'
+                        },
+                        provisioningState: {
+                          readOnly: true,
+                          description: 'The provisioning state of the subnet resource.',
+                          type: 'string',
+                          enum: [
+                            'Succeeded',
+                            'Updating',
+                            'Deleting',
+                            'Failed'
+                          ],
+                          'x-ms-enum': {
+                            name: 'ProvisioningState',
+                            modelAsString: true
+                          }
+                        },
+                        privateEndpointNetworkPolicies: {
+                          type: 'string',
+                          default: 'Enabled',
+                          description: 'Enable or Disable apply network policies on private end point in the subnet.',
+                          enum: [ 'Enabled', 'Disabled' ],
+                          'x-ms-enum': {
+                            name: 'VirtualNetworkPrivateEndpointNetworkPolicies',
+                            modelAsString: true
+                          }
+                        },
+                        privateLinkServiceNetworkPolicies: {
+                          type: 'string',
+                          default: 'Enabled',
+                          description: 'Enable or Disable apply network policies on private link service in the subnet.',
+                          enum: [ 'Enabled', 'Disabled' ],
+                          'x-ms-enum': {
+                            name: 'VirtualNetworkPrivateLinkServiceNetworkPolicies',
+                            modelAsString: true
+                          }
+                        },
+                        applicationGatewayIpConfigurations: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              properties: {
+                                'x-ms-client-flatten': true,
+                                description: 'Properties of the application gateway IP configuration.',
+                                properties: [Object]
+                              },
+                              name: {
+                                type: 'string',
+                                description: 'Name of the IP configuration that is unique within an Application Gateway.'
+                              },
+                              etag: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'A unique read-only string that changes whenever the resource is updated.'
+                              },
+                              type: {
+                                readOnly: true,
+                                type: 'string',
+                                description: 'Type of the resource.'
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'Reference to another subresource.',
+                                'x-ms-azure-resource': true
+                              }
+                            ],
+                            description: 'IP configuration of an application gateway. Currently 1 public and 1 private IP configuration is allowed.'
+                          },
+                          description: 'Application gateway IP configurations of virtual network resource.'
+                        }
+                      }
                     },
                     name: {
                       type: 'string',
@@ -136,7 +565,9 @@ provider.Network.makePublicIPAddress({
                   },
                   allOf: [
                     {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource ID.' }
+                      },
                       description: 'Reference to another subresource.',
                       'x-ms-azure-resource': true
                     }
@@ -144,10 +575,31 @@ provider.Network.makePublicIPAddress({
                 },
                 publicIPAddress: {
                   description: 'The reference to the public IP resource.',
-                  properties: [Circular *1],
+                  properties: [Circular *2],
                   allOf: [
                     {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource ID.' },
+                        name: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'Resource name.'
+                        },
+                        type: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'Resource type.'
+                        },
+                        location: {
+                          type: 'string',
+                          description: 'Resource location.'
+                        },
+                        tags: {
+                          type: 'object',
+                          additionalProperties: { type: 'string' },
+                          description: 'Resource tags.'
+                        }
+                      },
                       description: 'Common resource representation.',
                       'x-ms-azure-resource': true
                     }
@@ -268,7 +720,7 @@ provider.Network.makePublicIPAddress({
         },
         servicePublicIPAddress: {
           description: 'The service public IP address of the public IP address resource.',
-          properties: [Circular *1],
+          properties: [Circular *2],
           allOf: [
             {
               properties: {
@@ -321,7 +773,9 @@ provider.Network.makePublicIPAddress({
                 publicIpAddresses: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -330,7 +784,9 @@ provider.Network.makePublicIPAddress({
                 publicIpPrefixes: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -340,7 +796,9 @@ provider.Network.makePublicIPAddress({
                   readOnly: true,
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -408,7 +866,7 @@ provider.Network.makePublicIPAddress({
         },
         linkedPublicIPAddress: {
           description: 'The linked public IP address of the public IP address resource.',
-          properties: [Circular *1],
+          properties: [Circular *2],
           allOf: [
             {
               properties: {

@@ -70,9 +70,59 @@ provider.Compute.makeDedicatedHostGroup({
                 allOf: [
                   {
                     properties: {
-                      assetId: [Object],
-                      availableCapacity: [Object],
-                      statuses: [Object]
+                      assetId: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Specifies the unique id of the dedicated physical machine on which the dedicated host resides.'
+                      },
+                      availableCapacity: {
+                        description: 'Unutilized capacity of the dedicated host.',
+                        properties: {
+                          allocatableVMs: {
+                            type: 'array',
+                            items: {
+                              properties: { vmSize: [Object], count: [Object] },
+                              description: 'Represents the dedicated host unutilized capacity in terms of a specific VM size.'
+                            },
+                            description: 'The unutilized capacity of the dedicated host represented in terms of each VM size that is allowed to be deployed to the dedicated host.'
+                          }
+                        }
+                      },
+                      statuses: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            code: {
+                              type: 'string',
+                              description: 'The status code.'
+                            },
+                            level: {
+                              type: 'string',
+                              description: 'The level code.',
+                              enum: [ 'Info', 'Warning', 'Error' ],
+                              'x-ms-enum': {
+                                name: 'StatusLevelTypes',
+                                modelAsString: false
+                              }
+                            },
+                            displayStatus: {
+                              type: 'string',
+                              description: 'The short localizable label for the status.'
+                            },
+                            message: {
+                              type: 'string',
+                              description: 'The detailed status message, including for alerts and error messages.'
+                            },
+                            time: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'The time of the status.'
+                            }
+                          },
+                          description: 'Instance view status.'
+                        },
+                        description: 'The resource status information.'
+                      }
                     },
                     description: 'The instance view of a dedicated host.'
                   }

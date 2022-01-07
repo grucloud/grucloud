@@ -74,7 +74,44 @@ provider.Network.makePrivateDnsZoneGroup({
                     type: 'array',
                     readOnly: true,
                     items: {
-                      properties: [Object],
+                      properties: {
+                        recordType: {
+                          type: 'string',
+                          description: 'Resource record type.'
+                        },
+                        recordSetName: {
+                          type: 'string',
+                          description: 'Recordset name.'
+                        },
+                        fqdn: {
+                          type: 'string',
+                          description: 'Fqdn that resolves to private endpoint ip address.'
+                        },
+                        provisioningState: {
+                          readOnly: true,
+                          description: 'The provisioning state of the recordset.',
+                          type: 'string',
+                          enum: [
+                            'Succeeded',
+                            'Updating',
+                            'Deleting',
+                            'Failed'
+                          ],
+                          'x-ms-enum': {
+                            name: 'ProvisioningState',
+                            modelAsString: true
+                          }
+                        },
+                        ttl: {
+                          type: 'integer',
+                          description: 'Recordset time to live.'
+                        },
+                        ipAddresses: {
+                          type: 'array',
+                          items: { type: 'string' },
+                          description: 'The private ip address of the private endpoint.'
+                        }
+                      },
                       description: 'A collective group of information about the record set information.'
                     },
                     description: 'A collection of information regarding a recordSet, holding information to identify private resources.'

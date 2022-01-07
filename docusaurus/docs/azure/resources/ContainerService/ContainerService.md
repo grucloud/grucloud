@@ -486,7 +486,16 @@ provider.ContainerService.makeContainerService({
                   properties: {
                     publicKeys: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          keyData: {
+                            type: 'string',
+                            description: 'Certificate public key used to authenticate with VMs through SSH. The certificate must be in PEM format with or without headers.'
+                          }
+                        },
+                        required: [ 'keyData' ],
+                        description: 'Contains information about SSH certificate public key data.'
+                      },
                       description: 'The list of SSH public keys used to authenticate with Linux-based VMs. Only expect one key specified.'
                     }
                   },

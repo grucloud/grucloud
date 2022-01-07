@@ -175,7 +175,9 @@ provider.Network.makePublicIPPrefix({
                 publicIpAddresses: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -184,7 +186,9 @@ provider.Network.makePublicIPPrefix({
                 publicIpPrefixes: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -194,7 +198,9 @@ provider.Network.makePublicIPPrefix({
                   readOnly: true,
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },

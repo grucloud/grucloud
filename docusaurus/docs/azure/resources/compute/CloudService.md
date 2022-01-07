@@ -45,6 +45,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -108,6 +109,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -158,6 +160,7 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
@@ -219,12 +222,14 @@ provider.Compute.makeCloudService({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
 ## Swagger Schema
 ```js
 {
@@ -292,9 +297,19 @@ provider.Compute.makeCloudService({
                     description: 'Describes the cloud service role sku.',
                     type: 'object',
                     properties: {
-                      name: [Object],
-                      tier: [Object],
-                      capacity: [Object]
+                      name: {
+                        description: 'The sku name. NOTE: If the new SKU is not supported on the hardware the cloud service is currently on, you need to delete and recreate the cloud service or move back to the old sku.',
+                        type: 'string'
+                      },
+                      tier: {
+                        description: 'Specifies the tier of the cloud service. Possible Values are <br /><br /> **Standard** <br /><br /> **Basic**',
+                        type: 'string'
+                      },
+                      capacity: {
+                        format: 'int64',
+                        description: 'Specifies the number of role instances in the cloud service.',
+                        type: 'integer'
+                      }
                     }
                   }
                 }
@@ -315,7 +330,9 @@ provider.Compute.makeCloudService({
                 properties: {
                   sourceVault: {
                     type: 'object',
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { description: 'Resource Id', type: 'string' }
+                    },
                     'x-ms-azure-resource': true,
                     description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
                   },
@@ -325,7 +342,12 @@ provider.Compute.makeCloudService({
                     items: {
                       description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the role instance.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        certificateUrl: {
+                          description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret.',
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 }
@@ -352,7 +374,31 @@ provider.Compute.makeCloudService({
                   properties: {
                     description: 'Properties of the load balancer configuration.',
                     type: 'object',
-                    properties: { frontendIPConfigurations: [Object] },
+                    properties: {
+                      frontendIPConfigurations: {
+                        description: 'Specifies the frontend IP to be used for the load balancer. Only IPv4 frontend IP address is supported. Each load balancer configuration must have exactly one frontend IP configuration.',
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            name: {
+                              description: 'The name of the resource that is unique within the set of frontend IP configurations used by the load balancer. This name can be used to access the resource.',
+                              type: 'string'
+                            },
+                            properties: {
+                              description: 'Properties of load balancer frontend ip configuration.',
+                              type: 'object',
+                              properties: {
+                                publicIPAddress: [Object],
+                                subnet: [Object],
+                                privateIPAddress: [Object]
+                              }
+                            }
+                          },
+                          required: [ 'name', 'properties' ]
+                        }
+                      }
+                    },
                     required: [ 'frontendIPConfigurations' ]
                   }
                 },
@@ -386,16 +432,64 @@ provider.Compute.makeCloudService({
                     description: 'Extension Properties.',
                     type: 'object',
                     properties: {
-                      publisher: [Object],
-                      type: [Object],
-                      typeHandlerVersion: [Object],
-                      autoUpgradeMinorVersion: [Object],
-                      settings: [Object],
-                      protectedSettings: [Object],
-                      protectedSettingsFromKeyVault: [Object],
-                      forceUpdateTag: [Object],
-                      provisioningState: [Object],
-                      rolesAppliedTo: [Object]
+                      publisher: {
+                        description: 'The name of the extension handler publisher.',
+                        type: 'string'
+                      },
+                      type: {
+                        description: 'Specifies the type of the extension.',
+                        type: 'string'
+                      },
+                      typeHandlerVersion: {
+                        description: 'Specifies the version of the extension. Specifies the version of the extension. If this element is not specified or an asterisk (*) is used as the value, the latest version of the extension is used. If the value is specified with a major version number and an asterisk as the minor version number (X.), the latest minor version of the specified major version is selected. If a major version number and a minor version number are specified (X.Y), the specific extension version is selected. If a version is specified, an auto-upgrade is performed on the role instance.',
+                        type: 'string'
+                      },
+                      autoUpgradeMinorVersion: {
+                        description: 'Explicitly specify whether platform can automatically upgrade typeHandlerVersion to higher minor versions when they become available.',
+                        type: 'boolean'
+                      },
+                      settings: {
+                        description: 'Public settings for the extension. For JSON extensions, this is the JSON settings for the extension. For XML Extension (like RDP), this is the XML setting for the extension.',
+                        type: 'string'
+                      },
+                      protectedSettings: {
+                        description: 'Protected settings for the extension which are encrypted before sent to the role instance.',
+                        type: 'string'
+                      },
+                      protectedSettingsFromKeyVault: {
+                        type: 'object',
+                        properties: {
+                          sourceVault: {
+                            type: 'object',
+                            properties: {
+                              id: {
+                                description: 'Resource Id',
+                                type: 'string'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          },
+                          secretUrl: { type: 'string' }
+                        }
+                      },
+                      forceUpdateTag: {
+                        description: 'Tag to force apply the provided public and protected settings.\r\n' +
+                          'Changing the tag value allows for re-running the extension without changing any of the public or protected settings.\r\n' +
+                          'If forceUpdateTag is not changed, updates to public or protected settings would still be applied by the handler.\r\n' +
+                          'If neither forceUpdateTag nor any of public or protected settings change, extension would flow to the role instance with the same sequence-number, and\r\n' +
+                          'it is up to handler implementation whether to re-run it or not',
+                        type: 'string'
+                      },
+                      provisioningState: {
+                        description: 'The provisioning state, which only appears in the response.',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      rolesAppliedTo: {
+                        description: "Optional list of roles to apply this extension. If property is not specified or '*' is specified, extension is applied to all roles in the cloud service.",
+                        type: 'array',
+                        items: { type: 'string' }
+                      }
                     }
                   }
                 }

@@ -166,8 +166,15 @@ provider.Network.makeVpnSite({
                   linkProperties: {
                     description: 'The link provider properties.',
                     properties: {
-                      linkProviderName: [Object],
-                      linkSpeedInMbps: [Object]
+                      linkProviderName: {
+                        type: 'string',
+                        description: 'Name of the link provider.'
+                      },
+                      linkSpeedInMbps: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Link speed.'
+                      }
                     }
                   },
                   ipAddress: {
@@ -180,7 +187,17 @@ provider.Network.makeVpnSite({
                   },
                   bgpProperties: {
                     description: 'The set of bgp properties.',
-                    properties: { asn: [Object], bgpPeeringAddress: [Object] }
+                    properties: {
+                      asn: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: "The BGP speaker's ASN."
+                      },
+                      bgpPeeringAddress: {
+                        type: 'string',
+                        description: 'The BGP peering address and BGP identifier of this BGP speaker.'
+                      }
+                    }
                   },
                   provisioningState: {
                     readOnly: true,

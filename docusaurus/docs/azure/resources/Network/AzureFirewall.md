@@ -665,12 +665,75 @@ provider.Network.makeAzureFirewall({
                   },
                   action: {
                     description: 'The action type of a rule collection.',
-                    properties: { type: [Object] }
+                    properties: {
+                      type: {
+                        description: 'The type of action.',
+                        type: 'string',
+                        enum: [ 'Allow', 'Deny' ],
+                        'x-ms-enum': {
+                          name: 'AzureFirewallRCActionType',
+                          modelAsString: true
+                        }
+                      }
+                    }
                   },
                   rules: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        name: {
+                          type: 'string',
+                          description: 'Name of the application rule.'
+                        },
+                        description: {
+                          type: 'string',
+                          description: 'Description of the rule.'
+                        },
+                        sourceAddresses: {
+                          type: 'array',
+                          description: 'List of source IP addresses for this rule.',
+                          items: { type: 'string' }
+                        },
+                        protocols: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              protocolType: {
+                                description: 'Protocol type.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              },
+                              port: {
+                                type: 'integer',
+                                format: 'int32',
+                                maximum: 64000,
+                                exclusiveMaximum: false,
+                                minimum: 0,
+                                exclusiveMinimum: false,
+                                description: 'Port number for the protocol, cannot be greater than 64000. This field is optional.'
+                              }
+                            },
+                            description: 'Properties of the application rule protocol.'
+                          },
+                          description: 'Array of ApplicationRuleProtocols.'
+                        },
+                        targetFqdns: {
+                          type: 'array',
+                          description: 'List of FQDNs for this rule.',
+                          items: { type: 'string' }
+                        },
+                        fqdnTags: {
+                          type: 'array',
+                          description: 'List of FQDN Tags for this rule.',
+                          items: { type: 'string' }
+                        },
+                        sourceIpGroups: {
+                          type: 'array',
+                          description: 'List of source IpGroups for this rule.',
+                          items: { type: 'string' }
+                        }
+                      },
                       description: 'Properties of an application rule.'
                     },
                     description: 'Collection of rules used by a application rule collection.'
@@ -724,12 +787,76 @@ provider.Network.makeAzureFirewall({
                   },
                   action: {
                     description: 'The action type of a NAT rule collection.',
-                    properties: { type: [Object] }
+                    properties: {
+                      type: {
+                        description: 'The type of action.',
+                        type: 'string',
+                        enum: [ 'Snat', 'Dnat' ],
+                        'x-ms-enum': {
+                          name: 'AzureFirewallNatRCActionType',
+                          modelAsString: true
+                        }
+                      }
+                    }
                   },
                   rules: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        name: {
+                          type: 'string',
+                          description: 'Name of the NAT rule.'
+                        },
+                        description: {
+                          type: 'string',
+                          description: 'Description of the rule.'
+                        },
+                        sourceAddresses: {
+                          type: 'array',
+                          description: 'List of source IP addresses for this rule.',
+                          items: { type: 'string' }
+                        },
+                        destinationAddresses: {
+                          type: 'array',
+                          description: 'List of destination IP addresses for this rule. Supports IP ranges, prefixes, and service tags.',
+                          items: { type: 'string' }
+                        },
+                        destinationPorts: {
+                          type: 'array',
+                          description: 'List of destination ports.',
+                          items: { type: 'string' }
+                        },
+                        protocols: {
+                          type: 'array',
+                          items: {
+                            type: 'string',
+                            description: 'The protocol of a Network Rule resource.',
+                            enum: [ 'TCP', 'UDP', 'Any', 'ICMP' ],
+                            'x-ms-enum': {
+                              name: 'AzureFirewallNetworkRuleProtocol',
+                              modelAsString: true
+                            }
+                          },
+                          description: 'Array of AzureFirewallNetworkRuleProtocols applicable to this NAT rule.'
+                        },
+                        translatedAddress: {
+                          type: 'string',
+                          description: 'The translated address for this NAT rule.'
+                        },
+                        translatedPort: {
+                          type: 'string',
+                          description: 'The translated port for this NAT rule.'
+                        },
+                        translatedFqdn: {
+                          type: 'string',
+                          description: 'The translated FQDN for this NAT rule.'
+                        },
+                        sourceIpGroups: {
+                          type: 'array',
+                          description: 'List of source IpGroups for this rule.',
+                          items: { type: 'string' }
+                        }
+                      },
                       description: 'Properties of a NAT rule.'
                     },
                     description: 'Collection of rules used by a NAT rule collection.'
@@ -783,12 +910,74 @@ provider.Network.makeAzureFirewall({
                   },
                   action: {
                     description: 'The action type of a rule collection.',
-                    properties: { type: [Object] }
+                    properties: {
+                      type: {
+                        description: 'The type of action.',
+                        type: 'string',
+                        enum: [ 'Allow', 'Deny' ],
+                        'x-ms-enum': {
+                          name: 'AzureFirewallRCActionType',
+                          modelAsString: true
+                        }
+                      }
+                    }
                   },
                   rules: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        name: {
+                          type: 'string',
+                          description: 'Name of the network rule.'
+                        },
+                        description: {
+                          type: 'string',
+                          description: 'Description of the rule.'
+                        },
+                        protocols: {
+                          type: 'array',
+                          items: {
+                            type: 'string',
+                            description: 'The protocol of a Network Rule resource.',
+                            enum: [ 'TCP', 'UDP', 'Any', 'ICMP' ],
+                            'x-ms-enum': {
+                              name: 'AzureFirewallNetworkRuleProtocol',
+                              modelAsString: true
+                            }
+                          },
+                          description: 'Array of AzureFirewallNetworkRuleProtocols.'
+                        },
+                        sourceAddresses: {
+                          type: 'array',
+                          description: 'List of source IP addresses for this rule.',
+                          items: { type: 'string' }
+                        },
+                        destinationAddresses: {
+                          type: 'array',
+                          description: 'List of destination IP addresses.',
+                          items: { type: 'string' }
+                        },
+                        destinationPorts: {
+                          type: 'array',
+                          description: 'List of destination ports.',
+                          items: { type: 'string' }
+                        },
+                        destinationFqdns: {
+                          type: 'array',
+                          description: 'List of destination FQDNs.',
+                          items: { type: 'string' }
+                        },
+                        sourceIpGroups: {
+                          type: 'array',
+                          description: 'List of source IpGroups for this rule.',
+                          items: { type: 'string' }
+                        },
+                        destinationIpGroups: {
+                          type: 'array',
+                          description: 'List of destination IpGroups for this rule.',
+                          items: { type: 'string' }
+                        }
+                      },
                       description: 'Properties of the network rule.'
                     },
                     description: 'Collection of rules used by a network rule collection.'
@@ -837,12 +1026,16 @@ provider.Network.makeAzureFirewall({
                     description: 'The Firewall Internal Load Balancer IP to be used as the next hop in User Defined Routes.'
                   },
                   subnet: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   publicIPAddress: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -972,7 +1165,12 @@ provider.Network.makeAzureFirewall({
                   type: 'array',
                   description: 'The list of Public IP addresses associated with azure firewall or IP addresses to be retained.',
                   items: {
-                    properties: { address: [Object] },
+                    properties: {
+                      address: {
+                        type: 'string',
+                        description: 'Public IP Address value.'
+                      }
+                    },
                     description: 'Public IP Address associated with azure firewall.'
                   }
                 },

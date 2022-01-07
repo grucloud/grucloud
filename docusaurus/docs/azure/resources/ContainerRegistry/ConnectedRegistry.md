@@ -240,10 +240,10 @@ provider.ContainerRegistry.makeConnectedRegistry({
                   properties: {
                     type: {
                       description: 'The type of certificate location.',
-                      enum: [Array],
+                      enum: [ 'LocalDirectory' ],
                       type: 'string',
                       readOnly: true,
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': { name: 'CertificateType', modelAsString: true }
                     },
                     location: {
                       description: 'Indicates the location of the certificates.',

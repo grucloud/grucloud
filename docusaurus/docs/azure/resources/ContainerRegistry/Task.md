@@ -600,19 +600,66 @@ provider.ContainerRegistry.makeTask({
                     required: [ 'sourceControlType', 'repositoryUrl' ],
                     type: 'object',
                     properties: {
-                      sourceControlType: [Object],
-                      repositoryUrl: [Object],
-                      branch: [Object],
-                      sourceControlAuthProperties: [Object]
+                      sourceControlType: {
+                        description: 'The type of source control service.',
+                        enum: [ 'Github', 'VisualStudioTeamService' ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'SourceControlType',
+                          modelAsString: true
+                        }
+                      },
+                      repositoryUrl: {
+                        description: 'The full URL to the source code repository',
+                        type: 'string'
+                      },
+                      branch: {
+                        description: 'The branch name of the source code.',
+                        type: 'string'
+                      },
+                      sourceControlAuthProperties: {
+                        description: 'The authorization properties for accessing the source code repository and to set up\r\n' +
+                          'webhooks for notifications.',
+                        required: [ 'tokenType', 'token' ],
+                        type: 'object',
+                        properties: {
+                          tokenType: {
+                            description: 'The type of Auth token.',
+                            enum: [ 'PAT', 'OAuth' ],
+                            type: 'string',
+                            'x-ms-enum': { name: 'TokenType', modelAsString: true }
+                          },
+                          token: {
+                            description: 'The access token used to access the source control provider.',
+                            type: 'string'
+                          },
+                          refreshToken: {
+                            description: 'The refresh token used to refresh the access token.',
+                            type: 'string'
+                          },
+                          scope: {
+                            description: 'The scope of the access token.',
+                            type: 'string'
+                          },
+                          expiresIn: {
+                            format: 'int32',
+                            description: 'Time in seconds that the token remains valid',
+                            type: 'integer'
+                          }
+                        }
+                      }
                     }
                   },
                   sourceTriggerEvents: {
                     description: 'The source event corresponding to the trigger.',
                     type: 'array',
                     items: {
-                      enum: [Array],
+                      enum: [ 'commit', 'pullrequest' ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': {
+                        name: 'SourceTriggerEvent',
+                        modelAsString: true
+                      }
                     }
                   },
                   status: {
@@ -701,13 +748,47 @@ provider.ContainerRegistry.makeTask({
                   userName: {
                     description: 'The username for logging into the custom registry.',
                     type: 'object',
-                    properties: { value: [Object], type: [Object] }
+                    properties: {
+                      value: {
+                        description: 'The value of the secret. The format of this value will be determined\r\n' +
+                          'based on the type of the secret object. If the type is Opaque, the value will be\r\n' +
+                          'used as is without any modification.',
+                        type: 'string'
+                      },
+                      type: {
+                        description: 'The type of the secret object which determines how the value of the secret object has to be\r\n' +
+                          'interpreted.',
+                        enum: [ 'Opaque', 'Vaultsecret' ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'SecretObjectType',
+                          modelAsString: true
+                        }
+                      }
+                    }
                   },
                   password: {
                     description: 'The password for logging into the custom registry. The password is a secret \r\n' +
                       'object that allows multiple ways of providing the value for it.',
                     type: 'object',
-                    properties: { value: [Object], type: [Object] }
+                    properties: {
+                      value: {
+                        description: 'The value of the secret. The format of this value will be determined\r\n' +
+                          'based on the type of the secret object. If the type is Opaque, the value will be\r\n' +
+                          'used as is without any modification.',
+                        type: 'string'
+                      },
+                      type: {
+                        description: 'The type of the secret object which determines how the value of the secret object has to be\r\n' +
+                          'interpreted.',
+                        enum: [ 'Opaque', 'Vaultsecret' ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'SecretObjectType',
+                          modelAsString: true
+                        }
+                      }
+                    }
                   },
                   identity: {
                     description: 'Indicates the managed identity assigned to the custom credential. If a user-assigned identity\r\n' +

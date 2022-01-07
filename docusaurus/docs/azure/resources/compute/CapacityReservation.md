@@ -75,7 +75,13 @@ provider.Compute.makeCapacityReservation({
                 virtualMachinesAllocated: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Resource Id'
+                      }
+                    },
                     'x-ms-azure-resource': true
                   },
                   readOnly: true,

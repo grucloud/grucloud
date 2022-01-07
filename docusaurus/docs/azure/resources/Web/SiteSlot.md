@@ -194,7 +194,10 @@ Provides a **SiteSlot** from the **Web** group
                   items: {
                     description: 'Name value pair',
                     type: 'object',
-                    properties: { name: [Object], value: [Object] }
+                    properties: {
+                      name: { description: 'Pair name', type: 'string' },
+                      value: { description: 'Pair value', type: 'string' }
+                    }
                   }
                 },
                 metadata: {
@@ -203,7 +206,10 @@ Provides a **SiteSlot** from the **Web** group
                   items: {
                     description: 'Name value pair',
                     type: 'object',
-                    properties: { name: [Object], value: [Object] }
+                    properties: {
+                      name: { description: 'Pair name', type: 'string' },
+                      value: { description: 'Pair value', type: 'string' }
+                    }
                   }
                 },
                 connectionStrings: {
@@ -214,9 +220,23 @@ Provides a **SiteSlot** from the **Web** group
                     required: [ 'type' ],
                     type: 'object',
                     properties: {
-                      name: [Object],
-                      connectionString: [Object],
-                      type: [Object]
+                      name: {
+                        description: 'Name of connection string',
+                        type: 'string'
+                      },
+                      connectionString: {
+                        description: 'Connection string value',
+                        type: 'string'
+                      },
+                      type: {
+                        description: 'Type of database',
+                        enum: [ 'MySql', 'SQLServer', 'SQLAzure', 'Custom' ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'DatabaseServerType',
+                          modelAsString: false
+                        }
+                      }
                     }
                   }
                 },
@@ -228,9 +248,18 @@ Provides a **SiteSlot** from the **Web** group
                       '            For example it is used to configure php-cgi.exe process to handle all HTTP requests with *.php extension.',
                     type: 'object',
                     properties: {
-                      extension: [Object],
-                      scriptProcessor: [Object],
-                      arguments: [Object]
+                      extension: {
+                        description: 'Requests with this extension will be handled using the specified FastCGI application.',
+                        type: 'string'
+                      },
+                      scriptProcessor: {
+                        description: 'The absolute path to the FastCGI application.',
+                        type: 'string'
+                      },
+                      arguments: {
+                        description: 'Command-line arguments to be passed to the script processor.',
+                        type: 'string'
+                      }
                     }
                   }
                 },
@@ -264,10 +293,19 @@ Provides a **SiteSlot** from the **Web** group
                   items: {
                     type: 'object',
                     properties: {
-                      virtualPath: [Object],
-                      physicalPath: [Object],
-                      preloadEnabled: [Object],
-                      virtualDirectories: [Object]
+                      virtualPath: { type: 'string' },
+                      physicalPath: { type: 'string' },
+                      preloadEnabled: { type: 'boolean' },
+                      virtualDirectories: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            virtualPath: { type: 'string' },
+                            physicalPath: { type: 'string' }
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -290,7 +328,52 @@ Provides a **SiteSlot** from the **Web** group
                     rampUpRules: {
                       description: 'List of {Microsoft.Web.Hosting.Administration.RampUpRule} objects.',
                       type: 'array',
-                      items: [Object]
+                      items: {
+                        description: 'Routing rules for ramp up testing. This rule allows to redirect static traffic % to a slot or to gradually change routing % based on performance',
+                        type: 'object',
+                        properties: {
+                          actionHostName: {
+                            description: 'Hostname of a slot to which the traffic will be redirected if decided to. E.g. mysite-stage.azurewebsites.net',
+                            type: 'string'
+                          },
+                          reroutePercentage: {
+                            format: 'double',
+                            description: 'Percentage of the traffic which will be redirected to {Microsoft.Web.Hosting.Administration.RampUpRule.ActionHostName}',
+                            type: 'number'
+                          },
+                          changeStep: {
+                            format: 'double',
+                            description: '[Optional] In auto ramp up scenario this is the step to add/remove from {Microsoft.Web.Hosting.Administration.RampUpRule.ReroutePercentage} until it reaches \r\n' +
+                              '            {Microsoft.Web.Hosting.Administration.RampUpRule.MinReroutePercentage} or {Microsoft.Web.Hosting.Administration.RampUpRule.MaxReroutePercentage}. Site metrics are checked every N minutes specified in {Microsoft.Web.Hosting.Administration.RampUpRule.ChangeIntervalInMinutes}.\r\n' +
+                              '            Custom decision algorithm can be provided in TiPCallback site extension which Url can be specified in {Microsoft.Web.Hosting.Administration.RampUpRule.ChangeDecisionCallbackUrl}',
+                            type: 'number'
+                          },
+                          changeIntervalInMinutes: {
+                            format: 'int32',
+                            description: '[Optional] Specifies interval in minutes to reevaluate ReroutePercentage',
+                            type: 'integer'
+                          },
+                          minReroutePercentage: {
+                            format: 'double',
+                            description: '[Optional] Specifies lower boundary above which ReroutePercentage will stay.',
+                            type: 'number'
+                          },
+                          maxReroutePercentage: {
+                            format: 'double',
+                            description: '[Optional] Specifies upper boundary below which ReroutePercentage will stay.',
+                            type: 'number'
+                          },
+                          changeDecisionCallbackUrl: {
+                            description: 'Custom decision algorithm can be provided in TiPCallback site extension which Url can be specified. See TiPCallback site extension for the scaffold and contracts.\r\n' +
+                              '            https://www.siteextensions.net/packages/TiPCallback/',
+                            type: 'string'
+                          },
+                          name: {
+                            description: 'Name of the routing rule. The recommended name would be to point to the slot which will receive the traffic in the experiment.',
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -323,13 +406,116 @@ Provides a **SiteSlot** from the **Web** group
                     triggers: {
                       description: 'Triggers - Conditions that describe when to execute the auto-heal actions',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        requests: {
+                          description: 'Requests - Defines a rule based on total requests',
+                          type: 'object',
+                          properties: {
+                            count: {
+                              format: 'int32',
+                              description: 'Count',
+                              type: 'integer'
+                            },
+                            timeInterval: {
+                              description: 'TimeInterval',
+                              type: 'string'
+                            }
+                          }
+                        },
+                        privateBytesInKB: {
+                          format: 'int32',
+                          description: 'PrivateBytesInKB - Defines a rule based on private bytes',
+                          type: 'integer'
+                        },
+                        statusCodes: {
+                          description: 'StatusCodes - Defines a rule based on status codes',
+                          type: 'array',
+                          items: {
+                            description: 'StatusCodeBasedTrigger',
+                            type: 'object',
+                            properties: {
+                              status: {
+                                format: 'int32',
+                                description: 'HTTP status code',
+                                type: 'integer'
+                              },
+                              subStatus: {
+                                format: 'int32',
+                                description: 'SubStatus',
+                                type: 'integer'
+                              },
+                              win32Status: {
+                                format: 'int32',
+                                description: 'Win32 error code',
+                                type: 'integer'
+                              },
+                              count: {
+                                format: 'int32',
+                                description: 'Count',
+                                type: 'integer'
+                              },
+                              timeInterval: {
+                                description: 'TimeInterval',
+                                type: 'string'
+                              }
+                            }
+                          }
+                        },
+                        slowRequests: {
+                          description: 'SlowRequests - Defines a rule based on request execution time',
+                          type: 'object',
+                          properties: {
+                            timeTaken: {
+                              description: 'TimeTaken',
+                              type: 'string'
+                            },
+                            count: {
+                              format: 'int32',
+                              description: 'Count',
+                              type: 'integer'
+                            },
+                            timeInterval: {
+                              description: 'TimeInterval',
+                              type: 'string'
+                            }
+                          }
+                        }
+                      }
                     },
                     actions: {
                       description: 'Actions - Actions to be executed when a rule is triggered',
-                      required: [Array],
+                      required: [ 'actionType' ],
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        actionType: {
+                          description: 'ActionType - predefined action to be taken',
+                          enum: [ 'Recycle', 'LogEvent', 'CustomAction' ],
+                          type: 'string',
+                          'x-ms-enum': {
+                            name: 'AutoHealActionType',
+                            modelAsString: false
+                          }
+                        },
+                        customAction: {
+                          description: 'CustomAction - custom action to be taken',
+                          type: 'object',
+                          properties: {
+                            exe: {
+                              description: 'Executable to be run',
+                              type: 'string'
+                            },
+                            parameters: {
+                              description: 'Parameters for the executable',
+                              type: 'string'
+                            }
+                          }
+                        },
+                        minProcessExecutionTime: {
+                          description: 'MinProcessExecutionTime - minimum time the process must execute\r\n' +
+                            '            before taking the action',
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 },
@@ -343,7 +529,7 @@ Provides a **SiteSlot** from the **Web** group
                       description: 'Gets or sets the list of origins that should be allowed to make cross-origin\r\n' +
                         '            calls (for example: http://example.com:12345). Use "*" to allow all.',
                       type: 'array',
-                      items: [Object]
+                      items: { type: 'string' }
                     }
                   }
                 },
@@ -365,7 +551,16 @@ Provides a **SiteSlot** from the **Web** group
                   items: {
                     description: 'Represents an ip security restriction on a web app.',
                     type: 'object',
-                    properties: { ipAddress: [Object], subnetMask: [Object] }
+                    properties: {
+                      ipAddress: {
+                        description: 'IP address the security restriction is valid for',
+                        type: 'string'
+                      },
+                      subnetMask: {
+                        description: 'Subnet mask for the range of IP addresses the restriction is valid for',
+                        type: 'string'
+                      }
+                    }
                   }
                 }
               },

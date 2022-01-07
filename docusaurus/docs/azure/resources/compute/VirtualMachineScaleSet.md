@@ -62,6 +62,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -145,6 +146,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -217,6 +219,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -294,6 +297,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -380,6 +384,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -457,6 +462,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -536,6 +542,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -609,6 +616,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -686,6 +694,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -755,6 +764,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -834,6 +844,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -903,6 +914,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -981,6 +993,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1059,6 +1072,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1137,6 +1151,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1210,6 +1225,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1298,6 +1314,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1376,6 +1393,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1470,6 +1488,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1548,6 +1567,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1638,6 +1658,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1714,6 +1735,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1783,6 +1805,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1847,6 +1870,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1920,6 +1944,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2008,6 +2033,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2081,6 +2107,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2175,6 +2202,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2252,6 +2280,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2328,6 +2357,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    vault: resources.KeyVault.Vault["myVault"],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2344,6 +2374,7 @@ provider.Compute.makeVirtualMachineScaleSet({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
+- [Vault](../KeyVault/Vault.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
@@ -2497,16 +2528,95 @@ provider.Compute.makeVirtualMachineScaleSet({
                     },
                     additionalUnattendContent: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          passName: {
+                            type: 'string',
+                            description: 'The pass name. Currently, the only allowable value is OobeSystem.',
+                            enum: [ 'OobeSystem' ],
+                            'x-ms-enum': { name: 'PassNames', modelAsString: false }
+                          },
+                          componentName: {
+                            type: 'string',
+                            description: 'The component name. Currently, the only allowable value is Microsoft-Windows-Shell-Setup.',
+                            enum: [ 'Microsoft-Windows-Shell-Setup' ],
+                            'x-ms-enum': {
+                              name: 'ComponentNames',
+                              modelAsString: false
+                            }
+                          },
+                          settingName: {
+                            type: 'string',
+                            description: 'Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon.',
+                            enum: [ 'AutoLogon', 'FirstLogonCommands' ],
+                            'x-ms-enum': {
+                              name: 'SettingNames',
+                              modelAsString: false
+                            }
+                          },
+                          content: {
+                            type: 'string',
+                            description: 'Specifies the XML formatted content that is added to the unattend.xml file for the specified path and component. The XML must be less than 4KB and must include the root element for the setting or feature that is being inserted.'
+                          }
+                        },
+                        description: 'Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.'
+                      },
                       description: 'Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.'
                     },
                     patchSettings: {
                       description: '[Preview Feature] Specifies settings related to VM Guest Patching on Windows.',
-                      properties: [Object]
+                      properties: {
+                        patchMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true ',
+                          enum: [
+                            'Manual',
+                            'AutomaticByOS',
+                            'AutomaticByPlatform'
+                          ],
+                          'x-ms-enum': {
+                            name: 'WindowsVMGuestPatchMode',
+                            modelAsString: true
+                          }
+                        },
+                        enableHotpatching: {
+                          type: 'boolean',
+                          description: "Enables customers to patch their Azure VMs without requiring a reboot. For enableHotpatching, the 'provisionVMAgent' must be set to true and 'patchMode' must be set to 'AutomaticByPlatform'."
+                        },
+                        assessmentMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true. ',
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'WindowsPatchAssessmentMode',
+                            modelAsString: true
+                          }
+                        }
+                      }
                     },
                     winRM: {
                       description: 'Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell.',
-                      properties: [Object]
+                      properties: {
+                        listeners: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              protocol: {
+                                type: 'string',
+                                description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              },
+                              certificateUrl: {
+                                type: 'string',
+                                description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                              }
+                            },
+                            description: 'Describes Protocol and thumbprint of Windows Remote Management listener'
+                          },
+                          description: 'The list of Windows Remote Management listeners'
+                        }
+                      }
                     }
                   }
                 },
@@ -2519,7 +2629,25 @@ provider.Compute.makeVirtualMachineScaleSet({
                     },
                     ssh: {
                       description: 'Specifies the ssh key configuration for a Linux OS.',
-                      properties: [Object]
+                      properties: {
+                        publicKeys: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              path: {
+                                type: 'string',
+                                description: 'Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys'
+                              },
+                              keyData: {
+                                type: 'string',
+                                description: 'SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. <br><br> For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).'
+                              }
+                            },
+                            description: 'Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.'
+                          },
+                          description: 'The list of SSH public keys used to authenticate with linux based VMs.'
+                        }
+                      }
                     },
                     provisionVMAgent: {
                       type: 'boolean',
@@ -2527,7 +2655,26 @@ provider.Compute.makeVirtualMachineScaleSet({
                     },
                     patchSettings: {
                       description: '[Preview Feature] Specifies settings related to VM Guest Patching on Linux.',
-                      properties: [Object]
+                      properties: {
+                        patchMode: {
+                          type: 'string',
+                          description: "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'LinuxVMGuestPatchMode',
+                            modelAsString: true
+                          }
+                        },
+                        assessmentMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.',
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'LinuxPatchAssessmentMode',
+                            modelAsString: true
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -2535,8 +2682,33 @@ provider.Compute.makeVirtualMachineScaleSet({
                   type: 'array',
                   items: {
                     properties: {
-                      sourceVault: [Object],
-                      vaultCertificates: [Object]
+                      sourceVault: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true,
+                        description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                      },
+                      vaultCertificates: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            certificateUrl: {
+                              type: 'string',
+                              description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                            },
+                            certificateStore: {
+                              type: 'string',
+                              description: 'For Windows VMs, specifies the certificate store on the Virtual Machine to which the certificate should be added. The specified certificate store is implicitly in the LocalMachine account. <br><br>For Linux VMs, the certificate file is placed under the /var/lib/waagent directory, with the file name &lt;UppercaseThumbprint&gt;.crt for the X509 certificate file and &lt;UppercaseThumbprint&gt;.prv for private key. Both of these files are .pem formatted.'
+                            }
+                          },
+                          description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the VM.'
+                        },
+                        description: 'The list of key vault references in SourceVault which contain certificates.'
+                      }
                     },
                     description: 'Describes a set of certificates which are all in the same Key Vault.'
                   },
@@ -2575,7 +2747,9 @@ provider.Compute.makeVirtualMachineScaleSet({
                   },
                   allOf: [
                     {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource Id' }
+                      },
                       'x-ms-azure-resource': true
                     }
                   ]
@@ -2587,8 +2761,8 @@ provider.Compute.makeVirtualMachineScaleSet({
                     caching: {
                       description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                      'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
                     },
                     writeAcceleratorEnabled: {
                       type: 'boolean',
@@ -2597,12 +2771,34 @@ provider.Compute.makeVirtualMachineScaleSet({
                     createOption: {
                       description: 'Specifies how the virtual machines in the scale set should be created.<br><br> The only allowed value is: **FromImage** \\u2013 This value is used when you are using an image to create the virtual machine. If you are using a platform image, you also use the imageReference element described above. If you are using a marketplace image, you  also use the plan element previously described.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'FromImage', 'Empty', 'Attach' ],
+                      'x-ms-enum': {
+                        name: 'DiskCreateOptionTypes',
+                        modelAsString: true
+                      }
                     },
                     diffDiskSettings: {
                       description: 'Specifies the ephemeral disk Settings for the operating system disk used by the virtual machine scale set.',
-                      properties: [Object]
+                      properties: {
+                        option: {
+                          description: 'Specifies the ephemeral disk settings for operating system disk.',
+                          type: 'string',
+                          enum: [ 'Local' ],
+                          'x-ms-enum': {
+                            name: 'DiffDiskOptions',
+                            modelAsString: true
+                          }
+                        },
+                        placement: {
+                          description: 'Specifies the ephemeral disk placement for operating system disk.<br><br> Possible values are: <br><br> **CacheDisk** <br><br> **ResourceDisk** <br><br> Default: **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk** is used.<br><br> Refer to VM size documentation for Windows VM at https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM sizes exposes a cache disk.',
+                          type: 'string',
+                          enum: [ 'CacheDisk', 'ResourceDisk' ],
+                          'x-ms-enum': {
+                            name: 'DiffDiskPlacement',
+                            modelAsString: true
+                          }
+                        }
+                      }
                     },
                     diskSizeGB: {
                       type: 'integer',
@@ -2612,21 +2808,55 @@ provider.Compute.makeVirtualMachineScaleSet({
                     osType: {
                       type: 'string',
                       description: 'This property allows you to specify the type of the OS that is included in the disk if creating a VM from user-image or a specialized VHD. <br><br> Possible values are: <br><br> **Windows** <br><br> **Linux**',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'Windows', 'Linux' ],
+                      'x-ms-enum': {
+                        name: 'OperatingSystemTypes',
+                        modelAsString: false
+                      }
                     },
                     image: {
                       description: 'Specifies information about the unmanaged user image to base the scale set on.',
-                      properties: [Object]
+                      properties: {
+                        uri: {
+                          type: 'string',
+                          description: "Specifies the virtual hard disk's uri."
+                        }
+                      }
                     },
                     vhdContainers: {
                       type: 'array',
-                      items: [Object],
+                      items: { type: 'string' },
                       description: 'Specifies the container urls that are used to store operating system disks for the scale set.'
                     },
                     managedDisk: {
                       description: 'The managed disk parameters.',
-                      properties: [Object]
+                      properties: {
+                        storageAccountType: {
+                          description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                          type: 'string',
+                          enum: [
+                            'Standard_LRS',
+                            'Premium_LRS',
+                            'StandardSSD_LRS',
+                            'UltraSSD_LRS',
+                            'Premium_ZRS',
+                            'StandardSSD_ZRS'
+                          ],
+                          'x-ms-enum': {
+                            name: 'StorageAccountTypes',
+                            modelAsString: true
+                          }
+                        },
+                        diskEncryptionSet: {
+                          description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                          allOf: [
+                            {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true
+                            }
+                          ]
+                        }
+                      }
                     }
                   },
                   required: [ 'createOption' ]
@@ -2635,15 +2865,76 @@ provider.Compute.makeVirtualMachineScaleSet({
                   type: 'array',
                   items: {
                     properties: {
-                      name: [Object],
-                      lun: [Object],
-                      caching: [Object],
-                      writeAcceleratorEnabled: [Object],
-                      createOption: [Object],
-                      diskSizeGB: [Object],
-                      managedDisk: [Object],
-                      diskIOPSReadWrite: [Object],
-                      diskMBpsReadWrite: [Object]
+                      name: { type: 'string', description: 'The disk name.' },
+                      lun: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Specifies the logical unit number of the data disk. This value is used to identify data disks within the VM and therefore must be unique for each data disk attached to a VM.'
+                      },
+                      caching: {
+                        description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
+                        type: 'string',
+                        enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                        'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
+                      },
+                      writeAcceleratorEnabled: {
+                        type: 'boolean',
+                        description: 'Specifies whether writeAccelerator should be enabled or disabled on the disk.'
+                      },
+                      createOption: {
+                        description: 'The create option.',
+                        type: 'string',
+                        enum: [ 'FromImage', 'Empty', 'Attach' ],
+                        'x-ms-enum': {
+                          name: 'DiskCreateOptionTypes',
+                          modelAsString: true
+                        }
+                      },
+                      diskSizeGB: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Specifies the size of an empty data disk in gigabytes. This element can be used to overwrite the size of the disk in a virtual machine image. <br><br> This value cannot be larger than 1023 GB'
+                      },
+                      managedDisk: {
+                        description: 'The managed disk parameters.',
+                        properties: {
+                          storageAccountType: {
+                            description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                            type: 'string',
+                            enum: [
+                              'Standard_LRS',
+                              'Premium_LRS',
+                              'StandardSSD_LRS',
+                              'UltraSSD_LRS',
+                              'Premium_ZRS',
+                              'StandardSSD_ZRS'
+                            ],
+                            'x-ms-enum': {
+                              name: 'StorageAccountTypes',
+                              modelAsString: true
+                            }
+                          },
+                          diskEncryptionSet: {
+                            description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                            allOf: [
+                              {
+                                properties: [Object],
+                                'x-ms-azure-resource': true
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      diskIOPSReadWrite: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'Specifies the Read-Write IOPS for the managed disk. Should be used only when StorageAccountType is UltraSSD_LRS. If not specified, a default value would be assigned based on diskSizeGB.'
+                      },
+                      diskMBpsReadWrite: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'Specifies the bandwidth in MB per second for the managed disk. Should be used only when StorageAccountType is UltraSSD_LRS. If not specified, a default value would be assigned based on diskSizeGB.'
+                      }
                     },
                     required: [ 'lun', 'createOption' ],
                     description: 'Describes a virtual machine scale set data disk.'
@@ -2667,9 +2958,86 @@ provider.Compute.makeVirtualMachineScaleSet({
                 networkInterfaceConfigurations: {
                   type: 'array',
                   items: {
-                    properties: { name: [Object], properties: [Object] },
+                    properties: {
+                      name: {
+                        type: 'string',
+                        description: 'The network configuration name.'
+                      },
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        properties: {
+                          primary: {
+                            type: 'boolean',
+                            description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                          },
+                          enableAcceleratedNetworking: {
+                            type: 'boolean',
+                            description: 'Specifies whether the network interface is accelerated networking-enabled.'
+                          },
+                          enableFpga: {
+                            type: 'boolean',
+                            description: 'Specifies whether the network interface is FPGA networking-enabled.'
+                          },
+                          networkSecurityGroup: {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource Id'
+                              }
+                            },
+                            'x-ms-azure-resource': true,
+                            description: 'The network security group.'
+                          },
+                          dnsSettings: {
+                            description: 'The dns settings to be applied on the network interfaces.',
+                            properties: {
+                              dnsServers: {
+                                type: 'array',
+                                items: [Object],
+                                description: 'List of DNS servers IP addresses'
+                              }
+                            }
+                          },
+                          ipConfigurations: {
+                            type: 'array',
+                            items: {
+                              properties: { name: [Object], properties: [Object] },
+                              required: [ 'name' ],
+                              allOf: [ [Object] ],
+                              description: "Describes a virtual machine scale set network profile's IP configuration."
+                            },
+                            description: 'Specifies the IP configurations of the network interface.'
+                          },
+                          enableIPForwarding: {
+                            type: 'boolean',
+                            description: 'Whether IP forwarding enabled on this NIC.'
+                          },
+                          deleteOption: {
+                            type: 'string',
+                            description: 'Specify what happens to the network interface when the VM is deleted',
+                            enum: [ 'Delete', 'Detach' ],
+                            'x-ms-enum': {
+                              name: 'DeleteOptions',
+                              modelAsString: true
+                            }
+                          }
+                        },
+                        required: [ 'ipConfigurations' ],
+                        description: "Describes a virtual machine scale set network profile's IP configuration."
+                      }
+                    },
                     required: [ 'name' ],
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: "Describes a virtual machine scale set network profile's network configurations."
                   },
                   description: 'The list of network configurations.'
@@ -2735,11 +3103,80 @@ provider.Compute.makeVirtualMachineScaleSet({
                   type: 'array',
                   items: {
                     properties: {
-                      name: [Object],
-                      type: [Object],
-                      properties: [Object]
+                      name: {
+                        type: 'string',
+                        description: 'The name of the extension.'
+                      },
+                      type: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Resource type'
+                      },
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        properties: {
+                          forceUpdateTag: {
+                            type: 'string',
+                            description: 'If a value is provided and is different from the previous value, the extension handler will be forced to update even if the extension configuration has not changed.'
+                          },
+                          publisher: {
+                            type: 'string',
+                            description: 'The name of the extension handler publisher.'
+                          },
+                          type: {
+                            type: 'string',
+                            description: 'Specifies the type of the extension; an example is "CustomScriptExtension".'
+                          },
+                          typeHandlerVersion: {
+                            type: 'string',
+                            description: 'Specifies the version of the script handler.'
+                          },
+                          autoUpgradeMinorVersion: {
+                            type: 'boolean',
+                            description: 'Indicates whether the extension should use a newer minor version if one is available at deployment time. Once deployed, however, the extension will not upgrade minor versions unless redeployed, even with this property set to true.'
+                          },
+                          enableAutomaticUpgrade: {
+                            type: 'boolean',
+                            description: 'Indicates whether the extension should be automatically upgraded by the platform if there is a newer version of the extension available.'
+                          },
+                          settings: {
+                            type: 'object',
+                            description: 'Json formatted public settings for the extension.'
+                          },
+                          protectedSettings: {
+                            type: 'object',
+                            description: 'The extension can contain either protectedSettings or protectedSettingsFromKeyVault or no protected settings at all.'
+                          },
+                          provisioningState: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'The provisioning state, which only appears in the response.'
+                          },
+                          provisionAfterExtensions: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'Collection of extension names after which this extension needs to be provisioned.'
+                          },
+                          suppressFailures: {
+                            type: 'boolean',
+                            description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+                          }
+                        },
+                        description: 'Describes the properties of a Virtual Machine Scale Set Extension.'
+                      }
                     },
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: 'Describes a Virtual Machine Scale Set Extension.'
                   },
                   description: 'The virtual machine scale set child extension resources.'
@@ -2828,10 +3265,23 @@ provider.Compute.makeVirtualMachineScaleSet({
                   items: {
                     type: 'object',
                     properties: {
-                      tags: [Object],
-                      order: [Object],
-                      packageReferenceId: [Object],
-                      configurationReference: [Object]
+                      tags: {
+                        type: 'string',
+                        description: 'Optional, Specifies a passthrough value for more generic context.'
+                      },
+                      order: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Optional, Specifies the order in which the packages have to be installed'
+                      },
+                      packageReferenceId: {
+                        type: 'string',
+                        description: 'Specifies the GalleryApplicationVersion resource id on the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{application}/versions/{version}'
+                      },
+                      configurationReference: {
+                        type: 'string',
+                        description: 'Optional, Specifies the uri to an azure blob that will replace the default configuration for the package if provided'
+                      }
                     },
                     required: [ 'packageReferenceId' ],
                     description: 'Specifies the required information to reference a compute gallery application version'

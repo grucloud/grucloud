@@ -22,6 +22,8 @@ provider.Compute.makeSnapshot({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -48,6 +50,8 @@ provider.Compute.makeSnapshot({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -76,6 +80,8 @@ provider.Compute.makeSnapshot({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -102,6 +108,8 @@ provider.Compute.makeSnapshot({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
     image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
@@ -113,6 +121,8 @@ provider.Compute.makeSnapshot({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
 - [Image](../Compute/Image.md)
+- [Vault](../KeyVault/Vault.md)
+- [Key](../KeyVault/Key.md)
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [DiskAccess](../Compute/DiskAccess.md)
 ## Swagger Schema
@@ -412,12 +422,40 @@ provider.Compute.makeSnapshot({
                 properties: {
                   diskEncryptionKey: {
                     description: 'Key Vault Secret Url and vault id of the disk encryption key',
-                    properties: { sourceVault: [Object], secretUrl: [Object] },
+                    properties: {
+                      sourceVault: {
+                        description: 'Resource id of the KeyVault containing the key or secret',
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        }
+                      },
+                      secretUrl: {
+                        type: 'string',
+                        description: 'Url pointing to a key or secret in KeyVault'
+                      }
+                    },
                     required: [ 'secretUrl', 'sourceVault' ]
                   },
                   keyEncryptionKey: {
                     description: 'Key Vault Key Url and vault id of the key encryption key. KeyEncryptionKey is optional and when provided is used to unwrap the disk encryption key.',
-                    properties: { sourceVault: [Object], keyUrl: [Object] },
+                    properties: {
+                      sourceVault: {
+                        description: 'Resource id of the KeyVault containing the key or secret',
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        }
+                      },
+                      keyUrl: {
+                        type: 'string',
+                        description: 'Url pointing to a key or secret in KeyVault'
+                      }
+                    },
                     required: [ 'keyUrl', 'sourceVault' ]
                   }
                 },

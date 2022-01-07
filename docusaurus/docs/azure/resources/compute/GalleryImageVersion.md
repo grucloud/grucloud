@@ -476,10 +476,52 @@ provider.Compute.makeGalleryImageVersion({
                   type: 'array',
                   items: {
                     properties: {
-                      name: [Object],
-                      regionalReplicaCount: [Object],
-                      storageAccountType: [Object],
-                      encryption: [Object]
+                      name: {
+                        type: 'string',
+                        description: 'The name of the region.'
+                      },
+                      regionalReplicaCount: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The number of replicas of the Image Version to be created per region. This property is updatable.'
+                      },
+                      storageAccountType: {
+                        type: 'string',
+                        description: 'Specifies the storage account type to be used to store the image. This property is not updatable.',
+                        enum: [
+                          'Standard_LRS',
+                          'Standard_ZRS',
+                          'Premium_LRS'
+                        ],
+                        'x-ms-enum': {
+                          name: 'StorageAccountType',
+                          modelAsString: true
+                        }
+                      },
+                      encryption: {
+                        properties: {
+                          osDiskImage: {
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'This is the disk image encryption base class.'
+                              }
+                            ],
+                            description: 'Contains encryption settings for an OS disk image.'
+                          },
+                          dataDiskImages: {
+                            type: 'array',
+                            items: {
+                              properties: { lun: [Object] },
+                              allOf: [ [Object] ],
+                              required: [ 'lun' ],
+                              description: 'Contains encryption settings for a data disk image.'
+                            },
+                            description: 'A list of encryption specifications for data disk images.'
+                          }
+                        },
+                        description: 'Optional. Allows users to provide customer managed keys for encrypting the OS and data disks in the gallery artifact.'
+                      }
                     },
                     required: [ 'name' ],
                     description: 'Describes the target region information.'
@@ -566,11 +608,20 @@ provider.Compute.makeGalleryImageVersion({
                     hostCaching: {
                       type: 'string',
                       description: "The host caching of the disk. Valid values are 'None', 'ReadOnly', and 'ReadWrite'",
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                      'x-ms-enum': { name: 'HostCaching', modelAsString: false }
                     },
                     source: {
-                      properties: [Object],
+                      properties: {
+                        id: {
+                          type: 'string',
+                          description: 'The id of the gallery artifact version source. Can specify a disk uri, snapshot uri, user image or storage account resource.'
+                        },
+                        uri: {
+                          type: 'string',
+                          description: 'The uri of the gallery artifact version source. Currently used to specify vhd/blob source.'
+                        }
+                      },
                       description: 'The gallery artifact version source.'
                     }
                   },
@@ -592,9 +643,31 @@ provider.Compute.makeGalleryImageVersion({
                 allOf: [
                   {
                     properties: {
-                      sizeInGB: [Object],
-                      hostCaching: [Object],
-                      source: [Object]
+                      sizeInGB: {
+                        readOnly: true,
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'This property indicates the size of the VHD to be created.'
+                      },
+                      hostCaching: {
+                        type: 'string',
+                        description: "The host caching of the disk. Valid values are 'None', 'ReadOnly', and 'ReadWrite'",
+                        enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                        'x-ms-enum': { name: 'HostCaching', modelAsString: false }
+                      },
+                      source: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'The id of the gallery artifact version source. Can specify a disk uri, snapshot uri, user image or storage account resource.'
+                          },
+                          uri: {
+                            type: 'string',
+                            description: 'The uri of the gallery artifact version source. Currently used to specify vhd/blob source.'
+                          }
+                        },
+                        description: 'The gallery artifact version source.'
+                      }
                     },
                     description: 'This is the disk image base class.'
                   }

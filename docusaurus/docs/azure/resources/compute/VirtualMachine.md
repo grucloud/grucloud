@@ -2858,13 +2858,43 @@ provider.Compute.makeVirtualMachine({
                   properties: {
                     diskEncryptionKey: {
                       description: 'Specifies the location of the disk encryption key, which is a Key Vault Secret.',
-                      properties: [Object],
-                      required: [Array]
+                      properties: {
+                        secretUrl: {
+                          type: 'string',
+                          description: 'The URL referencing a secret in a Key Vault.'
+                        },
+                        sourceVault: {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource Id'
+                            }
+                          },
+                          'x-ms-azure-resource': true,
+                          description: 'The relative URL of the Key Vault containing the secret.'
+                        }
+                      },
+                      required: [ 'secretUrl', 'sourceVault' ]
                     },
                     keyEncryptionKey: {
                       description: 'Specifies the location of the key encryption key in Key Vault.',
-                      properties: [Object],
-                      required: [Array]
+                      properties: {
+                        keyUrl: {
+                          type: 'string',
+                          description: 'The URL referencing a key encryption key in Key Vault.'
+                        },
+                        sourceVault: {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource Id'
+                            }
+                          },
+                          'x-ms-azure-resource': true,
+                          description: 'The relative URL of the Key Vault containing the key.'
+                        }
+                      },
+                      required: [ 'keyUrl', 'sourceVault' ]
                     },
                     enabled: {
                       type: 'boolean',
@@ -2907,14 +2937,17 @@ provider.Compute.makeVirtualMachine({
                     option: {
                       description: 'Specifies the ephemeral disk settings for operating system disk.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'Local' ],
+                      'x-ms-enum': { name: 'DiffDiskOptions', modelAsString: true }
                     },
                     placement: {
                       description: 'Specifies the ephemeral disk placement for operating system disk.<br><br> Possible values are: <br><br> **CacheDisk** <br><br> **ResourceDisk** <br><br> Default: **CacheDisk** if one is configured for the VM size otherwise **ResourceDisk** is used.<br><br> Refer to VM size documentation for Windows VM at https://docs.microsoft.com/azure/virtual-machines/windows/sizes and Linux VM at https://docs.microsoft.com/azure/virtual-machines/linux/sizes to check which VM sizes exposes a cache disk.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'CacheDisk', 'ResourceDisk' ],
+                      'x-ms-enum': {
+                        name: 'DiffDiskPlacement',
+                        modelAsString: true
+                      }
                     }
                   }
                 },
@@ -2938,17 +2971,39 @@ provider.Compute.makeVirtualMachine({
                     storageAccountType: {
                       description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Standard_LRS',
+                        'Premium_LRS',
+                        'StandardSSD_LRS',
+                        'UltraSSD_LRS',
+                        'Premium_ZRS',
+                        'StandardSSD_ZRS'
+                      ],
+                      'x-ms-enum': {
+                        name: 'StorageAccountTypes',
+                        modelAsString: true
+                      }
                     },
                     diskEncryptionSet: {
                       description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
-                      allOf: [Array]
+                      allOf: [
+                        {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource Id'
+                            }
+                          },
+                          'x-ms-azure-resource': true
+                        }
+                      ]
                     }
                   },
                   allOf: [
                     {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource Id' }
+                      },
                       'x-ms-azure-resource': true
                     }
                   ]
@@ -2977,11 +3032,21 @@ provider.Compute.makeVirtualMachine({
                   name: { type: 'string', description: 'The disk name.' },
                   vhd: {
                     description: 'The virtual hard disk.',
-                    properties: { uri: [Object] }
+                    properties: {
+                      uri: {
+                        type: 'string',
+                        description: "Specifies the virtual hard disk's uri."
+                      }
+                    }
                   },
                   image: {
                     description: 'The source user image virtual hard disk. The virtual hard disk will be copied before being attached to the virtual machine. If SourceImage is provided, the destination virtual hard drive must not exist.',
-                    properties: { uri: [Object] }
+                    properties: {
+                      uri: {
+                        type: 'string',
+                        description: "Specifies the virtual hard disk's uri."
+                      }
+                    }
                   },
                   caching: {
                     description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
@@ -3010,10 +3075,48 @@ provider.Compute.makeVirtualMachine({
                   managedDisk: {
                     description: 'The managed disk parameters.',
                     properties: {
-                      storageAccountType: [Object],
-                      diskEncryptionSet: [Object]
+                      storageAccountType: {
+                        description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                        type: 'string',
+                        enum: [
+                          'Standard_LRS',
+                          'Premium_LRS',
+                          'StandardSSD_LRS',
+                          'UltraSSD_LRS',
+                          'Premium_ZRS',
+                          'StandardSSD_ZRS'
+                        ],
+                        'x-ms-enum': {
+                          name: 'StorageAccountTypes',
+                          modelAsString: true
+                        }
+                      },
+                      diskEncryptionSet: {
+                        description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource Id'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          }
+                        ]
+                      }
                     },
-                    allOf: [ [Object] ]
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true
+                      }
+                    ]
                   },
                   toBeDetached: {
                     type: 'boolean',
@@ -3108,10 +3211,31 @@ provider.Compute.makeVirtualMachine({
                   type: 'array',
                   items: {
                     properties: {
-                      passName: [Object],
-                      componentName: [Object],
-                      settingName: [Object],
-                      content: [Object]
+                      passName: {
+                        type: 'string',
+                        description: 'The pass name. Currently, the only allowable value is OobeSystem.',
+                        enum: [ 'OobeSystem' ],
+                        'x-ms-enum': { name: 'PassNames', modelAsString: false }
+                      },
+                      componentName: {
+                        type: 'string',
+                        description: 'The component name. Currently, the only allowable value is Microsoft-Windows-Shell-Setup.',
+                        enum: [ 'Microsoft-Windows-Shell-Setup' ],
+                        'x-ms-enum': {
+                          name: 'ComponentNames',
+                          modelAsString: false
+                        }
+                      },
+                      settingName: {
+                        type: 'string',
+                        description: 'Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon.',
+                        enum: [ 'AutoLogon', 'FirstLogonCommands' ],
+                        'x-ms-enum': { name: 'SettingNames', modelAsString: false }
+                      },
+                      content: {
+                        type: 'string',
+                        description: 'Specifies the XML formatted content that is added to the unattend.xml file for the specified path and component. The XML must be less than 4KB and must include the root element for the setting or feature that is being inserted.'
+                      }
                     },
                     description: 'Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.'
                   },
@@ -3123,8 +3247,15 @@ provider.Compute.makeVirtualMachine({
                     patchMode: {
                       type: 'string',
                       description: 'Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true ',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Manual',
+                        'AutomaticByOS',
+                        'AutomaticByPlatform'
+                      ],
+                      'x-ms-enum': {
+                        name: 'WindowsVMGuestPatchMode',
+                        modelAsString: true
+                      }
                     },
                     enableHotpatching: {
                       type: 'boolean',
@@ -3133,8 +3264,11 @@ provider.Compute.makeVirtualMachine({
                     assessmentMode: {
                       type: 'string',
                       description: 'Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true. ',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                      'x-ms-enum': {
+                        name: 'WindowsPatchAssessmentMode',
+                        modelAsString: true
+                      }
                     }
                   }
                 },
@@ -3143,7 +3277,24 @@ provider.Compute.makeVirtualMachine({
                   properties: {
                     listeners: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          protocol: {
+                            type: 'string',
+                            description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
+                            enum: [ 'Http', 'Https' ],
+                            'x-ms-enum': {
+                              name: 'ProtocolTypes',
+                              modelAsString: false
+                            }
+                          },
+                          certificateUrl: {
+                            type: 'string',
+                            description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                          }
+                        },
+                        description: 'Describes Protocol and thumbprint of Windows Remote Management listener'
+                      },
                       description: 'The list of Windows Remote Management listeners'
                     }
                   }
@@ -3162,7 +3313,19 @@ provider.Compute.makeVirtualMachine({
                   properties: {
                     publicKeys: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          path: {
+                            type: 'string',
+                            description: 'Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys'
+                          },
+                          keyData: {
+                            type: 'string',
+                            description: 'SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. <br><br> For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).'
+                          }
+                        },
+                        description: 'Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.'
+                      },
                       description: 'The list of SSH public keys used to authenticate with linux based VMs.'
                     }
                   }
@@ -3177,14 +3340,20 @@ provider.Compute.makeVirtualMachine({
                     patchMode: {
                       type: 'string',
                       description: "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                      'x-ms-enum': {
+                        name: 'LinuxVMGuestPatchMode',
+                        modelAsString: true
+                      }
                     },
                     assessmentMode: {
                       type: 'string',
                       description: 'Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                      'x-ms-enum': {
+                        name: 'LinuxPatchAssessmentMode',
+                        modelAsString: true
+                      }
                     }
                   }
                 }
@@ -3195,14 +3364,25 @@ provider.Compute.makeVirtualMachine({
               items: {
                 properties: {
                   sourceVault: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource Id' }
+                    },
                     'x-ms-azure-resource': true,
                     description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
                   },
                   vaultCertificates: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        certificateUrl: {
+                          type: 'string',
+                          description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                        },
+                        certificateStore: {
+                          type: 'string',
+                          description: 'For Windows VMs, specifies the certificate store on the Virtual Machine to which the certificate should be added. The specified certificate store is implicitly in the LocalMachine account. <br><br>For Linux VMs, the certificate file is placed under the /var/lib/waagent directory, with the file name &lt;UppercaseThumbprint&gt;.crt for the X509 certificate file and &lt;UppercaseThumbprint&gt;.prv for private key. Both of these files are .pem formatted.'
+                        }
+                      },
                       description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the VM.'
                     },
                     description: 'The list of key vault references in SourceVault which contain certificates.'
@@ -3231,13 +3411,26 @@ provider.Compute.makeVirtualMachine({
                 properties: {
                   properties: {
                     'x-ms-client-flatten': true,
-                    properties: { primary: [Object], deleteOption: [Object] },
+                    properties: {
+                      primary: {
+                        type: 'boolean',
+                        description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                      },
+                      deleteOption: {
+                        type: 'string',
+                        description: 'Specify what happens to the network interface when the VM is deleted',
+                        enum: [ 'Delete', 'Detach' ],
+                        'x-ms-enum': { name: 'DeleteOptions', modelAsString: true }
+                      }
+                    },
                     description: 'Describes a network interface reference properties.'
                   }
                 },
                 allOf: [
                   {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource Id' }
+                    },
                     'x-ms-azure-resource': true
                   }
                 ],
@@ -3262,15 +3455,84 @@ provider.Compute.makeVirtualMachine({
                   properties: {
                     'x-ms-client-flatten': true,
                     properties: {
-                      primary: [Object],
-                      deleteOption: [Object],
-                      enableAcceleratedNetworking: [Object],
-                      enableFpga: [Object],
-                      enableIPForwarding: [Object],
-                      networkSecurityGroup: [Object],
-                      dnsSettings: [Object],
-                      ipConfigurations: [Object],
-                      dscpConfiguration: [Object]
+                      primary: {
+                        type: 'boolean',
+                        description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                      },
+                      deleteOption: {
+                        type: 'string',
+                        description: 'Specify what happens to the network interface when the VM is deleted',
+                        enum: [ 'Delete', 'Detach' ],
+                        'x-ms-enum': { name: 'DeleteOptions', modelAsString: true }
+                      },
+                      enableAcceleratedNetworking: {
+                        type: 'boolean',
+                        description: 'Specifies whether the network interface is accelerated networking-enabled.'
+                      },
+                      enableFpga: {
+                        type: 'boolean',
+                        description: 'Specifies whether the network interface is FPGA networking-enabled.'
+                      },
+                      enableIPForwarding: {
+                        type: 'boolean',
+                        description: 'Whether IP forwarding enabled on this NIC.'
+                      },
+                      networkSecurityGroup: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true,
+                        description: 'The network security group.'
+                      },
+                      dnsSettings: {
+                        description: 'The dns settings to be applied on the network interfaces.',
+                        properties: {
+                          dnsServers: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'List of DNS servers IP addresses'
+                          }
+                        }
+                      },
+                      ipConfigurations: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            name: {
+                              type: 'string',
+                              description: 'The IP configuration name.'
+                            },
+                            properties: {
+                              'x-ms-client-flatten': true,
+                              properties: {
+                                subnet: [Object],
+                                primary: [Object],
+                                publicIPAddressConfiguration: [Object],
+                                privateIPAddressVersion: [Object],
+                                applicationSecurityGroups: [Object],
+                                applicationGatewayBackendAddressPools: [Object],
+                                loadBalancerBackendAddressPools: [Object]
+                              },
+                              description: 'Describes a virtual machine network interface IP configuration properties.'
+                            }
+                          },
+                          required: [ 'name' ],
+                          description: "Describes a virtual machine network profile's IP configuration."
+                        },
+                        description: 'Specifies the IP configurations of the network interface.'
+                      },
+                      dscpConfiguration: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true
+                      }
                     },
                     required: [ 'ipConfigurations' ],
                     description: "Describes a virtual machine network profile's IP configuration."
@@ -3431,9 +3693,45 @@ provider.Compute.makeVirtualMachine({
                   type: 'array',
                   items: {
                     properties: {
-                      type: [Object],
-                      typeHandlerVersion: [Object],
-                      status: [Object]
+                      type: {
+                        type: 'string',
+                        description: 'Specifies the type of the extension; an example is "CustomScriptExtension".'
+                      },
+                      typeHandlerVersion: {
+                        type: 'string',
+                        description: 'Specifies the version of the script handler.'
+                      },
+                      status: {
+                        properties: {
+                          code: {
+                            type: 'string',
+                            description: 'The status code.'
+                          },
+                          level: {
+                            type: 'string',
+                            description: 'The level code.',
+                            enum: [ 'Info', 'Warning', 'Error' ],
+                            'x-ms-enum': {
+                              name: 'StatusLevelTypes',
+                              modelAsString: false
+                            }
+                          },
+                          displayStatus: {
+                            type: 'string',
+                            description: 'The short localizable label for the status.'
+                          },
+                          message: {
+                            type: 'string',
+                            description: 'The detailed status message, including for alerts and error messages.'
+                          },
+                          time: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The time of the status.'
+                          }
+                        },
+                        description: 'Instance view status.'
+                      }
                     },
                     description: 'The instance view of a virtual machine extension handler.'
                   },
@@ -3443,11 +3741,32 @@ provider.Compute.makeVirtualMachine({
                   type: 'array',
                   items: {
                     properties: {
-                      code: [Object],
-                      level: [Object],
-                      displayStatus: [Object],
-                      message: [Object],
-                      time: [Object]
+                      code: {
+                        type: 'string',
+                        description: 'The status code.'
+                      },
+                      level: {
+                        type: 'string',
+                        description: 'The level code.',
+                        enum: [ 'Info', 'Warning', 'Error' ],
+                        'x-ms-enum': {
+                          name: 'StatusLevelTypes',
+                          modelAsString: false
+                        }
+                      },
+                      displayStatus: {
+                        type: 'string',
+                        description: 'The short localizable label for the status.'
+                      },
+                      message: {
+                        type: 'string',
+                        description: 'The detailed status message, including for alerts and error messages.'
+                      },
+                      time: {
+                        type: 'string',
+                        format: 'date-time',
+                        description: 'The time of the status.'
+                      }
                     },
                     description: 'Instance view status.'
                   },
@@ -3510,7 +3829,42 @@ provider.Compute.makeVirtualMachine({
                   encryptionSettings: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        diskEncryptionKey: {
+                          description: 'Specifies the location of the disk encryption key, which is a Key Vault Secret.',
+                          properties: {
+                            secretUrl: {
+                              type: 'string',
+                              description: 'The URL referencing a secret in a Key Vault.'
+                            },
+                            sourceVault: {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true,
+                              description: 'The relative URL of the Key Vault containing the secret.'
+                            }
+                          },
+                          required: [ 'secretUrl', 'sourceVault' ]
+                        },
+                        keyEncryptionKey: {
+                          description: 'Specifies the location of the key encryption key in Key Vault.',
+                          properties: {
+                            keyUrl: {
+                              type: 'string',
+                              description: 'The URL referencing a key encryption key in Key Vault.'
+                            },
+                            sourceVault: {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true,
+                              description: 'The relative URL of the Key Vault containing the key.'
+                            }
+                          },
+                          required: [ 'keyUrl', 'sourceVault' ]
+                        },
+                        enabled: {
+                          type: 'boolean',
+                          description: 'Specifies whether disk encryption should be enabled on the virtual machine.'
+                        }
+                      },
                       description: 'Describes a Encryption Settings for a Disk'
                     },
                     description: 'Specifies the encryption settings for the OS Disk. <br><br> Minimum api-version: 2015-06-15'
@@ -3518,7 +3872,34 @@ provider.Compute.makeVirtualMachine({
                   statuses: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        code: {
+                          type: 'string',
+                          description: 'The status code.'
+                        },
+                        level: {
+                          type: 'string',
+                          description: 'The level code.',
+                          enum: [ 'Info', 'Warning', 'Error' ],
+                          'x-ms-enum': {
+                            name: 'StatusLevelTypes',
+                            modelAsString: false
+                          }
+                        },
+                        displayStatus: {
+                          type: 'string',
+                          description: 'The short localizable label for the status.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The detailed status message, including for alerts and error messages.'
+                        },
+                        time: {
+                          type: 'string',
+                          format: 'date-time',
+                          description: 'The time of the status.'
+                        }
+                      },
                       description: 'Instance view status.'
                     },
                     description: 'The resource status information.'
@@ -3547,7 +3928,34 @@ provider.Compute.makeVirtualMachine({
                   substatuses: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        code: {
+                          type: 'string',
+                          description: 'The status code.'
+                        },
+                        level: {
+                          type: 'string',
+                          description: 'The level code.',
+                          enum: [ 'Info', 'Warning', 'Error' ],
+                          'x-ms-enum': {
+                            name: 'StatusLevelTypes',
+                            modelAsString: false
+                          }
+                        },
+                        displayStatus: {
+                          type: 'string',
+                          description: 'The short localizable label for the status.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The detailed status message, including for alerts and error messages.'
+                        },
+                        time: {
+                          type: 'string',
+                          format: 'date-time',
+                          description: 'The time of the status.'
+                        }
+                      },
                       description: 'Instance view status.'
                     },
                     description: 'The resource status information.'
@@ -3555,7 +3963,34 @@ provider.Compute.makeVirtualMachine({
                   statuses: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        code: {
+                          type: 'string',
+                          description: 'The status code.'
+                        },
+                        level: {
+                          type: 'string',
+                          description: 'The level code.',
+                          enum: [ 'Info', 'Warning', 'Error' ],
+                          'x-ms-enum': {
+                            name: 'StatusLevelTypes',
+                            modelAsString: false
+                          }
+                        },
+                        displayStatus: {
+                          type: 'string',
+                          description: 'The short localizable label for the status.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The detailed status message, including for alerts and error messages.'
+                        },
+                        time: {
+                          type: 'string',
+                          format: 'date-time',
+                          description: 'The time of the status.'
+                        }
+                      },
                       description: 'Instance view status.'
                     },
                     description: 'The resource status information.'
@@ -3575,8 +4010,11 @@ provider.Compute.makeVirtualMachine({
                     level: {
                       type: 'string',
                       description: 'The level code.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'Info', 'Warning', 'Error' ],
+                      'x-ms-enum': {
+                        name: 'StatusLevelTypes',
+                        modelAsString: false
+                      }
                     },
                     displayStatus: {
                       type: 'string',
@@ -3616,8 +4054,11 @@ provider.Compute.makeVirtualMachine({
                     level: {
                       type: 'string',
                       description: 'The level code.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'Info', 'Warning', 'Error' ],
+                      'x-ms-enum': {
+                        name: 'StatusLevelTypes',
+                        modelAsString: false
+                      }
                     },
                     displayStatus: {
                       type: 'string',
@@ -3682,8 +4123,17 @@ provider.Compute.makeVirtualMachine({
                       type: 'string',
                       readOnly: true,
                       description: 'The overall success or failure status of the operation. It remains "InProgress" until the operation completes. At that point it will become "Unknown", "Failed", "Succeeded", or "CompletedWithWarnings."',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Unknown',
+                        'InProgress',
+                        'Failed',
+                        'Succeeded',
+                        'CompletedWithWarnings'
+                      ],
+                      'x-ms-enum': {
+                        name: 'PatchOperationStatus',
+                        modelAsString: true
+                      }
                     },
                     assessmentActivityId: {
                       type: 'string',
@@ -3720,7 +4170,54 @@ provider.Compute.makeVirtualMachine({
                       description: 'The UTC timestamp when the operation began.'
                     },
                     error: {
-                      properties: [Object],
+                      properties: {
+                        details: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              code: {
+                                type: 'string',
+                                description: 'The error code.'
+                              },
+                              target: {
+                                type: 'string',
+                                description: 'The target of the particular error.'
+                              },
+                              message: {
+                                type: 'string',
+                                description: 'The error message.'
+                              }
+                            },
+                            description: 'Api error base.'
+                          },
+                          description: 'The Api error details'
+                        },
+                        innererror: {
+                          description: 'The Api inner error',
+                          properties: {
+                            exceptiontype: {
+                              type: 'string',
+                              description: 'The exception type.'
+                            },
+                            errordetail: {
+                              type: 'string',
+                              description: 'The internal error message or exception dump.'
+                            }
+                          }
+                        },
+                        code: {
+                          type: 'string',
+                          description: 'The error code.'
+                        },
+                        target: {
+                          type: 'string',
+                          description: 'The target of the particular error.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The error message.'
+                        }
+                      },
                       description: 'Api error.',
                       readOnly: true
                     }
@@ -3733,8 +4230,17 @@ provider.Compute.makeVirtualMachine({
                       type: 'string',
                       readOnly: true,
                       description: 'The overall success or failure status of the operation. It remains "InProgress" until the operation completes. At that point it will become "Unknown", "Failed", "Succeeded", or "CompletedWithWarnings."',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Unknown',
+                        'InProgress',
+                        'Failed',
+                        'Succeeded',
+                        'CompletedWithWarnings'
+                      ],
+                      'x-ms-enum': {
+                        name: 'PatchOperationStatus',
+                        modelAsString: true
+                      }
                     },
                     installationActivityId: {
                       type: 'string',
@@ -3789,7 +4295,54 @@ provider.Compute.makeVirtualMachine({
                       description: 'The UTC timestamp when the operation began.'
                     },
                     error: {
-                      properties: [Object],
+                      properties: {
+                        details: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              code: {
+                                type: 'string',
+                                description: 'The error code.'
+                              },
+                              target: {
+                                type: 'string',
+                                description: 'The target of the particular error.'
+                              },
+                              message: {
+                                type: 'string',
+                                description: 'The error message.'
+                              }
+                            },
+                            description: 'Api error base.'
+                          },
+                          description: 'The Api error details'
+                        },
+                        innererror: {
+                          description: 'The Api inner error',
+                          properties: {
+                            exceptiontype: {
+                              type: 'string',
+                              description: 'The exception type.'
+                            },
+                            errordetail: {
+                              type: 'string',
+                              description: 'The internal error message or exception dump.'
+                            }
+                          }
+                        },
+                        code: {
+                          type: 'string',
+                          description: 'The error code.'
+                        },
+                        target: {
+                          type: 'string',
+                          description: 'The target of the particular error.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The error message.'
+                        }
+                      },
                       description: 'Api error.',
                       readOnly: true
                     }
@@ -3801,11 +4354,32 @@ provider.Compute.makeVirtualMachine({
                   type: 'array',
                   items: {
                     properties: {
-                      code: [Object],
-                      level: [Object],
-                      displayStatus: [Object],
-                      message: [Object],
-                      time: [Object]
+                      code: {
+                        type: 'string',
+                        description: 'The status code.'
+                      },
+                      level: {
+                        type: 'string',
+                        description: 'The level code.',
+                        enum: [ 'Info', 'Warning', 'Error' ],
+                        'x-ms-enum': {
+                          name: 'StatusLevelTypes',
+                          modelAsString: false
+                        }
+                      },
+                      displayStatus: {
+                        type: 'string',
+                        description: 'The short localizable label for the status.'
+                      },
+                      message: {
+                        type: 'string',
+                        description: 'The detailed status message, including for alerts and error messages.'
+                      },
+                      time: {
+                        type: 'string',
+                        format: 'date-time',
+                        description: 'The time of the status.'
+                      }
                     },
                     description: 'Instance view status.'
                   }
@@ -3967,7 +4541,34 @@ provider.Compute.makeVirtualMachine({
                   substatuses: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        code: {
+                          type: 'string',
+                          description: 'The status code.'
+                        },
+                        level: {
+                          type: 'string',
+                          description: 'The level code.',
+                          enum: [ 'Info', 'Warning', 'Error' ],
+                          'x-ms-enum': {
+                            name: 'StatusLevelTypes',
+                            modelAsString: false
+                          }
+                        },
+                        displayStatus: {
+                          type: 'string',
+                          description: 'The short localizable label for the status.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The detailed status message, including for alerts and error messages.'
+                        },
+                        time: {
+                          type: 'string',
+                          format: 'date-time',
+                          description: 'The time of the status.'
+                        }
+                      },
                       description: 'Instance view status.'
                     },
                     description: 'The resource status information.'
@@ -3975,7 +4576,34 @@ provider.Compute.makeVirtualMachine({
                   statuses: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        code: {
+                          type: 'string',
+                          description: 'The status code.'
+                        },
+                        level: {
+                          type: 'string',
+                          description: 'The level code.',
+                          enum: [ 'Info', 'Warning', 'Error' ],
+                          'x-ms-enum': {
+                            name: 'StatusLevelTypes',
+                            modelAsString: false
+                          }
+                        },
+                        displayStatus: {
+                          type: 'string',
+                          description: 'The short localizable label for the status.'
+                        },
+                        message: {
+                          type: 'string',
+                          description: 'The detailed status message, including for alerts and error messages.'
+                        },
+                        time: {
+                          type: 'string',
+                          format: 'date-time',
+                          description: 'The time of the status.'
+                        }
+                      },
                       description: 'Instance view status.'
                     },
                     description: 'The resource status information.'

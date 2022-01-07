@@ -382,12 +382,28 @@ Provides a **WebAppConfigurationSlot** from the **Web** group
                     description: 'Trigger based on status code.',
                     type: 'object',
                     properties: {
-                      status: [Object],
-                      subStatus: [Object],
-                      win32Status: [Object],
-                      count: [Object],
-                      timeInterval: [Object],
-                      path: [Object]
+                      status: {
+                        format: 'int32',
+                        description: 'HTTP status code.',
+                        type: 'integer'
+                      },
+                      subStatus: {
+                        format: 'int32',
+                        description: 'Request Sub Status.',
+                        type: 'integer'
+                      },
+                      win32Status: {
+                        format: 'int32',
+                        description: 'Win32 error code.',
+                        type: 'integer'
+                      },
+                      count: {
+                        format: 'int32',
+                        description: 'Request Count.',
+                        type: 'integer'
+                      },
+                      timeInterval: { description: 'Time interval.', type: 'string' },
+                      path: { description: 'Request Path', type: 'string' }
                     }
                   }
                 },
@@ -412,10 +428,14 @@ Provides a **WebAppConfigurationSlot** from the **Web** group
                     description: 'Trigger based on request execution time.',
                     type: 'object',
                     properties: {
-                      timeTaken: [Object],
-                      path: [Object],
-                      count: [Object],
-                      timeInterval: [Object]
+                      timeTaken: { description: 'Time taken.', type: 'string' },
+                      path: { description: 'Request Path.', type: 'string' },
+                      count: {
+                        format: 'int32',
+                        description: 'Request Count.',
+                        type: 'integer'
+                      },
+                      timeInterval: { description: 'Time interval.', type: 'string' }
                     }
                   }
                 },
@@ -426,10 +446,17 @@ Provides a **WebAppConfigurationSlot** from the **Web** group
                     description: 'Trigger based on range of status codes.',
                     type: 'object',
                     properties: {
-                      statusCodes: [Object],
-                      path: [Object],
-                      count: [Object],
-                      timeInterval: [Object]
+                      statusCodes: {
+                        description: 'HTTP status code.',
+                        type: 'string'
+                      },
+                      path: { type: 'string' },
+                      count: {
+                        format: 'int32',
+                        description: 'Request Count.',
+                        type: 'integer'
+                      },
+                      timeInterval: { description: 'Time interval.', type: 'string' }
                     }
                   }
                 }

@@ -299,11 +299,27 @@ Provides a **SiteConfigSlot** from the **Web** group
                     description: 'StatusCodeBasedTrigger',
                     type: 'object',
                     properties: {
-                      status: [Object],
-                      subStatus: [Object],
-                      win32Status: [Object],
-                      count: [Object],
-                      timeInterval: [Object]
+                      status: {
+                        format: 'int32',
+                        description: 'HTTP status code',
+                        type: 'integer'
+                      },
+                      subStatus: {
+                        format: 'int32',
+                        description: 'SubStatus',
+                        type: 'integer'
+                      },
+                      win32Status: {
+                        format: 'int32',
+                        description: 'Win32 error code',
+                        type: 'integer'
+                      },
+                      count: {
+                        format: 'int32',
+                        description: 'Count',
+                        type: 'integer'
+                      },
+                      timeInterval: { description: 'TimeInterval', type: 'string' }
                     }
                   }
                 },

@@ -633,7 +633,16 @@ provider.ContainerService.makeAgentPool({
                   'x-ms-enum': {
                     name: 'code',
                     modelAsString: true,
-                    values: [ [Object], [Object] ]
+                    values: [
+                      {
+                        value: 'Running',
+                        description: 'The cluster is running.'
+                      },
+                      {
+                        value: 'Stopped',
+                        description: 'The cluster is stopped.'
+                      }
+                    ]
                   }
                 }
               }

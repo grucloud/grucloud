@@ -55,19 +55,48 @@ provider.Web.makeConnection({
                     type: 'object',
                     additionalProperties: false,
                     properties: {
-                      id: [Object],
-                      name: [Object],
-                      type: [Object],
-                      location: [Object],
-                      etag: [Object],
-                      tags: [Object]
+                      id: {
+                        description: 'Resource id',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      name: {
+                        description: 'Resource name',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      type: {
+                        description: 'Resource type',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      location: {
+                        description: 'Resource location',
+                        type: 'string'
+                      },
+                      etag: { description: 'Resource ETag', type: 'string' },
+                      tags: {
+                        type: 'object',
+                        description: 'Resource tags',
+                        additionalProperties: { type: 'string' },
+                        example: { SampleTagName: 'SampleTagValue' }
+                      }
                     },
                     'x-ms-azure-resource': true
                   }
                 ],
                 properties: {
                   properties: {
-                    properties: { code: [Object], message: [Object] },
+                    properties: {
+                      code: {
+                        description: 'Code of the status',
+                        type: 'string'
+                      },
+                      message: {
+                        description: 'Description of the status',
+                        type: 'string'
+                      }
+                    },
                     'x-ms-client-flatten': true
                   }
                 }

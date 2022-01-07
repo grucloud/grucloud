@@ -257,12 +257,16 @@ provider.Network.makeExpressRouteCircuitPeering({
                 description: 'Properties of the express route circuit connection.',
                 properties: {
                   expressRouteCircuitPeering: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   peerExpressRouteCircuitPeering: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
@@ -277,8 +281,20 @@ provider.Network.makeExpressRouteCircuitPeering({
                   ipv6CircuitConnectionConfig: {
                     description: 'IPv6 Address PrefixProperties of the express route circuit connection.',
                     properties: {
-                      addressPrefix: [Object],
-                      circuitConnectionStatus: [Object]
+                      addressPrefix: {
+                        type: 'string',
+                        description: '/125 IP address space to carve out customer addresses for global reach.'
+                      },
+                      circuitConnectionStatus: {
+                        readOnly: true,
+                        description: 'Express Route Circuit connection state.',
+                        type: 'string',
+                        enum: [ 'Connected', 'Connecting', 'Disconnected' ],
+                        'x-ms-enum': {
+                          name: 'CircuitConnectionStatus',
+                          modelAsString: true
+                        }
+                      }
                     }
                   },
                   circuitConnectionStatus: {
@@ -335,12 +351,16 @@ provider.Network.makeExpressRouteCircuitPeering({
                 description: 'Properties of the peer express route circuit connection.',
                 properties: {
                   expressRouteCircuitPeering: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   peerExpressRouteCircuitPeering: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },

@@ -98,7 +98,17 @@ provider.Compute.makeDedicatedHost({
                 allocatableVMs: {
                   type: 'array',
                   items: {
-                    properties: { vmSize: [Object], count: [Object] },
+                    properties: {
+                      vmSize: {
+                        type: 'string',
+                        description: 'VM size in terms of which the unutilized capacity is represented.'
+                      },
+                      count: {
+                        type: 'number',
+                        format: 'double',
+                        description: "Maximum number of VMs of size vmSize that can fit in the dedicated host's remaining capacity."
+                      }
+                    },
                     description: 'Represents the dedicated host unutilized capacity in terms of a specific VM size.'
                   },
                   description: 'The unutilized capacity of the dedicated host represented in terms of each VM size that is allowed to be deployed to the dedicated host.'

@@ -96,7 +96,9 @@ provider.Network.makeExpressRouteConnection({
                   type: 'array',
                   description: 'The list of resource ids of all the RouteTables.',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   }
@@ -112,9 +114,19 @@ provider.Network.makeExpressRouteConnection({
                   items: {
                     description: 'List of all Static Routes.',
                     properties: {
-                      name: [Object],
-                      addressPrefixes: [Object],
-                      nextHopIpAddress: [Object]
+                      name: {
+                        type: 'string',
+                        description: 'The name of the StaticRoute that is unique within a VnetRoute.'
+                      },
+                      addressPrefixes: {
+                        type: 'array',
+                        description: 'List of all address prefixes.',
+                        items: { type: 'string' }
+                      },
+                      nextHopIpAddress: {
+                        type: 'string',
+                        description: 'The ip address of the next hop.'
+                      }
                     }
                   }
                 },
@@ -123,7 +135,9 @@ provider.Network.makeExpressRouteConnection({
                   readOnly: true,
                   description: 'The list of references to HubBgpConnection objects.',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   }

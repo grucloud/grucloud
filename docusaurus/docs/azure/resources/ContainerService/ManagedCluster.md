@@ -1494,7 +1494,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'OSDiskType',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'Managed',
+                          description: "Azure replicates the operating system disk for a virtual machine to Azure storage to avoid data loss should the VM need to be relocated to another host. Since containers aren't designed to have local state persisted, this behavior offers limited value while providing some drawbacks, including slower node provisioning and higher read/write latency."
+                        },
+                        {
+                          value: 'Ephemeral',
+                          description: 'Ephemeral OS disks are stored only on the host machine, just like a temporary disk. This provides lower read/write latency, along with faster node scaling and cluster upgrades.'
+                        }
+                      ]
                     },
                     title: 'The OS disk type to be used for machines in the agent pool.',
                     description: "The default is 'Ephemeral' if the VM supports it and has a cache disk larger than the requested OSDiskSizeGB. Otherwise, defaults to 'Managed'. May not be changed after creation. For more information see [Ephemeral OS](https://docs.microsoft.com/azure/aks/cluster-configuration#ephemeral-os)."
@@ -1505,7 +1514,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'KubeletDiskType',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'OS',
+                          description: 'Kubelet will use the OS disk for its data.'
+                        },
+                        {
+                          value: 'Temporary',
+                          description: 'Kubelet will use the temporary disk for its data.'
+                        }
+                      ]
                     },
                     description: 'Determines the placement of emptyDir volumes, container runtime data root, and Kubelet ephemeral storage.'
                   },
@@ -1515,7 +1533,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'WorkloadRuntime',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'OCIContainer',
+                          description: 'Nodes will use Kubelet to run standard OCI container workloads.'
+                        },
+                        {
+                          value: 'WasmWasi',
+                          description: 'Nodes will use Krustlet to run WASM workloads using the WASI provider (Preview).'
+                        }
+                      ]
                     },
                     description: 'Determines the type of workload a node can run.'
                   },
@@ -1541,7 +1568,13 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'OSType',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        { value: 'Linux', description: 'Use Linux.' },
+                        {
+                          value: 'Windows',
+                          description: 'Use Windows.'
+                        }
+                      ]
                     },
                     description: 'The operating system type. The default is Linux.'
                   },
@@ -1573,7 +1606,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'ScaleDownMode',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'Delete',
+                          description: 'Create new instances during scale up and remove instances during scale down.'
+                        },
+                        {
+                          value: 'Deallocate',
+                          description: 'Attempt to start deallocated instances (if they exist) during scale up and deallocate instances during scale down.'
+                        }
+                      ]
                     }
                   },
                   type: {
@@ -1582,7 +1624,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'AgentPoolType',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'VirtualMachineScaleSets',
+                          description: 'Create an Agent Pool backed by a Virtual Machine Scale Set.'
+                        },
+                        {
+                          value: 'AvailabilitySet',
+                          description: 'Use of this is strongly discouraged.'
+                        }
+                      ]
                     },
                     description: 'The type of Agent Pool.'
                   },
@@ -1592,7 +1643,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'AgentPoolMode',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'System',
+                          description: 'System agent pools are primarily for hosting critical system pods such as CoreDNS and metrics-server. System agent pools osType must be Linux. System agent pools VM SKU must have at least 2vCPUs and 4GB of memory.'
+                        },
+                        {
+                          value: 'User',
+                          description: 'User agent pools are primarily for hosting your application pods.'
+                        }
+                      ]
                     },
                     title: 'The mode of an agent pool.',
                     description: "A cluster must have at least one 'System' Agent Pool at all times. For additional information on agent pool restrictions and best practices, see: https://docs.microsoft.com/azure/aks/use-system-pools"
@@ -1609,7 +1669,13 @@ provider.ContainerService.makeManagedCluster({
                   },
                   upgradeSettings: {
                     description: 'Settings for upgrading the agentpool',
-                    properties: { maxSurge: [Object] }
+                    properties: {
+                      maxSurge: {
+                        type: 'string',
+                        title: 'The maximum number or percentage of nodes that are surged during upgrade.',
+                        description: "This can either be set to an integer (e.g. '5') or a percentage (e.g. '50%'). If a percentage is specified, it is the percentage of the total agent pool size at the time of the upgrade. For percentages, fractional nodes are rounded up. If not specified, the default is 1. For more information, including best practices, see: https://docs.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade"
+                      }
+                    }
                   },
                   provisioningState: {
                     readOnly: true,
@@ -1619,7 +1685,27 @@ provider.ContainerService.makeManagedCluster({
                   powerState: {
                     title: 'Whether the Agent Pool is running or stopped.',
                     description: 'When an Agent Pool is first created it is initially Running. The Agent Pool can be stopped by setting this field to Stopped. A stopped Agent Pool stops all of its VMs and does not accrue billing charges. An Agent Pool can only be stopped if it is Running and provisioning state is Succeeded',
-                    properties: { code: [Object] }
+                    properties: {
+                      code: {
+                        type: 'string',
+                        description: 'Tells whether the cluster is Running or Stopped',
+                        enum: [ 'Running', 'Stopped' ],
+                        'x-ms-enum': {
+                          name: 'code',
+                          modelAsString: true,
+                          values: [
+                            {
+                              value: 'Running',
+                              description: 'The cluster is running.'
+                            },
+                            {
+                              value: 'Stopped',
+                              description: 'The cluster is stopped.'
+                            }
+                          ]
+                        }
+                      }
+                    }
                   },
                   availabilityZones: {
                     type: 'array',
@@ -1644,7 +1730,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'ScaleSetPriority',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'Spot',
+                          description: 'Spot priority VMs will be used. There is no SLA for spot nodes. See [spot on AKS](https://docs.microsoft.com/azure/aks/spot-node-pool) for more information.'
+                        },
+                        {
+                          value: 'Regular',
+                          description: 'Regular VMs will be used.'
+                        }
+                      ]
                     }
                   },
                   scaleSetEvictionPolicy: {
@@ -1656,7 +1751,16 @@ provider.ContainerService.makeManagedCluster({
                     'x-ms-enum': {
                       name: 'ScaleSetEvictionPolicy',
                       modelAsString: true,
-                      values: [Array]
+                      values: [
+                        {
+                          value: 'Delete',
+                          description: "Nodes in the underlying Scale Set of the node pool are deleted when they're evicted."
+                        },
+                        {
+                          value: 'Deallocate',
+                          description: 'Nodes in the underlying Scale Set of the node pool are set to the stopped-deallocated state upon eviction. Nodes in the stopped-deallocated state count against your compute quota and can cause issues with cluster scaling or upgrading.'
+                        }
+                      ]
                     }
                   },
                   spotMaxPrice: {
@@ -1689,17 +1793,63 @@ provider.ContainerService.makeManagedCluster({
                     title: 'Kubelet configurations of agent nodes.',
                     type: 'object',
                     properties: {
-                      cpuManagerPolicy: [Object],
-                      cpuCfsQuota: [Object],
-                      cpuCfsQuotaPeriod: [Object],
-                      imageGcHighThreshold: [Object],
-                      imageGcLowThreshold: [Object],
-                      topologyManagerPolicy: [Object],
-                      allowedUnsafeSysctls: [Object],
-                      failSwapOn: [Object],
-                      containerLogMaxSizeMB: [Object],
-                      containerLogMaxFiles: [Object],
-                      podMaxPids: [Object]
+                      cpuManagerPolicy: {
+                        type: 'string',
+                        title: 'The CPU Manager policy to use.',
+                        description: "The default is 'none'. See [Kubernetes CPU management policies](https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#cpu-management-policies) for more information. Allowed values are 'none' and 'static'."
+                      },
+                      cpuCfsQuota: {
+                        type: 'boolean',
+                        title: 'If CPU CFS quota enforcement is enabled for containers that specify CPU limits.',
+                        description: 'The default is true.'
+                      },
+                      cpuCfsQuotaPeriod: {
+                        type: 'string',
+                        title: 'The CPU CFS quota period value.',
+                        description: "The default is '100ms.' Valid values are a sequence of decimal numbers with an optional fraction and a unit suffix. For example: '300ms', '2h45m'. Supported units are 'ns', 'us', 'ms', 's', 'm', and 'h'."
+                      },
+                      imageGcHighThreshold: {
+                        type: 'integer',
+                        format: 'int32',
+                        title: 'The percent of disk usage after which image garbage collection is always run.',
+                        description: 'To disable image garbage collection, set to 100. The default is 85%'
+                      },
+                      imageGcLowThreshold: {
+                        type: 'integer',
+                        format: 'int32',
+                        title: 'The percent of disk usage before which image garbage collection is never run.',
+                        description: 'This cannot be set higher than imageGcHighThreshold. The default is 80%'
+                      },
+                      topologyManagerPolicy: {
+                        type: 'string',
+                        title: 'The Topology Manager policy to use.',
+                        description: "For more information see [Kubernetes Topology Manager](https://kubernetes.io/docs/tasks/administer-cluster/topology-manager). The default is 'none'. Allowed values are 'none', 'best-effort', 'restricted', and 'single-numa-node'."
+                      },
+                      allowedUnsafeSysctls: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'Allowed list of unsafe sysctls or unsafe sysctl patterns (ending in `*`).'
+                      },
+                      failSwapOn: {
+                        type: 'boolean',
+                        description: 'If set to true it will make the Kubelet fail to start if swap is enabled on the node.'
+                      },
+                      containerLogMaxSizeMB: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The maximum size (e.g. 10Mi) of container log file before it is rotated.'
+                      },
+                      containerLogMaxFiles: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The maximum number of container log files that can be present for a container. The number must be ≥ 2.',
+                        minimum: 2
+                      },
+                      podMaxPids: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The maximum number of processes per pod.'
+                      }
                     }
                   },
                   linuxOSConfig: {
@@ -1707,10 +1857,165 @@ provider.ContainerService.makeManagedCluster({
                     title: 'OS configurations of Linux agent nodes.',
                     type: 'object',
                     properties: {
-                      sysctls: [Object],
-                      transparentHugePageEnabled: [Object],
-                      transparentHugePageDefrag: [Object],
-                      swapFileSizeMB: [Object]
+                      sysctls: {
+                        description: 'Sysctl settings for Linux agent nodes.',
+                        type: 'object',
+                        properties: {
+                          netCoreSomaxconn: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.somaxconn.'
+                          },
+                          netCoreNetdevMaxBacklog: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.netdev_max_backlog.'
+                          },
+                          netCoreRmemDefault: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.rmem_default.'
+                          },
+                          netCoreRmemMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.rmem_max.'
+                          },
+                          netCoreWmemDefault: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.wmem_default.'
+                          },
+                          netCoreWmemMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.wmem_max.'
+                          },
+                          netCoreOptmemMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.core.optmem_max.'
+                          },
+                          netIpv4TcpMaxSynBacklog: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_max_syn_backlog.'
+                          },
+                          netIpv4TcpMaxTwBuckets: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_max_tw_buckets.'
+                          },
+                          netIpv4TcpFinTimeout: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_fin_timeout.'
+                          },
+                          netIpv4TcpKeepaliveTime: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_keepalive_time.'
+                          },
+                          netIpv4TcpKeepaliveProbes: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_keepalive_probes.'
+                          },
+                          netIpv4TcpkeepaliveIntvl: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.tcp_keepalive_intvl.'
+                          },
+                          netIpv4TcpTwReuse: {
+                            type: 'boolean',
+                            description: 'Sysctl setting net.ipv4.tcp_tw_reuse.'
+                          },
+                          netIpv4IpLocalPortRange: {
+                            type: 'string',
+                            description: 'Sysctl setting net.ipv4.ip_local_port_range.'
+                          },
+                          netIpv4NeighDefaultGcThresh1: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.neigh.default.gc_thresh1.'
+                          },
+                          netIpv4NeighDefaultGcThresh2: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.neigh.default.gc_thresh2.'
+                          },
+                          netIpv4NeighDefaultGcThresh3: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.ipv4.neigh.default.gc_thresh3.'
+                          },
+                          netNetfilterNfConntrackMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.netfilter.nf_conntrack_max.'
+                          },
+                          netNetfilterNfConntrackBuckets: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting net.netfilter.nf_conntrack_buckets.'
+                          },
+                          fsInotifyMaxUserWatches: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting fs.inotify.max_user_watches.'
+                          },
+                          fsFileMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting fs.file-max.'
+                          },
+                          fsAioMaxNr: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting fs.aio-max-nr.'
+                          },
+                          fsNrOpen: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting fs.nr_open.'
+                          },
+                          kernelThreadsMax: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting kernel.threads-max.'
+                          },
+                          vmMaxMapCount: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting vm.max_map_count.'
+                          },
+                          vmSwappiness: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting vm.swappiness.'
+                          },
+                          vmVfsCachePressure: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Sysctl setting vm.vfs_cache_pressure.'
+                          }
+                        }
+                      },
+                      transparentHugePageEnabled: {
+                        type: 'string',
+                        title: 'Whether transparent hugepages are enabled.',
+                        description: "Valid values are 'always', 'madvise', and 'never'. The default is 'always'. For more information see [Transparent Hugepages](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html#admin-guide-transhuge)."
+                      },
+                      transparentHugePageDefrag: {
+                        type: 'string',
+                        title: 'Whether the kernel should make aggressive use of memory compaction to make more hugepages available.',
+                        description: "Valid values are 'always', 'defer', 'defer+madvise', 'madvise' and 'never'. The default is 'madvise'. For more information see [Transparent Hugepages](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html#admin-guide-transhuge)."
+                      },
+                      swapFileSizeMB: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The size in MB of a swap file that will be created on each node.'
+                      }
                     }
                   },
                   enableEncryptionAtHost: {
@@ -1739,7 +2044,12 @@ provider.ContainerService.makeManagedCluster({
                   creationData: {
                     description: 'CreationData to be used to specify the source Snapshot ID if the node pool will be created/upgraded using a snapshot.',
                     type: 'object',
-                    properties: { sourceResourceId: [Object] }
+                    properties: {
+                      sourceResourceId: {
+                        type: 'string',
+                        description: 'This is the ARM ID of the source object to be used to create the target object.'
+                      }
+                    }
                   }
                 },
                 description: 'Properties for the container service agent pool profile.'
@@ -1774,7 +2084,12 @@ provider.ContainerService.makeManagedCluster({
                 publicKeys: {
                   type: 'array',
                   items: {
-                    properties: { keyData: [Object] },
+                    properties: {
+                      keyData: {
+                        type: 'string',
+                        description: 'Certificate public key used to authenticate with VMs through SSH. The certificate must be in PEM format with or without headers.'
+                      }
+                    },
                     required: [ 'keyData' ],
                     description: 'Contains information about SSH certificate public key data.'
                   },
@@ -1874,9 +2189,18 @@ provider.ContainerService.makeManagedCluster({
                 allOf: [
                   {
                     properties: {
-                      resourceId: [Object],
-                      clientId: [Object],
-                      objectId: [Object]
+                      resourceId: {
+                        type: 'string',
+                        description: 'The resource ID of the user assigned identity.'
+                      },
+                      clientId: {
+                        type: 'string',
+                        description: 'The client ID of the user assigned identity.'
+                      },
+                      objectId: {
+                        type: 'string',
+                        description: 'The object ID of the user assigned identity.'
+                      }
                     },
                     description: 'Details about a user assigned identity.'
                   }
@@ -1920,9 +2244,18 @@ provider.ContainerService.makeManagedCluster({
                   },
                   identity: {
                     properties: {
-                      resourceId: [Object],
-                      clientId: [Object],
-                      objectId: [Object]
+                      resourceId: {
+                        type: 'string',
+                        description: 'The resource ID of the user assigned identity.'
+                      },
+                      clientId: {
+                        type: 'string',
+                        description: 'The client ID of the user assigned identity.'
+                      },
+                      objectId: {
+                        type: 'string',
+                        description: 'The object ID of the user assigned identity.'
+                      }
                     },
                     description: 'Details about a user assigned identity.'
                   },
@@ -1936,7 +2269,40 @@ provider.ContainerService.makeManagedCluster({
                       modelAsString: true
                     }
                   },
-                  provisioningInfo: { readOnly: true, properties: { error: [Object] } }
+                  provisioningInfo: {
+                    readOnly: true,
+                    properties: {
+                      error: {
+                        description: 'Pod identity assignment error (if any).',
+                        type: 'object',
+                        properties: {
+                          error: {
+                            description: 'Details about the error.',
+                            type: 'object',
+                            properties: {
+                              code: {
+                                type: 'string',
+                                description: 'An identifier for the error. Codes are invariant and are intended to be consumed programmatically.'
+                              },
+                              message: {
+                                type: 'string',
+                                description: 'A message describing the error, intended to be suitable for display in a user interface.'
+                              },
+                              target: {
+                                type: 'string',
+                                description: 'The target of the particular error. For example, the name of the property in error.'
+                              },
+                              details: {
+                                type: 'array',
+                                items: [Object],
+                                description: 'A list of additional details about the error.'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
                 required: [ 'name', 'namespace', 'identity' ],
                 description: 'Details about the pod identity assigned to the Managed Cluster.'
@@ -2148,7 +2514,15 @@ provider.ContainerService.makeManagedCluster({
                   properties: {
                     publicIPPrefixes: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'The fully qualified Azure resource id.'
+                          }
+                        },
+                        description: 'A reference to an Azure resource.'
+                      },
                       description: 'A list of public IP prefix resources.'
                     }
                   },
@@ -2158,7 +2532,15 @@ provider.ContainerService.makeManagedCluster({
                   properties: {
                     publicIPs: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'The fully qualified Azure resource id.'
+                          }
+                        },
+                        description: 'A reference to an Azure resource.'
+                      },
                       description: 'A list of public IP resources.'
                     }
                   },
@@ -2167,7 +2549,12 @@ provider.ContainerService.makeManagedCluster({
                 effectiveOutboundIPs: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: {
+                        type: 'string',
+                        description: 'The fully qualified Azure resource id.'
+                      }
+                    },
                     description: 'A reference to an Azure resource.'
                   },
                   description: 'The effective outbound IP resources of the cluster load balancer.'
@@ -2215,7 +2602,12 @@ provider.ContainerService.makeManagedCluster({
                 effectiveOutboundIPs: {
                   type: 'array',
                   items: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: {
+                        type: 'string',
+                        description: 'The fully qualified Azure resource id.'
+                      }
+                    },
                     description: 'A reference to an Azure resource.'
                   },
                   description: 'The effective outbound IP resources of the cluster NAT gateway.'

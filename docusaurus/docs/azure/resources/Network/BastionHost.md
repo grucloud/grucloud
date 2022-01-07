@@ -39,12 +39,16 @@ provider.Network.makeBastionHost({
                 properties: {
                   subnet: {
                     description: 'Reference of the subnet resource.',
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     'x-ms-azure-resource': true
                   },
                   publicIPAddress: {
                     description: 'Reference of the PublicIP resource.',
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     'x-ms-azure-resource': true
                   },
                   provisioningState: {

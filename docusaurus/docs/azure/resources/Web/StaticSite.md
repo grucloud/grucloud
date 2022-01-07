@@ -186,10 +186,25 @@ provider.Web.makeStaticSite({
                     description: 'Azure proxy only resource. This resource is not tracked by Azure Resource Manager.',
                     type: 'object',
                     properties: {
-                      id: [Object],
-                      name: [Object],
-                      kind: [Object],
-                      type: [Object]
+                      id: {
+                        description: 'Resource Id.',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      name: {
+                        description: 'Resource Name.',
+                        type: 'string',
+                        readOnly: true
+                      },
+                      kind: {
+                        description: 'Kind of resource.',
+                        type: 'string'
+                      },
+                      type: {
+                        description: 'Resource type.',
+                        type: 'string',
+                        readOnly: true
+                      }
                     },
                     'x-ms-azure-resource': true
                   }
@@ -199,10 +214,35 @@ provider.Web.makeStaticSite({
                     description: 'RemotePrivateEndpointConnection resource specific properties',
                     type: 'object',
                     properties: {
-                      provisioningState: [Object],
-                      privateEndpoint: [Object],
-                      privateLinkServiceConnectionState: [Object],
-                      ipAddresses: [Object]
+                      provisioningState: { type: 'string', readOnly: true },
+                      privateEndpoint: {
+                        description: 'PrivateEndpoint of a remote private endpoint connection',
+                        type: 'object',
+                        properties: { id: { type: 'string', readOnly: true } }
+                      },
+                      privateLinkServiceConnectionState: {
+                        description: 'The state of a private link connection',
+                        type: 'object',
+                        properties: {
+                          status: {
+                            description: 'Status of a private link connection',
+                            type: 'string'
+                          },
+                          description: {
+                            description: 'Description of a private link connection',
+                            type: 'string'
+                          },
+                          actionsRequired: {
+                            description: 'ActionsRequired for a private link connection',
+                            type: 'string'
+                          }
+                        }
+                      },
+                      ipAddresses: {
+                        description: 'Private IPAddresses mapped to the remote private endpoint',
+                        type: 'array',
+                        items: { type: 'string' }
+                      }
                     },
                     'x-ms-client-flatten': true
                   }
@@ -237,11 +277,30 @@ provider.Web.makeStaticSite({
                     description: 'Min, max, and default scale values of the SKU.',
                     type: 'object',
                     properties: {
-                      minimum: [Object],
-                      maximum: [Object],
-                      elasticMaximum: [Object],
-                      default: [Object],
-                      scaleType: [Object]
+                      minimum: {
+                        format: 'int32',
+                        description: 'Minimum number of workers for this App Service plan SKU.',
+                        type: 'integer'
+                      },
+                      maximum: {
+                        format: 'int32',
+                        description: 'Maximum number of workers for this App Service plan SKU.',
+                        type: 'integer'
+                      },
+                      elasticMaximum: {
+                        format: 'int32',
+                        description: 'Maximum number of Elastic workers for this App Service plan SKU.',
+                        type: 'integer'
+                      },
+                      default: {
+                        format: 'int32',
+                        description: 'Default number of workers for this App Service plan SKU.',
+                        type: 'integer'
+                      },
+                      scaleType: {
+                        description: 'Available scale configurations for an App Service plan.',
+                        type: 'string'
+                      }
                     }
                   },
                   locations: {
@@ -255,7 +314,20 @@ provider.Web.makeStaticSite({
                     items: {
                       description: 'Describes the capabilities/features allowed for a specific SKU.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        name: {
+                          description: 'Name of the SKU capability.',
+                          type: 'string'
+                        },
+                        value: {
+                          description: 'Value of the SKU capability.',
+                          type: 'string'
+                        },
+                        reason: {
+                          description: 'Reason of the SKU capability.',
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 }
@@ -335,7 +407,18 @@ provider.Web.makeStaticSite({
                     additionalProperties: {
                       description: 'User Assigned identity.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        principalId: {
+                          description: 'Principal Id of user assigned identity',
+                          type: 'string',
+                          readOnly: true
+                        },
+                        clientId: {
+                          description: 'Client Id of user assigned identity',
+                          type: 'string',
+                          readOnly: true
+                        }
+                      }
                     }
                   }
                 }

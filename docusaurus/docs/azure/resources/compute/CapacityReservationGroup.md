@@ -79,7 +79,58 @@ provider.Compute.makeCapacityReservationGroup({
                 allOf: [
                   {
                     type: 'object',
-                    properties: { utilizationInfo: [Object], statuses: [Object] },
+                    properties: {
+                      utilizationInfo: {
+                        description: 'Unutilized capacity of the capacity reservation.',
+                        type: 'object',
+                        properties: {
+                          virtualMachinesAllocated: {
+                            type: 'array',
+                            items: {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true
+                            },
+                            readOnly: true,
+                            description: 'A list of all virtual machines resource ids allocated against the capacity reservation.'
+                          }
+                        }
+                      },
+                      statuses: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            code: {
+                              type: 'string',
+                              description: 'The status code.'
+                            },
+                            level: {
+                              type: 'string',
+                              description: 'The level code.',
+                              enum: [ 'Info', 'Warning', 'Error' ],
+                              'x-ms-enum': {
+                                name: 'StatusLevelTypes',
+                                modelAsString: false
+                              }
+                            },
+                            displayStatus: {
+                              type: 'string',
+                              description: 'The short localizable label for the status.'
+                            },
+                            message: {
+                              type: 'string',
+                              description: 'The detailed status message, including for alerts and error messages.'
+                            },
+                            time: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'The time of the status.'
+                            }
+                          },
+                          description: 'Instance view status.'
+                        },
+                        description: 'The resource status information.'
+                      }
+                    },
                     description: 'The instance view of a capacity reservation that provides as snapshot of the runtime properties of the capacity reservation that is managed by the platform and can change outside of control plane operations.'
                   }
                 ],

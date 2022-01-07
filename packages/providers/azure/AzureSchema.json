@@ -170,6 +170,11 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -450,6 +455,16 @@
                 "group": "Compute",
                 "createOnly": true
             },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
             "diskEncryptionSet": {
                 "type": "DiskEncryptionSet",
                 "group": "Compute",
@@ -681,6 +696,16 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
             }
         },
         "methods": {
@@ -1157,6 +1182,16 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
             "disk": {
                 "type": "Disk",
                 "group": "Compute",
@@ -1222,6 +1257,16 @@
                 "group": "Compute",
                 "createOnly": true
             },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
             "virtualMachineScaleSetVm": {
                 "type": "VirtualMachineScaleSetVM",
                 "group": "Compute",
@@ -1278,6 +1323,16 @@
             "image": {
                 "type": "Image",
                 "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
                 "createOnly": true
             },
             "diskEncryptionSet": {
@@ -1445,6 +1500,16 @@
             "galleryImage": {
                 "type": "GalleryImage",
                 "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
                 "createOnly": true
             },
             "networkSecurityGroup": {
@@ -1852,6 +1917,11 @@
                 "createOnly": true,
                 "list": true
             },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
             "galleryImage": {
                 "type": "GalleryImage",
                 "group": "Compute",
@@ -2190,6 +2260,16 @@
             "galleryImage": {
                 "type": "GalleryImage",
                 "group": "Compute",
+                "createOnly": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
                 "createOnly": true
             },
             "networkSecurityGroup": {

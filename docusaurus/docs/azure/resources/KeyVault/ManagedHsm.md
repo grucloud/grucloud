@@ -201,14 +201,44 @@ provider.KeyVault.makeManagedHsm({
                 properties: {
                   privateEndpoint: {
                     description: 'Properties of the private endpoint object.',
-                    properties: { id: [Object] }
+                    properties: {
+                      id: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Full identifier of the private endpoint resource.'
+                      }
+                    }
                   },
                   privateLinkServiceConnectionState: {
                     description: 'Approval state of the private link connection.',
                     properties: {
-                      status: [Object],
-                      description: [Object],
-                      actionsRequired: [Object]
+                      status: {
+                        description: 'Indicates whether the connection has been approved, rejected or removed by the key vault owner.',
+                        type: 'string',
+                        enum: [
+                          'Pending',
+                          'Approved',
+                          'Rejected',
+                          'Disconnected'
+                        ],
+                        'x-ms-enum': {
+                          name: 'PrivateEndpointServiceConnectionStatus',
+                          modelAsString: true
+                        }
+                      },
+                      description: {
+                        type: 'string',
+                        description: 'The reason for approval or rejection.'
+                      },
+                      actionsRequired: {
+                        type: 'string',
+                        description: 'A message indicating if changes on the service provider require any updates on the consumer.',
+                        enum: [ 'None' ],
+                        'x-ms-enum': {
+                          name: 'ActionsRequired',
+                          modelAsString: true
+                        }
+                      }
                     }
                   },
                   provisioningState: {

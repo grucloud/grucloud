@@ -432,9 +432,9 @@ provider.Storage.makeStorageAccount({
                     keyType: {
                       type: 'string',
                       description: "Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.",
-                      enum: [Array],
-                      'x-ms-enum': [Object],
-                      'x-ms-mutability': [Array]
+                      enum: [ 'Service', 'Account' ],
+                      'x-ms-enum': { name: 'KeyType', modelAsString: true },
+                      'x-ms-mutability': [ 'create', 'read' ]
                     }
                   }
                 },
@@ -454,9 +454,9 @@ provider.Storage.makeStorageAccount({
                     keyType: {
                       type: 'string',
                       description: "Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.",
-                      enum: [Array],
-                      'x-ms-enum': [Object],
-                      'x-ms-mutability': [Array]
+                      enum: [ 'Service', 'Account' ],
+                      'x-ms-enum': { name: 'KeyType', modelAsString: true },
+                      'x-ms-mutability': [ 'create', 'read' ]
                     }
                   }
                 },
@@ -476,9 +476,9 @@ provider.Storage.makeStorageAccount({
                     keyType: {
                       type: 'string',
                       description: "Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.",
-                      enum: [Array],
-                      'x-ms-enum': [Object],
-                      'x-ms-mutability': [Array]
+                      enum: [ 'Service', 'Account' ],
+                      'x-ms-enum': { name: 'KeyType', modelAsString: true },
+                      'x-ms-mutability': [ 'create', 'read' ]
                     }
                   }
                 },
@@ -498,9 +498,9 @@ provider.Storage.makeStorageAccount({
                     keyType: {
                       type: 'string',
                       description: "Encryption key type to be used for the encryption service. 'Account' key type implies that an account-scoped encryption key will be used. 'Service' key type implies that a default service key is used.",
-                      enum: [Array],
-                      'x-ms-enum': [Object],
-                      'x-ms-mutability': [Array]
+                      enum: [ 'Service', 'Account' ],
+                      'x-ms-enum': { name: 'KeyType', modelAsString: true },
+                      'x-ms-mutability': [ 'create', 'read' ]
                     }
                   }
                 }

@@ -108,7 +108,15 @@ provider.Storage.makeBlobService({
                   },
                   allowedMethods: {
                     type: 'array',
-                    items: { type: 'string', enum: [Array] },
+                    items: {
+                      type: 'string',
+                      enum: [
+                        'DELETE', 'GET',
+                        'HEAD',   'MERGE',
+                        'POST',   'OPTIONS',
+                        'PUT'
+                      ]
+                    },
                     description: 'Required if CorsRule element is present. A list of HTTP methods that are allowed to be executed by the origin.'
                   },
                   maxAgeInSeconds: {

@@ -118,12 +118,16 @@ provider.Network.makeVirtualNetworkGateway({
                   },
                   subnet: {
                     description: 'The reference to the subnet resource.',
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     'x-ms-azure-resource': true
                   },
                   publicIPAddress: {
                     description: 'The reference to the public IP resource.',
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     'x-ms-azure-resource': true
                   },
                   privateIPAddress: {
@@ -267,8 +271,25 @@ provider.Network.makeVirtualNetworkGateway({
                     'x-ms-client-flatten': true,
                     description: 'Properties of the vpn client root certificate.',
                     properties: {
-                      publicCertData: [Object],
-                      provisioningState: [Object]
+                      publicCertData: {
+                        type: 'string',
+                        description: 'The certificate public data.'
+                      },
+                      provisioningState: {
+                        readOnly: true,
+                        description: 'The provisioning state of the VPN client root certificate resource.',
+                        type: 'string',
+                        enum: [
+                          'Succeeded',
+                          'Updating',
+                          'Deleting',
+                          'Failed'
+                        ],
+                        'x-ms-enum': {
+                          name: 'ProvisioningState',
+                          modelAsString: true
+                        }
+                      }
                     },
                     required: [ 'publicCertData' ]
                   },
@@ -284,7 +305,9 @@ provider.Network.makeVirtualNetworkGateway({
                 },
                 allOf: [
                   {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   }
@@ -302,8 +325,25 @@ provider.Network.makeVirtualNetworkGateway({
                     'x-ms-client-flatten': true,
                     description: 'Properties of the vpn client revoked certificate.',
                     properties: {
-                      thumbprint: [Object],
-                      provisioningState: [Object]
+                      thumbprint: {
+                        type: 'string',
+                        description: 'The revoked VPN client certificate thumbprint.'
+                      },
+                      provisioningState: {
+                        readOnly: true,
+                        description: 'The provisioning state of the VPN client revoked certificate resource.',
+                        type: 'string',
+                        enum: [
+                          'Succeeded',
+                          'Updating',
+                          'Deleting',
+                          'Failed'
+                        ],
+                        'x-ms-enum': {
+                          name: 'ProvisioningState',
+                          modelAsString: true
+                        }
+                      }
                     }
                   },
                   name: {
@@ -318,7 +358,9 @@ provider.Network.makeVirtualNetworkGateway({
                 },
                 allOf: [
                   {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   }
@@ -616,7 +658,16 @@ provider.Network.makeVirtualNetworkGateway({
                   internalMappings: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        addressSpace: {
+                          type: 'string',
+                          description: 'Address space for Vpn NatRule mapping.'
+                        },
+                        portRange: {
+                          type: 'string',
+                          description: 'Port range for Vpn NatRule mapping.'
+                        }
+                      },
                       description: 'Vpn NatRule mapping.'
                     },
                     description: 'The private IP address internal mapping for NAT.'
@@ -624,7 +675,16 @@ provider.Network.makeVirtualNetworkGateway({
                   externalMappings: {
                     type: 'array',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        addressSpace: {
+                          type: 'string',
+                          description: 'Address space for Vpn NatRule mapping.'
+                        },
+                        portRange: {
+                          type: 'string',
+                          description: 'Port range for Vpn NatRule mapping.'
+                        }
+                      },
                       description: 'Vpn NatRule mapping.'
                     },
                     description: 'The private IP address external mapping for NAT.'

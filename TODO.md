@@ -1,5 +1,6 @@
 ## Bugs
 
+- makeFirewallPolicy - logAnalyticsResources workspace dep as an array
 - VirtualMachine deps ssh keys
 - key or vault dependencies ?
 - DBforPostgreSQL/ServerKey dep key

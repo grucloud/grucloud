@@ -128,7 +128,26 @@ provider.Network.makeVirtualHub({
                     type: 'array',
                     description: 'List of all routes.',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        destinationType: {
+                          type: 'string',
+                          description: 'The type of destinations.'
+                        },
+                        destinations: {
+                          type: 'array',
+                          description: 'List of all destinations.',
+                          items: { type: 'string' }
+                        },
+                        nextHopType: {
+                          type: 'string',
+                          description: 'The type of next hops.'
+                        },
+                        nextHops: {
+                          type: 'array',
+                          description: 'NextHops ip address.',
+                          items: { type: 'string' }
+                        }
+                      },
                       description: 'VirtualHubRouteTableV2 route.'
                     }
                   },

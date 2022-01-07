@@ -225,9 +225,14 @@ provider.ContainerRegistry.makeTaskRun({
                     },
                     createdByType: {
                       description: 'The type of identity that created the resource.',
-                      enum: [Array],
+                      enum: [
+                        'User',
+                        'Application',
+                        'ManagedIdentity',
+                        'Key'
+                      ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': { name: 'createdByType', modelAsString: true }
                     },
                     createdAt: {
                       format: 'date-time',
@@ -240,9 +245,17 @@ provider.ContainerRegistry.makeTaskRun({
                     },
                     lastModifiedByType: {
                       description: 'The type of identity that last modified the resource.',
-                      enum: [Array],
+                      enum: [
+                        'User',
+                        'Application',
+                        'ManagedIdentity',
+                        'Key'
+                      ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': {
+                        name: 'lastModifiedByType',
+                        modelAsString: true
+                      }
                     },
                     lastModifiedAt: {
                       format: 'date-time',
@@ -313,10 +326,19 @@ provider.ContainerRegistry.makeTaskRun({
                     description: 'Properties for a registry image.',
                     type: 'object',
                     properties: {
-                      registry: [Object],
-                      repository: [Object],
-                      tag: [Object],
-                      digest: [Object]
+                      registry: {
+                        description: 'The registry login server.',
+                        type: 'string'
+                      },
+                      repository: {
+                        description: 'The repository name.',
+                        type: 'string'
+                      },
+                      tag: { description: 'The tag name.', type: 'string' },
+                      digest: {
+                        description: 'The sha256-based digest of the image manifest.',
+                        type: 'string'
+                      }
                     }
                   }
                 },
@@ -340,7 +362,28 @@ provider.ContainerRegistry.makeTaskRun({
                     images: {
                       description: 'The list of image updates that caused the build.',
                       type: 'array',
-                      items: [Object]
+                      items: {
+                        description: 'Properties for a registry image.',
+                        type: 'object',
+                        properties: {
+                          registry: {
+                            description: 'The registry login server.',
+                            type: 'string'
+                          },
+                          repository: {
+                            description: 'The repository name.',
+                            type: 'string'
+                          },
+                          tag: {
+                            description: 'The tag name.',
+                            type: 'string'
+                          },
+                          digest: {
+                            description: 'The sha256-based digest of the image manifest.',
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -399,21 +442,21 @@ provider.ContainerRegistry.makeTaskRun({
                   properties: {
                     os: {
                       description: 'The operating system type required for the run.',
-                      enum: [Array],
+                      enum: [ 'Windows', 'Linux' ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': { name: 'OS', modelAsString: true }
                     },
                     architecture: {
                       description: 'The OS architecture.',
-                      enum: [Array],
+                      enum: [ 'amd64', 'x86', '386', 'arm', 'arm64' ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': { name: 'Architecture', modelAsString: true }
                     },
                     variant: {
                       description: 'Variant of the CPU.',
-                      enum: [Array],
+                      enum: [ 'v6', 'v7', 'v8' ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': { name: 'Variant', modelAsString: true }
                     }
                   }
                 },

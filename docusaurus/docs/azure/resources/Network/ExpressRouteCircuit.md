@@ -235,21 +235,70 @@ provider.Network.makeExpressRouteCircuit({
                   microsoftPeeringConfig: {
                     description: 'The Microsoft peering configuration.',
                     properties: {
-                      advertisedPublicPrefixes: [Object],
-                      advertisedCommunities: [Object],
-                      advertisedPublicPrefixesState: [Object],
-                      legacyMode: [Object],
-                      customerASN: [Object],
-                      routingRegistryName: [Object]
+                      advertisedPublicPrefixes: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'The reference to AdvertisedPublicPrefixes.'
+                      },
+                      advertisedCommunities: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'The communities of bgp peering. Specified for microsoft peering.'
+                      },
+                      advertisedPublicPrefixesState: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'The advertised public prefix state of the Peering resource.',
+                        enum: [
+                          'NotConfigured',
+                          'Configuring',
+                          'Configured',
+                          'ValidationNeeded'
+                        ],
+                        'x-ms-enum': {
+                          name: 'ExpressRouteCircuitPeeringAdvertisedPublicPrefixState',
+                          modelAsString: true
+                        }
+                      },
+                      legacyMode: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The legacy mode of the peering.'
+                      },
+                      customerASN: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The CustomerASN of the peering.'
+                      },
+                      routingRegistryName: {
+                        type: 'string',
+                        description: 'The RoutingRegistryName of the configuration.'
+                      }
                     }
                   },
                   stats: {
                     description: 'The peering stats of express route circuit.',
                     properties: {
-                      primarybytesIn: [Object],
-                      primarybytesOut: [Object],
-                      secondarybytesIn: [Object],
-                      secondarybytesOut: [Object]
+                      primarybytesIn: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'The Primary BytesIn of the peering.'
+                      },
+                      primarybytesOut: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'The primary BytesOut of the peering.'
+                      },
+                      secondarybytesIn: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'The secondary BytesIn of the peering.'
+                      },
+                      secondarybytesOut: {
+                        type: 'integer',
+                        format: 'int64',
+                        description: 'The secondary BytesOut of the peering.'
+                      }
                     }
                   },
                   provisioningState: {
@@ -269,29 +318,189 @@ provider.Network.makeExpressRouteCircuit({
                     description: 'Who was the last to modify the peering.'
                   },
                   routeFilter: {
-                    properties: { id: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
                     description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   ipv6PeeringConfig: {
                     description: 'The IPv6 peering configuration.',
                     properties: {
-                      primaryPeerAddressPrefix: [Object],
-                      secondaryPeerAddressPrefix: [Object],
-                      microsoftPeeringConfig: [Object],
-                      routeFilter: [Object],
-                      state: [Object]
+                      primaryPeerAddressPrefix: {
+                        type: 'string',
+                        description: 'The primary address prefix.'
+                      },
+                      secondaryPeerAddressPrefix: {
+                        type: 'string',
+                        description: 'The secondary address prefix.'
+                      },
+                      microsoftPeeringConfig: {
+                        description: 'The Microsoft peering configuration.',
+                        properties: {
+                          advertisedPublicPrefixes: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The reference to AdvertisedPublicPrefixes.'
+                          },
+                          advertisedCommunities: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The communities of bgp peering. Specified for microsoft peering.'
+                          },
+                          advertisedPublicPrefixesState: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'The advertised public prefix state of the Peering resource.',
+                            enum: [
+                              'NotConfigured',
+                              'Configuring',
+                              'Configured',
+                              'ValidationNeeded'
+                            ],
+                            'x-ms-enum': {
+                              name: 'ExpressRouteCircuitPeeringAdvertisedPublicPrefixState',
+                              modelAsString: true
+                            }
+                          },
+                          legacyMode: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The legacy mode of the peering.'
+                          },
+                          customerASN: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The CustomerASN of the peering.'
+                          },
+                          routingRegistryName: {
+                            type: 'string',
+                            description: 'The RoutingRegistryName of the configuration.'
+                          }
+                        }
+                      },
+                      routeFilter: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      },
+                      state: {
+                        type: 'string',
+                        description: 'The state of peering.',
+                        enum: [ 'Disabled', 'Enabled' ],
+                        'x-ms-enum': {
+                          name: 'ExpressRouteCircuitPeeringState',
+                          modelAsString: true
+                        }
+                      }
                     }
                   },
                   expressRouteConnection: {
                     description: 'The ExpressRoute connection.',
-                    properties: { id: [Object] }
+                    properties: {
+                      id: {
+                        type: 'string',
+                        readOnly: true,
+                        description: 'The ID of the ExpressRouteConnection.'
+                      }
+                    }
                   },
                   connections: {
                     type: 'array',
                     items: {
-                      properties: [Object],
-                      allOf: [Array],
+                      properties: {
+                        properties: {
+                          'x-ms-client-flatten': true,
+                          description: 'Properties of the express route circuit connection.',
+                          properties: {
+                            expressRouteCircuitPeering: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            },
+                            peerExpressRouteCircuitPeering: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            },
+                            addressPrefix: {
+                              type: 'string',
+                              description: '/29 IP address space to carve out Customer addresses for tunnels.'
+                            },
+                            authorizationKey: {
+                              type: 'string',
+                              description: 'The authorization key.'
+                            },
+                            ipv6CircuitConnectionConfig: {
+                              description: 'IPv6 Address PrefixProperties of the express route circuit connection.',
+                              properties: {
+                                addressPrefix: [Object],
+                                circuitConnectionStatus: [Object]
+                              }
+                            },
+                            circuitConnectionStatus: {
+                              description: 'Express Route Circuit connection state.',
+                              type: 'string',
+                              readOnly: true,
+                              enum: [
+                                'Connected',
+                                'Connecting',
+                                'Disconnected'
+                              ],
+                              'x-ms-enum': {
+                                name: 'CircuitConnectionStatus',
+                                modelAsString: true
+                              }
+                            },
+                            provisioningState: {
+                              readOnly: true,
+                              description: 'The provisioning state of the express route circuit connection resource.',
+                              type: 'string',
+                              enum: [
+                                'Succeeded',
+                                'Updating',
+                                'Deleting',
+                                'Failed'
+                              ],
+                              'x-ms-enum': {
+                                name: 'ProvisioningState',
+                                modelAsString: true
+                              }
+                            }
+                          }
+                        },
+                        name: {
+                          type: 'string',
+                          description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                        },
+                        etag: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'A unique read-only string that changes whenever the resource is updated.'
+                        },
+                        type: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'Type of the resource.'
+                        }
+                      },
+                      allOf: [
+                        {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource ID.'
+                            }
+                          },
+                          description: 'Reference to another subresource.',
+                          'x-ms-azure-resource': true
+                        }
+                      ],
                       description: 'Express Route Circuit Connection in an ExpressRouteCircuitPeering resource.'
                     },
                     description: 'The list of circuit connections associated with Azure Private Peering for this circuit.'
@@ -299,8 +508,91 @@ provider.Network.makeExpressRouteCircuit({
                   peeredConnections: {
                     type: 'array',
                     items: {
-                      properties: [Object],
-                      allOf: [Array],
+                      properties: {
+                        properties: {
+                          'x-ms-client-flatten': true,
+                          description: 'Properties of the peer express route circuit connection.',
+                          properties: {
+                            expressRouteCircuitPeering: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            },
+                            peerExpressRouteCircuitPeering: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            },
+                            addressPrefix: {
+                              type: 'string',
+                              description: '/29 IP address space to carve out Customer addresses for tunnels.'
+                            },
+                            circuitConnectionStatus: {
+                              description: 'Express Route Circuit connection state.',
+                              type: 'string',
+                              readOnly: true,
+                              enum: [
+                                'Connected',
+                                'Connecting',
+                                'Disconnected'
+                              ],
+                              'x-ms-enum': {
+                                name: 'CircuitConnectionStatus',
+                                modelAsString: true
+                              }
+                            },
+                            connectionName: {
+                              type: 'string',
+                              description: 'The name of the express route circuit connection resource.'
+                            },
+                            authResourceGuid: {
+                              type: 'string',
+                              description: 'The resource guid of the authorization used for the express route circuit connection.'
+                            },
+                            provisioningState: {
+                              readOnly: true,
+                              description: 'The provisioning state of the peer express route circuit connection resource.',
+                              type: 'string',
+                              enum: [
+                                'Succeeded',
+                                'Updating',
+                                'Deleting',
+                                'Failed'
+                              ],
+                              'x-ms-enum': {
+                                name: 'ProvisioningState',
+                                modelAsString: true
+                              }
+                            }
+                          }
+                        },
+                        name: {
+                          type: 'string',
+                          description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                        },
+                        etag: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'A unique read-only string that changes whenever the resource is updated.'
+                        },
+                        type: {
+                          readOnly: true,
+                          type: 'string',
+                          description: 'Type of the resource.'
+                        }
+                      },
+                      allOf: [
+                        {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource ID.'
+                            }
+                          },
+                          description: 'Reference to another subresource.',
+                          'x-ms-azure-resource': true
+                        }
+                      ],
                       description: 'Peer Express Route Circuit Connection in an ExpressRouteCircuitPeering resource.'
                     },
                     readOnly: true,

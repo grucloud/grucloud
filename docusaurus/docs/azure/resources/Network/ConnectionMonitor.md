@@ -212,7 +212,21 @@ provider.Network.makeConnectionMonitor({
                     type: 'array',
                     description: 'List of items in the filter.',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        type: {
+                          type: 'string',
+                          enum: [ 'AgentAddress' ],
+                          'x-ms-enum': {
+                            name: 'ConnectionMonitorEndpointFilterItemType',
+                            modelAsString: true
+                          },
+                          description: "The type of item included in the filter. Currently only 'AgentAddress' is supported."
+                        },
+                        address: {
+                          type: 'string',
+                          description: 'The address of the filter item.'
+                        }
+                      },
                       description: 'Describes the connection monitor endpoint filter item.'
                     }
                   }
@@ -225,7 +239,12 @@ provider.Network.makeConnectionMonitor({
                     type: 'array',
                     description: 'List of items which needs to be included to the endpoint scope.',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        address: {
+                          type: 'string',
+                          description: 'The address of the endpoint item. Supported types are IPv4/IPv6 subnet mask or IPv4/IPv6 IP address.'
+                        }
+                      },
                       description: 'Describes the connection monitor endpoint scope item.'
                     }
                   },
@@ -233,7 +252,12 @@ provider.Network.makeConnectionMonitor({
                     type: 'array',
                     description: 'List of items which needs to be excluded from the endpoint scope.',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        address: {
+                          type: 'string',
+                          description: 'The address of the endpoint item. Supported types are IPv4/IPv6 subnet mask or IPv4/IPv6 IP address.'
+                        }
+                      },
                       description: 'Describes the connection monitor endpoint scope item.'
                     }
                   }
@@ -313,7 +337,16 @@ provider.Network.makeConnectionMonitor({
                     type: 'array',
                     description: 'The HTTP headers to transmit with the request.',
                     items: {
-                      properties: [Object],
+                      properties: {
+                        name: {
+                          type: 'string',
+                          description: 'The name in HTTP header.'
+                        },
+                        value: {
+                          type: 'string',
+                          description: 'The value in HTTP header.'
+                        }
+                      },
                       description: 'The HTTP header.'
                     }
                   },

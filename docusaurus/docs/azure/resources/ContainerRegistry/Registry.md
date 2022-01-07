@@ -449,12 +449,49 @@ provider.ContainerRegistry.makeRegistry({
                     type: 'object',
                     readOnly: true,
                     properties: {
-                      createdBy: [Object],
-                      createdByType: [Object],
-                      createdAt: [Object],
-                      lastModifiedBy: [Object],
-                      lastModifiedByType: [Object],
-                      lastModifiedAt: [Object]
+                      createdBy: {
+                        description: 'The identity that created the resource.',
+                        type: 'string'
+                      },
+                      createdByType: {
+                        description: 'The type of identity that created the resource.',
+                        enum: [
+                          'User',
+                          'Application',
+                          'ManagedIdentity',
+                          'Key'
+                        ],
+                        type: 'string',
+                        'x-ms-enum': { name: 'createdByType', modelAsString: true }
+                      },
+                      createdAt: {
+                        format: 'date-time',
+                        description: 'The timestamp of resource creation (UTC).',
+                        type: 'string'
+                      },
+                      lastModifiedBy: {
+                        description: 'The identity that last modified the resource.',
+                        type: 'string'
+                      },
+                      lastModifiedByType: {
+                        description: 'The type of identity that last modified the resource.',
+                        enum: [
+                          'User',
+                          'Application',
+                          'ManagedIdentity',
+                          'Key'
+                        ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'lastModifiedByType',
+                          modelAsString: true
+                        }
+                      },
+                      lastModifiedAt: {
+                        format: 'date-time',
+                        description: 'The timestamp of resource modification (UTC).',
+                        type: 'string'
+                      }
                     }
                   }
                 },
@@ -470,15 +507,44 @@ provider.ContainerRegistry.makeRegistry({
                   privateEndpoint: {
                     description: 'The resource of private endpoint.',
                     type: 'object',
-                    properties: { id: [Object] }
+                    properties: {
+                      id: {
+                        description: 'This is private endpoint resource created with Microsoft.Network resource provider.',
+                        type: 'string'
+                      }
+                    }
                   },
                   privateLinkServiceConnectionState: {
                     description: 'A collection of information about the state of the connection between service consumer and provider.',
                     type: 'object',
                     properties: {
-                      status: [Object],
-                      description: [Object],
-                      actionsRequired: [Object]
+                      status: {
+                        description: 'The private link service connection status.',
+                        enum: [
+                          'Approved',
+                          'Pending',
+                          'Rejected',
+                          'Disconnected'
+                        ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'ConnectionStatus',
+                          modelAsString: true
+                        }
+                      },
+                      description: {
+                        description: 'The description for connection status. For example if connection is rejected it can indicate reason for rejection.',
+                        type: 'string'
+                      },
+                      actionsRequired: {
+                        description: 'A message indicating if changes on the service provider require any updates on the consumer.',
+                        enum: [ 'None', 'Recreate' ],
+                        type: 'string',
+                        'x-ms-enum': {
+                          name: 'ActionsRequired',
+                          modelAsString: true
+                        }
+                      }
                     }
                   },
                   provisioningState: {

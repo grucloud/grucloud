@@ -97,7 +97,20 @@ provider.Web.makeCustomApi({
                     additionalProperties: {
                       description: 'OAuth settings for the API',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        value: {
+                          description: 'Value of the setting',
+                          type: 'string'
+                        },
+                        options: {
+                          type: 'object',
+                          description: 'Options available to this parameter'
+                        },
+                        uiDefinition: {
+                          type: 'object',
+                          description: 'UI definitions per culture as caller can specify the culture'
+                        }
+                      }
                     }
                   }
                 }

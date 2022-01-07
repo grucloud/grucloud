@@ -82,7 +82,12 @@ provider.Network.makeExpressRouteGateway({
                   },
                   expressRouteCircuitPeering: {
                     description: 'The ExpressRoute circuit peering.',
-                    properties: { id: [Object] }
+                    properties: {
+                      id: {
+                        type: 'string',
+                        description: 'The ID of the ExpressRoute circuit peering.'
+                      }
+                    }
                   },
                   authorizationKey: {
                     type: 'string',
@@ -103,9 +108,62 @@ provider.Network.makeExpressRouteGateway({
                   routingConfiguration: {
                     description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
                     properties: {
-                      associatedRouteTable: [Object],
-                      propagatedRouteTables: [Object],
-                      vnetRoutes: [Object]
+                      associatedRouteTable: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      },
+                      propagatedRouteTables: {
+                        description: 'The list of RouteTables to advertise the routes to.',
+                        properties: {
+                          labels: {
+                            type: 'array',
+                            description: 'The list of labels.',
+                            items: { type: 'string' }
+                          },
+                          ids: {
+                            type: 'array',
+                            description: 'The list of resource ids of all the RouteTables.',
+                            items: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            }
+                          }
+                        }
+                      },
+                      vnetRoutes: {
+                        description: 'List of routes that control routing from VirtualHub into a virtual network connection.',
+                        properties: {
+                          staticRoutes: {
+                            type: 'array',
+                            description: 'List of all Static Routes.',
+                            items: {
+                              description: 'List of all Static Routes.',
+                              properties: {
+                                name: [Object],
+                                addressPrefixes: [Object],
+                                nextHopIpAddress: [Object]
+                              }
+                            }
+                          },
+                          bgpConnections: {
+                            type: 'array',
+                            readOnly: true,
+                            description: 'The list of references to HubBgpConnection objects.',
+                            items: {
+                              properties: { id: [Object] },
+                              description: 'Reference to another subresource.',
+                              'x-ms-azure-resource': true
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }

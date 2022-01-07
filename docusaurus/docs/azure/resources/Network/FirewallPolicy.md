@@ -190,7 +190,22 @@ provider.Network.makeFirewallPolicy({
                   items: {
                     description: 'Log Analytics Workspace for Firewall Policy Insights.',
                     'x-ms-discriminator-value': 'FirewallPolicyLogAnalyticsWorkspace',
-                    properties: { region: [Object], workspaceId: [Object] }
+                    properties: {
+                      region: {
+                        type: 'string',
+                        description: 'Region to configure the Workspace.'
+                      },
+                      workspaceId: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      }
+                    }
                   }
                 },
                 defaultWorkspaceId: {
@@ -305,7 +320,18 @@ provider.Network.makeFirewallPolicy({
                   type: 'array',
                   description: 'List of specific signatures states.',
                   items: {
-                    properties: { id: [Object], mode: [Object] },
+                    properties: {
+                      id: { type: 'string', description: 'Signature id.' },
+                      mode: {
+                        description: 'The signature state.',
+                        type: 'string',
+                        enum: [ 'Off', 'Alert', 'Deny' ],
+                        'x-ms-enum': {
+                          name: 'FirewallPolicyIntrusionDetectionStateType',
+                          modelAsString: true
+                        }
+                      }
+                    },
                     description: 'Intrusion detection signatures specification states.'
                   }
                 },
@@ -314,14 +340,48 @@ provider.Network.makeFirewallPolicy({
                   description: 'List of rules for traffic to bypass.',
                   items: {
                     properties: {
-                      name: [Object],
-                      description: [Object],
-                      protocol: [Object],
-                      sourceAddresses: [Object],
-                      destinationAddresses: [Object],
-                      destinationPorts: [Object],
-                      sourceIpGroups: [Object],
-                      destinationIpGroups: [Object]
+                      name: {
+                        type: 'string',
+                        description: 'Name of the bypass traffic rule.'
+                      },
+                      description: {
+                        type: 'string',
+                        description: 'Description of the bypass traffic rule.'
+                      },
+                      protocol: {
+                        type: 'string',
+                        description: 'The rule bypass protocol.',
+                        enum: [ 'TCP', 'UDP', 'ICMP', 'ANY' ],
+                        'x-ms-enum': {
+                          name: 'FirewallPolicyIntrusionDetectionProtocol',
+                          modelAsString: true
+                        }
+                      },
+                      sourceAddresses: {
+                        type: 'array',
+                        description: 'List of source IP addresses or ranges for this rule.',
+                        items: { type: 'string' }
+                      },
+                      destinationAddresses: {
+                        type: 'array',
+                        description: 'List of destination IP addresses or ranges for this rule.',
+                        items: { type: 'string' }
+                      },
+                      destinationPorts: {
+                        type: 'array',
+                        description: 'List of destination ports or ranges.',
+                        items: { type: 'string' }
+                      },
+                      sourceIpGroups: {
+                        type: 'array',
+                        description: 'List of source IpGroups for this rule.',
+                        items: { type: 'string' }
+                      },
+                      destinationIpGroups: {
+                        type: 'array',
+                        description: 'List of destination IpGroups for this rule.',
+                        items: { type: 'string' }
+                      }
                     },
                     description: 'Intrusion detection bypass traffic specification.'
                   }

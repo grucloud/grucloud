@@ -110,11 +110,83 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   type: 'array',
                   items: {
                     properties: {
-                      properties: [Object],
-                      name: [Object],
-                      etag: [Object]
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        description: 'Properties of the virtual network gateway ip configuration.',
+                        properties: {
+                          privateIPAllocationMethod: {
+                            description: 'The private IP address allocation method.',
+                            type: 'string',
+                            enum: [ 'Static', 'Dynamic' ],
+                            'x-ms-enum': {
+                              name: 'IPAllocationMethod',
+                              modelAsString: true
+                            }
+                          },
+                          subnet: {
+                            description: 'The reference to the subnet resource.',
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          },
+                          publicIPAddress: {
+                            description: 'The reference to the public IP resource.',
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          },
+                          privateIPAddress: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'Private IP Address for this gateway.'
+                          },
+                          provisioningState: {
+                            readOnly: true,
+                            description: 'The provisioning state of the virtual network gateway IP configuration resource.',
+                            type: 'string',
+                            enum: [
+                              'Succeeded',
+                              'Updating',
+                              'Deleting',
+                              'Failed'
+                            ],
+                            'x-ms-enum': {
+                              name: 'ProvisioningState',
+                              modelAsString: true
+                            }
+                          }
+                        }
+                      },
+                      name: {
+                        type: 'string',
+                        description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                      },
+                      etag: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'A unique read-only string that changes whenever the resource is updated.'
+                      }
                     },
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: 'IP configuration for virtual network gateway.'
                   },
                   description: 'IP configurations for virtual network gateway.'
@@ -166,14 +238,56 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     name: {
                       type: 'string',
                       description: 'Gateway SKU name.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Basic',
+                        'HighPerformance',
+                        'Standard',
+                        'UltraPerformance',
+                        'VpnGw1',
+                        'VpnGw2',
+                        'VpnGw3',
+                        'VpnGw4',
+                        'VpnGw5',
+                        'VpnGw1AZ',
+                        'VpnGw2AZ',
+                        'VpnGw3AZ',
+                        'VpnGw4AZ',
+                        'VpnGw5AZ',
+                        'ErGw1AZ',
+                        'ErGw2AZ',
+                        'ErGw3AZ'
+                      ],
+                      'x-ms-enum': {
+                        name: 'VirtualNetworkGatewaySkuName',
+                        modelAsString: true
+                      }
                     },
                     tier: {
                       type: 'string',
                       description: 'Gateway SKU tier.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Basic',
+                        'HighPerformance',
+                        'Standard',
+                        'UltraPerformance',
+                        'VpnGw1',
+                        'VpnGw2',
+                        'VpnGw3',
+                        'VpnGw4',
+                        'VpnGw5',
+                        'VpnGw1AZ',
+                        'VpnGw2AZ',
+                        'VpnGw3AZ',
+                        'VpnGw4AZ',
+                        'VpnGw5AZ',
+                        'ErGw1AZ',
+                        'ErGw2AZ',
+                        'ErGw3AZ'
+                      ],
+                      'x-ms-enum': {
+                        name: 'VirtualNetworkGatewaySkuTier',
+                        modelAsString: true
+                      }
                     },
                     capacity: {
                       readOnly: true,
@@ -188,31 +302,254 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   properties: {
                     vpnClientAddressPool: {
                       description: 'The reference to the address space resource which represents Address space for P2S VpnClient.',
-                      properties: [Object]
+                      properties: {
+                        addressPrefixes: {
+                          type: 'array',
+                          items: { type: 'string' },
+                          description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
+                        }
+                      }
                     },
                     vpnClientRootCertificates: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          properties: {
+                            'x-ms-client-flatten': true,
+                            description: 'Properties of the vpn client root certificate.',
+                            properties: {
+                              publicCertData: {
+                                type: 'string',
+                                description: 'The certificate public data.'
+                              },
+                              provisioningState: {
+                                readOnly: true,
+                                description: 'The provisioning state of the VPN client root certificate resource.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              }
+                            },
+                            required: [ 'publicCertData' ]
+                          },
+                          name: {
+                            type: 'string',
+                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                          },
+                          etag: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                          }
+                        },
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            description: 'Reference to another subresource.',
+                            'x-ms-azure-resource': true
+                          }
+                        ],
+                        required: [ 'properties' ],
+                        description: 'VPN client root certificate of virtual network gateway.'
+                      },
                       description: 'VpnClientRootCertificate for virtual network gateway.'
                     },
                     vpnClientRevokedCertificates: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          properties: {
+                            'x-ms-client-flatten': true,
+                            description: 'Properties of the vpn client revoked certificate.',
+                            properties: {
+                              thumbprint: {
+                                type: 'string',
+                                description: 'The revoked VPN client certificate thumbprint.'
+                              },
+                              provisioningState: {
+                                readOnly: true,
+                                description: 'The provisioning state of the VPN client revoked certificate resource.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              }
+                            }
+                          },
+                          name: {
+                            type: 'string',
+                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                          },
+                          etag: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                          }
+                        },
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            description: 'Reference to another subresource.',
+                            'x-ms-azure-resource': true
+                          }
+                        ],
+                        description: 'VPN client revoked certificate of virtual network gateway.'
+                      },
                       description: 'VpnClientRevokedCertificate for Virtual network gateway.'
                     },
                     vpnClientProtocols: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        type: 'string',
+                        description: 'VPN client protocol enabled for the virtual network gateway.',
+                        enum: [ 'IkeV2', 'SSTP', 'OpenVPN' ],
+                        'x-ms-enum': {
+                          name: 'VpnClientProtocol',
+                          modelAsString: true
+                        }
+                      },
                       description: 'VpnClientProtocols for Virtual network gateway.'
                     },
                     vpnAuthenticationTypes: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        type: 'string',
+                        description: 'VPN authentication types enabled for the virtual network gateway.',
+                        enum: [ 'Certificate', 'Radius', 'AAD' ],
+                        'x-ms-enum': {
+                          name: 'VpnAuthenticationType',
+                          modelAsString: true
+                        }
+                      },
                       description: 'VPN authentication types for the virtual network gateway..'
                     },
                     vpnClientIpsecPolicies: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          saLifeTimeSeconds: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) lifetime in seconds for a site to site VPN tunnel.'
+                          },
+                          saDataSizeKilobytes: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) payload size in KB for a site to site VPN tunnel.'
+                          },
+                          ipsecEncryption: {
+                            description: 'The IPSec encryption algorithm (IKE phase 1).',
+                            type: 'string',
+                            enum: [
+                              'None',      'DES',
+                              'DES3',      'AES128',
+                              'AES192',    'AES256',
+                              'GCMAES128', 'GCMAES192',
+                              'GCMAES256'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IpsecEncryption',
+                              modelAsString: true
+                            }
+                          },
+                          ipsecIntegrity: {
+                            description: 'The IPSec integrity algorithm (IKE phase 1).',
+                            type: 'string',
+                            enum: [
+                              'MD5',
+                              'SHA1',
+                              'SHA256',
+                              'GCMAES128',
+                              'GCMAES192',
+                              'GCMAES256'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IpsecIntegrity',
+                              modelAsString: true
+                            }
+                          },
+                          ikeEncryption: {
+                            description: 'The IKE encryption algorithm (IKE phase 2).',
+                            type: 'string',
+                            enum: [
+                              'DES',
+                              'DES3',
+                              'AES128',
+                              'AES192',
+                              'AES256',
+                              'GCMAES256',
+                              'GCMAES128'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IkeEncryption',
+                              modelAsString: true
+                            }
+                          },
+                          ikeIntegrity: {
+                            description: 'The IKE integrity algorithm (IKE phase 2).',
+                            type: 'string',
+                            enum: [
+                              'MD5',
+                              'SHA1',
+                              'SHA256',
+                              'SHA384',
+                              'GCMAES256',
+                              'GCMAES128'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IkeIntegrity',
+                              modelAsString: true
+                            }
+                          },
+                          dhGroup: {
+                            description: 'The DH Group used in IKE Phase 1 for initial SA.',
+                            type: 'string',
+                            enum: [
+                              'None',
+                              'DHGroup1',
+                              'DHGroup2',
+                              'DHGroup14',
+                              'DHGroup2048',
+                              'ECP256',
+                              'ECP384',
+                              'DHGroup24'
+                            ],
+                            'x-ms-enum': { name: 'DhGroup', modelAsString: true }
+                          },
+                          pfsGroup: {
+                            description: 'The Pfs Group used in IKE Phase 2 for new child SA.',
+                            type: 'string',
+                            enum: [
+                              'None',   'PFS1',
+                              'PFS2',   'PFS2048',
+                              'ECP256', 'ECP384',
+                              'PFS24',  'PFS14',
+                              'PFSMM'
+                            ],
+                            'x-ms-enum': { name: 'PfsGroup', modelAsString: true }
+                          }
+                        },
+                        required: [
+                          'saLifeTimeSeconds',
+                          'saDataSizeKilobytes',
+                          'ipsecEncryption',
+                          'ipsecIntegrity',
+                          'ikeEncryption',
+                          'ikeIntegrity',
+                          'dhGroup',
+                          'pfsGroup'
+                        ],
+                        description: 'An IPSec Policy configuration for a virtual network gateway connection.'
+                      },
                       description: 'VpnClientIpsecPolicies for virtual network gateway P2S client.'
                     },
                     radiusServerAddress: {
@@ -225,7 +562,25 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     },
                     radiusServers: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          radiusServerAddress: {
+                            type: 'string',
+                            description: 'The address of this radius server.'
+                          },
+                          radiusServerScore: {
+                            type: 'integer',
+                            format: 'int64',
+                            description: 'The initial score assigned to this radius server.'
+                          },
+                          radiusServerSecret: {
+                            type: 'string',
+                            description: 'The secret used for this radius server.'
+                          }
+                        },
+                        required: [ 'radiusServerAddress' ],
+                        description: 'Radius Server Settings.'
+                      },
                       description: 'The radiusServers property for multiple radius server configuration.'
                     },
                     aadTenant: {
@@ -263,7 +618,32 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     },
                     bgpPeeringAddresses: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          ipconfigurationId: {
+                            type: 'string',
+                            description: 'The ID of IP configuration which belongs to gateway.'
+                          },
+                          defaultBgpIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of default BGP peering addresses which belong to IP configuration.'
+                          },
+                          customBgpIpAddresses: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of custom BGP peering addresses which belong to IP configuration.'
+                          },
+                          tunnelIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of tunnel public IP addresses which belong to IP configuration.'
+                          }
+                        },
+                        description: 'Properties of IPConfigurationBgpPeeringAddress.'
+                      },
                       description: 'BGP peering address with IP configuration ID for virtual network gateway.'
                     }
                   }
@@ -273,7 +653,7 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   properties: {
                     addressPrefixes: {
                       type: 'array',
-                      items: [Object],
+                      items: { type: 'string' },
                       description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
                     }
                   }
@@ -307,12 +687,98 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   type: 'array',
                   items: {
                     properties: {
-                      properties: [Object],
-                      name: [Object],
-                      etag: [Object],
-                      type: [Object]
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        description: 'Properties of the Virtual Network Gateway NAT rule.',
+                        properties: {
+                          provisioningState: {
+                            readOnly: true,
+                            description: 'The provisioning state of the NAT Rule resource.',
+                            type: 'string',
+                            enum: [
+                              'Succeeded',
+                              'Updating',
+                              'Deleting',
+                              'Failed'
+                            ],
+                            'x-ms-enum': {
+                              name: 'ProvisioningState',
+                              modelAsString: true
+                            }
+                          },
+                          type: {
+                            type: 'string',
+                            description: 'The type of NAT rule for VPN NAT.',
+                            enum: [ 'Static', 'Dynamic' ],
+                            'x-ms-enum': {
+                              name: 'VpnNatRuleType',
+                              modelAsString: true
+                            }
+                          },
+                          mode: {
+                            type: 'string',
+                            description: 'The Source NAT direction of a VPN NAT.',
+                            enum: [ 'EgressSnat', 'IngressSnat' ],
+                            'x-ms-enum': {
+                              name: 'VpnNatRuleMode',
+                              modelAsString: true
+                            }
+                          },
+                          internalMappings: {
+                            type: 'array',
+                            items: {
+                              properties: {
+                                addressSpace: [Object],
+                                portRange: [Object]
+                              },
+                              description: 'Vpn NatRule mapping.'
+                            },
+                            description: 'The private IP address internal mapping for NAT.'
+                          },
+                          externalMappings: {
+                            type: 'array',
+                            items: {
+                              properties: {
+                                addressSpace: [Object],
+                                portRange: [Object]
+                              },
+                              description: 'Vpn NatRule mapping.'
+                            },
+                            description: 'The private IP address external mapping for NAT.'
+                          },
+                          ipConfigurationId: {
+                            type: 'string',
+                            description: 'The IP Configuration ID this NAT rule applies to.'
+                          }
+                        }
+                      },
+                      name: {
+                        type: 'string',
+                        description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                      },
+                      etag: {
+                        type: 'string',
+                        readOnly: true,
+                        description: 'A unique read-only string that changes whenever the resource is updated.'
+                      },
+                      type: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Resource type.'
+                      }
                     },
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: 'VirtualNetworkGatewayNatRule Resource.'
                   },
                   description: 'NatRules for virtual network gateway.'
@@ -385,11 +851,83 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   type: 'array',
                   items: {
                     properties: {
-                      properties: [Object],
-                      name: [Object],
-                      etag: [Object]
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        description: 'Properties of the virtual network gateway ip configuration.',
+                        properties: {
+                          privateIPAllocationMethod: {
+                            description: 'The private IP address allocation method.',
+                            type: 'string',
+                            enum: [ 'Static', 'Dynamic' ],
+                            'x-ms-enum': {
+                              name: 'IPAllocationMethod',
+                              modelAsString: true
+                            }
+                          },
+                          subnet: {
+                            description: 'The reference to the subnet resource.',
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          },
+                          publicIPAddress: {
+                            description: 'The reference to the public IP resource.',
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          },
+                          privateIPAddress: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'Private IP Address for this gateway.'
+                          },
+                          provisioningState: {
+                            readOnly: true,
+                            description: 'The provisioning state of the virtual network gateway IP configuration resource.',
+                            type: 'string',
+                            enum: [
+                              'Succeeded',
+                              'Updating',
+                              'Deleting',
+                              'Failed'
+                            ],
+                            'x-ms-enum': {
+                              name: 'ProvisioningState',
+                              modelAsString: true
+                            }
+                          }
+                        }
+                      },
+                      name: {
+                        type: 'string',
+                        description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                      },
+                      etag: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'A unique read-only string that changes whenever the resource is updated.'
+                      }
                     },
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: 'IP configuration for virtual network gateway.'
                   },
                   description: 'IP configurations for virtual network gateway.'
@@ -441,14 +979,56 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     name: {
                       type: 'string',
                       description: 'Gateway SKU name.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Basic',
+                        'HighPerformance',
+                        'Standard',
+                        'UltraPerformance',
+                        'VpnGw1',
+                        'VpnGw2',
+                        'VpnGw3',
+                        'VpnGw4',
+                        'VpnGw5',
+                        'VpnGw1AZ',
+                        'VpnGw2AZ',
+                        'VpnGw3AZ',
+                        'VpnGw4AZ',
+                        'VpnGw5AZ',
+                        'ErGw1AZ',
+                        'ErGw2AZ',
+                        'ErGw3AZ'
+                      ],
+                      'x-ms-enum': {
+                        name: 'VirtualNetworkGatewaySkuName',
+                        modelAsString: true
+                      }
                     },
                     tier: {
                       type: 'string',
                       description: 'Gateway SKU tier.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Basic',
+                        'HighPerformance',
+                        'Standard',
+                        'UltraPerformance',
+                        'VpnGw1',
+                        'VpnGw2',
+                        'VpnGw3',
+                        'VpnGw4',
+                        'VpnGw5',
+                        'VpnGw1AZ',
+                        'VpnGw2AZ',
+                        'VpnGw3AZ',
+                        'VpnGw4AZ',
+                        'VpnGw5AZ',
+                        'ErGw1AZ',
+                        'ErGw2AZ',
+                        'ErGw3AZ'
+                      ],
+                      'x-ms-enum': {
+                        name: 'VirtualNetworkGatewaySkuTier',
+                        modelAsString: true
+                      }
                     },
                     capacity: {
                       readOnly: true,
@@ -463,31 +1043,254 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   properties: {
                     vpnClientAddressPool: {
                       description: 'The reference to the address space resource which represents Address space for P2S VpnClient.',
-                      properties: [Object]
+                      properties: {
+                        addressPrefixes: {
+                          type: 'array',
+                          items: { type: 'string' },
+                          description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
+                        }
+                      }
                     },
                     vpnClientRootCertificates: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          properties: {
+                            'x-ms-client-flatten': true,
+                            description: 'Properties of the vpn client root certificate.',
+                            properties: {
+                              publicCertData: {
+                                type: 'string',
+                                description: 'The certificate public data.'
+                              },
+                              provisioningState: {
+                                readOnly: true,
+                                description: 'The provisioning state of the VPN client root certificate resource.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              }
+                            },
+                            required: [ 'publicCertData' ]
+                          },
+                          name: {
+                            type: 'string',
+                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                          },
+                          etag: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                          }
+                        },
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            description: 'Reference to another subresource.',
+                            'x-ms-azure-resource': true
+                          }
+                        ],
+                        required: [ 'properties' ],
+                        description: 'VPN client root certificate of virtual network gateway.'
+                      },
                       description: 'VpnClientRootCertificate for virtual network gateway.'
                     },
                     vpnClientRevokedCertificates: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          properties: {
+                            'x-ms-client-flatten': true,
+                            description: 'Properties of the vpn client revoked certificate.',
+                            properties: {
+                              thumbprint: {
+                                type: 'string',
+                                description: 'The revoked VPN client certificate thumbprint.'
+                              },
+                              provisioningState: {
+                                readOnly: true,
+                                description: 'The provisioning state of the VPN client revoked certificate resource.',
+                                type: 'string',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              }
+                            }
+                          },
+                          name: {
+                            type: 'string',
+                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                          },
+                          etag: {
+                            readOnly: true,
+                            type: 'string',
+                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                          }
+                        },
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource ID.'
+                              }
+                            },
+                            description: 'Reference to another subresource.',
+                            'x-ms-azure-resource': true
+                          }
+                        ],
+                        description: 'VPN client revoked certificate of virtual network gateway.'
+                      },
                       description: 'VpnClientRevokedCertificate for Virtual network gateway.'
                     },
                     vpnClientProtocols: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        type: 'string',
+                        description: 'VPN client protocol enabled for the virtual network gateway.',
+                        enum: [ 'IkeV2', 'SSTP', 'OpenVPN' ],
+                        'x-ms-enum': {
+                          name: 'VpnClientProtocol',
+                          modelAsString: true
+                        }
+                      },
                       description: 'VpnClientProtocols for Virtual network gateway.'
                     },
                     vpnAuthenticationTypes: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        type: 'string',
+                        description: 'VPN authentication types enabled for the virtual network gateway.',
+                        enum: [ 'Certificate', 'Radius', 'AAD' ],
+                        'x-ms-enum': {
+                          name: 'VpnAuthenticationType',
+                          modelAsString: true
+                        }
+                      },
                       description: 'VPN authentication types for the virtual network gateway..'
                     },
                     vpnClientIpsecPolicies: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          saLifeTimeSeconds: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) lifetime in seconds for a site to site VPN tunnel.'
+                          },
+                          saDataSizeKilobytes: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) payload size in KB for a site to site VPN tunnel.'
+                          },
+                          ipsecEncryption: {
+                            description: 'The IPSec encryption algorithm (IKE phase 1).',
+                            type: 'string',
+                            enum: [
+                              'None',      'DES',
+                              'DES3',      'AES128',
+                              'AES192',    'AES256',
+                              'GCMAES128', 'GCMAES192',
+                              'GCMAES256'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IpsecEncryption',
+                              modelAsString: true
+                            }
+                          },
+                          ipsecIntegrity: {
+                            description: 'The IPSec integrity algorithm (IKE phase 1).',
+                            type: 'string',
+                            enum: [
+                              'MD5',
+                              'SHA1',
+                              'SHA256',
+                              'GCMAES128',
+                              'GCMAES192',
+                              'GCMAES256'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IpsecIntegrity',
+                              modelAsString: true
+                            }
+                          },
+                          ikeEncryption: {
+                            description: 'The IKE encryption algorithm (IKE phase 2).',
+                            type: 'string',
+                            enum: [
+                              'DES',
+                              'DES3',
+                              'AES128',
+                              'AES192',
+                              'AES256',
+                              'GCMAES256',
+                              'GCMAES128'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IkeEncryption',
+                              modelAsString: true
+                            }
+                          },
+                          ikeIntegrity: {
+                            description: 'The IKE integrity algorithm (IKE phase 2).',
+                            type: 'string',
+                            enum: [
+                              'MD5',
+                              'SHA1',
+                              'SHA256',
+                              'SHA384',
+                              'GCMAES256',
+                              'GCMAES128'
+                            ],
+                            'x-ms-enum': {
+                              name: 'IkeIntegrity',
+                              modelAsString: true
+                            }
+                          },
+                          dhGroup: {
+                            description: 'The DH Group used in IKE Phase 1 for initial SA.',
+                            type: 'string',
+                            enum: [
+                              'None',
+                              'DHGroup1',
+                              'DHGroup2',
+                              'DHGroup14',
+                              'DHGroup2048',
+                              'ECP256',
+                              'ECP384',
+                              'DHGroup24'
+                            ],
+                            'x-ms-enum': { name: 'DhGroup', modelAsString: true }
+                          },
+                          pfsGroup: {
+                            description: 'The Pfs Group used in IKE Phase 2 for new child SA.',
+                            type: 'string',
+                            enum: [
+                              'None',   'PFS1',
+                              'PFS2',   'PFS2048',
+                              'ECP256', 'ECP384',
+                              'PFS24',  'PFS14',
+                              'PFSMM'
+                            ],
+                            'x-ms-enum': { name: 'PfsGroup', modelAsString: true }
+                          }
+                        },
+                        required: [
+                          'saLifeTimeSeconds',
+                          'saDataSizeKilobytes',
+                          'ipsecEncryption',
+                          'ipsecIntegrity',
+                          'ikeEncryption',
+                          'ikeIntegrity',
+                          'dhGroup',
+                          'pfsGroup'
+                        ],
+                        description: 'An IPSec Policy configuration for a virtual network gateway connection.'
+                      },
                       description: 'VpnClientIpsecPolicies for virtual network gateway P2S client.'
                     },
                     radiusServerAddress: {
@@ -500,7 +1303,25 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     },
                     radiusServers: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          radiusServerAddress: {
+                            type: 'string',
+                            description: 'The address of this radius server.'
+                          },
+                          radiusServerScore: {
+                            type: 'integer',
+                            format: 'int64',
+                            description: 'The initial score assigned to this radius server.'
+                          },
+                          radiusServerSecret: {
+                            type: 'string',
+                            description: 'The secret used for this radius server.'
+                          }
+                        },
+                        required: [ 'radiusServerAddress' ],
+                        description: 'Radius Server Settings.'
+                      },
                       description: 'The radiusServers property for multiple radius server configuration.'
                     },
                     aadTenant: {
@@ -538,7 +1359,32 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     },
                     bgpPeeringAddresses: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          ipconfigurationId: {
+                            type: 'string',
+                            description: 'The ID of IP configuration which belongs to gateway.'
+                          },
+                          defaultBgpIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of default BGP peering addresses which belong to IP configuration.'
+                          },
+                          customBgpIpAddresses: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of custom BGP peering addresses which belong to IP configuration.'
+                          },
+                          tunnelIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of tunnel public IP addresses which belong to IP configuration.'
+                          }
+                        },
+                        description: 'Properties of IPConfigurationBgpPeeringAddress.'
+                      },
                       description: 'BGP peering address with IP configuration ID for virtual network gateway.'
                     }
                   }
@@ -548,7 +1394,7 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   properties: {
                     addressPrefixes: {
                       type: 'array',
-                      items: [Object],
+                      items: { type: 'string' },
                       description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
                     }
                   }
@@ -582,12 +1428,98 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   type: 'array',
                   items: {
                     properties: {
-                      properties: [Object],
-                      name: [Object],
-                      etag: [Object],
-                      type: [Object]
+                      properties: {
+                        'x-ms-client-flatten': true,
+                        description: 'Properties of the Virtual Network Gateway NAT rule.',
+                        properties: {
+                          provisioningState: {
+                            readOnly: true,
+                            description: 'The provisioning state of the NAT Rule resource.',
+                            type: 'string',
+                            enum: [
+                              'Succeeded',
+                              'Updating',
+                              'Deleting',
+                              'Failed'
+                            ],
+                            'x-ms-enum': {
+                              name: 'ProvisioningState',
+                              modelAsString: true
+                            }
+                          },
+                          type: {
+                            type: 'string',
+                            description: 'The type of NAT rule for VPN NAT.',
+                            enum: [ 'Static', 'Dynamic' ],
+                            'x-ms-enum': {
+                              name: 'VpnNatRuleType',
+                              modelAsString: true
+                            }
+                          },
+                          mode: {
+                            type: 'string',
+                            description: 'The Source NAT direction of a VPN NAT.',
+                            enum: [ 'EgressSnat', 'IngressSnat' ],
+                            'x-ms-enum': {
+                              name: 'VpnNatRuleMode',
+                              modelAsString: true
+                            }
+                          },
+                          internalMappings: {
+                            type: 'array',
+                            items: {
+                              properties: {
+                                addressSpace: [Object],
+                                portRange: [Object]
+                              },
+                              description: 'Vpn NatRule mapping.'
+                            },
+                            description: 'The private IP address internal mapping for NAT.'
+                          },
+                          externalMappings: {
+                            type: 'array',
+                            items: {
+                              properties: {
+                                addressSpace: [Object],
+                                portRange: [Object]
+                              },
+                              description: 'Vpn NatRule mapping.'
+                            },
+                            description: 'The private IP address external mapping for NAT.'
+                          },
+                          ipConfigurationId: {
+                            type: 'string',
+                            description: 'The IP Configuration ID this NAT rule applies to.'
+                          }
+                        }
+                      },
+                      name: {
+                        type: 'string',
+                        description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                      },
+                      etag: {
+                        type: 'string',
+                        readOnly: true,
+                        description: 'A unique read-only string that changes whenever the resource is updated.'
+                      },
+                      type: {
+                        readOnly: true,
+                        type: 'string',
+                        description: 'Resource type.'
+                      }
                     },
-                    allOf: [ [Object] ],
+                    allOf: [
+                      {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource ID.'
+                          }
+                        },
+                        description: 'Reference to another subresource.',
+                        'x-ms-azure-resource': true
+                      }
+                    ],
                     description: 'VirtualNetworkGatewayNatRule Resource.'
                   },
                   description: 'NatRules for virtual network gateway.'
@@ -662,7 +1594,7 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                   properties: {
                     addressPrefixes: {
                       type: 'array',
-                      items: [Object],
+                      items: { type: 'string' },
                       description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
                     }
                   }
@@ -696,7 +1628,32 @@ provider.Network.makeVirtualNetworkGatewayConnection({
                     },
                     bgpPeeringAddresses: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          ipconfigurationId: {
+                            type: 'string',
+                            description: 'The ID of IP configuration which belongs to gateway.'
+                          },
+                          defaultBgpIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of default BGP peering addresses which belong to IP configuration.'
+                          },
+                          customBgpIpAddresses: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of custom BGP peering addresses which belong to IP configuration.'
+                          },
+                          tunnelIpAddresses: {
+                            readOnly: true,
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'The list of tunnel public IP addresses which belong to IP configuration.'
+                          }
+                        },
+                        description: 'Properties of IPConfigurationBgpPeeringAddress.'
+                      },
                       description: 'BGP peering address with IP configuration ID for virtual network gateway.'
                     }
                   }

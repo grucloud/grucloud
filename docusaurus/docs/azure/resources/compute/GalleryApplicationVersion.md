@@ -99,10 +99,52 @@ provider.Compute.makeGalleryApplicationVersion({
                   type: 'array',
                   items: {
                     properties: {
-                      name: [Object],
-                      regionalReplicaCount: [Object],
-                      storageAccountType: [Object],
-                      encryption: [Object]
+                      name: {
+                        type: 'string',
+                        description: 'The name of the region.'
+                      },
+                      regionalReplicaCount: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The number of replicas of the Image Version to be created per region. This property is updatable.'
+                      },
+                      storageAccountType: {
+                        type: 'string',
+                        description: 'Specifies the storage account type to be used to store the image. This property is not updatable.',
+                        enum: [
+                          'Standard_LRS',
+                          'Standard_ZRS',
+                          'Premium_LRS'
+                        ],
+                        'x-ms-enum': {
+                          name: 'StorageAccountType',
+                          modelAsString: true
+                        }
+                      },
+                      encryption: {
+                        properties: {
+                          osDiskImage: {
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'This is the disk image encryption base class.'
+                              }
+                            ],
+                            description: 'Contains encryption settings for an OS disk image.'
+                          },
+                          dataDiskImages: {
+                            type: 'array',
+                            items: {
+                              properties: { lun: [Object] },
+                              allOf: [ [Object] ],
+                              required: [ 'lun' ],
+                              description: 'Contains encryption settings for a data disk image.'
+                            },
+                            description: 'A list of encryption specifications for data disk images.'
+                          }
+                        },
+                        description: 'Optional. Allows users to provide customer managed keys for encrypting the OS and data disks in the gallery artifact.'
+                      }
                     },
                     required: [ 'name' ],
                     description: 'Describes the target region information.'

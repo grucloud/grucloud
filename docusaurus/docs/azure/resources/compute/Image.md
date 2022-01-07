@@ -329,7 +329,16 @@ provider.Compute.makeImage({
                   'x-ms-enum': {
                     name: 'OperatingSystemStateTypes',
                     modelAsString: false,
-                    values: [ [Object], [Object] ]
+                    values: [
+                      {
+                        value: 'Generalized',
+                        description: 'Generalized image. Needs to be provisioned during deployment time.'
+                      },
+                      {
+                        value: 'Specialized',
+                        description: 'Specialized image. Contains already provisioned OS Disk.'
+                      }
+                    ]
                   }
                 }
               },
@@ -337,12 +346,16 @@ provider.Compute.makeImage({
                 {
                   properties: {
                     snapshot: {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource Id' }
+                      },
                       'x-ms-azure-resource': true,
                       description: 'The snapshot.'
                     },
                     managedDisk: {
-                      properties: [Object],
+                      properties: {
+                        id: { type: 'string', description: 'Resource Id' }
+                      },
                       'x-ms-azure-resource': true,
                       description: 'The managedDisk.'
                     },
@@ -353,8 +366,8 @@ provider.Compute.makeImage({
                     caching: {
                       type: 'string',
                       description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                      'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
                     },
                     diskSizeGB: {
                       type: 'integer',
@@ -364,12 +377,32 @@ provider.Compute.makeImage({
                     storageAccountType: {
                       description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [
+                        'Standard_LRS',
+                        'Premium_LRS',
+                        'StandardSSD_LRS',
+                        'UltraSSD_LRS',
+                        'Premium_ZRS',
+                        'StandardSSD_ZRS'
+                      ],
+                      'x-ms-enum': {
+                        name: 'StorageAccountTypes',
+                        modelAsString: true
+                      }
                     },
                     diskEncryptionSet: {
                       description: 'Specifies the customer managed disk encryption set resource id for the managed image disk.',
-                      allOf: [Array]
+                      allOf: [
+                        {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource Id'
+                            }
+                          },
+                          'x-ms-azure-resource': true
+                        }
+                      ]
                     }
                   },
                   description: 'Describes a image disk.'
@@ -390,13 +423,71 @@ provider.Compute.makeImage({
                 allOf: [
                   {
                     properties: {
-                      snapshot: [Object],
-                      managedDisk: [Object],
-                      blobUri: [Object],
-                      caching: [Object],
-                      diskSizeGB: [Object],
-                      storageAccountType: [Object],
-                      diskEncryptionSet: [Object]
+                      snapshot: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true,
+                        description: 'The snapshot.'
+                      },
+                      managedDisk: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true,
+                        description: 'The managedDisk.'
+                      },
+                      blobUri: {
+                        type: 'string',
+                        description: 'The Virtual Hard Disk.'
+                      },
+                      caching: {
+                        type: 'string',
+                        description: 'Specifies the caching requirements. <br><br> Possible values are: <br><br> **None** <br><br> **ReadOnly** <br><br> **ReadWrite** <br><br> Default: **None for Standard storage. ReadOnly for Premium storage**',
+                        enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                        'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
+                      },
+                      diskSizeGB: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Specifies the size of empty data disks in gigabytes. This element can be used to overwrite the name of the disk in a virtual machine image. <br><br> This value cannot be larger than 1023 GB'
+                      },
+                      storageAccountType: {
+                        description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                        type: 'string',
+                        enum: [
+                          'Standard_LRS',
+                          'Premium_LRS',
+                          'StandardSSD_LRS',
+                          'UltraSSD_LRS',
+                          'Premium_ZRS',
+                          'StandardSSD_ZRS'
+                        ],
+                        'x-ms-enum': {
+                          name: 'StorageAccountTypes',
+                          modelAsString: true
+                        }
+                      },
+                      diskEncryptionSet: {
+                        description: 'Specifies the customer managed disk encryption set resource id for the managed image disk.',
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource Id'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          }
+                        ]
+                      }
                     },
                     description: 'Describes a image disk.'
                   }

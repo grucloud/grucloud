@@ -19,6 +19,8 @@ provider.Compute.makeRestorePoint({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
     disk: resources.Compute.Disk["myDisk"],
     virtualMachineScaleSetVm:
       resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
@@ -30,6 +32,8 @@ provider.Compute.makeRestorePoint({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
+- [Key](../KeyVault/Key.md)
 - [Disk](../Compute/Disk.md)
 - [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
 - [RestorePointCollection](../Compute/RestorePointCollection.md)
@@ -199,11 +203,49 @@ provider.Compute.makeRestorePoint({
                     osType: {
                       type: 'string',
                       description: 'Gets the Operating System type.',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'Windows', 'Linux' ],
+                      'x-ms-enum': {
+                        name: 'OperatingSystemType',
+                        modelAsString: true
+                      }
                     },
                     encryptionSettings: {
-                      properties: [Object],
+                      properties: {
+                        diskEncryptionKey: {
+                          description: 'Specifies the location of the disk encryption key, which is a Key Vault Secret.',
+                          properties: {
+                            secretUrl: {
+                              type: 'string',
+                              description: 'The URL referencing a secret in a Key Vault.'
+                            },
+                            sourceVault: {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true,
+                              description: 'The relative URL of the Key Vault containing the secret.'
+                            }
+                          },
+                          required: [ 'secretUrl', 'sourceVault' ]
+                        },
+                        keyEncryptionKey: {
+                          description: 'Specifies the location of the key encryption key in Key Vault.',
+                          properties: {
+                            keyUrl: {
+                              type: 'string',
+                              description: 'The URL referencing a key encryption key in Key Vault.'
+                            },
+                            sourceVault: {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true,
+                              description: 'The relative URL of the Key Vault containing the key.'
+                            }
+                          },
+                          required: [ 'keyUrl', 'sourceVault' ]
+                        },
+                        enabled: {
+                          type: 'boolean',
+                          description: 'Specifies whether disk encryption should be enabled on the virtual machine.'
+                        }
+                      },
                       description: 'Describes a Encryption Settings for a Disk'
                     },
                     name: {
@@ -213,8 +255,8 @@ provider.Compute.makeRestorePoint({
                     caching: {
                       description: 'Gets the caching type.',
                       type: 'string',
-                      enum: [Array],
-                      'x-ms-enum': [Object]
+                      enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                      'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
                     },
                     diskSizeGB: {
                       type: 'integer',
@@ -223,11 +265,52 @@ provider.Compute.makeRestorePoint({
                     },
                     managedDisk: {
                       description: 'Gets the managed disk details',
-                      properties: [Object],
-                      allOf: [Array]
+                      properties: {
+                        storageAccountType: {
+                          description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                          type: 'string',
+                          enum: [
+                            'Standard_LRS',
+                            'Premium_LRS',
+                            'StandardSSD_LRS',
+                            'UltraSSD_LRS',
+                            'Premium_ZRS',
+                            'StandardSSD_ZRS'
+                          ],
+                          'x-ms-enum': {
+                            name: 'StorageAccountTypes',
+                            modelAsString: true
+                          }
+                        },
+                        diskEncryptionSet: {
+                          description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                          allOf: [
+                            {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true
+                            }
+                          ]
+                        }
+                      },
+                      allOf: [
+                        {
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Resource Id'
+                            }
+                          },
+                          'x-ms-azure-resource': true
+                        }
+                      ]
                     },
                     diskRestorePoint: {
-                      properties: [Object],
+                      properties: {
+                        id: {
+                          type: 'string',
+                          description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
+                        }
+                      },
                       description: 'The API entity reference.'
                     }
                   }
@@ -236,12 +319,76 @@ provider.Compute.makeRestorePoint({
                   type: 'array',
                   items: {
                     properties: {
-                      lun: [Object],
-                      name: [Object],
-                      caching: [Object],
-                      diskSizeGB: [Object],
-                      managedDisk: [Object],
-                      diskRestorePoint: [Object]
+                      lun: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Gets the logical unit number.'
+                      },
+                      name: {
+                        type: 'string',
+                        description: 'Gets the disk name.'
+                      },
+                      caching: {
+                        description: 'Gets the caching type.',
+                        type: 'string',
+                        enum: [ 'None', 'ReadOnly', 'ReadWrite' ],
+                        'x-ms-enum': { name: 'CachingTypes', modelAsString: false }
+                      },
+                      diskSizeGB: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Gets the initial disk size in GB for blank data disks, and the new desired size for existing OS and Data disks.'
+                      },
+                      managedDisk: {
+                        description: 'Gets the managed disk details',
+                        properties: {
+                          storageAccountType: {
+                            description: 'Specifies the storage account type for the managed disk. NOTE: UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk.',
+                            type: 'string',
+                            enum: [
+                              'Standard_LRS',
+                              'Premium_LRS',
+                              'StandardSSD_LRS',
+                              'UltraSSD_LRS',
+                              'Premium_ZRS',
+                              'StandardSSD_ZRS'
+                            ],
+                            'x-ms-enum': {
+                              name: 'StorageAccountTypes',
+                              modelAsString: true
+                            }
+                          },
+                          diskEncryptionSet: {
+                            description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
+                            allOf: [
+                              {
+                                properties: [Object],
+                                'x-ms-azure-resource': true
+                              }
+                            ]
+                          }
+                        },
+                        allOf: [
+                          {
+                            properties: {
+                              id: {
+                                type: 'string',
+                                description: 'Resource Id'
+                              }
+                            },
+                            'x-ms-azure-resource': true
+                          }
+                        ]
+                      },
+                      diskRestorePoint: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
+                          }
+                        },
+                        description: 'The API entity reference.'
+                      }
                     },
                     description: 'Describes a data disk.'
                   },
@@ -285,16 +432,95 @@ provider.Compute.makeRestorePoint({
                     },
                     additionalUnattendContent: {
                       type: 'array',
-                      items: [Object],
+                      items: {
+                        properties: {
+                          passName: {
+                            type: 'string',
+                            description: 'The pass name. Currently, the only allowable value is OobeSystem.',
+                            enum: [ 'OobeSystem' ],
+                            'x-ms-enum': { name: 'PassNames', modelAsString: false }
+                          },
+                          componentName: {
+                            type: 'string',
+                            description: 'The component name. Currently, the only allowable value is Microsoft-Windows-Shell-Setup.',
+                            enum: [ 'Microsoft-Windows-Shell-Setup' ],
+                            'x-ms-enum': {
+                              name: 'ComponentNames',
+                              modelAsString: false
+                            }
+                          },
+                          settingName: {
+                            type: 'string',
+                            description: 'Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon.',
+                            enum: [ 'AutoLogon', 'FirstLogonCommands' ],
+                            'x-ms-enum': {
+                              name: 'SettingNames',
+                              modelAsString: false
+                            }
+                          },
+                          content: {
+                            type: 'string',
+                            description: 'Specifies the XML formatted content that is added to the unattend.xml file for the specified path and component. The XML must be less than 4KB and must include the root element for the setting or feature that is being inserted.'
+                          }
+                        },
+                        description: 'Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.'
+                      },
                       description: 'Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.'
                     },
                     patchSettings: {
                       description: '[Preview Feature] Specifies settings related to VM Guest Patching on Windows.',
-                      properties: [Object]
+                      properties: {
+                        patchMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true ',
+                          enum: [
+                            'Manual',
+                            'AutomaticByOS',
+                            'AutomaticByPlatform'
+                          ],
+                          'x-ms-enum': {
+                            name: 'WindowsVMGuestPatchMode',
+                            modelAsString: true
+                          }
+                        },
+                        enableHotpatching: {
+                          type: 'boolean',
+                          description: "Enables customers to patch their Azure VMs without requiring a reboot. For enableHotpatching, the 'provisionVMAgent' must be set to true and 'patchMode' must be set to 'AutomaticByPlatform'."
+                        },
+                        assessmentMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true. ',
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'WindowsPatchAssessmentMode',
+                            modelAsString: true
+                          }
+                        }
+                      }
                     },
                     winRM: {
                       description: 'Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell.',
-                      properties: [Object]
+                      properties: {
+                        listeners: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              protocol: {
+                                type: 'string',
+                                description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              },
+                              certificateUrl: {
+                                type: 'string',
+                                description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                              }
+                            },
+                            description: 'Describes Protocol and thumbprint of Windows Remote Management listener'
+                          },
+                          description: 'The list of Windows Remote Management listeners'
+                        }
+                      }
                     }
                   }
                 },
@@ -307,7 +533,25 @@ provider.Compute.makeRestorePoint({
                     },
                     ssh: {
                       description: 'Specifies the ssh key configuration for a Linux OS.',
-                      properties: [Object]
+                      properties: {
+                        publicKeys: {
+                          type: 'array',
+                          items: {
+                            properties: {
+                              path: {
+                                type: 'string',
+                                description: 'Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys'
+                              },
+                              keyData: {
+                                type: 'string',
+                                description: 'SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. <br><br> For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed).'
+                              }
+                            },
+                            description: 'Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.'
+                          },
+                          description: 'The list of SSH public keys used to authenticate with linux based VMs.'
+                        }
+                      }
                     },
                     provisionVMAgent: {
                       type: 'boolean',
@@ -315,7 +559,26 @@ provider.Compute.makeRestorePoint({
                     },
                     patchSettings: {
                       description: '[Preview Feature] Specifies settings related to VM Guest Patching on Linux.',
-                      properties: [Object]
+                      properties: {
+                        patchMode: {
+                          type: 'string',
+                          description: "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'LinuxVMGuestPatchMode',
+                            modelAsString: true
+                          }
+                        },
+                        assessmentMode: {
+                          type: 'string',
+                          description: 'Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.',
+                          enum: [ 'ImageDefault', 'AutomaticByPlatform' ],
+                          'x-ms-enum': {
+                            name: 'LinuxPatchAssessmentMode',
+                            modelAsString: true
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -323,8 +586,33 @@ provider.Compute.makeRestorePoint({
                   type: 'array',
                   items: {
                     properties: {
-                      sourceVault: [Object],
-                      vaultCertificates: [Object]
+                      sourceVault: {
+                        properties: {
+                          id: {
+                            type: 'string',
+                            description: 'Resource Id'
+                          }
+                        },
+                        'x-ms-azure-resource': true,
+                        description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                      },
+                      vaultCertificates: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            certificateUrl: {
+                              type: 'string',
+                              description: 'This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  "data":"<Base64-encoded-certificate>",<br>  "dataType":"pfx",<br>  "password":"<pfx-file-password>"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                            },
+                            certificateStore: {
+                              type: 'string',
+                              description: 'For Windows VMs, specifies the certificate store on the Virtual Machine to which the certificate should be added. The specified certificate store is implicitly in the LocalMachine account. <br><br>For Linux VMs, the certificate file is placed under the /var/lib/waagent directory, with the file name &lt;UppercaseThumbprint&gt;.crt for the X509 certificate file and &lt;UppercaseThumbprint&gt;.prv for private key. Both of these files are .pem formatted.'
+                            }
+                          },
+                          description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the VM.'
+                        },
+                        description: 'The list of key vault references in SourceVault which contain certificates.'
+                      }
                     },
                     description: 'Describes a set of certificates which are all in the same Key Vault.'
                   },

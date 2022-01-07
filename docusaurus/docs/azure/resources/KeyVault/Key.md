@@ -156,14 +156,30 @@ provider.KeyVault.makeKey({
                   trigger: {
                     description: 'The trigger of key rotation policy lifetimeAction.',
                     properties: {
-                      timeAfterCreate: [Object],
-                      timeBeforeExpiry: [Object]
+                      timeAfterCreate: {
+                        type: 'string',
+                        description: "The time duration after key creation to rotate the key. It only applies to rotate. It will be in ISO 8601 duration format. Eg: 'P90D', 'P1Y'."
+                      },
+                      timeBeforeExpiry: {
+                        type: 'string',
+                        description: "The time duration before key expiring to rotate or notify. It will be in ISO 8601 duration format. Eg: 'P90D', 'P1Y'."
+                      }
                     },
                     type: 'object'
                   },
                   action: {
                     description: 'The action of key rotation policy lifetimeAction.',
-                    properties: { type: [Object] },
+                    properties: {
+                      type: {
+                        type: 'string',
+                        description: 'The type of action.',
+                        enum: [ 'rotate', 'notify' ],
+                        'x-ms-enum': {
+                          name: 'KeyRotationPolicyActionType',
+                          modelAsString: false
+                        }
+                      }
+                    },
                     type: 'object'
                   }
                 },

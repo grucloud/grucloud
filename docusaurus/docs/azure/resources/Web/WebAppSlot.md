@@ -374,7 +374,16 @@ Provides a **WebAppSlot** from the **Web** group
                     items: {
                       description: 'Directory for virtual application.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        virtualPath: {
+                          description: 'Path to virtual application.',
+                          type: 'string'
+                        },
+                        physicalPath: {
+                          description: 'Physical path.',
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 }
@@ -404,14 +413,46 @@ Provides a **WebAppSlot** from the **Web** group
                     description: 'Routing rules for ramp up testing. This rule allows to redirect static traffic % to a slot or to gradually change routing % based on performance.',
                     type: 'object',
                     properties: {
-                      actionHostName: [Object],
-                      reroutePercentage: [Object],
-                      changeStep: [Object],
-                      changeIntervalInMinutes: [Object],
-                      minReroutePercentage: [Object],
-                      maxReroutePercentage: [Object],
-                      changeDecisionCallbackUrl: [Object],
-                      name: [Object]
+                      actionHostName: {
+                        description: 'Hostname of a slot to which the traffic will be redirected if decided to. E.g. myapp-stage.azurewebsites.net.',
+                        type: 'string'
+                      },
+                      reroutePercentage: {
+                        format: 'double',
+                        description: 'Percentage of the traffic which will be redirected to <code>ActionHostName</code>.',
+                        type: 'number'
+                      },
+                      changeStep: {
+                        format: 'double',
+                        description: 'In auto ramp up scenario this is the step to add/remove from <code>ReroutePercentage</code> until it reaches \\n<code>MinReroutePercentage</code> or \n' +
+                          '<code>MaxReroutePercentage</code>. Site metrics are checked every N minutes specified in <code>ChangeIntervalInMinutes</code>.\\nCustom decision algorithm \n' +
+                          'can be provided in TiPCallback site extension which URL can be specified in <code>ChangeDecisionCallbackUrl</code>.',
+                        type: 'number'
+                      },
+                      changeIntervalInMinutes: {
+                        format: 'int32',
+                        description: 'Specifies interval in minutes to reevaluate ReroutePercentage.',
+                        type: 'integer'
+                      },
+                      minReroutePercentage: {
+                        format: 'double',
+                        description: 'Specifies lower boundary above which ReroutePercentage will stay.',
+                        type: 'number'
+                      },
+                      maxReroutePercentage: {
+                        format: 'double',
+                        description: 'Specifies upper boundary below which ReroutePercentage will stay.',
+                        type: 'number'
+                      },
+                      changeDecisionCallbackUrl: {
+                        description: 'Custom decision algorithm can be provided in TiPCallback site extension which URL can be specified. See TiPCallback site extension for the scaffold and contracts.\n' +
+                          'https://www.siteextensions.net/packages/TiPCallback/',
+                        type: 'string'
+                      },
+                      name: {
+                        description: 'Name of the routing rule. The recommended name would be to point to the slot which will receive the traffic in the experiment.',
+                        type: 'string'
+                      }
                     }
                   }
                 }
@@ -453,7 +494,17 @@ Provides a **WebAppSlot** from the **Web** group
                     requests: {
                       description: 'A rule based on total requests.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        count: {
+                          format: 'int32',
+                          description: 'Request Count.',
+                          type: 'integer'
+                        },
+                        timeInterval: {
+                          description: 'Time interval.',
+                          type: 'string'
+                        }
+                      }
                     },
                     privateBytesInKB: {
                       format: 'int32',
@@ -463,22 +514,111 @@ Provides a **WebAppSlot** from the **Web** group
                     statusCodes: {
                       description: 'A rule based on status codes.',
                       type: 'array',
-                      items: [Object]
+                      items: {
+                        description: 'Trigger based on status code.',
+                        type: 'object',
+                        properties: {
+                          status: {
+                            format: 'int32',
+                            description: 'HTTP status code.',
+                            type: 'integer'
+                          },
+                          subStatus: {
+                            format: 'int32',
+                            description: 'Request Sub Status.',
+                            type: 'integer'
+                          },
+                          win32Status: {
+                            format: 'int32',
+                            description: 'Win32 error code.',
+                            type: 'integer'
+                          },
+                          count: {
+                            format: 'int32',
+                            description: 'Request Count.',
+                            type: 'integer'
+                          },
+                          timeInterval: {
+                            description: 'Time interval.',
+                            type: 'string'
+                          },
+                          path: {
+                            description: 'Request Path',
+                            type: 'string'
+                          }
+                        }
+                      }
                     },
                     slowRequests: {
                       description: 'A rule based on request execution time.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        timeTaken: { description: 'Time taken.', type: 'string' },
+                        path: {
+                          description: 'Request Path.',
+                          type: 'string'
+                        },
+                        count: {
+                          format: 'int32',
+                          description: 'Request Count.',
+                          type: 'integer'
+                        },
+                        timeInterval: {
+                          description: 'Time interval.',
+                          type: 'string'
+                        }
+                      }
                     },
                     slowRequestsWithPath: {
                       description: 'A rule based on multiple Slow Requests Rule with path',
                       type: 'array',
-                      items: [Object]
+                      items: {
+                        description: 'Trigger based on request execution time.',
+                        type: 'object',
+                        properties: {
+                          timeTaken: {
+                            description: 'Time taken.',
+                            type: 'string'
+                          },
+                          path: {
+                            description: 'Request Path.',
+                            type: 'string'
+                          },
+                          count: {
+                            format: 'int32',
+                            description: 'Request Count.',
+                            type: 'integer'
+                          },
+                          timeInterval: {
+                            description: 'Time interval.',
+                            type: 'string'
+                          }
+                        }
+                      }
                     },
                     statusCodesRange: {
                       description: 'A rule based on status codes ranges.',
                       type: 'array',
-                      items: [Object]
+                      items: {
+                        description: 'Trigger based on range of status codes.',
+                        type: 'object',
+                        properties: {
+                          statusCodes: {
+                            description: 'HTTP status code.',
+                            type: 'string'
+                          },
+                          path: { type: 'string' },
+                          count: {
+                            format: 'int32',
+                            description: 'Request Count.',
+                            type: 'integer'
+                          },
+                          timeInterval: {
+                            description: 'Time interval.',
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },
@@ -488,14 +628,26 @@ Provides a **WebAppSlot** from the **Web** group
                   properties: {
                     actionType: {
                       description: 'Predefined action to be taken.',
-                      enum: [Array],
+                      enum: [ 'Recycle', 'LogEvent', 'CustomAction' ],
                       type: 'string',
-                      'x-ms-enum': [Object]
+                      'x-ms-enum': {
+                        name: 'AutoHealActionType',
+                        modelAsString: false
+                      }
                     },
                     customAction: {
                       description: 'Custom action to be taken.',
                       type: 'object',
-                      properties: [Object]
+                      properties: {
+                        exe: {
+                          description: 'Executable to be run.',
+                          type: 'string'
+                        },
+                        parameters: {
+                          description: 'Parameters for the executable.',
+                          type: 'string'
+                        }
+                      }
                     },
                     minProcessExecutionTime: {
                       description: 'Minimum time the process must execute\n' +
@@ -710,7 +862,7 @@ Provides a **WebAppSlot** from the **Web** group
                       'X-Azure-FDID and X-FD-HealthProbe.\n' +
                       'The matching logic is exact match.',
                     type: 'object',
-                    additionalProperties: { type: 'array', items: [Object] }
+                    additionalProperties: { type: 'array', items: { type: 'string' } }
                   }
                 }
               }
@@ -788,7 +940,7 @@ Provides a **WebAppSlot** from the **Web** group
                       'X-Azure-FDID and X-FD-HealthProbe.\n' +
                       'The matching logic is exact match.',
                     type: 'object',
-                    additionalProperties: { type: 'array', items: [Object] }
+                    additionalProperties: { type: 'array', items: { type: 'string' } }
                   }
                 }
               }
