@@ -144,11 +144,41 @@ module.exports = AzClient = ({
       }),
     ])();
 
+  const findDependenciesFromCreate = ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(dependencies);
+        //console.log(dependencies);
+      }),
+      () => dependencies,
+      filter(get("pathId")),
+      map.entries(([key, { group, type, pathId }]) => [
+        key,
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => live,
+          get(pathId),
+          (id) => ({
+            group,
+            type,
+            ids: [id],
+          }),
+        ])(),
+      ]),
+      values,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   const findDependenciesDefault = ({ live, lives }) =>
     pipe([
       () => [
         ...findDependenciesFromList({ live, lives }),
         findDependenciesUserAssignedIdentity({ live, lives }),
+        ...findDependenciesFromCreate({ live, lives }),
       ],
       filter(not(isEmpty)),
       tap((params) => {

@@ -123,11 +123,13 @@ const buildProperties = ({
   programOptions,
   filterLive = () => identity,
   propertiesDefault = {},
+  pickPropertiesCreate,
 }) =>
   pipe([
     tap(() => {
       assert(environmentVariables);
       assert(filterLive);
+      assert(pickPropertiesCreate);
     }),
     () => resource,
     get("live"),
@@ -138,6 +140,7 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
+      pickPropertiesCreate,
     }),
     tap((params) => {
       assert(true);
@@ -749,7 +752,10 @@ const removeDefaultDependencies =
                         assert(type);
                         assert(group);
                         assert(providerName);
-                        assert(ids);
+                        if (!ids) {
+                          //assert(ids);
+                        }
+                        //assert(ids);
                       }),
                       () => ids,
                       filter((id) =>
@@ -1011,6 +1017,7 @@ const writeResource =
     resourceName = identity,
     filterLive,
     propertiesDefault,
+    pickPropertiesCreate,
     codeBuildProperties,
     hasNoProperty,
     inferName,
@@ -1049,6 +1056,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
+                  pickPropertiesCreate,
                   propertiesDefault,
                   dependencies,
                   environmentVariables,
@@ -1107,6 +1115,7 @@ const writeResources =
     providerName,
     filterLive,
     propertiesDefault,
+    pickPropertiesCreate,
     properties,
     dependencies,
     environmentVariables,
@@ -1157,6 +1166,7 @@ const writeResources =
                 properties,
                 filterLive,
                 propertiesDefault,
+                pickPropertiesCreate,
                 inferName,
                 dependencies,
                 ignoreResource,

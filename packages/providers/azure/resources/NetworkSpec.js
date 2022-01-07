@@ -4,7 +4,7 @@ const { defaultsDeep, pluck, isObject } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, compare } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 
 const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
@@ -369,6 +369,49 @@ exports.fnSpecs = ({ config }) => {
           "properties.privateLinkServiceNetworkPolicies",
           "properties.applicationGatewayIpConfigurations",
         ],
+        //TODO use filterLive in compare
+        compare: compare({
+          filterAll: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["properties.provisioningState"]),
+            omitIfEmpty(["properties.delegations"]),
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                assign({
+                  serviceEndpoints: pipe([
+                    get("serviceEndpoints"),
+                    map(omit(["provisioningState"])),
+                  ]),
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        }),
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([
+            tap((params) => {
+              assert(pickPropertiesCreate);
+            }),
+            pick(pickPropertiesCreate),
+            assign({
+              properties: pipe([
+                get("properties"),
+                assign({
+                  serviceEndpoints: pipe([
+                    get("serviceEndpoints"),
+                    map(omit(["provisioningState"])),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
         configDefault: ({ properties, dependencies }) => {
           return defaultsDeep({
             properties: {},

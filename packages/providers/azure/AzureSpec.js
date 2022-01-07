@@ -19,12 +19,14 @@ const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
-const ResourceManagementSpec = require("./resources/ResourcesSpec");
-const NetworkSpec = require("./resources/NetworkSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
-const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
-const WebSpec = require("./resources/WebSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
+const KeyVault = require("./resources/KeyVault");
+
+const NetworkSpec = require("./resources/NetworkSpec");
+const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
+const ResourceManagementSpec = require("./resources/ResourcesSpec");
+const WebSpec = require("./resources/WebSpec");
 
 const AzTag = require("./AzTag");
 
@@ -36,6 +38,7 @@ const createSpecsOveride = (config) =>
     () => [
       ComputeSpec,
       DBForPortgreSQLSpec,
+      KeyVault,
       NetworkSpec,
       OperationalInsightsSpec,
       ResourceManagementSpec,

@@ -8,7 +8,7 @@ const exlusionList = {
   // gcp
   accessToken: hiddenCredentials,
   // az
-  tenantId: hiddenCredentials,
+  //tenantId: hiddenCredentials,
   subscriptionId: hiddenCredentials,
   appId: hiddenCredentials,
   password: hiddenCredentials,

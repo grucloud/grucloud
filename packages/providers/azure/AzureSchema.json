@@ -4500,9 +4500,9 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "privateEndpoint": {
-                "type": "PrivateEndpoint",
-                "group": "Network",
+            "mhsmPrivateEndpointConnection": {
+                "type": "MHSMPrivateEndpointConnection",
+                "group": "KeyVault",
                 "createOnly": true,
                 "pathId": "properties.privateEndpointConnections.items.privateEndpoint.id"
             }
@@ -4579,9 +4579,9 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "privateEndpointConnection": {
-                "type": "PrivateEndpointConnection",
-                "group": "KeyVault",
+            "privateEndpoint": {
+                "type": "PrivateEndpoint",
+                "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.privateEndpoint.id"
             },
@@ -4607,58 +4607,6 @@
             "getAll": {
                 "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/managedHSMs/{name}/privateEndpointConnections",
                 "operationId": "MHSMPrivateEndpointConnections_ListByResource"
-            }
-        },
-        "omitProperties": [
-            "properties.privateEndpoint.id",
-            "properties.privateLinkServiceConnectionState",
-            "properties.provisioningState"
-        ],
-        "pickProperties": [
-            "etag"
-        ],
-        "pickPropertiesCreate": [
-            "etag"
-        ]
-    },
-    {
-        "type": "PrivateEndpointConnection",
-        "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "mhsmPrivateEndpointConnection": {
-                "type": "MHSMPrivateEndpointConnection",
-                "group": "KeyVault",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.id"
-            },
-            "vault": {
-                "type": "Vault",
-                "group": "KeyVault",
-                "name": "vaultName"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Put"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Delete"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/privateEndpointConnections",
-                "operationId": "PrivateEndpointConnections_ListByResource"
             }
         },
         "omitProperties": [

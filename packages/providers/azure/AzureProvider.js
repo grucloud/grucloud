@@ -38,10 +38,13 @@ exports.AzureProvider = ({
       _bearerToken = bearerToken;
     }),
   ]);
+
   const configProviderDefault = {
     bearerToken: () => _bearerToken,
     retryCount: 60,
     retryDelay: 10e3,
+    tenantId: process.env.TENANT_ID,
+    appId: process.env.APP_ID,
   };
 
   const makeConfig = () =>
