@@ -36,16 +36,12 @@ provider.Network.makeDscpConfiguration({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualMachine](../Compute/VirtualMachine.md)
-- [NatGateway](../Network/NatGateway.md)
 ## Swagger Schema
 ```js
 {

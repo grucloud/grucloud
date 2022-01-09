@@ -296,7 +296,6 @@ provider.Network.makeApplicationGateway({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
@@ -308,7 +307,6 @@ provider.Network.makeApplicationGateway({
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
-- [NatGateway](../Network/NatGateway.md)
 ## Swagger Schema
 ```js
 {

@@ -1181,78 +1181,6 @@
         ]
     },
     {
-        "type": "RestorePoint",
-        "group": "Compute",
-        "apiVersion": "2021-07-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "vault": {
-                "type": "Vault",
-                "group": "KeyVault",
-                "createOnly": true
-            },
-            "key": {
-                "type": "Key",
-                "group": "KeyVault",
-                "createOnly": true
-            },
-            "disk": {
-                "type": "Disk",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.sourceMetadata.storageProfile.dataDisks.items.diskRestorePoint.id"
-            },
-            "virtualMachineScaleSetVm": {
-                "type": "VirtualMachineScaleSetVM",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.sourceMetadata.vmId"
-            },
-            "restorePointCollection": {
-                "type": "RestorePointCollection",
-                "group": "Compute",
-                "name": "restorePointCollectionName"
-            }
-        },
-        "methods": {
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
-                "operationId": "RestorePoints_Create"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
-                "operationId": "RestorePoints_Delete"
-            },
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}/restorePoints/{restorePointName}",
-                "operationId": "RestorePoints_Get"
-            }
-        },
-        "omitProperties": [
-            "properties.sourceMetadata",
-            "properties.provisioningState",
-            "properties.consistencyMode"
-        ],
-        "pickProperties": [
-            "properties.excludeDisks",
-            "properties.timeCreated"
-        ],
-        "pickPropertiesCreate": [
-            "properties.excludeDisks",
-            "properties.timeCreated"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.sourceMetadata.osProfile.adminPassword",
-                "suffix": "ADMIN_PASSWORD"
-            }
-        ]
-    },
-    {
         "type": "RestorePointCollection",
         "group": "Compute",
         "apiVersion": "2021-07-01",
@@ -1266,23 +1194,7 @@
                 "type": "RestorePoint",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.restorePoints.items.sourceMetadata.storageProfile.osDisk.diskRestorePoint.id"
-            },
-            "vault": {
-                "type": "Vault",
-                "group": "KeyVault",
-                "createOnly": true
-            },
-            "key": {
-                "type": "Key",
-                "group": "KeyVault",
-                "createOnly": true
-            },
-            "virtualMachineScaleSetVm": {
-                "type": "VirtualMachineScaleSetVM",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.restorePoints.items.sourceMetadata.vmId"
+                "pathId": "properties.restorePointCollectionId"
             }
         },
         "methods": {
@@ -2283,12 +2195,6 @@
                 "createOnly": true,
                 "pathId": "instanceId"
             },
-            "proximityPlacementGroup": {
-                "type": "ProximityPlacementGroup",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.instanceView.placementGroupId"
-            },
             "galleryImage": {
                 "type": "GalleryImage",
                 "group": "Compute",
@@ -3122,12 +3028,6 @@
                 "group": "ManagedIdentity",
                 "createOnly": true,
                 "list": true
-            },
-            "privateEndpointConnection": {
-                "type": "PrivateEndpointConnection",
-                "group": "ContainerRegistry",
-                "createOnly": true,
-                "pathId": "properties.privateEndpointConnections.items.privateEndpoint.id"
             }
         },
         "methods": {
@@ -3520,12 +3420,6 @@
                 "group": "ManagedIdentity",
                 "createOnly": true,
                 "list": true
-            },
-            "pipelineRun": {
-                "type": "PipelineRun",
-                "group": "ContainerRegistry",
-                "createOnly": true,
-                "pathId": "properties.runResult.runId"
             },
             "registry": {
                 "type": "Registry",
@@ -4499,12 +4393,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "mhsmPrivateEndpointConnection": {
-                "type": "MHSMPrivateEndpointConnection",
-                "group": "KeyVault",
-                "createOnly": true,
-                "pathId": "properties.privateEndpointConnections.items.privateEndpoint.id"
             }
         },
         "methods": {
@@ -4842,12 +4730,6 @@
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.requestRoutingRules.items.backendAddressPool.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpointConnections.items.privateEndpoint.subnet.natGateway.id"
             }
         },
         "methods": {
@@ -4990,48 +4872,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.natGateway.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
-            },
-            "privateLinkService": {
-                "type": "PrivateLinkService",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.manualPrivateLinkServiceConnections.items.privateLinkServiceId"
             },
             "applicationGateway": {
                 "type": "ApplicationGateway",
@@ -5505,18 +5345,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.associatedNetworkInterfaces.items.virtualMachine.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.associatedNetworkInterfaces.items.privateEndpoint.subnet.natGateway.id"
             }
         },
         "methods": {
@@ -5973,18 +5801,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "expressRouteCircuitPeering": {
-                "type": "ExpressRouteCircuitPeering",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.expressRouteConnections.items.expressRouteCircuitPeering.id"
-            },
-            "routeTable": {
-                "type": "RouteTable",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.expressRouteConnections.items.routingConfiguration.associatedRouteTable.id"
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -6507,52 +6323,16 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "loadBalancer": {
-                "type": "LoadBalancer",
-                "group": "Network",
-                "name": "loadBalancerName"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
-            },
             "loadBalancerBackendAddressPool": {
                 "type": "LoadBalancerBackendAddressPool",
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.backendAddressPool.id"
             },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
+            "loadBalancer": {
+                "type": "LoadBalancer",
                 "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
+                "name": "loadBalancerName"
             }
         },
         "methods": {
@@ -6824,19 +6604,19 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.inboundNatRules.items.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
+                "pathId": "properties.frontendIPConfigurations.items.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.inboundNatRules.items.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.frontendIPConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.inboundNatRules.items.backendIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
+                "pathId": "properties.frontendIPConfigurations.items.publicIPPrefix.id"
             },
             "loadBalancerBackendAddressPool": {
                 "type": "LoadBalancerBackendAddressPool",
@@ -6931,24 +6711,6 @@
                 "type": "LoadBalancer",
                 "group": "Network",
                 "name": "loadBalancerName"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.backendIPConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
             }
         },
         "methods": {
@@ -7186,25 +6948,19 @@
                 "type": "VirtualMachine",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.networkInterfaces.items.virtualMachine.id"
+                "pathId": "properties.virtualMachine.id"
+            },
+            "loadBalancer": {
+                "type": "LoadBalancer",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.gatewayLoadBalancer.id"
             },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.privateEndpointConnections.items.privateEndpoint.subnet.natGateway.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateLinkService.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
+                "pathId": "properties.privateLinkService.ipConfigurations.items.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -7218,17 +6974,11 @@
                 "createOnly": true,
                 "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.publicIPPrefix.id"
             },
-            "privateLinkService": {
-                "type": "PrivateLinkService",
+            "dscpConfiguration": {
+                "type": "DscpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateEndpoint.manualPrivateLinkServiceConnections.items.privateLinkServiceId"
-            },
-            "loadBalancer": {
-                "type": "LoadBalancer",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.gatewayLoadBalancer.id"
+                "pathId": "properties.dscpConfiguration.id"
             }
         },
         "methods": {
@@ -7358,7 +7108,7 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
+                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -7377,24 +7127,6 @@
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.virtualNetworkTap.destinationNetworkInterfaceIPConfiguration.loadBalancerInboundNatRules.items.backendAddressPool.id"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
             },
             "networkInterface": {
                 "type": "NetworkInterface",
@@ -8352,30 +8084,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.virtualMachine.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.subnets.items.natGateway.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
             }
         },
         "methods": {
@@ -8782,41 +8490,11 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.dscpConfiguration.id"
-            },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.privateEndpoint.subnet.natGateway.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
+                "pathId": "properties.subnet.natGateway.id"
             },
             "privateLinkService": {
                 "type": "PrivateLinkService",
@@ -8941,7 +8619,7 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateEndpointConnections.items.privateEndpoint.subnet.natGateway.id"
+                "pathId": "properties.ipConfigurations.items.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -8960,18 +8638,6 @@
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.loadBalancerFrontendIpConfigurations.items.gatewayLoadBalancer.id"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.networkInterfaces.items.dscpConfiguration.id"
             }
         },
         "methods": {
@@ -9029,48 +8695,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.natGateway.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.subnet.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
-            },
-            "privateLinkService": {
-                "type": "PrivateLinkService",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.manualPrivateLinkServiceConnections.items.privateLinkServiceId"
             },
             "service": {
                 "type": "PrivateLinkService",
@@ -9134,30 +8758,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -9699,18 +9299,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "route": {
-                "type": "Route",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.ipv6Peerings.items.ipv6PeeringConfig.routeFilter.id"
-            },
-            "expressRouteConnection": {
-                "type": "ExpressRouteConnection",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.ipv6Peerings.items.expressRouteConnection.id"
             }
         },
         "methods": {
@@ -9810,12 +9398,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.subnets.items.natGateway.id"
             }
         },
         "methods": {
@@ -9964,12 +9546,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "natGateway": {
-                "type": "NatGateway",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.subnets.items.natGateway.id"
             }
         },
         "methods": {
@@ -10075,41 +9651,11 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurationProfiles.items.subnet.natGateway.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
-            },
-            "ddosCustomPolicy": {
-                "type": "DdosCustomPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
-            },
-            "publicIpPrefix": {
-                "type": "PublicIPPrefix",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
+                "pathId": "properties.natGateway.id"
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
@@ -10424,29 +9970,11 @@
                 "group": "Resources",
                 "name": "resourceGroupName"
             },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
+                "pathId": "properties.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -11609,7 +11137,7 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.natGateway.id"
+                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.subnet.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -11628,24 +11156,6 @@
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.destinationNetworkInterfaceIPConfiguration.loadBalancerInboundNatRules.items.backendAddressPool.id"
-            },
-            "virtualMachine": {
-                "type": "VirtualMachine",
-                "group": "Compute",
-                "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.virtualMachine.id"
-            },
-            "dscpConfiguration": {
-                "type": "DscpConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.networkInterfaces.items.dscpConfiguration.id"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ipConfiguration.subnet.networkSecurityGroup.flowLogs.items.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.workspaceResourceId"
             }
         },
         "methods": {
@@ -12882,18 +12392,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "virtualHub": {
-                "type": "VirtualHub",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.p2SVpnGateways.items.virtualHub.id"
-            },
-            "p2sVpnServerConfiguration": {
-                "type": "P2sVpnServerConfiguration",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.p2SVpnGateways.items.vpnServerConfiguration.id"
             }
         },
         "methods": {
@@ -13053,12 +12551,6 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
-            },
-            "firewallPolicy": {
-                "type": "FirewallPolicy",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.applicationGateways.items.firewallPolicy.id"
             }
         },
         "methods": {

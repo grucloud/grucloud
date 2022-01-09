@@ -375,7 +375,10 @@ exports.fnSpecs = ({ config }) => {
             tap((params) => {
               assert(true);
             }),
-            omit(["properties.provisioningState"]),
+            omit([
+              "properties.provisioningState",
+              "properties.ipConfigurations",
+            ]),
             omitIfEmpty(["properties.delegations"]),
             pick(["properties"]),
             assign({

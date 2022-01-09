@@ -1235,17 +1235,19 @@ const buildDependenciesFromBody =
                   ],
                 ]),
                 // Else
-                eq(obj.type, "array"),
+                //TODO
+                eq(obj?.type, "array"),
                 pipe([
                   tap((params) => {
-                    assert(true);
+                    assert(obj);
+                    assert(obj.items);
                   }),
                   () => obj,
                   buildDependenciesFromBody({
                     parentPath: getParentPath({
                       parentPath,
                       key,
-                      obj: obj.items,
+                      obj: pipe([() => obj, get("items")])(),
                     }),
                     accumulator,
                   }),

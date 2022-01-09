@@ -7,7 +7,6 @@ Provides a **VirtualMachineScaleSetVM** from the **Compute** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
-- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)

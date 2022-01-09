@@ -38,9 +38,6 @@ provider.Network.makeLoadBalancerBackendAddressPool({
     subnet: resources.Network.Subnet["mySubnet"],
     networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
   }),
 });
 
@@ -51,9 +48,6 @@ provider.Network.makeLoadBalancerBackendAddressPool({
 - [Subnet](../Network/Subnet.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
-- [NatGateway](../Network/NatGateway.md)
-- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
-- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 ## Swagger Schema
 ```js
 <ref *3> {

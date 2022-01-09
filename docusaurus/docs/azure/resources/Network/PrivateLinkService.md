@@ -15,9 +15,6 @@ provider.Network.makePrivateLinkService({
     ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
     publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
   }),
 });
 
@@ -28,8 +25,6 @@ provider.Network.makePrivateLinkService({
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
-- [VirtualMachine](../Compute/VirtualMachine.md)
-- [DscpConfiguration](../Network/DscpConfiguration.md)
 ## Swagger Schema
 ```js
 {
