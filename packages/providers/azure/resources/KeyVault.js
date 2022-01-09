@@ -1,12 +1,13 @@
 const assert = require("assert");
 const { pipe, assign, eq, get, tap, map, pick, omit } = require("rubico");
-const { defaultsDeep, pluck, callProp } = require("rubico/x");
+const { defaultsDeep, pluck, callProp, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const {
   findDependenciesResourceGroup,
   configDefaultGeneric,
+  createAxiosAzure,
 } = require("../AzureCommon");
 
 const group = "KeyVault";
@@ -14,6 +15,33 @@ const group = "KeyVault";
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
+      {
+        type: "Key",
+        // decorate: ({ axios }) =>
+        //   pipe([
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //     assign({
+        //       versions: pipe([
+        //         get("properties.keyUri"),
+        //         tap((params) => {
+        //           assert(true);
+        //         }),
+        //         (baseURL) => ({ baseURL, config }),
+        //         createAxiosAzure,
+        //         tap((params) => {
+        //           assert(true);
+        //         }),
+        //         callProp("get", "/versions?api-version=7.2"),
+        //         get("data"),
+        //         tap((params) => {
+        //           assert(true);
+        //         }),
+        //       ]),
+        //     }),
+        //   ]),
+      },
       {
         type: "Vault",
         dependencies: {
@@ -48,25 +76,28 @@ exports.fnSpecs = ({ config }) =>
               assert(true);
             }),
             () => properties,
-            defaultsDeep({
-              properties: {
-                networkAcls: {
-                  virtualNetworkRules: pipe([
-                    () => dependencies,
-                    get("subnets", []),
-                    map((subnet) =>
-                      pipe([
-                        () => getField(subnet, "id"),
-                        callProp("toLowerCase"),
-                        (id) => ({
-                          id,
-                        }),
-                      ])()
-                    ),
-                  ])(),
+            when(
+              () => dependencies.subnets,
+              defaultsDeep({
+                properties: {
+                  networkAcls: {
+                    virtualNetworkRules: pipe([
+                      () => dependencies,
+                      get("subnets", []),
+                      map((subnet) =>
+                        pipe([
+                          () => getField(subnet, "id"),
+                          callProp("toLowerCase"),
+                          (id) => ({
+                            id,
+                          }),
+                        ])()
+                      ),
+                    ])(),
+                  },
                 },
-              },
-            }),
+              })
+            ),
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config })
             ),

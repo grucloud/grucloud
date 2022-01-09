@@ -27,7 +27,6 @@ const {
   isEmpty,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
-const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 const {
   isInstanceUp: isInstanceUpDefault,
@@ -35,6 +34,7 @@ const {
   isSubstituable,
   configDefaultGeneric,
   findDependenciesUserAssignedIdentity,
+  createAxiosAzure,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
@@ -357,11 +357,10 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const axios = AxiosMaker({
+  //TODO add axios vault
+  const axios = createAxiosAzure({
     baseURL: AZURE_MANAGEMENT_BASE_URL,
-    onHeaders: () => ({
-      Authorization: `Bearer ${config.bearerToken()}`,
-    }),
+    config,
   });
 
   return CoreClient({

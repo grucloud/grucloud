@@ -10,7 +10,17 @@ const {
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const AxiosMaker = require("@grucloud/core/AxiosMaker");
+
 exports.AZURE_MANAGEMENT_BASE_URL = "https://management.azure.com";
+
+exports.createAxiosAzure = ({ baseURL, config }) =>
+  AxiosMaker({
+    baseURL,
+    onHeaders: () => ({
+      Authorization: `Bearer ${config.bearerToken()}`,
+    }),
+  });
 
 exports.isSubstituable = callProp("startsWith", "{");
 

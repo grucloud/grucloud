@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, eq, not, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, find } = require("rubico/x");
+const { defaultsDeep, pluck, isEmpty, find, includes } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -19,34 +19,34 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Disk",
         managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "DiskAccess",
-            group: "Compute",
-            ids: [pipe([() => live, get("properties.diskAccessId")])()],
-          },
-          {
-            type: "Image",
-            group: "Compute",
-            ids: [
-              pipe([
-                () => live,
-                get("properties.creationData.imageReference.id"),
-              ])(),
-            ],
-          },
-          {
-            type: "DiskEncryptionSet",
-            group: "Compute",
-            ids: [
-              pipe([
-                () => live,
-                get("properties.encryption.diskEncryptionSetId"),
-              ])(),
-            ],
-          },
-        ],
+        // findDependencies: ({ live, lives }) => [
+        //   findDependenciesResourceGroup({ live, lives, config }),
+        //   {
+        //     type: "DiskAccess",
+        //     group: "Compute",
+        //     ids: [pipe([() => live, get("properties.diskAccessId")])()],
+        //   },
+        //   {
+        //     type: "Image",
+        //     group: "Compute",
+        //     ids: [
+        //       pipe([
+        //         () => live,
+        //         get("properties.creationData.imageReference.id"),
+        //       ])(),
+        //     ],
+        //   },
+        //   {
+        //     type: "DiskEncryptionSet",
+        //     group: "Compute",
+        //     ids: [
+        //       pipe([
+        //         () => live,
+        //         get("properties.encryption.diskEncryptionSetId"),
+        //       ])(),
+        //     ],
+        //   },
+        // ],
         configDefault: ({
           properties,
           dependencies: { diskAccess, image, diskEncryptionSet },
@@ -94,13 +94,21 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
           },
         },
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["tags", "properties"]),
+            omit(["properties.activeKey", "properties.provisioningState"]),
+          ]),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
             type: "Vault",
             group: "KeyVault",
             ids: [
-              pipe([() => live, get("properties.activeKey.sourceVault")])(),
+              pipe([() => live, get("properties.activeKey.sourceVault.id")])(),
             ],
           },
           {
@@ -112,39 +120,51 @@ exports.fnSpecs = ({ config }) =>
                 get("properties.activeKey.keyUrl"),
                 (keyUrl) =>
                   pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
                     () =>
                       lives.getByType({
                         type: "Key",
                         group: "KeyVault",
                         providerName: config.providerName,
                       }),
-                    //TODO check
-                    find(eq(get("live.keyUrl"), keyUrl)),
+                    find(
+                      pipe([
+                        get("live.properties.keyUri"),
+                        (liveKeyUri) =>
+                          pipe([() => keyUrl, includes(liveKeyUri)])(),
+                      ])
+                    ),
                     get("id"),
                   ])(),
               ])(),
             ],
           },
         ],
-        configDefault: ({ properties, dependencies: { vault, key } }) =>
+        configDefault: ({ properties, dependencies, config }) =>
           pipe([
             () => properties,
             defaultsDeep({
-              location,
-              tags: buildTags(config),
               properties: {
                 activeKey: {
-                  ...(vault && {
+                  ...(dependencies.vault && {
                     sourceVault: {
-                      id: getField(vault, "id"),
+                      id: getField(dependencies.vault, "id"),
                     },
                   }),
-                  ...(key && { keyUrl: getField(key, "keyUri") }),
+                  ...(dependencies.key && {
+                    keyUrl: getField(dependencies.key, "properties.keyUri"),
+                  }),
                 },
               },
+            }),
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+              })
+            ),
+            tap((params) => {
+              assert(true);
             }),
           ])(),
       },

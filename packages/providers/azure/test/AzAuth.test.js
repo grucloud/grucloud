@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { envLoader } = require("@grucloud/core/EnvLoader");
 const { AzAuthorize } = require("../AzAuthorize");
 
 describe("AzAuth", function () {
