@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, map, eq, switchCase, reduce } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  map,
+  eq,
+  switchCase,
+  reduce,
+  filter,
+  set,
+} = require("rubico");
 const {
   callProp,
   keys,
@@ -7,6 +17,7 @@ const {
   isEmpty,
   defaultsDeep,
   when,
+  values,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -119,3 +130,31 @@ const configDefaultGeneric = ({ properties, dependencies, config }) =>
   ])();
 
 exports.configDefaultGeneric = configDefaultGeneric;
+
+const configDefaultDependenciesId = ({ dependencies, spec }) =>
+  pipe([
+    tap(() => {
+      assert(spec);
+      assert(dependencies);
+    }),
+    () => spec,
+    get("dependencies"),
+    filter(get("pathId")),
+    map.entries(([varName, { pathId }]) => [
+      varName,
+      pipe([
+        tap(() => {
+          assert(dependencies[varName]);
+        }),
+        () => ({}),
+        set(pathId, getField(dependencies[varName], "id")),
+      ])(),
+    ]),
+    values,
+    reduce((acc, value) => pipe([() => acc, defaultsDeep(value)])(), {}),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+exports.configDefaultDependenciesId = configDefaultDependenciesId;

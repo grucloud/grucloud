@@ -26,12 +26,14 @@ provider.Network.makeNatGateway({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Swagger Schema
 ```js
 {

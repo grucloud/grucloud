@@ -491,6 +491,7 @@ exports.ResourceMaker = ({
                   defaultsDeep(spec.propertiesDefault),
                 ])(),
                 dependencies: resolvedDependencies,
+                spec,
                 live,
                 lives: provider.lives,
                 programOptions,

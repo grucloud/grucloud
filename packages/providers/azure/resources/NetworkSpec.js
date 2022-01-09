@@ -1,13 +1,18 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isObject } = require("rubico/x");
+const { defaultsDeep, pluck, isObject, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty, compare } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 
-const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
+const {
+  findDependenciesResourceGroup,
+  buildTags,
+  configDefaultDependenciesId,
+  configDefaultGeneric,
+} = require("../AzureCommon");
 
 const group = "Network";
 
@@ -129,11 +134,6 @@ exports.fnSpecs = ({ config }) => {
           //   group: "Network",
           //   createOnly: true,
           // },
-          // natGateway: {
-          //   type: "NatGateway",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
           // workspace: {
           //   type: "Workspace",
           //   group: "OperationalInsights",
@@ -151,6 +151,26 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -350,6 +370,12 @@ exports.fnSpecs = ({ config }) => {
             group: "Network",
             name: "virtualNetworkName",
           },
+          natGateway: {
+            type: "NatGateway",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.natGateway.id",
+          },
         },
         pickProperties: [
           "properties.addressPrefix",
@@ -412,14 +438,25 @@ exports.fnSpecs = ({ config }) => {
                     map(omit(["provisioningState"])),
                   ]),
                 }),
+                omitIfEmpty(["serviceEndpoints"]),
               ]),
             }),
           ]),
-        configDefault: ({ properties, dependencies }) => {
-          return defaultsDeep({
-            properties: {},
-          })(properties);
-        },
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep({
+              properties: {},
+            }),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
       },
       // {
       //   group: "Network",
@@ -444,6 +481,63 @@ exports.fnSpecs = ({ config }) => {
         ignoreResource: () => () => true,
         managedByOther: () => true,
         cannotBeDeleted: () => true,
+      },
+      {
+        type: "NatGateway",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            list: true,
+            createOnly: true,
+          },
+        },
+        pickPropertiesCreate: [
+          "sku.name",
+          "properties.idleTimeoutInMinutes",
+          "properties.publicIpPrefixes",
+          "zones",
+        ],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.publicIpAddresses"),
+              pluck("id"),
+            ])(),
+          },
+        ],
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            when(
+              () => dependencies.publicIpAddresses,
+              defaultsDeep({
+                properties: {
+                  publicIpAddresses: pipe([
+                    () => dependencies.publicIpAddresses,
+                    map((ipAddress) => ({ id: getField(ipAddress, "id") })),
+                  ])(),
+                },
+              })
+            ),
+          ])(),
       },
     ],
     map(defaultsDeep({ group })),
