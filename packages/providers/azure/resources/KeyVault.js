@@ -8,6 +8,7 @@ const {
   findDependenciesResourceGroup,
   configDefaultGeneric,
   createAxiosAzure,
+  AZURE_KEYVAULT_AUDIENCE,
 } = require("../AzureCommon");
 
 const group = "KeyVault";
@@ -17,30 +18,22 @@ exports.fnSpecs = ({ config }) =>
     () => [
       {
         type: "Key",
-        // decorate: ({ axios }) =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //     assign({
-        //       versions: pipe([
-        //         get("properties.keyUri"),
-        //         tap((params) => {
-        //           assert(true);
-        //         }),
-        //         (baseURL) => ({ baseURL, config }),
-        //         createAxiosAzure,
-        //         tap((params) => {
-        //           assert(true);
-        //         }),
-        //         callProp("get", "/versions?api-version=7.2"),
-        //         get("data"),
-        //         tap((params) => {
-        //           assert(true);
-        //         }),
-        //       ]),
-        //     }),
-        //   ]),
+        decorate: ({ axios }) =>
+          pipe([
+            assign({
+              versions: pipe([
+                get("properties.keyUri"),
+                (baseURL) => ({
+                  baseURL,
+                  bearerToken: () =>
+                    config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
+                }),
+                createAxiosAzure,
+                callProp("get", "/versions?api-version=7.2"),
+                get("data.value"),
+              ]),
+            }),
+          ]),
       },
       {
         type: "Vault",

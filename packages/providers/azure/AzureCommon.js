@@ -13,12 +13,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 exports.AZURE_MANAGEMENT_BASE_URL = "https://management.azure.com";
+exports.AZURE_KEYVAULT_AUDIENCE = "https://vault.azure.net";
 
-exports.createAxiosAzure = ({ baseURL, config }) =>
+exports.createAxiosAzure = ({ baseURL, bearerToken }) =>
   AxiosMaker({
     baseURL,
     onHeaders: () => ({
-      Authorization: `Bearer ${config.bearerToken()}`,
+      Authorization: `Bearer ${bearerToken()}`,
     }),
   });
 

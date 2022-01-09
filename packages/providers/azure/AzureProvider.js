@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, fork, tryCatch, assign } = require("rubico");
+const { map, pipe, get, tap, fork, tryCatch, assign } = require("rubico");
 const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
@@ -13,6 +13,8 @@ const { checkEnv } = require("@grucloud/core/Utils");
 const { generateCode } = require("./Az2gc");
 const { fnSpecs } = require("./AzureSpec");
 
+const AUDIENCES = ["https://management.azure.com", "https://vault.azure.net"];
+
 exports.AzureProvider = ({
   name = "azure",
   config,
@@ -21,26 +23,43 @@ exports.AzureProvider = ({
 }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
 
-  let _bearerToken;
+  const bearerTokenMap = {};
+
+  const authorizeByResource = ({ resource }) =>
+    pipe([
+      AzAuthorize({ resource }),
+      get("bearerToken"),
+      tap((bearerToken) => {
+        bearerTokenMap[resource] = bearerToken;
+      }),
+    ]);
 
   const start = pipe([
     tap(() => {
       checkEnv(mandatoryEnvs);
     }),
-    () => ({
-      tenantId: process.env.TENANT_ID,
-      appId: process.env.APP_ID,
-      password: process.env.PASSWORD,
-    }),
-    AzAuthorize,
-    get("bearerToken"),
-    tap((bearerToken) => {
-      _bearerToken = bearerToken;
-    }),
+    () => AUDIENCES,
+    map((resource) =>
+      pipe([
+        () => ({
+          tenantId: process.env.TENANT_ID,
+          appId: process.env.APP_ID,
+          password: process.env.PASSWORD,
+        }),
+        authorizeByResource({
+          resource,
+        }),
+      ])()
+    ),
   ]);
 
   const configProviderDefault = {
-    bearerToken: () => _bearerToken,
+    bearerToken: pipe([
+      (audience) => bearerTokenMap[audience],
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
     retryCount: 60,
     retryDelay: 10e3,
     tenantId: process.env.TENANT_ID,

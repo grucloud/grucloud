@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, eq, not, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, find, includes } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  isEmpty,
+  find,
+  includes,
+  first,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -143,6 +150,9 @@ exports.fnSpecs = ({ config }) =>
           pipe([
             () => properties,
             defaultsDeep({
+              identity: {
+                type: "SystemAssigned",
+              },
               properties: {
                 activeKey: {
                   ...(dependencies.vault && {
@@ -151,7 +161,11 @@ exports.fnSpecs = ({ config }) =>
                     },
                   }),
                   ...(dependencies.key && {
-                    keyUrl: getField(dependencies.key, "properties.keyUri"),
+                    keyUrl: pipe([
+                      () => getField(dependencies.key, "versions"),
+                      first,
+                      get("kid"),
+                    ])(),
                   }),
                 },
               },

@@ -357,10 +357,9 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  //TODO add axios vault
   const axios = createAxiosAzure({
     baseURL: AZURE_MANAGEMENT_BASE_URL,
-    config,
+    bearerToken: () => config.bearerToken(AZURE_MANAGEMENT_BASE_URL),
   });
 
   return CoreClient({
