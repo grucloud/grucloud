@@ -15,6 +15,7 @@ const {
   buildTags,
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
+  configDefaultDependenciesId,
   configDefaultGeneric,
 } = require("../AzureCommon");
 
@@ -26,60 +27,26 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Disk",
         managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
-        // findDependencies: ({ live, lives }) => [
-        //   findDependenciesResourceGroup({ live, lives, config }),
-        //   {
-        //     type: "DiskAccess",
-        //     group: "Compute",
-        //     ids: [pipe([() => live, get("properties.diskAccessId")])()],
-        //   },
-        //   {
-        //     type: "Image",
-        //     group: "Compute",
-        //     ids: [
-        //       pipe([
-        //         () => live,
-        //         get("properties.creationData.imageReference.id"),
-        //       ])(),
-        //     ],
-        //   },
-        //   {
-        //     type: "DiskEncryptionSet",
-        //     group: "Compute",
-        //     ids: [
-        //       pipe([
-        //         () => live,
-        //         get("properties.encryption.diskEncryptionSetId"),
-        //       ])(),
-        //     ],
-        //   },
-        // ],
-        configDefault: ({
-          properties,
-          dependencies: { diskAccess, image, diskEncryptionSet },
-        }) =>
+        //TODO default configDefault shouls be this
+        configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             () => properties,
-            defaultsDeep({
-              location,
-              tags: buildTags(config),
-              properties: {
-                ...(diskAccess && { diskAccessId: getField(key, "id") }),
-                ...(image && {
-                  creationData: {
-                    createOption: "FromImage",
-                    imageReference: {
-                      id: getField(image, "id"),
-                    },
-                  },
-                }),
-                ...(diskEncryptionSet && {
-                  encryption: {
-                    diskEncryptionSetId: getField(key, "diskEncryptionSet"),
-                  },
-                }),
-              },
-            }),
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
           ])(),
       },
       {

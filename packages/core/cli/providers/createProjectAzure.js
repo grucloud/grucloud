@@ -132,17 +132,17 @@ const writeEnv = ({ dirs, app, account }) =>
     }),
     assign({
       content: pipe([
-        () => `TENANT_ID=${account.tenantId}
-SUBSCRIPTION_ID=${account.id}
-APP_ID=${app.appId}
-PASSWORD=${app.password}
+        () => `AZURE_TENANT_ID=${account.tenantId}
+AZURE_SUBSCRIPTION_ID=${account.id}
+AZURE_CLIENT_ID=${app.appId}
+AZURE_CLIENT_SECRET=${app.password}
 `,
       ]),
       filename: () => path.resolve(dirs.destination, "auth.env"),
     }),
     tap(({ filename }) => {
       console.log(
-        `Writing environment variables TENANT_ID, SUBSCRIPTION_ID, APP_ID and PASSWORD to ${filename}`
+        `Writing environment variables AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, AZURE_CLIENT_ID and AZURE_CLIENT_SECRET to ${filename}`
       );
     }),
     ({ content, filename }) => fs.writeFile(filename, content),

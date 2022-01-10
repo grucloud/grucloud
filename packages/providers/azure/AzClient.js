@@ -207,7 +207,10 @@ module.exports = AzClient = ({
 
   const substituteSubscriptionId = () =>
     map(
-      when(eq(identity, "{subscriptionId}"), () => process.env.SUBSCRIPTION_ID)
+      when(
+        eq(identity, "{subscriptionId}"),
+        () => process.env.AZURE_SUBSCRIPTION_ID
+      )
     );
 
   const substitutePath = ({ dependencies }) =>
@@ -251,7 +254,11 @@ module.exports = AzClient = ({
         assert(path);
       }),
       //TODO common
-      callProp("replace", "{subscriptionId}", process.env.SUBSCRIPTION_ID),
+      callProp(
+        "replace",
+        "{subscriptionId}",
+        process.env.AZURE_SUBSCRIPTION_ID
+      ),
       append(queryParameters(apiVersion)),
       tap((params) => {
         assert(true);

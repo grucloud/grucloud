@@ -3,6 +3,33 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.Compute.makeDisk({
+    name: "disk",
+    properties: ({ config }) => ({
+      sku: {
+        name: "Premium_LRS",
+      },
+      properties: {
+        creationData: {
+          createOption: "Empty",
+        },
+        diskSizeGB: 1,
+        diskIOPSReadWrite: 120,
+        diskMBpsReadWrite: 25,
+        encryption: {
+          type: "EncryptionAtRestWithCustomerKey",
+        },
+        networkAccessPolicy: "AllowAll",
+        tier: "P1",
+        publicNetworkAccess: "Enabled",
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
+      diskEncryptionSet: resources.Compute.DiskEncryptionSet["de"],
+    }),
+  });
+
   provider.Compute.makeDiskEncryptionSet({
     name: "de",
     properties: ({ config }) => ({
@@ -59,10 +86,11 @@ const createResources = ({ provider }) => {
         },
         accessPolicies: [],
         enabledForDeployment: false,
-        enabledForDiskEncryption: false,
+        enabledForDiskEncryption: true,
         enabledForTemplateDeployment: false,
         softDeleteRetentionInDays: 7,
         enableRbacAuthorization: true,
+        enablePurgeProtection: true,
         publicNetworkAccess: "Enabled",
         tenantId: `${config.tenantId}`,
       },

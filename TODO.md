@@ -1,5 +1,7 @@
 ## Bugs
 
+- Key Vault Reader
+
 - LoadBalancer deps natGateway
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array
 - VirtualMachine deps ssh keys

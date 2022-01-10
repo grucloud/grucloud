@@ -27,6 +27,34 @@ const assignVersions = ({ uri, config }) =>
     ]),
   });
 
+const assignIam = ({ uri, config }) =>
+  assign({
+    iam: ({ id, properties }) =>
+      pipe([
+        tap((params) => {
+          assert(id);
+        }),
+        () => properties,
+        get(uri),
+        (baseURL) => ({
+          baseURL,
+          bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
+        }),
+        createAxiosAzure,
+        tap((params) => {
+          assert(true);
+        }),
+        callProp(
+          "get",
+          `${id}/providers/Microsoft.Authorization/roleDefinitions?api-version=7.2`
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        get("data.value"),
+      ])(),
+  });
+
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
@@ -36,6 +64,12 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "Secret",
+        omitProperties: [
+          "properties.secretUri",
+          "properties.secretUriWithVersion",
+          "properties.attributes.created",
+          "properties.attributes.updated",
+        ],
         pickPropertiesCreate: [
           "tags",
           "properties.value",
@@ -60,7 +94,13 @@ exports.fnSpecs = ({ config }) =>
             //pathId: "properties.networkAcls.virtualNetworkRules.items.id",
           },
         },
-
+        decorate: (params) =>
+          pipe([
+            tap((xxx) => {
+              assert(xxx);
+            }),
+            assignIam({ uri: "vaultUri", config }),
+          ]),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {

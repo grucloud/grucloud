@@ -21,7 +21,12 @@ exports.AzureProvider = ({
   configs = [],
   ...other
 }) => {
-  const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
+  const mandatoryEnvs = [
+    "AZURE_TENANT_ID",
+    "AZURE_SUBSCRIPTION_ID",
+    "AZURE_CLIENT_ID",
+    "AZURE_CLIENT_SECRET",
+  ];
 
   const bearerTokenMap = {};
 
@@ -42,9 +47,9 @@ exports.AzureProvider = ({
     map((resource) =>
       pipe([
         () => ({
-          tenantId: process.env.TENANT_ID,
-          appId: process.env.APP_ID,
-          password: process.env.PASSWORD,
+          tenantId: process.env.AZURE_TENANT_ID,
+          appId: process.env.AZURE_CLIENT_ID,
+          password: process.env.AZURE_CLIENT_SECRET,
         }),
         authorizeByResource({
           resource,
@@ -62,17 +67,17 @@ exports.AzureProvider = ({
     ]),
     retryCount: 60,
     retryDelay: 10e3,
-    tenantId: process.env.TENANT_ID,
-    appId: process.env.APP_ID,
+    tenantId: process.env.AZURE_TENANT_ID,
+    appId: process.env.AZURE_CLIENT_ID,
   };
 
   const makeConfig = () =>
     mergeConfig({ configDefault: configProviderDefault, config, configs });
 
   const info = () => ({
-    subscriptionId: process.env.SUBSCRIPTION_ID,
-    tenantId: process.env.TENANT_ID,
-    appId: process.env.APP_ID,
+    subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
+    tenantId: process.env.AZURE_TENANT_ID,
+    appId: process.env.AZURE_CLIENT_ID,
     config: makeConfig(),
   });
 
@@ -125,7 +130,7 @@ exports.AzureProvider = ({
   //       assert(options);
   //     }),
   //     () =>
-  //       `/subscriptions/${process.env.SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
+  //       `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
   //     axios.get,
   //     get("data.value"),
   //   ])();
