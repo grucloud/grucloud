@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/identity": "^2.0.1",
+    "@azure/keyvault-secrets": "^4.3.0",
     "@grucloud/core": "^3.2.0",
     "@grucloud/provider-azure": "^3.2.1",
     "rubico": "^1.8.3"

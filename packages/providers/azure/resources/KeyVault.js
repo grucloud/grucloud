@@ -13,27 +13,36 @@ const {
 
 const group = "KeyVault";
 
+const assignVersions = ({ uri, config }) =>
+  assign({
+    versions: pipe([
+      get(`properties.${uri}`),
+      (baseURL) => ({
+        baseURL,
+        bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
+      }),
+      createAxiosAzure,
+      callProp("get", "/versions?api-version=7.2"),
+      get("data.value"),
+    ]),
+  });
+
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
       {
         type: "Key",
-        decorate: ({ axios }) =>
-          pipe([
-            assign({
-              versions: pipe([
-                get("properties.keyUri"),
-                (baseURL) => ({
-                  baseURL,
-                  bearerToken: () =>
-                    config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
-                }),
-                createAxiosAzure,
-                callProp("get", "/versions?api-version=7.2"),
-                get("data.value"),
-              ]),
-            }),
-          ]),
+        decorate: () => pipe([assignVersions({ uri: "keyUri", config })]),
+      },
+      {
+        type: "Secret",
+        pickPropertiesCreate: [
+          "tags",
+          "properties.value",
+          "properties.contentType",
+          "properties.attributes.enabled",
+        ],
+        decorate: () => pipe([assignVersions({ uri: "secretUri", config })]),
       },
       {
         type: "Vault",
@@ -51,6 +60,7 @@ exports.fnSpecs = ({ config }) =>
             //pathId: "properties.networkAcls.virtualNetworkRules.items.id",
           },
         },
+
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {

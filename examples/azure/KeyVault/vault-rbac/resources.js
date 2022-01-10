@@ -39,9 +39,6 @@ const createResources = ({ provider }) => {
       properties: {
         attributes: {
           enabled: true,
-          //TODO remove
-          created: 1641610355,
-          updated: 1641610355,
         },
       },
     }),
