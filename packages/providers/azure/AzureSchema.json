@@ -1,5 +1,109 @@
 [
     {
+        "type": "RoleAssignment",
+        "group": "Authorization",
+        "apiVersion": "2020-10-01-preview",
+        "dependencies": {
+            "roleDefinition": {
+                "type": "RoleDefinition",
+                "group": "Authorization",
+                "createOnly": true,
+                "pathId": "properties.roleDefinitionId"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+                "operationId": "RoleAssignments_Get"
+            },
+            "put": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+                "operationId": "RoleAssignments_Create"
+            },
+            "delete": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+                "operationId": "RoleAssignments_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments",
+                "operationId": "RoleAssignments_ListForSubscription"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name",
+            "type",
+            "properties.scope",
+            "properties.roleDefinitionId",
+            "properties.principalId",
+            "properties.createdOn",
+            "properties.updatedOn",
+            "properties.createdBy",
+            "properties.updatedBy",
+            "properties.delegatedManagedIdentityResourceId"
+        ],
+        "pickProperties": [
+            "properties.principalType",
+            "properties.description",
+            "properties.condition",
+            "properties.conditionVersion"
+        ],
+        "pickPropertiesCreate": [
+            "properties.principalType",
+            "properties.description",
+            "properties.condition",
+            "properties.conditionVersion"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "principalType": "User"
+            }
+        }
+    },
+    {
+        "type": "RoleDefinition",
+        "group": "Authorization",
+        "apiVersion": "2018-01-01-preview",
+        "dependencies": {},
+        "methods": {
+            "delete": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+                "operationId": "RoleDefinitions_Delete"
+            },
+            "get": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+                "operationId": "RoleDefinitions_Get"
+            },
+            "put": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+                "operationId": "RoleDefinitions_CreateOrUpdate"
+            },
+            "getAll": {
+                "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions",
+                "operationId": "RoleDefinitions_List"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name",
+            "type"
+        ],
+        "pickProperties": [
+            "properties.roleName",
+            "properties.description",
+            "properties.type",
+            "properties.permissions",
+            "properties.assignableScopes"
+        ],
+        "pickPropertiesCreate": [
+            "properties.roleName",
+            "properties.description",
+            "properties.type",
+            "properties.permissions",
+            "properties.assignableScopes"
+        ]
+    },
+    {
         "type": "AvailabilitySet",
         "group": "Compute",
         "apiVersion": "2021-07-01",
@@ -15508,12 +15612,6 @@
                 "group": "Network",
                 "createOnly": true,
                 "pathId": "properties.virtualNetwork.id"
-            },
-            "globalSubscriptionPublishingCredentials": {
-                "type": "GlobalSubscriptionPublishingCredentials",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.subscriptionId"
             }
         },
         "methods": {

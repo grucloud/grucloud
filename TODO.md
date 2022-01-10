@@ -1,5 +1,8 @@
 ## Bugs
 
+- gc new az: add az role assignment create --scope "/subscriptions/xxxxxxxxx" --role "Key Vault Secrets Officer" --assignee $AZURE_CLIENT_ID
+  or Key Vault Crypto Service Encryption User
+
 - Key Vault Reader
 
 - LoadBalancer deps natGateway

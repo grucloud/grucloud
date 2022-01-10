@@ -19,10 +19,10 @@ const { defaultsDeep, callProp, find, values } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
+const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
-const KeyVault = require("./resources/KeyVault");
-
+const KeyVaultSpec = require("./resources/KeyVaultSpec");
 const NetworkSpec = require("./resources/NetworkSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const ResourceManagementSpec = require("./resources/ResourcesSpec");
@@ -36,9 +36,10 @@ const AzClient = require("./AzClient");
 const createSpecsOveride = (config) =>
   pipe([
     () => [
+      AuthorizationSpec,
       ComputeSpec,
       DBForPortgreSQLSpec,
-      KeyVault,
+      KeyVaultSpec,
       NetworkSpec,
       OperationalInsightsSpec,
       ResourceManagementSpec,
@@ -83,11 +84,12 @@ const buildDefaultSpec = fork({
     ])(),
   Client:
     ({ dependencies }) =>
-    ({ spec, config }) =>
+    ({ spec, config, lives }) =>
       AzClient({
         spec,
         dependencies,
         config,
+        lives,
       }),
   filterLive:
     ({ pickPropertiesCreate = [] }) =>

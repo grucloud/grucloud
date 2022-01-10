@@ -22,6 +22,7 @@ module.exports = CoreClient = ({
   spec,
   type,
   config,
+  lives,
   axios,
   pathGet = ({ id }) => `/${id}`,
   pathCreate = () => `/`,
@@ -69,6 +70,7 @@ module.exports = CoreClient = ({
 }) =>
   pipe([
     tap((params) => {
+      assert(lives);
       assert(spec);
       assert(type);
       assert(config, "config");
@@ -122,7 +124,10 @@ module.exports = CoreClient = ({
               }),
             get("data"),
             (data) => onResponseGet({ id, data }),
-            decorate({ axios }),
+            tap((params) => {
+              assert(true);
+            }),
+            decorate({ axios, lives }),
             tap((data) => {
               logger.debug(`getById result: ${tos(data)}`);
             }),
@@ -164,7 +169,7 @@ module.exports = CoreClient = ({
                 logger.debug(`getList ${spec.type}, ${tos(data)}`);
               }),
               onResponseList({ axios }),
-              map(decorate({ axios })),
+              map(decorate({ axios, lives })),
             ])
           ),
           flatten,

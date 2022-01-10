@@ -155,6 +155,7 @@ describe("AzureRestApi", function () {
           //"apimanagement",
           //"appconfiguration",
           //"dns",
+          "authorization",
           "compute",
           "containerservice",
           "containerregistry",

@@ -73,16 +73,30 @@ const PreDefinedDependenciesMap = {
 };
 
 const ResourcesExcludes = [
+  "Authorization::AccessReviewDefaultSetting",
+  "Authorization::AccessReviewScheduleDefinitionById",
+  "Authorization::AccessReviewInstanceById",
+  "Authorization::ScopeRoleAssignmentApprovalStepById",
+  "Authorization::RoleAssignmentApprovalStepById",
+  "Authorization::RoleAssignmentById",
+  "Authorization::RoleAssignmentScheduleRequest",
+  "Authorization::RoleEligibilityScheduleRequest",
+  "Authorization::RoleManagementPolicy",
+  "Authorization::RoleManagementPolicyAssignment",
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
   "ContainerService::OpenShiftManagedCluster", // 404
-  "Network::PublicIpAddress", // Renamed to PublicIPAddress
+  "Network::AdminRule",
   "Network::ExpressRouteCrossConnection",
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
   "Network::InterfaceEndpoint",
-  "Network::VirtualWAN", // Renamed to VirtualWan
+  "Network::NetworkManager",
+  "Network::NetworkSecurityPerimeter",
+  "Network::PublicIpAddress", // Renamed to PublicIPAddress
   "Network::SecurityRule",
+  "Network::UserRule",
+  "Network::VirtualWAN", // Renamed to VirtualWan
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
   "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, uksouth, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
@@ -91,7 +105,12 @@ const ResourcesExcludes = [
   "Web::CertificateCsr",
   "Web::ClassicMobileService",
   "Web::Domain",
+  "Web::GetSourceControlSourceControl",
+  "Web::GetPublishingUserPublishingUser",
+  "Web::GlobalSubscriptionPublishingCredentials",
   "Web::ManagedHostingEnvironment",
+  "Web::ProviderPublishingUser",
+  "Web::ProviderSourceControl",
 ];
 const OpertionIdReplaceMap = {
   //Storage
@@ -632,30 +651,35 @@ const findResourcesByParameterType = ({ path, group, resources, index }) =>
     }),
     () => path,
     callProp("split", "/"),
-    (arr) => arr[index - 1],
+    (arr) => arr[index - 1], //TODO use slice or at ?
     tap((paramType) => {
-      assert(paramType, `not paramType in ${path}, index: ${index}`);
+      //assert(paramType, `not paramType in ${path}, index: ${index}`);
     }),
-    pluralize.singular,
-    (paramType) =>
+    unless(
+      isEmpty,
       pipe([
-        () => resources,
-        filter(
+        pluralize.singular,
+        (paramType) =>
           pipe([
-            and([
+            () => resources,
+            filter(
               pipe([
-                get("parentName", ""),
-                callProp("match", new RegExp(paramType, "gi")),
-              ]),
-              eq(get("group"), group),
-            ]),
-          ])
-        ),
-        tap((params) => {
-          assert(true);
-        }),
-        first,
-      ])(),
+                and([
+                  pipe([
+                    get("parentName", ""),
+                    callProp("match", new RegExp(paramType, "gi")),
+                  ]),
+                  eq(get("group"), group),
+                ]),
+              ])
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            first,
+          ])(),
+      ])
+    ),
   ])();
 
 const findParameterTypeFromPath =
@@ -713,6 +737,7 @@ const addDependencyFromPath = ({
     filter(eq(get("in"), "path")),
     filter(not(eq(get("name"), "resourceGroupName"))),
     filter(not(eq(get("name"), "subscriptionId"))),
+    filter(not(eq(get("name"), "scope"))),
     filter(not(pipe([get("name"), isParamLastOfUrl({ path })]))),
     tap((params) => {
       assert(true);
@@ -1446,13 +1471,14 @@ const filterGetAll = ({ name, dependencies, methods }) =>
         get("getAll.parameters"),
         when(isEmpty, () => get("get.parameters")(methods)),
         tap.if(isEmpty, () => {
-          assert(false, "no get or getAll parameter");
+          //assert(false, "no get or getAll parameter");
         }),
         filter(
           and([
             eq(get("in"), "path"),
             get("required"),
             not(eq(get("name"), "subscriptionId")),
+            not(eq(get("name"), "scope")),
           ])
         ),
         size,
@@ -1467,7 +1493,7 @@ const filterGetAll = ({ name, dependencies, methods }) =>
     }),
   ])();
 
-const filterNoDependency = pipe([get("dependencies"), not(isEmpty)]);
+//const filterNoDependency = pipe([get("dependencies"), not(isEmpty)]);
 
 const filterExclusion = ({ group, type }) =>
   pipe([
@@ -1531,9 +1557,12 @@ const processSwaggerFiles = ({
     filter(not(isEmpty)),
     //filter(filterNoSubscription),
     filter(filterExclusion),
+    tap((params) => {
+      assert(true);
+    }),
     (resources) =>
       pipe([() => resources, map(addDependencies({ resources }))])(),
-    filter(filterNoDependency),
+    //filter(filterNoDependency),
     filter(filterGetAll),
     tap((params) => {
       assert(true);

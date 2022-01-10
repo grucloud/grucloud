@@ -998,11 +998,16 @@ const ignoreDefault =
       }),
       () => resource,
       and([
-        get("managedByOther"),
+        or([get("managedByOther"), get("cannotBeDeleted")]),
         pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
       tap.if(identity, (xxx) => {
-        //console.log("ignoreDefault", resource.name);
+        // console.log(
+        //   "ignoreDefault",
+        //   resource.name,
+        //   " #usedBy",
+        //   size(resource.usedBy)
+        // );
       }),
     ])();
 

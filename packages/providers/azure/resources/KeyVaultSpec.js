@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, eq, get, tap, map, pick, omit } = require("rubico");
+const { pipe, assign, tryCatch, get, tap, map, pick, omit } = require("rubico");
 const { defaultsDeep, pluck, callProp, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -22,31 +22,29 @@ const assignVersions = ({ uri, config }) =>
         bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
       }),
       createAxiosAzure,
-      callProp("get", "/versions?api-version=7.2"),
-      get("data.value"),
+      tryCatch(
+        pipe([callProp("get", "/versions?api-version=7.2"), get("data.value")]),
+        (error) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ])()
+      ),
     ]),
   });
 
-const assignIam = ({ uri, config }) =>
+const assignIam = ({ axios, uri, config }) =>
   assign({
     iam: ({ id, properties }) =>
       pipe([
         tap((params) => {
           assert(id);
         }),
-        () => properties,
-        get(uri),
-        (baseURL) => ({
-          baseURL,
-          bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
-        }),
-        createAxiosAzure,
-        tap((params) => {
-          assert(true);
-        }),
+        () => axios,
         callProp(
           "get",
-          `${id}/providers/Microsoft.Authorization/roleDefinitions?api-version=7.2`
+          `${id}/providers/Microsoft.Authorization/roleAssignments?api-version=2015-07-01`
         ),
         tap((params) => {
           assert(true);
@@ -94,12 +92,12 @@ exports.fnSpecs = ({ config }) =>
             //pathId: "properties.networkAcls.virtualNetworkRules.items.id",
           },
         },
-        decorate: (params) =>
+        decorate: ({ axios }) =>
           pipe([
             tap((xxx) => {
               assert(xxx);
             }),
-            assignIam({ uri: "vaultUri", config }),
+            assignIam({ axios, uri: "vaultUri", config }),
           ]),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),

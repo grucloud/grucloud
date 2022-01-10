@@ -374,6 +374,7 @@ function CoreProvider({
       config: getProviderConfig(),
       providerName,
       getListHof,
+      lives: getLives(),
     });
 
   const getClients = pipe([getSpecs, map(createClientFromSpec)]);

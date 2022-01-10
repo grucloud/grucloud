@@ -44,6 +44,7 @@ const onResponseListDefault = () => get("value", []);
 const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
 
 module.exports = AzClient = ({
+  lives,
   spec,
   isInstanceUp = isInstanceUpDefault,
   config,
@@ -61,6 +62,7 @@ module.exports = AzClient = ({
   getByName = () => undefined,
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
+  assert(lives);
   assert(spec);
   const { methods, apiVersion, dependencies = {} } = spec;
   if (!methods) {
@@ -212,7 +214,13 @@ module.exports = AzClient = ({
         () => process.env.AZURE_SUBSCRIPTION_ID
       )
     );
-
+  const substituteScope = () =>
+    map(
+      when(
+        eq(identity, "{scope}"),
+        () => `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
+      )
+    );
   const substitutePath = ({ dependencies }) =>
     map(when(isSubstituable, substituteDependency({ dependencies })));
 
@@ -232,6 +240,10 @@ module.exports = AzClient = ({
       ),
       callProp("slice", 0, -1),
       substituteSubscriptionId(),
+      substituteScope(),
+      tap((params) => {
+        assert(true);
+      }),
       substitutePath({ dependencies }),
       callProp("join", "/"),
       append(`/${name}`),
@@ -258,6 +270,11 @@ module.exports = AzClient = ({
         "replace",
         "{subscriptionId}",
         process.env.AZURE_SUBSCRIPTION_ID
+      ),
+      callProp(
+        "replace",
+        "{scope}",
+        `subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
       ),
       append(queryParameters(apiVersion)),
       tap((params) => {
@@ -316,6 +333,7 @@ module.exports = AzClient = ({
             switchCase([
               and([
                 not(eq(value, "{subscriptionId}")),
+                not(eq(value, "{scope}")),
                 callProp("startsWith", "{"),
               ]),
               () => acc + 1,
@@ -371,8 +389,10 @@ module.exports = AzClient = ({
 
   return CoreClient({
     type: "azure",
+    lives,
     spec,
     config,
+    findName: spec.findName,
     findDependencies: spec.findDependencies || findDependenciesDefault,
     onResponseList: spec.onResponseList || onResponseListDefault,
     decorate: spec.decorate,
