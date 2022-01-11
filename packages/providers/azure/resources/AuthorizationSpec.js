@@ -1,13 +1,29 @@
 const assert = require("assert");
-const { pipe, filter, eq, get, tap, map, set, omit } = require("rubico");
-const { defaultsDeep, pluck, callProp, when } = require("rubico/x");
+const {
+  pipe,
+  not,
+  eq,
+  get,
+  tap,
+  map,
+  set,
+  switchCase,
+  pick,
+  assign,
+  omit,
+} = require("rubico");
+const {
+  defaultsDeep,
+  pluck,
+  flatten,
+  find,
+  isEmpty,
+  when,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const {
-  findDependenciesResourceGroup,
-  configDefaultGeneric,
-} = require("../AzureCommon");
+const { configDefaultDependenciesId } = require("../AzureCommon");
 
 const group = "Authorization";
 
@@ -33,7 +49,10 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "RoleAssignment",
         apiVersion: "2021-04-01-preview",
-        dependsOnList: ["Authorization::RoleDefinition"],
+        dependsOnList: [
+          "Authorization::RoleDefinition",
+          "Compute::DiskEncryptionSet",
+        ],
         dependencies: {
           roleDefinition: {
             type: "RoleDefinition",
@@ -41,7 +60,38 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             pathId: "properties.roleDefinitionId",
           },
+          principal: {
+            type: "DiskEncryptionSet",
+            group: "Compute",
+            createOnly: true,
+          },
         },
+        // findName: pipe([
+        //   tap((params) => {
+        //     assert(true);
+        //   }),
+        //   get("live.properties"),
+        //   ({ roleName, principalName, principalId }) =>
+        //     `role-assignment::${roleName}::${principalName || principalId}`,
+        //   tap((params) => {
+        //     assert(true);
+        //   }),
+        // ]),
+        // inferName: ({ properties }) =>
+        //   pipe([
+        //     tap((params) => {
+        //       assert(properties);
+        //     }),
+        //     () =>
+        //       `role-assignment::${properties.roleName}::${
+        //         properties.principalName || properties.principalId
+        //       }`,
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //   ])(),
+        ignoreResource: ({ lives }) =>
+          not(get("live.properties.principalName")),
         decorate:
           ({ axios, lives }) =>
           (live) =>
@@ -63,95 +113,107 @@ exports.fnSpecs = ({ config }) =>
                   get("name"),
                 ])()
               ),
+              set(
+                "properties.principalName",
+                pipe([
+                  () => lives.getByProvider(config),
+                  pluck("resources"),
+                  flatten,
+                  find(
+                    eq(
+                      get("live.identity.principalId"),
+                      live.properties.principalId
+                    )
+                  ),
+                  get("name"),
+                ])()
+              ),
             ])(),
-        // findDependencies: ({ live, lives }) => [
-        //   findDependenciesResourceGroup({ live, lives, config }),
-        //   {
-        //     type: "Subnet",
-        //     group: "Network",
-        //     ids: pipe([
-        //       () => live,
-        //       get("properties.networkAcls.virtualNetworkRules"),
-        //       pluck("id"),
-        //     ])(),
-        //   },
-        // ],
-        // configDefault: ({ properties, dependencies, config }) =>
-        //   pipe([
-        //     tap(() => {
-        //       assert(true);
-        //     }),
-        //     () => properties,
-        //     when(
-        //       () => dependencies.subnets,
-        //       defaultsDeep({
-        //         properties: {
-        //           networkAcls: {
-        //             virtualNetworkRules: pipe([
-        //               () => dependencies,
-        //               get("subnets", []),
-        //               map((subnet) =>
-        //                 pipe([
-        //                   () => getField(subnet, "id"),
-        //                   callProp("toLowerCase"),
-        //                   (id) => ({
-        //                     id,
-        //                   }),
-        //                 ])()
-        //               ),
-        //             ])(),
-        //           },
-        //         },
-        //       })
-        //     ),
-        //     defaultsDeep(
-        //       configDefaultGeneric({ properties, dependencies, config })
-        //     ),
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //   ])(),
-        // omitProperties: [
-        //   "id",
-        //   "name",
-        //   "type",
-        //   "systemData",
-        //   "properties.vaultUri", // fix azure spec
-        //   "properties.tenantId",
-        //   "properties.hsmPoolResourceId",
-        //   "properties.createMode",
-        //   "properties.provisioningState",
-        //   "properties.privateEndpointConnections",
-        // ],
-        // filterLive: ({ pickPropertiesCreate }) =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(pickPropertiesCreate);
-        //     }),
-        //     omit([
-        //       "properties.vaultUri", // fix azure specs
-        //       "properties.networkAcls.virtualNetworkRules",
-        //     ]),
-        //     pick(pickPropertiesCreate),
-        //     assign({
-        //       properties: pipe([
-        //         get("properties"),
-        //         assign({
-        //           tenantId: () => () => "`" + "${config.tenantId}" + "`",
-        //           accessPolicies: pipe([
-        //             get("accessPolicies"),
-        //             map(
-        //               assign({
-        //                 tenantId: pipe([
-        //                   () => () => "`" + "${config.tenantId}" + "`",
-        //                 ]),
-        //               })
-        //             ),
-        //           ]),
-        //         }),
-        //       ]),
-        //     }),
-        //   ]),
+        findDependencies: ({ live, lives }) => [
+          {
+            type: "RoleDefinition",
+            group: "Authorization",
+            ids: [pipe([() => live.roleDefinitionId])()],
+          },
+          ...pipe([
+            tap((params) => {
+              assert(lives);
+              assert(live.properties.principalId);
+            }),
+            () => lives.getByProvider(config),
+            pluck("resources"),
+            flatten,
+            find(
+              eq(get("live.identity.principalId"), live.properties.principalId)
+            ),
+            switchCase([
+              isEmpty,
+              () => [],
+              pipe([({ group, type, id }) => [{ group, type, ids: [id] }]]),
+            ]),
+          ])(),
+        ],
+        configDefault: ({ properties, dependencies, config, lives }) =>
+          pipe([
+            tap(() => {
+              assert(dependencies.principal);
+              assert(lives);
+            }),
+            () => properties,
+            omit(["properties.principalName", "properties.roleName"]),
+            defaultsDeep({
+              properties: {
+                roleDefinitionId: when(
+                  () => properties.properties.roleName,
+                  pipe([
+                    () =>
+                      lives.getByType({
+                        providerName: config.providerName,
+                        type: "RoleDefinition",
+                        group: "Authorization",
+                      }),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    find(
+                      eq(
+                        get("live.properties.roleName"),
+                        properties.properties.roleName
+                      )
+                    ),
+                    get("id"),
+                    tap((id) => {
+                      assert(id);
+                    }),
+                  ])
+                )(),
+                principalId: getField(
+                  dependencies.principal,
+                  "identity.principalId"
+                ),
+              },
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+        filterLive: ({}) =>
+          pipe([
+            pick([
+              "properties.roleName",
+              "properties.principalName",
+              "properties.principalType",
+              "properties.description",
+            ]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                // assign({
+                //   tenantId: () => () => "`" + "${config.tenantId}" + "`",
+                // }),
+              ]),
+            }),
+          ]),
       },
     ],
     map(defaultsDeep({ group })),

@@ -16,18 +16,21 @@ const group = "KeyVault";
 const assignVersions = ({ uri, config }) =>
   assign({
     versions: pipe([
-      get(`properties.${uri}`),
-      (baseURL) => ({
-        baseURL,
-        bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
-      }),
-      createAxiosAzure,
       tryCatch(
-        pipe([callProp("get", "/versions?api-version=7.2"), get("data.value")]),
+        pipe([
+          get(`properties.${uri}`),
+          (baseURL) => ({
+            baseURL,
+            bearerToken: () => config.bearerToken(AZURE_KEYVAULT_AUDIENCE),
+          }),
+          createAxiosAzure,
+          callProp("get", "/versions?api-version=7.2"),
+          get("data.value"),
+        ]),
         (error) =>
           pipe([
             tap((params) => {
-              assert(true);
+              assert(error);
             }),
           ])()
       ),

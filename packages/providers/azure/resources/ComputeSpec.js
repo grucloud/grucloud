@@ -68,6 +68,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
           },
         },
+        pickProperties: [
+          "properties.encryptionType",
+          "properties.rotationToLatestKeyVersionEnabled",
+        ],
         filterLive: () =>
           pipe([
             tap((params) => {

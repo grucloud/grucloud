@@ -3,30 +3,17 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Compute.makeDisk({
-    name: "disk",
+  provider.Authorization.makeRoleAssignment({
+    name: "11982547-8b79-4f05-a137-b682f92f1add",
     properties: ({ config }) => ({
-      sku: {
-        name: "Premium_LRS",
-      },
       properties: {
-        creationData: {
-          createOption: "Empty",
-        },
-        diskSizeGB: 1,
-        diskIOPSReadWrite: 120,
-        diskMBpsReadWrite: 25,
-        encryption: {
-          type: "EncryptionAtRestWithCustomerKey",
-        },
-        networkAccessPolicy: "AllowAll",
-        tier: "P1",
-        publicNetworkAccess: "Enabled",
+        roleName: "Key Vault Crypto Service Encryption User",
+        principalName: "de",
+        principalType: "ServicePrincipal",
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
-      diskEncryptionSet: resources.Compute.DiskEncryptionSet["de"],
+      principal: resources.Compute.DiskEncryptionSet["de"],
     }),
   });
 
@@ -47,21 +34,6 @@ const createResources = ({ provider }) => {
 
   provider.KeyVault.makeKey({
     name: "my-key",
-    properties: ({ config }) => ({
-      properties: {
-        attributes: {
-          enabled: true,
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
-      vault: resources.KeyVault.Vault["gc-vault-rbac"],
-    }),
-  });
-
-  provider.KeyVault.makeSecret({
-    name: "my-secret",
     properties: ({ config }) => ({
       properties: {
         attributes: {

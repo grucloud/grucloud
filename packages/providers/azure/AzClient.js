@@ -218,7 +218,7 @@ module.exports = AzClient = ({
     map(
       when(
         eq(identity, "{scope}"),
-        () => `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
+        () => `subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
       )
     );
   const substitutePath = ({ dependencies }) =>
