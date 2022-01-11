@@ -90,6 +90,7 @@ exports.fnSpecs = ({ config }) =>
         //       assert(true);
         //     }),
         //   ])(),
+        cannotBeDeleted: eq(get("live.properties.roleName"), "Owner"),
         ignoreResource: ({ lives }) =>
           not(get("live.properties.principalName")),
         decorate:

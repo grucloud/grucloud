@@ -78,7 +78,11 @@ module.exports = AzClient = ({
     tap((params) => {
       assert(true);
     }),
-    or([spec.cannotBeDeleted, pipe([() => methods, get("delete"), isEmpty])]),
+    or([
+      spec.managedByOther,
+      spec.cannotBeDeleted,
+      pipe([() => methods, get("delete"), isEmpty]),
+    ]),
     tap((params) => {
       assert(true);
     }),
