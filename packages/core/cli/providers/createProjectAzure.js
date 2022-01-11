@@ -15,6 +15,10 @@ const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
+const RolesDefault = ["Owner", "Key Vault Secrets Officer"];
+
+const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
+
 const { execCommandShell } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
@@ -109,7 +113,6 @@ const fetchAppIdPassword = pipe([
     ])
   ),
 ]);
-const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
 
 const registerNamespaces = () =>
   pipe([
@@ -117,6 +120,22 @@ const registerNamespaces = () =>
     map.series((namespace) =>
       pipe([
         () => `az provider register --namespace ${namespace}`,
+        execCommandShell(),
+      ])()
+    ),
+  ])();
+
+const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
+  pipe([
+    tap(() => {
+      assert(appId);
+      assert(id);
+    }),
+    () => RolesDefault,
+    map.series((role) =>
+      pipe([
+        () =>
+          `az role assignment create --scope "/subscriptions/${id}" --role "${role}" --assignee ${appId}`,
         execCommandShell(),
       ])()
     ),
@@ -203,6 +222,7 @@ exports.createProjectAzure = pipe([
   tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
+  tap(assignRoleAssignments),
   assign({ location: promptLocation }),
   assign({ config: createConfig }),
   tap(registerNamespaces),

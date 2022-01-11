@@ -37,6 +37,7 @@ describe("createProject", function () {
             "azure",
             "azure-project-test",
             "e012cd34-c794-4e35-916f-f38dcd8ac45c",
+            "sp-test",
             "uksouth",
           ]);
         }),
