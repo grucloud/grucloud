@@ -250,7 +250,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(true);
             }),
-            pick(["tags", "properties"]),
+            pick(["tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),
