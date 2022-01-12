@@ -3,6 +3,20 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.Authorization.makeRoleAssignment({
+    name: "eef4a72d-0d39-478d-899e-64cb62f94498",
+    properties: ({ config }) => ({
+      properties: {
+        roleName: "Key Vault Crypto Officer",
+        principalName: "vm-vault",
+        principalType: "ServicePrincipal",
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      principalVirtualMachine: resources.Compute.VirtualMachine["vm-vault"],
+    }),
+  });
+
   provider.Compute.makeSshPublicKey({
     name: "keypair-vm-vault",
     properties: ({ config }) => ({

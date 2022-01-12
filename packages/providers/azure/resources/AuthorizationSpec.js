@@ -34,23 +34,13 @@ exports.fnSpecs = ({ config }) =>
         type: "RoleDefinition",
         managedByOther: pipe([eq(get("live.properties.type"), "BuiltInRole")]),
         findName: pipe([get("live.properties.roleName")]),
-        // onResponseList: (xxx) =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //     get("value"),
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //     //filter(not(eq(get("properties.type"), "BuiltInRole"))),
-        //   ]),
       },
       {
         type: "RoleAssignment",
         apiVersion: "2021-04-01-preview",
         dependsOnList: [
           "Authorization::RoleDefinition",
+          "Compute::VirtualMachine",
           "Compute::DiskEncryptionSet",
         ],
         dependencies: {
@@ -60,8 +50,13 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             pathId: "properties.roleDefinitionId",
           },
-          principal: {
+          principalDiskEncryptionSet: {
             type: "DiskEncryptionSet",
+            group: "Compute",
+            createOnly: true,
+          },
+          principalVirtualMachine: {
+            type: "VirtualMachine",
             group: "Compute",
             createOnly: true,
           },
@@ -157,7 +152,10 @@ exports.fnSpecs = ({ config }) =>
         configDefault: ({ properties, dependencies, config, lives }) =>
           pipe([
             tap(() => {
-              assert(dependencies.principal);
+              assert(
+                dependencies.principalVirtualMachine ||
+                  dependencies.principalDiskEncryptionSet
+              );
               assert(lives);
             }),
             () => properties,
@@ -173,9 +171,6 @@ exports.fnSpecs = ({ config }) =>
                         type: "RoleDefinition",
                         group: "Authorization",
                       }),
-                    tap((params) => {
-                      assert(true);
-                    }),
                     find(
                       eq(
                         get("live.properties.roleName"),
@@ -188,10 +183,19 @@ exports.fnSpecs = ({ config }) =>
                     }),
                   ])
                 )(),
-                principalId: getField(
-                  dependencies.principal,
-                  "identity.principalId"
-                ),
+                principalId: switchCase([
+                  () => dependencies.principalDiskEncryptionSet,
+                  getField(
+                    dependencies.principalDiskEncryptionSet,
+                    "identity.principalId"
+                  ),
+                  () => dependencies.principalVirtualMachine,
+                  getField(
+                    dependencies.principalVirtualMachine,
+                    "identity.principalId"
+                  ),
+                  () => undefined,
+                ]),
               },
             }),
             tap((params) => {
