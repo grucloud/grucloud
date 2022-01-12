@@ -40,8 +40,6 @@ const createResources = ({ provider }) => {
               publicKeys: [
                 {
                   path: "/home/azureuser/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHnft9RNWHWd6VJTnFpNfh0gs4\r\nliy/BoQFCki/UhfLCqfHX8eOggKOUFjv94hFq1B+2uPDoPMJ4uKx/jk4VD2Q8EqE\r\n5DCOqOpfIFRu5phmxtOBNleLmh0HF0X3RRFqGxMp09MhijfEo8PCVmZW62aO2CuZ\r\nxRhGfZ8EWfRtxOtB9HNw2NSFnIrB2LA78L7Yv6kc2uFEfXa8uG47EiuACZQ3WsJI\r\n6L5QOBaOrKv8z/grkKisKBxKV0yJ4COPAew9qP3O7Z8doDmLX055OW9SALMF/ZOe\r\niLHCM6EJdoFUUpbh+GZjweDM5OjD1XuCKJQY4vjNFNNfd18mOpaGSnvw9GjEwIrY\r\npIz4mNAVdmywlRr9xKeE+JmdIjFpSBRSidfidQjnlaypVXgnaZ3apiwZCJxsACfY\r\nxiTJ5NdfQFEAOJ05svf7Qmdk1pz4LQP208m8vhE0mzTRVch93RfS1nWDd1UTEnSD\r\nUu8bQjfKpcixhJW2WnIiVjPgOCy5DtS9szSiypE= generated-by-azure\r\n",
                 },
               ],
             },
@@ -56,7 +54,7 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-vault"],
       networkInterface: resources.Network.NetworkInterface["vm-vault738"],
-      sshPublicKey: resources.Compute.SshPublicKey["keypair-vm-vault"],
+      sshPublicKeys: [resources.Compute.SshPublicKey["keypair-vm-vault"]],
     }),
   });
 

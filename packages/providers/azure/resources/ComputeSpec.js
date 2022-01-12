@@ -7,6 +7,7 @@ const {
   find,
   includes,
   first,
+  when,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -27,7 +28,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Disk",
         managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
-        //TODO default configDefault shouls be this
+        //TODO default configDefault should be this
         configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             () => properties,
@@ -173,9 +174,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
-          sshPublicKey: {
+          sshPublicKeys: {
             type: "SshPublicKey",
             group: "Compute",
+            list: true,
             createOnly: true,
           },
           galleryImage: {
@@ -264,6 +266,30 @@ exports.fnSpecs = ({ config }) =>
                   "osProfile.requireGuestProvisionSignal",
                   "storageProfile.imageReference.exactVersion",
                 ]),
+                assign({
+                  osProfile: pipe([
+                    get("osProfile"),
+                    assign({
+                      linuxConfiguration: pipe([
+                        get("linuxConfiguration"),
+                        assign({
+                          ssh: pipe([
+                            get("ssh"),
+                            assign({
+                              publicKeys: pipe([
+                                get("publicKeys"),
+                                map(omit(["keyData"])),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ]),
+                    }),
+                  ]),
+                }),
+                tap((params) => {
+                  assert(true);
+                }),
               ]),
             }),
           ]),
@@ -337,9 +363,42 @@ exports.fnSpecs = ({ config }) =>
               );
             }),
             () => properties,
+            when(
+              () => dependencies.sshPublicKeys,
+              defaultsDeep({
+                properties: {
+                  osProfile: {
+                    linuxConfiguration: {
+                      ssh: {
+                        publicKeys: pipe([
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          () => dependencies.sshPublicKeys,
+                          map((sshPublicKey) =>
+                            pipe([
+                              tap((params) => {
+                                assert(true);
+                              }),
+                              //TODO azureuser
+                              () => ({
+                                path: "/home/azureuser/.ssh/authorized_keys",
+                                keyData: getField(
+                                  sshPublicKey,
+                                  "properties.publicKey"
+                                ),
+                              }),
+                            ])()
+                          ),
+                        ])(),
+                      },
+                    },
+                  },
+                },
+              })
+            ),
             defaultsDeep({
               properties: {
-                //TODO ssh key
                 networkProfile: {
                   networkInterfaces: [
                     {
