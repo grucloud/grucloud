@@ -73,6 +73,7 @@ module.exports = AzClient = ({
   }
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
+  assert(spec.managedByOther);
 
   const cannotBeDeleted = pipe([
     tap((params) => {

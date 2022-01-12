@@ -123,7 +123,7 @@ const buildProperties = ({
   programOptions,
   filterLive = () => identity,
   propertiesDefault = {},
-  pickPropertiesCreate,
+  pickPropertiesCreate = [],
 }) =>
   pipe([
     tap(() => {

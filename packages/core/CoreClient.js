@@ -56,7 +56,7 @@ module.exports = CoreClient = ({
   onResponseDelete = identity,
   onResponseUpdate = identity,
   isDefault,
-  managedByOther,
+  managedByOther = () => false,
   cannotBeDeleted,
   shouldRetryOnException,
   onCreateExpectedException,

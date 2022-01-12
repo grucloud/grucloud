@@ -41,6 +41,9 @@ exports.fnSpecs = ({ config }) => {
           getAll: {
             path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments`,
           },
+          delete: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
+          },
         },
         pickPropertiesCreate: [
           "properties.arcConfiguration.frontEndServiceConfiguration.kind",
@@ -126,6 +129,9 @@ exports.fnSpecs = ({ config }) => {
           },
           getAll: {
             path: `/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerapps`,
+          },
+          delete: {
+            path: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerapps/{name}",
           },
         },
         apiVersion: "2021-03-01",

@@ -57,6 +57,7 @@ const SpecDefault = ({ providerName }) => ({
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   displayResource: () => identity,
+  managedByOther: () => false,
   cannotBeDeleted: () => false,
   findResource: ({ resources, name, lives }) =>
     pipe([
