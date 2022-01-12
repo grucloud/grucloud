@@ -11,6 +11,9 @@ const {
   pick,
   assign,
   omit,
+  or,
+  and,
+  filter,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -19,6 +22,9 @@ const {
   find,
   isEmpty,
   when,
+  callProp,
+  prepend,
+  append,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -40,10 +46,32 @@ exports.fnSpecs = ({ config }) =>
         apiVersion: "2021-04-01-preview",
         dependsOnList: [
           "Authorization::RoleDefinition",
+          "Resource::ResourceGroup",
           "Compute::VirtualMachine",
           "Compute::DiskEncryptionSet",
         ],
         dependencies: {
+          scopeResourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            createOnly: true,
+          },
+          scopeVirtualMachine: {
+            type: "VirtualMachine",
+            group: "Compute",
+            createOnly: true,
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => dependency,
+                  get("id"),
+                  callProp(
+                    "match",
+                    new RegExp(`^${resource.live.properties.scope}$`, "ig")
+                  ),
+                ])(),
+          },
           roleDefinition: {
             type: "RoleDefinition",
             group: "Authorization",
@@ -59,35 +87,29 @@ exports.fnSpecs = ({ config }) =>
             type: "VirtualMachine",
             group: "Compute",
             createOnly: true,
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => dependency,
+                  get("id"),
+                  not(
+                    callProp(
+                      "match",
+                      new RegExp(`^${resource.live.properties.scope}$`, "ig")
+                    )
+                  ),
+                ])(),
           },
         },
-        // findName: pipe([
-        //   tap((params) => {
-        //     assert(true);
-        //   }),
-        //   get("live.properties"),
-        //   ({ roleName, principalName, principalId }) =>
-        //     `role-assignment::${roleName}::${principalName || principalId}`,
-        //   tap((params) => {
-        //     assert(true);
-        //   }),
-        // ]),
-        // inferName: ({ properties }) =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(properties);
-        //     }),
-        //     () =>
-        //       `role-assignment::${properties.roleName}::${
-        //         properties.principalName || properties.principalId
-        //       }`,
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //   ])(),
         cannotBeDeleted: eq(get("live.properties.roleName"), "Owner"),
         ignoreResource: ({ lives }) =>
-          not(get("live.properties.principalName")),
+          or([
+            and([
+              eq(get("live.properties.principalType"), "ServicePrincipal"),
+              not(get("live.properties.principalName")),
+            ]),
+          ]),
         decorate:
           ({ axios, lives }) =>
           (live) =>
@@ -139,24 +161,29 @@ exports.fnSpecs = ({ config }) =>
             () => lives.getByProvider(config),
             pluck("resources"),
             flatten,
-            find(
-              eq(get("live.identity.principalId"), live.properties.principalId)
+            filter(
+              or([
+                pipe([
+                  get("id"),
+                  callProp(
+                    "match",
+                    new RegExp(`^${live.properties.scope}$`, "ig")
+                  ),
+                ]),
+                eq(
+                  get("live.identity.principalId"),
+                  live.properties.principalId
+                ),
+              ])
             ),
-            switchCase([
-              isEmpty,
-              () => [],
-              pipe([({ group, type, id }) => [{ group, type, ids: [id] }]]),
-            ]),
+            map(({ group, type, id }) => ({ group, type, ids: [id] })),
           ])(),
         ],
         configDefault: ({ properties, dependencies, config, lives }) =>
           pipe([
             tap(() => {
-              assert(
-                dependencies.principalVirtualMachine ||
-                  dependencies.principalDiskEncryptionSet
-              );
               assert(lives);
+              assert(config.subscriptionId);
             }),
             () => properties,
             omit(["properties.principalName", "properties.roleName"]),
@@ -198,6 +225,27 @@ exports.fnSpecs = ({ config }) =>
                 ]),
               },
             }),
+            when(
+              () => dependencies.scopeResourceGroup,
+              defaultsDeep({
+                properties: {
+                  scope: getField(dependencies.scopeResourceGroup, "id"),
+                },
+              })
+            ),
+            when(
+              () => dependencies.scopeVirtualMachine,
+              defaultsDeep({
+                properties: {
+                  scope: getField(dependencies.scopeVirtualMachine, "id"),
+                },
+              })
+            ),
+            defaultsDeep({
+              properties: {
+                scope: `/subscriptions/${config.subscriptionId}`,
+              },
+            }),
             tap((params) => {
               assert(true);
             }),
@@ -207,17 +255,14 @@ exports.fnSpecs = ({ config }) =>
             pick([
               "properties.roleName",
               "properties.principalName",
+              "properties.principalId",
               "properties.principalType",
               "properties.description",
             ]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                // assign({
-                //   tenantId: () => () => "`" + "${config.tenantId}" + "`",
-                // }),
-              ]),
-            }),
+            when(
+              eq(get("properties.principalType"), "ServicePrincipal"),
+              omit(["properties.principalId"])
+            ),
           ]),
       },
     ],

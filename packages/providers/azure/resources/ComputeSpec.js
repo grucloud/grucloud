@@ -13,7 +13,6 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
-  buildTags,
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
   configDefaultDependenciesId,
@@ -260,6 +259,7 @@ exports.fnSpecs = ({ config }) =>
                   "hardwareProfile",
                   "storageProfile.imageReference",
                   "osProfile",
+                  "diagnosticsProfile",
                 ]),
                 omitIfEmpty(["osProfile.secrets"]),
                 omit([

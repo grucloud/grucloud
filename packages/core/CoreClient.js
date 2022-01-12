@@ -208,7 +208,7 @@ module.exports = CoreClient = ({
                 assert(!spec.singleton);
                 assert(!spec.listOnly);
               }),
-              () => ({ dependencies: dependencies(), name }),
+              () => ({ dependencies: dependencies(), name, payload }),
               pathCreate,
               tap((path) => {
                 logger.info(`create ${spec.type}/${name}, path: ${path}`);

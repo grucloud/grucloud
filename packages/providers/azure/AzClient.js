@@ -219,17 +219,29 @@ module.exports = AzClient = ({
         () => process.env.AZURE_SUBSCRIPTION_ID
       )
     );
-  const substituteScope = () =>
-    map(
-      when(
-        eq(identity, "{scope}"),
-        () => `subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
-      )
-    );
+  const substituteScope = ({ payload }) =>
+    pipe([
+      tap((params) => {
+        assert(payload.properties.scope);
+      }),
+      map(
+        when(
+          eq(identity, "{scope}"),
+          pipe([
+            () => payload,
+            get("properties.scope"),
+            callProp("substring", 1), //remove first slash
+          ])
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
   const substitutePath = ({ dependencies }) =>
     map(when(isSubstituable, substituteDependency({ dependencies })));
 
-  const pathCreate = ({ dependencies, name }) =>
+  const pathCreate = ({ dependencies, name, payload }) =>
     pipe([
       () => methods,
       get("get.path"),
@@ -245,7 +257,7 @@ module.exports = AzClient = ({
       ),
       callProp("slice", 0, -1),
       substituteSubscriptionId(),
-      substituteScope(),
+      substituteScope({ payload }),
       tap((params) => {
         assert(true);
       }),
