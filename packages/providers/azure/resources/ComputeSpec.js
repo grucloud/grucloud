@@ -8,6 +8,7 @@ const {
   includes,
   first,
   when,
+  flatten,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -55,6 +56,32 @@ const filterVirtualMachineProperties = pipe([
     assert(true);
   }),
 ]);
+
+const VirtualMachineDependencySshPublicKey = ({
+  publicKeysPath,
+  live,
+  lives,
+  config,
+}) => ({
+  type: "SshPublicKey",
+  group: "Compute",
+  ids: pipe([
+    () => live,
+    get(publicKeysPath),
+    map(({ keyData }) =>
+      pipe([
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "SshPublicKey",
+            group: "Compute",
+          }),
+        find(eq(get("live.properties.publicKey"), keyData)),
+        get("id"),
+      ])()
+    ),
+  ])(),
+});
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -191,6 +218,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "VirtualMachineScaleSetVM",
         ignoreResource: () => () => true,
+        managedByOther: () => true,
       },
       {
         type: "VirtualMachineScaleSet",
@@ -199,6 +227,12 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
           },
           networkInterface: {
             type: "NetworkInterface",
@@ -237,11 +271,6 @@ exports.fnSpecs = ({ config }) =>
             group: "Compute",
             createOnly: true,
           },
-          virtualMachineScaleSetVm: {
-            type: "VirtualMachineScaleSetVM",
-            group: "Compute",
-            createOnly: true,
-          },
           capacityReservationGroup: {
             type: "CapacityReservationGroup",
             group: "Compute",
@@ -252,6 +281,58 @@ exports.fnSpecs = ({ config }) =>
           {
             path: "properties.virtualMachineProfile.osProfile.adminPassword",
             suffix: "ADMIN_PASSWORD",
+          },
+        ],
+        findDependencies: ({ live, lives }) => [
+          {
+            //TODO replace with findDependenciesResourceGroup
+            type: "ResourceGroup",
+            group: "Resources",
+            ids: pipe([
+              () => [
+                live.id
+                  .replace(`/providers/${live.type}/${live.name}`, "")
+                  .toLowerCase()
+                  .replace("resourcegroups", "resourceGroups"),
+              ],
+            ])(),
+          },
+          findDependenciesUserAssignedIdentity({ live }),
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("ipConfigurations"),
+              flatten,
+              pluck("properties"),
+              pluck("subnet"),
+              pluck("id"),
+            ])(),
+          },
+          VirtualMachineDependencySshPublicKey({
+            live,
+            lives,
+            config,
+            publicKeysPath:
+              "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys",
+          }),
+          //TODO common
+          {
+            type: "Disk",
+            group: "Compute",
+            ids: [
+              pipe([
+                () => live,
+                get(
+                  "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.id"
+                ),
+              ])(),
+            ],
           },
         ],
         filterLive: () =>
@@ -410,26 +491,13 @@ exports.fnSpecs = ({ config }) =>
               pluck("id"),
             ])(),
           },
-          {
-            type: "SshPublicKey",
-            group: "Compute",
-            ids: pipe([
-              () => live,
-              get("properties.osProfile.linuxConfiguration.ssh.publicKeys"),
-              map(({ keyData }) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      providerName: config.providerName,
-                      type: "SshPublicKey",
-                      group: "Compute",
-                    }),
-                  find(eq(get("live.properties.publicKey"), keyData)),
-                  get("id"),
-                ])()
-              ),
-            ])(),
-          },
+          VirtualMachineDependencySshPublicKey({
+            lives,
+            live,
+            config,
+            publicKeysPath:
+              "properties.osProfile.linuxConfiguration.ssh.publicKeys",
+          }),
           {
             type: "Disk",
             group: "Compute",

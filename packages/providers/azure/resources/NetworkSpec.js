@@ -35,9 +35,33 @@ exports.fnSpecs = ({ config }) => {
             createOnly: true,
             list: true,
           },
+          loadBalancerBackendAddressPools: {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
         },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.backendAddressPools"),
+              pluck("properties"),
+              pluck("loadBalancerBackendAddresses"),
+              tap((params) => {
+                assert(true);
+              }),
+              flatten,
+              pluck("id"),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          },
           {
             type: "PublicIPAddress",
             group: "Network",
@@ -59,24 +83,14 @@ exports.fnSpecs = ({ config }) => {
             assign({
               properties: pipe([
                 get("properties"),
-                omit(["provisioningState", "resourceGuid"]),
+                omit([
+                  "provisioningState",
+                  "resourceGuid",
+                  "backendAddressPools",
+                ]),
                 assign({
                   frontendIPConfigurations: pipe([
                     get("frontendIPConfigurations"),
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    map(
-                      pipe([
-                        tap((params) => {
-                          assert(true);
-                        }),
-                        pick(["name", "properties"]),
-                      ])
-                    ),
-                  ]),
-                  backendAddressPools: pipe([
-                    get("backendAddressPools"),
                     tap((params) => {
                       assert(true);
                     }),
