@@ -1,5 +1,6 @@
 ## Bugs
 
+- az vm storageProfile dataDisks
 - Subnet default name prefixed with virtual-network
 - OperationalInsights.makeDataCollectorLog test
 - LoadBalancer deps natGateway

@@ -75,70 +75,81 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
     omit([
       "osProfile.requireGuestProvisionSignal",
       "storageProfile.imageReference.exactVersion",
+      "storageProfile.osDisk",
+      "networkProfile.networkInterfaces",
     ]),
     assign({
       networkProfile: pipe([
         get("networkProfile"),
-        assign({
-          networkInterfaceConfigurations: pipe([
-            get("networkInterfaceConfigurations"),
-            map(
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  assign({
-                    networkSecurityGroup: pipe([
-                      get("networkSecurityGroup"),
-                      assignDependenciesId({
-                        group: "Network",
-                        type: "NetworkSecurityGroup",
-                        lives,
-                      }),
-                    ]),
-                    ipConfigurations: pipe([
-                      get("ipConfigurations"),
-                      map(
-                        pipe([
-                          assign({
-                            properties: pipe([
-                              get("properties"),
-                              assign({
-                                subnet: pipe([
-                                  get("subnet"),
-                                  assignDependenciesId({
-                                    group: "Network",
-                                    type: "Subnet",
-                                    lives,
-                                  }),
-                                ]),
-                              }),
-                            ]),
-                          }),
-                        ])
-                      ),
-                    ]),
-                  }),
-                ]),
-              })
-            ),
-          ]),
-        }),
+        when(
+          get("networkInterfaceConfigurations"),
+          assign({
+            networkInterfaceConfigurations: pipe([
+              get("networkInterfaceConfigurations"),
+              map(
+                assign({
+                  properties: pipe([
+                    get("properties"),
+                    assign({
+                      networkSecurityGroup: pipe([
+                        get("networkSecurityGroup"),
+                        assignDependenciesId({
+                          group: "Network",
+                          type: "NetworkSecurityGroup",
+                          lives,
+                        }),
+                      ]),
+                      ipConfigurations: pipe([
+                        get("ipConfigurations"),
+                        map(
+                          pipe([
+                            assign({
+                              properties: pipe([
+                                get("properties"),
+                                assign({
+                                  subnet: pipe([
+                                    get("subnet"),
+                                    assignDependenciesId({
+                                      group: "Network",
+                                      type: "Subnet",
+                                      lives,
+                                    }),
+                                  ]),
+                                }),
+                              ]),
+                            }),
+                          ])
+                        ),
+                      ]),
+                    }),
+                  ]),
+                })
+              ),
+            ]),
+          })
+        ),
       ]),
       osProfile: pipe([
         get("osProfile"),
-        assign({
-          linuxConfiguration: pipe([
-            get("linuxConfiguration"),
-            assign({
-              ssh: pipe([
-                get("ssh"),
-                assign({
-                  publicKeys: pipe([get("publicKeys"), map(omit(["keyData"]))]),
-                }),
-              ]),
-            }),
-          ]),
-        }),
+        when(
+          get("linuxConfiguration.ssh.publicKeys"),
+          assign({
+            linuxConfiguration: pipe([
+              get("linuxConfiguration"),
+              assign({
+                ssh: pipe([
+                  get("ssh"),
+                  assign({
+                    publicKeys: pipe([
+                      get("publicKeys", []),
+                      map(omit(["keyData"])),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          })
+        ),
       ]),
     }),
     tap((params) => {
