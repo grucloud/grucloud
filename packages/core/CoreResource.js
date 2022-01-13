@@ -480,6 +480,28 @@ exports.ResourceMaker = ({
               properties({
                 config: provider.getConfig(),
                 dependencies: resolvedDependencies,
+                getId: ({ group, type, name }) =>
+                  pipe([
+                    tap(() => {
+                      assert(group);
+                      assert(type);
+                      assert(name);
+                    }),
+                    () =>
+                      provider.lives.getByName({
+                        name,
+                        group,
+                        type,
+                        providerName: config.providerName,
+                      }),
+                    get(
+                      "id",
+                      `id of ${group}::${type}::${name} not vailable yet`
+                    ),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                  ])(),
               }),
             (properties = {}) =>
               getClient().configDefault({

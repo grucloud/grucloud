@@ -1,5 +1,6 @@
 ## Bugs
 
+- Subnet default name prefixed with virtual-network
 - OperationalInsights.makeDataCollectorLog test
 - LoadBalancer deps natGateway
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array

@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, eq, not, get, tap, pick, map, assign, omit } = require("rubico");
+const {
+  pipe,
+  eq,
+  not,
+  get,
+  tap,
+  pick,
+  map,
+  assign,
+  omit,
+  and,
+} = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -22,40 +33,118 @@ const {
 
 const group = "Compute";
 
-const filterVirtualMachineProperties = pipe([
-  pick([
-    "hardwareProfile",
-    "osProfile",
-    "storageProfile.imageReference",
-    "diagnosticsProfile",
-  ]),
-  omitIfEmpty(["osProfile.secrets"]),
-  omit([
-    "osProfile.requireGuestProvisionSignal",
-    "storageProfile.imageReference.exactVersion",
-  ]),
-  assign({
-    osProfile: pipe([
-      get("osProfile"),
-      assign({
-        linuxConfiguration: pipe([
-          get("linuxConfiguration"),
-          assign({
-            ssh: pipe([
-              get("ssh"),
-              assign({
-                publicKeys: pipe([get("publicKeys"), map(omit(["keyData"]))]),
-              }),
-            ]),
-          }),
-        ]),
+const findResourceById =
+  ({ groupType, lives }) =>
+  (id) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(groupType);
       }),
+      () => lives,
+      find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
+    ])();
+
+const assignDependenciesId = ({ group, type, lives }) =>
+  assign({
+    id: pipe([
+      get("id"),
+      findResourceById({
+        groupType: `${group}::${type}`,
+        lives,
+      }),
+      get("name"),
+      (name) => () =>
+        `getId({ type: "${type}", group: "${group}", name: "${name}" })`,
     ]),
-  }),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+  });
+const filterVirtualMachineProperties = ({ resource, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(resource);
+      assert(lives);
+    }),
+    pick([
+      "hardwareProfile",
+      "osProfile",
+      "storageProfile",
+      "diagnosticsProfile",
+      "networkProfile",
+    ]),
+    omitIfEmpty(["osProfile.secrets"]),
+    omit([
+      "osProfile.requireGuestProvisionSignal",
+      "storageProfile.imageReference.exactVersion",
+    ]),
+    assign({
+      networkProfile: pipe([
+        get("networkProfile"),
+        assign({
+          networkInterfaceConfigurations: pipe([
+            get("networkInterfaceConfigurations"),
+            map(
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  assign({
+                    networkSecurityGroup: pipe([
+                      get("networkSecurityGroup"),
+                      assignDependenciesId({
+                        group: "Network",
+                        type: "NetworkSecurityGroup",
+                        lives,
+                      }),
+                    ]),
+                    ipConfigurations: pipe([
+                      get("ipConfigurations"),
+                      map(
+                        pipe([
+                          assign({
+                            properties: pipe([
+                              get("properties"),
+                              assign({
+                                subnet: pipe([
+                                  get("subnet"),
+                                  assignDependenciesId({
+                                    group: "Network",
+                                    type: "Subnet",
+                                    lives,
+                                  }),
+                                ]),
+                              }),
+                            ]),
+                          }),
+                        ])
+                      ),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        }),
+      ]),
+      osProfile: pipe([
+        get("osProfile"),
+        assign({
+          linuxConfiguration: pipe([
+            get("linuxConfiguration"),
+            assign({
+              ssh: pipe([
+                get("ssh"),
+                assign({
+                  publicKeys: pipe([get("publicKeys"), map(omit(["keyData"]))]),
+                }),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const VirtualMachineDependencySshPublicKey = ({
   publicKeysPath,
@@ -82,6 +171,26 @@ const VirtualMachineDependencySshPublicKey = ({
     ),
   ])(),
 });
+
+const publicKeysCreatePayload = ({ dependencies }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => dependencies.sshPublicKeys,
+    map((sshPublicKey) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        //TODO azureuser
+        () => ({
+          path: "/home/azureuser/.ssh/authorized_keys",
+          keyData: getField(sshPublicKey, "properties.publicKey"),
+        }),
+      ])()
+    ),
+  ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -256,10 +365,11 @@ exports.fnSpecs = ({ config }) =>
             group: "Compute",
             createOnly: true,
           },
-          networkSecurityGroup: {
+          networkSecurityGroups: {
             type: "NetworkSecurityGroup",
             group: "Network",
             createOnly: true,
+            list: true,
           },
           proximityPlacementGroup: {
             type: "ProximityPlacementGroup",
@@ -283,6 +393,10 @@ exports.fnSpecs = ({ config }) =>
             suffix: "ADMIN_PASSWORD",
           },
         ],
+        omitProperties: [
+          "properties.virtualMachineProfile.osProfile.adminPassword",
+          "properties.virtualMachineProfile.osProfile.secrets",
+        ],
         findDependencies: ({ live, lives }) => [
           {
             //TODO replace with findDependenciesResourceGroup
@@ -298,6 +412,19 @@ exports.fnSpecs = ({ config }) =>
             ])(),
           },
           findDependenciesUserAssignedIdentity({ live }),
+          {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("networkSecurityGroup"),
+              pluck("id"),
+            ])(),
+          },
           {
             type: "Subnet",
             group: "Network",
@@ -335,10 +462,10 @@ exports.fnSpecs = ({ config }) =>
             ],
           },
         ],
-        filterLive: () =>
+        filterLive: (context) =>
           pipe([
             tap((params) => {
-              assert(true);
+              assert(context);
             }),
             pick(["sku", "identity.type", "properties", "tags"]),
             assign({
@@ -348,13 +475,42 @@ exports.fnSpecs = ({ config }) =>
                 assign({
                   virtualMachineProfile: pipe([
                     get("virtualMachineProfile"),
-                    filterVirtualMachineProperties,
+                    filterVirtualMachineProperties(context),
                   ]),
                 }),
                 ,
               ]),
             }),
           ]),
+        configDefault: ({ properties, dependencies, config }) =>
+          pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () => properties,
+            when(
+              () => dependencies.sshPublicKeys,
+              defaultsDeep({
+                properties: {
+                  virtualMachineProfile: {
+                    osProfile: {
+                      linuxConfiguration: {
+                        ssh: {
+                          publicKeys: publicKeysCreatePayload({ dependencies }),
+                        },
+                      },
+                    },
+                  },
+                },
+              })
+            ),
+            defaultsDeep(
+              configDefaultGeneric({ properties, dependencies, config })
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
@@ -449,16 +605,16 @@ exports.fnSpecs = ({ config }) =>
             },
           },
         },
-        filterLive: () =>
+        filterLive: (context) =>
           pipe([
             tap((params) => {
-              assert(true);
+              assert(context);
             }),
             pick(["tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),
-                filterVirtualMachineProperties,
+                filterVirtualMachineProperties(context),
               ]),
             }),
           ]),
@@ -526,27 +682,7 @@ exports.fnSpecs = ({ config }) =>
                   osProfile: {
                     linuxConfiguration: {
                       ssh: {
-                        publicKeys: pipe([
-                          tap((params) => {
-                            assert(true);
-                          }),
-                          () => dependencies.sshPublicKeys,
-                          map((sshPublicKey) =>
-                            pipe([
-                              tap((params) => {
-                                assert(true);
-                              }),
-                              //TODO azureuser
-                              () => ({
-                                path: "/home/azureuser/.ssh/authorized_keys",
-                                keyData: getField(
-                                  sshPublicKey,
-                                  "properties.publicKey"
-                                ),
-                              }),
-                            ])()
-                          ),
-                        ])(),
+                        publicKeys: publicKeysCreatePayload({ dependencies }),
                       },
                     },
                   },

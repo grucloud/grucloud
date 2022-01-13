@@ -4,6 +4,7 @@ const fs = require("fs").promises;
 const { snakeCase } = require("change-case");
 const prettier = require("prettier");
 const prompts = require("prompts");
+const { ESLint } = require("eslint");
 
 const { differenceObject } = require("./Common");
 const {
@@ -29,6 +30,7 @@ const {
 } = require("rubico");
 
 const {
+  first,
   uniq,
   size,
   isEmpty,
@@ -251,7 +253,7 @@ const configBuildPropertiesDefault = ({
     }),
     () =>
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\nproperties: ({config}) => (${printProperties(properties)}),`
+        ? `\nproperties: ({config, getId}) => (${printProperties(properties)}),`
         : "",
     tap((params) => {
       assert(true);
@@ -502,7 +504,39 @@ const writeToFile =
       assign({
         filenameResolved: () =>
           path.resolve(programOptions.workingDirectory, filename),
-        contentFormated: () => prettier.format(content, { parser: "babel" }),
+        contentFormated: pipe([
+          () =>
+            new ESLint({
+              fix: true,
+              plugins: {
+                autofix: require("eslint-plugin-autofix"),
+              },
+              baseConfig: {
+                env: {
+                  es6: true,
+                  node: true,
+                },
+                parserOptions: {
+                  ecmaVersion: 2017,
+                },
+                extends: ["eslint:recommended"],
+                plugins: ["autofix"],
+                rules: {
+                  "autofix/no-unused-vars": "warn",
+                },
+              },
+            }),
+          (eslint) =>
+            pipe([
+              () => eslint.lintText(content),
+              tap((params) => {
+                assert(true);
+              }),
+              first,
+              get("output"),
+              (output) => prettier.format(output, { parser: "babel" }),
+            ])(),
+        ]),
       }),
       tap((params) => {
         assert(true);
