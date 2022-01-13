@@ -222,7 +222,8 @@ module.exports = AzClient = ({
   const substituteScope = ({ payload }) =>
     pipe([
       tap((params) => {
-        assert(payload.properties.scope);
+        // assert(payload);
+        //assert(payload.properties.scope);
       }),
       map(
         when(

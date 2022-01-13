@@ -22,6 +22,86 @@ exports.fnSpecs = ({ config }) => {
   return pipe([
     () => [
       {
+        type: "LoadBalancer",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          publicIPAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.frontendIPConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          },
+        ],
+        filterLive: () =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "resourceGuid"]),
+                assign({
+                  frontendIPConfigurations: pipe([
+                    get("frontendIPConfigurations"),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    map(
+                      pipe([
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        pick(["name", "properties"]),
+                      ])
+                    ),
+                  ]),
+                  backendAddressPools: pipe([
+                    get("backendAddressPools"),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    map(
+                      pipe([
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        pick(["name", "properties"]),
+                      ])
+                    ),
+                  ]),
+                  /*
+                  loadBalancingRules: [],
+        probes: [],
+        inboundNatRules: [],
+        inboundNatPools: [],
+        outboundRules: [],
+                  */
+                }),
+              ]),
+            }),
+          ]),
+      },
+      {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
         // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01

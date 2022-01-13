@@ -21,6 +21,41 @@ const {
 
 const group = "Compute";
 
+const filterVirtualMachineProperties = pipe([
+  pick([
+    "hardwareProfile",
+    "osProfile",
+    "storageProfile.imageReference",
+    "diagnosticsProfile",
+  ]),
+  omitIfEmpty(["osProfile.secrets"]),
+  omit([
+    "osProfile.requireGuestProvisionSignal",
+    "storageProfile.imageReference.exactVersion",
+  ]),
+  assign({
+    osProfile: pipe([
+      get("osProfile"),
+      assign({
+        linuxConfiguration: pipe([
+          get("linuxConfiguration"),
+          assign({
+            ssh: pipe([
+              get("ssh"),
+              assign({
+                publicKeys: pipe([get("publicKeys"), map(omit(["keyData"]))]),
+              }),
+            ]),
+          }),
+        ]),
+      }),
+    ]),
+  }),
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
@@ -154,6 +189,93 @@ exports.fnSpecs = ({ config }) =>
           ])(),
       },
       {
+        type: "VirtualMachineScaleSetVM",
+        ignoreResource: () => () => true,
+      },
+      {
+        type: "VirtualMachineScaleSet",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          networkInterface: {
+            type: "NetworkInterface",
+            group: "Network",
+            createOnly: true,
+          },
+          managedIdentities: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          sshPublicKeys: {
+            type: "SshPublicKey",
+            group: "Compute",
+            list: true,
+            createOnly: true,
+          },
+          galleryImage: {
+            type: "GalleryImage",
+            group: "Compute",
+            createOnly: true,
+          },
+          networkSecurityGroup: {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            createOnly: true,
+          },
+          proximityPlacementGroup: {
+            type: "ProximityPlacementGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          dedicatedHostGroup: {
+            type: "DedicatedHostGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          virtualMachineScaleSetVm: {
+            type: "VirtualMachineScaleSetVM",
+            group: "Compute",
+            createOnly: true,
+          },
+          capacityReservationGroup: {
+            type: "CapacityReservationGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+        },
+        environmentVariables: [
+          {
+            path: "properties.virtualMachineProfile.osProfile.adminPassword",
+            suffix: "ADMIN_PASSWORD",
+          },
+        ],
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["sku", "identity.type", "properties", "tags"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "uniqueId"]),
+                assign({
+                  virtualMachineProfile: pipe([
+                    get("virtualMachineProfile"),
+                    filterVirtualMachineProperties,
+                  ]),
+                }),
+                ,
+              ]),
+            }),
+          ]),
+      },
+      {
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
         type: "VirtualMachine",
         dependencies: {
@@ -255,41 +377,7 @@ exports.fnSpecs = ({ config }) =>
             assign({
               properties: pipe([
                 get("properties"),
-                pick([
-                  "hardwareProfile",
-                  "storageProfile.imageReference",
-                  "osProfile",
-                  "diagnosticsProfile",
-                ]),
-                omitIfEmpty(["osProfile.secrets"]),
-                omit([
-                  "osProfile.requireGuestProvisionSignal",
-                  "storageProfile.imageReference.exactVersion",
-                ]),
-                assign({
-                  osProfile: pipe([
-                    get("osProfile"),
-                    assign({
-                      linuxConfiguration: pipe([
-                        get("linuxConfiguration"),
-                        assign({
-                          ssh: pipe([
-                            get("ssh"),
-                            assign({
-                              publicKeys: pipe([
-                                get("publicKeys"),
-                                map(omit(["keyData"])),
-                              ]),
-                            }),
-                          ]),
-                        }),
-                      ]),
-                    }),
-                  ]),
-                }),
-                tap((params) => {
-                  assert(true);
-                }),
+                filterVirtualMachineProperties,
               ]),
             }),
           ]),
