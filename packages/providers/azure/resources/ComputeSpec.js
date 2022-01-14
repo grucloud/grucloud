@@ -20,6 +20,7 @@ const {
   first,
   when,
   flatten,
+  callProp,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -42,16 +43,27 @@ const findResourceById =
         assert(groupType);
       }),
       () => lives,
-      find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
+      find(
+        and([
+          eq(get("groupType"), groupType),
+          pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]),
+        ])
+      ),
     ])();
 
 const assignDependenciesId = ({ group, type, lives }) =>
   assign({
     id: pipe([
       get("id"),
+      tap((id) => {
+        assert(id);
+      }),
       findResourceById({
         groupType: `${group}::${type}`,
         lives,
+      }),
+      tap((resource) => {
+        assert(resource);
       }),
       get("name"),
       (name) => () =>
@@ -77,6 +89,28 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
       "storageProfile.osDisk",
       "networkProfile.networkInterfaces",
     ]),
+    assign({
+      storageProfile: pipe([
+        get("storageProfile"),
+        assign({
+          dataDisks: pipe([
+            get("dataDisks", []),
+            map(
+              assign({
+                managedDisk: pipe([
+                  get("managedDisk"),
+                  assignDependenciesId({
+                    group: "Compute",
+                    type: "Disk",
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        }),
+      ]),
+    }),
     assign({
       networkProfile: pipe([
         get("networkProfile"),
@@ -224,7 +258,18 @@ exports.fnSpecs = ({ config }) =>
     () => [
       {
         type: "Disk",
-        managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
+        managedByOther: ({ live, lives }) =>
+          pipe([
+            () =>
+              lives.getById({
+                id: live.managedBy,
+                type: "VirtualMachine",
+                group: "Compute",
+                providerName: config.providerName,
+              }),
+            get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
+            callProp("match", new RegExp(`^${live.id}$`, "ig")),
+          ])(),
         //TODO default configDefault should be this
         configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
@@ -376,6 +421,12 @@ exports.fnSpecs = ({ config }) =>
             list: true,
             createOnly: true,
           },
+          disks: {
+            type: "Disk",
+            group: "Compute",
+            list: true,
+            createOnly: true,
+          },
           managedIdentities: {
             type: "UserAssignedIdentity",
             group: "ManagedIdentity",
@@ -425,20 +476,8 @@ exports.fnSpecs = ({ config }) =>
           "properties.virtualMachineProfile.osProfile.adminPassword",
           "properties.virtualMachineProfile.osProfile.secrets",
         ],
-        findDependencies: ({ live, lives }) => [
-          {
-            //TODO replace with findDependenciesResourceGroup
-            type: "ResourceGroup",
-            group: "Resources",
-            ids: pipe([
-              () => [
-                live.id
-                  .replace(`/providers/${live.type}/${live.name}`, "")
-                  .toLowerCase()
-                  .replace("resourcegroups", "resourceGroups"),
-              ],
-            ])(),
-          },
+        findDependencies: ({ live, lives, config }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),
           {
             type: "NetworkSecurityGroup",
@@ -555,6 +594,12 @@ exports.fnSpecs = ({ config }) =>
             list: true,
             createOnly: true,
           },
+          disks: {
+            type: "Disk",
+            group: "Compute",
+            list: true,
+            createOnly: true,
+          },
           managedIdentities: {
             type: "UserAssignedIdentity",
             group: "ManagedIdentity",
@@ -653,19 +698,7 @@ exports.fnSpecs = ({ config }) =>
           "properties.osProfile",
         ],
         findDependencies: ({ live, lives }) => [
-          {
-            //TODO replace with findDependenciesResourceGroup
-            type: "ResourceGroup",
-            group: "Resources",
-            ids: pipe([
-              () => [
-                live.id
-                  .replace(`/providers/${live.type}/${live.name}`, "")
-                  .toLowerCase()
-                  .replace("resourcegroups", "resourceGroups"),
-              ],
-            ])(),
-          },
+          findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),
           {
             type: "NetworkInterface",
@@ -690,6 +723,12 @@ exports.fnSpecs = ({ config }) =>
               pipe([
                 () => live,
                 get("properties.storageProfile.osDisk.managedDisk.id"),
+              ])(),
+              ...pipe([
+                () => live,
+                get("properties.storageProfile.dataDisks"),
+                pluck("managedDisk"),
+                pluck("id"),
               ])(),
             ],
           },
