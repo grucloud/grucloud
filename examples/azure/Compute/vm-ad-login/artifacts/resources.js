@@ -87,14 +87,6 @@ const createResources = ({ provider }) => {
             enabled: true,
           },
         },
-        networkProfile: {
-          networkInterfaces: [
-            {
-              id: "/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-vm-ad-login/providers/Microsoft.Network/networkInterfaces/vm-ad-login705",
-            },
-          ],
-          networkInterfaceConfigurations: undefined,
-        },
       },
       identity: {
         type: "SystemAssigned",

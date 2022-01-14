@@ -81,14 +81,12 @@ const createResources = ({ provider }) => {
             sku: "20_04-lts",
             version: "latest",
           },
-          dataDisks: [],
         },
         diagnosticsProfile: {
           bootDiagnostics: {
             enabled: true,
           },
         },
-        networkProfile: {},
       },
       identity: {
         type: "SystemAssigned",

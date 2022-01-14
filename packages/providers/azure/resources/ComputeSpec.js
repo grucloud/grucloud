@@ -71,7 +71,6 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
       "diagnosticsProfile",
       "networkProfile",
     ]),
-    omitIfEmpty(["osProfile.secrets"]),
     omit([
       "osProfile.requireGuestProvisionSignal",
       "storageProfile.imageReference.exactVersion",
@@ -152,6 +151,12 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
         ),
       ]),
     }),
+    omitIfEmpty([
+      "osProfile.secrets",
+      "storageProfile.dataDisks",
+      "networkProfile",
+    ]),
+
     tap((params) => {
       assert(true);
     }),
