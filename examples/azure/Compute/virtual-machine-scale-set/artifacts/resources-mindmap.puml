@@ -1,17 +1,13 @@
 @startmindmap
-title Resources for project managed-identity-basic
+title Resources for project virtual-machine-scale-set
 skinparam monochrome true
 + Infra
 ++ azure
 +++ Compute
 ++++ SshPublicKey (1)
-++++ VirtualMachine (1)
-+++ ManagedIdentity
-++++ UserAssignedIdentity (1)
+++++ VirtualMachineScaleSet (1)
 +++ Network
-++++ NetworkInterface (1)
 ++++ NetworkSecurityGroup (1)
-++++ PublicIPAddress (1)
 ++++ Subnet (1)
 ++++ VirtualNetwork (1)
 +++ Resources

@@ -52,15 +52,6 @@ const createResources = ({ provider }) => {
             adminPassword: process.env.VIRTUAL_MACHINE_SCALE_SET_ADMIN_PASSWORD,
           },
           storageProfile: {
-            osDisk: {
-              osType: "Linux",
-              createOption: "FromImage",
-              caching: "None",
-              managedDisk: {
-                storageAccountType: "Premium_LRS",
-              },
-              diskSizeGB: 30,
-            },
             imageReference: {
               publisher: "canonical",
               offer: "0001-com-ubuntu-server-focal",
