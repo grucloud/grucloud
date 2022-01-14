@@ -94,7 +94,7 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
-      networkInterface: resources.Network.NetworkInterface["vm-ad-login705"],
+      networkInterfaces: [resources.Network.NetworkInterface["vm-ad-login705"]],
       sshPublicKeys: [resources.Compute.SshPublicKey["vm-ad-login_key"]],
     }),
   });

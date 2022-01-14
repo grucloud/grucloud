@@ -13,11 +13,6 @@ const createResources = ({ provider }) => {
         osProfile: {
           computerName: "myVM",
           adminUsername: "ops",
-          linuxConfiguration: {
-            ssh: {
-              publicKeys: undefined,
-            },
-          },
           adminPassword: process.env.VM_ADMIN_PASSWORD,
         },
         storageProfile: {
@@ -27,14 +22,14 @@ const createResources = ({ provider }) => {
             sku: "18.04-LTS",
             version: "latest",
           },
-          dataDisks: [],
         },
-        networkProfile: {},
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterface: resources.Network.NetworkInterface["network-interface"],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["network-interface"],
+      ],
     }),
   });
 

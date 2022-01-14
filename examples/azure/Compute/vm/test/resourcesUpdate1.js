@@ -32,7 +32,9 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterface: resources.Network.NetworkInterface["network-interface"],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["network-interface"],
+      ],
     }),
   });
 };

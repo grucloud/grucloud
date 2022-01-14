@@ -80,6 +80,18 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
     assign({
       networkProfile: pipe([
         get("networkProfile"),
+        // assign({
+        //   networkInterfaces: pipe([
+        //     get("networkInterfaces"),
+        //     map(
+        //       assignDependenciesId({
+        //         group: "Network",
+        //         type: "NetworkInterface",
+        //         lives,
+        //       })
+        //     ),
+        //   ]),
+        // }),
         when(
           get("networkInterfaceConfigurations"),
           assign({
@@ -156,7 +168,6 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
       "storageProfile.dataDisks",
       "networkProfile",
     ]),
-
     tap((params) => {
       assert(true);
     }),
@@ -359,9 +370,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
-          networkInterface: {
+          networkInterfaces: {
             type: "NetworkInterface",
             group: "Network",
+            list: true,
             createOnly: true,
           },
           managedIdentities: {
@@ -537,9 +549,10 @@ exports.fnSpecs = ({ config }) =>
             group: "Resources",
             name: "resourceGroupName",
           },
-          networkInterface: {
+          networkInterfaces: {
             type: "NetworkInterface",
             group: "Network",
+            list: true,
             createOnly: true,
           },
           managedIdentities: {
@@ -684,9 +697,8 @@ exports.fnSpecs = ({ config }) =>
         configDefault: ({ properties, dependencies, config }) =>
           pipe([
             tap(() => {
-              //TODO multiple networkInterface ?
               assert(
-                dependencies.networkInterface,
+                dependencies.networkInterfaces,
                 "networkInterfaces is missing VirtualMachine"
               );
             }),
@@ -708,11 +720,13 @@ exports.fnSpecs = ({ config }) =>
             defaultsDeep({
               properties: {
                 networkProfile: {
-                  networkInterfaces: [
-                    {
-                      id: getField(dependencies.networkInterface, "id"),
-                    },
-                  ],
+                  networkInterfaces: pipe([
+                    () => dependencies,
+                    get("networkInterfaces", []),
+                    map((networkInterface) => ({
+                      id: getField(networkInterface, "id"),
+                    })),
+                  ])(),
                 },
               },
             }),
