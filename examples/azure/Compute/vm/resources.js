@@ -22,6 +22,17 @@ const createResources = ({ provider }) => {
             sku: "18.04-LTS",
             version: "latest",
           },
+          osDisk: {
+            osType: "Linux",
+            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Standard_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
         },
       },
     }),

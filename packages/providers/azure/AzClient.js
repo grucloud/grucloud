@@ -40,8 +40,18 @@ const {
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
-//TODO switchCase ?
-const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
+
+const verbCreateFromMethods = switchCase([
+  get("post"),
+  () => "POST",
+  () => "PUT",
+]);
+
+const verbUpdateFromMethods = switchCase([
+  get("patch"),
+  () => "PATCH",
+  () => "PUT",
+]);
 
 module.exports = AzClient = ({
   lives,
@@ -412,6 +422,7 @@ module.exports = AzClient = ({
     config,
     findName: spec.findName,
     findDependencies: spec.findDependencies || findDependenciesDefault,
+    onResponseCreate: spec.onResponseCreate,
     onResponseList: spec.onResponseList || onResponseListDefault,
     decorate: spec.decorate,
     configDefault: spec.configDefault || configDefaultGeneric,
@@ -421,7 +432,7 @@ module.exports = AzClient = ({
     pathDelete,
     pathList,
     findTargetId,
-    verbCreate: "PUT",
+    verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),
     isInstanceUp,
     isDefault: spec.isDefault,

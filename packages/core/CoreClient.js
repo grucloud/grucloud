@@ -52,7 +52,7 @@ module.exports = CoreClient = ({
   //TODO curry
   onResponseGet = get("data"),
   onResponseList = () => identity,
-  onResponseCreate = identity,
+  onResponseCreate = () => identity,
   onResponseDelete = identity,
   onResponseUpdate = identity,
   isDefault,
@@ -247,7 +247,7 @@ module.exports = CoreClient = ({
                         assert(result);
                       }),
                       get("data"),
-                      onResponseCreate,
+                      onResponseCreate({ name, payload }),
                       (data) =>
                         pipe([
                           () => data,

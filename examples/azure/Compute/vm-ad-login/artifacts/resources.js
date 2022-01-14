@@ -81,6 +81,17 @@ const createResources = ({ provider }) => {
             sku: "20_04-lts",
             version: "latest",
           },
+          osDisk: {
+            osType: "Linux",
+            name: "vm-ad-login_disk1_7b0cd8799dae4e7c918138c636472ab8",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
         },
         diagnosticsProfile: {
           bootDiagnostics: {

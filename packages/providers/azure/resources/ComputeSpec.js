@@ -2,7 +2,7 @@ const assert = require("assert");
 const {
   pipe,
   eq,
-  not,
+  tryCatch,
   get,
   tap,
   pick,
@@ -22,7 +22,8 @@ const {
   flatten,
   callProp,
 } = require("rubico/x");
-
+const fs = require("fs").promises;
+const path = require("path");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -70,6 +71,7 @@ const assignDependenciesId = ({ group, type, lives }) =>
         `getId({ type: "${type}", group: "${group}", name: "${name}" })`,
     ]),
   });
+
 const filterVirtualMachineProperties = ({ resource, lives }) =>
   pipe([
     tap((params) => {
@@ -86,13 +88,34 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
     omit([
       "osProfile.requireGuestProvisionSignal",
       "storageProfile.imageReference.exactVersion",
-      "storageProfile.osDisk",
       "networkProfile.networkInterfaces",
     ]),
     assign({
       storageProfile: pipe([
         get("storageProfile"),
         assign({
+          osDisk: pipe([
+            get("osDisk"),
+            assign({
+              managedDisk: pipe([
+                get("managedDisk"),
+                omit(["id"]),
+                when(
+                  get("diskEncryptionSet"),
+                  assign({
+                    diskEncryptionSet: pipe([
+                      get("diskEncryptionSet"),
+                      assignDependenciesId({
+                        group: "Compute",
+                        type: "DiskEncryptionSet",
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
           dataDisks: pipe([
             get("dataDisks", []),
             map(
@@ -233,6 +256,22 @@ const VirtualMachineDependencySshPublicKey = ({
   ])(),
 });
 
+// const saveKeyToFile =
+//   ({ directory = process.cwd() }) =>
+//   ({ KeyMaterial, KeyName }) =>
+//     pipe([
+//       tap(() => {
+//         logger.info(`saveKeyToFile '${directory}'`);
+//       }),
+//       () =>
+//         fs.writeFile(
+//           path.resolve(directory, `${KeyName}.pem`),
+//           KeyMaterial,
+//           "utf8"
+//         ),
+//       () => fs.chmod(path.resolve(directory, `${KeyName}.pem`), "600"),
+//     ])();
+
 const publicKeysCreatePayload = ({ dependencies }) =>
   pipe([
     tap((params) => {
@@ -256,6 +295,48 @@ const publicKeysCreatePayload = ({ dependencies }) =>
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
+      {
+        type: "SshPublicKey",
+        configDefault: async ({
+          properties,
+          dependencies,
+          config,
+          spec,
+          programOptions,
+        }) =>
+          pipe([
+            () => properties,
+            when(
+              get("publicKeyFile"),
+              defaultsDeep({
+                properties: {
+                  publicKey: await pipe([
+                    () => properties,
+                    get("publicKeyFile"),
+                    (publicKeyFile) =>
+                      path.resolve(
+                        programOptions.workingDirectory,
+                        publicKeyFile
+                      ),
+                    tryCatch(
+                      (fileName) => fs.readFile(fileName, "utf-8"),
+                      pipe([() => undefined])
+                    ),
+                  ])(),
+                },
+              })
+            ),
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            omit(["publicKeyFile"]),
+          ])(),
+      },
       {
         type: "Disk",
         managedByOther: ({ live, lives }) =>
@@ -476,8 +557,8 @@ exports.fnSpecs = ({ config }) =>
           "properties.virtualMachineProfile.osProfile.adminPassword",
           "properties.virtualMachineProfile.osProfile.secrets",
         ],
-        findDependencies: ({ live, lives, config }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives }),
           findDependenciesUserAssignedIdentity({ live }),
           {
             type: "NetworkSecurityGroup",

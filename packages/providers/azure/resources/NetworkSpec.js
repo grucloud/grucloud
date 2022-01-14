@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isObject, when } = require("rubico/x");
+const {
+  pipe,
+  eq,
+  get,
+  tap,
+  pick,
+  map,
+  assign,
+  omit,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, pluck, isObject, when, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -437,6 +447,25 @@ exports.fnSpecs = ({ config }) => {
         type: "Subnet",
         isDefault: () => false,
         managedByOther: () => false,
+        // findName: ({ live }) =>
+        //   pipe([
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //     () => live,
+        //     switchCase([
+        //       eq(get("name"), "default"),
+        //       pipe([
+        //         get("id"),
+        //         callProp("split", "/"),
+        //         (idArray) => `${idArray[4]}::${idArray[8]}::default`,
+        //         tap((params) => {
+        //           assert(true);
+        //         }),
+        //       ]),
+        //       get("name"),
+        //     ]),
+        //   ])(),
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

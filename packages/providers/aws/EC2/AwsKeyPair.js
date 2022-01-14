@@ -17,7 +17,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   const findId = findName;
 
   //TODO add describeKeyPairs
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList keypair ${tos(params)}`);
@@ -26,7 +26,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
       get("KeyPairs"),
     ])();
 
-  const getByName = async ({ name } = {}) =>
+  const getByName = ({ name }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
@@ -72,15 +72,13 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
           fn: () => isUpByName({ name }),
         })
       ),
-
       tap((result) => {
         logger.info(`keyPair created ${tos(result)}`);
       }),
-      ({ KeyPairId }) => ({ id: KeyPairId }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteKeyPair-property
-  const destroy = async ({ id, name, live }) =>
+  const destroy = ({ id, name, live }) =>
     pipe([
       tap(() => {
         logger.info(`destroy keyPair ${JSON.stringify({ name, id })}`);
@@ -91,7 +89,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, namespace }) =>
+  const configDefault = ({ name, properties, namespace }) =>
     pipe([
       () => properties,
       defaultsDeep({
