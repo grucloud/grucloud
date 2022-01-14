@@ -17,7 +17,13 @@ provider.Authorization.makeRoleAssignment({
     },
   }),
   dependencies: ({ resources }) => ({
+    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalDiskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    principalVirtualMachine:
+      resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -36,7 +42,13 @@ provider.Authorization.makeRoleAssignment({
     },
   }),
   dependencies: ({ resources }) => ({
+    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalDiskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    principalVirtualMachine:
+      resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
@@ -55,13 +67,23 @@ provider.Authorization.makeRoleAssignment({
     },
   }),
   dependencies: ({ resources }) => ({
+    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalDiskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    principalVirtualMachine:
+      resources.Compute.VirtualMachine["myVirtualMachine"],
   }),
 });
 
 ```
 ## Dependencies
+- [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
 - [RoleDefinition](../Authorization/RoleDefinition.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
 ## Swagger Schema
 ```js
 {
