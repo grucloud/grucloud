@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Network.makeNatGateway({
-    name: "nat-gateway",
     properties: ({}) => ({
+      name: "nat-gateway",
       sku: {
         name: "Standard",
       },
@@ -20,8 +20,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "nat-ip",
     properties: ({}) => ({
+      name: "nat-ip",
       sku: {
         name: "Standard",
       },
@@ -35,8 +35,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
@@ -49,8 +49,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "vnet-nat-gateway",
     properties: ({}) => ({
+      name: "vnet-nat-gateway",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -63,7 +63,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-natgateway",
+    properties: ({}) => ({
+      name: "rg-natgateway",
+    }),
   });
 };
 

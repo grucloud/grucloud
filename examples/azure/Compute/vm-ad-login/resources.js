@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
-    name: "6b666cf9-7a83-4fd6-8242-1ed706f1a299",
     properties: ({}) => ({
+      name: "6b666cf9-7a83-4fd6-8242-1ed706f1a299",
       properties: {
         roleName: "Virtual Machine User Login",
         principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
@@ -14,8 +14,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Authorization.makeRoleAssignment({
-    name: "ae123f45-0f98-4844-afb6-8d4e9a980b11",
     properties: ({}) => ({
+      name: "ae123f45-0f98-4844-afb6-8d4e9a980b11",
       properties: {
         roleName: "Virtual Machine User Login",
         principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
@@ -27,8 +27,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Authorization.makeRoleAssignment({
-    name: "f0516cf2-f1a0-4c25-a824-01929538c860",
     properties: ({}) => ({
+      name: "f0516cf2-f1a0-4c25-a824-01929538c860",
       properties: {
         roleName: "Virtual Machine User Login",
         principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
@@ -40,8 +40,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "vm-ad-login_key",
     properties: ({}) => ({
+      name: "vm-ad-login_key",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCuFO2BGw/Prov17ZxxCxf648P2\r\nI47TZzs1k7SEDG08wZFqCMpvvQ7ixOuZS6R5/HxWM8WJ12BAgcnGm1fXzvK9+H62\r\nLG1E4E3wQVYvjmDOq06y35loSJ9k06CGQYkkM4LcLDb/w4EOQjwOJeWd4WGAM8bv\r\nTtZIcPWfKujr/8VsW12aBJO4zXWlgrBuFqIgr9/IrXueZBuI1evNb5h0Pik17QPI\r\nckLVyiH+IEC0jqep8fxgSMHC9UnGx7l1xlWDY1LEEQcVo6wtJDrY+m/CbVU4QtiW\r\nKjqzRwgMZVUbntgTzOIKkT7v842vUc4yOOuwshQ7w+OiEs/2HQo70orqGVzE+pyj\r\nq+AjM6rzbEnBqsC2qlrazF7ARlLs7lC+iHHkNG0cuZrePzIShsq5fQuRx33CWOo3\r\nKCIxlnvBJ/x1G+Y5rgat2uv+CrD/QWRAmabKj4H36NLDBDZhsxh07WbpojcyFKkN\r\nTGJvgJAg1+2ZrY0RMXbWk+nq5n2yQZQQ1QSIoFE= generated-by-azure\r\n",
@@ -53,8 +53,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "vm-ad-login",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      name: "vm-ad-login",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -81,11 +81,33 @@ const createResources = ({ provider }) => {
             sku: "20_04-lts",
             version: "latest",
           },
+          osDisk: {
+            osType: "Linux",
+            name: "vm-ad-login_OsDisk_1_c074f73b9f7a4fbb92b7c9befd8bbf3f",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
         },
         diagnosticsProfile: {
           bootDiagnostics: {
             enabled: true,
           },
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "vm-ad-login705",
+              }),
+            },
+          ],
         },
       },
       identity: {
@@ -100,8 +122,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineExtension({
-    name: "AADSSHLoginForLinux",
     properties: ({}) => ({
+      name: "AADSSHLoginForLinux",
       properties: {
         publisher: "Microsoft.Azure.ActiveDirectory",
         type: "AADSSHLoginForLinux",
@@ -116,8 +138,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "vm-ad-login705",
     properties: ({}) => ({
+      name: "vm-ad-login705",
       properties: {
         ipConfigurations: [
           {
@@ -139,8 +161,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "vm-ad-login-nsg",
     properties: ({}) => ({
+      name: "vm-ad-login-nsg",
       properties: {
         securityRules: [
           {
@@ -165,15 +187,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "vm-ad-login-ip",
+    properties: ({}) => ({
+      name: "vm-ad-login-ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
@@ -185,8 +209,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-ad-login-vnet",
     properties: ({}) => ({
+      name: "rg-vm-ad-login-vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -199,7 +223,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-ad-login",
+    properties: ({}) => ({
+      name: "rg-vm-ad-login",
+    }),
   });
 };
 

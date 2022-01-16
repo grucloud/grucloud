@@ -57,6 +57,23 @@ const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
   managedByOther: () => eq(get("live.name"), "default"),
   ignoreResource: () => () => pipe([get("isDefault")]),
+  inferName:
+    ({ methods, ...other }) =>
+    ({ properties, dependencies }) =>
+      pipe([
+        tap((params) => {
+          assert(other);
+          assert(methods);
+          assert(dependencies);
+          assert(properties);
+        }),
+        () => properties,
+        get("name"),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+
   dependsOn: ({ dependencies, type }) =>
     pipe([
       tap((params) => {
@@ -98,14 +115,8 @@ const buildDefaultSpec = fork({
         tap((params) => {
           assert(true);
         }),
-        pick(pickPropertiesCreate),
-        omit([
-          "properties.provisioningState",
-          "etag",
-          "name",
-          "type",
-          "identity",
-        ]),
+        pick(["name", ...pickPropertiesCreate]),
+        omit(["properties.provisioningState", "etag", "type", "identity"]),
       ]),
   compare: ({
     pickProperties = [],

@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeDisk({
-    name: "vm_DataDisk_0",
     properties: ({}) => ({
+      name: "vm_DataDisk_0",
       sku: {
         name: "Premium_LRS",
       },
@@ -30,8 +30,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "keypair-vm",
     properties: ({}) => ({
+      name: "keypair-vm",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDhnfm727z+WSZ2hwIUoE/oiAB1\r\nwT/oIG75RmHeNLgq6R0oVEf0nMFv2HiqZeZPXBARsHwbtGC/RaQ6p/ccTD/4AJLZ\r\n0daZDLZ6y48BPzMpwS92xfAAJLP2ot656m5x/O/46wLyOvKzrgztIZrxs4Bfjzu1\r\nz3ScKXo/U2CI1sfmCzVyy2zTBWywv4JghRu1VZvm9w7/itCgSP214FDgkzphybRe\r\nCejmizHH4SEz4cBb4RPznYY+B5TJmVLRGi01OAjENzhx0Wn28WisY6tCTipZqM4y\r\n4z9PPIEDPI4EMhVYBMfB+pIEEyPKlcUnO7yMtdaFakNC/Mb9VoA8AfghUS6Ya/ss\r\nfjA4nlJx6w51ceflCPlaY0mzg5zMlL/RAyAlstfHqfBLHES66LuxKYpICle7cae6\r\ntgmZjZp/cIC4C8dajYJ6q0ir2l8dYs+Ov5s7NGqbJIOvn8O51RulyaGtfWy+1Uwp\r\noV/fiksm36yhfynfkNZ3GpOMetKvs47sZtKFIqU= generated-by-azure\r\n",
@@ -43,8 +43,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -70,6 +70,17 @@ const createResources = ({ provider }) => {
             offer: "0001-com-ubuntu-server-focal",
             sku: "20_04-lts",
             version: "latest",
+          },
+          osDisk: {
+            osType: "Linux",
+            name: "vm_OsDisk_1_19836e078f78419babf10999eeeaeec6",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
           },
           dataDisks: [
             {
@@ -97,6 +108,17 @@ const createResources = ({ provider }) => {
             enabled: true,
           },
         },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "vm27",
+              }),
+            },
+          ],
+        },
       },
     }),
     dependencies: ({ resources }) => ({
@@ -108,8 +130,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "vm27",
     properties: ({}) => ({
+      name: "vm27",
       properties: {
         ipConfigurations: [
           {
@@ -131,8 +153,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -157,15 +179,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "vm-ip",
+    properties: ({}) => ({
+      name: "vm-ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
@@ -177,8 +201,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-disks-vnet",
     properties: ({}) => ({
+      name: "rg-vm-disks-vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -191,7 +215,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-disks",
+    properties: ({}) => ({
+      name: "rg-vm-disks",
+    }),
   });
 };
 

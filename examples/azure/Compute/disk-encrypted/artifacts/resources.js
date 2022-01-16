@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Network.makeSubnet({
-    name: "default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
         serviceEndpoints: [
@@ -23,8 +23,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "vnet-vault",
     properties: ({}) => ({
+      name: "vnet-vault",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -37,7 +37,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-disk-encrypted",
+    properties: ({}) => ({
+      name: "rg-disk-encrypted",
+    }),
   });
 };
 

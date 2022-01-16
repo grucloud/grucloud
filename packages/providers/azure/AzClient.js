@@ -393,9 +393,6 @@ module.exports = AzClient = ({
           () => dependencies,
           values,
           filter(not(get("createOnly"))),
-          tap((params) => {
-            assert(true);
-          }),
           last,
           tap((dep) => {
             if (!dep) {
@@ -405,9 +402,6 @@ module.exports = AzClient = ({
           getPathsListWithDeps({ lives, config, methods }),
         ]),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const axios = createAxiosAzure({
@@ -415,12 +409,23 @@ module.exports = AzClient = ({
     bearerToken: () => config.bearerToken(AZURE_MANAGEMENT_BASE_URL),
   });
 
+  const findNameDefault = pipe([
+    get("live.id"),
+    callProp("split", "/"),
+    callProp("slice", 3),
+    callProp("join", "/"),
+
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
   return CoreClient({
     type: "azure",
     lives,
     spec,
     config,
-    findName: spec.findName,
+    findName: spec.findName /*|| findNameDefault*/,
     findDependencies: spec.findDependencies || findDependenciesDefault,
     onResponseCreate: spec.onResponseCreate,
     onResponseList: spec.onResponseList || onResponseListDefault,

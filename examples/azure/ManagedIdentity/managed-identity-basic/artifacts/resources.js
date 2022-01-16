@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "key-pair",
     properties: ({}) => ({
+      name: "key-pair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCslQeJxWwmq/fcMuFhYgp26yob\r\nbqrpx4WGp8gkNhFkXPBFRQ17wO9T8VM7jGzGpdxnKeaefMSsfO4lEeeHUPuQtkZG\r\nva9xz6Tq/C9xXzpI08JCptdLiGIklgz+Qz5wS0Qm97CryYOViYN3u8QXIwUMD2Ib\r\nPRg8T1JMqSRVk0KZD7UJw/qH52VUX/ODu6Oze8NvxJKIgB/zZmtGQnvLCnH2Cag6\r\nhQLWLQfdvs50Eo6scOeOr3ct/JIxB6oDeoTMCOJ9x5352FCxnwdzSxBBnu1BVHJF\r\n4I51qZ4D8JTnlo4JuaeDHCbs4QBhmNclKmSnLexxWmSDvyKMJFNJDlJsDYNotV4G\r\nQynH0IpQek/D1sQHC6xBHaHPRDKIaoy8xg/uzjBe2ZMWCj0crGAK9k9k2PSd3ANG\r\nZV+/LSbNIzhBipqx22Uqmq5lsgZfl0/inGdyVHT7tSyuy8Ga5vVz+wC6P6Kg6TIl\r\nsFqZd6mQS6M9w7gNZQeUTmr6tWkspAbdHi9d18k= generated-by-azure\r\n",
@@ -17,8 +17,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "vm",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -45,11 +45,33 @@ const createResources = ({ provider }) => {
             sku: "20_04-lts",
             version: "latest",
           },
+          osDisk: {
+            osType: "Linux",
+            name: "vm_OsDisk_1_4c428c835352416dadd32605bb9934b0",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
         },
         diagnosticsProfile: {
           bootDiagnostics: {
             enabled: true,
           },
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "vm330",
+              }),
+            },
+          ],
         },
       },
       identity: {
@@ -67,15 +89,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.ManagedIdentity.makeUserAssignedIdentity({
-    name: "identity-vault",
+    properties: ({}) => ({
+      name: "identity-vault",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-managed-identity"],
     }),
   });
 
   provider.Network.makeNetworkInterface({
-    name: "vm330",
     properties: ({}) => ({
+      name: "vm330",
       properties: {
         ipConfigurations: [
           {
@@ -98,8 +122,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -124,15 +148,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "vm-ip",
+    properties: ({}) => ({
+      name: "vm-ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-managed-identity"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
@@ -145,8 +171,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-managed-identity-vnet",
     properties: ({}) => ({
+      name: "rg-managed-identity-vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -159,7 +185,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-managed-identity",
+    properties: ({}) => ({
+      name: "rg-managed-identity",
+    }),
   });
 };
 

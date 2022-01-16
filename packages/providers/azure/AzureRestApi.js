@@ -86,6 +86,11 @@ const ResourcesExcludes = [
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
   "ContainerService::OpenShiftManagedCluster", // 404
+  "DBforPostgreSQL::PrivateEndpointConnection",
+  "DBforPostgreSQL::ServerSecurityAlertPolicy",
+  "DBforPostgreSQL::ServerKey",
+  "DBforPostgreSQL::ServerAdministrator",
+  "DBforPostgreSQL::VirtualNetworkRule",
   "Network::AdminRule",
   "Network::ExpressRouteCrossConnection",
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list

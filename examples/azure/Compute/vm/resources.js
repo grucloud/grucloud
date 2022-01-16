@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "vm",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A1_v2",
@@ -34,6 +34,17 @@ const createResources = ({ provider }) => {
             diskSizeGB: 30,
           },
         },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "network-interface",
+              }),
+            },
+          ],
+        },
       },
     }),
     dependencies: ({ resources }) => ({
@@ -45,8 +56,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "network-interface",
     properties: ({}) => ({
+      name: "network-interface",
       properties: {
         ipConfigurations: [
           {
@@ -68,8 +79,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "security-group",
     properties: ({}) => ({
+      name: "security-group",
       properties: {
         securityRules: [
           {
@@ -107,15 +118,17 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "ip",
+    properties: ({}) => ({
+      name: "ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "subnet",
     properties: ({}) => ({
+      name: "subnet",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
@@ -127,8 +140,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -141,7 +154,9 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "resource-group",
+    properties: ({}) => ({
+      name: "resource-group",
+    }),
   });
 };
 

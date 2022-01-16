@@ -88,7 +88,6 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
     omit([
       "osProfile.requireGuestProvisionSignal",
       "storageProfile.imageReference.exactVersion",
-      "networkProfile.networkInterfaces",
     ]),
     assign({
       storageProfile: pipe([
@@ -137,18 +136,18 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
     assign({
       networkProfile: pipe([
         get("networkProfile"),
-        // assign({
-        //   networkInterfaces: pipe([
-        //     get("networkInterfaces"),
-        //     map(
-        //       assignDependenciesId({
-        //         group: "Network",
-        //         type: "NetworkInterface",
-        //         lives,
-        //       })
-        //     ),
-        //   ]),
-        // }),
+        assign({
+          networkInterfaces: pipe([
+            get("networkInterfaces"),
+            map(
+              assignDependenciesId({
+                group: "Network",
+                type: "NetworkInterface",
+                lives,
+              })
+            ),
+          ]),
+        }),
         when(
           get("networkInterfaceConfigurations"),
           assign({
@@ -306,25 +305,26 @@ exports.fnSpecs = ({ config }) =>
         }) =>
           pipe([
             () => properties,
-            when(
-              get("publicKeyFile"),
-              defaultsDeep({
-                properties: {
-                  publicKey: await pipe([
-                    () => properties,
-                    get("publicKeyFile"),
-                    (publicKeyFile) =>
-                      path.resolve(
-                        programOptions.workingDirectory,
-                        publicKeyFile
-                      ),
-                    tryCatch(
-                      (fileName) => fs.readFile(fileName, "utf-8"),
-                      pipe([() => undefined])
-                    ),
+            when(get("publicKeyFile"), (props) =>
+              pipe([
+                () => properties,
+                get("publicKeyFile"),
+                (publicKeyFile) =>
+                  path.resolve(programOptions.workingDirectory, publicKeyFile),
+                tryCatch(
+                  (fileName) => fs.readFile(fileName, "utf-8"),
+                  pipe([() => undefined])
+                ),
+                (publicKey) =>
+                  pipe([
+                    () => props,
+                    defaultsDeep({
+                      properties: {
+                        publicKey,
+                      },
+                    }),
                   ])(),
-                },
-              })
+              ])()
             ),
             defaultsDeep(
               configDefaultGeneric({
@@ -335,6 +335,9 @@ exports.fnSpecs = ({ config }) =>
               })
             ),
             omit(["publicKeyFile"]),
+            tap((params) => {
+              assert(true);
+            }),
           ])(),
       },
       {
@@ -401,7 +404,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(true);
             }),
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             omit(["properties.activeKey", "properties.provisioningState"]),
           ]),
         findDependencies: ({ live, lives }) => [
@@ -615,7 +618,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(context);
             }),
-            pick(["sku", "identity.type", "properties", "tags"]),
+            pick(["name", "sku", "identity.type", "properties", "tags"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -765,7 +768,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(context);
             }),
-            pick(["tags", "properties", "identity.type"]),
+            pick(["name", "tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),

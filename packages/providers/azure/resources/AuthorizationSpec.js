@@ -164,7 +164,7 @@ exports.fnSpecs = ({ config }) =>
             filter(
               or([
                 pipe([
-                  get("id"),
+                  get("id", ""),
                   callProp(
                     "match",
                     new RegExp(`^${live.properties.scope}$`, "ig")
@@ -253,6 +253,7 @@ exports.fnSpecs = ({ config }) =>
         filterLive: ({}) =>
           pipe([
             pick([
+              "name",
               "properties.roleName",
               "properties.principalName",
               "properties.principalId",

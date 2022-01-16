@@ -57,6 +57,26 @@ exports.ResourceMaker = ({
   const { type, group, groupType } = spec;
   assert(groupType);
 
+  const getId = ({ group, type, name }) =>
+    pipe([
+      tap(() => {
+        assert(group);
+        assert(type);
+        assert(name);
+      }),
+      () =>
+        provider.lives.getByName({
+          name,
+          group,
+          type,
+          providerName: config.providerName,
+        }),
+      get("id", `id of ${group}::${type}::${name} not vailable yet`),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   const getResourceName = pipe([
     () => resourceName,
     switchCase([
@@ -73,7 +93,7 @@ exports.ResourceMaker = ({
           );
         }),
         () => ({
-          properties: properties({ config }),
+          properties: properties({ config, getId }),
           dependencies: () =>
             dependencies({
               resources: provider.resources(),
@@ -480,28 +500,7 @@ exports.ResourceMaker = ({
               properties({
                 config: provider.getConfig(),
                 dependencies: resolvedDependencies,
-                getId: ({ group, type, name }) =>
-                  pipe([
-                    tap(() => {
-                      assert(group);
-                      assert(type);
-                      assert(name);
-                    }),
-                    () =>
-                      provider.lives.getByName({
-                        name,
-                        group,
-                        type,
-                        providerName: config.providerName,
-                      }),
-                    get(
-                      "id",
-                      `id of ${group}::${type}::${name} not vailable yet`
-                    ),
-                    tap((params) => {
-                      assert(true);
-                    }),
-                  ])(),
+                getId,
               }),
             (properties = {}) =>
               getClient().configDefault({

@@ -63,6 +63,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -152,6 +153,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -230,6 +232,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -313,6 +316,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -405,6 +409,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -488,6 +493,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -573,6 +579,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -652,6 +659,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -735,6 +743,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -810,6 +819,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -895,6 +905,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -970,6 +981,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1054,6 +1066,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1138,6 +1151,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1222,6 +1236,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1301,6 +1316,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1395,6 +1411,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1479,6 +1496,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1579,6 +1597,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1663,6 +1682,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1759,6 +1779,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1841,6 +1862,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1916,6 +1938,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -1986,6 +2009,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2065,6 +2089,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2159,6 +2184,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2238,6 +2264,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2338,6 +2365,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2421,6 +2449,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2503,6 +2532,7 @@ provider.Compute.makeVirtualMachineScaleSet({
     networkInterfaces: [
       resources.Network.NetworkInterface["myNetworkInterface"],
     ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
@@ -2525,6 +2555,7 @@ provider.Compute.makeVirtualMachineScaleSet({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
+- [Disk](../Compute/Disk.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [SshPublicKey](../Compute/SshPublicKey.md)
 - [GalleryImage](../Compute/GalleryImage.md)

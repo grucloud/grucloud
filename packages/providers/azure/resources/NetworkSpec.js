@@ -89,7 +89,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["sku", "tags", "properties"]),
+            pick(["name", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -192,7 +192,7 @@ exports.fnSpecs = ({ config }) => {
         omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -374,7 +374,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -551,7 +551,7 @@ exports.fnSpecs = ({ config }) => {
             tap((params) => {
               assert(pickPropertiesCreate);
             }),
-            pick(pickPropertiesCreate),
+            pick(["name", ...pickPropertiesCreate]),
             assign({
               properties: pipe([
                 get("properties"),
