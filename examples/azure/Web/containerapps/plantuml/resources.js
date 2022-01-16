@@ -3,22 +3,9 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.OperationalInsights.makeDataCollectorLog({
-    properties: ({}) => ({
-      name: "ContainerAppConsoleLogs_CL",
-      properties: {
-        name: "ContainerAppConsoleLogs_CL",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
-      workspace: resources.OperationalInsights.Workspace["logs"],
-    }),
-  });
-
   provider.OperationalInsights.makeWorkspace({
+    name: "rg-plantuml::logs",
     properties: ({}) => ({
-      name: "logs",
       properties: {
         sku: {
           name: "pergb2018",
@@ -27,19 +14,17 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "rg",
-    }),
+    name: "rg-plantuml",
   });
 
   provider.Web.makeContainerApp({
+    name: "rg-plantuml::plantuml",
     properties: ({}) => ({
-      name: "plantuml",
       properties: {
         configuration: {
           ingress: {
@@ -53,8 +38,8 @@ const createResources = ({ provider }) => {
               image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.15",
               name: "plantuml",
               resources: {
-                cpu: 0.5,
-                memory: "1Gi",
+                cpu: 0.25,
+                memory: ".5Gi",
               },
             },
           ],
@@ -65,18 +50,16 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
-      kubeEnvironment: resources.Web.KubeEnvironment["dev"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
+      kubeEnvironment: resources.Web.KubeEnvironment["rg-plantuml::dev"],
     }),
   });
 
   provider.Web.makeKubeEnvironment({
-    properties: ({}) => ({
-      name: "dev",
-    }),
+    name: "rg-plantuml::dev",
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
-      workspace: resources.OperationalInsights.Workspace["logs"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
+      workspace: resources.OperationalInsights.Workspace["rg-plantuml::logs"],
     }),
   });
 };

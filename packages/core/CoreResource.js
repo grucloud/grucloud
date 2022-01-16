@@ -147,10 +147,11 @@ exports.ResourceMaker = ({
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
       }),
-      () =>
+      getResourceName,
+      (name) =>
         getClient().getByName({
           provider,
-          name: getResourceName(),
+          name,
           namespace,
           meta,
           dependencies: getDependencies(),

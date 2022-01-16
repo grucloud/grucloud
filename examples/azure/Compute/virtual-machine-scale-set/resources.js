@@ -4,11 +4,11 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
+    name: "rg-virtual-machine-scale-set::keypair",
     properties: ({}) => ({
-      name: "vm_key",
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXDmsiCyVIX/BRfbjLJdMPKckk\r\nN+i4apjWzy/Iiax9QOe6r2Z4Sv1vYrHmAinYE3E2xChXHLfSnsXQ38NQSx3ftB/f\r\n7thnYIsXempjl+0spV543KljPM0b8SoRd7KmxGuVg8+2zPWX16Zynnum5sS2nsN8\r\nhJWtGOIcogZrggrSFxlbMYxgFZewnZu2EA3VDTh6s8uD4qHlZ4TAv0JkXZulGgLI\r\nCqCzNixDmbuV6p0V6BwnMR81JwcwhYXyTzLIEtpqh+B3XNbrFH87LU0JfJfTjTtr\r\njA46FsVNmVETczi0K0hcHpK/3YYtdH9PEeSEwoA33Lqi1NWINMyWCwGqLVGq6qg9\r\nY4gUqGcVobhlhea3PZJbyXw4CvwmMXz8W+yIQc5j8jCLDI+oAlf+3DWBTPbXhe/a\r\nk7gB3jtbYgnmTgeu5WOK83JekWim3UAEXPxS7lCjm170Z4hQkSeNHIZFZiVlysgk\r\nBCoDtFQisH3MZx8HWtAsxIe4rYVzcyxPWc93P8U= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
       },
     }),
     dependencies: ({ resources }) => ({
@@ -18,8 +18,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
+    name: "rg-virtual-machine-scale-set::vm-scale-set",
     properties: ({ getId }) => ({
-      name: "virtual-machine-scale-set",
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
@@ -35,27 +35,29 @@ const createResources = ({ provider }) => {
         },
         virtualMachineProfile: {
           osProfile: {
-            computerNamePrefix: "virtual-m",
-            adminUsername: "AdminGruCloud",
+            computerNamePrefix: "vm-scale-",
+            adminUsername: "azureuser",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
               ssh: {
                 publicKeys: [
                   {
-                    path: "/home/AdminGruCloud/.ssh/authorized_keys",
+                    path: "/home/azureuser/.ssh/authorized_keys",
                   },
                 ],
               },
               provisionVMAgent: true,
             },
             allowExtensionOperations: true,
-            adminPassword: process.env.VIRTUAL_MACHINE_SCALE_SET_ADMIN_PASSWORD,
+            adminPassword:
+              process.env
+                .RG_VIRTUAL_MACHINE_SCALE_SET_VM_SCALE_SET_ADMIN_PASSWORD,
           },
           storageProfile: {
             osDisk: {
               osType: "Linux",
               createOption: "FromImage",
-              caching: "None",
+              caching: "ReadWrite",
               managedDisk: {
                 storageAccountType: "Premium_LRS",
               },
@@ -76,7 +78,7 @@ const createResources = ({ provider }) => {
           networkProfile: {
             networkInterfaceConfigurations: [
               {
-                name: "rg-virtual-machine-scale-set-vnet-nic01",
+                name: "virtual-network-nic01",
                 properties: {
                   primary: true,
                   enableAcceleratedNetworking: false,
@@ -84,7 +86,7 @@ const createResources = ({ provider }) => {
                     id: getId({
                       type: "NetworkSecurityGroup",
                       group: "Network",
-                      name: "basicNsgrg-virtual-machine-scale-set-vnet-nic01",
+                      name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
                     }),
                   },
                   dnsSettings: {
@@ -93,14 +95,14 @@ const createResources = ({ provider }) => {
                   enableIPForwarding: false,
                   ipConfigurations: [
                     {
-                      name: "rg-virtual-machine-scale-set-vnet-nic01-defaultIpConfiguration",
+                      name: "virtual-network-nic01-defaultIpConfiguration",
                       properties: {
                         primary: true,
                         subnet: {
                           id: getId({
                             type: "Subnet",
                             group: "Network",
-                            name: "default",
+                            name: "rg-virtual-machine-scale-set::virtual-network::default",
                           }),
                         },
                         privateIPAddressVersion: "IPv4",
@@ -110,6 +112,7 @@ const createResources = ({ provider }) => {
                 },
               },
             ],
+            networkInterfaces: undefined,
           },
         },
         overprovision: false,
@@ -120,35 +123,40 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup:
         resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
-      subnets: [resources.Network.Subnet["default"]],
-      sshPublicKeys: [resources.Compute.SshPublicKey["vm_key"]],
+      subnets: [
+        resources.Network.Subnet[
+          "rg-virtual-machine-scale-set::virtual-network::default"
+        ],
+      ],
+      sshPublicKeys: [
+        resources.Compute.SshPublicKey["rg-virtual-machine-scale-set::keypair"],
+      ],
       networkSecurityGroups: [
         resources.Network.NetworkSecurityGroup[
-          "basicNsgrg-virtual-machine-scale-set-vnet-nic01"
+          "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01"
         ],
       ],
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
+    name: "rg-virtual-machine-scale-set::basicnsgrg-virtual-machine-scale-set-vnet-nic01",
     properties: ({}) => ({
-      name: "basicNsgrg-virtual-machine-scale-set-vnet-nic01",
       properties: {
-        securityRules: [
-          {
-            name: "Port_8080",
-            properties: {
-              protocol: "*",
-              sourcePortRange: "*",
-              destinationPortRange: "8080",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 100,
-              direction: "Inbound",
-            },
-          },
-        ],
+        securityRules: [],
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup:
+        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
+    }),
+  });
+
+  provider.Network.makeNetworkSecurityGroup({
+    name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
+    properties: ({}) => ({
+      properties: {
+        securityRules: [],
       },
     }),
     dependencies: ({ resources }) => ({
@@ -158,23 +166,26 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
+    name: "rg-virtual-machine-scale-set::virtual-network::default",
     properties: ({}) => ({
       name: "default",
       properties: {
-        addressPrefix: "10.0.0.0/16",
+        addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
         resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
       virtualNetwork:
-        resources.Network.VirtualNetwork["rg-virtual-machine-scale-set-vnet"],
+        resources.Network.VirtualNetwork[
+          "rg-virtual-machine-scale-set::virtual-network"
+        ],
     }),
   });
 
   provider.Network.makeVirtualNetwork({
+    name: "rg-virtual-machine-scale-set::virtual-network",
     properties: ({}) => ({
-      name: "rg-virtual-machine-scale-set-vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -188,9 +199,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "rg-virtual-machine-scale-set",
-    }),
+    name: "rg-virtual-machine-scale-set",
   });
 };
 

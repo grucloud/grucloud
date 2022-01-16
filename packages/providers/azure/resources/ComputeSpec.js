@@ -404,7 +404,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(true);
             }),
-            pick(["name", "tags", "properties"]),
+            pick(["tags", "properties"]),
             omit(["properties.activeKey", "properties.provisioningState"]),
           ]),
         findDependencies: ({ live, lives }) => [
@@ -618,7 +618,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(context);
             }),
-            pick(["name", "sku", "identity.type", "properties", "tags"]),
+            pick(["sku", "identity.type", "properties", "tags"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -768,7 +768,7 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(context);
             }),
-            pick(["name", "tags", "properties", "identity.type"]),
+            pick(["tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),

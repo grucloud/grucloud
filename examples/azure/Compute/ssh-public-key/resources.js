@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
+    name: "rg-ssh-public-key::my-key-pair",
     properties: ({}) => ({
-      name: "my-key-pair",
       publicKeyFile: "keys/my-key-pair.pub",
     }),
     dependencies: ({ resources }) => ({

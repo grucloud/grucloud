@@ -17,6 +17,7 @@ const {
   isEmpty,
   defaultsDeep,
   when,
+  last,
   values,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -33,6 +34,8 @@ exports.createAxiosAzure = ({ baseURL, bearerToken }) =>
       Authorization: `Bearer ${bearerToken()}`,
     }),
   });
+
+exports.shortName = pipe([callProp("split", "::"), last]);
 
 exports.isSubstituable = callProp("startsWith", "{");
 

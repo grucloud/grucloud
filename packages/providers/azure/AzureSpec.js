@@ -12,10 +12,18 @@ const {
   assign,
   omit,
   pick,
+  reduce,
   fork,
 } = require("rubico");
 
-const { defaultsDeep, callProp, find, values } = require("rubico/x");
+const {
+  when,
+  defaultsDeep,
+  callProp,
+  find,
+  values,
+  size,
+} = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
@@ -32,6 +40,7 @@ const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
 const AzClient = require("./AzClient");
+const { isSubstituable } = require("./AzureCommon");
 
 const createSpecsOveride = (config) =>
   pipe([
@@ -57,6 +66,48 @@ const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
   managedByOther: () => eq(get("live.name"), "default"),
   ignoreResource: () => () => pipe([get("isDefault")]),
+  findName: ({ methods, dependencies }) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(dependencies);
+      }),
+      fork({
+        path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
+        id: pipe([get("live.id"), callProp("split", "/")]),
+        lives: get("lives"),
+      }),
+      ({ path, id }) =>
+        pipe([
+          () => path,
+          reduce(
+            (acc, value, index) =>
+              pipe([
+                () => acc,
+                when(
+                  and([
+                    () => isSubstituable(value),
+                    not(eq(value, "{subscriptionId}")),
+                    not(eq(value, "{scope}")),
+                  ]),
+                  pipe([
+                    () => id[index + size(id) - size(path)],
+                    tap((depName) => {
+                      assert(depName);
+                    }),
+                    callProp("toLowerCase"),
+                    (depName) => [...acc, depName],
+                  ])
+                ),
+              ])(),
+            []
+          ),
+        ])(),
+      callProp("join", "::"),
+      tap((name) => {
+        assert(name, "missing name");
+      }),
+    ]),
   inferName:
     ({ methods, ...other }) =>
     ({ properties, dependencies }) =>
@@ -69,8 +120,8 @@ const buildDefaultSpec = fork({
         }),
         () => properties,
         get("name"),
-        tap((params) => {
-          assert(true);
+        tap((name) => {
+          assert(name);
         }),
       ])(),
 
@@ -115,7 +166,7 @@ const buildDefaultSpec = fork({
         tap((params) => {
           assert(true);
         }),
-        pick(["name", ...pickPropertiesCreate]),
+        pick(pickPropertiesCreate),
         omit(["properties.provisioningState", "etag", "type", "identity"]),
       ]),
   compare: ({

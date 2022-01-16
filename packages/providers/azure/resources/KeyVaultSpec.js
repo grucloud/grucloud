@@ -170,7 +170,7 @@ exports.fnSpecs = ({ config }) =>
               "properties.vaultUri", // fix azure specs
               "properties.networkAcls.virtualNetworkRules",
             ]),
-            pick(["name", ...pickPropertiesCreate]),
+            pick(pickPropertiesCreate),
             assign({
               properties: pipe([
                 get("properties"),

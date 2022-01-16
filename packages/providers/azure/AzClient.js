@@ -35,6 +35,7 @@ const {
   configDefaultGeneric,
   findDependenciesUserAssignedIdentity,
   createAxiosAzure,
+  shortName,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
@@ -68,8 +69,6 @@ module.exports = AzClient = ({
           pipe([() => path, callProp("split", "?api-version"), first])
         ),
       ])(),
-  getList = () => undefined,
-  getByName = () => undefined,
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
   assert(lives);
@@ -220,6 +219,7 @@ module.exports = AzClient = ({
           assert(resource);
         }),
         get("resource.name"),
+        shortName,
       ])();
 
   const substituteSubscriptionId = () =>
@@ -249,6 +249,7 @@ module.exports = AzClient = ({
         assert(true);
       }),
     ]);
+
   const substitutePath = ({ dependencies }) =>
     map(when(isSubstituable, substituteDependency({ dependencies })));
 
@@ -274,7 +275,8 @@ module.exports = AzClient = ({
       }),
       substitutePath({ dependencies }),
       callProp("join", "/"),
-      append(`/${name}`),
+      append("/"),
+      append(shortName(name)),
       append(queryParameters(apiVersion)),
       tap((params) => {
         assert(true);
@@ -299,6 +301,7 @@ module.exports = AzClient = ({
         "{subscriptionId}",
         process.env.AZURE_SUBSCRIPTION_ID
       ),
+      //TODO wrong
       callProp(
         "replace",
         "{scope}",
@@ -402,6 +405,9 @@ module.exports = AzClient = ({
           getPathsListWithDeps({ lives, config, methods }),
         ]),
       ]),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const axios = createAxiosAzure({
@@ -409,23 +415,12 @@ module.exports = AzClient = ({
     bearerToken: () => config.bearerToken(AZURE_MANAGEMENT_BASE_URL),
   });
 
-  const findNameDefault = pipe([
-    get("live.id"),
-    callProp("split", "/"),
-    callProp("slice", 3),
-    callProp("join", "/"),
-
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
   return CoreClient({
     type: "azure",
     lives,
     spec,
     config,
-    findName: spec.findName /*|| findNameDefault*/,
+    findName: spec.findName,
     findDependencies: spec.findDependencies || findDependenciesDefault,
     onResponseCreate: spec.onResponseCreate,
     onResponseList: spec.onResponseList || onResponseListDefault,
@@ -444,7 +439,5 @@ module.exports = AzClient = ({
     cannotBeDeleted,
     managedByOther: spec.managedByOther,
     axios,
-    getList: getList({ axios }),
-    getByName: getByName({ axios }),
   });
 };

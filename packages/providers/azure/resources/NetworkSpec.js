@@ -89,7 +89,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["name", "sku", "tags", "properties"]),
+            pick(["sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -192,7 +192,7 @@ exports.fnSpecs = ({ config }) => {
         omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
-            pick(["name", "tags", "properties"]),
+            pick(["tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -447,25 +447,6 @@ exports.fnSpecs = ({ config }) => {
         type: "Subnet",
         isDefault: () => false,
         managedByOther: () => false,
-        // findName: ({ live }) =>
-        //   pipe([
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //     () => live,
-        //     switchCase([
-        //       eq(get("name"), "default"),
-        //       pipe([
-        //         get("id"),
-        //         callProp("split", "/"),
-        //         (idArray) => `${idArray[4]}::${idArray[8]}::default`,
-        //         tap((params) => {
-        //           assert(true);
-        //         }),
-        //       ]),
-        //       get("name"),
-        //     ]),
-        //   ])(),
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

@@ -29,7 +29,7 @@ const {
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { configDefaultDependenciesId } = require("../AzureCommon");
+const { configDefaultDependenciesId, shortName } = require("../AzureCommon");
 
 const group = "Authorization";
 
@@ -212,17 +212,19 @@ exports.fnSpecs = ({ config }) =>
                 )(),
                 principalId: switchCase([
                   () => dependencies.principalDiskEncryptionSet,
-                  getField(
-                    dependencies.principalDiskEncryptionSet,
-                    "identity.principalId"
-                  ),
+                  () =>
+                    getField(
+                      dependencies.principalDiskEncryptionSet,
+                      "identity.principalId"
+                    ),
                   () => dependencies.principalVirtualMachine,
-                  getField(
-                    dependencies.principalVirtualMachine,
-                    "identity.principalId"
-                  ),
+                  () =>
+                    getField(
+                      dependencies.principalVirtualMachine,
+                      "identity.principalId"
+                    ),
                   () => undefined,
-                ]),
+                ])(),
               },
             }),
             when(
@@ -253,7 +255,6 @@ exports.fnSpecs = ({ config }) =>
         filterLive: ({}) =>
           pipe([
             pick([
-              "name",
               "properties.roleName",
               "properties.principalName",
               "properties.principalId",

@@ -41,12 +41,14 @@ module.exports = ({ provider }) => {
         //console.log("azure onDeployed");
         const resources = provider.resources();
         const publicIpAddress = await resources.Network.PublicIPAddress[
-          "ip"
+          "resource-group::ip"
         ].getLive();
         const networkInterface = await resources.Network.NetworkInterface[
-          "network-interface"
+          "resource-group::network-interface"
         ].getLive();
-        const vm = await resources.Compute.VirtualMachine["vm"].getLive();
+        const vm = await resources.Compute.VirtualMachine[
+          "RESOURCE-GROUP::vm"
+        ].getLive();
         assert(vm, "vm not up");
         //Check network interface id of the vm
         assert.equal(
@@ -95,8 +97,8 @@ module.exports = ({ provider }) => {
               fn: async () => {
                 await testSsh({
                   host,
-                  username: process.env.VM_ADMIN_USERNAME,
-                  password: process.env.VM_ADMIN_PASSWORD,
+                  username: process.env.RESOURCE_GROUP_VM_ADMIN_USERNAME,
+                  password: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
                 });
               },
               isExpectedResult: () => true,

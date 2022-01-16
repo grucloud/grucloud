@@ -179,7 +179,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["name", "tags", "properties"]),
+            pick(["tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),

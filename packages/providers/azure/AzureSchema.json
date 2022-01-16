@@ -12787,43 +12787,6 @@
         ]
     },
     {
-        "type": "DataCollectorLog",
-        "group": "OperationalInsights",
-        "apiVersion": "2020-03-01-preview",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "workspace": {
-                "type": "Workspace",
-                "group": "OperationalInsights",
-                "name": "workspaceName"
-            }
-        },
-        "methods": {
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs/{tableName}",
-                "operationId": "DataCollectorLogs_Delete"
-            },
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs/{tableName}",
-                "operationId": "DataCollectorLogs_Get"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataCollectorLogs",
-                "operationId": "DataCollectorLogs_ListByWorkspace"
-            }
-        },
-        "pickProperties": [
-            "properties.name"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name"
-        ]
-    },
-    {
         "type": "DataExport",
         "group": "OperationalInsights",
         "apiVersion": "2020-08-01",

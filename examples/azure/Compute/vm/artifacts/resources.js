@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
+    name: "RESOURCE-GROUP::vm",
     properties: ({ getId }) => ({
-      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A1_v2",
@@ -13,7 +13,7 @@ const createResources = ({ provider }) => {
         osProfile: {
           computerName: "myVM",
           adminUsername: "ops",
-          adminPassword: process.env.VM_ADMIN_PASSWORD,
+          adminPassword: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -40,7 +40,7 @@ const createResources = ({ provider }) => {
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "network-interface",
+                name: "resource-group::network-interface",
               }),
             },
           ],
@@ -50,12 +50,13 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
       networkInterfaces: [
-        resources.Network.NetworkInterface["network-interface"],
+        resources.Network.NetworkInterface["resource-group::network-interface"],
       ],
     }),
   });
 
   provider.Network.makeNetworkInterface({
+    name: "resource-group::network-interface",
     properties: ({}) => ({
       name: "network-interface",
       properties: {
@@ -71,16 +72,21 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["ip"],
-      securityGroup: resources.Network.NetworkSecurityGroup["security-group"],
-      subnet: resources.Network.Subnet["subnet"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["resource-group::virtual-network"],
+      publicIpAddress: resources.Network.PublicIPAddress["resource-group::ip"],
+      securityGroup:
+        resources.Network.NetworkSecurityGroup[
+          "resource-group::security-group"
+        ],
+      subnet:
+        resources.Network.Subnet["resource-group::virtual-network::subnet"],
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
+    name: "resource-group::security-group",
     properties: ({}) => ({
-      name: "security-group",
       properties: {
         securityRules: [
           {
@@ -118,15 +124,14 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    properties: ({}) => ({
-      name: "ip",
-    }),
+    name: "resource-group::ip",
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
     }),
   });
 
   provider.Network.makeSubnet({
+    name: "resource-group::virtual-network::subnet",
     properties: ({}) => ({
       name: "subnet",
       properties: {
@@ -135,13 +140,14 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork: resources.Network.VirtualNetwork["virtual-network"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["resource-group::virtual-network"],
     }),
   });
 
   provider.Network.makeVirtualNetwork({
+    name: "resource-group::virtual-network",
     properties: ({}) => ({
-      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -154,9 +160,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "resource-group",
-    }),
+    name: "resource-group",
   });
 };
 
