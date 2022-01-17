@@ -137,8 +137,28 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
                             assign({
                               properties: pipe([
                                 get("properties"),
-                                omit(["loadBalancerBackendAddressPools"]),
                                 assign({
+                                  loadBalancerBackendAddressPools: pipe([
+                                    get("loadBalancerBackendAddressPools"),
+                                    map(
+                                      assignDependenciesId({
+                                        group: "Network",
+                                        type: "LoadBalancerBackendAddressPool",
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                  //TODO
+                                  // loadBalancerInboundNatPools: pipe([
+                                  //   get("loadBalancerInboundNatPools"),
+                                  //   map(
+                                  //     assignDependenciesId({
+                                  //       group: "Network",
+                                  //       type: "LoadBalancerInboundNatPool",
+                                  //       lives,
+                                  //     })
+                                  //   ),
+                                  // ]),
                                   subnet: pipe([
                                     get("subnet"),
                                     assignDependenciesId({
@@ -498,6 +518,11 @@ exports.fnSpecs = ({ config }) =>
             group: "Compute",
             createOnly: true,
           },
+          loadBalancerBackendAddressPool: {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            createOnly: true,
+          },
         },
         environmentVariables: [
           {
@@ -548,6 +573,23 @@ exports.fnSpecs = ({ config }) =>
             publicKeysPath:
               "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys",
           }),
+          {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("ipConfigurations"),
+              flatten,
+              pluck("properties"),
+              pluck("loadBalancerBackendAddressPools"),
+              flatten,
+              pluck("id"),
+            ])(),
+          },
           //TODO common
           {
             type: "Disk",

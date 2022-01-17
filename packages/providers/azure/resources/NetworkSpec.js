@@ -46,12 +46,6 @@ exports.fnSpecs = ({ config }) => {
             createOnly: true,
             list: true,
           },
-          loadBalancerBackendAddressPools: {
-            type: "LoadBalancerBackendAddressPool",
-            group: "Network",
-            createOnly: true,
-            list: true,
-          },
         },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
@@ -63,14 +57,8 @@ exports.fnSpecs = ({ config }) => {
               get("properties.backendAddressPools"),
               pluck("properties"),
               pluck("loadBalancerBackendAddresses"),
-              tap((params) => {
-                assert(true);
-              }),
               flatten,
               pluck("id"),
-              tap((params) => {
-                assert(true);
-              }),
             ])(),
           },
           {
@@ -82,11 +70,12 @@ exports.fnSpecs = ({ config }) => {
               pluck("properties"),
               pluck("publicIPAddress"),
               pluck("id"),
-              tap((params) => {
-                assert(true);
-              }),
             ])(),
           },
+        ],
+        omitProperties: [
+          "properties.frontendIPConfigurations",
+          "properties.backendAddressPools",
         ],
         filterLive: ({ lives }) =>
           pipe([
@@ -94,22 +83,12 @@ exports.fnSpecs = ({ config }) => {
             assign({
               properties: pipe([
                 get("properties"),
-                omit([
-                  "provisioningState",
-                  "resourceGuid",
-                  "backendAddressPools",
-                ]),
+                omit(["provisioningState", "resourceGuid"]),
                 assign({
                   frontendIPConfigurations: pipe([
                     get("frontendIPConfigurations"),
-                    tap((params) => {
-                      assert(true);
-                    }),
                     map(
                       pipe([
-                        tap((params) => {
-                          assert(true);
-                        }),
                         pick(["name", "properties"]),
                         assign({
                           properties: pipe([
@@ -126,6 +105,23 @@ exports.fnSpecs = ({ config }) => {
                             }),
                           ]),
                         }),
+                      ])
+                    ),
+                  ]),
+                  backendAddressPools: pipe([
+                    get("backendAddressPools"),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    map(
+                      pipe([
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        pick(["name" /*"properties"*/]),
+                        // assign({
+                        //   properties: pipe([get("properties")]),
+                        // }),
                       ])
                     ),
                   ]),
@@ -146,21 +142,83 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         type: "LoadBalancerBackendAddressPool",
-        ignoreResource: () => () => true,
-        // filterLive: () =>
-        //   pipe([
-        //     pick(["properties"]),
-        //     assign({
-        //       properties: pipe([
-        //         get("properties"),
-        //         omit([
-        //           "loadBalancerBackendAddresses",
-        //           "provisioningState",
-        //           "backendIPConfigurations",
-        //         ]),
-        //       ]),
-        //     }),
-        //   ]),
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          loadBalancer: {
+            type: "LoadBalancer",
+            group: "Network",
+            name: "loadBalancerName",
+          },
+          virtualNetworks: {
+            type: "VirtualNetwork",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+        },
+        pickProperties: [],
+        // findDependencies: ({ live, lives }) => [
+        //   findDependenciesResourceGroup({ live, lives, config }),
+        //   {
+        //     type: "VirtualNetwork",
+        //     group: "Network",
+        //     ids: pipe([
+        //       () => live,
+        //       get("properties.loadBalancerBackendAddresses"),
+        //       pluck("properties"),
+        //       pluck("virtualNetwork"),
+        //       flatten,
+        //       pluck("id"),
+        //     ])(),
+        //   },
+        // ],
+        filterLive: () =>
+          pipe([
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit([
+                  "provisioningState",
+                  "backendIPConfigurations",
+                  "loadBalancerBackendAddresses",
+                ]),
+                // assign({
+                //   loadBalancerBackendAddresses: pipe([
+                //     get("loadBalancerBackendAddresses"),
+                //     map(
+                //       assign({
+                //         properties: pipe([
+                //           get("properties"),
+                //           assign({
+                //             virtualNetwork: pipe([
+                //               get("virtualNetwork"),
+                //               assignDependenciesId({
+                //                 group: "Network",
+                //                 type: "VirtualNetwork",
+                //                 lives,
+                //               }),
+                //             ]),
+                //           }),
+                //         ]),
+                //       })
+                //     ),
+                //   ]),
+                // }),
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks

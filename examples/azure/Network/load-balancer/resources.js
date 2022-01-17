@@ -104,6 +104,15 @@ const createResources = ({ provider }) => {
                           }),
                         },
                         privateIPAddressVersion: "IPv4",
+                        loadBalancerBackendAddressPools: [
+                          {
+                            id: getId({
+                              type: "LoadBalancerBackendAddressPool",
+                              group: "Network",
+                              name: "rg-load-balancer::load-balancer::backend-pool",
+                            }),
+                          },
+                        ],
                       },
                     },
                   ],
@@ -129,6 +138,10 @@ const createResources = ({ provider }) => {
           "rg-load-balancer::basicnsgvnet-nic01"
         ],
       ],
+      loadBalancerBackendAddressPool:
+        resources.Network.LoadBalancerBackendAddressPool[
+          "rg-load-balancer::load-balancer::backend-pool"
+        ],
     }),
   });
 
@@ -156,6 +169,11 @@ const createResources = ({ provider }) => {
             },
           },
         ],
+        backendAddressPools: [
+          {
+            name: "backend-pool",
+          },
+        ],
         loadBalancingRules: [],
         probes: [],
         inboundNatRules: [],
@@ -168,6 +186,18 @@ const createResources = ({ provider }) => {
       publicIPAddresses: [
         resources.Network.PublicIPAddress["rg-load-balancer::ip-address"],
       ],
+    }),
+  });
+
+  provider.Network.makeLoadBalancerBackendAddressPool({
+    name: "rg-load-balancer::load-balancer::backend-pool",
+    properties: ({}) => ({
+      properties: {},
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+      loadBalancer:
+        resources.Network.LoadBalancer["rg-load-balancer::load-balancer"],
     }),
   });
 
