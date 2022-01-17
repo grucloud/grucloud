@@ -10,7 +10,7 @@ const {
   omit,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, pluck, isObject, when, callProp } = require("rubico/x");
+const { defaultsDeep, pluck, isObject, when, flatten } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -22,6 +22,7 @@ const {
   buildTags,
   configDefaultDependenciesId,
   configDefaultGeneric,
+  assignDependenciesId,
 } = require("../AzureCommon");
 
 const group = "Network";
@@ -87,7 +88,7 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
-        filterLive: () =>
+        filterLive: ({ lives }) =>
           pipe([
             pick(["sku", "tags", "properties"]),
             assign({
@@ -110,6 +111,21 @@ exports.fnSpecs = ({ config }) => {
                           assert(true);
                         }),
                         pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            assign({
+                              publicIPAddress: pipe([
+                                get("publicIPAddress"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "PublicIPAddress",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
                       ])
                     ),
                   ]),
@@ -123,7 +139,28 @@ exports.fnSpecs = ({ config }) => {
                 }),
               ]),
             }),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
+      },
+      {
+        type: "LoadBalancerBackendAddressPool",
+        ignoreResource: () => () => true,
+        // filterLive: () =>
+        //   pipe([
+        //     pick(["properties"]),
+        //     assign({
+        //       properties: pipe([
+        //         get("properties"),
+        //         omit([
+        //           "loadBalancerBackendAddresses",
+        //           "provisioningState",
+        //           "backendIPConfigurations",
+        //         ]),
+        //       ]),
+        //     }),
+        //   ]),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks

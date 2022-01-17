@@ -219,6 +219,9 @@ module.exports = AzClient = ({
           assert(resource);
         }),
         get("resource.name"),
+        tap((name) => {
+          assert(name);
+        }),
         shortName,
       ])();
 

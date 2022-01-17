@@ -31,46 +31,10 @@ const {
   findDependenciesUserAssignedIdentity,
   configDefaultDependenciesId,
   configDefaultGeneric,
+  assignDependenciesId,
 } = require("../AzureCommon");
 
 const group = "Compute";
-
-const findResourceById =
-  ({ groupType, lives }) =>
-  (id) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(groupType);
-      }),
-      () => lives,
-      find(
-        and([
-          eq(get("groupType"), groupType),
-          pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]),
-        ])
-      ),
-    ])();
-
-const assignDependenciesId = ({ group, type, lives }) =>
-  assign({
-    id: pipe([
-      get("id"),
-      tap((id) => {
-        assert(id);
-      }),
-      findResourceById({
-        groupType: `${group}::${type}`,
-        lives,
-      }),
-      tap((resource) => {
-        assert(resource);
-      }),
-      get("name"),
-      (name) => () =>
-        `getId({ type: "${type}", group: "${group}", name: "${name}" })`,
-    ]),
-  });
 
 const filterVirtualMachineProperties = ({ resource, lives }) =>
   pipe([
@@ -173,6 +137,7 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
                             assign({
                               properties: pipe([
                                 get("properties"),
+                                omit(["loadBalancerBackendAddressPools"]),
                                 assign({
                                   subnet: pipe([
                                     get("subnet"),
@@ -254,22 +219,6 @@ const VirtualMachineDependencySshPublicKey = ({
     ),
   ])(),
 });
-
-// const saveKeyToFile =
-//   ({ directory = process.cwd() }) =>
-//   ({ KeyMaterial, KeyName }) =>
-//     pipe([
-//       tap(() => {
-//         logger.info(`saveKeyToFile '${directory}'`);
-//       }),
-//       () =>
-//         fs.writeFile(
-//           path.resolve(directory, `${KeyName}.pem`),
-//           KeyMaterial,
-//           "utf8"
-//         ),
-//       () => fs.chmod(path.resolve(directory, `${KeyName}.pem`), "600"),
-//     ])();
 
 const publicKeysCreatePayload = ({ dependencies }) =>
   pipe([
@@ -401,9 +350,6 @@ exports.fnSpecs = ({ config }) =>
         ],
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             pick(["tags", "properties"]),
             omit(["properties.activeKey", "properties.provisioningState"]),
           ]),
@@ -446,6 +392,10 @@ exports.fnSpecs = ({ config }) =>
         ],
         configDefault: ({ properties, dependencies, config }) =>
           pipe([
+            tap(() => {
+              assert(dependencies.vault);
+              assert(dependencies.key);
+            }),
             () => properties,
             defaultsDeep({
               identity: {
@@ -453,18 +403,20 @@ exports.fnSpecs = ({ config }) =>
               },
               properties: {
                 activeKey: {
-                  ...(dependencies.vault && {
-                    sourceVault: {
-                      id: getField(dependencies.vault, "id"),
-                    },
-                  }),
-                  ...(dependencies.key && {
-                    keyUrl: pipe([
-                      () => getField(dependencies.key, "versions"),
-                      first,
-                      get("kid"),
-                    ])(),
-                  }),
+                  sourceVault: {
+                    id: getField(dependencies.vault, "id"),
+                  },
+                  keyUrl: pipe([
+                    () => getField(dependencies.key, "versions"),
+                    first,
+                    get("kid"),
+                    tap((kid) => {
+                      assert(
+                        kid,
+                        `Cannot found key version, check role assignment`
+                      );
+                    }),
+                  ])(),
                 },
               },
             }),
@@ -475,9 +427,6 @@ exports.fnSpecs = ({ config }) =>
                 config,
               })
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ])(),
       },
       {
@@ -615,9 +564,6 @@ exports.fnSpecs = ({ config }) =>
         ],
         filterLive: (context) =>
           pipe([
-            tap((params) => {
-              assert(context);
-            }),
             pick(["sku", "identity.type", "properties", "tags"]),
             assign({
               properties: pipe([
@@ -765,9 +711,6 @@ exports.fnSpecs = ({ config }) =>
         },
         filterLive: (context) =>
           pipe([
-            tap((params) => {
-              assert(context);
-            }),
             pick(["tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
@@ -856,9 +799,6 @@ exports.fnSpecs = ({ config }) =>
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config })
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ])(),
       },
     ],

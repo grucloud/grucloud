@@ -32,6 +32,7 @@ const assignVersions = ({ uri, config }) =>
             tap((params) => {
               assert(error);
             }),
+            () => ({ error: error.message }),
           ])()
       ),
     ]),

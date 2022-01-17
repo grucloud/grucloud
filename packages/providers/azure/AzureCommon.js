@@ -9,8 +9,11 @@ const {
   reduce,
   filter,
   set,
+  assign,
+  and,
 } = require("rubico");
 const {
+  find,
   callProp,
   keys,
   unless,
@@ -38,6 +41,51 @@ exports.createAxiosAzure = ({ baseURL, bearerToken }) =>
 exports.shortName = pipe([callProp("split", "::"), last]);
 
 exports.isSubstituable = callProp("startsWith", "{");
+
+const findResourceById =
+  ({ groupType, lives }) =>
+  (id) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(groupType);
+        assert(id);
+      }),
+      () => lives,
+      find(
+        and([
+          eq(get("groupType"), groupType),
+          pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]),
+        ])
+      ),
+    ])();
+
+exports.assignDependenciesId = ({ group, type, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(group);
+      assert(type);
+      assert(lives);
+    }),
+    assign({
+      id: pipe([
+        get("id"),
+        tap((id) => {
+          assert(id, `no id for ${type}`);
+        }),
+        findResourceById({
+          groupType: `${group}::${type}`,
+          lives,
+        }),
+        tap((resource) => {
+          assert(resource);
+        }),
+        get("name"),
+        (name) => () =>
+          `getId({ type: "${type}", group: "${group}", name: "${name}" })`,
+      ]),
+    }),
+  ]);
 
 const buildTags = ({ managedByKey, managedByValue, stageTagKey, stage }) => ({
   [managedByKey]: managedByValue,

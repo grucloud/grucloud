@@ -3,37 +3,39 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Authorization.makeRoleAssignment({
-    name: "11982547-8b79-4f05-a137-b682f92f1add",
-    properties: ({ config }) => ({
-      properties: {
-        roleName: "Key Vault Crypto Service Encryption User",
-        principalName: "de",
-        principalType: "ServicePrincipal",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      principal: resources.Compute.DiskEncryptionSet["de"],
-    }),
-  });
+  // provider.Authorization.makeRoleAssignment({
+  //   name: "11982547-8b79-4f05-a137-b682f92f1add",
+  //   properties: ({ config }) => ({
+  //     properties: {
+  //       roleName: "Key Vault Crypto Service Encryption User",
+  //       principalName: "de",
+  //       principalType: "ServicePrincipal",
+  //     },
+  //   }),
+  //   dependencies: ({ resources }) => ({
+  //     principal: resources.Compute.DiskEncryptionSet["rg-keyvault-rbac::de"],
+  //   }),
+  // });
 
   provider.Compute.makeDiskEncryptionSet({
-    name: "de",
+    name: "rg-keyvault-rbac::de",
     properties: ({ config }) => ({
       properties: {
         encryptionType: "EncryptionAtRestWithCustomerKey",
         rotationToLatestKeyVersionEnabled: false,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
-      vault: resources.KeyVault.Vault["gc-vault-rbac"],
-      key: resources.KeyVault.Key["my-key"],
-    }),
+    dependencies: pipe([
+      ({ resources }) => ({
+        resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
+        vault: resources.KeyVault.Vault["rg-keyvault-rbac::gc-vault-rbac"],
+        key: resources.KeyVault.Key["rg-keyvault-rbac::gc-vault-rbac::my-key"],
+      }),
+    ]),
   });
 
   provider.KeyVault.makeKey({
-    name: "my-key",
+    name: "rg-keyvault-rbac::gc-vault-rbac::my-key",
     properties: ({ config }) => ({
       properties: {
         attributes: {
@@ -43,12 +45,12 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
-      vault: resources.KeyVault.Vault["gc-vault-rbac"],
+      vault: resources.KeyVault.Vault["rg-keyvault-rbac::gc-vault-rbac"],
     }),
   });
 
   provider.KeyVault.makeVault({
-    name: "gc-vault-rbac",
+    name: "rg-keyvault-rbac::gc-vault-rbac",
     properties: ({ config }) => ({
       location: "centralus",
       properties: {

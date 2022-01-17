@@ -108,23 +108,6 @@ const buildDefaultSpec = fork({
         assert(name, "missing name");
       }),
     ]),
-  inferName:
-    ({ methods, ...other }) =>
-    ({ properties, dependencies }) =>
-      pipe([
-        tap((params) => {
-          assert(other);
-          assert(methods);
-          assert(dependencies);
-          assert(properties);
-        }),
-        () => properties,
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-      ])(),
-
   dependsOn: ({ dependencies, type }) =>
     pipe([
       tap((params) => {
