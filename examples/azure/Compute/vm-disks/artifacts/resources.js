@@ -4,7 +4,7 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeDisk({
-    name: "vm_DataDisk_0",
+    name: "rg-vm-disks::vm_datadisk_0",
     properties: ({}) => ({
       sku: {
         name: "Premium_LRS",
@@ -30,11 +30,11 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "keypair-vm",
+    name: "rg-vm-disks::keypair",
     properties: ({}) => ({
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDhnfm727z+WSZ2hwIUoE/oiAB1\r\nwT/oIG75RmHeNLgq6R0oVEf0nMFv2HiqZeZPXBARsHwbtGC/RaQ6p/ccTD/4AJLZ\r\n0daZDLZ6y48BPzMpwS92xfAAJLP2ot656m5x/O/46wLyOvKzrgztIZrxs4Bfjzu1\r\nz3ScKXo/U2CI1sfmCzVyy2zTBWywv4JghRu1VZvm9w7/itCgSP214FDgkzphybRe\r\nCejmizHH4SEz4cBb4RPznYY+B5TJmVLRGi01OAjENzhx0Wn28WisY6tCTipZqM4y\r\n4z9PPIEDPI4EMhVYBMfB+pIEEyPKlcUnO7yMtdaFakNC/Mb9VoA8AfghUS6Ya/ss\r\nfjA4nlJx6w51ceflCPlaY0mzg5zMlL/RAyAlstfHqfBLHES66LuxKYpICle7cae6\r\ntgmZjZp/cIC4C8dajYJ6q0ir2l8dYs+Ov5s7NGqbJIOvn8O51RulyaGtfWy+1Uwp\r\noV/fiksm36yhfynfkNZ3GpOMetKvs47sZtKFIqU= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDML7vLyGtMh/cmqV31Kx7xJbAk\r\nmVFUgaB3cRs7QTj9FzAJywGnF+YAB6Kg/7KhGNrbeddMH7Dal2t3GeGhWuJHQXrb\r\nPI6+XrkkNZBIgea0/yk2/DLcrbsXeO+vF21R/qXgSrbK1F4hG7UYl0XIXxlpf3XR\r\nmni+Cr0TTc0lrjUk+CsxxEX/tBUI03C2hMwppe2j2bMeNMN93jpj63Z0BDIS8laf\r\nZPrnHZconfgKwVx6DzpV303SpaVkyxisWTKlIhuKKcN4LDxtpt+emWhYxCfx6scr\r\nW3zBnfhK0WvZJihP2Dr5j+CrMzP1SByyzJGiz69IlnoRK1yTyP6kM4Nc3RfnE/xJ\r\ny9XPFXBF6aPWm6zQTeUjcb6AHPy84kixX5l87LGYxHMfipyEoEYTEEN6RmgO2mpk\r\nzvuL27ewD/FMd+uigx0vd6SfdJR4dyc5WkCA8PkmpVbFtSR995hvTuVgaknAG1wd\r\noAVIBoekRLIwca9DcIOjTqaU0EWF8Gkt8FDhkIE= generated-by-azure\r\n",
       },
     }),
     dependencies: ({ resources }) => ({
@@ -43,7 +43,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "vm",
+    name: "rg-vm-disks::vm",
     properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {
@@ -62,7 +62,7 @@ const createResources = ({ provider }) => {
               ],
             },
           },
-          adminPassword: process.env.VM_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_VM_DISKS_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -73,7 +73,7 @@ const createResources = ({ provider }) => {
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_disk1_1b93a063f1f0423d90c443b4b5f5134b",
+            name: "vm_disk1_9d916b60fd7048329e3979079f2abdf7",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -94,7 +94,7 @@ const createResources = ({ provider }) => {
                 id: getId({
                   type: "Disk",
                   group: "Compute",
-                  name: "vm_DataDisk_0",
+                  name: "rg-vm-disks::vm_datadisk_0",
                 }),
               },
               deleteOption: "Detach",
@@ -108,19 +108,33 @@ const createResources = ({ provider }) => {
             enabled: true,
           },
         },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "rg-vm-disks::vm537",
+              }),
+            },
+          ],
+        },
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      networkInterfaces: [resources.Network.NetworkInterface["vm27"]],
-      disks: [resources.Compute.Disk["vm_DataDisk_0"]],
-      sshPublicKeys: [resources.Compute.SshPublicKey["keypair-vm"]],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["rg-vm-disks::vm537"],
+      ],
+      disks: [resources.Compute.Disk["rg-vm-disks::vm_datadisk_0"]],
+      sshPublicKeys: [resources.Compute.SshPublicKey["rg-vm-disks::keypair"]],
     }),
   });
 
   provider.Network.makeNetworkInterface({
-    name: "vm27",
+    name: "rg-vm-disks::vm537",
     properties: ({}) => ({
+      name: "vm537",
       properties: {
         ipConfigurations: [
           {
@@ -134,15 +148,17 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      virtualNetwork: resources.Network.VirtualNetwork["rg-vm-disks-vnet"],
-      publicIpAddress: resources.Network.PublicIPAddress["vm-ip"],
-      securityGroup: resources.Network.NetworkSecurityGroup["vm-nsg"],
-      subnet: resources.Network.Subnet["default"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["rg-vm-disks::virtual-network"],
+      publicIpAddress: resources.Network.PublicIPAddress["rg-vm-disks::vm-ip"],
+      securityGroup:
+        resources.Network.NetworkSecurityGroup["rg-vm-disks::vm-nsg"],
+      subnet: resources.Network.Subnet["rg-vm-disks::virtual-network::default"],
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "vm-nsg",
+    name: "rg-vm-disks::vm-nsg",
     properties: ({}) => ({
       properties: {
         securityRules: [
@@ -168,27 +184,29 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "vm-ip",
+    name: "rg-vm-disks::vm-ip",
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "default",
+    name: "rg-vm-disks::virtual-network::default",
     properties: ({}) => ({
+      name: "default",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      virtualNetwork: resources.Network.VirtualNetwork["rg-vm-disks-vnet"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["rg-vm-disks::virtual-network"],
     }),
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-disks-vnet",
+    name: "rg-vm-disks::virtual-network",
     properties: ({}) => ({
       properties: {
         addressSpace: {

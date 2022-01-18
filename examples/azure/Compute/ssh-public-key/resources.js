@@ -14,9 +14,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "rg-ssh-public-key",
-    }),
+    name: "rg-ssh-public-key",
   });
 };
 

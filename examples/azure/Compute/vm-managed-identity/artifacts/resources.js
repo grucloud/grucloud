@@ -4,22 +4,22 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "AdminGruCloud",
+    name: "rg-user-managed-identity::keypair",
     properties: ({}) => ({
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCUaOf6WMP2G14KmITySPZRfBlj\r\nKmREIyccOTVEHhuewb0MbCh50H8cvMRpIzFUbhZ4sl7eIa2SaWkrZUf45CptdTYs\r\nYIMUTiFnkVa6UgUx6oRbbYWi85L7HJrU3XnUfeD7wXUe502aMerkqW9TOkVTVGDd\r\nkFjtsHngtFMrdvhGP5EEwwu5c5uy4lsiWvACA4dDIlg2+CeXlYp96cZ9kxcbZ8Vx\r\nrRmWhhIwdYllTYgvLPFXjK1aLAM4nmD7/0ZgEf8MbfZkJlEgRg7c1USKMHyxFONJ\r\nYFN8yZVaxgXk+1qooAd5p1C1hLkUyjTixIvXspZEprAdWS2cYvex99G6CG4lg2ub\r\ntpize7HeF8a3M+uxXlbSJDRpOWgK/2G2vQ9XkiA2zpPjzNLsAPW2cR5c3gXn4XFL\r\nOAVqdU78XDpzmRZfjp/NwVItJ5H02BnQkpChJxGp3HVmIB4/AfgaIFIgbxUGi+LW\r\nTcr1zqwHd0BauEPwlBZD119hXashajimSddMJTU= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDN2bsPENDfUWBy81C6uvY3IvP/\r\nsBr1pCg0QZiZ6OtAo1fvNVk9rG4ApA9NlbDeECNn5idqXzb68jQ2YPWjOgfxY2KW\r\n/kpZrrkuksYOw7O7ylZp9bIL4kD+8FzFB8A1EogIbZb2wZ1gqFawrpdtHvCuOTGG\r\n2EUwowDvo5++Jm6ee3tzGxdnBj+ciJOFv4NHrJl0y1Dbh8WzISbgkVL5gwrJvmj+\r\nxIUIOUesabSccAw08TX0vEt5G/yB3Q1EGPQ8fib4Og3tJOJ4+IBpnEi4RM9vEjgZ\r\nYvwEmuUb7Vx78uTZ8DUChQ74Ot4DvTAioSSXHJMOmY3yyGJBmzbGtbl6c8nx9tq2\r\nhlznqM8emKEuSHAV7zhB9Pk3f2C1XFCtUApWpY7CZ/huBv9EP1nohWp2tRCJFERt\r\ne5u6Sz+g0Lgz9roPfFRSExS7F+vP96TRV+KmzYzgHAXHD57h59qqYOiUxjjieCrm\r\n8C8ZUQjG3GPJaMnd4eCNsk5xanrRxxbiVw9OPKU= generated-by-azure\r\n",
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
     }),
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "vm",
-    properties: ({}) => ({
+    name: "rg-user-managed-identity::vm",
+    properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -37,7 +37,7 @@ const createResources = ({ provider }) => {
               ],
             },
           },
-          adminPassword: process.env.VM_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_USER_MANAGED_IDENTITY_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -46,6 +46,33 @@ const createResources = ({ provider }) => {
             sku: "20_04-lts",
             version: "latest",
           },
+          osDisk: {
+            osType: "Linux",
+            name: "vm_disk1_bb67c59163eb4d1a82700ee86e65ca81",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
+        },
+        diagnosticsProfile: {
+          bootDiagnostics: {
+            enabled: true,
+          },
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "rg-user-managed-identity::vm180",
+              }),
+            },
+          ],
         },
       },
       identity: {
@@ -54,26 +81,33 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
-      networkInterfaces: [resources.Network.NetworkInterface["vm376"]],
-      managedIdentities: [
-        resources.ManagedIdentity.UserAssignedIdentity["my-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["rg-user-managed-identity::vm180"],
       ],
-      sshPublicKeys: [resources.Compute.SshPublicKey["AdminGruCloud"]],
+      managedIdentities: [
+        resources.ManagedIdentity.UserAssignedIdentity[
+          "rg-user-managed-identity::identity-vault"
+        ],
+      ],
+      sshPublicKeys: [
+        resources.Compute.SshPublicKey["rg-user-managed-identity::keypair"],
+      ],
     }),
   });
 
   provider.ManagedIdentity.makeUserAssignedIdentity({
-    name: "my-identity",
+    name: "rg-user-managed-identity::identity-vault",
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
     }),
   });
 
   provider.Network.makeNetworkInterface({
-    name: "vm376",
+    name: "rg-user-managed-identity::vm180",
     properties: ({}) => ({
+      name: "vm180",
       properties: {
         ipConfigurations: [
           {
@@ -87,17 +121,22 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
       virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm-managed-identity-vnet"],
-      publicIpAddress: resources.Network.PublicIPAddress["vm-ip"],
-      securityGroup: resources.Network.NetworkSecurityGroup["vm-nsg"],
-      subnet: resources.Network.Subnet["default"],
+        resources.Network.VirtualNetwork["rg-user-managed-identity::vnet"],
+      publicIpAddress:
+        resources.Network.PublicIPAddress["rg-user-managed-identity::vm-ip"],
+      securityGroup:
+        resources.Network.NetworkSecurityGroup[
+          "rg-user-managed-identity::vm-nsg"
+        ],
+      subnet:
+        resources.Network.Subnet["rg-user-managed-identity::vnet::default"],
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "vm-nsg",
+    name: "rg-user-managed-identity::vm-nsg",
     properties: ({}) => ({
       properties: {
         securityRules: [
@@ -119,50 +158,51 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
     }),
   });
 
   provider.Network.makePublicIPAddress({
-    name: "vm-ip",
+    name: "rg-user-managed-identity::vm-ip",
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "default",
+    name: "rg-user-managed-identity::vnet::default",
     properties: ({}) => ({
+      name: "default",
       properties: {
-        addressPrefix: "10.0.0.0/24",
+        addressPrefix: "10.1.0.0/24",
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
       virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm-managed-identity-vnet"],
+        resources.Network.VirtualNetwork["rg-user-managed-identity::vnet"],
     }),
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-managed-identity-vnet",
+    name: "rg-user-managed-identity::vnet",
     properties: ({}) => ({
       properties: {
         addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
+          addressPrefixes: ["10.1.0.0/16"],
         },
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup:
-        resources.Resources.ResourceGroup["rg-vm-managed-identity"],
+        resources.Resources.ResourceGroup["rg-user-managed-identity"],
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-managed-identity",
+    name: "rg-user-managed-identity",
   });
 };
 

@@ -206,7 +206,7 @@ module.exports = () =>
                     isEmpty,
                     () => `"${id}"`,
                     ({ group = "compute", type, name }) =>
-                      `resources.${group}.${type}.["${name}"]`,
+                      `resources.${group}.${type}["${name}"]`,
                   ]),
                 ])()
               ),

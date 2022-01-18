@@ -79,11 +79,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -164,11 +159,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -248,11 +238,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -334,11 +319,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -393,11 +373,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -494,11 +469,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -582,11 +552,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -674,11 +639,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -753,11 +713,6 @@ provider.Network.makeLoadBalancer({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
   }),
 });
 
@@ -765,7 +720,6 @@ provider.Network.makeLoadBalancer({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
-- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 ## Swagger Schema
 ```js
 {

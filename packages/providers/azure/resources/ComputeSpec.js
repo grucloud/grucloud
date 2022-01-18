@@ -168,6 +168,9 @@ const filterVirtualMachineProperties = ({ resource, lives }) =>
                                     }),
                                   ]),
                                 }),
+                                omitIfEmpty([
+                                  "loadBalancerBackendAddressPools",
+                                ]),
                               ]),
                             }),
                           ])

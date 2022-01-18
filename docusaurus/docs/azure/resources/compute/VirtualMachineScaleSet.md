@@ -78,6 +78,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -168,6 +172,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -247,6 +255,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -331,6 +343,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -424,6 +440,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -508,6 +528,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -594,6 +618,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -674,6 +702,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -758,6 +790,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -834,6 +870,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -920,6 +960,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -996,6 +1040,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1081,6 +1129,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1166,6 +1218,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1251,6 +1307,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1331,6 +1391,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1426,6 +1490,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1511,6 +1579,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1612,6 +1684,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1697,6 +1773,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1794,6 +1874,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1877,6 +1961,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -1953,6 +2041,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2024,6 +2116,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2104,6 +2200,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2199,6 +2299,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2279,6 +2383,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2380,6 +2488,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2464,6 +2576,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2547,6 +2663,10 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
     capacityReservationGroup:
       resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
   }),
 });
 
@@ -2563,6 +2683,7 @@ provider.Compute.makeVirtualMachineScaleSet({
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 ## Swagger Schema
 ```js
 {

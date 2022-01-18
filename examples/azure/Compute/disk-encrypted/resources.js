@@ -3,38 +3,7 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Network.makeSubnet({
-    name: "default",
-    properties: ({ config }) => ({
-      properties: {
-        addressPrefix: "10.0.0.0/24",
-        serviceEndpoints: [
-          {
-            service: "Microsoft.KeyVault",
-            locations: ["*"],
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-disk-encrypted"],
-      virtualNetwork: resources.Network.VirtualNetwork["vnet-vault"],
-    }),
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "vnet-vault",
-    properties: ({ config }) => ({
-      properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-disk-encrypted"],
-    }),
-  });
+  //TODO
 
   provider.Resources.makeResourceGroup({
     name: "rg-disk-encrypted",

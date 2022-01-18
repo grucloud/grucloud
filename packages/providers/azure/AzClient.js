@@ -220,7 +220,14 @@ module.exports = AzClient = ({
         }),
         get("resource.name"),
         tap((name) => {
-          assert(name);
+          assert(
+            name,
+            `cannot find ${paramName} in ${JSON.stringify(
+              dependencies,
+              null,
+              4
+            )}`
+          );
         }),
         shortName,
       ])();

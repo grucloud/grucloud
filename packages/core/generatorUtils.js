@@ -533,8 +533,31 @@ const writeToFile =
                 assert(true);
               }),
               first,
-              get("output"),
-              (output) => prettier.format(output, { parser: "babel" }),
+              switchCase([
+                get("fatalErrorCount"),
+                pipe([
+                  tap((result) => {
+                    console.log("Error linting");
+                    console.log(content);
+                    console.log(JSON.stringify(result, null, 4));
+                  }),
+                  () => content,
+                ]),
+                get("output"),
+              ]),
+              tryCatch(
+                (output) => prettier.format(output, { parser: "babel" }),
+                (error) =>
+                  pipe([
+                    tap(() => {
+                      console.error(error);
+                      console.error(content);
+                    }),
+                    () => {
+                      throw error;
+                    },
+                  ])()
+              ),
             ])(),
         ]),
       }),
@@ -1032,7 +1055,7 @@ const ignoreDefault =
       }),
       () => resource,
       and([
-        or([get("managedByOther"), get("cannotBeDeleted")]),
+        or([get("managedByOther") /*, get("cannotBeDeleted")*/]),
         pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
       tap.if(identity, (xxx) => {

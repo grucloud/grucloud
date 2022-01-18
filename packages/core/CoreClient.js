@@ -71,7 +71,7 @@ module.exports = CoreClient = ({
 }) =>
   pipe([
     tap((params) => {
-      assert(lives);
+      //assert(lives);
       assert(spec);
       assert(type);
       assert(config, "config");

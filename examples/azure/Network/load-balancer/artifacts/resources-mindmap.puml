@@ -1,16 +1,14 @@
 @startmindmap
-title Resources for project vm-ad-login
+title Resources for project load-balancer
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Authorization
-++++ RoleAssignment (1)
 +++ Compute
 ++++ SshPublicKey (1)
-++++ VirtualMachine (1)
-++++ VirtualMachineExtension (1)
+++++ VirtualMachineScaleSet (1)
 +++ Network
-++++ NetworkInterface (1)
+++++ LoadBalancer (1)
+++++ LoadBalancerBackendAddressPool (1)
 ++++ NetworkSecurityGroup (1)
 ++++ PublicIPAddress (1)
 ++++ Subnet (1)

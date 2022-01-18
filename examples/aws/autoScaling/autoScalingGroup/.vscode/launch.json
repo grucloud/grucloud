@@ -39,7 +39,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["gencode", "--input", "artifacts/inventory.json"],
+      "runtimeArgs": ["gencode", "--no-inventory-fetch"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

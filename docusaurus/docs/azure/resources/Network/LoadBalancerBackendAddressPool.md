@@ -34,20 +34,16 @@ provider.Network.makeLoadBalancerBackendAddressPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+    virtualNetworks: [resources.Network.VirtualNetwork["myVirtualNetwork"]],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualNetwork](../Network/VirtualNetwork.md)
-- [Subnet](../Network/Subnet.md)
-- [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Swagger Schema
 ```js
 <ref *3> {
