@@ -4,7 +4,7 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "RESOURCE-GROUP::vm",
+    name: "resource-group::vm",
     properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {

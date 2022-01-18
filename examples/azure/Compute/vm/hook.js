@@ -47,7 +47,7 @@ module.exports = ({ provider }) => {
           "resource-group::network-interface"
         ].getLive();
         const vm = await resources.Compute.VirtualMachine[
-          "RESOURCE-GROUP::vm"
+          "resource-group::vm"
         ].getLive();
         assert(vm, "vm not up");
         //Check network interface id of the vm
