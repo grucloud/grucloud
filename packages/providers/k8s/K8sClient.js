@@ -47,7 +47,7 @@ module.exports = K8sClient = ({
   pathUpdate,
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
-  isInstanceUp,
+  isInstanceUp = not(isEmpty),
   cannotBeDeleted = () => false,
   findDependencies,
 }) => {
@@ -208,7 +208,7 @@ module.exports = K8sClient = ({
       namespace: get("namespace")(findMeta({ live })),
     });
 
-  const isUpById = pipe([getById, not(isEmpty)]);
+  const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([getById, isEmpty]);
 
   const create = ({ name, payload, dependencies }) =>
