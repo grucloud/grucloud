@@ -537,8 +537,13 @@ provider.Web.makeStaticSite({
         },
         provider: {
           description: 'The provider that submitted the last deployment to the primary environment of the static site.',
+          type: 'string'
+        },
+        enterpriseGradeCdnStatus: {
+          description: 'State indicating the status of the enterprise grade CDN serving traffic to the static web app.',
+          enum: [ 'Enabled', 'Enabling', 'Disabled', 'Disabling' ],
           type: 'string',
-          readOnly: true
+          'x-ms-enum': { name: 'EnterpriseGradeCdnStatus', modelAsString: true }
         }
       }
     },
@@ -674,6 +679,6 @@ provider.Web.makeStaticSite({
 }
 ```
 ## Misc
-The resource version is `2021-02-01`.
+The resource version is `2021-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-02-01/StaticSites.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/StaticSites.json).

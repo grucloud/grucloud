@@ -607,6 +607,7 @@ const addResourceGroupDependency = pipe([
         type: "ResourceGroup",
         group: "Resources",
         name: "resourceGroupName",
+        parent: true,
       },
     }),
     () => undefined,
@@ -785,6 +786,7 @@ const addDependencyFromPath = ({
                   type: parameterType.type,
                   group: parameterType.group,
                   name,
+                  parent: true,
                 },
               }),
             ])(),
@@ -886,7 +888,7 @@ const findDependenciesFromResources = ({
       assert(resources);
     }),
     () => depId,
-    callProp("replace", /Id$/g, ""),
+    callProp("replace", /Id$/gi, ""),
     callProp("replace", /Resource$/i, ""),
     tap((params) => {
       assert(true);
@@ -941,58 +943,65 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
     tap((params) => {
       assert(true);
     }),
-    get("properties"),
-    buildDependenciesFromBody({}),
-    tap((deps) => {
-      assert(true);
-    }),
-    map(({ depId, pathId }) =>
+    (schema) =>
       pipe([
-        () => findPreDefinedDependencies({ depId }),
+        () => schema,
+        get("properties", get("allOf[1].properties")(schema)),
         tap((params) => {
           assert(true);
         }),
-        when(isEmpty, () =>
-          findDependenciesFromResources({
-            resources,
-            type,
-            group,
-            depId,
-            pathId,
-          })
+        buildDependenciesFromBody({}),
+        tap((deps) => {
+          assert(true);
+        }),
+        map(({ depId, pathId }) =>
+          pipe([
+            () => findPreDefinedDependencies({ depId }),
+            tap((params) => {
+              assert(true);
+            }),
+            when(isEmpty, () =>
+              findDependenciesFromResources({
+                resources,
+                type,
+                group,
+                depId,
+                pathId,
+              })
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ])()
+        ),
+        filter(not(isEmpty)),
+        tap((params) => {
+          assert(true);
+        }),
+        reduce(
+          (acc, { group, type, pathId }) =>
+            pipe([
+              tap((params) => {
+                assert(group);
+              }),
+              () => type,
+              camelCase,
+              (varName) => ({
+                ...acc,
+                [varName]: {
+                  type: type,
+                  group: group,
+                  createOnly: true,
+                  pathId,
+                },
+              }),
+            ])(),
+          {}
         ),
         tap((params) => {
           assert(true);
         }),
-      ])()
-    ),
-    filter(not(isEmpty)),
-    tap((params) => {
-      assert(true);
-    }),
-    reduce(
-      (acc, { group, type, pathId }) =>
-        pipe([
-          tap((params) => {
-            assert(group);
-          }),
-          () => type,
-          camelCase,
-          (varName) => ({
-            ...acc,
-            [varName]: {
-              type: type,
-              group: group,
-              createOnly: true,
-              pathId,
-            },
-          }),
-        ])(),
-      {}
-    ),
-    tap((params) => {
-      assert(true);
-    }),
+      ])(),
   ])();
 
 const addDependencies = ({ resources }) =>
@@ -1201,7 +1210,7 @@ const buildDependenciesFromBody =
             // console.log(
             //   "buildDependenciesFromBody",
             //   parentPath,
-            //   JSON.stringify(properties)
+            //   util.inspect(properties)
             // );
           }),
           map.entries(([key, obj]) => [

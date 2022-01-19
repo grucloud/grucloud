@@ -4,6 +4,46 @@ title: VirtualMachineScaleSetExtension
 ---
 Provides a **VirtualMachineScaleSetExtension** from the **Compute** group
 ## Examples
+### VirtualMachineScaleSetExtensions_CreateOrUpdate_MaximumSet_Gen
+```js
+provider.Compute.makeVirtualMachineScaleSetExtension({
+  name: "myVirtualMachineScaleSetExtension",
+  properties: () => ({
+    name: "{extension-name}",
+    properties: {
+      autoUpgradeMinorVersion: true,
+      publisher: "{extension-Publisher}",
+      type: "{extension-Type}",
+      typeHandlerVersion: "{handler-version}",
+      settings: {},
+      forceUpdateTag: "aaaaaaaaa",
+      enableAutomaticUpgrade: true,
+      protectedSettings: {},
+      provisionAfterExtensions: ["aa"],
+      suppressFailures: true,
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vmScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  }),
+});
+
+```
+
+### VirtualMachineScaleSetExtensions_CreateOrUpdate_MinimumSet_Gen
+```js
+provider.Compute.makeVirtualMachineScaleSetExtension({
+  name: "myVirtualMachineScaleSetExtension",
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vmScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
@@ -61,6 +101,10 @@ Provides a **VirtualMachineScaleSetExtension** from the **Compute** group
         suppressFailures: {
           type: 'boolean',
           description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+        },
+        protectedSettingsFromKeyVault: {
+          type: 'object',
+          description: 'The extensions protected settings that are passed by reference, and consumed from key vault'
         }
       },
       description: 'Describes the properties of a Virtual Machine Scale Set Extension.'
@@ -78,6 +122,6 @@ Provides a **VirtualMachineScaleSetExtension** from the **Compute** group
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

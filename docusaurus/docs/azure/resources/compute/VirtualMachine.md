@@ -2755,6 +2755,227 @@ provider.Compute.makeVirtualMachine({
 });
 
 ```
+
+### Create a VM from a community gallery image
+```js
+provider.Compute.makeVirtualMachine({
+  name: "myVirtualMachine",
+  properties: () => ({
+    location: "westus",
+    properties: {
+      hardwareProfile: { vmSize: "Standard_D1_v2" },
+      storageProfile: {
+        imageReference: {
+          communityGalleryImageId:
+            "/CommunityGalleries/galleryPublicName/Images/communityGalleryImageName/Versions/communityGalleryImageVersionName",
+        },
+        osDisk: {
+          caching: "ReadWrite",
+          managedDisk: { storageAccountType: "Standard_LRS" },
+          name: "myVMosdisk",
+          createOption: "FromImage",
+        },
+      },
+      osProfile: {
+        adminUsername: "{your-username}",
+        computerName: "myVM",
+        adminPassword: "{your-password}",
+      },
+      networkProfile: {
+        networkInterfaces: [
+          {
+            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/{existing-nic-name}",
+            properties: { primary: true },
+          },
+        ],
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+  }),
+});
+
+```
+
+### Create a VM with securityType ConfidentialVM with Platform Managed Keys
+```js
+provider.Compute.makeVirtualMachine({
+  name: "myVirtualMachine",
+  properties: () => ({
+    location: "westus",
+    properties: {
+      hardwareProfile: { vmSize: "Standard_DC2as_v5" },
+      securityProfile: {
+        uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
+        securityType: "ConfidentialVM",
+      },
+      storageProfile: {
+        imageReference: {
+          sku: "windows-cvm",
+          publisher: "MicrosoftWindowsServer",
+          version: "17763.2183.2109130127",
+          offer: "2019-datacenter-cvm",
+        },
+        osDisk: {
+          caching: "ReadOnly",
+          managedDisk: {
+            storageAccountType: "StandardSSD_LRS",
+            securityProfile: { securityEncryptionType: "DiskWithVMGuestState" },
+          },
+          createOption: "FromImage",
+          name: "myVMosdisk",
+        },
+      },
+      osProfile: {
+        adminUsername: "{your-username}",
+        computerName: "myVM",
+        adminPassword: "{your-password}",
+      },
+      networkProfile: {
+        networkInterfaces: [
+          {
+            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/{existing-nic-name}",
+            properties: { primary: true },
+          },
+        ],
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+  }),
+});
+
+```
+
+### Create a VM with securityType ConfidentialVM with Customer Managed Keys
+```js
+provider.Compute.makeVirtualMachine({
+  name: "myVirtualMachine",
+  properties: () => ({
+    location: "westus",
+    properties: {
+      hardwareProfile: { vmSize: "Standard_DC2as_v5" },
+      securityProfile: {
+        uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
+        securityType: "ConfidentialVM",
+      },
+      storageProfile: {
+        imageReference: {
+          sku: "windows-cvm",
+          publisher: "MicrosoftWindowsServer",
+          version: "17763.2183.2109130127",
+          offer: "2019-datacenter-cvm",
+        },
+        osDisk: {
+          caching: "ReadOnly",
+          managedDisk: {
+            storageAccountType: "StandardSSD_LRS",
+            securityProfile: {
+              securityEncryptionType: "DiskWithVMGuestState",
+              diskEncryptionSet: {
+                id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+              },
+            },
+          },
+          createOption: "FromImage",
+          name: "myVMosdisk",
+        },
+      },
+      osProfile: {
+        adminUsername: "{your-username}",
+        computerName: "myVM",
+        adminPassword: "{your-password}",
+      },
+      networkProfile: {
+        networkInterfaces: [
+          {
+            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkInterfaces/{existing-nic-name}",
+            properties: { primary: true },
+          },
+        ],
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroup:
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    dscpConfiguration:
+      resources.Network.DscpConfiguration["myDscpConfiguration"],
+    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
+    virtualMachineScaleSet:
+      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    virtualMachineScaleSetVm:
+      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
@@ -2942,6 +3163,10 @@ provider.Compute.makeVirtualMachine({
                 sharedGalleryImageId: {
                   type: 'string',
                   description: 'Specified the shared gallery image unique id for vm deployment. This can be fetched from shared gallery image GET call.'
+                },
+                communityGalleryImageId: {
+                  type: 'string',
+                  description: 'Specified the community gallery image unique id for vm deployment. This can be fetched from community gallery image GET call.'
                 }
               },
               allOf: [
@@ -3109,6 +3334,33 @@ provider.Compute.makeVirtualMachine({
                           'x-ms-azure-resource': true
                         }
                       ]
+                    },
+                    securityProfile: {
+                      description: 'Specifies the security profile for the managed disk.',
+                      type: 'object',
+                      properties: {
+                        securityEncryptionType: {
+                          type: 'string',
+                          description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
+                          enum: [
+                            'VMGuestStateOnly',
+                            'DiskWithVMGuestState'
+                          ],
+                          'x-ms-enum': {
+                            name: 'securityEncryptionTypes',
+                            modelAsString: true
+                          }
+                        },
+                        diskEncryptionSet: {
+                          description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
+                          allOf: [
+                            {
+                              properties: { id: [Object] },
+                              'x-ms-azure-resource': true
+                            }
+                          ]
+                        }
+                      }
                     }
                   },
                   allOf: [
@@ -3216,6 +3468,33 @@ provider.Compute.makeVirtualMachine({
                             'x-ms-azure-resource': true
                           }
                         ]
+                      },
+                      securityProfile: {
+                        description: 'Specifies the security profile for the managed disk.',
+                        type: 'object',
+                        properties: {
+                          securityEncryptionType: {
+                            type: 'string',
+                            description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
+                            enum: [
+                              'VMGuestStateOnly',
+                              'DiskWithVMGuestState'
+                            ],
+                            'x-ms-enum': {
+                              name: 'securityEncryptionTypes',
+                              modelAsString: true
+                            }
+                          },
+                          diskEncryptionSet: {
+                            description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
+                            allOf: [
+                              {
+                                properties: [Object],
+                                'x-ms-azure-resource': true
+                              }
+                            ]
+                          }
+                        }
                       }
                     },
                     allOf: [
@@ -3679,8 +3958,8 @@ provider.Compute.makeVirtualMachine({
             },
             securityType: {
               type: 'string',
-              description: 'Specifies the SecurityType of the virtual machine. It is set as TrustedLaunch to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set as TrustedLaunch.',
-              enum: [ 'TrustedLaunch' ],
+              description: 'Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set.',
+              enum: [ 'TrustedLaunch', 'ConfidentialVM' ],
               'x-ms-enum': { name: 'SecurityTypes', modelAsString: true }
             }
           }
@@ -4586,6 +4865,12 @@ provider.Compute.makeVirtualMachine({
               description: 'Specifies the gallery applications that should be made available to the VM/VMSS'
             }
           }
+        },
+        timeCreated: {
+          readOnly: true,
+          type: 'string',
+          format: 'date-time',
+          description: 'Specifies the time at which the Virtual Machine resource was created.<br><br>Minimum api-version: 2021-11-01.'
         }
       },
       description: 'Describes the properties of a Virtual Machine.'
@@ -4725,6 +5010,10 @@ provider.Compute.makeVirtualMachine({
               suppressFailures: {
                 type: 'boolean',
                 description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+              },
+              protectedSettingsFromKeyVault: {
+                type: 'object',
+                description: 'The extensions protected settings that are passed by reference, and consumed from key vault'
               }
             },
             description: 'Describes the properties of a Virtual Machine Extension.'
@@ -4861,6 +5150,6 @@ provider.Compute.makeVirtualMachine({
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

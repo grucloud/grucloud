@@ -1,54 +1,17 @@
 ---
 id: ContainerApp
-title: Container App
+title: ContainerApp
 ---
-
-Provides a Container App:
-
-```js
-provider.Web.makeContainerApp({
-  name: "plantuml",
-  properties: ({ config }) => ({
-    properties: {
-      configuration: {
-        ingress: {
-          external: true,
-          targetPort: 8080,
-        },
-      },
-      template: {
-        containers: [
-          {
-            image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.15",
-            name: "plantuml",
-            resources: {
-              cpu: 0.5,
-              memory: "1Gi",
-            },
-          },
-        ],
-        scale: {
-          maxReplicas: 10,
-        },
-      },
-    },
-  }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["rg"],
-    kubeEnvironment: resources.Web.KubeEnvironment["dev"],
-  }),
-});
-```
-
-### Examples
-
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/Web/containerapps/plantuml/resources.js)
-
-### Properties
-
-- [all properties](https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments/create-or-update)
-
-### Dependencies
-
+Provides a **ContainerApp** from the **Web** group
+## Examples
+## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [KubeEnvironment](./KubeEnvironment.md)
+- [KubeEnvironment](../Web/KubeEnvironment.md)
+## Swagger Schema
+```js
+''
+```
+## Misc
+The resource version is `2021-03-01`.
+
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/ContainerApps.json).

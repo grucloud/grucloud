@@ -24,6 +24,27 @@ provider.Compute.makeRestorePointCollection({
 });
 
 ```
+
+### Create or update a restore point collection for cross region copy.
+```js
+provider.Compute.makeRestorePointCollection({
+  name: "myRestorePointCollection",
+  properties: () => ({
+    location: "norwayeast",
+    properties: {
+      source: {
+        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/restorePointCollections/sourceRpcName",
+      },
+    },
+    tags: { myTag1: "tagValue1" },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    restorePoint: resources.Compute.RestorePoint["myRestorePoint"],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [RestorePoint](../Compute/RestorePoint.md)
@@ -414,8 +435,8 @@ provider.Compute.makeRestorePointCollection({
                           },
                           securityType: {
                             type: 'string',
-                            description: 'Specifies the SecurityType of the virtual machine. It is set as TrustedLaunch to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set as TrustedLaunch.',
-                            enum: [ 'TrustedLaunch' ],
+                            description: 'Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set.',
+                            enum: [ 'TrustedLaunch', 'ConfidentialVM' ],
                             'x-ms-enum': {
                               name: 'SecurityTypes',
                               modelAsString: true
@@ -452,6 +473,80 @@ provider.Compute.makeRestorePointCollection({
                     type: 'string',
                     format: 'date-time',
                     description: 'Gets the creation time of the restore point.'
+                  },
+                  sourceRestorePoint: {
+                    properties: {
+                      id: {
+                        type: 'string',
+                        description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
+                      }
+                    },
+                    description: 'The API entity reference.'
+                  },
+                  instanceView: {
+                    readOnly: true,
+                    description: 'The restore point instance view.',
+                    type: 'object',
+                    properties: {
+                      diskRestorePoints: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            id: {
+                              type: 'string',
+                              description: 'Disk restore point Id.'
+                            },
+                            replicationStatus: {
+                              type: 'object',
+                              items: {
+                                type: 'object',
+                                properties: [Object],
+                                description: 'The instance view of a disk restore point.'
+                              },
+                              description: 'The disk restore point replication status information.'
+                            }
+                          },
+                          description: 'The instance view of a disk restore point.'
+                        },
+                        description: 'The disk restore points information.'
+                      },
+                      statuses: {
+                        type: 'array',
+                        items: {
+                          properties: {
+                            code: {
+                              type: 'string',
+                              description: 'The status code.'
+                            },
+                            level: {
+                              type: 'string',
+                              description: 'The level code.',
+                              enum: [ 'Info', 'Warning', 'Error' ],
+                              'x-ms-enum': {
+                                name: 'StatusLevelTypes',
+                                modelAsString: false
+                              }
+                            },
+                            displayStatus: {
+                              type: 'string',
+                              description: 'The short localizable label for the status.'
+                            },
+                            message: {
+                              type: 'string',
+                              description: 'The detailed status message, including for alerts and error messages.'
+                            },
+                            time: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'The time of the status.'
+                            }
+                          },
+                          description: 'Instance view status.'
+                        },
+                        description: 'The resource status information.'
+                      }
+                    }
                   }
                 },
                 description: 'The restore point properties.'
@@ -518,6 +613,6 @@ provider.Compute.makeRestorePointCollection({
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

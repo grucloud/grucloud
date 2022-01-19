@@ -106,12 +106,13 @@
     {
         "type": "AvailabilitySet",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "proximityPlacementGroup": {
                 "type": "ProximityPlacementGroup",
@@ -166,17 +167,19 @@
     {
         "type": "CapacityReservation",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "capacityReservationGroup": {
                 "type": "CapacityReservationGroup",
                 "group": "Compute",
-                "name": "capacityReservationGroupName"
+                "name": "capacityReservationGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -206,7 +209,8 @@
             "properties.virtualMachinesAssociated",
             "properties.provisioningTime",
             "properties.provisioningState",
-            "properties.instanceView"
+            "properties.instanceView",
+            "properties.timeCreated"
         ],
         "pickProperties": [
             "sku.name",
@@ -224,12 +228,13 @@
     {
         "type": "CapacityReservationGroup",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -274,7 +279,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vault": {
                 "type": "Vault",
@@ -349,12 +355,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "cloudService": {
                 "type": "CloudService",
                 "group": "Compute",
-                "name": "cloudServiceName"
+                "name": "cloudServiceName",
+                "parent": true
             }
         },
         "methods": {
@@ -396,12 +404,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "cloudService": {
                 "type": "CloudService",
                 "group": "Compute",
-                "name": "cloudServiceName"
+                "name": "cloudServiceName",
+                "parent": true
             }
         },
         "methods": {
@@ -428,12 +438,13 @@
     {
         "type": "DedicatedHost",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "dedicatedHostGroup": {
                 "type": "DedicatedHostGroup",
@@ -444,7 +455,8 @@
             "hostGroup": {
                 "type": "DedicatedHostGroup",
                 "group": "Compute",
-                "name": "hostGroupName"
+                "name": "hostGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -474,7 +486,8 @@
             "properties.virtualMachines",
             "properties.provisioningTime",
             "properties.provisioningState",
-            "properties.instanceView"
+            "properties.instanceView",
+            "properties.timeCreated"
         ],
         "pickProperties": [
             "properties.platformFaultDomain",
@@ -496,12 +509,13 @@
     {
         "type": "DedicatedHostGroup",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -544,12 +558,13 @@
     {
         "type": "Disk",
         "group": "Compute",
-        "apiVersion": "2021-04-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "storageAccount": {
                 "type": "StorageAccount",
@@ -577,7 +592,7 @@
                 "type": "DiskEncryptionSet",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.encryption.diskEncryptionSetId"
+                "pathId": "properties.securityProfile.secureVMDiskEncryptionSetId"
             },
             "diskAccess": {
                 "type": "DiskAccess",
@@ -625,7 +640,8 @@
             "properties.encryption.diskEncryptionSetId",
             "properties.shareInfo",
             "properties.diskAccessId",
-            "properties.propertyUpdatesInProgress"
+            "properties.propertyUpdatesInProgress",
+            "properties.securityProfile.secureVMDiskEncryptionSetId"
         ],
         "pickProperties": [
             "sku.name",
@@ -645,6 +661,7 @@
             "properties.creationData.sourceUri",
             "properties.creationData.uploadSizeBytes",
             "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
             "properties.diskSizeGB",
             "properties.encryptionSettingsCollection.enabled",
             "properties.encryptionSettingsCollection.encryptionSettings",
@@ -681,6 +698,7 @@
             "properties.creationData.sourceUri",
             "properties.creationData.uploadSizeBytes",
             "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
             "properties.diskSizeGB",
             "properties.encryptionSettingsCollection.enabled",
             "properties.encryptionSettingsCollection.encryptionSettings",
@@ -703,12 +721,13 @@
     {
         "type": "DiskAccess",
         "group": "Compute",
-        "apiVersion": "2021-04-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -750,12 +769,13 @@
     {
         "type": "DiskAccessAPrivateEndpointConnection",
         "group": "Compute",
-        "apiVersion": "2021-04-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
@@ -766,7 +786,8 @@
             "diskAccess": {
                 "type": "DiskAccess",
                 "group": "Compute",
-                "name": "diskAccessName"
+                "name": "diskAccessName",
+                "parent": true
             }
         },
         "methods": {
@@ -801,12 +822,13 @@
     {
         "type": "DiskEncryptionSet",
         "group": "Compute",
-        "apiVersion": "2021-04-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vault": {
                 "type": "Vault",
@@ -871,7 +893,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -920,12 +943,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
-                "name": "galleryName"
+                "name": "galleryName",
+                "parent": true
             }
         },
         "methods": {
@@ -976,17 +1001,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
-                "name": "galleryName"
+                "name": "galleryName",
+                "parent": true
             },
             "galleryApplication": {
                 "type": "GalleryApplication",
                 "group": "Compute",
-                "name": "galleryApplicationName"
+                "name": "galleryApplicationName",
+                "parent": true
             }
         },
         "methods": {
@@ -1040,12 +1068,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
-                "name": "galleryName"
+                "name": "galleryName",
+                "parent": true
             }
         },
         "methods": {
@@ -1124,17 +1154,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
-                "name": "galleryName"
+                "name": "galleryName",
+                "parent": true
             },
             "galleryImage": {
                 "type": "GalleryImage",
                 "group": "Compute",
-                "name": "galleryImageName"
+                "name": "galleryImageName",
+                "parent": true
             }
         },
         "methods": {
@@ -1180,12 +1213,13 @@
     {
         "type": "Image",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualMachine": {
                 "type": "VirtualMachine",
@@ -1241,12 +1275,13 @@
     {
         "type": "ProximityPlacementGroup",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -1287,12 +1322,13 @@
     {
         "type": "RestorePointCollection",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "restorePoint": {
                 "type": "RestorePoint",
@@ -1336,12 +1372,13 @@
     {
         "type": "Snapshot",
         "group": "Compute",
-        "apiVersion": "2021-04-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "storageAccount": {
                 "type": "StorageAccount",
@@ -1369,7 +1406,7 @@
                 "type": "DiskEncryptionSet",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.encryption.diskEncryptionSetId"
+                "pathId": "properties.securityProfile.secureVMDiskEncryptionSetId"
             },
             "diskAccess": {
                 "type": "DiskAccess",
@@ -1414,7 +1451,8 @@
             "properties.uniqueId",
             "properties.provisioningState",
             "properties.encryption.diskEncryptionSetId",
-            "properties.diskAccessId"
+            "properties.diskAccessId",
+            "properties.securityProfile.secureVMDiskEncryptionSetId"
         ],
         "pickProperties": [
             "sku.name",
@@ -1433,6 +1471,7 @@
             "properties.creationData.sourceUri",
             "properties.creationData.uploadSizeBytes",
             "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
             "properties.diskSizeGB",
             "properties.encryptionSettingsCollection.enabled",
             "properties.encryptionSettingsCollection.encryptionSettings",
@@ -1440,6 +1479,7 @@
             "properties.incremental",
             "properties.encryption.type",
             "properties.networkAccessPolicy",
+            "properties.securityProfile.securityType",
             "properties.supportsHibernation",
             "properties.publicNetworkAccess",
             "properties.completionPercent"
@@ -1461,6 +1501,7 @@
             "properties.creationData.sourceUri",
             "properties.creationData.uploadSizeBytes",
             "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
             "properties.diskSizeGB",
             "properties.encryptionSettingsCollection.enabled",
             "properties.encryptionSettingsCollection.encryptionSettings",
@@ -1468,6 +1509,7 @@
             "properties.incremental",
             "properties.encryption.type",
             "properties.networkAccessPolicy",
+            "properties.securityProfile.securityType",
             "properties.supportsHibernation",
             "properties.publicNetworkAccess",
             "properties.completionPercent"
@@ -1476,12 +1518,13 @@
     {
         "type": "SshPublicKey",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -1516,12 +1559,13 @@
     {
         "type": "VirtualMachine",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -1533,7 +1577,7 @@
                 "type": "GalleryImage",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.storageProfile.imageReference.sharedGalleryImageId"
+                "pathId": "properties.storageProfile.imageReference.communityGalleryImageId"
             },
             "vault": {
                 "type": "Vault",
@@ -1619,6 +1663,7 @@
         "omitProperties": [
             "properties.storageProfile.imageReference.exactVersion",
             "properties.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.storageProfile.imageReference.communityGalleryImageId",
             "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
             "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
             "properties.osProfile.adminPassword",
@@ -1631,6 +1676,7 @@
             "properties.instanceView",
             "properties.vmId",
             "properties.capacityReservation.capacityReservationGroup.id",
+            "properties.timeCreated",
             "resources",
             "identity.principalId",
             "identity.tenantId"
@@ -1662,6 +1708,8 @@
             "properties.storageProfile.osDisk.diskSizeGB",
             "properties.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.storageProfile.osDisk.deleteOption",
             "properties.storageProfile.dataDisks",
             "properties.additionalCapabilities.ultraSSDEnabled",
@@ -1737,6 +1785,8 @@
             "properties.storageProfile.osDisk.diskSizeGB",
             "properties.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.storageProfile.osDisk.deleteOption",
             "properties.storageProfile.dataDisks",
             "properties.additionalCapabilities.ultraSSDEnabled",
@@ -1795,17 +1845,19 @@
     {
         "type": "VirtualMachineExtension",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vm": {
                 "type": "VirtualMachine",
                 "group": "Compute",
-                "name": "vmName"
+                "name": "vmName",
+                "parent": true
             }
         },
         "methods": {
@@ -1847,7 +1899,8 @@
             "properties.instanceView.name",
             "properties.instanceView.type",
             "properties.instanceView.typeHandlerVersion",
-            "properties.suppressFailures"
+            "properties.suppressFailures",
+            "properties.protectedSettingsFromKeyVault"
         ],
         "pickPropertiesCreate": [
             "properties.forceUpdateTag",
@@ -1861,23 +1914,26 @@
             "properties.instanceView.name",
             "properties.instanceView.type",
             "properties.instanceView.typeHandlerVersion",
-            "properties.suppressFailures"
+            "properties.suppressFailures",
+            "properties.protectedSettingsFromKeyVault"
         ]
     },
     {
         "type": "VirtualMachineRunCommandByVirtualMachine",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vm": {
                 "type": "VirtualMachine",
                 "group": "Compute",
-                "name": "vmName"
+                "name": "vmName",
+                "parent": true
             }
         },
         "methods": {
@@ -1945,12 +2001,13 @@
     {
         "type": "VirtualMachineScaleSet",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -1967,7 +2024,7 @@
                 "type": "GalleryImage",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.virtualMachineProfile.storageProfile.imageReference.sharedGalleryImageId"
+                "pathId": "properties.virtualMachineProfile.storageProfile.imageReference.communityGalleryImageId"
             },
             "networkSecurityGroup": {
                 "type": "NetworkSecurityGroup",
@@ -2020,12 +2077,14 @@
             "properties.virtualMachineProfile.osProfile.adminPassword",
             "properties.virtualMachineProfile.storageProfile.imageReference.exactVersion",
             "properties.virtualMachineProfile.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.virtualMachineProfile.storageProfile.imageReference.communityGalleryImageId",
             "properties.virtualMachineProfile.networkProfile.healthProbe.id",
             "properties.virtualMachineProfile.capacityReservation.capacityReservationGroup.id",
             "properties.provisioningState",
             "properties.uniqueId",
             "properties.proximityPlacementGroup.id",
             "properties.hostGroup.id",
+            "properties.timeCreated",
             "identity.principalId",
             "identity.tenantId"
         ],
@@ -2048,6 +2107,7 @@
             "properties.upgradePolicy.automaticOSUpgradePolicy.disableAutomaticRollback",
             "properties.automaticRepairsPolicy.enabled",
             "properties.automaticRepairsPolicy.gracePeriod",
+            "properties.automaticRepairsPolicy.repairAction",
             "properties.virtualMachineProfile.osProfile.computerNamePrefix",
             "properties.virtualMachineProfile.osProfile.adminUsername",
             "properties.virtualMachineProfile.osProfile.customData",
@@ -2065,6 +2125,7 @@
             "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.patchMode",
             "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.assessmentMode",
             "properties.virtualMachineProfile.osProfile.secrets",
+            "properties.virtualMachineProfile.osProfile.allowExtensionOperations",
             "properties.virtualMachineProfile.storageProfile.imageReference.publisher",
             "properties.virtualMachineProfile.storageProfile.imageReference.offer",
             "properties.virtualMachineProfile.storageProfile.imageReference.sku",
@@ -2081,6 +2142,8 @@
             "properties.virtualMachineProfile.storageProfile.osDisk.vhdContainers",
             "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.virtualMachineProfile.storageProfile.dataDisks",
             "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations",
             "properties.virtualMachineProfile.networkProfile.networkApiVersion",
@@ -2100,6 +2163,8 @@
             "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.enable",
             "properties.virtualMachineProfile.userData",
             "properties.virtualMachineProfile.applicationProfile.galleryApplications",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsPerCore",
             "properties.overprovision",
             "properties.doNotRunExtensionsOnOverprovisionedVMs",
             "properties.singlePlacementGroup",
@@ -2137,6 +2202,7 @@
             "properties.upgradePolicy.automaticOSUpgradePolicy.disableAutomaticRollback",
             "properties.automaticRepairsPolicy.enabled",
             "properties.automaticRepairsPolicy.gracePeriod",
+            "properties.automaticRepairsPolicy.repairAction",
             "properties.virtualMachineProfile.osProfile.computerNamePrefix",
             "properties.virtualMachineProfile.osProfile.adminUsername",
             "properties.virtualMachineProfile.osProfile.customData",
@@ -2154,6 +2220,7 @@
             "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.patchMode",
             "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.assessmentMode",
             "properties.virtualMachineProfile.osProfile.secrets",
+            "properties.virtualMachineProfile.osProfile.allowExtensionOperations",
             "properties.virtualMachineProfile.storageProfile.imageReference.publisher",
             "properties.virtualMachineProfile.storageProfile.imageReference.offer",
             "properties.virtualMachineProfile.storageProfile.imageReference.sku",
@@ -2170,6 +2237,8 @@
             "properties.virtualMachineProfile.storageProfile.osDisk.vhdContainers",
             "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.virtualMachineProfile.storageProfile.dataDisks",
             "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations",
             "properties.virtualMachineProfile.networkProfile.networkApiVersion",
@@ -2189,6 +2258,8 @@
             "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.enable",
             "properties.virtualMachineProfile.userData",
             "properties.virtualMachineProfile.applicationProfile.galleryApplications",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsPerCore",
             "properties.overprovision",
             "properties.doNotRunExtensionsOnOverprovisionedVMs",
             "properties.singlePlacementGroup",
@@ -2217,17 +2288,19 @@
     {
         "type": "VirtualMachineScaleSetExtension",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vmScaleSet": {
                 "type": "VirtualMachineScaleSet",
                 "group": "Compute",
-                "name": "vmScaleSetName"
+                "name": "vmScaleSetName",
+                "parent": true
             }
         },
         "methods": {
@@ -2267,7 +2340,8 @@
             "properties.settings",
             "properties.protectedSettings",
             "properties.provisionAfterExtensions",
-            "properties.suppressFailures"
+            "properties.suppressFailures",
+            "properties.protectedSettingsFromKeyVault"
         ],
         "pickPropertiesCreate": [
             "name",
@@ -2280,18 +2354,20 @@
             "properties.settings",
             "properties.protectedSettings",
             "properties.provisionAfterExtensions",
-            "properties.suppressFailures"
+            "properties.suppressFailures",
+            "properties.protectedSettingsFromKeyVault"
         ]
     },
     {
         "type": "VirtualMachineScaleSetVM",
         "group": "Compute",
-        "apiVersion": "2021-07-01",
+        "apiVersion": "2021-11-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "cloudServiceRoleInstance": {
                 "type": "CloudServiceRoleInstance",
@@ -2303,7 +2379,7 @@
                 "type": "GalleryImage",
                 "group": "Compute",
                 "createOnly": true,
-                "pathId": "properties.storageProfile.imageReference.sharedGalleryImageId"
+                "pathId": "properties.storageProfile.imageReference.communityGalleryImageId"
             },
             "vault": {
                 "type": "Vault",
@@ -2336,20 +2412,21 @@
             "vmScaleSet": {
                 "type": "VirtualMachineScaleSet",
                 "group": "Compute",
-                "name": "vmScaleSetName"
+                "name": "vmScaleSetName",
+                "parent": true
             }
         },
         "methods": {
             "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualmachines/{instanceId}",
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
                 "operationId": "VirtualMachineScaleSetVMs_Update"
             },
             "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualmachines/{instanceId}",
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
                 "operationId": "VirtualMachineScaleSetVMs_Delete"
             },
             "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualmachines/{instanceId}",
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
                 "operationId": "VirtualMachineScaleSetVMs_Get"
             },
             "getAll": {
@@ -2365,6 +2442,7 @@
             "properties.instanceView",
             "properties.storageProfile.imageReference.exactVersion",
             "properties.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.storageProfile.imageReference.communityGalleryImageId",
             "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
             "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
             "properties.osProfile.adminPassword",
@@ -2397,6 +2475,8 @@
             "properties.storageProfile.osDisk.diskSizeGB",
             "properties.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.storageProfile.osDisk.deleteOption",
             "properties.storageProfile.dataDisks",
             "properties.additionalCapabilities.ultraSSDEnabled",
@@ -2462,6 +2542,8 @@
             "properties.storageProfile.osDisk.diskSizeGB",
             "properties.storageProfile.osDisk.managedDisk.storageAccountType",
             "properties.storageProfile.osDisk.managedDisk.diskEncryptionSet",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "properties.storageProfile.osDisk.managedDisk.securityProfile.diskEncryptionSet",
             "properties.storageProfile.osDisk.deleteOption",
             "properties.storageProfile.dataDisks",
             "properties.additionalCapabilities.ultraSSDEnabled",
@@ -2519,7 +2601,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -2593,7 +2676,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -2603,7 +2687,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -2651,17 +2736,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             },
             "buildTask": {
                 "type": "BuildTask",
                 "group": "ContainerRegistry",
-                "name": "buildTaskName"
+                "name": "buildTaskName",
+                "parent": true
             }
         },
         "methods": {
@@ -2701,12 +2789,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -2781,12 +2871,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -2861,7 +2953,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -2872,7 +2965,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -2925,7 +3019,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -2936,7 +3031,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3002,12 +3098,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3077,7 +3175,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
@@ -3088,7 +3187,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3125,7 +3225,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -3244,7 +3345,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -3297,12 +3399,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3354,12 +3458,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3406,7 +3512,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -3417,7 +3524,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3517,7 +3625,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -3528,7 +3637,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3600,7 +3710,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "scopeMap": {
                 "type": "ScopeMap",
@@ -3611,7 +3722,8 @@
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3659,12 +3771,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "registry": {
                 "type": "Registry",
                 "group": "ContainerRegistry",
-                "name": "registryName"
+                "name": "registryName",
+                "parent": true
             }
         },
         "methods": {
@@ -3707,17 +3821,31 @@
     {
         "type": "AgentPool",
         "group": "ContainerService",
-        "apiVersion": "2021-10-01",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.proximityPlacementGroupID"
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.capacityReservationGroupID"
             },
             "resource": {
                 "type": "ManagedCluster",
                 "group": "ContainerService",
-                "name": "resourceName"
+                "name": "resourceName",
+                "parent": true
             }
         },
         "methods": {
@@ -3746,7 +3874,8 @@
             "properties.powerState",
             "properties.nodePublicIPPrefixID",
             "properties.proximityPlacementGroupID",
-            "properties.creationData.sourceResourceId"
+            "properties.creationData.sourceResourceId",
+            "properties.capacityReservationGroupID"
         ],
         "pickProperties": [
             "properties.count",
@@ -3755,6 +3884,7 @@
             "properties.osDiskType",
             "properties.kubeletDiskType",
             "properties.workloadRuntime",
+            "properties.messageOfTheDay",
             "properties.maxPods",
             "properties.osType",
             "properties.osSKU",
@@ -3828,6 +3958,7 @@
             "properties.osDiskType",
             "properties.kubeletDiskType",
             "properties.workloadRuntime",
+            "properties.messageOfTheDay",
             "properties.maxPods",
             "properties.osType",
             "properties.osSKU",
@@ -3911,7 +4042,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true,
+                "pathId": "properties.servicePrincipalProfile.keyVaultSecretRef.vaultID"
             }
         },
         "methods": {
@@ -3997,17 +4135,19 @@
     {
         "type": "MaintenanceConfiguration",
         "group": "ContainerService",
-        "apiVersion": "2021-10-01",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "resource": {
                 "type": "ManagedCluster",
                 "group": "ContainerService",
-                "name": "resourceName"
+                "name": "resourceName",
+                "parent": true
             }
         },
         "methods": {
@@ -4043,18 +4183,25 @@
     {
         "type": "ManagedCluster",
         "group": "ContainerService",
-        "apiVersion": "2021-10-01",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
                 "group": "ManagedIdentity",
                 "createOnly": true,
                 "list": true
+            },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.diskEncryptionSetID"
             }
         },
         "methods": {
@@ -4085,11 +4232,13 @@
             "properties.provisioningState",
             "properties.powerState",
             "properties.maxAgentPools",
+            "properties.currentKubernetesVersion",
             "properties.fqdn",
             "properties.privateFQDN",
             "properties.azurePortalFQDN",
             "properties.windowsProfile.adminPassword",
             "properties.servicePrincipalProfile.clientId",
+            "properties.oidcIssuerProfile.issuerURL",
             "properties.aadProfile.clientAppID",
             "properties.aadProfile.serverAppID",
             "properties.aadProfile.tenantID",
@@ -4121,9 +4270,11 @@
             "properties.podIdentityProfile.allowNetworkPluginKubenet",
             "properties.podIdentityProfile.userAssignedIdentities",
             "properties.podIdentityProfile.userAssignedIdentityExceptions",
+            "properties.oidcIssuerProfile.enabled",
             "properties.nodeResourceGroup",
             "properties.enableRBAC",
             "properties.enablePodSecurityPolicy",
+            "properties.enableNamespaceResources",
             "properties.networkProfile.networkPlugin",
             "properties.networkProfile.networkPolicy",
             "properties.networkProfile.networkMode",
@@ -4209,9 +4360,11 @@
             "properties.podIdentityProfile.allowNetworkPluginKubenet",
             "properties.podIdentityProfile.userAssignedIdentities",
             "properties.podIdentityProfile.userAssignedIdentityExceptions",
+            "properties.oidcIssuerProfile.enabled",
             "properties.nodeResourceGroup",
             "properties.enableRBAC",
             "properties.enablePodSecurityPolicy",
+            "properties.enableNamespaceResources",
             "properties.networkProfile.networkPlugin",
             "properties.networkProfile.networkPolicy",
             "properties.networkProfile.networkMode",
@@ -4308,12 +4461,13 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "ContainerService",
-        "apiVersion": "2021-10-01",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
@@ -4324,7 +4478,8 @@
             "resource": {
                 "type": "ManagedCluster",
                 "group": "ContainerService",
-                "name": "resourceName"
+                "name": "resourceName",
+                "parent": true
             }
         },
         "methods": {
@@ -4359,12 +4514,13 @@
     {
         "type": "Snapshot",
         "group": "ContainerService",
-        "apiVersion": "2021-10-01",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -4415,17 +4571,19 @@
     {
         "type": "Key",
         "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "name": "vaultName"
+                "name": "vaultName",
+                "parent": true
             }
         },
         "methods": {
@@ -4491,12 +4649,13 @@
     {
         "type": "ManagedHsm",
         "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -4564,12 +4723,13 @@
     {
         "type": "MHSMPrivateEndpointConnection",
         "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
@@ -4580,7 +4740,8 @@
             "name": {
                 "type": "ManagedHsm",
                 "group": "KeyVault",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -4616,17 +4777,19 @@
     {
         "type": "Secret",
         "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "name": "vaultName"
+                "name": "vaultName",
+                "parent": true
             }
         },
         "methods": {
@@ -4666,12 +4829,13 @@
     {
         "type": "Vault",
         "group": "KeyVault",
-        "apiVersion": "2021-06-01-preview",
+        "apiVersion": "2021-11-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -4764,7 +4928,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -4803,7 +4968,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -4975,12 +5141,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "applicationGateway": {
                 "type": "ApplicationGateway",
                 "group": "Network",
-                "name": "applicationGatewayName"
+                "name": "applicationGatewayName",
+                "parent": true
             }
         },
         "methods": {
@@ -5038,7 +5206,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -5079,7 +5248,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -5180,7 +5350,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -5264,7 +5435,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "workspace": {
                 "type": "Workspace",
@@ -5275,7 +5447,8 @@
             "networkWatcher": {
                 "type": "NetworkWatcher",
                 "group": "Network",
-                "name": "networkWatcherName"
+                "name": "networkWatcherName",
+                "parent": true
             }
         },
         "methods": {
@@ -5337,7 +5510,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -5397,13 +5571,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "securityPartnerProvider": {
-                "type": "SecurityPartnerProvider",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "id"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -5454,7 +5623,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -5509,7 +5679,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "routeFilter": {
                 "type": "RouteFilter",
@@ -5601,12 +5772,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "circuit": {
                 "type": "ExpressRouteCircuit",
                 "group": "Network",
-                "name": "circuitName"
+                "name": "circuitName",
+                "parent": true
             }
         },
         "methods": {
@@ -5650,7 +5823,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "expressRouteCircuitPeering": {
                 "type": "ExpressRouteCircuitPeering",
@@ -5661,12 +5835,14 @@
             "circuit": {
                 "type": "ExpressRouteCircuit",
                 "group": "Network",
-                "name": "circuitName"
+                "name": "circuitName",
+                "parent": true
             },
             "peering": {
                 "type": "ExpressRouteCircuitPeering",
                 "group": "Network",
-                "name": "peeringName"
+                "name": "peeringName",
+                "parent": true
             }
         },
         "methods": {
@@ -5717,7 +5893,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "routeFilter": {
                 "type": "RouteFilter",
@@ -5734,7 +5911,8 @@
             "circuit": {
                 "type": "ExpressRouteCircuit",
                 "group": "Network",
-                "name": "circuitName"
+                "name": "circuitName",
+                "parent": true
             }
         },
         "methods": {
@@ -5837,7 +6015,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "expressRouteCircuitPeering": {
                 "type": "ExpressRouteCircuitPeering",
@@ -5854,7 +6033,8 @@
             "expressRouteGateway": {
                 "type": "ExpressRouteGateway",
                 "group": "Network",
-                "name": "expressRouteGatewayName"
+                "name": "expressRouteGatewayName",
+                "parent": true
             }
         },
         "methods": {
@@ -5910,7 +6090,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -5964,7 +6145,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -6068,12 +6250,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "firewallPolicy": {
                 "type": "FirewallPolicy",
                 "group": "Network",
-                "name": "firewallPolicyName"
+                "name": "firewallPolicyName",
+                "parent": true
             }
         },
         "methods": {
@@ -6118,12 +6302,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "firewallPolicy": {
                 "type": "FirewallPolicy",
                 "group": "Network",
-                "name": "firewallPolicyName"
+                "name": "firewallPolicyName",
+                "parent": true
             }
         },
         "methods": {
@@ -6168,7 +6354,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "workspace": {
                 "type": "Workspace",
@@ -6179,7 +6366,8 @@
             "networkWatcher": {
                 "type": "NetworkWatcher",
                 "group": "Network",
-                "name": "networkWatcherName"
+                "name": "networkWatcherName",
+                "parent": true
             }
         },
         "methods": {
@@ -6253,12 +6441,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -6305,7 +6495,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
@@ -6322,7 +6513,8 @@
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -6377,7 +6569,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "loadBalancerBackendAddressPool": {
                 "type": "LoadBalancerBackendAddressPool",
@@ -6388,7 +6581,8 @@
             "loadBalancer": {
                 "type": "LoadBalancer",
                 "group": "Network",
-                "name": "loadBalancerName"
+                "name": "loadBalancerName",
+                "parent": true
             }
         },
         "methods": {
@@ -6537,7 +6731,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -6608,7 +6803,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -6654,7 +6850,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -6743,7 +6940,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
@@ -6766,7 +6964,8 @@
             "loadBalancer": {
                 "type": "LoadBalancer",
                 "group": "Network",
-                "name": "loadBalancerName"
+                "name": "loadBalancerName",
+                "parent": true
             }
         },
         "methods": {
@@ -6818,7 +7017,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
@@ -6881,7 +7081,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -6935,7 +7136,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
@@ -6946,7 +7148,8 @@
             "gateway": {
                 "type": "VpnGateway",
                 "group": "Network",
-                "name": "gatewayName"
+                "name": "gatewayName",
+                "parent": true
             }
         },
         "methods": {
@@ -6998,7 +7201,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualMachine": {
                 "type": "VirtualMachine",
@@ -7152,7 +7356,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "loadBalancer": {
                 "type": "LoadBalancer",
@@ -7187,7 +7392,8 @@
             "networkInterface": {
                 "type": "NetworkInterface",
                 "group": "Network",
-                "name": "networkInterfaceName"
+                "name": "networkInterfaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -8093,7 +8299,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -8139,7 +8346,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -8188,7 +8396,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -8269,7 +8478,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -8309,7 +8519,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -8380,12 +8591,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualWan": {
                 "type": "VirtualWan",
                 "group": "Network",
-                "name": "virtualWanName"
+                "name": "virtualWanName",
+                "parent": true
             }
         },
         "methods": {
@@ -8446,12 +8659,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "networkWatcher": {
                 "type": "NetworkWatcher",
                 "group": "Network",
-                "name": "networkWatcherName"
+                "name": "networkWatcherName",
+                "parent": true
             }
         },
         "methods": {
@@ -8497,12 +8712,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
                 "group": "Network",
-                "name": "privateEndpointName"
+                "name": "privateEndpointName",
+                "parent": true
             }
         },
         "methods": {
@@ -8544,7 +8761,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -8669,7 +8887,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -8750,12 +8969,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "service": {
                 "type": "PrivateLinkService",
                 "group": "Network",
-                "name": "serviceName"
+                "name": "serviceName",
+                "parent": true
             }
         },
         "methods": {
@@ -8813,7 +9034,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
@@ -9210,7 +9432,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "loadBalancer": {
                 "type": "LoadBalancer",
@@ -9299,12 +9522,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "routeTable": {
                 "type": "RouteTable",
                 "group": "Network",
-                "name": "routeTableName"
+                "name": "routeTableName",
+                "parent": true
             }
         },
         "methods": {
@@ -9354,7 +9579,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -9400,12 +9626,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "routeFilter": {
                 "type": "RouteFilter",
                 "group": "Network",
-                "name": "routeFilterName"
+                "name": "routeFilterName",
+                "parent": true
             }
         },
         "methods": {
@@ -9453,7 +9681,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -9501,12 +9730,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -9549,7 +9780,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -9601,7 +9833,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -9652,12 +9885,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "serviceEndpointPolicy": {
                 "type": "ServiceEndpointPolicy",
                 "group": "Network",
-                "name": "serviceEndpointPolicyName"
+                "name": "serviceEndpointPolicyName",
+                "parent": true
             }
         },
         "methods": {
@@ -9705,7 +9940,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -9716,7 +9952,8 @@
             "virtualNetwork": {
                 "type": "VirtualNetwork",
                 "group": "Network",
-                "name": "virtualNetworkName"
+                "name": "virtualNetworkName",
+                "parent": true
             }
         },
         "methods": {
@@ -9806,12 +10043,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "networkVirtualAppliance": {
                 "type": "NetworkVirtualAppliance",
                 "group": "Network",
-                "name": "networkVirtualApplianceName"
+                "name": "networkVirtualApplianceName",
+                "parent": true
             }
         },
         "methods": {
@@ -9860,7 +10099,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualWan": {
                 "type": "VirtualWan",
@@ -9966,7 +10206,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "hubVirtualNetworkConnection": {
                 "type": "HubVirtualNetworkConnection",
@@ -9977,7 +10218,8 @@
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -10024,7 +10266,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -10047,7 +10290,8 @@
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -10495,12 +10739,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
                 "group": "Network",
-                "name": "virtualHubName"
+                "name": "virtualHubName",
+                "parent": true
             }
         },
         "methods": {
@@ -10544,7 +10790,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "natGateway": {
                 "type": "NatGateway",
@@ -10633,7 +10880,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -10762,7 +11010,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -11017,12 +11266,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetworkGatewayConnection": {
                 "type": "VirtualNetworkGatewayConnection",
                 "group": "Network",
-                "name": "virtualNetworkGatewayConnectionName"
+                "name": "virtualNetworkGatewayConnectionName",
+                "parent": true
             }
         },
         "methods": {
@@ -11050,7 +11301,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
@@ -11061,7 +11313,8 @@
             "virtualNetworkGateway": {
                 "type": "VirtualNetworkGateway",
                 "group": "Network",
-                "name": "virtualNetworkGatewayName"
+                "name": "virtualNetworkGatewayName",
+                "parent": true
             }
         },
         "methods": {
@@ -11111,12 +11364,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
                 "group": "Network",
-                "name": "virtualNetworkName"
+                "name": "virtualNetworkName",
+                "parent": true
             }
         },
         "methods": {
@@ -11181,7 +11436,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "loadBalancer": {
                 "type": "LoadBalancer",
@@ -12112,7 +12368,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -12163,12 +12420,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualRouter": {
                 "type": "VirtualRouter",
                 "group": "Network",
-                "name": "virtualRouterName"
+                "name": "virtualRouterName",
+                "parent": true
             }
         },
         "methods": {
@@ -12213,7 +12472,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -12266,7 +12526,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "vpnSite": {
                 "type": "VpnSite",
@@ -12283,7 +12544,8 @@
             "gateway": {
                 "type": "VpnGateway",
                 "group": "Network",
-                "name": "gatewayName"
+                "name": "gatewayName",
+                "parent": true
             }
         },
         "methods": {
@@ -12361,7 +12623,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -12447,7 +12710,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -12521,7 +12785,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualWan": {
                 "type": "VirtualWan",
@@ -12606,7 +12871,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -12663,7 +12929,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -12746,12 +13013,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "workspace": {
                 "type": "Workspace",
                 "group": "OperationalInsights",
-                "name": "workspaceName"
+                "name": "workspaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -12800,12 +13069,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "workspace": {
                 "type": "Workspace",
                 "group": "OperationalInsights",
-                "name": "workspaceName"
+                "name": "workspaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -12843,12 +13114,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "queryPack": {
                 "type": "QueryPack",
                 "group": "OperationalInsights",
-                "name": "queryPackName"
+                "name": "queryPackName",
+                "parent": true
             }
         },
         "methods": {
@@ -12908,7 +13181,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "query": {
                 "type": "Query",
@@ -12956,12 +13230,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "workspace": {
                 "type": "Workspace",
                 "group": "OperationalInsights",
-                "name": "workspaceName"
+                "name": "workspaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -13011,7 +13287,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "linkedStorageAccount": {
                 "type": "LinkedStorageAccount",
@@ -13022,7 +13299,8 @@
             "workspace": {
                 "type": "Workspace",
                 "group": "OperationalInsights",
-                "name": "workspaceName"
+                "name": "workspaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -13068,7 +13346,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "linkedStorageAccount": {
                 "type": "LinkedStorageAccount",
@@ -13079,7 +13358,8 @@
             "workspace": {
                 "type": "Workspace",
                 "group": "OperationalInsights",
-                "name": "workspaceName"
+                "name": "workspaceName",
+                "parent": true
             }
         },
         "methods": {
@@ -13121,12 +13401,13 @@
     {
         "type": "Workspace",
         "group": "OperationalInsights",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "cluster": {
                 "type": "Cluster",
@@ -13166,7 +13447,9 @@
             "properties.createdDate",
             "properties.modifiedDate",
             "properties.privateLinkScopedResources",
-            "properties.features.clusterResourceId"
+            "properties.features.clusterResourceId",
+            "properties.defaultDataCollectionRuleResourceId",
+            "systemData"
         ],
         "pickProperties": [
             "properties.sku.name",
@@ -13211,12 +13494,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "server": {
                 "type": "Server",
                 "group": "DBforPostgreSQL",
-                "name": "serverName"
+                "name": "serverName",
+                "parent": true
             }
         },
         "methods": {
@@ -13266,12 +13551,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "server": {
                 "type": "Server",
                 "group": "DBforPostgreSQL",
-                "name": "serverName"
+                "name": "serverName",
+                "parent": true
             }
         },
         "methods": {
@@ -13312,12 +13599,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "server": {
                 "type": "Server",
                 "group": "DBforPostgreSQL",
-                "name": "serverName"
+                "name": "serverName",
+                "parent": true
             }
         },
         "methods": {
@@ -13358,7 +13647,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -13428,17 +13718,19 @@
     {
         "type": "BlobContainer",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13501,17 +13793,19 @@
     {
         "type": "BlobService",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13573,17 +13867,19 @@
     {
         "type": "EncryptionScope",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13625,17 +13921,19 @@
     {
         "type": "FileService",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13679,17 +13977,19 @@
     {
         "type": "FileShare",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13745,19 +14045,83 @@
         ]
     },
     {
-        "type": "ObjectReplicationPolicy",
+        "type": "LocalUser",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/localUsers/{username}",
+                "operationId": "LocalUsers_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/localUsers/{username}",
+                "operationId": "LocalUsers_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/localUsers/{username}",
+                "operationId": "LocalUsers_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/localUsers",
+                "operationId": "LocalUsers_List"
+            }
+        },
+        "omitProperties": [
+            "properties.sid",
+            "properties.hasSshPassword",
+            "systemData"
+        ],
+        "pickProperties": [
+            "properties.permissionScopes",
+            "properties.homeDirectory",
+            "properties.sshAuthorizedKeys",
+            "properties.hasSharedKey",
+            "properties.hasSshKey"
+        ],
+        "pickPropertiesCreate": [
+            "properties.permissionScopes",
+            "properties.homeDirectory",
+            "properties.sshAuthorizedKeys",
+            "properties.hasSharedKey",
+            "properties.hasSshKey"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.hasSshPassword",
+                "suffix": "HAS_SSH_PASSWORD"
+            }
+        ]
+    },
+    {
+        "type": "ObjectReplicationPolicy",
+        "group": "Storage",
+        "apiVersion": "2021-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "account": {
+                "type": "StorageAccount",
+                "group": "Storage",
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13796,12 +14160,13 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "privateEndpoint": {
                 "type": "PrivateEndpoint",
@@ -13812,7 +14177,8 @@
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13844,17 +14210,19 @@
     {
         "type": "Queue",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13892,17 +14260,19 @@
     {
         "type": "QueueService",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -13929,12 +14299,13 @@
     {
         "type": "StorageAccount",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -14005,8 +14376,12 @@
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.domainName",
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.netBiosDomainName",
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.forestName",
+            "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.samAccountName",
+            "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.accountType",
             "properties.azureFilesIdentityBasedAuthentication.defaultSharePermission",
             "properties.supportsHttpsTrafficOnly",
+            "properties.isSftpEnabled",
+            "properties.isLocalUserEnabled",
             "properties.isHnsEnabled",
             "properties.routingPreference.routingChoice",
             "properties.routingPreference.publishMicrosoftEndpoints",
@@ -14020,7 +14395,8 @@
             "properties.publicNetworkAccess",
             "properties.immutableStorageWithVersioning.enabled",
             "properties.immutableStorageWithVersioning.immutabilityPolicy.immutabilityPeriodSinceCreationInDays",
-            "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites"
+            "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites",
+            "properties.allowedCopyScope"
         ],
         "pickPropertiesCreate": [
             "sku.name",
@@ -14031,6 +14407,7 @@
             "tags",
             "identity.type",
             "identity.userAssignedIdentities",
+            "properties.allowedCopyScope",
             "properties.publicNetworkAccess",
             "properties.sasPolicy.sasExpirationPeriod",
             "properties.sasPolicy.expirationAction",
@@ -14057,8 +14434,12 @@
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.domainName",
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.netBiosDomainName",
             "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.forestName",
+            "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.samAccountName",
+            "properties.azureFilesIdentityBasedAuthentication.activeDirectoryProperties.accountType",
             "properties.azureFilesIdentityBasedAuthentication.defaultSharePermission",
             "properties.supportsHttpsTrafficOnly",
+            "properties.isSftpEnabled",
+            "properties.isLocalUserEnabled",
             "properties.isHnsEnabled",
             "properties.routingPreference.routingChoice",
             "properties.routingPreference.publishMicrosoftEndpoints",
@@ -14091,17 +14472,19 @@
     {
         "type": "Table",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -14135,17 +14518,19 @@
     {
         "type": "TableService",
         "group": "Storage",
-        "apiVersion": "2021-06-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "account": {
                 "type": "StorageAccount",
                 "group": "Storage",
-                "name": "accountName"
+                "name": "accountName",
+                "parent": true
             }
         },
         "methods": {
@@ -14172,12 +14557,13 @@
     {
         "type": "AppServiceCertificateOrder",
         "group": "CertificateRegistration",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -14241,17 +14627,19 @@
     {
         "type": "AppServiceCertificateOrderCertificate",
         "group": "CertificateRegistration",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "certificateOrder": {
                 "type": "AppServiceCertificateOrder",
                 "group": "CertificateRegistration",
-                "name": "certificateOrderName"
+                "name": "certificateOrderName",
+                "parent": true
             }
         },
         "methods": {
@@ -14290,12 +14678,13 @@
     {
         "type": "Domain",
         "group": "DomainRegistration",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -14359,17 +14748,19 @@
     {
         "type": "DomainOwnershipIdentifier",
         "group": "DomainRegistration",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "domain": {
                 "type": "Domain",
                 "group": "DomainRegistration",
-                "name": "domainName"
+                "name": "domainName",
+                "parent": true
             }
         },
         "methods": {
@@ -14403,12 +14794,13 @@
     {
         "type": "AppServiceEnvironment",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
@@ -14478,17 +14870,19 @@
     {
         "type": "AppServiceEnvironmentAseV3NetworkingConfiguration",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -14517,17 +14911,19 @@
     {
         "type": "AppServiceEnvironmentMultiRolePool",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -14586,17 +14982,19 @@
     {
         "type": "AppServiceEnvironmentPrivateEndpointConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -14630,17 +15028,19 @@
     {
         "type": "AppServiceEnvironmentWorkerPool",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -14703,12 +15103,13 @@
     {
         "type": "AppServicePlan",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "hostingEnvironment": {
                 "type": "HostingEnvironment",
@@ -14824,12 +15225,13 @@
     {
         "type": "Certificate",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "hostingEnvironment": {
                 "type": "HostingEnvironment",
@@ -14913,7 +15315,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -15031,12 +15434,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "certificateOrder": {
                 "type": "AppServiceCertificateOrder",
                 "group": "CertificateRegistration",
-                "name": "certificateOrderName"
+                "name": "certificateOrderName",
+                "parent": true
             }
         },
         "methods": {
@@ -15080,7 +15485,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -15147,7 +15553,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -15195,6 +15602,96 @@
         ]
     },
     {
+        "type": "ContainerApp",
+        "group": "Web",
+        "apiVersion": "2021-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "kubeEnvironment": {
+                "type": "KubeEnvironment",
+                "group": "Web",
+                "createOnly": true,
+                "pathId": "properties.kubeEnvironmentId"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
+                "operationId": "ContainerApps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
+                "operationId": "ContainerApps_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
+                "operationId": "ContainerApps_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerApps",
+                "operationId": "ContainerApps_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.kubeEnvironmentId",
+            "properties.latestRevisionName",
+            "properties.latestRevisionFqdn",
+            "properties.configuration.ingress.fqdn",
+            "properties.template.dapr.appId"
+        ],
+        "pickProperties": [
+            "properties.configuration.secrets",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries",
+            "properties.template.revisionSuffix",
+            "properties.template.containers",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules",
+            "properties.template.dapr.enabled",
+            "properties.template.dapr.appPort",
+            "properties.template.dapr.components"
+        ],
+        "pickPropertiesCreate": [
+            "properties.configuration.secrets",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries",
+            "properties.template.revisionSuffix",
+            "properties.template.containers",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules",
+            "properties.template.dapr.enabled",
+            "properties.template.dapr.appPort",
+            "properties.template.dapr.components"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "configuration": {
+                    "ingress": {
+                        "external": false
+                    }
+                }
+            }
+        }
+    },
+    {
         "type": "CustomApi",
         "group": "Web",
         "apiVersion": "2016-06-01",
@@ -15202,7 +15699,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -15274,7 +15772,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "virtualNetwork": {
                 "type": "VirtualNetwork",
@@ -15380,12 +15879,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -15432,12 +15933,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "AppServiceEnvironment",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -15483,12 +15986,13 @@
     {
         "type": "KubeEnvironment",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             }
         },
         "methods": {
@@ -15519,6 +16023,7 @@
             "properties.internalLoadBalancerEnabled",
             "properties.defaultDomain",
             "properties.staticIp",
+            "properties.environmentType",
             "properties.arcConfiguration.artifactsStorageType",
             "properties.arcConfiguration.artifactStorageClassName",
             "properties.arcConfiguration.artifactStorageMountPath",
@@ -15527,6 +16032,12 @@
             "properties.arcConfiguration.kubeConfig",
             "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId",
             "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
+            "properties.containerAppsConfiguration.daprAIInstrumentationKey",
+            "properties.containerAppsConfiguration.platformReservedCidr",
+            "properties.containerAppsConfiguration.platformReservedDnsIP",
+            "properties.containerAppsConfiguration.controlPlaneSubnetResourceId",
+            "properties.containerAppsConfiguration.appSubnetResourceId",
+            "properties.containerAppsConfiguration.dockerBridgeCidr",
             "properties.aksResourceID",
             "extendedLocation.type"
         ],
@@ -15559,7 +16070,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "hostingEnvironment": {
                 "type": "HostingEnvironment",
@@ -15633,7 +16145,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "serverFarm": {
                 "type": "ServerFarm",
@@ -15857,12 +16370,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -15919,17 +16434,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -15986,12 +16504,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16135,17 +16655,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16289,12 +16812,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16348,17 +16873,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16412,7 +16940,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "domain": {
                 "type": "Domain",
@@ -16423,7 +16952,8 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16472,7 +17002,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "domain": {
                 "type": "Domain",
@@ -16483,12 +17014,14 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16537,12 +17070,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16596,17 +17131,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16660,12 +17198,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16710,17 +17250,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16765,12 +17308,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -16822,17 +17367,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -16884,7 +17432,8 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "serverFarm": {
                 "type": "ServerFarm",
@@ -16907,7 +17456,8 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17113,12 +17663,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17148,12 +17700,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17197,17 +17751,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -17251,12 +17808,14 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17307,17 +17866,20 @@
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -17363,12 +17925,13 @@
     {
         "type": "StaticSite",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -17406,7 +17969,7 @@
             "properties.contentDistributionEndpoint",
             "properties.keyVaultReferenceIdentity",
             "properties.userProvidedFunctionApps",
-            "properties.provider",
+            "properties.enterpriseGradeCdnStatus",
             "identity.tenantId",
             "identity.principalId"
         ],
@@ -17429,6 +17992,7 @@
             "properties.templateProperties.repositoryName",
             "properties.templateProperties.description",
             "properties.templateProperties.isPrivate",
+            "properties.provider",
             "sku.name",
             "sku.tier",
             "sku.size",
@@ -17463,6 +18027,7 @@
             "properties.templateProperties.repositoryName",
             "properties.templateProperties.description",
             "properties.templateProperties.isPrivate",
+            "properties.provider",
             "sku.name",
             "sku.tier",
             "sku.size",
@@ -17482,17 +18047,19 @@
     {
         "type": "StaticSiteBuild",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "StaticSite",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17525,17 +18092,19 @@
     {
         "type": "StaticSiteCustomDomain",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "StaticSite",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17571,17 +18140,19 @@
     {
         "type": "StaticSitePrivateEndpointConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "StaticSite",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17615,12 +18186,13 @@
     {
         "type": "UserProvidedFunctionAppForStaticSite",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "userProvidedFunctionAppForStaticSiteBuild": {
                 "type": "UserProvidedFunctionAppForStaticSiteBuild",
@@ -17631,7 +18203,8 @@
             "name": {
                 "type": "StaticSite",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -17666,12 +18239,13 @@
     {
         "type": "UserProvidedFunctionAppForStaticSiteBuild",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "userProvidedFunctionAppForStaticSite": {
                 "type": "UserProvidedFunctionAppForStaticSite",
@@ -17682,12 +18256,14 @@
             "name": {
                 "type": "StaticSite",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "environment": {
                 "type": "StaticSiteBuild",
                 "group": "Web",
-                "name": "environmentName"
+                "name": "environmentName",
+                "parent": true
             }
         },
         "methods": {
@@ -17722,12 +18298,13 @@
     {
         "type": "WebApp",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -18021,19 +18598,185 @@
         }
     },
     {
-        "type": "WebAppBackupStatus",
+        "type": "WebAppAuthSettingsV2WithoutSecrets",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/authsettingsV2",
+                "operationId": "WebApps_GetAuthSettingsV2WithoutSecrets"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/authsettingsV2",
+                "operationId": "WebApps_UpdateAuthSettingsV2"
+            }
+        },
+        "omitProperties": [
+            "properties.identityProviders.azureActiveDirectory.registration.clientId",
+            "properties.identityProviders.facebook.registration.appId",
+            "properties.identityProviders.gitHub.registration.clientId",
+            "properties.identityProviders.google.registration.clientId",
+            "properties.identityProviders.legacyMicrosoftAccount.registration.clientId",
+            "properties.identityProviders.apple.registration.clientId",
+            "properties.identityProviders.azureStaticWebApps.registration.clientId"
+        ],
+        "pickProperties": [
+            "properties.platform.enabled",
+            "properties.platform.runtimeVersion",
+            "properties.platform.configFilePath",
+            "properties.globalValidation.requireAuthentication",
+            "properties.globalValidation.unauthenticatedClientAction",
+            "properties.globalValidation.redirectToProvider",
+            "properties.globalValidation.excludedPaths",
+            "properties.identityProviders.azureActiveDirectory.enabled",
+            "properties.identityProviders.azureActiveDirectory.registration.openIdIssuer",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretSettingName",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateThumbprint",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateSubjectAlternativeName",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateIssuer",
+            "properties.identityProviders.azureActiveDirectory.login.loginParameters",
+            "properties.identityProviders.azureActiveDirectory.login.disableWWWAuthenticate",
+            "properties.identityProviders.azureActiveDirectory.validation.jwtClaimChecks.allowedGroups",
+            "properties.identityProviders.azureActiveDirectory.validation.jwtClaimChecks.allowedClientApplications",
+            "properties.identityProviders.azureActiveDirectory.validation.allowedAudiences",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedPrincipals.groups",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedPrincipals.identities",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications",
+            "properties.identityProviders.azureActiveDirectory.isAutoProvisioned",
+            "properties.identityProviders.facebook.enabled",
+            "properties.identityProviders.facebook.registration.appSecretSettingName",
+            "properties.identityProviders.facebook.graphApiVersion",
+            "properties.identityProviders.facebook.login.scopes",
+            "properties.identityProviders.gitHub.enabled",
+            "properties.identityProviders.gitHub.registration.clientSecretSettingName",
+            "properties.identityProviders.gitHub.login.scopes",
+            "properties.identityProviders.google.enabled",
+            "properties.identityProviders.google.registration.clientSecretSettingName",
+            "properties.identityProviders.google.login.scopes",
+            "properties.identityProviders.google.validation.allowedAudiences",
+            "properties.identityProviders.legacyMicrosoftAccount.enabled",
+            "properties.identityProviders.legacyMicrosoftAccount.registration.clientSecretSettingName",
+            "properties.identityProviders.legacyMicrosoftAccount.login.scopes",
+            "properties.identityProviders.legacyMicrosoftAccount.validation.allowedAudiences",
+            "properties.identityProviders.twitter.enabled",
+            "properties.identityProviders.twitter.registration.consumerKey",
+            "properties.identityProviders.twitter.registration.consumerSecretSettingName",
+            "properties.identityProviders.apple.enabled",
+            "properties.identityProviders.apple.registration.clientSecretSettingName",
+            "properties.identityProviders.apple.login.scopes",
+            "properties.identityProviders.azureStaticWebApps.enabled",
+            "properties.identityProviders.customOpenIdConnectProviders",
+            "properties.login.routes.logoutEndpoint",
+            "properties.login.tokenStore.enabled",
+            "properties.login.tokenStore.tokenRefreshExtensionHours",
+            "properties.login.tokenStore.fileSystem.directory",
+            "properties.login.tokenStore.azureBlobStorage.sasUrlSettingName",
+            "properties.login.preserveUrlFragmentsForLogins",
+            "properties.login.allowedExternalRedirectUrls",
+            "properties.login.cookieExpiration.convention",
+            "properties.login.cookieExpiration.timeToExpiration",
+            "properties.login.nonce.validateNonce",
+            "properties.login.nonce.nonceExpirationInterval",
+            "properties.httpSettings.requireHttps",
+            "properties.httpSettings.routes.apiPrefix",
+            "properties.httpSettings.forwardProxy.convention",
+            "properties.httpSettings.forwardProxy.customHostHeaderName",
+            "properties.httpSettings.forwardProxy.customProtoHeaderName"
+        ],
+        "pickPropertiesCreate": [
+            "properties.platform.enabled",
+            "properties.platform.runtimeVersion",
+            "properties.platform.configFilePath",
+            "properties.globalValidation.requireAuthentication",
+            "properties.globalValidation.unauthenticatedClientAction",
+            "properties.globalValidation.redirectToProvider",
+            "properties.globalValidation.excludedPaths",
+            "properties.identityProviders.azureActiveDirectory.enabled",
+            "properties.identityProviders.azureActiveDirectory.registration.openIdIssuer",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretSettingName",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateThumbprint",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateSubjectAlternativeName",
+            "properties.identityProviders.azureActiveDirectory.registration.clientSecretCertificateIssuer",
+            "properties.identityProviders.azureActiveDirectory.login.loginParameters",
+            "properties.identityProviders.azureActiveDirectory.login.disableWWWAuthenticate",
+            "properties.identityProviders.azureActiveDirectory.validation.jwtClaimChecks.allowedGroups",
+            "properties.identityProviders.azureActiveDirectory.validation.jwtClaimChecks.allowedClientApplications",
+            "properties.identityProviders.azureActiveDirectory.validation.allowedAudiences",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedPrincipals.groups",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedPrincipals.identities",
+            "properties.identityProviders.azureActiveDirectory.validation.defaultAuthorizationPolicy.allowedApplications",
+            "properties.identityProviders.azureActiveDirectory.isAutoProvisioned",
+            "properties.identityProviders.facebook.enabled",
+            "properties.identityProviders.facebook.registration.appSecretSettingName",
+            "properties.identityProviders.facebook.graphApiVersion",
+            "properties.identityProviders.facebook.login.scopes",
+            "properties.identityProviders.gitHub.enabled",
+            "properties.identityProviders.gitHub.registration.clientSecretSettingName",
+            "properties.identityProviders.gitHub.login.scopes",
+            "properties.identityProviders.google.enabled",
+            "properties.identityProviders.google.registration.clientSecretSettingName",
+            "properties.identityProviders.google.login.scopes",
+            "properties.identityProviders.google.validation.allowedAudiences",
+            "properties.identityProviders.legacyMicrosoftAccount.enabled",
+            "properties.identityProviders.legacyMicrosoftAccount.registration.clientSecretSettingName",
+            "properties.identityProviders.legacyMicrosoftAccount.login.scopes",
+            "properties.identityProviders.legacyMicrosoftAccount.validation.allowedAudiences",
+            "properties.identityProviders.twitter.enabled",
+            "properties.identityProviders.twitter.registration.consumerKey",
+            "properties.identityProviders.twitter.registration.consumerSecretSettingName",
+            "properties.identityProviders.apple.enabled",
+            "properties.identityProviders.apple.registration.clientSecretSettingName",
+            "properties.identityProviders.apple.login.scopes",
+            "properties.identityProviders.azureStaticWebApps.enabled",
+            "properties.identityProviders.customOpenIdConnectProviders",
+            "properties.login.routes.logoutEndpoint",
+            "properties.login.tokenStore.enabled",
+            "properties.login.tokenStore.tokenRefreshExtensionHours",
+            "properties.login.tokenStore.fileSystem.directory",
+            "properties.login.tokenStore.azureBlobStorage.sasUrlSettingName",
+            "properties.login.preserveUrlFragmentsForLogins",
+            "properties.login.allowedExternalRedirectUrls",
+            "properties.login.cookieExpiration.convention",
+            "properties.login.cookieExpiration.timeToExpiration",
+            "properties.login.nonce.validateNonce",
+            "properties.login.nonce.nonceExpirationInterval",
+            "properties.httpSettings.requireHttps",
+            "properties.httpSettings.routes.apiPrefix",
+            "properties.httpSettings.forwardProxy.convention",
+            "properties.httpSettings.forwardProxy.customHostHeaderName",
+            "properties.httpSettings.forwardProxy.customProtoHeaderName"
+        ]
+    },
+    {
+        "type": "WebAppBackupStatus",
+        "group": "Web",
+        "apiVersion": "2021-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "name": {
+                "type": "Site",
+                "group": "Web",
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18072,22 +18815,25 @@
     {
         "type": "WebAppBackupStatusSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -18126,17 +18872,19 @@
     {
         "type": "WebAppConfiguration",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18333,22 +19081,25 @@
     {
         "type": "WebAppConfigurationSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -18545,17 +19296,19 @@
     {
         "type": "WebAppContinuousWebJob",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18600,22 +19353,25 @@
     {
         "type": "WebAppContinuousWebJobSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -18660,17 +19416,19 @@
     {
         "type": "WebAppDeployment",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18718,22 +19476,25 @@
     {
         "type": "WebAppDeploymentSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -18781,17 +19542,19 @@
     {
         "type": "WebAppDiagnosticLogsConfiguration",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18849,22 +19612,25 @@
     {
         "type": "WebAppDiagnosticLogsConfigurationSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -18922,17 +19688,19 @@
     {
         "type": "WebAppDomainOwnershipIdentifier",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -18966,22 +19734,25 @@
     {
         "type": "WebAppDomainOwnershipIdentifierSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19015,17 +19786,19 @@
     {
         "type": "WebAppFtpAllowed",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19048,22 +19821,25 @@
     {
         "type": "WebAppFtpAllowedSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19086,17 +19862,19 @@
     {
         "type": "WebAppFunction",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19152,12 +19930,13 @@
     {
         "type": "WebAppHostNameBinding",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "domain": {
                 "type": "Domain",
@@ -19168,7 +19947,8 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19206,12 +19986,13 @@
     {
         "type": "WebAppHostNameBindingSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "domain": {
                 "type": "Domain",
@@ -19222,12 +20003,14 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19265,22 +20048,25 @@
     {
         "type": "WebAppInstanceFunctionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19336,17 +20122,19 @@
     {
         "type": "WebAppListSlotConfigurationNames",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19377,17 +20165,19 @@
     {
         "type": "WebAppMSDeployStatus",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19415,22 +20205,25 @@
     {
         "type": "WebAppMSDeployStatusSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19458,17 +20251,19 @@
     {
         "type": "WebAppPremierAddOn",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19511,22 +20306,25 @@
     {
         "type": "WebAppPremierAddOnSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19569,17 +20367,19 @@
     {
         "type": "WebAppPrivateAccess",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19604,22 +20404,25 @@
     {
         "type": "WebAppPrivateAccessSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19644,17 +20447,19 @@
     {
         "type": "WebAppPrivateEndpointConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19688,22 +20493,25 @@
     {
         "type": "WebAppPrivateEndpointConnectionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19737,17 +20545,19 @@
     {
         "type": "WebAppProcess",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -19845,22 +20655,25 @@
     {
         "type": "WebAppProcessSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -19958,17 +20771,19 @@
     {
         "type": "WebAppPublicCertificate",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20004,22 +20819,25 @@
     {
         "type": "WebAppPublicCertificateSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20055,17 +20873,19 @@
     {
         "type": "WebAppRelayServiceConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20112,22 +20932,25 @@
     {
         "type": "WebAppRelayServiceConnectionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20174,17 +20997,19 @@
     {
         "type": "WebAppScmAllowed",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20207,22 +21032,25 @@
     {
         "type": "WebAppScmAllowedSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20245,17 +21073,19 @@
     {
         "type": "WebAppSiteExtension",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20324,22 +21154,25 @@
     {
         "type": "WebAppSiteExtensionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20408,12 +21241,13 @@
     {
         "type": "WebAppSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "managedIdentities": {
                 "type": "UserAssignedIdentity",
@@ -20447,7 +21281,8 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20720,17 +21555,19 @@
     {
         "type": "WebAppSourceControl",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20788,22 +21625,25 @@
     {
         "type": "WebAppSourceControlSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20861,12 +21701,13 @@
     {
         "type": "WebAppSwiftVirtualNetworkConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -20877,7 +21718,8 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -20911,12 +21753,13 @@
     {
         "type": "WebAppSwiftVirtualNetworkConnectionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "subnet": {
                 "type": "Subnet",
@@ -20927,12 +21770,14 @@
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -20966,17 +21811,19 @@
     {
         "type": "WebAppTriggeredWebJob",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -21041,22 +21888,25 @@
     {
         "type": "WebAppTriggeredWebJobSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {
@@ -21121,17 +21971,19 @@
     {
         "type": "WebAppVnetConnection",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             }
         },
         "methods": {
@@ -21176,22 +22028,25 @@
     {
         "type": "WebAppVnetConnectionSlot",
         "group": "Web",
-        "apiVersion": "2021-02-01",
+        "apiVersion": "2021-03-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
-                "name": "resourceGroupName"
+                "name": "resourceGroupName",
+                "parent": true
             },
             "name": {
                 "type": "Site",
                 "group": "Web",
-                "name": "name"
+                "name": "name",
+                "parent": true
             },
             "slot": {
                 "type": "SiteSlot",
                 "group": "Web",
-                "name": "slot"
+                "name": "slot",
+                "parent": true
             }
         },
         "methods": {

@@ -4,6 +4,68 @@ title: VirtualMachineExtension
 ---
 Provides a **VirtualMachineExtension** from the **Compute** group
 ## Examples
+### VirtualMachineExtensions_CreateOrUpdate_MaximumSet_Gen
+```js
+provider.Compute.makeVirtualMachineExtension({
+  name: "myVirtualMachineExtension",
+  properties: () => ({
+    location: "westus",
+    properties: {
+      autoUpgradeMinorVersion: true,
+      publisher: "extPublisher",
+      type: "extType",
+      typeHandlerVersion: "1.2",
+      suppressFailures: true,
+      settings: {},
+      forceUpdateTag: "a",
+      enableAutomaticUpgrade: true,
+      protectedSettings: {},
+      instanceView: {
+        name: "aaaaaaaaaaaaaaaaa",
+        type: "aaaaaaaaa",
+        typeHandlerVersion: "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+        substatuses: [
+          {
+            code: "aaaaaaaaaaaaaaaaaaaaaaa",
+            level: "Info",
+            displayStatus: "aaaaaa",
+            message: "a",
+            time: "2021-11-30T12:58:26.522Z",
+          },
+        ],
+        statuses: [
+          {
+            code: "aaaaaaaaaaaaaaaaaaaaaaa",
+            level: "Info",
+            displayStatus: "aaaaaa",
+            message: "a",
+            time: "2021-11-30T12:58:26.522Z",
+          },
+        ],
+      },
+    },
+    tags: { key9183: "aa" },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vm: resources.Compute.VirtualMachine["myVirtualMachine"],
+  }),
+});
+
+```
+
+### VirtualMachineExtensions_CreateOrUpdate_MinimumSet_Gen
+```js
+provider.Compute.makeVirtualMachineExtension({
+  name: "myVirtualMachineExtension",
+  properties: () => ({ location: "westus" }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vm: resources.Compute.VirtualMachine["myVirtualMachine"],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
@@ -129,6 +191,10 @@ Provides a **VirtualMachineExtension** from the **Compute** group
         suppressFailures: {
           type: 'boolean',
           description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+        },
+        protectedSettingsFromKeyVault: {
+          type: 'object',
+          description: 'The extensions protected settings that are passed by reference, and consumed from key vault'
         }
       },
       description: 'Describes the properties of a Virtual Machine Extension.'
@@ -164,6 +230,6 @@ Provides a **VirtualMachineExtension** from the **Compute** group
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

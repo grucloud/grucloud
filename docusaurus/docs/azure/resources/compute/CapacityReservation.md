@@ -121,6 +121,12 @@ provider.Compute.makeCapacityReservation({
           },
           description: 'The instance view of a capacity reservation that provides as snapshot of the runtime properties of the capacity reservation that is managed by the platform and can change outside of control plane operations.',
           readOnly: true
+        },
+        timeCreated: {
+          readOnly: true,
+          type: 'string',
+          format: 'date-time',
+          description: 'Specifies the time at which the Capacity Reservation resource was created.<br><br>Minimum api-version: 2021-11-01.'
         }
       },
       description: 'Properties of the Capacity reservation.'
@@ -177,6 +183,6 @@ provider.Compute.makeCapacityReservation({
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

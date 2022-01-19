@@ -11,12 +11,14 @@ provider.ContainerService.makeContainerService({
   properties: () => ({ location: "location1" }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    vault: resources.KeyVault.Vault["myVault"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Vault](../KeyVault/Vault.md)
 ## Swagger Schema
 ```js
 {

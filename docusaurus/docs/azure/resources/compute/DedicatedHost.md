@@ -147,6 +147,12 @@ provider.Compute.makeDedicatedHost({
           },
           description: 'The instance view of a dedicated host.',
           readOnly: true
+        },
+        timeCreated: {
+          readOnly: true,
+          type: 'string',
+          format: 'date-time',
+          description: 'Specifies the time at which the Dedicated Host resource was created.<br><br>Minimum api-version: 2021-11-01.'
         }
       },
       description: 'Properties of the dedicated host.'
@@ -198,6 +204,6 @@ provider.Compute.makeDedicatedHost({
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

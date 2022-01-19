@@ -70,6 +70,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -129,6 +131,69 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+  }),
+});
+
+```
+
+### Create/Update Managed Cluster with EnableNamespaceResources
+```js
+provider.ContainerService.makeManagedCluster({
+  name: "myManagedCluster",
+  properties: () => ({
+    location: "location1",
+    tags: { tier: "production", archv2: "" },
+    sku: { name: "Basic", tier: "Free" },
+    properties: {
+      kubernetesVersion: "",
+      dnsPrefix: "dnsprefix1",
+      agentPoolProfiles: [
+        {
+          name: "nodepool1",
+          count: 3,
+          vmSize: "Standard_DS1_v2",
+          osType: "Linux",
+          type: "VirtualMachineScaleSets",
+          availabilityZones: ["1", "2", "3"],
+          enableNodePublicIP: true,
+          mode: "System",
+        },
+      ],
+      linuxProfile: {
+        adminUsername: "azureuser",
+        ssh: { publicKeys: [{ keyData: "keydata" }] },
+      },
+      networkProfile: {
+        loadBalancerSku: "standard",
+        outboundType: "loadBalancer",
+        loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
+      },
+      autoScalerProfile: {
+        "scan-interval": "20s",
+        "scale-down-delay-after-add": "15m",
+      },
+      windowsProfile: {
+        adminUsername: "azureuser",
+        adminPassword: "replacePassword1234$",
+      },
+      servicePrincipalProfile: { clientId: "clientid", secret: "secret" },
+      addonProfiles: {},
+      enableRBAC: true,
+      diskEncryptionSetID:
+        "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
+      enablePodSecurityPolicy: true,
+      enableNamespaceResources: true,
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -188,6 +253,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -252,6 +319,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -316,6 +385,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -382,6 +453,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -440,6 +513,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -498,6 +573,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -556,6 +633,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -617,6 +696,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -677,6 +758,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -734,6 +817,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -793,6 +878,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -851,6 +938,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -914,6 +1003,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -964,6 +1055,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1021,6 +1114,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1077,6 +1172,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1139,6 +1236,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1205,6 +1304,8 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1277,6 +1378,69 @@ provider.ContainerService.makeManagedCluster({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+  }),
+});
+
+```
+
+### Associate Managed Cluster with Capacity Reservation Group
+```js
+provider.ContainerService.makeManagedCluster({
+  name: "myManagedCluster",
+  properties: () => ({
+    location: "location1",
+    tags: { tier: "production", archv2: "" },
+    sku: { name: "Basic", tier: "Free" },
+    properties: {
+      kubernetesVersion: "",
+      dnsPrefix: "dnsprefix1",
+      agentPoolProfiles: [
+        {
+          name: "nodepool1",
+          count: 3,
+          vmSize: "Standard_DS2_v2",
+          osType: "Linux",
+          type: "VirtualMachineScaleSets",
+          enableNodePublicIP: true,
+          mode: "System",
+          capacityReservationGroupID:
+            "/subscriptions/subid1/resourcegroups/rg1/providers//Microsoft.Compute/capacityReservationGroups/crg1",
+        },
+      ],
+      linuxProfile: {
+        adminUsername: "azureuser",
+        ssh: { publicKeys: [{ keyData: "keydata" }] },
+      },
+      networkProfile: {
+        loadBalancerSku: "standard",
+        outboundType: "loadBalancer",
+        loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
+      },
+      autoScalerProfile: {
+        "scan-interval": "20s",
+        "scale-down-delay-after-add": "15m",
+      },
+      windowsProfile: {
+        adminUsername: "azureuser",
+        adminPassword: "replacePassword1234$",
+      },
+      servicePrincipalProfile: { clientId: "clientid", secret: "secret" },
+      addonProfiles: {},
+      enableRBAC: true,
+      diskEncryptionSetID:
+        "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
+      enablePodSecurityPolicy: true,
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
   }),
 });
 
@@ -1284,6 +1448,7 @@ provider.ContainerService.makeManagedCluster({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 ## Swagger Schema
 ```js
 {
@@ -1436,8 +1601,13 @@ provider.ContainerService.makeManagedCluster({
         },
         kubernetesVersion: {
           type: 'string',
-          title: 'The version of Kubernetes the Managed Cluster is running.',
+          title: 'The version of Kubernetes the Managed Cluster is requested to run.',
           description: 'When you upgrade a supported AKS cluster, Kubernetes minor versions cannot be skipped. All upgrades must be performed sequentially by major version number. For example, upgrades between 1.14.x -> 1.15.x or 1.15.x -> 1.16.x are allowed, however 1.14.x -> 1.16.x is not allowed. See [upgrading an AKS cluster](https://docs.microsoft.com/azure/aks/upgrade-cluster) for more details.'
+        },
+        currentKubernetesVersion: {
+          readOnly: true,
+          type: 'string',
+          description: 'The version of Kubernetes the Managed Cluster is running.'
         },
         dnsPrefix: {
           type: 'string',
@@ -1545,6 +1715,11 @@ provider.ContainerService.makeManagedCluster({
                       ]
                     },
                     description: 'Determines the type of workload a node can run.'
+                  },
+                  messageOfTheDay: {
+                    type: 'string',
+                    title: 'Message of the day for Linux nodes, base64-encoded.',
+                    description: 'A base64-encoded string which will be written to /etc/motd after decoding. This allows customization of the message of the day for Linux nodes. It must not be specified for Windows nodes. It must be a static string (i.e., will be printed raw and not be executed as a script).'
                   },
                   vnetSubnetID: {
                     type: 'string',
@@ -2050,6 +2225,10 @@ provider.ContainerService.makeManagedCluster({
                         description: 'This is the ARM ID of the source object to be used to create the target object.'
                       }
                     }
+                  },
+                  capacityReservationGroupID: {
+                    description: 'AKS will associate the specified agent pool with the Capacity Reservation Group.',
+                    type: 'string'
                   }
                 },
                 description: 'Properties for the container service agent pool profile.'
@@ -2334,6 +2513,21 @@ provider.ContainerService.makeManagedCluster({
             }
           }
         },
+        oidcIssuerProfile: {
+          description: 'The OIDC issuer profile of the Managed Cluster.',
+          type: 'object',
+          properties: {
+            issuerURL: {
+              readOnly: true,
+              type: 'string',
+              description: 'The OIDC issuer url of the Managed Cluster.'
+            },
+            enabled: {
+              type: 'boolean',
+              description: 'Whether the OIDC issuer is enabled.'
+            }
+          }
+        },
         nodeResourceGroup: {
           type: 'string',
           description: 'The name of the resource group containing agent pool nodes.'
@@ -2345,6 +2539,11 @@ provider.ContainerService.makeManagedCluster({
         enablePodSecurityPolicy: {
           type: 'boolean',
           description: '(DEPRECATING) Whether to enable Kubernetes pod security policy (preview). This feature is set for removal on October 15th, 2020. Learn more at aka.ms/aks/azpodpolicy.'
+        },
+        enableNamespaceResources: {
+          type: 'boolean',
+          title: 'Enable namespace as Azure resource.',
+          description: 'The default value is false. It can be enabled/disabled on creation and updation of the managed cluster. See [https://aka.ms/NamespaceARMResource](https://aka.ms/NamespaceARMResource) for more details on Namespace as a ARM Resource.'
         },
         networkProfile: {
           description: 'The network configuration profile.',
@@ -3013,6 +3212,6 @@ provider.ContainerService.makeManagedCluster({
 }
 ```
 ## Misc
-The resource version is `2021-10-01`.
+The resource version is `2021-11-01-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/stable/2021-10-01/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2021-11-01-preview/managedClusters.json).

@@ -613,7 +613,7 @@ exports.fnSpecs = ({ config }) =>
             assign({
               properties: pipe([
                 get("properties"),
-                omit(["provisioningState", "uniqueId"]),
+                omit(["provisioningState", "uniqueId", "timeCreated"]),
                 assign({
                   virtualMachineProfile: pipe([
                     get("virtualMachineProfile"),

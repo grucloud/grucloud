@@ -17,6 +17,7 @@ provider.Storage.makeStorageAccount({
       keyPolicy: { keyExpirationPeriodInDays: 20 },
       sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
       isHnsEnabled: true,
+      isSftpEnabled: true,
       allowBlobPublicAccess: false,
       defaultToOAuthAuthentication: false,
       minimumTlsVersion: "TLS1_2",
@@ -155,7 +156,7 @@ provider.Storage.makeStorageAccount({
 
 ```
 
-### StorageAccountCreateDisallowPublicNetworkAccess.
+### StorageAccountCreateDisallowPublicNetworkAccess
 ```js
 provider.Storage.makeStorageAccount({
   name: "myStorageAccount",
@@ -198,7 +199,7 @@ provider.Storage.makeStorageAccount({
 
 ```
 
-### StorageAccountCreateEnablePublicNetworkAccess.
+### StorageAccountCreateEnablePublicNetworkAccess
 ```js
 provider.Storage.makeStorageAccount({
   name: "myStorageAccount",
@@ -215,6 +216,135 @@ provider.Storage.makeStorageAccount({
       minimumTlsVersion: "TLS1_2",
       allowSharedKeyAccess: true,
       publicNetworkAccess: "Enabled",
+      routingPreference: {
+        routingChoice: "MicrosoftRouting",
+        publishMicrosoftEndpoints: true,
+        publishInternetEndpoints: true,
+      },
+      encryption: {
+        services: {
+          file: { keyType: "Account", enabled: true },
+          blob: { keyType: "Account", enabled: true },
+        },
+        requireInfrastructureEncryption: false,
+        keySource: "Microsoft.Storage",
+      },
+    },
+    tags: { key1: "value1", key2: "value2" },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+  }),
+});
+
+```
+
+### StorageAccountCreateUserAssignedIdentityWithFederatedIdentityClientId.
+```js
+provider.Storage.makeStorageAccount({
+  name: "myStorageAccount",
+  properties: () => ({
+    identity: {
+      type: "UserAssigned",
+      userAssignedIdentities: {
+        "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}":
+          {},
+      },
+    },
+    sku: { name: "Standard_LRS" },
+    kind: "Storage",
+    location: "eastus",
+    properties: {
+      encryption: {
+        services: {
+          file: { keyType: "Account", enabled: true },
+          blob: { keyType: "Account", enabled: true },
+        },
+        keyvaultproperties: {
+          keyvaulturi: "https://myvault8569.vault.azure.net",
+          keyname: "wrappingKey",
+          keyversion: "",
+        },
+        keySource: "Microsoft.Keyvault",
+        identity: {
+          userAssignedIdentity:
+            "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}",
+          federatedIdentityClientId: "f83c6b1b-4d34-47e4-bb34-9d83df58b540",
+        },
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+  }),
+});
+
+```
+
+### StorageAccountCreateAllowedCopyScopeToPrivateLink
+```js
+provider.Storage.makeStorageAccount({
+  name: "myStorageAccount",
+  properties: () => ({
+    sku: { name: "Standard_GRS" },
+    kind: "Storage",
+    location: "eastus",
+    properties: {
+      keyPolicy: { keyExpirationPeriodInDays: 20 },
+      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
+      isHnsEnabled: true,
+      allowBlobPublicAccess: false,
+      minimumTlsVersion: "TLS1_2",
+      allowSharedKeyAccess: true,
+      allowedCopyScope: "PrivateLink",
+      routingPreference: {
+        routingChoice: "MicrosoftRouting",
+        publishMicrosoftEndpoints: true,
+        publishInternetEndpoints: true,
+      },
+      encryption: {
+        services: {
+          file: { keyType: "Account", enabled: true },
+          blob: { keyType: "Account", enabled: true },
+        },
+        requireInfrastructureEncryption: false,
+        keySource: "Microsoft.Storage",
+      },
+    },
+    tags: { key1: "value1", key2: "value2" },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+  }),
+});
+
+```
+
+### StorageAccountCreateAllowedCopyScopeToAAD
+```js
+provider.Storage.makeStorageAccount({
+  name: "myStorageAccount",
+  properties: () => ({
+    sku: { name: "Standard_GRS" },
+    kind: "Storage",
+    location: "eastus",
+    properties: {
+      keyPolicy: { keyExpirationPeriodInDays: 20 },
+      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
+      isHnsEnabled: true,
+      allowBlobPublicAccess: false,
+      minimumTlsVersion: "TLS1_2",
+      allowSharedKeyAccess: true,
+      allowedCopyScope: "AAD",
       routingPreference: {
         routingChoice: "MicrosoftRouting",
         publishMicrosoftEndpoints: true,
@@ -361,6 +491,12 @@ provider.Storage.makeStorageAccount({
       'x-ms-client-flatten': true,
       description: 'The parameters used to create the storage account.',
       properties: {
+        allowedCopyScope: {
+          type: 'string',
+          description: 'Restrict copy to and from Storage Accounts within an AAD tenant or with Private Links to the same VNet.',
+          enum: [ 'PrivateLink', 'AAD' ],
+          'x-ms-enum': { name: 'AllowedCopyScope', modelAsString: true }
+        },
         publicNetworkAccess: {
           type: 'string',
           description: "Allow or disallow public network access to Storage Account. Value is optional but if passed in, must be 'Enabled' or 'Disabled'.",
@@ -411,7 +547,7 @@ provider.Storage.makeStorageAccount({
           required: [ 'name' ]
         },
         encryption: {
-          description: 'Not applicable. Azure Storage encryption is enabled for all storage accounts and cannot be disabled.',
+          description: 'Encryption settings to be used for server-side encryption for the storage account.',
           properties: {
             services: {
               description: 'List of services which support encryption.',
@@ -421,13 +557,13 @@ provider.Storage.makeStorageAccount({
                   properties: {
                     enabled: {
                       type: 'boolean',
-                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored.'
+                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored. Encryption at rest is enabled by default today and cannot be disabled.'
                     },
                     lastEnabledTime: {
                       readOnly: true,
                       type: 'string',
                       format: 'date-time',
-                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Only returned when encryption is enabled. There might be some unencrypted blobs which were written after this time, as it is just a rough estimate.'
+                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Data is encrypted at rest by default today and cannot be disabled.'
                     },
                     keyType: {
                       type: 'string',
@@ -443,13 +579,13 @@ provider.Storage.makeStorageAccount({
                   properties: {
                     enabled: {
                       type: 'boolean',
-                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored.'
+                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored. Encryption at rest is enabled by default today and cannot be disabled.'
                     },
                     lastEnabledTime: {
                       readOnly: true,
                       type: 'string',
                       format: 'date-time',
-                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Only returned when encryption is enabled. There might be some unencrypted blobs which were written after this time, as it is just a rough estimate.'
+                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Data is encrypted at rest by default today and cannot be disabled.'
                     },
                     keyType: {
                       type: 'string',
@@ -465,13 +601,13 @@ provider.Storage.makeStorageAccount({
                   properties: {
                     enabled: {
                       type: 'boolean',
-                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored.'
+                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored. Encryption at rest is enabled by default today and cannot be disabled.'
                     },
                     lastEnabledTime: {
                       readOnly: true,
                       type: 'string',
                       format: 'date-time',
-                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Only returned when encryption is enabled. There might be some unencrypted blobs which were written after this time, as it is just a rough estimate.'
+                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Data is encrypted at rest by default today and cannot be disabled.'
                     },
                     keyType: {
                       type: 'string',
@@ -487,13 +623,13 @@ provider.Storage.makeStorageAccount({
                   properties: {
                     enabled: {
                       type: 'boolean',
-                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored.'
+                      description: 'A boolean indicating whether or not the service encrypts the data as it is stored. Encryption at rest is enabled by default today and cannot be disabled.'
                     },
                     lastEnabledTime: {
                       readOnly: true,
                       type: 'string',
                       format: 'date-time',
-                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Only returned when encryption is enabled. There might be some unencrypted blobs which were written after this time, as it is just a rough estimate.'
+                      description: 'Gets a rough estimate of the date/time when the encryption was last enabled by the user. Data is encrypted at rest by default today and cannot be disabled.'
                     },
                     keyType: {
                       type: 'string',
@@ -560,6 +696,11 @@ provider.Storage.makeStorageAccount({
                   type: 'string',
                   description: 'Resource identifier of the UserAssigned identity to be associated with server-side encryption on the storage account.',
                   'x-ms-client-name': 'EncryptionUserAssignedIdentity'
+                },
+                federatedIdentityClientId: {
+                  type: 'string',
+                  description: 'ClientId of the multi-tenant application to be used in conjunction with the user-assigned identity for cross-tenant customer-managed-keys server-side encryption on the storage account.',
+                  'x-ms-client-name': 'EncryptionFederatedIdentityClientId'
                 }
               }
             }
@@ -696,6 +837,15 @@ provider.Storage.makeStorageAccount({
                 azureStorageSid: {
                   type: 'string',
                   description: 'Specifies the security identifier (SID) for Azure Storage.'
+                },
+                samAccountName: {
+                  type: 'string',
+                  description: 'Specifies the Active Directory SAMAccountName for Azure Storage.'
+                },
+                accountType: {
+                  type: 'string',
+                  description: 'Specifies the Active Directory account type for Azure Storage.',
+                  enum: [ 'User', 'Computer' ]
                 }
               },
               required: [
@@ -725,6 +875,16 @@ provider.Storage.makeStorageAccount({
           type: 'boolean',
           'x-ms-client-name': 'EnableHttpsTrafficOnly',
           description: 'Allows https traffic only to storage service if sets to true. The default value is true since API version 2019-04-01.'
+        },
+        isSftpEnabled: {
+          type: 'boolean',
+          'x-ms-client-name': 'IsSftpEnabled',
+          description: 'Enables Secure File Transfer Protocol, if set to true'
+        },
+        isLocalUserEnabled: {
+          type: 'boolean',
+          'x-ms-client-name': 'IsLocalUserEnabled',
+          description: 'Enables local users feature, if set to true'
         },
         isHnsEnabled: {
           type: 'boolean',
@@ -831,6 +991,6 @@ provider.Storage.makeStorageAccount({
 }
 ```
 ## Misc
-The resource version is `2021-06-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-06-01/storage.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-08-01/storage.json).
