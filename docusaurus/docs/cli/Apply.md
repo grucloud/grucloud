@@ -16,11 +16,11 @@ gc apply
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/fSjitJBdZt7qoIGPbIemGk3rq/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/fSjitJBdZt7qoIGPbIemGk3rq/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "900px" }}
+    style={{ width: "100%", height: "900px" }}
     ></iframe>
 </div>
 

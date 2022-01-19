@@ -10,11 +10,11 @@ The **list** commands lists the live resources.
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/JXYoBtVZKtiZ6BmIhgWCEpIho/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/JXYoBtVZKtiZ6BmIhgWCEpIho/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "750px" }}
+    style={{ width: "100%", height: "750px" }}
     ></iframe>
 </div>
 

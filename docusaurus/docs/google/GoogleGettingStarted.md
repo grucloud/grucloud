@@ -64,11 +64,11 @@ Below is the screencast of **gc new**:
  <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/lskiblzLpXqnPsZ5Z1W7Bf2Kd/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/lskiblzLpXqnPsZ5Z1W7Bf2Kd/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "600px" }}
+    style={{ width: "100%", height: "600px" }}
     ></iframe>
 </div>
             
@@ -93,11 +93,11 @@ gc init
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/7ZjVCYhCV5IpFJix3o8MWCfpm/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/7ZjVCYhCV5IpFJix3o8MWCfpm/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "600px" }}
+    style={{ width: "100%", height: "600px" }}
     ></iframe>
 </div>
 
@@ -126,11 +126,11 @@ The following flowchart explains in more detail the process of generating the co
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/cG8dNLRpUbjcpGmg1HajmZdcJ/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/cG8dNLRpUbjcpGmg1HajmZdcJ/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "610px" }}
+    style={{ width: "100%", height: "610px" }}
     ></iframe>
 </div>
 
@@ -168,11 +168,11 @@ gc apply
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/0VjCmyE8bW8Jq4FdEnFxyjaFd/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/0VjCmyE8bW8Jq4FdEnFxyjaFd/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "640px" }}
+    style={{ width: "100%", height: "640px" }}
     ></iframe>
 </div>
 
@@ -187,11 +187,11 @@ gc destroy
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/Rla0m3E70stbH5faMTS5ZWAIw/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/Rla0m3E70stbH5faMTS5ZWAIw/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "640px" }}
+    style={{ width: "100%", height: "640px" }}
     ></iframe>
 </div>
 

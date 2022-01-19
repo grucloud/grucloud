@@ -12,11 +12,11 @@ gc destroy
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/0lD2ub5ltJCEifqifCWGNYAg6/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/0lD2ub5ltJCEifqifCWGNYAg6/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>
 
