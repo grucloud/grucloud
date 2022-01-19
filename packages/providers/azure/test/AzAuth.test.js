@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { envLoader } = require("@grucloud/core/EnvLoader");
 const { AzAuthorize } = require("../AzAuthorize");
 
 describe("AzAuth", function () {
@@ -7,12 +6,13 @@ describe("AzAuth", function () {
 
   it("ok", async function () {
     try {
-      const { TENANT_ID, APP_ID, PASSWORD } = process.env;
-      assert(TENANT_ID);
+      const { AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET } =
+        process.env;
+      assert(AZURE_TENANT_ID);
       const { bearerToken } = await AzAuthorize({
-        tenantId: TENANT_ID,
-        appId: APP_ID,
-        password: PASSWORD,
+        tenantId: AZURE_TENANT_ID,
+        appId: AZURE_CLIENT_ID,
+        password: AZURE_CLIENT_SECRET,
       });
       assert(bearerToken);
     } catch (error) {

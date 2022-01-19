@@ -1,7 +1,7 @@
 ## Bugs
 
+- LoadBalancer deps natGateway
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array
-- VirtualMachine deps ssh keys
 - key or vault dependencies ?
 - DBforPostgreSQL/ServerKey dep key
 - Web::WebAppConfiguration dep Network::Subnet

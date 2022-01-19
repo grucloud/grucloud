@@ -34,9 +34,9 @@ az --version
 Create or edit **default.env** and set the correct values:
 
 ```sh
-TENANT_ID=
-SUBSCRIPTION_ID=
-APP_ID=
+AZURE_TENANT_ID=
+AZURE_SUBSCRIPTION_ID=
+AZURE_CLIENT_ID=
 PASSWORD=
 MACHINE_ADMIN_USERNAME=
 MACHINE_ADMIN_PASSWORD=

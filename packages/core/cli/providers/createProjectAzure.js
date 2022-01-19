@@ -15,6 +15,10 @@ const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
+const RolesDefault = ["Owner", "Key Vault Secrets Officer"];
+
+const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
+
 const { execCommandShell } = require("./createProjectCommon");
 
 const isAzPresent = pipe([
@@ -109,7 +113,6 @@ const fetchAppIdPassword = pipe([
     ])
   ),
 ]);
-const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
 
 const registerNamespaces = () =>
   pipe([
@@ -117,6 +120,22 @@ const registerNamespaces = () =>
     map.series((namespace) =>
       pipe([
         () => `az provider register --namespace ${namespace}`,
+        execCommandShell(),
+      ])()
+    ),
+  ])();
+
+const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
+  pipe([
+    tap(() => {
+      assert(appId);
+      assert(id);
+    }),
+    () => RolesDefault,
+    map.series((role) =>
+      pipe([
+        () =>
+          `az role assignment create --scope "/subscriptions/${id}" --role "${role}" --assignee ${appId}`,
         execCommandShell(),
       ])()
     ),
@@ -132,17 +151,17 @@ const writeEnv = ({ dirs, app, account }) =>
     }),
     assign({
       content: pipe([
-        () => `TENANT_ID=${account.tenantId}
-SUBSCRIPTION_ID=${account.id}
-APP_ID=${app.appId}
-PASSWORD=${app.password}
+        () => `AZURE_TENANT_ID=${account.tenantId}
+AZURE_SUBSCRIPTION_ID=${account.id}
+AZURE_CLIENT_ID=${app.appId}
+AZURE_CLIENT_SECRET=${app.password}
 `,
       ]),
       filename: () => path.resolve(dirs.destination, "auth.env"),
     }),
     tap(({ filename }) => {
       console.log(
-        `Writing environment variables TENANT_ID, SUBSCRIPTION_ID, APP_ID and PASSWORD to ${filename}`
+        `Writing environment variables AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, AZURE_CLIENT_ID and AZURE_CLIENT_SECRET to ${filename}`
       );
     }),
     ({ content, filename }) => fs.writeFile(filename, content),
@@ -203,6 +222,7 @@ exports.createProjectAzure = pipe([
   tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
+  tap(assignRoleAssignments),
   assign({ location: promptLocation }),
   assign({ config: createConfig }),
   tap(registerNamespaces),

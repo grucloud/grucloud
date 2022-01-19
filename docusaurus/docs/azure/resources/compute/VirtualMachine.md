@@ -43,11 +43,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -119,11 +122,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -184,11 +190,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -253,11 +262,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -321,11 +333,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -399,11 +414,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -471,11 +489,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -537,11 +558,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -606,11 +630,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -676,11 +703,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -738,11 +768,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -823,11 +856,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -888,11 +924,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -959,11 +998,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1053,11 +1095,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1124,11 +1169,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1195,11 +1243,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1266,11 +1317,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1336,11 +1390,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1409,11 +1466,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1479,11 +1539,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1549,11 +1612,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1622,11 +1688,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1694,11 +1763,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1763,11 +1835,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1832,11 +1907,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1905,11 +1983,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -1974,11 +2055,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2036,11 +2120,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2093,11 +2180,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2178,11 +2268,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2251,11 +2344,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2332,11 +2428,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2405,11 +2504,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2481,11 +2583,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2556,11 +2661,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2619,11 +2727,14 @@ provider.Compute.makeVirtualMachine({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    sshPublicKey: resources.Compute.SshPublicKey["mySshPublicKey"],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
     galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
     networkSecurityGroup:
       resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
@@ -2647,6 +2758,7 @@ provider.Compute.makeVirtualMachine({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
+- [Disk](../Compute/Disk.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [SshPublicKey](../Compute/SshPublicKey.md)
 - [GalleryImage](../Compute/GalleryImage.md)

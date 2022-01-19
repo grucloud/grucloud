@@ -12,30 +12,43 @@ const {
   assign,
   omit,
   pick,
+  reduce,
   fork,
 } = require("rubico");
 
-const { defaultsDeep, callProp, find, values } = require("rubico/x");
+const {
+  when,
+  defaultsDeep,
+  callProp,
+  find,
+  values,
+  size,
+} = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
 
-const ResourceManagementSpec = require("./resources/ResourcesSpec");
-const NetworkSpec = require("./resources/NetworkSpec");
+const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
-const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
-const WebSpec = require("./resources/WebSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
+const KeyVaultSpec = require("./resources/KeyVaultSpec");
+const NetworkSpec = require("./resources/NetworkSpec");
+const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
+const ResourceManagementSpec = require("./resources/ResourcesSpec");
+const WebSpec = require("./resources/WebSpec");
 
 const AzTag = require("./AzTag");
 
 const Schema = require("./AzureSchema.json");
 const AzClient = require("./AzClient");
+const { isSubstituable } = require("./AzureCommon");
 
 const createSpecsOveride = (config) =>
   pipe([
     () => [
+      AuthorizationSpec,
       ComputeSpec,
       DBForPortgreSQLSpec,
+      KeyVaultSpec,
       NetworkSpec,
       OperationalInsightsSpec,
       ResourceManagementSpec,
@@ -53,6 +66,48 @@ const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
   managedByOther: () => eq(get("live.name"), "default"),
   ignoreResource: () => () => pipe([get("isDefault")]),
+  findName: ({ methods, dependencies }) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(dependencies);
+      }),
+      fork({
+        path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
+        id: pipe([get("live.id"), callProp("split", "/")]),
+        lives: get("lives"),
+      }),
+      ({ path, id }) =>
+        pipe([
+          () => path,
+          reduce(
+            (acc, value, index) =>
+              pipe([
+                () => acc,
+                when(
+                  and([
+                    () => isSubstituable(value),
+                    not(eq(value, "{subscriptionId}")),
+                    not(eq(value, "{scope}")),
+                  ]),
+                  pipe([
+                    () => id[index + size(id) - size(path)],
+                    tap((depName) => {
+                      assert(depName);
+                    }),
+                    callProp("toLowerCase"),
+                    (depName) => [...acc, depName],
+                  ])
+                ),
+              ])(),
+            []
+          ),
+        ])(),
+      callProp("join", "::"),
+      tap((name) => {
+        assert(name, "missing name");
+      }),
+    ]),
   dependsOn: ({ dependencies, type }) =>
     pipe([
       tap((params) => {
@@ -80,11 +135,12 @@ const buildDefaultSpec = fork({
     ])(),
   Client:
     ({ dependencies }) =>
-    ({ spec, config }) =>
+    ({ spec, config, lives }) =>
       AzClient({
         spec,
         dependencies,
         config,
+        lives,
       }),
   filterLive:
     ({ pickPropertiesCreate = [] }) =>
@@ -94,13 +150,7 @@ const buildDefaultSpec = fork({
           assert(true);
         }),
         pick(pickPropertiesCreate),
-        omit([
-          "properties.provisioningState",
-          "etag",
-          "name",
-          "type",
-          "identity",
-        ]),
+        omit(["properties.provisioningState", "etag", "type", "identity"]),
       ]),
   compare: ({
     pickProperties = [],

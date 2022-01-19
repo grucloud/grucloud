@@ -23,32 +23,19 @@ provider.Network.makeInboundNatRule({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
     loadBalancerBackendAddressPool:
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [LoadBalancer](../Network/LoadBalancer.md)
-- [NatGateway](../Network/NatGateway.md)
-- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
-- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
-- [VirtualMachine](../Compute/VirtualMachine.md)
-- [DscpConfiguration](../Network/DscpConfiguration.md)
-- [Workspace](../OperationalInsights/Workspace.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
 ## Swagger Schema
 ```js
 <ref *2> {

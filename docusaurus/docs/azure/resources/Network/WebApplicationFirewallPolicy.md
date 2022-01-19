@@ -91,14 +91,12 @@ provider.Network.makeWebApplicationFirewallPolicy({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [FirewallPolicy](../Network/FirewallPolicy.md)
 ## Swagger Schema
 ```js
 {

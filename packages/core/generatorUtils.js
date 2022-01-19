@@ -4,6 +4,7 @@ const fs = require("fs").promises;
 const { snakeCase } = require("change-case");
 const prettier = require("prettier");
 const prompts = require("prompts");
+const { ESLint } = require("eslint");
 
 const { differenceObject } = require("./Common");
 const {
@@ -29,6 +30,7 @@ const {
 } = require("rubico");
 
 const {
+  first,
   uniq,
   size,
   isEmpty,
@@ -123,11 +125,13 @@ const buildProperties = ({
   programOptions,
   filterLive = () => identity,
   propertiesDefault = {},
+  pickPropertiesCreate = [],
 }) =>
   pipe([
     tap(() => {
       assert(environmentVariables);
       assert(filterLive);
+      assert(pickPropertiesCreate);
     }),
     () => resource,
     get("live"),
@@ -138,6 +142,7 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
+      pickPropertiesCreate,
     }),
     tap((params) => {
       assert(true);
@@ -248,7 +253,7 @@ const configBuildPropertiesDefault = ({
     }),
     () =>
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\nproperties: ({config}) => (${printProperties(properties)}),`
+        ? `\nproperties: ({config, getId}) => (${printProperties(properties)}),`
         : "",
     tap((params) => {
       assert(true);
@@ -499,7 +504,62 @@ const writeToFile =
       assign({
         filenameResolved: () =>
           path.resolve(programOptions.workingDirectory, filename),
-        contentFormated: () => prettier.format(content, { parser: "babel" }),
+        contentFormated: pipe([
+          () =>
+            new ESLint({
+              fix: true,
+              plugins: {
+                autofix: require("eslint-plugin-autofix"),
+              },
+              baseConfig: {
+                env: {
+                  es6: true,
+                  node: true,
+                },
+                parserOptions: {
+                  ecmaVersion: 2017,
+                },
+                extends: ["eslint:recommended"],
+                plugins: ["autofix"],
+                rules: {
+                  "autofix/no-unused-vars": "warn",
+                },
+              },
+            }),
+          (eslint) =>
+            pipe([
+              () => eslint.lintText(content),
+              tap((params) => {
+                assert(true);
+              }),
+              first,
+              switchCase([
+                get("fatalErrorCount"),
+                pipe([
+                  tap((result) => {
+                    console.log("Error linting");
+                    console.log(content);
+                    console.log(JSON.stringify(result, null, 4));
+                  }),
+                  () => content,
+                ]),
+                get("output"),
+              ]),
+              tryCatch(
+                (output) => prettier.format(output, { parser: "babel" }),
+                (error) =>
+                  pipe([
+                    tap(() => {
+                      console.error(error);
+                      console.error(content);
+                    }),
+                    () => {
+                      throw error;
+                    },
+                  ])()
+              ),
+            ])(),
+        ]),
       }),
       tap((params) => {
         assert(true);
@@ -749,7 +809,10 @@ const removeDefaultDependencies =
                         assert(type);
                         assert(group);
                         assert(providerName);
-                        assert(ids);
+                        if (!ids) {
+                          //assert(ids);
+                        }
+                        //assert(ids);
                       }),
                       () => ids,
                       filter((id) =>
@@ -992,11 +1055,16 @@ const ignoreDefault =
       }),
       () => resource,
       and([
-        get("managedByOther"),
+        or([get("managedByOther") /*, get("cannotBeDeleted")*/]),
         pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
       ]),
       tap.if(identity, (xxx) => {
-        //console.log("ignoreDefault", resource.name);
+        // console.log(
+        //   "ignoreDefault",
+        //   resource.name,
+        //   " #usedBy",
+        //   size(resource.usedBy)
+        // );
       }),
     ])();
 
@@ -1011,6 +1079,7 @@ const writeResource =
     resourceName = identity,
     filterLive,
     propertiesDefault,
+    pickPropertiesCreate,
     codeBuildProperties,
     hasNoProperty,
     inferName,
@@ -1049,6 +1118,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
+                  pickPropertiesCreate,
                   propertiesDefault,
                   dependencies,
                   environmentVariables,
@@ -1107,6 +1177,7 @@ const writeResources =
     providerName,
     filterLive,
     propertiesDefault,
+    pickPropertiesCreate,
     properties,
     dependencies,
     environmentVariables,
@@ -1157,6 +1228,7 @@ const writeResources =
                 properties,
                 filterLive,
                 propertiesDefault,
+                pickPropertiesCreate,
                 inferName,
                 dependencies,
                 ignoreResource,

@@ -33,11 +33,11 @@ Example of the CLI output:
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "600px" }}
+    style={{ width: "100%", height: "600px" }}
     ></iframe>
 </div>
 
@@ -52,11 +52,11 @@ Example of the CLI output:
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "500px" }}
+    style={{ width: "100%", height: "500px" }}
     ></iframe>
 </div>
 
@@ -71,10 +71,10 @@ Example of the CLI output:
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/lskiblzLpXqnPsZ5Z1W7Bf2Kd/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/lskiblzLpXqnPsZ5Z1W7Bf2Kd/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>

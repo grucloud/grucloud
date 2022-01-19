@@ -11,12 +11,15 @@ provider.Network.makeDdosProtectionPlan({
   properties: () => ({ location: "westus", properties: {} }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    securityPartnerProvider:
+      resources.Network.SecurityPartnerProvider["mySecurityPartnerProvider"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
 ## Swagger Schema
 ```js
 {

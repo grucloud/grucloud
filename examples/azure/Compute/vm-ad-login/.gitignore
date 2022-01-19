@@ -1,0 +1,9 @@
+node_modules/
+default.env
+.nyc_output
+coverage
+*.log
+auth.env
+default.env
+*.pem
+.DS_Store

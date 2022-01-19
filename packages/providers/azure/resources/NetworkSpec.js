@@ -1,13 +1,29 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isObject } = require("rubico/x");
+const {
+  pipe,
+  eq,
+  get,
+  tap,
+  pick,
+  map,
+  assign,
+  omit,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, pluck, isObject, when, flatten } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, compare } = require("@grucloud/core/Common");
 const { tos } = require("@grucloud/core/tos");
 
-const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
+const {
+  findDependenciesResourceGroup,
+  buildTags,
+  configDefaultDependenciesId,
+  configDefaultGeneric,
+  assignDependenciesId,
+} = require("../AzureCommon");
 
 const group = "Network";
 
@@ -16,6 +32,194 @@ exports.fnSpecs = ({ config }) => {
 
   return pipe([
     () => [
+      {
+        type: "LoadBalancer",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          publicIPAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.backendAddressPools"),
+              pluck("properties"),
+              pluck("loadBalancerBackendAddresses"),
+              flatten,
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.frontendIPConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+        ],
+        omitProperties: [
+          "properties.frontendIPConfigurations",
+          "properties.backendAddressPools",
+        ],
+        filterLive: ({ lives }) =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "resourceGuid"]),
+                assign({
+                  frontendIPConfigurations: pipe([
+                    get("frontendIPConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            assign({
+                              publicIPAddress: pipe([
+                                get("publicIPAddress"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "PublicIPAddress",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  backendAddressPools: pipe([
+                    get("backendAddressPools"),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    map(
+                      pipe([
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        pick(["name" /*"properties"*/]),
+                        // assign({
+                        //   properties: pipe([get("properties")]),
+                        // }),
+                      ])
+                    ),
+                  ]),
+                  /*
+                  loadBalancingRules: [],
+        probes: [],
+        inboundNatRules: [],
+        inboundNatPools: [],
+        outboundRules: [],
+                  */
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      },
+      {
+        type: "LoadBalancerBackendAddressPool",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          loadBalancer: {
+            type: "LoadBalancer",
+            group: "Network",
+            name: "loadBalancerName",
+          },
+          virtualNetworks: {
+            type: "VirtualNetwork",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+        },
+        pickProperties: [],
+        // findDependencies: ({ live, lives }) => [
+        //   findDependenciesResourceGroup({ live, lives, config }),
+        //   {
+        //     type: "VirtualNetwork",
+        //     group: "Network",
+        //     ids: pipe([
+        //       () => live,
+        //       get("properties.loadBalancerBackendAddresses"),
+        //       pluck("properties"),
+        //       pluck("virtualNetwork"),
+        //       flatten,
+        //       pluck("id"),
+        //     ])(),
+        //   },
+        // ],
+        filterLive: () =>
+          pipe([
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit([
+                  "provisioningState",
+                  "backendIPConfigurations",
+                  "loadBalancerBackendAddresses",
+                ]),
+                // assign({
+                //   loadBalancerBackendAddresses: pipe([
+                //     get("loadBalancerBackendAddresses"),
+                //     map(
+                //       assign({
+                //         properties: pipe([
+                //           get("properties"),
+                //           assign({
+                //             virtualNetwork: pipe([
+                //               get("virtualNetwork"),
+                //               assignDependenciesId({
+                //                 group: "Network",
+                //                 type: "VirtualNetwork",
+                //                 lives,
+                //               }),
+                //             ]),
+                //           }),
+                //         ]),
+                //       })
+                //     ),
+                //   ]),
+                // }),
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
         // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
@@ -129,11 +333,6 @@ exports.fnSpecs = ({ config }) => {
           //   group: "Network",
           //   createOnly: true,
           // },
-          // natGateway: {
-          //   type: "NatGateway",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
           // workspace: {
           //   type: "Workspace",
           //   group: "OperationalInsights",
@@ -151,6 +350,26 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -167,6 +386,151 @@ exports.fnSpecs = ({ config }) => {
           "properties.publicIPAddressVersion",
           "properties.dnsSettings.domainNameLabel",
         ],
+      },
+      {
+        type: "AzureFirewall",
+        apiVersion: "2021-05-01",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          virtualHub: {
+            type: "VirtualHub",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.virtualHub.id",
+          },
+          firewallPolicy: {
+            type: "FirewallPolicy",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.firewallPolicy.id",
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("subnet"),
+              pluck("id"),
+            ])(),
+          },
+          //TODO create findDependenciesDependencyId
+          {
+            type: "VirtualHub",
+            group: "Network",
+            ids: [pipe([() => live, get("properties.virtualHub.id")])()],
+          },
+          {
+            type: "FirewallPolicy",
+            group: "Network",
+            ids: [pipe([() => live, get("properties.firewallPolicy.id")])()],
+          },
+        ],
+        omitProperties: ["properties.ipConfigurations"],
+        filterLive: ({ lives }) =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                //pick(["ipConfigurations"]),
+                omit(["provisioningState"]),
+                assign({
+                  firewallPolicy: pipe([
+                    get("firewallPolicy"),
+                    assignDependenciesId({
+                      group: "Network",
+                      type: "FirewallPolicy",
+                      lives,
+                    }),
+                  ]),
+                  ipConfigurations: pipe([
+                    get("ipConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["subnet", "publicIPAddress"]),
+                            assign({
+                              subnet: pipe([
+                                get("subnet"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "Subnet",
+                                  lives,
+                                }),
+                              ]),
+                              publicIPAddress: pipe([
+                                get("publicIPAddress"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "PublicIPAddress",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
@@ -250,7 +614,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -350,6 +714,12 @@ exports.fnSpecs = ({ config }) => {
             group: "Network",
             name: "virtualNetworkName",
           },
+          natGateway: {
+            type: "NatGateway",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.natGateway.id",
+          },
         },
         pickProperties: [
           "properties.addressPrefix",
@@ -369,11 +739,68 @@ exports.fnSpecs = ({ config }) => {
           "properties.privateLinkServiceNetworkPolicies",
           "properties.applicationGatewayIpConfigurations",
         ],
-        configDefault: ({ properties, dependencies }) => {
-          return defaultsDeep({
-            properties: {},
-          })(properties);
-        },
+        //TODO use filterLive in compare
+        compare: compare({
+          filterAll: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "properties.provisioningState",
+              "properties.ipConfigurations",
+            ]),
+            omitIfEmpty(["properties.delegations"]),
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                assign({
+                  serviceEndpoints: pipe([
+                    get("serviceEndpoints"),
+                    map(omit(["provisioningState"])),
+                  ]),
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        }),
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([
+            tap((params) => {
+              assert(pickPropertiesCreate);
+            }),
+            pick(["name", ...pickPropertiesCreate]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                assign({
+                  serviceEndpoints: pipe([
+                    get("serviceEndpoints"),
+                    map(omit(["provisioningState"])),
+                  ]),
+                }),
+                omitIfEmpty(["serviceEndpoints"]),
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep({
+              properties: {},
+            }),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
       },
       // {
       //   group: "Network",
@@ -398,6 +825,63 @@ exports.fnSpecs = ({ config }) => {
         ignoreResource: () => () => true,
         managedByOther: () => true,
         cannotBeDeleted: () => true,
+      },
+      {
+        type: "NatGateway",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            list: true,
+            createOnly: true,
+          },
+        },
+        pickPropertiesCreate: [
+          "sku.name",
+          "properties.idleTimeoutInMinutes",
+          "properties.publicIpPrefixes",
+          "zones",
+        ],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.publicIpAddresses"),
+              pluck("id"),
+            ])(),
+          },
+        ],
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            when(
+              () => dependencies.publicIpAddresses,
+              defaultsDeep({
+                properties: {
+                  publicIpAddresses: pipe([
+                    () => dependencies.publicIpAddresses,
+                    map((ipAddress) => ({ id: getField(ipAddress, "id") })),
+                  ])(),
+                },
+              })
+            ),
+          ])(),
       },
     ],
     map(defaultsDeep({ group })),

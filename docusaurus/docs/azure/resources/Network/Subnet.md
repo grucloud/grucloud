@@ -12,6 +12,7 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
@@ -30,6 +31,7 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
@@ -43,6 +45,7 @@ provider.Network.makeSubnet({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+    natGateway: resources.Network.NatGateway["myNatGateway"],
   }),
 });
 
@@ -50,6 +53,7 @@ provider.Network.makeSubnet({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
+- [NatGateway](../Network/NatGateway.md)
 ## Swagger Schema
 ```js
 <ref *2> {

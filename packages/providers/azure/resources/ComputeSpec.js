@@ -1,78 +1,351 @@
 const assert = require("assert");
-const { pipe, eq, not, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, find } = require("rubico/x");
-
+const {
+  pipe,
+  eq,
+  tryCatch,
+  get,
+  tap,
+  pick,
+  map,
+  assign,
+  omit,
+  and,
+} = require("rubico");
+const {
+  defaultsDeep,
+  pluck,
+  isEmpty,
+  find,
+  includes,
+  first,
+  when,
+  flatten,
+  callProp,
+} = require("rubico/x");
+const fs = require("fs").promises;
+const path = require("path");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
-  buildTags,
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
+  configDefaultDependenciesId,
   configDefaultGeneric,
+  assignDependenciesId,
 } = require("../AzureCommon");
 
 const group = "Compute";
+
+const filterVirtualMachineProperties = ({ resource, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(resource);
+      assert(lives);
+    }),
+    pick([
+      "hardwareProfile",
+      "osProfile",
+      "storageProfile",
+      "diagnosticsProfile",
+      "networkProfile",
+    ]),
+    omit([
+      "osProfile.requireGuestProvisionSignal",
+      "storageProfile.imageReference.exactVersion",
+    ]),
+    assign({
+      storageProfile: pipe([
+        get("storageProfile"),
+        assign({
+          osDisk: pipe([
+            get("osDisk"),
+            assign({
+              managedDisk: pipe([
+                get("managedDisk"),
+                omit(["id"]),
+                when(
+                  get("diskEncryptionSet"),
+                  assign({
+                    diskEncryptionSet: pipe([
+                      get("diskEncryptionSet"),
+                      assignDependenciesId({
+                        group: "Compute",
+                        type: "DiskEncryptionSet",
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
+          dataDisks: pipe([
+            get("dataDisks", []),
+            map(
+              assign({
+                managedDisk: pipe([
+                  get("managedDisk"),
+                  assignDependenciesId({
+                    group: "Compute",
+                    type: "Disk",
+                    lives,
+                  }),
+                ]),
+              })
+            ),
+          ]),
+        }),
+      ]),
+    }),
+    assign({
+      networkProfile: pipe([
+        get("networkProfile"),
+        assign({
+          networkInterfaces: pipe([
+            get("networkInterfaces"),
+            map(
+              assignDependenciesId({
+                group: "Network",
+                type: "NetworkInterface",
+                lives,
+              })
+            ),
+          ]),
+        }),
+        when(
+          get("networkInterfaceConfigurations"),
+          assign({
+            networkInterfaceConfigurations: pipe([
+              get("networkInterfaceConfigurations"),
+              map(
+                assign({
+                  properties: pipe([
+                    get("properties"),
+                    assign({
+                      networkSecurityGroup: pipe([
+                        get("networkSecurityGroup"),
+                        assignDependenciesId({
+                          group: "Network",
+                          type: "NetworkSecurityGroup",
+                          lives,
+                        }),
+                      ]),
+                      ipConfigurations: pipe([
+                        get("ipConfigurations"),
+                        map(
+                          pipe([
+                            assign({
+                              properties: pipe([
+                                get("properties"),
+                                assign({
+                                  loadBalancerBackendAddressPools: pipe([
+                                    get("loadBalancerBackendAddressPools"),
+                                    map(
+                                      assignDependenciesId({
+                                        group: "Network",
+                                        type: "LoadBalancerBackendAddressPool",
+                                        lives,
+                                      })
+                                    ),
+                                  ]),
+                                  //TODO
+                                  // loadBalancerInboundNatPools: pipe([
+                                  //   get("loadBalancerInboundNatPools"),
+                                  //   map(
+                                  //     assignDependenciesId({
+                                  //       group: "Network",
+                                  //       type: "LoadBalancerInboundNatPool",
+                                  //       lives,
+                                  //     })
+                                  //   ),
+                                  // ]),
+                                  subnet: pipe([
+                                    get("subnet"),
+                                    assignDependenciesId({
+                                      group: "Network",
+                                      type: "Subnet",
+                                      lives,
+                                    }),
+                                  ]),
+                                }),
+                                omitIfEmpty([
+                                  "loadBalancerBackendAddressPools",
+                                ]),
+                              ]),
+                            }),
+                          ])
+                        ),
+                      ]),
+                    }),
+                  ]),
+                })
+              ),
+            ]),
+          })
+        ),
+      ]),
+      osProfile: pipe([
+        get("osProfile"),
+        when(
+          get("linuxConfiguration.ssh.publicKeys"),
+          assign({
+            linuxConfiguration: pipe([
+              get("linuxConfiguration"),
+              assign({
+                ssh: pipe([
+                  get("ssh"),
+                  assign({
+                    publicKeys: pipe([
+                      get("publicKeys", []),
+                      map(omit(["keyData"])),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          })
+        ),
+      ]),
+    }),
+    omitIfEmpty([
+      "osProfile.secrets",
+      "storageProfile.dataDisks",
+      "networkProfile",
+    ]),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const VirtualMachineDependencySshPublicKey = ({
+  publicKeysPath,
+  live,
+  lives,
+  config,
+}) => ({
+  type: "SshPublicKey",
+  group: "Compute",
+  ids: pipe([
+    () => live,
+    get(publicKeysPath),
+    map(({ keyData }) =>
+      pipe([
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "SshPublicKey",
+            group: "Compute",
+          }),
+        find(eq(get("live.properties.publicKey"), keyData)),
+        get("id"),
+      ])()
+    ),
+  ])(),
+});
+
+const publicKeysCreatePayload = ({ dependencies }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => dependencies.sshPublicKeys,
+    map((sshPublicKey) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        //TODO azureuser
+        () => ({
+          path: "/home/azureuser/.ssh/authorized_keys",
+          keyData: getField(sshPublicKey, "properties.publicKey"),
+        }),
+      ])()
+    ),
+  ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
       {
-        type: "Disk",
-        managedByOther: pipe([get("live.managedBy"), not(isEmpty)]),
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "DiskAccess",
-            group: "Compute",
-            ids: [pipe([() => live, get("properties.diskAccessId")])()],
-          },
-          {
-            type: "Image",
-            group: "Compute",
-            ids: [
-              pipe([
-                () => live,
-                get("properties.creationData.imageReference.id"),
-              ])(),
-            ],
-          },
-          {
-            type: "DiskEncryptionSet",
-            group: "Compute",
-            ids: [
-              pipe([
-                () => live,
-                get("properties.encryption.diskEncryptionSetId"),
-              ])(),
-            ],
-          },
-        ],
-        configDefault: ({
+        type: "SshPublicKey",
+        configDefault: async ({
           properties,
-          dependencies: { diskAccess, image, diskEncryptionSet },
+          dependencies,
+          config,
+          spec,
+          programOptions,
         }) =>
           pipe([
             () => properties,
-            defaultsDeep({
-              location,
-              tags: buildTags(config),
-              properties: {
-                ...(diskAccess && { diskAccessId: getField(key, "id") }),
-                ...(image && {
-                  creationData: {
-                    createOption: "FromImage",
-                    imageReference: {
-                      id: getField(image, "id"),
-                    },
-                  },
-                }),
-                ...(diskEncryptionSet && {
-                  encryption: {
-                    diskEncryptionSetId: getField(key, "diskEncryptionSet"),
-                  },
-                }),
-              },
+            when(get("publicKeyFile"), (props) =>
+              pipe([
+                () => properties,
+                get("publicKeyFile"),
+                (publicKeyFile) =>
+                  path.resolve(programOptions.workingDirectory, publicKeyFile),
+                tryCatch(
+                  (fileName) => fs.readFile(fileName, "utf-8"),
+                  pipe([() => undefined])
+                ),
+                (publicKey) =>
+                  pipe([
+                    () => props,
+                    defaultsDeep({
+                      properties: {
+                        publicKey,
+                      },
+                    }),
+                  ])(),
+              ])()
+            ),
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            omit(["publicKeyFile"]),
+            tap((params) => {
+              assert(true);
             }),
+          ])(),
+      },
+      {
+        type: "Disk",
+        managedByOther: ({ live, lives }) =>
+          pipe([
+            () =>
+              lives.getById({
+                id: live.managedBy,
+                type: "VirtualMachine",
+                group: "Compute",
+                providerName: config.providerName,
+              }),
+            get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
+            callProp("match", new RegExp(`^${live.id}$`, "ig")),
+          ])(),
+        //TODO default configDefault should be this
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
           ])(),
       },
       {
@@ -94,13 +367,22 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
           },
         },
+        pickProperties: [
+          "properties.encryptionType",
+          "properties.rotationToLatestKeyVersionEnabled",
+        ],
+        filterLive: () =>
+          pipe([
+            pick(["tags", "properties"]),
+            omit(["properties.activeKey", "properties.provisioningState"]),
+          ]),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
             type: "Vault",
             group: "KeyVault",
             ids: [
-              pipe([() => live, get("properties.activeKey.sourceVault")])(),
+              pipe([() => live, get("properties.activeKey.sourceVault.id")])(),
             ],
           },
           {
@@ -112,39 +394,263 @@ exports.fnSpecs = ({ config }) =>
                 get("properties.activeKey.keyUrl"),
                 (keyUrl) =>
                   pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
                     () =>
                       lives.getByType({
                         type: "Key",
                         group: "KeyVault",
                         providerName: config.providerName,
                       }),
-                    //TODO check
-                    find(eq(get("live.keyUrl"), keyUrl)),
+                    find(
+                      pipe([
+                        get("live.properties.keyUri"),
+                        (liveKeyUri) =>
+                          pipe([() => keyUrl, includes(liveKeyUri)])(),
+                      ])
+                    ),
                     get("id"),
                   ])(),
               ])(),
             ],
           },
         ],
-        configDefault: ({ properties, dependencies: { vault, key } }) =>
+        configDefault: ({ properties, dependencies, config }) =>
           pipe([
+            tap(() => {
+              assert(dependencies.vault);
+              assert(dependencies.key);
+            }),
             () => properties,
             defaultsDeep({
-              location,
-              tags: buildTags(config),
+              identity: {
+                type: "SystemAssigned",
+              },
               properties: {
                 activeKey: {
-                  ...(vault && {
-                    sourceVault: {
-                      id: getField(vault, "id"),
-                    },
-                  }),
-                  ...(key && { keyUrl: getField(key, "keyUri") }),
+                  sourceVault: {
+                    id: getField(dependencies.vault, "id"),
+                  },
+                  keyUrl: pipe([
+                    () => getField(dependencies.key, "versions"),
+                    first,
+                    get("kid"),
+                    tap((kid) => {
+                      assert(
+                        kid,
+                        `Cannot found key version, check role assignment`
+                      );
+                    }),
+                  ])(),
                 },
               },
+            }),
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+              })
+            ),
+          ])(),
+      },
+      {
+        type: "VirtualMachineScaleSetVM",
+        ignoreResource: () => () => true,
+        managedByOther: () => true,
+      },
+      {
+        type: "VirtualMachineScaleSet",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          networkInterfaces: {
+            type: "NetworkInterface",
+            group: "Network",
+            list: true,
+            createOnly: true,
+          },
+          disks: {
+            type: "Disk",
+            group: "Compute",
+            list: true,
+            createOnly: true,
+          },
+          managedIdentities: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          sshPublicKeys: {
+            type: "SshPublicKey",
+            group: "Compute",
+            list: true,
+            createOnly: true,
+          },
+          galleryImage: {
+            type: "GalleryImage",
+            group: "Compute",
+            createOnly: true,
+          },
+          networkSecurityGroups: {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          proximityPlacementGroup: {
+            type: "ProximityPlacementGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          dedicatedHostGroup: {
+            type: "DedicatedHostGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          capacityReservationGroup: {
+            type: "CapacityReservationGroup",
+            group: "Compute",
+            createOnly: true,
+          },
+          loadBalancerBackendAddressPool: {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            createOnly: true,
+          },
+        },
+        environmentVariables: [
+          {
+            path: "properties.virtualMachineProfile.osProfile.adminPassword",
+            suffix: "ADMIN_PASSWORD",
+          },
+        ],
+        omitProperties: [
+          "properties.virtualMachineProfile.osProfile.adminPassword",
+          "properties.virtualMachineProfile.osProfile.secrets",
+        ],
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives }),
+          findDependenciesUserAssignedIdentity({ live }),
+          {
+            type: "NetworkSecurityGroup",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("networkSecurityGroup"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("ipConfigurations"),
+              flatten,
+              pluck("properties"),
+              pluck("subnet"),
+              pluck("id"),
+            ])(),
+          },
+          VirtualMachineDependencySshPublicKey({
+            live,
+            lives,
+            config,
+            publicKeysPath:
+              "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys",
+          }),
+          {
+            type: "LoadBalancerBackendAddressPool",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("ipConfigurations"),
+              flatten,
+              pluck("properties"),
+              pluck("loadBalancerBackendAddressPools"),
+              flatten,
+              pluck("id"),
+            ])(),
+          },
+          //TODO common
+          {
+            type: "Disk",
+            group: "Compute",
+            ids: [
+              pipe([
+                () => live,
+                get(
+                  "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.id"
+                ),
+              ])(),
+            ],
+          },
+        ],
+        filterLive: (context) =>
+          pipe([
+            pick(["sku", "identity.type", "properties", "tags"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "uniqueId"]),
+                assign({
+                  virtualMachineProfile: pipe([
+                    get("virtualMachineProfile"),
+                    filterVirtualMachineProperties(context),
+                  ]),
+                }),
+                ,
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config }) =>
+          pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () => properties,
+            when(
+              () => dependencies.sshPublicKeys,
+              defaultsDeep({
+                properties: {
+                  virtualMachineProfile: {
+                    osProfile: {
+                      linuxConfiguration: {
+                        ssh: {
+                          publicKeys: publicKeysCreatePayload({ dependencies }),
+                        },
+                      },
+                    },
+                  },
+                },
+              })
+            ),
+            defaultsDeep(
+              configDefaultGeneric({ properties, dependencies, config })
+            ),
+            tap((params) => {
+              assert(true);
             }),
           ])(),
       },
@@ -157,9 +663,16 @@ exports.fnSpecs = ({ config }) =>
             group: "Resources",
             name: "resourceGroupName",
           },
-          networkInterface: {
+          networkInterfaces: {
             type: "NetworkInterface",
             group: "Network",
+            list: true,
+            createOnly: true,
+          },
+          disks: {
+            type: "Disk",
+            group: "Compute",
+            list: true,
             createOnly: true,
           },
           managedIdentities: {
@@ -168,9 +681,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
-          sshPublicKey: {
+          sshPublicKeys: {
             type: "SshPublicKey",
             group: "Compute",
+            list: true,
             createOnly: true,
           },
           galleryImage: {
@@ -240,25 +754,13 @@ exports.fnSpecs = ({ config }) =>
             },
           },
         },
-        filterLive: () =>
+        filterLive: (context) =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["tags", "properties"]),
+            pick(["tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),
-                pick([
-                  "hardwareProfile",
-                  "storageProfile.imageReference",
-                  "osProfile",
-                ]),
-                omitIfEmpty(["osProfile.secrets"]),
-                omit([
-                  "osProfile.requireGuestProvisionSignal",
-                  "storageProfile.imageReference.exactVersion",
-                ]),
+                filterVirtualMachineProperties(context),
               ]),
             }),
           ]),
@@ -268,19 +770,7 @@ exports.fnSpecs = ({ config }) =>
           "properties.osProfile",
         ],
         findDependencies: ({ live, lives }) => [
-          {
-            //TODO replace with findDependenciesResourceGroup
-            type: "ResourceGroup",
-            group: "Resources",
-            ids: pipe([
-              () => [
-                live.id
-                  .replace(`/providers/${live.type}/${live.name}`, "")
-                  .toLowerCase()
-                  .replace("resourcegroups", "resourceGroups"),
-              ],
-            ])(),
-          },
+          findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),
           {
             type: "NetworkInterface",
@@ -291,26 +781,13 @@ exports.fnSpecs = ({ config }) =>
               pluck("id"),
             ])(),
           },
-          {
-            type: "SshPublicKey",
-            group: "Compute",
-            ids: pipe([
-              () => live,
-              get("properties.osProfile.linuxConfiguration.ssh.publicKeys"),
-              map(({ keyData }) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      providerName: config.providerName,
-                      type: "SshPublicKey",
-                      group: "Compute",
-                    }),
-                  find(eq(get("live.properties.publicKey"), keyData)),
-                  get("id"),
-                ])()
-              ),
-            ])(),
-          },
+          VirtualMachineDependencySshPublicKey({
+            lives,
+            live,
+            config,
+            publicKeysPath:
+              "properties.osProfile.linuxConfiguration.ssh.publicKeys",
+          }),
           {
             type: "Disk",
             group: "Compute",
@@ -319,37 +796,54 @@ exports.fnSpecs = ({ config }) =>
                 () => live,
                 get("properties.storageProfile.osDisk.managedDisk.id"),
               ])(),
+              ...pipe([
+                () => live,
+                get("properties.storageProfile.dataDisks"),
+                pluck("managedDisk"),
+                pluck("id"),
+              ])(),
             ],
           },
         ],
         configDefault: ({ properties, dependencies, config }) =>
           pipe([
             tap(() => {
-              //TODO multiple networkInterface ?
               assert(
-                dependencies.networkInterface,
+                dependencies.networkInterfaces,
                 "networkInterfaces is missing VirtualMachine"
               );
             }),
             () => properties,
+            when(
+              () => dependencies.sshPublicKeys,
+              defaultsDeep({
+                properties: {
+                  osProfile: {
+                    linuxConfiguration: {
+                      ssh: {
+                        publicKeys: publicKeysCreatePayload({ dependencies }),
+                      },
+                    },
+                  },
+                },
+              })
+            ),
             defaultsDeep({
               properties: {
-                //TODO ssh key
                 networkProfile: {
-                  networkInterfaces: [
-                    {
-                      id: getField(dependencies.networkInterface, "id"),
-                    },
-                  ],
+                  networkInterfaces: pipe([
+                    () => dependencies,
+                    get("networkInterfaces", []),
+                    map((networkInterface) => ({
+                      id: getField(networkInterface, "id"),
+                    })),
+                  ])(),
                 },
               },
             }),
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config })
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ])(),
       },
     ],

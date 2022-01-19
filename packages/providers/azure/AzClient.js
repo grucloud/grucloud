@@ -27,7 +27,6 @@ const {
   isEmpty,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
-const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 const {
   isInstanceUp: isInstanceUpDefault,
@@ -35,15 +34,28 @@ const {
   isSubstituable,
   configDefaultGeneric,
   findDependenciesUserAssignedIdentity,
+  createAxiosAzure,
+  shortName,
 } = require("./AzureCommon");
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
-//TODO switchCase ?
-const verbUpdateFromMethods = pipe([get("patch"), () => "PATCH", () => "PUT"]);
+
+const verbCreateFromMethods = switchCase([
+  get("post"),
+  () => "POST",
+  () => "PUT",
+]);
+
+const verbUpdateFromMethods = switchCase([
+  get("patch"),
+  () => "PATCH",
+  () => "PUT",
+]);
 
 module.exports = AzClient = ({
+  lives,
   spec,
   isInstanceUp = isInstanceUpDefault,
   config,
@@ -57,10 +69,9 @@ module.exports = AzClient = ({
           pipe([() => path, callProp("split", "?api-version"), first])
         ),
       ])(),
-  getList = () => undefined,
-  getByName = () => undefined,
   pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
 }) => {
+  assert(lives);
   assert(spec);
   const { methods, apiVersion, dependencies = {} } = spec;
   if (!methods) {
@@ -71,12 +82,17 @@ module.exports = AzClient = ({
   }
   assert(apiVersion);
   assert(spec.cannotBeDeleted);
+  assert(spec.managedByOther);
 
   const cannotBeDeleted = pipe([
     tap((params) => {
       assert(true);
     }),
-    or([spec.cannotBeDeleted, pipe([() => methods, get("delete"), isEmpty])]),
+    or([
+      spec.managedByOther,
+      spec.cannotBeDeleted,
+      pipe([() => methods, get("delete"), isEmpty]),
+    ]),
     tap((params) => {
       assert(true);
     }),
@@ -144,11 +160,41 @@ module.exports = AzClient = ({
       }),
     ])();
 
+  const findDependenciesFromCreate = ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(dependencies);
+        //console.log(dependencies);
+      }),
+      () => dependencies,
+      filter(get("pathId")),
+      map.entries(([key, { group, type, pathId }]) => [
+        key,
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => live,
+          get(pathId),
+          (id) => ({
+            group,
+            type,
+            ids: [id],
+          }),
+        ])(),
+      ]),
+      values,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   const findDependenciesDefault = ({ live, lives }) =>
     pipe([
       () => [
         ...findDependenciesFromList({ live, lives }),
         findDependenciesUserAssignedIdentity({ live, lives }),
+        ...findDependenciesFromCreate({ live, lives }),
       ],
       filter(not(isEmpty)),
       tap((params) => {
@@ -173,17 +219,51 @@ module.exports = AzClient = ({
           assert(resource);
         }),
         get("resource.name"),
+        tap((name) => {
+          assert(
+            name,
+            `cannot find ${paramName} in ${JSON.stringify(
+              dependencies,
+              null,
+              4
+            )}`
+          );
+        }),
+        shortName,
       ])();
 
   const substituteSubscriptionId = () =>
     map(
-      when(eq(identity, "{subscriptionId}"), () => process.env.SUBSCRIPTION_ID)
+      when(
+        eq(identity, "{subscriptionId}"),
+        () => process.env.AZURE_SUBSCRIPTION_ID
+      )
     );
+  const substituteScope = ({ payload }) =>
+    pipe([
+      tap((params) => {
+        // assert(payload);
+        //assert(payload.properties.scope);
+      }),
+      map(
+        when(
+          eq(identity, "{scope}"),
+          pipe([
+            () => payload,
+            get("properties.scope"),
+            callProp("substring", 1), //remove first slash
+          ])
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
   const substitutePath = ({ dependencies }) =>
     map(when(isSubstituable, substituteDependency({ dependencies })));
 
-  const pathCreate = ({ dependencies, name }) =>
+  const pathCreate = ({ dependencies, name, payload }) =>
     pipe([
       () => methods,
       get("get.path"),
@@ -199,9 +279,14 @@ module.exports = AzClient = ({
       ),
       callProp("slice", 0, -1),
       substituteSubscriptionId(),
+      substituteScope({ payload }),
+      tap((params) => {
+        assert(true);
+      }),
       substitutePath({ dependencies }),
       callProp("join", "/"),
-      append(`/${name}`),
+      append("/"),
+      append(shortName(name)),
       append(queryParameters(apiVersion)),
       tap((params) => {
         assert(true);
@@ -221,7 +306,17 @@ module.exports = AzClient = ({
         assert(path);
       }),
       //TODO common
-      callProp("replace", "{subscriptionId}", process.env.SUBSCRIPTION_ID),
+      callProp(
+        "replace",
+        "{subscriptionId}",
+        process.env.AZURE_SUBSCRIPTION_ID
+      ),
+      //TODO wrong
+      callProp(
+        "replace",
+        "{scope}",
+        `subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
+      ),
       append(queryParameters(apiVersion)),
       tap((params) => {
         assert(true);
@@ -279,6 +374,7 @@ module.exports = AzClient = ({
             switchCase([
               and([
                 not(eq(value, "{subscriptionId}")),
+                not(eq(value, "{scope}")),
                 callProp("startsWith", "{"),
               ]),
               () => acc + 1,
@@ -310,9 +406,6 @@ module.exports = AzClient = ({
           () => dependencies,
           values,
           filter(not(get("createOnly"))),
-          tap((params) => {
-            assert(true);
-          }),
           last,
           tap((dep) => {
             if (!dep) {
@@ -327,18 +420,19 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const axios = AxiosMaker({
+  const axios = createAxiosAzure({
     baseURL: AZURE_MANAGEMENT_BASE_URL,
-    onHeaders: () => ({
-      Authorization: `Bearer ${config.bearerToken()}`,
-    }),
+    bearerToken: () => config.bearerToken(AZURE_MANAGEMENT_BASE_URL),
   });
 
   return CoreClient({
     type: "azure",
+    lives,
     spec,
     config,
+    findName: spec.findName,
     findDependencies: spec.findDependencies || findDependenciesDefault,
+    onResponseCreate: spec.onResponseCreate,
     onResponseList: spec.onResponseList || onResponseListDefault,
     decorate: spec.decorate,
     configDefault: spec.configDefault || configDefaultGeneric,
@@ -348,14 +442,12 @@ module.exports = AzClient = ({
     pathDelete,
     pathList,
     findTargetId,
-    verbCreate: "PUT",
+    verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),
     isInstanceUp,
     isDefault: spec.isDefault,
     cannotBeDeleted,
     managedByOther: spec.managedByOther,
     axios,
-    getList: getList({ axios }),
-    getByName: getByName({ axios }),
   });
 };

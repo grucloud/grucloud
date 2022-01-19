@@ -22,14 +22,12 @@ provider.KeyVault.makeManagedHsm({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 ## Swagger Schema
 ```js
 {

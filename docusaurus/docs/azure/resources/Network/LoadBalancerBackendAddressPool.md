@@ -34,26 +34,16 @@ provider.Network.makeLoadBalancerBackendAddressPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
     loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
+    virtualNetworks: [resources.Network.VirtualNetwork["myVirtualNetwork"]],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualNetwork](../Network/VirtualNetwork.md)
-- [Subnet](../Network/Subnet.md)
-- [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
-- [NatGateway](../Network/NatGateway.md)
-- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
-- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Swagger Schema
 ```js
 <ref *3> {

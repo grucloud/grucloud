@@ -25,10 +25,6 @@ provider.Network.makeNetworkInterfaceTapConfiguration({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
     networkInterface: resources.Network.NetworkInterface["myNetworkInterface"],
   }),
 });
@@ -41,9 +37,6 @@ provider.Network.makeNetworkInterfaceTapConfiguration({
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
-- [VirtualMachine](../Compute/VirtualMachine.md)
-- [DscpConfiguration](../Network/DscpConfiguration.md)
-- [Workspace](../OperationalInsights/Workspace.md)
 - [NetworkInterface](../Network/NetworkInterface.md)
 ## Swagger Schema
 ```js

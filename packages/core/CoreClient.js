@@ -22,6 +22,7 @@ module.exports = CoreClient = ({
   spec,
   type,
   config,
+  lives,
   axios,
   pathGet = ({ id }) => `/${id}`,
   pathCreate = () => `/`,
@@ -34,8 +35,7 @@ module.exports = CoreClient = ({
   verbUpdate = "PATCH",
   isInstanceUp = not(isEmpty),
   isInstanceDown = isEmpty,
-  isDefault,
-  managedByOther,
+
   configDefault = ({ name, properties }) => ({
     name,
     ...properties,
@@ -52,10 +52,12 @@ module.exports = CoreClient = ({
   //TODO curry
   onResponseGet = get("data"),
   onResponseList = () => identity,
-  onResponseCreate = identity,
+  onResponseCreate = () => identity,
   onResponseDelete = identity,
   onResponseUpdate = identity,
-  cannotBeDeleted = () => false,
+  isDefault,
+  managedByOther = () => false,
+  cannotBeDeleted,
   shouldRetryOnException,
   onCreateExpectedException,
   findDependencies,
@@ -69,6 +71,7 @@ module.exports = CoreClient = ({
 }) =>
   pipe([
     tap((params) => {
+      //assert(lives);
       assert(spec);
       assert(type);
       assert(config, "config");
@@ -84,7 +87,7 @@ module.exports = CoreClient = ({
       findName,
       isDefault,
       managedByOther,
-      cannotBeDeleted,
+      cannotBeDeleted: cannotBeDeleted || managedByOther,
       shouldRetryOnException,
       isUpById,
       isDownById,
@@ -122,7 +125,10 @@ module.exports = CoreClient = ({
               }),
             get("data"),
             (data) => onResponseGet({ id, data }),
-            decorate({ axios }),
+            tap((params) => {
+              assert(true);
+            }),
+            decorate({ axios, lives }),
             tap((data) => {
               logger.debug(`getById result: ${tos(data)}`);
             }),
@@ -164,7 +170,7 @@ module.exports = CoreClient = ({
                 logger.debug(`getList ${spec.type}, ${tos(data)}`);
               }),
               onResponseList({ axios }),
-              map(decorate({ axios })),
+              map(decorate({ axios, lives })),
             ])
           ),
           flatten,
@@ -202,7 +208,7 @@ module.exports = CoreClient = ({
                 assert(!spec.singleton);
                 assert(!spec.listOnly);
               }),
-              () => ({ dependencies: dependencies(), name }),
+              () => ({ dependencies: dependencies(), name, payload }),
               pathCreate,
               tap((path) => {
                 logger.info(`create ${spec.type}/${name}, path: ${path}`);
@@ -241,7 +247,7 @@ module.exports = CoreClient = ({
                         assert(result);
                       }),
                       get("data"),
-                      onResponseCreate,
+                      onResponseCreate({ name, payload }),
                       (data) =>
                         pipe([
                           () => data,

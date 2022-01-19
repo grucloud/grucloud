@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
-const { size, isEmpty, find, append } = require("rubico/x");
+const { size, isEmpty, find, append, callProp } = require("rubico/x");
 const { tos } = require("./tos");
 //const initSqlJs = require("sql.js");
 
@@ -64,7 +64,7 @@ exports.createLives = (livesRaw = []) => {
   const getById = ({ providerName, type, group, id }) =>
     pipe([
       () => getByType({ providerName, type, group }),
-      find(eq(get("id"), id)),
+      find(pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))])),
       tap((result) => {
         assert(true);
       }),

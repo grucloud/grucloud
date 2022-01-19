@@ -36,8 +36,18 @@ module.exports = ({ provider }) => {
           command: async () => {
             // start kubectl port-forward
             var child = shell.exec(kubectlPortForwardCommand, { async: true });
-            child.stdout.on("data", function (data) {});
+            child.stdout.on("data", function (data) {
+              //console.log(data);
+            });
+            child.stderr.on("data", function (data) {
+              console.error(data);
+            });
 
+            // child.on("exit", function (code, signal) {
+            //   console.log(
+            //     `${kubectlPortForwardCommand} code ${code} and signal ${signal}`
+            //   );
+            // });
             // Retry to get the web page.
             await retryCallOnError({
               name: `get ${url}`,

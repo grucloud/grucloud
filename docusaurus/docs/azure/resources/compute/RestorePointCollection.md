@@ -20,10 +20,6 @@ provider.Compute.makeRestorePointCollection({
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     restorePoint: resources.Compute.RestorePoint["myRestorePoint"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    virtualMachineScaleSetVm:
-      resources.Compute.VirtualMachineScaleSetVM["myVirtualMachineScaleSetVM"],
   }),
 });
 
@@ -31,9 +27,6 @@ provider.Compute.makeRestorePointCollection({
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [RestorePoint](../Compute/RestorePoint.md)
-- [Vault](../KeyVault/Vault.md)
-- [Key](../KeyVault/Key.md)
-- [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
 ## Swagger Schema
 ```js
 {

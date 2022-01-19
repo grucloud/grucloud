@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project nat-gateway
+skinparam monochrome true
++ Infra
+++ azure
++++ Network
+++++ NatGateway (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

@@ -15,7 +15,7 @@ import TOCInline from '@theme/TOCInline';
 
 ## Workflow
 
-![gc-new-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
+![gc-new-workflow](../../plantuml/gc-new-workflow.svg)
 
 ## Requirement
 
@@ -56,11 +56,11 @@ Use the [new](../cli/New.md) command to create a new project:
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/MFw0YToJlA6BpFgUU3LY2LA1D/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "500px" }}
+    style={{ width: "100%", height: "500px" }}
     ></iframe>
 </div>
             
@@ -77,15 +77,15 @@ gc list --graph
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/zbXkGiXBdDwOXHCJtKvttxv9z/embed?autoplay=true&amp;speed=1&amp;loop=true"
+    src="https://asciinema.org/a/zbXkGiXBdDwOXHCJtKvttxv9z/iframe?autoplay=true&amp;speed=1&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-live.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/Compute/vm/artifacts/diagram-live.svg)
 
 ### `gc gencode` Generate the code
 
@@ -102,11 +102,11 @@ The following flowchart explains in more detail the process of generating the co
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/MyAIWObbcxVXLMaBA2A05u3y4/embed?autoplay=true&amp;speed=1&amp;loop=true"
-    id="asciicast-iframe-13761"
-    name="asciicast-iframe-13761"
+    src="https://asciinema.org/a/MyAIWObbcxVXLMaBA2A05u3y4/iframe?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13762"
+    name="asciicast-iframe-13762"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>
 
@@ -134,11 +134,11 @@ gc apply
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/X8nXfxNUnAKVPTORfPRggDbP0/embed?autoplay=true&amp;speed=1&amp;loop=true"
-    id="asciicast-iframe-13761"
-    name="asciicast-iframe-13761"
+    src="https://asciinema.org/a/X8nXfxNUnAKVPTORfPRggDbP0/iframe?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13763"
+    name="asciicast-iframe-13763"
     scrolling="no"
-    style={{ width: "700px", height: "800px" }}
+    style={{ width: "100%", height: "800px" }}
     ></iframe>
 </div>
 
@@ -153,11 +153,11 @@ gc destroy
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/2pQiYTgZgQD776G077qOHBU64/embed?autoplay=true&amp;speed=1&amp;loop=true"
-    id="asciicast-iframe-13761"
-    name="asciicast-iframe-13761"
+    src="https://asciinema.org/a/2pQiYTgZgQD776G077qOHBU64/iframe?autoplay=true&amp;speed=1&amp;loop=true"
+    id="asciicast-iframe-13764"
+    name="asciicast-iframe-13764"
     scrolling="no"
-    style={{ width: "700px", height: "900px" }}
+    style={{ width: "100%", height: "900px" }}
     ></iframe>
 </div>
 

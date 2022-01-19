@@ -4,11 +4,16 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "vm",
-    properties: ({ config }) => ({
+    name: "resource-group::vm",
+    properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A2_v2",
+        },
+        osProfile: {
+          computerName: "myVM",
+          adminUsername: "ops",
+          adminPassword: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -17,22 +22,36 @@ const createResources = ({ provider }) => {
             sku: "18.04-LTS",
             version: "latest",
           },
-        },
-        osProfile: {
-          computerName: "myVM",
-          adminUsername: "ops",
-          linuxConfiguration: {
-            disablePasswordAuthentication: false,
-            provisionVMAgent: true,
+          osDisk: {
+            osType: "Linux",
+            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Standard_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
           },
-          allowExtensionOperations: true,
-          adminPassword: process.env.VM_ADMIN_PASSWORD,
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "resource-group::network-interface",
+              }),
+            },
+          ],
         },
       },
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterface: resources.Network.NetworkInterface["network-interface"],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["resource-group::network-interface"],
+      ],
     }),
   });
 };

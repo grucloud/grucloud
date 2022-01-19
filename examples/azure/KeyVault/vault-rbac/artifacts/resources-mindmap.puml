@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project vault-rbac
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ DiskEncryptionSet (1)
++++ KeyVault
+++++ Key (1)
+++++ Secret (1)
+++++ Vault (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

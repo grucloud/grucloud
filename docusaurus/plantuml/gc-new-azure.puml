@@ -45,13 +45,14 @@ partition "Select Region " {
 partition "Register namespaces" {
 :""az provider register --namespace Microsoft.Network"";
 :""az provider register --namespace Microsoft.Compute"";
+}
 
 : Create ""auth.env"";
 note right
-* ""TENANT_ID""
-* ""SUBSCRIPTION_ID""
-* ""APP_ID""
-* ""PASSWORD""
+* ""AZURE_TENANT_ID""
+* ""AZURE_SUBSCRIPTION_ID""
+* ""AZURE_CLIENT_ID""
+* ""AZURE_CLIENT_SECRET""
 end note 
 
 : Save files; 

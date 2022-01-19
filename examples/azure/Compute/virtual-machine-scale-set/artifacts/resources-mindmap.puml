@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project virtual-machine-scale-set
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ SshPublicKey (1)
+++++ VirtualMachineScaleSet (1)
++++ Network
+++++ NetworkSecurityGroup (2)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

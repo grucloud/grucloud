@@ -73,24 +73,51 @@ const PreDefinedDependenciesMap = {
 };
 
 const ResourcesExcludes = [
+  "Authorization::AccessReviewDefaultSetting",
+  "Authorization::AccessReviewScheduleDefinitionById",
+  "Authorization::AccessReviewInstanceById",
+  "Authorization::ScopeRoleAssignmentApprovalStepById",
+  "Authorization::RoleAssignmentApprovalStepById",
+  "Authorization::RoleAssignmentById",
+  "Authorization::RoleAssignmentScheduleRequest",
+  "Authorization::RoleEligibilityScheduleRequest",
+  "Authorization::RoleManagementPolicy",
+  "Authorization::RoleManagementPolicyAssignment",
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
   "ContainerService::OpenShiftManagedCluster", // 404
-  "Network::PublicIpAddress", // Renamed to PublicIPAddress
+  "DBforPostgreSQL::PrivateEndpointConnection",
+  "DBforPostgreSQL::ServerSecurityAlertPolicy",
+  "DBforPostgreSQL::ServerKey",
+  "DBforPostgreSQL::ServerAdministrator",
+  "DBforPostgreSQL::VirtualNetworkRule",
+  "Network::AdminRule",
   "Network::ExpressRouteCrossConnection",
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
+  "Network::FirewallPolicyIdpsSignaturesOverride",
   "Network::InterfaceEndpoint",
-  "Network::VirtualWAN", // Renamed to VirtualWan
+  "Network::NetworkManager",
+  "Network::NetworkSecurityPerimeter",
+  "Network::PublicIpAddress", // Renamed to PublicIPAddress
   "Network::SecurityRule",
+  "Network::UserRule",
+  "Network::VirtualWAN", // Renamed to VirtualWan
+  "OperationalInsights::DataCollectorLog", //404
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
   "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, uksouth, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
   "Storage::BlobInventoryPolicy", //TODO 404 on list
+  "KeyVault::PrivateEndpointConnection", // TODO 404
   "Web::CertificateCsr",
   "Web::ClassicMobileService",
   "Web::Domain",
+  "Web::GetSourceControlSourceControl",
+  "Web::GetPublishingUserPublishingUser",
+  "Web::GlobalSubscriptionPublishingCredentials",
   "Web::ManagedHostingEnvironment",
+  "Web::ProviderPublishingUser",
+  "Web::ProviderSourceControl",
 ];
 const OpertionIdReplaceMap = {
   //Storage
@@ -631,30 +658,35 @@ const findResourcesByParameterType = ({ path, group, resources, index }) =>
     }),
     () => path,
     callProp("split", "/"),
-    (arr) => arr[index - 1],
+    (arr) => arr[index - 1], //TODO use slice or at ?
     tap((paramType) => {
-      assert(paramType, `not paramType in ${path}, index: ${index}`);
+      //assert(paramType, `not paramType in ${path}, index: ${index}`);
     }),
-    pluralize.singular,
-    (paramType) =>
+    unless(
+      isEmpty,
       pipe([
-        () => resources,
-        filter(
+        pluralize.singular,
+        (paramType) =>
           pipe([
-            and([
+            () => resources,
+            filter(
               pipe([
-                get("parentName", ""),
-                callProp("match", new RegExp(paramType, "gi")),
-              ]),
-              eq(get("group"), group),
-            ]),
-          ])
-        ),
-        tap((params) => {
-          assert(true);
-        }),
-        first,
-      ])(),
+                and([
+                  pipe([
+                    get("parentName", ""),
+                    callProp("match", new RegExp(paramType, "gi")),
+                  ]),
+                  eq(get("group"), group),
+                ]),
+              ])
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            first,
+          ])(),
+      ])
+    ),
   ])();
 
 const findParameterTypeFromPath =
@@ -712,6 +744,7 @@ const addDependencyFromPath = ({
     filter(eq(get("in"), "path")),
     filter(not(eq(get("name"), "resourceGroupName"))),
     filter(not(eq(get("name"), "subscriptionId"))),
+    filter(not(eq(get("name"), "scope"))),
     filter(not(pipe([get("name"), isParamLastOfUrl({ path })]))),
     tap((params) => {
       assert(true);
@@ -1146,6 +1179,7 @@ const getParentPath = ({ obj, key, parentPath }) =>
     switchCase([
       or([
         get("x-ms-client-flatten"),
+        //eq(key, "items"),
         and([eq(key, "properties"), () => !isEmpty(parentPath)]),
       ]),
       () => parentPath,
@@ -1158,121 +1192,152 @@ const buildDependenciesFromBody =
   (properties = {}) =>
     pipe([
       () => properties,
-      tap((params) => {
-        // console.log(
-        //   "buildDependenciesFromBody",
-        //   parentPath,
-        //   JSON.stringify(properties)
-        // );
-      }),
-      map.entries(([key, obj]) => [
-        key,
+      switchCase([
+        get("readOnly"),
+        () => undefined,
         pipe([
           tap((params) => {
-            //assert(obj);
-            assert(key);
-            //console.log("key:", key, "value:", obj);
+            assert(properties);
+            // console.log(
+            //   "buildDependenciesFromBody",
+            //   parentPath,
+            //   JSON.stringify(properties)
+            // );
           }),
-          () => key,
-          switchCase([
-            // Avoid cycling properties
-            isPreviousProperties({ parentPath, key }),
-            pipe([() => undefined]),
-            // Predefined
-            pipe([() => PreDefinedDependenciesMap[key]]),
-            pipe([
-              () => [...parentPath, key],
-              callProp("join", "."),
-              (pathId) => [
-                {
-                  pathId,
-                  depId: key,
-                },
-              ],
-            ]),
-            // Find properties.id
-            pipe([
-              () => obj,
-              and([
-                get("properties.id"),
-                //not(get("id.readOnly")),
-                //not(eq(key, "properties")),
-              ]),
-            ]),
-            pipe([
-              () => [...parentPath, key, "id"],
-              callProp("join", "."),
-              (pathId) => [
-                {
-                  pathId,
-                  depId: key,
-                },
-              ],
-            ]),
-            // Find MyPropId
-            and([isString, callProp("match", new RegExp("Id$", "gi"))]),
+          map.entries(([key, obj]) => [
+            key,
             pipe([
               tap((params) => {
-                assert(true);
-              }),
-              (id) => [...parentPath, id],
-              callProp("join", "."),
-              (pathId) => [
-                {
-                  pathId,
-                  depId: key,
-                },
-              ],
-            ]),
-            // Else
-            () => isObject(obj) && !Array.isArray(obj),
-            pipe([
-              tap((params) => {
+                //assert(obj);
                 assert(key);
+                //console.log("key:", key, "value:", obj);
               }),
-              () => obj,
+              () => key,
               switchCase([
-                get("properties"),
-                (properties) =>
-                  pipe([
-                    () => properties,
-                    tap((params) => {
-                      assert(obj);
-                      assert(properties);
-                      console.log("key", key);
-                      console.log(util.inspect(properties));
+                // Avoid cycling properties
+                isPreviousProperties({ parentPath, key }),
+                pipe([() => undefined]),
+                // Predefined
+                pipe([() => PreDefinedDependenciesMap[key]]),
+                pipe([
+                  () => [...parentPath, key],
+                  callProp("join", "."),
+                  (pathId) => [
+                    {
+                      pathId,
+                      depId: key,
+                    },
+                  ],
+                ]),
+                // Find properties.id
+                pipe([
+                  () => obj,
+                  and([
+                    get("properties.id"),
+                    //not(get("id.readOnly")),
+                    //not(eq(key, "properties")),
+                  ]),
+                ]),
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () => [...parentPath, key, "id"],
+                  callProp("join", "."),
+                  (pathId) => [
+                    {
+                      pathId,
+                      depId: key,
+                    },
+                  ],
+                ]),
+                // Find MyPropId
+                and([isString, callProp("match", new RegExp("Id$", "gi"))]),
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  (id) => [...parentPath, id],
+                  callProp("join", "."),
+                  (pathId) => [
+                    {
+                      pathId,
+                      depId: key,
+                    },
+                  ],
+                ]),
+                // Else
+                //TODO
+                eq(obj?.type, "array"),
+                pipe([
+                  tap((params) => {
+                    assert(obj);
+                    assert(obj.items);
+                  }),
+                  () => obj,
+                  buildDependenciesFromBody({
+                    parentPath: getParentPath({
+                      parentPath,
+                      key,
+                      obj: pipe([() => obj, get("items")])(),
                     }),
+                    accumulator,
+                  }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+                () => isObject(obj) && !Array.isArray(obj),
+                pipe([
+                  tap((params) => {
+                    assert(key);
+                  }),
+                  () => obj,
+                  switchCase([
+                    get("properties"),
+                    (properties) =>
+                      pipe([
+                        () => properties,
+                        tap((params) => {
+                          assert(obj);
+                          assert(properties);
+                          //console.log("key", key);
+                          //console.log(util.inspect(properties));
+                        }),
+                        buildDependenciesFromBody({
+                          parentPath: getParentPath({
+                            parentPath,
+                            key,
+                            obj: properties,
+                          }),
+                          accumulator,
+                        }),
+                      ])(),
                     buildDependenciesFromBody({
                       parentPath: getParentPath({
                         parentPath,
                         key,
-                        obj: properties,
+                        obj,
                       }),
                       accumulator,
                     }),
-                  ])(),
-                buildDependenciesFromBody({
-                  parentPath: getParentPath({
-                    parentPath,
-                    key,
-                  }),
-                  accumulator,
-                }),
+                  ]),
+                ]),
+                (params) => {
+                  assert(true);
+                },
               ]),
-            ]),
-            (params) => {
-              assert(true);
-            },
+            ])(),
           ]),
-        ])(),
+          values,
+          filter(not(isEmpty)),
+          flatten,
+          tap((params) => {
+            assert(true);
+          }),
+          (results) => [...accumulator, ...results],
+        ]),
       ]),
-      values,
-      filter(not(isEmpty)),
-      flatten,
-      tap((params) => {
-        assert(true);
-      }),
-      (results) => [...accumulator, ...results],
     ])();
 
 exports.buildDependenciesFromBody = buildDependenciesFromBody;
@@ -1413,13 +1478,14 @@ const filterGetAll = ({ name, dependencies, methods }) =>
         get("getAll.parameters"),
         when(isEmpty, () => get("get.parameters")(methods)),
         tap.if(isEmpty, () => {
-          assert(false, "no get or getAll parameter");
+          //assert(false, "no get or getAll parameter");
         }),
         filter(
           and([
             eq(get("in"), "path"),
             get("required"),
             not(eq(get("name"), "subscriptionId")),
+            not(eq(get("name"), "scope")),
           ])
         ),
         size,
@@ -1434,7 +1500,7 @@ const filterGetAll = ({ name, dependencies, methods }) =>
     }),
   ])();
 
-const filterNoDependency = pipe([get("dependencies"), not(isEmpty)]);
+//const filterNoDependency = pipe([get("dependencies"), not(isEmpty)]);
 
 const filterExclusion = ({ group, type }) =>
   pipe([
@@ -1498,9 +1564,12 @@ const processSwaggerFiles = ({
     filter(not(isEmpty)),
     //filter(filterNoSubscription),
     filter(filterExclusion),
+    tap((params) => {
+      assert(true);
+    }),
     (resources) =>
       pipe([() => resources, map(addDependencies({ resources }))])(),
-    filter(filterNoDependency),
+    //filter(filterNoDependency),
     filter(filterGetAll),
     tap((params) => {
       assert(true);

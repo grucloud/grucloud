@@ -340,7 +340,7 @@ function Home() {
         >
           <iframe
             data-autoplay
-            src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
+            src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/iframe?autoplay=true&amp;speed=6&amp;loop=true"
             id="asciicast-iframe-13761"
             name="asciicast-iframe-13761"
             scrolling="no"

@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project vm-ad-login
+skinparam monochrome true
++ Infra
+++ azure
++++ Authorization
+++++ RoleAssignment (1)
++++ Compute
+++++ SshPublicKey (1)
+++++ VirtualMachine (1)
+++++ VirtualMachineExtension (1)
++++ Network
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

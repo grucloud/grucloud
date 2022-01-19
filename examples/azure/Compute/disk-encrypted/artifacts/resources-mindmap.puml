@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project disk-encrypted
+skinparam monochrome true
++ Infra
+++ azure
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

@@ -78,13 +78,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -164,13 +158,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -249,13 +237,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -336,13 +318,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -396,13 +372,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -498,13 +468,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -587,13 +551,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -680,13 +638,7 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
@@ -760,23 +712,14 @@ provider.Network.makeLoadBalancer({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [NatGateway](../Network/NatGateway.md)
-- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
-- [PublicIPPrefix](../Network/PublicIPPrefix.md)
-- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Swagger Schema
 ```js
 {

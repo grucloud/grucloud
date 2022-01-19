@@ -248,13 +248,15 @@ const createClient = ({
   getResourcesByType,
   getResourceFromLive,
   getListHof,
+  lives,
 }) =>
   pipe([
     tap((params) => {
       assert(getListHof);
       assert(spec.Client);
+      assert(lives);
     }),
-    () => spec.Client({ providerName, spec, config }),
+    () => spec.Client({ providerName, spec, config, lives }),
     tap((client) => {
       assert(getResourcesByType);
       assert(getResourceFromLive);

@@ -106,7 +106,7 @@ const securityGroupRulePickProperties = pipe([
       ])(),
 ]);
 
-const ec2InstanceDependencies = () => ({
+const ec2InstanceDependencies = {
   subnet: {
     type: "Subnet",
     group: "EC2",
@@ -139,7 +139,7 @@ const ec2InstanceDependencies = () => ({
           not(includes(resource.live.RootDeviceName)),
         ])(),
   },
-});
+};
 
 const buildAvailabilityZone = pipe([
   get("AvailabilityZone"),

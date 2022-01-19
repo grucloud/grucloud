@@ -90,11 +90,11 @@ Below is the screencast of **gc new**:
  <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/daLrxnF4qNuuUksSugIBjmi2F/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "400px" }}
+    style={{ width: "100%", height: "400px" }}
     ></iframe>
 </div>
             
@@ -162,11 +162,11 @@ For instance, let's change the EC2 _InstanceType_ from _t2.micro_ to _t2.small_.
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/iab00IPqf2GCNx4nHRJQ0snKN/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/iab00IPqf2GCNx4nHRJQ0snKN/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>
 
@@ -181,11 +181,11 @@ gc destroy
 <div>
     <iframe
     data-autoplay
-    src="https://asciinema.org/a/0lD2ub5ltJCEifqifCWGNYAg6/embed?autoplay=true&amp;speed=2&amp;loop=true"
+    src="https://asciinema.org/a/0lD2ub5ltJCEifqifCWGNYAg6/iframe?autoplay=true&amp;speed=2&amp;loop=true"
     id="asciicast-iframe-13761"
     name="asciicast-iframe-13761"
     scrolling="no"
-    style={{ width: "900px", height: "700px" }}
+    style={{ width: "100%", height: "700px" }}
     ></iframe>
 </div>
 

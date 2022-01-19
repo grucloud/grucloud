@@ -48,6 +48,11 @@ exports.fnSpecs = ({ config }) =>
           },
         },
       },
+      //{ type: "PrivateEndpointConnection", apiVersion: "2021-06-01" },
+      // { type: "VirtualNetworkRule", apiVersion: "2021-06-01" },
+      // { type: "ServerSecurityAlertPolicy", apiVersion: "2021-06-01" },
+      // { type: "ServerKey", apiVersion: "2020-02-14-preview" },
+      // { type: "ServerAdministrator", apiVersion: "2021-06-01" },
     ],
     map(defaultsDeep({ group })),
   ])();

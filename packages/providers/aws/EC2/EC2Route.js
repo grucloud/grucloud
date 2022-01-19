@@ -366,7 +366,7 @@ exports.EC2Route = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
-  const destroy = async ({ id, name, live }) =>
+  const destroy = ({ live }) =>
     pipe([
       tap(() => {
         logger.info(`destroy route ${JSON.stringify({ live })}`);

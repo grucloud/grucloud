@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, fork, tryCatch, assign } = require("rubico");
+const { map, pipe, get, tap, fork, tryCatch, assign } = require("rubico");
 const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
@@ -13,44 +13,72 @@ const { checkEnv } = require("@grucloud/core/Utils");
 const { generateCode } = require("./Az2gc");
 const { fnSpecs } = require("./AzureSpec");
 
+const AUDIENCES = ["https://management.azure.com", "https://vault.azure.net"];
+
 exports.AzureProvider = ({
   name = "azure",
   config,
   configs = [],
   ...other
 }) => {
-  const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
+  const mandatoryEnvs = [
+    "AZURE_TENANT_ID",
+    "AZURE_SUBSCRIPTION_ID",
+    "AZURE_CLIENT_ID",
+    "AZURE_CLIENT_SECRET",
+  ];
 
-  let _bearerToken;
+  const bearerTokenMap = {};
+
+  const authorizeByResource = ({ resource }) =>
+    pipe([
+      AzAuthorize({ resource }),
+      get("bearerToken"),
+      tap((bearerToken) => {
+        bearerTokenMap[resource] = bearerToken;
+      }),
+    ]);
 
   const start = pipe([
     tap(() => {
       checkEnv(mandatoryEnvs);
     }),
-    () => ({
-      tenantId: process.env.TENANT_ID,
-      appId: process.env.APP_ID,
-      password: process.env.PASSWORD,
-    }),
-    AzAuthorize,
-    get("bearerToken"),
-    tap((bearerToken) => {
-      _bearerToken = bearerToken;
-    }),
+    () => AUDIENCES,
+    map((resource) =>
+      pipe([
+        () => ({
+          tenantId: process.env.AZURE_TENANT_ID,
+          appId: process.env.AZURE_CLIENT_ID,
+          password: process.env.AZURE_CLIENT_SECRET,
+        }),
+        authorizeByResource({
+          resource,
+        }),
+      ])()
+    ),
   ]);
+
   const configProviderDefault = {
-    bearerToken: () => _bearerToken,
+    bearerToken: pipe([
+      (audience) => bearerTokenMap[audience],
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
     retryCount: 60,
     retryDelay: 10e3,
+    subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
+    tenantId: process.env.AZURE_TENANT_ID,
+    appId: process.env.AZURE_CLIENT_ID,
   };
 
   const makeConfig = () =>
     mergeConfig({ configDefault: configProviderDefault, config, configs });
 
   const info = () => ({
-    subscriptionId: process.env.SUBSCRIPTION_ID,
-    tenantId: process.env.TENANT_ID,
-    appId: process.env.APP_ID,
+    subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
+    tenantId: process.env.AZURE_TENANT_ID,
+    appId: process.env.AZURE_CLIENT_ID,
     config: makeConfig(),
   });
 
@@ -103,7 +131,7 @@ exports.AzureProvider = ({
   //       assert(options);
   //     }),
   //     () =>
-  //       `/subscriptions/${process.env.SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
+  //       `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
   //     axios.get,
   //     get("data.value"),
   //   ])();

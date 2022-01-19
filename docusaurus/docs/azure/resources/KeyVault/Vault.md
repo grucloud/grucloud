@@ -73,6 +73,7 @@ provider.KeyVault.makeVault({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
   }),
 });
 
@@ -104,12 +105,14 @@ provider.KeyVault.makeVault({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
 ## Swagger Schema
 ```js
 {

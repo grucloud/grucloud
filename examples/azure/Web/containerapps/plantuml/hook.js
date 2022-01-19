@@ -12,7 +12,7 @@ module.exports = ({ provider }) => {
       init: async () => {
         const resources = provider.resources();
         const containerApp = await resources.Web.ContainerApp[
-          "plantuml"
+          "rg-plantuml::plantuml"
         ].getLive();
         assert(containerApp);
         const url = `https://${containerApp.properties.configuration.ingress.fqdn}`;

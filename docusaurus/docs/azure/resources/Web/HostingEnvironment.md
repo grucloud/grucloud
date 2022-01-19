@@ -7,7 +7,6 @@ Provides a **HostingEnvironment** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
-- [GlobalSubscriptionPublishingCredentials](../Web/GlobalSubscriptionPublishingCredentials.md)
 ## Swagger Schema
 ```js
 {
