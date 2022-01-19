@@ -95,6 +95,7 @@ const ResourcesExcludes = [
   "Network::ExpressRouteCrossConnection",
   "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
   "Network::ExpressRoutePort",
+  "Network::FirewallPolicyIdpsSignaturesOverride",
   "Network::InterfaceEndpoint",
   "Network::NetworkManager",
   "Network::NetworkSecurityPerimeter",

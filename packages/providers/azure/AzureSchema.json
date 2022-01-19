@@ -5398,6 +5398,12 @@
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName"
+            },
+            "securityPartnerProvider": {
+                "type": "SecurityPartnerProvider",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "id"
             }
         },
         "methods": {
@@ -6052,60 +6058,6 @@
             "properties.sku.tier",
             "identity.type",
             "identity.userAssignedIdentities"
-        ]
-    },
-    {
-        "type": "FirewallPolicyIdpsSignaturesOverride",
-        "group": "Network",
-        "apiVersion": "2021-05-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName"
-            },
-            "securityPartnerProvider": {
-                "type": "SecurityPartnerProvider",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "id"
-            },
-            "firewallPolicy": {
-                "type": "FirewallPolicy",
-                "group": "Network",
-                "name": "firewallPolicyName"
-            }
-        },
-        "methods": {
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}/signatureOverrides/default",
-                "operationId": "FirewallPolicyIdpsSignaturesOverrides_Patch"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}/signatureOverrides/default",
-                "operationId": "FirewallPolicyIdpsSignaturesOverrides_Put"
-            },
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}/signatureOverrides/default",
-                "operationId": "FirewallPolicyIdpsSignaturesOverrides_Get"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}/signatureOverrides",
-                "operationId": "FirewallPolicyIdpsSignaturesOverrides_List"
-            }
-        },
-        "omitProperties": [
-            "id"
-        ],
-        "pickProperties": [
-            "name",
-            "type",
-            "properties.signatures"
-        ],
-        "pickPropertiesCreate": [
-            "name",
-            "type",
-            "properties.signatures"
         ]
     },
     {

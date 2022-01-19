@@ -388,6 +388,151 @@ exports.fnSpecs = ({ config }) => {
         ],
       },
       {
+        type: "AzureFirewall",
+        apiVersion: "2021-05-01",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          virtualHub: {
+            type: "VirtualHub",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.virtualHub.id",
+          },
+          firewallPolicy: {
+            type: "FirewallPolicy",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.firewallPolicy.id",
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.ipConfigurations"),
+              pluck("properties"),
+              pluck("subnet"),
+              pluck("id"),
+            ])(),
+          },
+          //TODO create findDependenciesDependencyId
+          {
+            type: "VirtualHub",
+            group: "Network",
+            ids: [pipe([() => live, get("properties.virtualHub.id")])()],
+          },
+          {
+            type: "FirewallPolicy",
+            group: "Network",
+            ids: [pipe([() => live, get("properties.firewallPolicy.id")])()],
+          },
+        ],
+        omitProperties: ["properties.ipConfigurations"],
+        filterLive: ({ lives }) =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                //pick(["ipConfigurations"]),
+                omit(["provisioningState"]),
+                assign({
+                  firewallPolicy: pipe([
+                    get("firewallPolicy"),
+                    assignDependenciesId({
+                      group: "Network",
+                      type: "FirewallPolicy",
+                      lives,
+                    }),
+                  ]),
+                  ipConfigurations: pipe([
+                    get("ipConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["subnet", "publicIPAddress"]),
+                            assign({
+                              subnet: pipe([
+                                get("subnet"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "Subnet",
+                                  lives,
+                                }),
+                              ]),
+                              publicIPAddress: pipe([
+                                get("publicIPAddress"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "PublicIPAddress",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([
+            () => properties,
+            defaultsDeep(
+              configDefaultGeneric({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+            defaultsDeep(
+              configDefaultDependenciesId({
+                properties,
+                dependencies,
+                config,
+                spec,
+              })
+            ),
+          ])(),
+      },
+      {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
         type: "NetworkInterface",
         includeDefaultDependencies: true,
