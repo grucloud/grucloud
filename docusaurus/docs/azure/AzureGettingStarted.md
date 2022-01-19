@@ -15,7 +15,7 @@ import TOCInline from '@theme/TOCInline';
 
 ## Workflow
 
-![gc-new-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-new-workflow.svg)
+![gc-new-workflow](../../plantuml/gc-new-workflow.svg)
 
 ## Requirement
 
