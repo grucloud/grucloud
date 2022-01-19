@@ -3,9 +3,13 @@ title Resources for project vm-vault
 skinparam monochrome true
 + Infra
 ++ azure
++++ Authorization
+++++ RoleAssignment (1)
 +++ Compute
 ++++ SshPublicKey (1)
 ++++ VirtualMachine (1)
++++ KeyVault
+++++ Vault (1)
 +++ Network
 ++++ NetworkInterface (1)
 ++++ NetworkSecurityGroup (1)
