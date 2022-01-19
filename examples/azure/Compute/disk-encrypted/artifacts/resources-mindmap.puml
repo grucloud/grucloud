@@ -3,9 +3,6 @@ title Resources for project disk-encrypted
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Network
-++++ Subnet (1)
-++++ VirtualNetwork (1)
 +++ Resources
 ++++ ResourceGroup (1)
 @endmindmap

@@ -85,7 +85,7 @@ gc list --graph
     ></iframe>
 </div>
 
-![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/vm/artifacts/diagram-live.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/Compute/vm/artifacts/diagram-live.svg)
 
 ### `gc gencode` Generate the code
 

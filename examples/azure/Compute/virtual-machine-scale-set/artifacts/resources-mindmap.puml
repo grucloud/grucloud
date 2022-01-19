@@ -7,7 +7,7 @@ skinparam monochrome true
 ++++ SshPublicKey (1)
 ++++ VirtualMachineScaleSet (1)
 +++ Network
-++++ NetworkSecurityGroup (1)
+++++ NetworkSecurityGroup (2)
 ++++ Subnet (1)
 ++++ VirtualNetwork (1)
 +++ Resources
