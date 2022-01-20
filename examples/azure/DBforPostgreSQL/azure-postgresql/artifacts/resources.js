@@ -29,6 +29,7 @@ const createResources = ({ provider }) => {
         storage: {
           storageSizeGB: 32,
         },
+        administratorLogin: "GcAdmin",
         administratorLoginPassword:
           process.env.DB_GRUCLOUD_TEST_ADMINISTRATOR_LOGIN_PASSWORD,
       },

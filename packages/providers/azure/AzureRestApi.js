@@ -1039,7 +1039,7 @@ const isOmit = (key) =>
     () => key.match(new RegExp("Id$", "gi")),
     () => key.match(new RegExp("status", "gi")),
     () => key.match(new RegExp("state", "gi")),
-    get("x-ms-mutability"),
+    //get("x-ms-mutability"),
     isSecret(key),
   ]);
 
@@ -1091,7 +1091,7 @@ const buildPickProperties =
           switchCase([
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
-            isOmit(key),
+            or([isOmit(key), get("x-ms-mutability")]),
             () => undefined,
             and([not(isOmit(key)), not(get("properties"))]),
             pipe([() => [[...parentPath, key]]]),

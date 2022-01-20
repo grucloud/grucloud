@@ -10,7 +10,7 @@ module.exports = AxiosMaker = ({
 }) => {
   const axios = Axios.create({
     baseURL,
-    timeout: 10e3,
+    timeout: 5e3,
     withCredentials: true,
     httpsAgent,
   });

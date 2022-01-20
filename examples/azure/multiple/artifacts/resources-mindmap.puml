@@ -1,0 +1,38 @@
+@startmindmap
+title Resources for project multiple
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ VirtualMachine (4)
+++++ SshPublicKey (5)
+++++ VirtualMachineExtension (1)
+++++ Disk (1)
+++++ VirtualMachineScaleSet (2)
++++ Network
+++++ NetworkInterface (4)
+++++ NetworkSecurityGroup (7)
+++++ PublicIPAddress (7)
+++++ Subnet (8)
+++++ VirtualNetwork (8)
+++++ AzureFirewall (1)
+++++ FirewallPolicy (1)
+++++ LoadBalancer (1)
+++++ LoadBalancerBackendAddressPool (1)
+++++ NatGateway (1)
++++ Resources
+++++ ResourceGroup (10)
++++ Authorization
+++++ RoleAssignment (1)
++++ ManagedIdentity
+++++ UserAssignedIdentity (1)
++++ DBforPostgreSQL
+++++ Configuration (1)
+++++ FirewallRule (1)
+++++ Server (1)
++++ OperationalInsights
+++++ Workspace (1)
++++ Web
+++++ ContainerApp (1)
+++++ KubeEnvironment (1)
+@endmindmap

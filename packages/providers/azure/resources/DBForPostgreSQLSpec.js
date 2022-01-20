@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, map } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { pipe, eq, get, tap, map, or } = require("rubico");
+const { defaultsDeep, callProp, last, identity } = require("rubico/x");
 
 const group = "DBforPostgreSQL";
 
@@ -16,7 +16,12 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "Database",
         ignoreResource: () =>
-          pipe([get("name"), callProp("startsWith", "azure_")]),
+          pipe([
+            get("name"),
+            callProp("split", "::"),
+            last,
+            or([callProp("startsWith", "azure_"), eq(identity, "postgres")]),
+          ]),
         cannotBeDeleted: pipe([
           tap((params) => {
             assert(true);

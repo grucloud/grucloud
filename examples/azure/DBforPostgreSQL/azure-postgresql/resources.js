@@ -3,9 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.DBforPostgreSQL.makeFirewallRule({
+  provider.DBforPostgreSQL.makeConfiguration({
+    name: "rg-postgres::gc-server::shared_preload_libraries",
     properties: ({}) => ({
-      name: "AllowAllAzureServicesAndResourcesWithinAzureIps_2021-12-15_11-18-53",
+      properties: {
+        value: "pg_cron,pg_stat_statements",
+        source: "user-override",
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
+    }),
+  });
+
+  provider.DBforPostgreSQL.makeFirewallRule({
+    name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
+    properties: ({}) => ({
       properties: {
         startIpAddress: "0.0.0.0",
         endIpAddress: "0.0.0.0",
@@ -13,13 +27,13 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
+      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
     }),
   });
 
   provider.DBforPostgreSQL.makeServer({
+    name: "rg-postgres::gc-server",
     properties: ({}) => ({
-      name: "db-grucloud-test",
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",
@@ -29,8 +43,9 @@ const createResources = ({ provider }) => {
         storage: {
           storageSizeGB: 32,
         },
+        administratorLogin: "GcAdmin",
         administratorLoginPassword:
-          process.env.DB_GRUCLOUD_TEST_ADMINISTRATOR_LOGIN_PASSWORD,
+          process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
     dependencies: ({ resources }) => ({
@@ -39,9 +54,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "rg-postgres",
-    }),
+    name: "rg-postgres",
   });
 };
 

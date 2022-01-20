@@ -83,7 +83,7 @@ exports.Lister =
         }),
         switchCase([
           () => isUp(),
-          map.pool(20, (entry) =>
+          map.pool(10, (entry) =>
             pipe([
               () => entry,
               get("dependsOn"),

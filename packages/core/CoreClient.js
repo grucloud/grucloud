@@ -154,7 +154,7 @@ module.exports = CoreClient = ({
           }),
           unless(Array.isArray, (path) => [path]),
           map.pool(
-            50,
+            5,
             pipe([
               (path) =>
                 retryCallOnError({
