@@ -697,7 +697,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DBforPostgreSQL.makeServer({
+  provider.DBforPostgreSQL.makeFlexibleServer({
     name: "rg-postgres::gc-server",
     properties: ({}) => ({
       sku: {

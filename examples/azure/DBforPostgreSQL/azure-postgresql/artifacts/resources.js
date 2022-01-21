@@ -17,7 +17,7 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.DBforPostgreSQL.makeServer({
+  provider.DBforPostgreSQL.makeFlexibleServer({
     name: "db-grucloud-test",
     properties: ({}) => ({
       sku: {

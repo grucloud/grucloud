@@ -27,7 +27,7 @@ describe("AzProvider", async function () {
     }
     provider = AzureProvider({
       name: "azure",
-      config: () => ({ location: "uksouth" }),
+      config: () => ({ location: "canadacentral" }),
     });
     resourceGroup = provider.Resources.makeResourceGroup({
       name: rgName,

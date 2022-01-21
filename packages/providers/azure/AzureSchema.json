@@ -13494,7 +13494,7 @@
                 "parent": true
             },
             "server": {
-                "type": "Server",
+                "type": "FlexibleServer",
                 "group": "DBforPostgreSQL",
                 "name": "serverName",
                 "parent": true
@@ -13551,7 +13551,7 @@
                 "parent": true
             },
             "server": {
-                "type": "Server",
+                "type": "FlexibleServer",
                 "group": "DBforPostgreSQL",
                 "name": "serverName",
                 "parent": true
@@ -13599,7 +13599,7 @@
                 "parent": true
             },
             "server": {
-                "type": "Server",
+                "type": "FlexibleServer",
                 "group": "DBforPostgreSQL",
                 "name": "serverName",
                 "parent": true
@@ -13636,7 +13636,7 @@
         ]
     },
     {
-        "type": "Server",
+        "type": "FlexibleServer",
         "group": "DBforPostgreSQL",
         "apiVersion": "2021-06-01",
         "dependencies": {

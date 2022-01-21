@@ -12,16 +12,14 @@ skinparam monochrome true
 +++ Network
 ++++ NetworkInterface (4)
 ++++ NetworkSecurityGroup (7)
-++++ PublicIPAddress (7)
-++++ Subnet (8)
-++++ VirtualNetwork (8)
-++++ AzureFirewall (1)
-++++ FirewallPolicy (1)
+++++ PublicIPAddress (6)
+++++ Subnet (7)
+++++ VirtualNetwork (7)
 ++++ LoadBalancer (1)
 ++++ LoadBalancerBackendAddressPool (1)
 ++++ NatGateway (1)
 +++ Resources
-++++ ResourceGroup (10)
+++++ ResourceGroup (9)
 +++ Authorization
 ++++ RoleAssignment (1)
 +++ ManagedIdentity
@@ -29,7 +27,7 @@ skinparam monochrome true
 +++ DBforPostgreSQL
 ++++ Configuration (1)
 ++++ FirewallRule (1)
-++++ Server (1)
+++++ FlexibleServer (1)
 +++ OperationalInsights
 ++++ Workspace (1)
 +++ Web

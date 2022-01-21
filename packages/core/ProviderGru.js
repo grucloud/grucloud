@@ -168,13 +168,16 @@ exports.ProviderGru = ({
     readWrite,
   }) =>
     pipe([
-      tap(() => {
+      tap((providers) => {
         logger.info(`listLives ${JSON.stringify({ options, readWrite })}`);
         assert(onStateChange);
+        assert(providers);
       }),
-      () => filterProviderUp({ stacks, onStateChange }),
       map(({ provider }) =>
         pipe([
+          tap(() => {
+            assert(provider);
+          }),
           () =>
             provider.listLives({
               onStateChange,
@@ -196,7 +199,7 @@ exports.ProviderGru = ({
         assert(true);
       }),
       () => lives,
-    ])();
+    ]);
 
   const displayLives = (lives) =>
     pipe([
@@ -215,10 +218,11 @@ exports.ProviderGru = ({
 
   const planQuery = ({ onStateChange = identity } = {}) =>
     pipe([
-      tap(() => {
+      tap((providers) => {
         logger.info(`planQuery`);
+        assert(Array.isArray(providers));
       }),
-      () => listLives({ onStateChange }),
+      listLives({ onStateChange }),
       tap((params) => {
         assert(true);
       }),
@@ -268,7 +272,7 @@ exports.ProviderGru = ({
           }),
         ]),
       ]),
-    ])();
+    ]);
 
   const planApply = ({ plan, onStateChange, onProviderEnd = () => {} }) =>
     pipe([
@@ -290,13 +294,7 @@ exports.ProviderGru = ({
                     getProvider({
                       providerName: planPerProvider.providerName,
                     }),
-                  (provider) =>
-                    pipe([
-                      () => provider.start({ onStateChange }),
-                      tap((xxx) => {
-                        assert(true);
-                      }),
-                    ])(),
+                  (provider) => provider.start({ onStateChange }),
                 ])(),
               (error, { providerName }) => {
                 logger.error(
@@ -362,10 +360,12 @@ exports.ProviderGru = ({
       }),
     ])();
 
-  const filterProviderUp = ({ stacks, onStateChange }) =>
+  const startProvider = ({ onStateChange }) =>
     pipe([
       tap(() => {
-        logger.info(`filterProviderUp`);
+        logger.info(`startProvider`);
+        assert(onStateChange);
+        assert(stacks);
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
@@ -373,11 +373,11 @@ exports.ProviderGru = ({
         executor: ({ results }) =>
           pipe([
             tap(() => {
-              logger.info(`filterProviderUp start`);
+              logger.info(`startProvider`);
             }),
             () => provider.start({ onStateChange }),
             tap(() => {
-              logger.info(`filterProviderUp started`);
+              logger.info(`startProvider started`);
             }),
             () => ({
               provider,
@@ -389,11 +389,12 @@ exports.ProviderGru = ({
         onStateChange: ({ key, result, nextState }) =>
           pipe([
             tap.if(
+              //TODO eq ?
               () => includes(nextState)(["ERROR"]),
               pipe([
                 () => getProvider({ providerName: key }),
                 tap((provider) => {
-                  logger.info(`filterProviderUp provider ${provider.name}`);
+                  logger.error(`error startProvider provider ${provider.name}`);
                 }),
                 (provider) =>
                   provider.spinnersStopListLives({
@@ -406,21 +407,24 @@ exports.ProviderGru = ({
       }),
       get("results"),
       tap((results) => {
-        logger.info(`filterProviderUp #providers ${size(results)}`);
+        logger.info(`startProvider #providers ${size(results)}`);
       }),
     ])();
 
   const planQueryDestroy = ({ onStateChange, options }) =>
     pipe([
-      tap(() => {
+      tap((providers) => {
         logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
         assert(onStateChange);
         assert(stacks);
+        assert(Array.isArray(providers));
       }),
-      () => listLives({ onStateChange, options, readWrite: true }),
+      listLives({ onStateChange, options, readWrite: true }),
       () =>
         pipe([
-          () => filterProviderUp({ stacks, onStateChange }),
+          //TOSO start twice ?
+          () => ({ onStateChange }),
+          startProvider,
           map(({ provider, isProviderUp }) =>
             pipe([
               () =>
@@ -446,7 +450,7 @@ exports.ProviderGru = ({
             logger.info(`planQueryDestroy done`);
           }),
         ])(),
-    ])();
+    ]);
 
   const planDestroy = ({ plan, onStateChange = identity, options }) =>
     pipe([
@@ -806,6 +810,7 @@ exports.ProviderGru = ({
     ])();
 
   return {
+    startProvider,
     listLives,
     planQuery,
     planApply,

@@ -320,15 +320,19 @@ const doPlanQuery = ({ commandOptions } = {}) =>
         }),
         command: ({ onStateChange }) =>
           pipe([
-            tap(() =>
-              map.series((provider) =>
-                provider.spinnersStartQuery({
-                  onStateChange,
-                  options: commandOptions,
-                })
-              )(providerGru.getProviders())
+            providerGru.getProviders,
+            map.series((provider) =>
+              provider.spinnersStartQuery({
+                onStateChange,
+                options: commandOptions,
+              })
             ),
-            () => providerGru.planQuery({ onStateChange, commandOptions }),
+            () => ({ onStateChange }),
+            providerGru.startProvider,
+            tap((params) => {
+              assert(true);
+            }),
+            providerGru.planQuery({ onStateChange, commandOptions }),
           ])({}),
       }),
     tap((result) => {
@@ -963,21 +967,18 @@ const planDestroy = async ({
               }),
               command: ({ onStateChange }) =>
                 pipe([
-                  tap(() =>
-                    map.series((provider) =>
-                      provider.spinnersStartDestroyQuery({
-                        onStateChange,
-                        options: commandOptions,
-                      })
-                    )(providerGru.getProviders())
-                  ),
-                  () =>
-                    providerGru.planQueryDestroy({
+                  providerGru.getProviders,
+                  map.series((provider) =>
+                    provider.spinnersStartDestroyQuery({
                       onStateChange,
                       options: commandOptions,
-                    }),
-                  tap((xxx) => {
-                    assert(xxx);
+                    })
+                  ),
+                  () => ({ onStateChange }),
+                  providerGru.startProvider,
+                  providerGru.planQueryDestroy({
+                    onStateChange,
+                    options: commandOptions,
                   }),
                 ])({}),
             }),
@@ -1129,25 +1130,25 @@ const listDoOk = ({ commandOptions, programOptions }) =>
             }),
             command: ({ onStateChange }) =>
               pipe([
-                tap(() =>
-                  map.series((provider) =>
-                    provider.spinnersStartListLives({
-                      onStateChange,
-                      options: commandOptions,
-                    })
-                  )(providerGru.getProviders())
-                ),
-                () =>
-                  providerGru.listLives({
+                providerGru.getProviders,
+                map.series((provider) =>
+                  provider.spinnersStartListLives({
                     onStateChange,
-                    onProviderEnd: ({ provider, error }) =>
-                      provider.spinnersStopProvider({
-                        onStateChange,
-                        error,
-                      }),
                     options: commandOptions,
-                  }),
-              ])({}),
+                  })
+                ),
+                () => ({ onStateChange }),
+                providerGru.startProvider,
+                providerGru.listLives({
+                  onStateChange,
+                  onProviderEnd: ({ provider, error }) =>
+                    provider.spinnersStopProvider({
+                      onStateChange,
+                      error,
+                    }),
+                  options: commandOptions,
+                }),
+              ])(),
           }),
         tap((lives) => {
           assert(lives);
@@ -1161,7 +1162,6 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           providerGru.displayLives(lives);
         }),
         tap(displayListResult),
-
         (results) => ({
           error: any(get("error"))(results),
           results,

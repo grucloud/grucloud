@@ -13,7 +13,7 @@ exports.createStack = ({ createProvider }) => {
           require("../Compute/virtual-machine-scale-set/resources"),
           require("../DBforPostgreSQL/azure-postgresql/resources"),
           //require("../ManagedIdentity/managed-identity-basic/resources"),
-          require("../Network/firewall/resources"),
+          //require("../Network/firewall/resources"),
           require("../Network/load-balancer/resources"),
           require("../Network/nat-gateway/resources"),
           require("../Web/containerapps/plantuml/resources"),

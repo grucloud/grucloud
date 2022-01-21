@@ -30,7 +30,7 @@ exports.fnSpecs = ({ config }) =>
         ]),
       },
       {
-        type: "Server",
+        type: "FlexibleServer",
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

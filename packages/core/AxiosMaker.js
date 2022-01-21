@@ -1,16 +1,21 @@
+const assert = require("assert");
 const Axios = require("axios");
 const logger = require("./logger")({ prefix: "AxiosMaker" });
 const { tos } = require("./tos");
 const { convertError } = require("./Common");
+const { assign, pipe, tap } = require("rubico");
+const { retryCallOnError } = require("./Retry");
+
 module.exports = AxiosMaker = ({
   baseURL,
   httpsAgent,
   onHeaders = noop,
   contentType = "application/json",
+  timeout = 30e3,
 }) => {
   const axios = Axios.create({
     baseURL,
-    timeout: 5e3,
+    timeout,
     withCredentials: true,
     httpsAgent,
   });
@@ -56,5 +61,20 @@ module.exports = AxiosMaker = ({
     }
   );
 
-  return axios;
+  return pipe([
+    () => axios,
+    assign({
+      get:
+        () =>
+        (...args) =>
+          pipe([
+            () =>
+              retryCallOnError({
+                name: `get url ${args[0]}`,
+                fn: () => axios.get(...args),
+                config: { retryDelay: 10e3 },
+              }),
+          ])(),
+    }),
+  ])();
 };

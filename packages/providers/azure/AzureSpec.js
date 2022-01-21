@@ -14,6 +14,7 @@ const {
   pick,
   reduce,
   fork,
+  any,
 } = require("rubico");
 
 const {
@@ -174,16 +175,55 @@ const buildDefaultSpec = fork({
   isOurMinion: () => AzTag.isOurMinion,
 });
 
-const addDefaultSpecs = ({}) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    map((spec) => ({ ...buildDefaultSpec(spec), ...spec })),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+const addDefaultSpecs = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  map((spec) => ({ ...buildDefaultSpec(spec), ...spec })),
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
+// const addUsedBy = (specs) =>
+//   pipe([
+//     tap((params) => {
+//       assert(true);
+//     }),
+//     () => specs,
+//     map(
+//       assign({
+//         usedBy: (spec) =>
+//           pipe([
+//             tap((params) => {
+//               assert(spec);
+//             }),
+//             () => specs,
+//             filter(
+//               pipe([
+//                 get("dependencies"),
+//                 filter(get("parent")),
+//                 tap((params) => {
+//                   assert(true);
+//                 }),
+//                 any(
+//                   and([
+//                     eq(get("group"), spec.group),
+//                     eq(get("type"), spec.type),
+//                   ])
+//                 ),
+//               ])
+//             ),
+//             tap((params) => {
+//               assert(true);
+//             }),
+//           ])(),
+//       })
+//     ),
+//     tap((params) => {
+//       assert(true);
+//     }),
+//   ])();
 
 const findByGroupAndType = ({ group, type }) =>
   pipe([
@@ -247,5 +287,9 @@ exports.fnSpecs = (config) =>
       assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
     ),
     callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
-    addDefaultSpecs({}),
+    addDefaultSpecs,
+    //addUsedBy,
+    tap((params) => {
+      assert(true);
+    }),
   ])();

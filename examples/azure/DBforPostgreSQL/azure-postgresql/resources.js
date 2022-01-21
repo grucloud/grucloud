@@ -13,7 +13,8 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
     }),
   });
 
@@ -27,11 +28,12 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
     }),
   });
 
-  provider.DBforPostgreSQL.makeServer({
+  provider.DBforPostgreSQL.makeFlexibleServer({
     name: "rg-postgres::gc-server",
     properties: ({}) => ({
       sku: {

@@ -106,7 +106,7 @@ const ResourcesExcludes = [
   "OperationalInsights::DataCollectorLog", //404
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
   "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
-  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, uksouth, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
+  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, canadacentral, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
   "Storage::BlobInventoryPolicy", //TODO 404 on list
   "KeyVault::PrivateEndpointConnection", // TODO 404
   "Web::CertificateCsr",
@@ -120,6 +120,7 @@ const ResourcesExcludes = [
   "Web::ProviderSourceControl",
 ];
 const OpertionIdReplaceMap = {
+  Servers_Get: "FlexibleServers_Get",
   //Storage
   StorageAccounts_GetProperties: "StorageAccounts_Get",
   TableServices_GetServiceProperties: "TableServices_Get",
@@ -910,7 +911,7 @@ const findDependenciesFromResources = ({
             }
           }
         },
-        pick(["group", "type"]),
+        pick(["group", "type", "parent"]),
         tap((params) => {
           assert(true);
         }),
@@ -989,8 +990,8 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
               (varName) => ({
                 ...acc,
                 [varName]: {
-                  type: type,
-                  group: group,
+                  type,
+                  group,
                   createOnly: true,
                   pathId,
                 },
