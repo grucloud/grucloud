@@ -97,8 +97,8 @@ module.exports = ({ provider }) => {
               fn: async () => {
                 await testSsh({
                   host,
-                  username: process.env.RESOURCE_GROUP_VM_ADMIN_USERNAME,
-                  password: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
+                  username: process.env.RG_VM_VM_ADMIN_USERNAME,
+                  password: process.env.RG_VM_VM_ADMIN_PASSWORD,
                 });
               },
               isExpectedResult: () => true,
