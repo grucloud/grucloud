@@ -110,58 +110,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "resource-group::vm",
-    properties: ({ getId }) => ({
-      properties: {
-        hardwareProfile: {
-          vmSize: "Standard_A1_v2",
-        },
-        osProfile: {
-          computerName: "myVM",
-          adminUsername: "ops",
-          adminPassword: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
-        },
-        storageProfile: {
-          imageReference: {
-            publisher: "Canonical",
-            offer: "UbuntuServer",
-            sku: "18.04-LTS",
-            version: "latest",
-          },
-          osDisk: {
-            osType: "Linux",
-            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
-            createOption: "FromImage",
-            caching: "ReadWrite",
-            managedDisk: {
-              storageAccountType: "Standard_LRS",
-            },
-            deleteOption: "Detach",
-            diskSizeGB: 30,
-          },
-        },
-        networkProfile: {
-          networkInterfaces: [
-            {
-              id: getId({
-                type: "NetworkInterface",
-                group: "Network",
-                name: "resource-group::network-interface",
-              }),
-            },
-          ],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      networkInterfaces: [
-        resources.Network.NetworkInterface["resource-group::network-interface"],
-      ],
-    }),
-  });
-
-  provider.Compute.makeVirtualMachine({
     name: "rg-user-managed-identity::vm",
     properties: ({ getId }) => ({
       properties: {
@@ -399,6 +347,58 @@ const createResources = ({ provider }) => {
       ],
       disks: [resources.Compute.Disk["rg-vm-disks::vm_datadisk_0"]],
       sshPublicKeys: [resources.Compute.SshPublicKey["rg-vm-disks::keypair"]],
+    }),
+  });
+
+  provider.Compute.makeVirtualMachine({
+    name: "rg-vm::vm",
+    properties: ({ getId }) => ({
+      properties: {
+        hardwareProfile: {
+          vmSize: "Standard_A1_v2",
+        },
+        osProfile: {
+          computerName: "myVM",
+          adminUsername: "ops",
+          adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
+        },
+        storageProfile: {
+          imageReference: {
+            publisher: "Canonical",
+            offer: "UbuntuServer",
+            sku: "18.04-LTS",
+            version: "latest",
+          },
+          osDisk: {
+            osType: "Linux",
+            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Standard_LRS",
+            },
+            deleteOption: "Detach",
+            diskSizeGB: 30,
+          },
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "rg-vm::network-interface",
+              }),
+            },
+          ],
+        },
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+      networkInterfaces: [
+        resources.Network.NetworkInterface["rg-vm::network-interface"],
+      ],
     }),
   });
 
@@ -679,7 +679,8 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
     }),
   });
 
@@ -693,7 +694,8 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["rg-postgres::gc-server"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
     }),
   });
 
@@ -723,79 +725,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup:
         resources.Resources.ResourceGroup["rg-user-managed-identity"],
-    }),
-  });
-
-  provider.Network.makeAzureFirewall({
-    name: "rg-firewall::firewall",
-    properties: ({ getId }) => ({
-      properties: {
-        sku: {
-          name: "AZFW_VNet",
-          tier: "Standard",
-        },
-        threatIntelMode: "Alert",
-        additionalProperties: {},
-        ipConfigurations: [
-          {
-            name: "ip-address",
-            properties: {
-              subnet: {
-                id: getId({
-                  type: "Subnet",
-                  group: "Network",
-                  name: "rg-firewall::virtual-network::azurefirewallsubnet",
-                }),
-              },
-              publicIPAddress: {
-                id: getId({
-                  type: "PublicIPAddress",
-                  group: "Network",
-                  name: "rg-firewall::ip-address",
-                }),
-              },
-            },
-          },
-        ],
-        networkRuleCollections: [],
-        applicationRuleCollections: [],
-        natRuleCollections: [],
-        firewallPolicy: {
-          id: getId({
-            type: "FirewallPolicy",
-            group: "Network",
-            name: "rg-firewall::firewall-policy",
-          }),
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
-      subnets: [
-        resources.Network.Subnet[
-          "rg-firewall::virtual-network::azurefirewallsubnet"
-        ],
-      ],
-      publicIpAddresses: [
-        resources.Network.PublicIPAddress["rg-firewall::ip-address"],
-      ],
-      firewallPolicy:
-        resources.Network.FirewallPolicy["rg-firewall::firewall-policy"],
-    }),
-  });
-
-  provider.Network.makeFirewallPolicy({
-    name: "rg-firewall::firewall-policy",
-    properties: ({}) => ({
-      properties: {
-        threatIntelMode: "Alert",
-        sku: {
-          tier: "Standard",
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
     }),
   });
 
@@ -870,35 +799,6 @@ const createResources = ({ provider }) => {
       publicIpAddresses: [
         resources.Network.PublicIPAddress["rg-natgateway::ip-address"],
       ],
-    }),
-  });
-
-  provider.Network.makeNetworkInterface({
-    name: "resource-group::network-interface",
-    properties: ({}) => ({
-      name: "network-interface",
-      properties: {
-        ipConfigurations: [
-          {
-            name: "ipconfig",
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["resource-group::virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["resource-group::ip"],
-      securityGroup:
-        resources.Network.NetworkSecurityGroup[
-          "resource-group::security-group"
-        ],
-      subnet:
-        resources.Network.Subnet["resource-group::virtual-network::subnet"],
     }),
   });
 
@@ -985,42 +885,29 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makeNetworkSecurityGroup({
-    name: "resource-group::security-group",
+  provider.Network.makeNetworkInterface({
+    name: "rg-vm::network-interface",
     properties: ({}) => ({
+      name: "network-interface",
       properties: {
-        securityRules: [
+        ipConfigurations: [
           {
-            name: "SSH",
+            name: "ipconfig",
             properties: {
-              protocol: "Tcp",
-              sourcePortRange: "*",
-              destinationPortRange: "22",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 1000,
-              direction: "Inbound",
-            },
-          },
-          {
-            name: "ICMP",
-            properties: {
-              protocol: "Icmp",
-              sourcePortRange: "*",
-              destinationPortRange: "*",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 1001,
-              direction: "Inbound",
+              privateIPAllocationMethod: "Dynamic",
             },
           },
         ],
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
+      publicIpAddress: resources.Network.PublicIPAddress["rg-vm::ip"],
+      securityGroup:
+        resources.Network.NetworkSecurityGroup["rg-vm::security-group"],
+      subnet: resources.Network.Subnet["rg-vm::virtual-network::subnet"],
     }),
   });
 
@@ -1141,25 +1028,42 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makePublicIPAddress({
-    name: "resource-group::ip",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-    }),
-  });
-
-  provider.Network.makePublicIPAddress({
-    name: "rg-firewall::ip-address",
+  provider.Network.makeNetworkSecurityGroup({
+    name: "rg-vm::security-group",
     properties: ({}) => ({
-      sku: {
-        name: "Standard",
-      },
       properties: {
-        publicIPAllocationMethod: "Static",
+        securityRules: [
+          {
+            name: "SSH",
+            properties: {
+              protocol: "Tcp",
+              sourcePortRange: "*",
+              destinationPortRange: "22",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              priority: 1000,
+              direction: "Inbound",
+            },
+          },
+          {
+            name: "ICMP",
+            properties: {
+              protocol: "Icmp",
+              sourcePortRange: "*",
+              destinationPortRange: "*",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              priority: 1001,
+              direction: "Inbound",
+            },
+          },
+        ],
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
   });
 
@@ -1215,33 +1119,10 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makeSubnet({
-    name: "resource-group::virtual-network::subnet",
-    properties: ({}) => ({
-      name: "subnet",
-      properties: {
-        addressPrefix: "10.0.0.0/24",
-      },
-    }),
+  provider.Network.makePublicIPAddress({
+    name: "rg-vm::ip",
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["resource-group::virtual-network"],
-    }),
-  });
-
-  provider.Network.makeSubnet({
-    name: "rg-firewall::virtual-network::azurefirewallsubnet",
-    properties: ({}) => ({
-      name: "azurefirewallsubnet",
-      properties: {
-        addressPrefix: "10.0.0.0/24",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-firewall::virtual-network"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
   });
 
@@ -1338,31 +1219,18 @@ const createResources = ({ provider }) => {
     }),
   });
 
-  provider.Network.makeVirtualNetwork({
-    name: "resource-group::virtual-network",
+  provider.Network.makeSubnet({
+    name: "rg-vm::virtual-network::subnet",
     properties: ({}) => ({
+      name: "subnet",
       properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
-        },
+        addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
-    }),
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "rg-firewall::virtual-network",
-    properties: ({}) => ({
-      properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+      virtualNetwork:
+        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
     }),
   });
 
@@ -1452,6 +1320,20 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.Network.makeVirtualNetwork({
+    name: "rg-vm::virtual-network",
+    properties: ({}) => ({
+      properties: {
+        addressSpace: {
+          addressPrefixes: ["10.0.0.0/16"],
+        },
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+    }),
+  });
+
   provider.OperationalInsights.makeWorkspace({
     name: "rg-plantuml::logs",
     properties: ({}) => ({
@@ -1465,14 +1347,6 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "resource-group",
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "rg-firewall",
   });
 
   provider.Resources.makeResourceGroup({
@@ -1497,6 +1371,10 @@ const createResources = ({ provider }) => {
 
   provider.Resources.makeResourceGroup({
     name: "rg-virtual-machine-scale-set",
+  });
+
+  provider.Resources.makeResourceGroup({
+    name: "rg-vm",
   });
 
   provider.Resources.makeResourceGroup({

@@ -75,6 +75,17 @@ module.exports = AxiosMaker = ({
                 config: { retryDelay: 10e3 },
               }),
           ])(),
+      post:
+        () =>
+        (...args) =>
+          pipe([
+            () =>
+              retryCallOnError({
+                name: `post url ${args[0]}`,
+                fn: () => axios.post(...args),
+                config: { retryDelay: 10e3 },
+              }),
+          ])(),
     }),
   ])();
 };
