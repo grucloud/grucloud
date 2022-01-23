@@ -3,8 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
+  provider.DBforPostgreSQL.makeConfiguration({
+    name: "rg-postgres::gc-server::shared_preload_libraries",
+    properties: ({}) => ({
+      properties: {
+        value: "pg_cron,pg_stat_statements",
+        source: "user-override",
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    }),
+  });
+
   provider.DBforPostgreSQL.makeFirewallRule({
-    name: "AllowAllAzureServicesAndResourcesWithinAzureIps_2021-12-15_11-18-53",
+    name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
     properties: ({}) => ({
       properties: {
         startIpAddress: "0.0.0.0",
@@ -13,25 +28,26 @@ const createResources = ({ provider }) => {
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server: resources.DBforPostgreSQL.Server["db-grucloud-test"],
+      server:
+        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
     }),
   });
 
   provider.DBforPostgreSQL.makeFlexibleServer({
-    name: "db-grucloud-test",
+    name: "rg-postgres::gc-server",
     properties: ({}) => ({
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",
       },
       properties: {
+        administratorLogin: "GcAdmin",
         version: "13",
         storage: {
           storageSizeGB: 32,
         },
-        administratorLogin: "GcAdmin",
         administratorLoginPassword:
-          process.env.DB_GRUCLOUD_TEST_ADMINISTRATOR_LOGIN_PASSWORD,
+          process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
     dependencies: ({ resources }) => ({

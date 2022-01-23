@@ -46,8 +46,10 @@ exports.fnSpecs = ({ config }) =>
         },
         propertiesDefault: {
           properties: {
+            availabilityZone: "2",
             backup: {
               backupRetentionDays: 7,
+              geoRedundantBackup: "Disabled",
             },
             highAvailability: { mode: "Disabled" },
           },

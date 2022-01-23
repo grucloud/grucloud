@@ -4,8 +4,9 @@ skinparam monochrome true
 + Infra
 ++ azure
 +++ DBforPostgreSQL
+++++ Configuration (1)
 ++++ FirewallRule (1)
-++++ Server (1)
+++++ FlexibleServer (1)
 +++ Resources
 ++++ ResourceGroup (1)
 @endmindmap

@@ -61,7 +61,7 @@ const createResources = ({ provider }) => {
         ],
       },
       sourceImage:
-        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20220110",
+        "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20220118",
     }),
     dependencies: ({ resources }) => ({
       ip: resources.compute.Address["ip-webserver-ssh-keys"],

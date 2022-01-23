@@ -151,7 +151,13 @@ const buildDefaultSpec = fork({
           assert(true);
         }),
         pick(pickPropertiesCreate),
-        omit(["properties.provisioningState", "etag", "type", "identity"]),
+        omit([
+          "properties.provisioningState",
+          "etag",
+          "type",
+          //"identity",
+          "identity.userAssignedIdentities",
+        ]),
       ]),
   compare: ({
     pickProperties = [],

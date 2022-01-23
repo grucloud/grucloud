@@ -1092,7 +1092,7 @@ const buildPickProperties =
           switchCase([
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
-            or([isOmit(key), get("x-ms-mutability")]),
+            or([isOmit(key) /*, get("x-ms-mutability")*/]),
             () => undefined,
             and([not(isOmit(key)), not(get("properties"))]),
             pipe([() => [[...parentPath, key]]]),

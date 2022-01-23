@@ -533,6 +533,30 @@ exports.fnSpecs = ({ config }) => {
           ])(),
       },
       {
+        type: "FirewallPolicy",
+        group: "Network",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          managedIdentities: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          workspace: {
+            type: "Workspace",
+            group: "OperationalInsights",
+            createOnly: true,
+            list: true,
+          },
+        },
+      },
+      {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
         type: "NetworkInterface",
         includeDefaultDependencies: true,

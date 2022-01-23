@@ -1,6 +1,5 @@
 ## Bugs
 
-- LoadBalancer deps natGateway
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array
 - key or vault dependencies ?
 - DBforPostgreSQL/ServerKey dep key
@@ -64,9 +63,6 @@
 
 ## Azure
 
-- managedIdentity: create association with vm
-- Compute::SshPublicKey saves keys
-- Compute::VirtualMachine deps to Compute::SshPublicKey
 - RestorePoint
   AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRolePool
 
@@ -77,9 +73,6 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 - delete NSG : failed with status code 429 A retry
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
-
-- gc init: choose the service provider name depending on the project name
-- doc
 
 ## Aws2gc
 
@@ -194,15 +187,31 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Bugs
 
-az aks-basic
-✖ ContainerService::AgentPool 0/1 There has to be at least one agent pool.  
- ✓ ContainerService::ManagedCluster 1/1
-✓ Network::LoadBalancer 1/1
-✓ Network::LoadBalancerBackendAddressPool 1/1
-✖ Network::NetworkSecurityGroup 0/1 Request failed with status code 400 Network security group /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-31319825-nsg cannot be deleted because it is in use by the following resources: /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/virtualNetworks/aks-vnet-31319825/subnets/aks-subnet. In order to delete the Network security group, remove the association with the resource(s). To learn how to do this, see aka.ms/deletensg.
-✖ Network::PublicIPAddress 0/1 Request failed with status code 400 Public IP address /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/publicIPAddresses/c6c8863f-86ff-4644-b7bf-809d04f0b1e4 can not be deleted since it is still allocated to resource /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/loadBalancers/kubernetes/frontendIPConfigurations/c6c8863f-86ff-4644-b7bf-809d04f0b1e4. In order to delete the public IP, disassociate/detach the Public IP address from the resource. To learn how to do this, see aka.ms/deletepublicip.
-✓ Network::Route 1/1
-✓ Network::RouteTable 1/1
-✖ Network::Subnet 0/1 Request failed with status code 400 Subnet aks-subnet is in use by /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkInterfaces/|providers|Microsoft.Compute|virtualMachineScaleSets|aks-agentpool-29972251-vmss|virtualMachines|0|networkInterfaces|aks-agentpool-29972251-vmss/ipConfigurations/ipconfig1 and cannot be deleted. In order to delete the subnet, delete all the resources within the subnet. See aka.ms/deletesubnet.
-✖ Network::VirtualNetwork 0/1 Request failed with status code 400 Subnet aks-subnet is in use by /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/MC_rf-aks-basic_aks-basic_centralus/providers/Microsoft.Network/networkInterfaces/|providers|Microsoft.Compute|virtualMachineScaleSets|aks-agentpool-29972251-vmss|virtualMachines|0|networkInterfaces|aks-agentpool-29972251-vmss/ipConfigurations/ipconfig1 and cannot be deleted. In order to delete the subnet, delete all the resources within the subnet. See aka.ms/deletesubnet.
-✓ Resources::ResourceGroup 2/2
+azure plantuml
+
+axios error {
+"Message": "Request failed with status code 409 ",
+"Status": 409,
+"Output": {
+"Code": "95802",
+"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps",
+"Target": null,
+"Details": [
+{
+"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps"
+},
+{
+"Code": "95802"
+},
+{
+"ErrorEntity": {
+"Code": "95802",
+"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps"
+}
+}
+],
+"Innererror": null
+},
+"Input": {
+"url": "delete https://management.azure.com/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-plantuml/providers/Microsoft.Web/kubeenvironments/dev?api-version=2021-03-01"
+}
