@@ -712,10 +712,6 @@ const createResources = ({ provider }) => {
         storage: {
           storageSizeGB: 32,
         },
-        backup: {
-          geoRedundantBackup: "Disabled",
-        },
-        availabilityZone: "3",
         administratorLoginPassword:
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
