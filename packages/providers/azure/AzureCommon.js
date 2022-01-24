@@ -13,6 +13,7 @@ const {
   and,
 } = require("rubico");
 const {
+  isFunction,
   find,
   callProp,
   keys,
@@ -29,14 +30,22 @@ const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 exports.AZURE_MANAGEMENT_BASE_URL = "https://management.azure.com";
 exports.AZURE_KEYVAULT_AUDIENCE = "https://vault.azure.net";
+exports.AZURE_STORAGE_AUDIENCE = "https://storage.azure.com/";
 
 exports.createAxiosAzure = ({ baseURL, bearerToken }) =>
-  AxiosMaker({
-    baseURL,
-    onHeaders: () => ({
-      Authorization: `Bearer ${bearerToken()}`,
+  pipe([
+    tap(() => {
+      assert(baseURL);
+      assert(isFunction(bearerToken));
     }),
-  });
+    () =>
+      AxiosMaker({
+        baseURL,
+        onHeaders: () => ({
+          Authorization: `Bearer ${bearerToken()}`,
+        }),
+      }),
+  ])();
 
 exports.shortName = pipe([callProp("split", "::"), last]);
 

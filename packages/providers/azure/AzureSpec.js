@@ -35,6 +35,7 @@ const KeyVaultSpec = require("./resources/KeyVaultSpec");
 const NetworkSpec = require("./resources/NetworkSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const ResourceManagementSpec = require("./resources/ResourcesSpec");
+const StorageSpec = require("./resources/StorageSpec");
 const WebSpec = require("./resources/WebSpec");
 
 const AzTag = require("./AzTag");
@@ -53,6 +54,7 @@ const createSpecsOveride = (config) =>
       NetworkSpec,
       OperationalInsightsSpec,
       ResourceManagementSpec,
+      StorageSpec,
       WebSpec,
     ],
     flatMap(callProp("fnSpecs", { config })),
@@ -128,9 +130,6 @@ const buildDefaultSpec = fork({
       }),
       () => dependencies,
       values,
-      tap((params) => {
-        assert(true);
-      }),
       filter(not(get("createOnly"))),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
@@ -147,9 +146,6 @@ const buildDefaultSpec = fork({
     ({ pickPropertiesCreate = [] }) =>
     () =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         pick(pickPropertiesCreate),
         omit([
           "properties.provisioningState",
@@ -165,7 +161,16 @@ const buildDefaultSpec = fork({
     propertiesDefault = {},
   }) =>
     compare({
+      filterTarget: pipe([
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
       filterAll: pipe([
+        tap((params) => {
+          assert(pickProperties);
+          assert(propertiesDefault);
+        }),
         pick(pickProperties),
         defaultsDeep(propertiesDefault),
         omit(omitProperties),
@@ -238,9 +243,6 @@ const findByGroupAndType = ({ group, type }) =>
       assert(group);
     }),
     find(and([eq(get("group"), group), eq(get("type"), type)])),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 exports.findByGroupAndType = findByGroupAndType;
 
@@ -294,7 +296,6 @@ exports.fnSpecs = (config) =>
     ),
     callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
     addDefaultSpecs,
-    //addUsedBy,
     tap((params) => {
       assert(true);
     }),

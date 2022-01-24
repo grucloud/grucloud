@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project website
+skinparam monochrome true
++ Infra
+++ azure
++++ Resources
+++++ ResourceGroup (1)
++++ Storage
+++++ BlobContainer (1)
+++++ BlobServiceProperties (1)
+++++ StorageAccount (1)
+@endmindmap

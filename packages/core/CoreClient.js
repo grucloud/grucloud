@@ -169,7 +169,7 @@ module.exports = CoreClient = ({
               tap((data) => {
                 logger.debug(`getList ${spec.type}, ${tos(data)}`);
               }),
-              onResponseList({ axios }),
+              onResponseList({ axios, lives }),
               map(decorate({ axios, lives })),
             ])
           ),
@@ -247,7 +247,7 @@ module.exports = CoreClient = ({
                         assert(result);
                       }),
                       get("data"),
-                      onResponseCreate({ name, payload }),
+                      onResponseCreate({ name, payload, axios }),
                       (data) =>
                         pipe([
                           () => data,
