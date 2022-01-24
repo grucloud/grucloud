@@ -382,8 +382,8 @@ function CoreProvider({
     getSpecs,
     map(createClientFromSpec),
     filter(filterClient),
-    tap((params) => {
-      assert(true);
+    tap((clients) => {
+      logger.debug(`#client ${size(clients)}`);
     }),
   ]);
 

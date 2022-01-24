@@ -50,9 +50,6 @@ const assignIam = ({ axios, uri, config }) =>
           "get",
           `${id}/providers/Microsoft.Authorization/roleAssignments?api-version=2015-07-01`
         ),
-        tap((params) => {
-          assert(true);
-        }),
         get("data.value"),
       ])(),
   });

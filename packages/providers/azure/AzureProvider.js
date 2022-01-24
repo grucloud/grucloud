@@ -34,6 +34,8 @@ const {
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const {
   AZURE_MANAGEMENT_BASE_URL,
+  AZURE_KEYVAULT_AUDIENCE,
+  AZURE_STORAGE_AUDIENCE,
   createAxiosAzure,
 } = require("./AzureCommon");
 const { AzAuthorize } = require("./AzAuthorize");
@@ -42,7 +44,7 @@ const { generateCode } = require("./Az2gc");
 const { fnSpecs } = require("./AzureSpec");
 const logger = require("@grucloud/core/logger")({ prefix: "AzureProvider" });
 
-const AUDIENCES = [AZURE_MANAGEMENT_BASE_URL, "https://vault.azure.net"];
+const AUDIENCES = [AZURE_MANAGEMENT_BASE_URL, AZURE_KEYVAULT_AUDIENCE];
 
 const ResourceInclusionList = [
   "ResourceGroup",
@@ -99,7 +101,7 @@ exports.AzureProvider = ({
       checkEnv(mandatoryEnvs);
     }),
     () => AUDIENCES,
-    map((resource) =>
+    map.pool(5, (resource) =>
       pipe([
         () => ({
           tenantId: process.env.AZURE_TENANT_ID,
@@ -202,6 +204,7 @@ exports.AzureProvider = ({
         ({ group, type, dependencies }) =>
           pipe([
             () => dependencies,
+            // filter(not(get("createOnly"))), => filter(get("parent")),
             filter(not(get("createOnly"))),
             filter(not(eq(get("type"), "ResourceGroup"))),
             values,
@@ -210,6 +213,9 @@ exports.AzureProvider = ({
           ])(),
       ]),
     ]),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
   return {

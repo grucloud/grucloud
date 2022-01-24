@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project firewall
+skinparam monochrome true
++ Infra
+++ azure
++++ Network
+++++ AzureFirewall (1)
+++++ FirewallPolicy (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

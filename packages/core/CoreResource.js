@@ -253,6 +253,8 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
+          omitProperties: spec.omitProperties,
+          pickProperties: spec.pickProperties,
           propertiesDefault: spec.propertiesDefault,
           target,
           live,

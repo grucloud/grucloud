@@ -263,6 +263,7 @@ const createClient = ({
       assert(providerName);
       assert(client.spec);
       assert(client.findName);
+      assert(client.getByName);
       assert(client.getList);
     }),
     defaultsDeep({
@@ -293,7 +294,7 @@ const createClient = ({
           live,
           lives,
         }),
-      configDefault: () => ({}),
+      configDefault: get("properties"),
       isInstanceUp: not(isEmpty),
       providerName,
     }),
