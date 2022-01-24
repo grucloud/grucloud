@@ -235,10 +235,16 @@ provider.Compute.makeSnapshot({
             createOption: {
               type: 'string',
               enum: [
-                'Empty',     'Attach',
-                'FromImage', 'Import',
-                'Copy',      'Restore',
-                'Upload',    'CopyStart'
+                'Empty',
+                'Attach',
+                'FromImage',
+                'Import',
+                'Copy',
+                'Restore',
+                'Upload',
+                'CopyStart',
+                'ImportSecure',
+                'UploadPreparedSecure'
               ],
               'x-ms-enum': {
                 name: 'DiskCreateOption',
@@ -275,6 +281,14 @@ provider.Compute.makeSnapshot({
                   {
                     value: 'CopyStart',
                     description: 'Create a new disk by using a deep copy process, where the resource creation is considered complete only after all data has been copied from the source.'
+                  },
+                  {
+                    value: 'ImportSecure',
+                    description: 'Similar to Import create option. Create a new Trusted Launch VM or Confidential VM supported disk by importing additional blob for VM guest state specified by securityDataUri in storage account specified by storageAccountId'
+                  },
+                  {
+                    value: 'UploadPreparedSecure',
+                    description: 'Similar to Upload create option. Create a new Trusted Launch VM or Confidential VM supported disk and upload using write token in both disk and VM guest state'
                   }
                 ]
               },
@@ -336,6 +350,10 @@ provider.Compute.makeSnapshot({
               type: 'integer',
               format: 'int32',
               description: 'Logical sector size in bytes for Ultra disks. Supported values are 512 ad 4096. 4096 is the default.'
+            },
+            securityDataUri: {
+              type: 'string',
+              description: 'If createOption is ImportSecure, this is the URI of a blob to be imported into VM guest state.'
             }
           },
           required: [ 'createOption' ]
@@ -542,6 +560,47 @@ provider.Compute.makeSnapshot({
           type: 'string',
           description: 'ARM id of the DiskAccess resource for using private endpoints on disks.'
         },
+        securityProfile: {
+          description: 'Contains the security related information for the resource.',
+          properties: {
+            securityType: {
+              type: 'string',
+              description: 'Specifies the SecurityType of the VM. Applicable for OS disks only.',
+              enum: [
+                'TrustedLaunch',
+                'ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey',
+                'ConfidentialVM_DiskEncryptedWithPlatformKey',
+                'ConfidentialVM_DiskEncryptedWithCustomerKey'
+              ],
+              'x-ms-enum': {
+                name: 'DiskSecurityTypes',
+                modelAsString: true,
+                values: [
+                  {
+                    value: 'TrustedLaunch',
+                    description: 'Trusted Launch provides security features such as secure boot and virtual Trusted Platform Module (vTPM)'
+                  },
+                  {
+                    value: 'ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey',
+                    description: 'Indicates Confidential VM disk with only VM guest state encrypted'
+                  },
+                  {
+                    value: 'ConfidentialVM_DiskEncryptedWithPlatformKey',
+                    description: 'Indicates Confidential VM disk with both OS disk and VM guest state encrypted with a platform managed key'
+                  },
+                  {
+                    value: 'ConfidentialVM_DiskEncryptedWithCustomerKey',
+                    description: 'Indicates Confidential VM disk with both OS disk and VM guest state encrypted with a customer managed key'
+                  }
+                ]
+              }
+            },
+            secureVMDiskEncryptionSetId: {
+              type: 'string',
+              description: 'ResourceId of the disk encryption set associated to Confidential VM supported disk encrypted with customer managed key'
+            }
+          }
+        },
         supportsHibernation: {
           type: 'boolean',
           description: 'Indicates the OS on a snapshot supports hibernation.'
@@ -604,6 +663,6 @@ provider.Compute.makeSnapshot({
 }
 ```
 ## Misc
-The resource version is `2021-04-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-04-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).

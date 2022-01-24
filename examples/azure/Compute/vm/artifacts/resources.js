@@ -4,7 +4,7 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "resource-group::vm",
+    name: "rg-vm::vm",
     properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {
@@ -13,7 +13,7 @@ const createResources = ({ provider }) => {
         osProfile: {
           computerName: "myVM",
           adminUsername: "ops",
-          adminPassword: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -40,7 +40,7 @@ const createResources = ({ provider }) => {
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "resource-group::network-interface",
+                name: "rg-vm::network-interface",
               }),
             },
           ],
@@ -48,15 +48,15 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
       networkInterfaces: [
-        resources.Network.NetworkInterface["resource-group::network-interface"],
+        resources.Network.NetworkInterface["rg-vm::network-interface"],
       ],
     }),
   });
 
   provider.Network.makeNetworkInterface({
-    name: "resource-group::network-interface",
+    name: "rg-vm::network-interface",
     properties: ({}) => ({
       name: "network-interface",
       properties: {
@@ -71,21 +71,18 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
       virtualNetwork:
-        resources.Network.VirtualNetwork["resource-group::virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["resource-group::ip"],
+        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
+      publicIpAddress: resources.Network.PublicIPAddress["rg-vm::ip"],
       securityGroup:
-        resources.Network.NetworkSecurityGroup[
-          "resource-group::security-group"
-        ],
-      subnet:
-        resources.Network.Subnet["resource-group::virtual-network::subnet"],
+        resources.Network.NetworkSecurityGroup["rg-vm::security-group"],
+      subnet: resources.Network.Subnet["rg-vm::virtual-network::subnet"],
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "resource-group::security-group",
+    name: "rg-vm::security-group",
     properties: ({}) => ({
       properties: {
         securityRules: [
@@ -119,19 +116,19 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
   });
 
   provider.Network.makePublicIPAddress({
-    name: "resource-group::ip",
+    name: "rg-vm::ip",
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
   });
 
   provider.Network.makeSubnet({
-    name: "resource-group::virtual-network::subnet",
+    name: "rg-vm::virtual-network::subnet",
     properties: ({}) => ({
       name: "subnet",
       properties: {
@@ -139,14 +136,14 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
       virtualNetwork:
-        resources.Network.VirtualNetwork["resource-group::virtual-network"],
+        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
     }),
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "resource-group::virtual-network",
+    name: "rg-vm::virtual-network",
     properties: ({}) => ({
       properties: {
         addressSpace: {
@@ -155,12 +152,12 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "resource-group",
+    name: "rg-vm",
   });
 };
 

@@ -375,6 +375,6 @@ Provides a **AppServiceCertificateOrder** from the **CertificateRegistration** g
 }
 ```
 ## Misc
-The resource version is `2021-02-01`.
+The resource version is `2021-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2021-02-01/AppServiceCertificateOrders.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2021-03-01/AppServiceCertificateOrders.json).

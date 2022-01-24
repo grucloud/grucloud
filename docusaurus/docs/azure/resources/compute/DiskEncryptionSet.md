@@ -93,7 +93,8 @@ provider.Compute.makeDiskEncryptionSet({
           description: 'The type of key used to encrypt the data of the disk.',
           enum: [
             'EncryptionAtRestWithCustomerKey',
-            'EncryptionAtRestWithPlatformAndCustomerKeys'
+            'EncryptionAtRestWithPlatformAndCustomerKeys',
+            'ConfidentialVmEncryptedWithCustomerKey'
           ],
           'x-ms-enum': {
             name: 'DiskEncryptionSetType',
@@ -106,6 +107,10 @@ provider.Compute.makeDiskEncryptionSet({
               {
                 value: 'EncryptionAtRestWithPlatformAndCustomerKeys',
                 description: 'Resource using diskEncryptionSet would be encrypted at rest with two layers of encryption. One of the keys is Customer managed and the other key is Platform managed.'
+              },
+              {
+                value: 'ConfidentialVmEncryptedWithCustomerKey',
+                description: 'Confidential VM supported disk and VM guest state would be encrypted with customer managed key.'
               }
             ]
           }
@@ -228,6 +233,6 @@ provider.Compute.makeDiskEncryptionSet({
 }
 ```
 ## Misc
-The resource version is `2021-04-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-04-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).

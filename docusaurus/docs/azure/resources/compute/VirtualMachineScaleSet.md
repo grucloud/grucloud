@@ -1367,7 +1367,7 @@ provider.Compute.makeVirtualMachineScaleSet({
         },
       },
       upgradePolicy: { mode: "Manual" },
-      automaticRepairsPolicy: { enabled: true, gracePeriod: "PT30M" },
+      automaticRepairsPolicy: { enabled: true, gracePeriod: "PT10M" },
     },
   }),
   dependencies: ({ resources }) => ({
@@ -2671,6 +2671,294 @@ provider.Compute.makeVirtualMachineScaleSet({
 });
 
 ```
+
+### Create a VMSS with an extension with protectedSettingsFromKeyVault
+```js
+provider.Compute.makeVirtualMachineScaleSet({
+  name: "myVirtualMachineScaleSet",
+  properties: () => ({
+    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+    location: "westus",
+    properties: {
+      overprovision: true,
+      virtualMachineProfile: {
+        storageProfile: {
+          imageReference: {
+            sku: "2016-Datacenter",
+            publisher: "MicrosoftWindowsServer",
+            version: "latest",
+            offer: "WindowsServer",
+          },
+          osDisk: {
+            caching: "ReadWrite",
+            managedDisk: { storageAccountType: "Standard_LRS" },
+            createOption: "FromImage",
+          },
+        },
+        diagnosticsProfile: {
+          bootDiagnostics: {
+            storageUri:
+              "http://{existing-storage-account-name}.blob.core.windows.net",
+            enabled: true,
+          },
+        },
+        osProfile: {
+          computerNamePrefix: "{vmss-name}",
+          adminUsername: "{your-username}",
+          adminPassword: "{your-password}",
+        },
+        extensionProfile: {
+          extensions: [
+            {
+              name: "{extension-name}",
+              properties: {
+                autoUpgradeMinorVersion: false,
+                publisher: "{extension-Publisher}",
+                type: "{extension-Type}",
+                typeHandlerVersion: "{handler-version}",
+                settings: {},
+                protectedSettingsFromKeyVault: {
+                  sourceVault: {
+                    id: "/subscriptions/a53f7094-a16c-47af-abe4-b05c05d0d79a/resourceGroups/myResourceGroup/providers/Microsoft.KeyVault/vaults/kvName",
+                  },
+                  secretUrl:
+                    "https://kvName.vault.azure.net/secrets/secretName/79b88b3a6f5440ffb2e73e44a0db712e",
+                },
+              },
+            },
+          ],
+        },
+        networkProfile: {
+          networkInterfaceConfigurations: [
+            {
+              name: "{vmss-name}",
+              properties: {
+                primary: true,
+                enableIPForwarding: true,
+                ipConfigurations: [
+                  {
+                    name: "{vmss-name}",
+                    properties: {
+                      subnet: {
+                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      upgradePolicy: { mode: "Manual" },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroups: [
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    ],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+  }),
+});
+
+```
+
+### Create a scale set with vm size properties
+```js
+provider.Compute.makeVirtualMachineScaleSet({
+  name: "myVirtualMachineScaleSet",
+  properties: () => ({
+    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+    location: "westus",
+    properties: {
+      overprovision: true,
+      upgradePolicy: { mode: "Manual" },
+      virtualMachineProfile: {
+        storageProfile: {
+          imageReference: {
+            sku: "2016-Datacenter",
+            publisher: "MicrosoftWindowsServer",
+            version: "latest",
+            offer: "WindowsServer",
+          },
+          osDisk: {
+            caching: "ReadWrite",
+            managedDisk: { storageAccountType: "Standard_LRS" },
+            createOption: "FromImage",
+          },
+        },
+        userData: "RXhhbXBsZSBVc2VyRGF0YQ==",
+        hardwareProfile: {
+          vmSizeProperties: { vCPUsAvailable: 1, vCPUsPerCore: 1 },
+        },
+        osProfile: {
+          computerNamePrefix: "{vmss-name}",
+          adminUsername: "{your-username}",
+          adminPassword: "{your-password}",
+        },
+        networkProfile: {
+          networkInterfaceConfigurations: [
+            {
+              name: "{vmss-name}",
+              properties: {
+                primary: true,
+                enableIPForwarding: true,
+                ipConfigurations: [
+                  {
+                    name: "{vmss-name}",
+                    properties: {
+                      subnet: {
+                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroups: [
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    ],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+  }),
+});
+
+```
+
+### Create a scale set with SecurityType as ConfidentialVM
+```js
+provider.Compute.makeVirtualMachineScaleSet({
+  name: "myVirtualMachineScaleSet",
+  properties: () => ({
+    sku: { tier: "Standard", capacity: 3, name: "Standard_DC2as_v5" },
+    properties: {
+      overprovision: true,
+      virtualMachineProfile: {
+        storageProfile: {
+          imageReference: {
+            sku: "windows-cvm",
+            publisher: "MicrosoftWindowsServer",
+            version: "17763.2183.2109130127",
+            offer: "2019-datacenter-cvm",
+          },
+          osDisk: {
+            caching: "ReadOnly",
+            managedDisk: {
+              storageAccountType: "StandardSSD_LRS",
+              securityProfile: { securityEncryptionType: "VMGuestStateOnly" },
+            },
+            createOption: "FromImage",
+          },
+        },
+        securityProfile: {
+          uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
+          securityType: "ConfidentialVM",
+        },
+        osProfile: {
+          computerNamePrefix: "{vmss-name}",
+          adminUsername: "{your-username}",
+          adminPassword: "{your-password}",
+        },
+        networkProfile: {
+          networkInterfaceConfigurations: [
+            {
+              name: "{vmss-name}",
+              properties: {
+                primary: true,
+                enableIPForwarding: true,
+                ipConfigurations: [
+                  {
+                    name: "{vmss-name}",
+                    properties: {
+                      subnet: {
+                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      upgradePolicy: { mode: "Manual" },
+    },
+    location: "westus",
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
+    networkInterfaces: [
+      resources.Network.NetworkInterface["myNetworkInterface"],
+    ],
+    disks: [resources.Compute.Disk["myDisk"]],
+    managedIdentities: [
+      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
+    ],
+    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
+    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+    networkSecurityGroups: [
+      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
+    ],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    dedicatedHostGroup:
+      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    loadBalancerBackendAddressPool:
+      resources.Network.LoadBalancerBackendAddressPool[
+        "myLoadBalancerBackendAddressPool"
+      ],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
@@ -2789,7 +3077,13 @@ provider.Compute.makeVirtualMachineScaleSet({
             },
             gracePeriod: {
               type: 'string',
-              description: 'The amount of time for which automatic repairs are suspended due to a state change on VM. The grace time starts after the state change has completed. This helps avoid premature or accidental repairs. The time duration should be specified in ISO 8601 format. The minimum allowed grace period is 30 minutes (PT30M), which is also the default value. The maximum allowed grace period is 90 minutes (PT90M).'
+              description: 'The amount of time for which automatic repairs are suspended due to a state change on VM. The grace time starts after the state change has completed. This helps avoid premature or accidental repairs. The time duration should be specified in ISO 8601 format. The minimum allowed grace period is 10 minutes (PT10M), which is also the default value. The maximum allowed grace period is 90 minutes (PT90M).'
+            },
+            repairAction: {
+              type: 'string',
+              description: 'Type of repair action (replace, restart, reimage) that will be used for repairing unhealthy virtual machines in the scale set. Default value is replace.',
+              enum: [ 'Replace', 'Restart', 'Reimage' ],
+              'x-ms-enum': { name: 'RepairAction', modelAsString: true }
             }
           }
         },
@@ -3017,6 +3311,10 @@ provider.Compute.makeVirtualMachineScaleSet({
                     description: 'Describes a set of certificates which are all in the same Key Vault.'
                   },
                   description: 'Specifies set of certificates that should be installed onto the virtual machines in the scale set. To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
+                },
+                allowExtensionOperations: {
+                  type: 'boolean',
+                  description: 'Specifies whether extension operations should be allowed on the virtual machine scale set. <br><br>This may only be set to False when no extensions are present on the virtual machine scale set.'
                 }
               }
             },
@@ -3047,6 +3345,10 @@ provider.Compute.makeVirtualMachineScaleSet({
                     sharedGalleryImageId: {
                       type: 'string',
                       description: 'Specified the shared gallery image unique id for vm deployment. This can be fetched from shared gallery image GET call.'
+                    },
+                    communityGalleryImageId: {
+                      type: 'string',
+                      description: 'Specified the community gallery image unique id for vm deployment. This can be fetched from community gallery image GET call.'
                     }
                   },
                   allOf: [
@@ -3159,6 +3461,28 @@ provider.Compute.makeVirtualMachineScaleSet({
                               'x-ms-azure-resource': true
                             }
                           ]
+                        },
+                        securityProfile: {
+                          description: 'Specifies the security profile for the managed disk.',
+                          type: 'object',
+                          properties: {
+                            securityEncryptionType: {
+                              type: 'string',
+                              description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
+                              enum: [
+                                'VMGuestStateOnly',
+                                'DiskWithVMGuestState'
+                              ],
+                              'x-ms-enum': {
+                                name: 'securityEncryptionTypes',
+                                modelAsString: true
+                              }
+                            },
+                            diskEncryptionSet: {
+                              description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
+                              allOf: [ [Object] ]
+                            }
+                          }
                         }
                       }
                     }
@@ -3226,6 +3550,22 @@ provider.Compute.makeVirtualMachineScaleSet({
                                 'x-ms-azure-resource': true
                               }
                             ]
+                          },
+                          securityProfile: {
+                            description: 'Specifies the security profile for the managed disk.',
+                            type: 'object',
+                            properties: {
+                              securityEncryptionType: {
+                                type: 'string',
+                                description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
+                                enum: [Array],
+                                'x-ms-enum': [Object]
+                              },
+                              diskEncryptionSet: {
+                                description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
+                                allOf: [Array]
+                              }
+                            }
                           }
                         }
                       },
@@ -3376,8 +3716,8 @@ provider.Compute.makeVirtualMachineScaleSet({
                 },
                 securityType: {
                   type: 'string',
-                  description: 'Specifies the SecurityType of the virtual machine. It is set as TrustedLaunch to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set as TrustedLaunch.',
-                  enum: [ 'TrustedLaunch' ],
+                  description: 'Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set.',
+                  enum: [ 'TrustedLaunch', 'ConfidentialVM' ],
                   'x-ms-enum': { name: 'SecurityTypes', modelAsString: true }
                 }
               }
@@ -3464,6 +3804,10 @@ provider.Compute.makeVirtualMachineScaleSet({
                           suppressFailures: {
                             type: 'boolean',
                             description: 'Indicates whether failures stemming from the extension will be suppressed (Operational failures such as not connecting to the VM will not be suppressed regardless of this value). The default is false.'
+                          },
+                          protectedSettingsFromKeyVault: {
+                            type: 'object',
+                            description: 'The extensions protected settings that are passed by reference, and consumed from key vault'
                           }
                         },
                         description: 'Describes the properties of a Virtual Machine Scale Set Extension.'
@@ -3593,6 +3937,28 @@ provider.Compute.makeVirtualMachineScaleSet({
                   description: 'Specifies the gallery applications that should be made available to the VM/VMSS'
                 }
               }
+            },
+            hardwareProfile: {
+              description: 'Specifies the hardware profile related details of a scale set. <br><br>Minimum api-version: 2021-11-01.',
+              type: 'object',
+              properties: {
+                vmSizeProperties: {
+                  description: 'Specifies the properties for customizing the size of the virtual machine. Minimum api-version: 2021-11-01. <br><br> Please follow the instructions in [VM Customization](https://aka.ms/vmcustomization) for more details.',
+                  type: 'object',
+                  properties: {
+                    vCPUsAvailable: {
+                      type: 'integer',
+                      format: 'int32',
+                      description: 'Specifies the number of vCPUs available for the VM. <br><br> When this property is not specified in the request body the default behavior is to set it to the value of vCPUs available for that VM size exposed in api response of [List all available virtual machine sizes in a region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list) .'
+                    },
+                    vCPUsPerCore: {
+                      type: 'integer',
+                      format: 'int32',
+                      description: 'Specifies the vCPU to physical core ratio. <br><br> When this property is not specified in the request body the default behavior is set to the value of vCPUsPerCore for the VM Size exposed in api response of [List all available virtual machine sizes in a region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list) <br><br> Setting this property to 1 also means that hyper-threading is disabled.'
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -3690,6 +4056,12 @@ provider.Compute.makeVirtualMachineScaleSet({
               description: 'Timeout value expressed as an ISO 8601 time duration after which the platform will not try to restore the VMSS SPOT instances'
             }
           }
+        },
+        timeCreated: {
+          readOnly: true,
+          type: 'string',
+          format: 'date-time',
+          description: 'Specifies the time at which the Virtual Machine Scale Set resource was created.<br><br>Minimum api-version: 2021-11-01.'
         }
       },
       description: 'Describes the properties of a Virtual Machine Scale Set.'
@@ -3791,6 +4163,6 @@ provider.Compute.makeVirtualMachineScaleSet({
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-11-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).

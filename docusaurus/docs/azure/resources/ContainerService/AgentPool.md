@@ -24,6 +24,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -50,6 +54,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -75,6 +83,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -97,6 +109,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -139,6 +155,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -181,6 +201,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -203,6 +227,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -244,6 +272,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -265,6 +297,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -286,6 +322,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -307,6 +347,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -332,6 +376,10 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -355,6 +403,37 @@ provider.ContainerService.makeAgentPool({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
+  }),
+});
+
+```
+
+### Create Agent Pool with Message of the Day
+```js
+provider.ContainerService.makeAgentPool({
+  name: "myAgentPool",
+  properties: () => ({
+    properties: {
+      orchestratorVersion: "",
+      count: 3,
+      vmSize: "Standard_DS2_v2",
+      osType: "Linux",
+      osDiskSizeGB: 64,
+      mode: "User",
+      messageOfTheDay: "Zm9vCg==",
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -368,6 +447,10 @@ provider.ContainerService.makeAgentPool({
   properties: () => ({ properties: { powerState: { code: "Stopped" } } }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -381,6 +464,36 @@ provider.ContainerService.makeAgentPool({
   properties: () => ({ properties: { powerState: { code: "Running" } } }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+    resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
+  }),
+});
+
+```
+
+### Associate Agent Pool with Capacity Reservation Group
+```js
+provider.ContainerService.makeAgentPool({
+  name: "myAgentPool",
+  properties: () => ({
+    properties: {
+      orchestratorVersion: "",
+      count: 3,
+      vmSize: "Standard_DS2_v2",
+      osType: "Linux",
+      capacityReservationGroupID:
+        "/subscriptions/subid1/resourcegroups/rg1/providers//Microsoft.Compute/CapacityReservationGroups/crg1",
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    proximityPlacementGroup:
+      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+    capacityReservationGroup:
+      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
     resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
   }),
 });
@@ -388,6 +501,8 @@ provider.ContainerService.makeAgentPool({
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
+- [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 - [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Swagger Schema
 ```js
@@ -488,6 +603,11 @@ provider.ContainerService.makeAgentPool({
                 ]
               },
               description: 'Determines the type of workload a node can run.'
+            },
+            messageOfTheDay: {
+              type: 'string',
+              title: 'Message of the day for Linux nodes, base64-encoded.',
+              description: 'A base64-encoded string which will be written to /etc/motd after decoding. This allows customization of the message of the day for Linux nodes. It must not be specified for Windows nodes. It must be a static string (i.e., will be printed raw and not be executed as a script).'
             },
             vnetSubnetID: {
               type: 'string',
@@ -987,6 +1107,10 @@ provider.ContainerService.makeAgentPool({
                   description: 'This is the ARM ID of the source object to be used to create the target object.'
                 }
               }
+            },
+            capacityReservationGroupID: {
+              description: 'AKS will associate the specified agent pool with the Capacity Reservation Group.',
+              type: 'string'
             }
           },
           description: 'Properties for the container service agent pool profile.',
@@ -999,6 +1123,6 @@ provider.ContainerService.makeAgentPool({
 }
 ```
 ## Misc
-The resource version is `2021-10-01`.
+The resource version is `2021-11-01-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/stable/2021-10-01/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2021-11-01-preview/managedClusters.json).

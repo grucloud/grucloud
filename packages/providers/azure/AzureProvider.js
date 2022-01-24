@@ -1,5 +1,29 @@
 const assert = require("assert");
-const { map, pipe, get, tap, fork, tryCatch, assign } = require("rubico");
+const {
+  filter,
+  eq,
+  map,
+  pipe,
+  get,
+  tap,
+  fork,
+  tryCatch,
+  assign,
+  any,
+  switchCase,
+  not,
+  or,
+} = require("rubico");
+const {
+  uniq,
+  pluck,
+  callProp,
+  isEmpty,
+  values,
+  includes,
+} = require("rubico/x");
+const pluralize = require("pluralize");
+
 const path = require("path");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const {
@@ -8,12 +32,24 @@ const {
 } = require("@grucloud/core/cli/providers/createProjectAzure");
 
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
+const {
+  AZURE_MANAGEMENT_BASE_URL,
+  createAxiosAzure,
+} = require("./AzureCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { checkEnv } = require("@grucloud/core/Utils");
 const { generateCode } = require("./Az2gc");
 const { fnSpecs } = require("./AzureSpec");
+const logger = require("@grucloud/core/logger")({ prefix: "AzureProvider" });
 
-const AUDIENCES = ["https://management.azure.com", "https://vault.azure.net"];
+const AUDIENCES = [AZURE_MANAGEMENT_BASE_URL, "https://vault.azure.net"];
+
+const ResourceInclusionList = [
+  "ResourceGroup",
+  "UserAssignedIdentity",
+  "RoleAssignment",
+  "RoleDefinition", //Authorization
+];
 
 exports.AzureProvider = ({
   name = "azure",
@@ -29,6 +65,12 @@ exports.AzureProvider = ({
   ];
 
   const bearerTokenMap = {};
+  let _livesTypes = [];
+
+  const axios = createAxiosAzure({
+    baseURL: AZURE_MANAGEMENT_BASE_URL,
+    bearerToken: () => bearerTokenMap[AZURE_MANAGEMENT_BASE_URL],
+  });
 
   const authorizeByResource = ({ resource }) =>
     pipe([
@@ -38,6 +80,19 @@ exports.AzureProvider = ({
         bearerTokenMap[resource] = bearerToken;
       }),
     ]);
+
+  const listTypes = pipe([
+    () =>
+      `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
+    axios.get,
+    get("data.value"),
+    pluck("type"),
+    uniq,
+    tap((livesTypes) => {
+      logger.info(`livesTypes: ${livesTypes}`);
+      _livesTypes = livesTypes;
+    }),
+  ]);
 
   const start = pipe([
     tap(() => {
@@ -51,11 +106,13 @@ exports.AzureProvider = ({
           appId: process.env.AZURE_CLIENT_ID,
           password: process.env.AZURE_CLIENT_SECRET,
         }),
+        //Change curry order
         authorizeByResource({
           resource,
         }),
       ])()
     ),
+    listTypes,
   ]);
 
   const configProviderDefault = {
@@ -96,7 +153,7 @@ exports.AzureProvider = ({
       ),
     ])();
 
-  const init = ({ options, programOptions }) =>
+  const init = ({ programOptions }) =>
     pipe([
       tap(() => {
         assert(programOptions.workingDirectory);
@@ -112,29 +169,48 @@ exports.AzureProvider = ({
       writeConfigToFile,
     ])();
 
-  // GET https://management.azure.com/subscriptions/{subscriptionId}/resources?api-version=2021-04-01
-  // const axios = AxiosMaker({
-  //   baseURL: AZURE_MANAGEMENT_BASE_URL,
-  //   onHeaders: () => ({
-  //     Authorization: `Bearer ${_bearerToken}`,
-  //   }),
-  // });
+  const isGroupTypeIncluded = ({ group, type }) =>
+    pipe([
+      tap((livesTypes) => {
+        assert(group);
+        assert(type);
+        assert(livesTypes);
+      }),
+      any(
+        callProp(
+          "match",
+          new RegExp(`^Microsoft.${group}/${pluralize.plural(type)}$`, "ig")
+        )
+      ),
+    ]);
 
-  // const listLives = ({
-  //   onStateChange = identity,
-  //   options = {},
-  //   title = "TT",
-  //   readWrite = false,
-  // } = {}) =>
-  //   pipe([
-  //     tap(() => {
-  //       assert(options);
-  //     }),
-  //     () =>
-  //       `/subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
-  //     axios.get,
-  //     get("data.value"),
-  //   ])();
+  const filterClient = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    switchCase([
+      or([
+        () => isEmpty(_livesTypes),
+        pipe([
+          get("spec.type"),
+          (type) => pipe([() => ResourceInclusionList, includes(type)])(),
+        ]),
+      ]),
+      () => true,
+      pipe([
+        get("spec"),
+        ({ group, type, dependencies }) =>
+          pipe([
+            () => dependencies,
+            filter(not(get("createOnly"))),
+            filter(not(eq(get("type"), "ResourceGroup"))),
+            values,
+            (deps) => [...deps, { group, type }],
+            any((dep) => pipe([() => _livesTypes, isGroupTypeIncluded(dep)])()),
+          ])(),
+      ]),
+    ]),
+  ]);
 
   return {
     ...CoreProvider({
@@ -147,6 +223,7 @@ exports.AzureProvider = ({
       start,
       info,
       init,
+      filterClient,
       generateCode: ({ commandOptions, programOptions }) =>
         generateCode({
           providerConfig: makeConfig(),
@@ -155,6 +232,5 @@ exports.AzureProvider = ({
           programOptions,
         }),
     }),
-    //listLives,
   };
 };

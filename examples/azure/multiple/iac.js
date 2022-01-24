@@ -1,0 +1,27 @@
+const { pipe, map, get } = require("rubico");
+const { AzureProvider } = require("@grucloud/provider-azure");
+
+exports.createStack = ({ createProvider }) => {
+  return {
+    provider: createProvider(AzureProvider, {
+      createResources: pipe([
+        () => [
+          require("../Compute/vm/resources"),
+          require("../Compute/vm-ad-login/resources"),
+          require("../Compute/vm-disks/resources"),
+          require("../Compute/vm-managed-identity/resources"),
+          require("../Compute/virtual-machine-scale-set/resources"),
+          require("../DBforPostgreSQL/azure-postgresql/resources"),
+          //require("../ManagedIdentity/managed-identity-basic/resources"),
+          //require("../Network/firewall/resources"),
+          require("../Network/load-balancer/resources"),
+          require("../Network/nat-gateway/resources"),
+          require("../Web/containerapps/plantuml/resources"),
+        ],
+        map(get("createResources")),
+      ])(),
+      config: require("./config"),
+    }),
+    hooks: [require("./hook")],
+  };
+};

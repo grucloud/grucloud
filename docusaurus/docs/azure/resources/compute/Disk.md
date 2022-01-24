@@ -353,6 +353,106 @@ provider.Compute.makeDisk({
 });
 
 ```
+
+### Create a managed disk from ImportSecure create option
+```js
+provider.Compute.makeDisk({
+  name: "myDisk",
+  properties: () => ({
+    location: "West US",
+    properties: {
+      osType: "Windows",
+      securityProfile: {
+        securityType: "ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey",
+      },
+      creationData: {
+        createOption: "ImportSecure",
+        storageAccountId:
+          "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
+        sourceUri:
+          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+        securityDataUri:
+          "https://mystorageaccount.blob.core.windows.net/osimages/vmgs.vhd",
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
+    image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  }),
+});
+
+```
+
+### Create a managed disk from UploadPreparedSecure create option
+```js
+provider.Compute.makeDisk({
+  name: "myDisk",
+  properties: () => ({
+    location: "West US",
+    properties: {
+      osType: "Windows",
+      securityProfile: { securityType: "TrustedLaunch" },
+      creationData: {
+        createOption: "UploadPreparedSecure",
+        uploadSizeBytes: 10737418752,
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
+    image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  }),
+});
+
+```
+
+### Create a confidential VM supported disk encrypted with customer managed key
+```js
+provider.Compute.makeDisk({
+  name: "myDisk",
+  properties: () => ({
+    location: "West US",
+    properties: {
+      osType: "Windows",
+      securityProfile: {
+        securityType: "ConfidentialVM_DiskEncryptedWithCustomerKey",
+        secureVMDiskEncryptionSetId:
+          "/subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+      },
+      creationData: {
+        createOption: "FromImage",
+        imageReference: {
+          id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/westus/Publishers/{publisher}/ArtifactTypes/VMImage/Offers/{offer}/Skus/{sku}/Versions/1.0.0",
+        },
+      },
+    },
+  }),
+  dependencies: ({ resources }) => ({
+    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
+    image: resources.Compute.Image["myImage"],
+    vault: resources.KeyVault.Vault["myVault"],
+    key: resources.KeyVault.Key["myKey"],
+    diskEncryptionSet:
+      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  }),
+});
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
@@ -501,10 +601,16 @@ provider.Compute.makeDisk({
             createOption: {
               type: 'string',
               enum: [
-                'Empty',     'Attach',
-                'FromImage', 'Import',
-                'Copy',      'Restore',
-                'Upload',    'CopyStart'
+                'Empty',
+                'Attach',
+                'FromImage',
+                'Import',
+                'Copy',
+                'Restore',
+                'Upload',
+                'CopyStart',
+                'ImportSecure',
+                'UploadPreparedSecure'
               ],
               'x-ms-enum': {
                 name: 'DiskCreateOption',
@@ -541,6 +647,14 @@ provider.Compute.makeDisk({
                   {
                     value: 'CopyStart',
                     description: 'Create a new disk by using a deep copy process, where the resource creation is considered complete only after all data has been copied from the source.'
+                  },
+                  {
+                    value: 'ImportSecure',
+                    description: 'Similar to Import create option. Create a new Trusted Launch VM or Confidential VM supported disk by importing additional blob for VM guest state specified by securityDataUri in storage account specified by storageAccountId'
+                  },
+                  {
+                    value: 'UploadPreparedSecure',
+                    description: 'Similar to Upload create option. Create a new Trusted Launch VM or Confidential VM supported disk and upload using write token in both disk and VM guest state'
                   }
                 ]
               },
@@ -602,6 +716,10 @@ provider.Compute.makeDisk({
               type: 'integer',
               format: 'int32',
               description: 'Logical sector size in bytes for Ultra disks. Supported values are 512 ad 4096. 4096 is the default.'
+            },
+            securityDataUri: {
+              type: 'string',
+              description: 'If createOption is ImportSecure, this is the URI of a blob to be imported into VM guest state.'
             }
           },
           required: [ 'createOption' ]
@@ -871,7 +989,12 @@ provider.Compute.makeDisk({
             securityType: {
               type: 'string',
               description: 'Specifies the SecurityType of the VM. Applicable for OS disks only.',
-              enum: [ 'TrustedLaunch' ],
+              enum: [
+                'TrustedLaunch',
+                'ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey',
+                'ConfidentialVM_DiskEncryptedWithPlatformKey',
+                'ConfidentialVM_DiskEncryptedWithCustomerKey'
+              ],
               'x-ms-enum': {
                 name: 'DiskSecurityTypes',
                 modelAsString: true,
@@ -879,9 +1002,25 @@ provider.Compute.makeDisk({
                   {
                     value: 'TrustedLaunch',
                     description: 'Trusted Launch provides security features such as secure boot and virtual Trusted Platform Module (vTPM)'
+                  },
+                  {
+                    value: 'ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey',
+                    description: 'Indicates Confidential VM disk with only VM guest state encrypted'
+                  },
+                  {
+                    value: 'ConfidentialVM_DiskEncryptedWithPlatformKey',
+                    description: 'Indicates Confidential VM disk with both OS disk and VM guest state encrypted with a platform managed key'
+                  },
+                  {
+                    value: 'ConfidentialVM_DiskEncryptedWithCustomerKey',
+                    description: 'Indicates Confidential VM disk with both OS disk and VM guest state encrypted with a customer managed key'
                   }
                 ]
               }
+            },
+            secureVMDiskEncryptionSetId: {
+              type: 'string',
+              description: 'ResourceId of the disk encryption set associated to Confidential VM supported disk encrypted with customer managed key'
             }
           }
         },
@@ -943,6 +1082,6 @@ provider.Compute.makeDisk({
 }
 ```
 ## Misc
-The resource version is `2021-04-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-04-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).

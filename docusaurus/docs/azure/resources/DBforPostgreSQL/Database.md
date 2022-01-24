@@ -13,14 +13,14 @@ provider.DBforPostgreSQL.makeDatabase({
   }),
   dependencies: ({ resources }) => ({
     resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server: resources.DBforPostgreSQL.Server["myServer"],
+    server: resources.DBforPostgreSQL.FlexibleServer["myFlexibleServer"],
   }),
 });
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Server](../DBforPostgreSQL/Server.md)
+- [FlexibleServer](../DBforPostgreSQL/FlexibleServer.md)
 ## Swagger Schema
 ```js
 {

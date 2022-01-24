@@ -4,7 +4,7 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "resource-group::vm",
+    name: "rg-vm::vm",
     properties: ({ getId }) => ({
       properties: {
         hardwareProfile: {
@@ -40,7 +40,7 @@ const createResources = ({ provider }) => {
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "resource-group::network-interface",
+                name: "rg-vm::network-interface",
               }),
             },
           ],
@@ -48,9 +48,9 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["resource-group"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
       networkInterfaces: [
-        resources.Network.NetworkInterface["resource-group::network-interface"],
+        resources.Network.NetworkInterface["rg-vm::network-interface"],
       ],
     }),
   });

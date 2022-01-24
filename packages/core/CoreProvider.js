@@ -168,6 +168,7 @@ function CoreProvider({
   start = () => {},
   generateCode = () => {},
   getListHof = getListHofDefault,
+  filterClient = () => true,
 }) {
   assert(makeConfig);
   let _lives;
@@ -377,7 +378,15 @@ function CoreProvider({
       lives: getLives(),
     });
 
-  const getClients = pipe([getSpecs, map(createClientFromSpec)]);
+  const getClients = pipe([
+    getSpecs,
+    map(createClientFromSpec),
+    filter(filterClient),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
   const getClient = ({ groupType }) =>
     pipe([
       tap(() => {
@@ -691,11 +700,6 @@ function CoreProvider({
             indent: 2,
           }),
         () =>
-          onStateChange({
-            context: contextFromPlanner({ providerName, title }),
-            nextState: "RUNNING",
-          }),
-        () =>
           pipe([
             map((resourcesPerType) =>
               onStateChange({
@@ -824,12 +828,6 @@ function CoreProvider({
           targetTypes: getTargetGroupTypes(),
         })(getClients()),
       }),
-      (resourcesPerType) =>
-        spinnersStartResources({
-          onStateChange,
-          title: TitleQuery,
-          resourcesPerType,
-        })(),
     ])();
 
   const spinnersStartListLives = ({ onStateChange, options }) =>
@@ -855,7 +853,7 @@ function CoreProvider({
     tap(
       pipe([
         tap(() => {
-          logger.debug(`spinnersStopListLives error: ${error}`);
+          logger.debug(`spinnersStopListLives ${error}`);
         }),
         spinnersStopClient({
           onStateChange,
@@ -1061,7 +1059,6 @@ function CoreProvider({
     tryCatch(
       pipe([
         tap(() => {
-          assert(onStateChange);
           logger.debug(`start`);
         }),
         tap(() =>
