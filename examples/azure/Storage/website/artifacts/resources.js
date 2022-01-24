@@ -4,11 +4,11 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Resources.makeResourceGroup({
-    name: "rg-sa-website",
+    name: "rg-storage-web",
   });
 
   provider.Storage.makeBlobContainer({
-    name: "rg-sa-website::gcsawebsite::$web",
+    name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({
       properties: {
         defaultEncryptionScope: "$account-encryption-key",
@@ -20,13 +20,29 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-sa-website"],
-      account: resources.Storage.StorageAccount["rg-sa-website::gcsawebsite"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
+    }),
+  });
+
+  provider.Storage.makeBlobServiceProperties({
+    name: "rg-storage-web::gcstorageweb",
+    properties: ({}) => ({
+      properties: {
+        deleteRetentionPolicy: {
+          enabled: true,
+          days: 7,
+        },
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
     }),
   });
 
   provider.Storage.makeStorageAccount({
-    name: "rg-sa-website::gcsawebsite",
+    name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
       sku: {
         name: "Standard_RAGRS",
@@ -61,7 +77,7 @@ const createResources = ({ provider }) => {
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-sa-website"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
     }),
   });
 };

@@ -109,6 +109,7 @@ exports.fnSpecs = ({ config }) =>
           properties: {
             staticWebsite: {
               enabled: false,
+              indexDocument: undefined,
               defaultIndexDocumentPath: undefined,
               errorDocument404Path: undefined,
             },
@@ -138,13 +139,12 @@ exports.fnSpecs = ({ config }) =>
                 },
               ],
               //TODO merge create and update
-              create: ({ name, payload, resolvedDependencies, live, lives }) =>
+              create: ({ name, payload, lives }) =>
                 pipe([
                   tap((params) => {
                     assert(name);
-                    assert(live);
                     assert(payload);
-                    assert(resolvedDependencies);
+                    //assert(resolvedDependencies);
                     assert(lives);
                   }),
                   () =>
