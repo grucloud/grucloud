@@ -61,10 +61,13 @@ exports.createLives = (livesRaw = []) => {
       }),
     ])();
 
-  const getById = ({ providerName, type, group, id }) =>
+  const getById = ({ providerName, type, group, id = "" }) =>
     pipe([
+      tap(() => {
+        //assert(id);
+      }),
       () => getByType({ providerName, type, group }),
-      find(pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))])),
+      find(pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())])),
       tap((result) => {
         assert(true);
       }),

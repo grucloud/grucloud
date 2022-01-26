@@ -7,6 +7,20 @@ const createResources = ({ provider }) => {
     name: "rg-storage-web",
   });
 
+  provider.Storage.makeBlob({
+    properties: ({}) => ({
+      properties: {
+        contentType: "application/octet-stream",
+      },
+      name: "index.html",
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+      container:
+        resources.Storage.BlobContainer["rg-storage-web::gcstorageweb::$web"],
+    }),
+  });
+
   provider.Storage.makeBlobContainer({
     name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({

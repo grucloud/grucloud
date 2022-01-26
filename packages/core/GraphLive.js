@@ -41,7 +41,16 @@ const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
 const ResourceTypesHide = ["Namespace"];
 
 const matchId = (idToMatch) =>
-  pipe([get("id"), callProp("match", new RegExp(`^${idToMatch}$`, "gi"))]);
+  pipe([
+    tap(() => {
+      assert(idToMatch);
+    }),
+    get("id"),
+    tap((id) => {
+      assert(id);
+    }),
+    eq(callProp("toUpperCase"), idToMatch.toUpperCase()),
+  ]);
 
 const nodeNameFromResource = (resource) => resource.name || resource.id;
 

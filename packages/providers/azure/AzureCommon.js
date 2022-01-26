@@ -64,7 +64,7 @@ const findResourceById =
       find(
         and([
           eq(get("groupType"), groupType),
-          pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]),
+          pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())]),
         ])
       ),
     ])();

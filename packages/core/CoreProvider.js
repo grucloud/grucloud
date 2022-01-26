@@ -1636,6 +1636,7 @@ function CoreProvider({
                   target: input,
                   propertiesDefault: engine.spec.propertiesDefault,
                   config: getProviderConfig(),
+                  programOptions,
                 }),
                 resolvedDependencies,
                 lives: getLives(),
