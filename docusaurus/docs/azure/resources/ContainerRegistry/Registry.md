@@ -256,6 +256,29 @@ provider.ContainerRegistry.makeRegistry({
               type: 'string',
               'x-ms-enum': { name: 'DefaultAction', modelAsString: true }
             },
+            virtualNetworkRules: {
+              description: 'The virtual network rules.',
+              type: 'array',
+              items: {
+                description: 'Virtual network rule.',
+                required: [ 'id' ],
+                type: 'object',
+                properties: {
+                  action: {
+                    description: 'The action of virtual network rule.',
+                    default: 'Allow',
+                    enum: [ 'Allow' ],
+                    type: 'string',
+                    'x-ms-enum': { name: 'Action', modelAsString: true }
+                  },
+                  id: {
+                    description: 'Resource ID of a subnet, for example: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}.',
+                    type: 'string',
+                    'x-ms-client-name': 'VirtualNetworkResourceId'
+                  }
+                }
+              }
+            },
             ipRules: {
               description: 'The IP ACL rules.',
               type: 'array',
@@ -578,6 +601,11 @@ provider.ContainerRegistry.makeRegistry({
           enum: [ 'Enabled', 'Disabled' ],
           type: 'string',
           'x-ms-enum': { name: 'ZoneRedundancy', modelAsString: true }
+        },
+        anonymousPullEnabled: {
+          description: 'Enables registry-wide pull from unauthenticated clients.',
+          default: false,
+          type: 'boolean'
         }
       }
     }
@@ -585,6 +613,6 @@ provider.ContainerRegistry.makeRegistry({
 }
 ```
 ## Misc
-The resource version is `2021-09-01`.
+The resource version is `2021-12-01-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2021-09-01/containerregistry.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/preview/2021-12-01-preview/containerregistry.json).

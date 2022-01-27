@@ -74,6 +74,7 @@ const PreDefinedDependenciesMap = {
 
 const ResourcesExcludes = [
   "Authorization::AccessReviewDefaultSetting",
+  "Authorization::AccessReviewHistoryDefinitionById",
   "Authorization::AccessReviewScheduleDefinitionById",
   "Authorization::AccessReviewInstanceById",
   "Authorization::ScopeRoleAssignmentApprovalStepById",
@@ -85,6 +86,8 @@ const ResourcesExcludes = [
   "Authorization::RoleManagementPolicyAssignment",
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
+  "ContainerRegistry::ConnectedRegistry",
+  "ContainerService::PrivateEndpointConnection", // 400 Cluster cluster is not a private cluster.
   "ContainerService::OpenShiftManagedCluster", // 404
   "DBforPostgreSQL::PrivateEndpointConnection",
   "DBforPostgreSQL::ServerSecurityAlertPolicy",
@@ -97,10 +100,12 @@ const ResourcesExcludes = [
   "Network::ExpressRoutePort",
   "Network::FirewallPolicyIdpsSignaturesOverride",
   "Network::InterfaceEndpoint",
+  "Network::ManagementGroupNetworkManagerConnection",
   "Network::NetworkManager",
   "Network::NetworkSecurityPerimeter",
   "Network::PublicIpAddress", // Renamed to PublicIPAddress
   "Network::SecurityRule",
+  "Network::SubscriptionNetworkManagerConnection",
   "Network::UserRule",
   "Network::VirtualWAN", // Renamed to VirtualWan
   "OperationalInsights::DataCollectorLog", //404
@@ -118,6 +123,7 @@ const ResourcesExcludes = [
   "Web::ManagedHostingEnvironment",
   "Web::ProviderPublishingUser",
   "Web::ProviderSourceControl",
+  "Web::WebAppOneDeployStatus",
 ];
 const OpertionIdReplaceMap = {
   Servers_Get: "FlexibleServers_Get",

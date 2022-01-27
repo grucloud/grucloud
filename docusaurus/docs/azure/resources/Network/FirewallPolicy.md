@@ -85,7 +85,7 @@ provider.Network.makeFirewallPolicy({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+    workspace: [resources.OperationalInsights.Workspace["myWorkspace"]],
   }),
 });
 
