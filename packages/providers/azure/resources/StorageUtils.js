@@ -163,7 +163,7 @@ exports.getBlobsByContainer =
       }),
     ])();
 
-exports.getContainerClient = ({ name, config, lives }) =>
+const getContainerClient = ({ name, config, lives }) =>
   pipe([
     tap((params) => {
       assert(name);
@@ -187,6 +187,8 @@ exports.getContainerClient = ({ name, config, lives }) =>
       containerName: getContainerName(name),
     }),
   ]);
+
+exports.getContainerClient = getContainerClient;
 
 exports.setBlobServiceProperties =
   ({ payload }) =>

@@ -20,8 +20,10 @@ const {
   getBlobServiceProperties,
   getBlobsByContainer,
   getContainerClient,
+  getContainerName,
   setBlobServiceProperties,
   upsertBlob,
+  getBlobName,
 } = require("./StorageUtils");
 
 const { findDependenciesResourceGroup } = require("../AzureCommon");
