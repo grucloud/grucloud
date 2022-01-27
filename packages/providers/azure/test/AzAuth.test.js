@@ -4,7 +4,7 @@ const { AzAuthorize } = require("../AzAuthorize");
 describe("AzAuth", function () {
   before(async function () {});
 
-  it.only("ok", async function () {
+  it("ok", async function () {
     try {
       const { AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET } =
         process.env;
