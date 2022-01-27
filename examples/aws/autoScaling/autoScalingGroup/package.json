@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-autoscaling-group",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.4.0",
-    "@grucloud/provider-aws": "^3.4.0",
+    "@grucloud/core": "^3.5.0",
+    "@grucloud/provider-aws": "^3.5.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {

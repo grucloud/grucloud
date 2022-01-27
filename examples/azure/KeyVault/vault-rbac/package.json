@@ -1,6 +1,6 @@
 {
   "name": "vault-rbac",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -15,8 +15,8 @@
   "dependencies": {
     "@azure/identity": "^2.0.1",
     "@azure/keyvault-secrets": "^4.3.0",
-    "@grucloud/core": "^3.4.0",
-    "@grucloud/provider-azure": "^3.4.1",
+    "@grucloud/core": "^3.5.0",
+    "@grucloud/provider-azure": "^3.5.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
