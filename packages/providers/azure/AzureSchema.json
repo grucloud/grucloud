@@ -2864,91 +2864,9 @@
         }
     },
     {
-        "type": "ConnectedRegistry",
-        "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "registry": {
-                "type": "Registry",
-                "group": "ContainerRegistry",
-                "name": "registryName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
-                "operationId": "ConnectedRegistries_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
-                "operationId": "ConnectedRegistries_Create"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
-                "operationId": "ConnectedRegistries_Delete"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries/{connectedRegistryName}",
-                "operationId": "ConnectedRegistries_Update"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/connectedRegistries",
-                "operationId": "ConnectedRegistries_List"
-            }
-        },
-        "omitProperties": [
-            "properties.provisioningState",
-            "properties.version",
-            "properties.connectionState",
-            "properties.lastActivityTime",
-            "properties.activation",
-            "properties.parent.id",
-            "properties.parent.syncProperties.tokenId",
-            "properties.parent.syncProperties.lastSyncTime",
-            "properties.parent.syncProperties.gatewayEndpoint",
-            "properties.loginServer.host",
-            "properties.loginServer.tls",
-            "properties.logging.auditLogStatus",
-            "properties.statusDetails"
-        ],
-        "pickProperties": [
-            "properties.mode",
-            "properties.parent.syncProperties.schedule",
-            "properties.parent.syncProperties.syncWindow",
-            "properties.parent.syncProperties.messageTtl",
-            "properties.clientTokenIds",
-            "properties.logging.logLevel",
-            "properties.notificationsList"
-        ],
-        "pickPropertiesCreate": [
-            "properties.mode",
-            "properties.parent.syncProperties.schedule",
-            "properties.parent.syncProperties.syncWindow",
-            "properties.parent.syncProperties.messageTtl",
-            "properties.clientTokenIds",
-            "properties.logging.logLevel",
-            "properties.notificationsList"
-        ],
-        "propertiesDefault": {
-            "properties": {
-                "logging": {
-                    "logLevel": "Information",
-                    "auditLogStatus": "Disabled"
-                }
-            }
-        }
-    },
-    {
         "type": "ExportPipeline",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3014,7 +2932,7 @@
     {
         "type": "ImportPipeline",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3093,7 +3011,7 @@
     {
         "type": "PipelineRun",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3170,7 +3088,7 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3220,7 +3138,7 @@
     {
         "type": "Registry",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3283,6 +3201,7 @@
             "identity.userAssignedIdentities",
             "properties.adminUserEnabled",
             "properties.networkRuleSet.defaultAction",
+            "properties.networkRuleSet.virtualNetworkRules",
             "properties.networkRuleSet.ipRules",
             "properties.policies.trustPolicy.type",
             "properties.policies.retentionPolicy.days",
@@ -3291,7 +3210,8 @@
             "properties.dataEndpointEnabled",
             "properties.publicNetworkAccess",
             "properties.networkRuleBypassOptions",
-            "properties.zoneRedundancy"
+            "properties.zoneRedundancy",
+            "properties.anonymousPullEnabled"
         ],
         "pickPropertiesCreate": [
             "sku.name",
@@ -3299,6 +3219,7 @@
             "identity.userAssignedIdentities",
             "properties.adminUserEnabled",
             "properties.networkRuleSet.defaultAction",
+            "properties.networkRuleSet.virtualNetworkRules",
             "properties.networkRuleSet.ipRules",
             "properties.policies.trustPolicy.type",
             "properties.policies.retentionPolicy.days",
@@ -3307,7 +3228,8 @@
             "properties.dataEndpointEnabled",
             "properties.publicNetworkAccess",
             "properties.networkRuleBypassOptions",
-            "properties.zoneRedundancy"
+            "properties.zoneRedundancy",
+            "properties.anonymousPullEnabled"
         ],
         "propertiesDefault": {
             "properties": {
@@ -3333,7 +3255,8 @@
                 },
                 "publicNetworkAccess": "Enabled",
                 "networkRuleBypassOptions": "AzureServices",
-                "zoneRedundancy": "Disabled"
+                "zoneRedundancy": "Disabled",
+                "anonymousPullEnabled": false
             }
         }
     },
@@ -3394,7 +3317,7 @@
     {
         "type": "Replication",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3453,7 +3376,7 @@
     {
         "type": "ScopeMap",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3705,7 +3628,7 @@
     {
         "type": "Token",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-08-01-preview",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3766,7 +3689,7 @@
     {
         "type": "Webhook",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2021-12-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4457,59 +4380,6 @@
                 }
             }
         }
-    },
-    {
-        "type": "PrivateEndpointConnection",
-        "group": "ContainerService",
-        "apiVersion": "2021-11-01-preview",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "privateEndpoint": {
-                "type": "PrivateEndpoint",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.privateEndpoint.id"
-            },
-            "resource": {
-                "type": "ManagedCluster",
-                "group": "ContainerService",
-                "name": "resourceName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Update"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/privateEndpointConnections/{privateEndpointConnectionName}",
-                "operationId": "PrivateEndpointConnections_Delete"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/privateEndpointConnections",
-                "operationId": "PrivateEndpointConnections_List"
-            }
-        },
-        "omitProperties": [
-            "id",
-            "name",
-            "type",
-            "properties.provisioningState",
-            "properties.privateEndpoint.id",
-            "properties.privateLinkServiceConnectionState"
-        ],
-        "pickProperties": [],
-        "pickPropertiesCreate": []
     },
     {
         "type": "Snapshot",

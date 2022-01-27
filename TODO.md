@@ -1,5 +1,11 @@
 ## Bugs
 
+- az aks: gc d
+
+✖ ContainerService::AgentPool 0/1 There has to be at least one agent pool.
+✖ Network::RouteTable 0/1 Request failed with status code 400 Route table aks-agentpool-18663747-routetable is in use and cannot be
+deleted
+
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array
 - key or vault dependencies ?
 - DBforPostgreSQL/ServerKey dep key

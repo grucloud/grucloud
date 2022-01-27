@@ -19,7 +19,7 @@ skinparam monochrome true
 ++++ LoadBalancerBackendAddressPool (1)
 ++++ NatGateway (1)
 +++ Resources
-++++ ResourceGroup (10)
+++++ ResourceGroup (9)
 +++ Authorization
 ++++ RoleAssignment (1)
 +++ ManagedIdentity
@@ -28,11 +28,6 @@ skinparam monochrome true
 ++++ Configuration (1)
 ++++ FirewallRule (1)
 ++++ FlexibleServer (1)
-+++ Storage
-++++ Blob (1)
-++++ BlobContainer (1)
-++++ BlobServiceProperties (1)
-++++ StorageAccount (1)
 +++ OperationalInsights
 ++++ Workspace (1)
 +++ Web

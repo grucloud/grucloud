@@ -36,186 +36,219 @@ const {
 
 const group = "Compute";
 
-const filterVirtualMachineProperties = ({ resource, lives }) =>
-  pipe([
-    tap((params) => {
-      assert(resource);
-      assert(lives);
-    }),
-    pick([
-      "hardwareProfile",
-      "osProfile",
-      "storageProfile",
-      "diagnosticsProfile",
-      "networkProfile",
-    ]),
-    omit([
-      "osProfile.requireGuestProvisionSignal",
-      "storageProfile.imageReference.exactVersion",
-    ]),
-    assign({
-      storageProfile: pipe([
-        get("storageProfile"),
-        assign({
-          osDisk: pipe([
-            get("osDisk"),
+const filterVirtualMachineProperties =
+  ({ config }) =>
+  ({ resource, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(resource);
+        assert(lives);
+        assert(config);
+      }),
+      pick([
+        "hardwareProfile",
+        "osProfile",
+        "storageProfile",
+        "diagnosticsProfile",
+        "networkProfile",
+      ]),
+      omit([
+        "osProfile.requireGuestProvisionSignal",
+        "storageProfile.imageReference.exactVersion",
+      ]),
+      assign({
+        storageProfile: pipe([
+          get("storageProfile"),
+          when(
+            get("imageReference"),
             assign({
-              managedDisk: pipe([
-                get("managedDisk"),
-                omit(["id"]),
-                when(
-                  get("diskEncryptionSet"),
-                  assign({
-                    diskEncryptionSet: pipe([
-                      get("diskEncryptionSet"),
-                      assignDependenciesId({
-                        group: "Compute",
-                        type: "DiskEncryptionSet",
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
+              imageReference: pipe([
+                get("imageReference"),
+                tap((params) => {
+                  assert(true);
+                }),
+                assign({
+                  id: pipe([
+                    get("id"),
+                    callProp(
+                      "replace",
+                      config.subscriptionId,
+                      "${config.subscriptionId}"
+                    ),
+                    (id) => () => "`" + id + "`",
+                  ]),
+                }),
               ]),
-            }),
-          ]),
-          dataDisks: pipe([
-            get("dataDisks", []),
-            map(
+            })
+          ),
+          assign({
+            osDisk: pipe([
+              get("osDisk"),
               assign({
                 managedDisk: pipe([
                   get("managedDisk"),
-                  assignDependenciesId({
-                    group: "Compute",
-                    type: "Disk",
-                    lives,
-                  }),
-                ]),
-              })
-            ),
-          ]),
-        }),
-      ]),
-    }),
-    assign({
-      networkProfile: pipe([
-        get("networkProfile"),
-        assign({
-          networkInterfaces: pipe([
-            get("networkInterfaces"),
-            map(
-              assignDependenciesId({
-                group: "Network",
-                type: "NetworkInterface",
-                lives,
-              })
-            ),
-          ]),
-        }),
-        when(
-          get("networkInterfaceConfigurations"),
-          assign({
-            networkInterfaceConfigurations: pipe([
-              get("networkInterfaceConfigurations"),
-              map(
-                assign({
-                  properties: pipe([
-                    get("properties"),
+                  omit(["id"]),
+                  when(
+                    get("diskEncryptionSet"),
                     assign({
-                      networkSecurityGroup: pipe([
-                        get("networkSecurityGroup"),
+                      diskEncryptionSet: pipe([
+                        get("diskEncryptionSet"),
                         assignDependenciesId({
-                          group: "Network",
-                          type: "NetworkSecurityGroup",
+                          group: "Compute",
+                          type: "DiskEncryptionSet",
                           lives,
                         }),
                       ]),
-                      ipConfigurations: pipe([
-                        get("ipConfigurations"),
-                        map(
-                          pipe([
-                            assign({
-                              properties: pipe([
-                                get("properties"),
-                                assign({
-                                  loadBalancerBackendAddressPools: pipe([
-                                    get("loadBalancerBackendAddressPools"),
-                                    map(
-                                      assignDependenciesId({
-                                        group: "Network",
-                                        type: "LoadBalancerBackendAddressPool",
-                                        lives,
-                                      })
-                                    ),
-                                  ]),
-                                  //TODO
-                                  // loadBalancerInboundNatPools: pipe([
-                                  //   get("loadBalancerInboundNatPools"),
-                                  //   map(
-                                  //     assignDependenciesId({
-                                  //       group: "Network",
-                                  //       type: "LoadBalancerInboundNatPool",
-                                  //       lives,
-                                  //     })
-                                  //   ),
-                                  // ]),
-                                  subnet: pipe([
-                                    get("subnet"),
-                                    assignDependenciesId({
-                                      group: "Network",
-                                      type: "Subnet",
-                                      lives,
-                                    }),
-                                  ]),
-                                }),
-                                omitIfEmpty([
-                                  "loadBalancerBackendAddressPools",
-                                ]),
-                              ]),
-                            }),
-                          ])
-                        ),
-                      ]),
+                    })
+                  ),
+                ]),
+              }),
+            ]),
+            dataDisks: pipe([
+              get("dataDisks", []),
+              map(
+                assign({
+                  managedDisk: pipe([
+                    get("managedDisk"),
+                    assignDependenciesId({
+                      group: "Compute",
+                      type: "Disk",
+                      lives,
                     }),
                   ]),
                 })
               ),
             ]),
-          })
-        ),
-      ]),
-      osProfile: pipe([
-        get("osProfile"),
-        when(
-          get("linuxConfiguration.ssh.publicKeys"),
-          assign({
-            linuxConfiguration: pipe([
-              get("linuxConfiguration"),
-              assign({
-                ssh: pipe([
-                  get("ssh"),
+          }),
+        ]),
+      }),
+      assign({
+        networkProfile: pipe([
+          get("networkProfile"),
+          when(
+            get("networkInterfaces"),
+            assign({
+              networkInterfaces: pipe([
+                get("networkInterfaces"),
+                map(
+                  assignDependenciesId({
+                    group: "Network",
+                    type: "NetworkInterface",
+                    lives,
+                  })
+                ),
+              ]),
+            })
+          ),
+          when(
+            get("networkInterfaceConfigurations"),
+            assign({
+              networkInterfaceConfigurations: pipe([
+                get("networkInterfaceConfigurations"),
+                map(
                   assign({
-                    publicKeys: pipe([
-                      get("publicKeys", []),
-                      map(omit(["keyData"])),
+                    properties: pipe([
+                      get("properties"),
+                      when(
+                        get("networkSecurityGroup"),
+                        assign({
+                          networkSecurityGroup: pipe([
+                            get("networkSecurityGroup"),
+                            assignDependenciesId({
+                              group: "Network",
+                              type: "NetworkSecurityGroup",
+                              lives,
+                            }),
+                          ]),
+                        })
+                      ),
+                      assign({
+                        ipConfigurations: pipe([
+                          get("ipConfigurations"),
+                          map(
+                            pipe([
+                              assign({
+                                properties: pipe([
+                                  get("properties"),
+                                  assign({
+                                    loadBalancerBackendAddressPools: pipe([
+                                      get("loadBalancerBackendAddressPools"),
+                                      map(
+                                        assignDependenciesId({
+                                          group: "Network",
+                                          type: "LoadBalancerBackendAddressPool",
+                                          lives,
+                                        })
+                                      ),
+                                    ]),
+                                    //TODO
+                                    // loadBalancerInboundNatPools: pipe([
+                                    //   get("loadBalancerInboundNatPools"),
+                                    //   map(
+                                    //     assignDependenciesId({
+                                    //       group: "Network",
+                                    //       type: "LoadBalancerInboundNatPool",
+                                    //       lives,
+                                    //     })
+                                    //   ),
+                                    // ]),
+                                    subnet: pipe([
+                                      get("subnet"),
+                                      assignDependenciesId({
+                                        group: "Network",
+                                        type: "Subnet",
+                                        lives,
+                                      }),
+                                    ]),
+                                  }),
+                                  omitIfEmpty([
+                                    "loadBalancerBackendAddressPools",
+                                  ]),
+                                ]),
+                              }),
+                            ])
+                          ),
+                        ]),
+                      }),
                     ]),
-                  }),
-                ]),
-              }),
-            ]),
-          })
-        ),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+        osProfile: pipe([
+          get("osProfile"),
+          when(
+            get("linuxConfiguration.ssh.publicKeys"),
+            assign({
+              linuxConfiguration: pipe([
+                get("linuxConfiguration"),
+                assign({
+                  ssh: pipe([
+                    get("ssh"),
+                    assign({
+                      publicKeys: pipe([
+                        get("publicKeys", []),
+                        map(omit(["keyData"])),
+                      ]),
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          ),
+        ]),
+      }),
+      omitIfEmpty([
+        "osProfile.secrets",
+        "storageProfile.dataDisks",
+        "networkProfile",
       ]),
-    }),
-    omitIfEmpty([
-      "osProfile.secrets",
-      "storageProfile.dataDisks",
-      "networkProfile",
-    ]),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
 const VirtualMachineDependencySshPublicKey = ({
   publicKeysPath,
@@ -524,10 +557,11 @@ exports.fnSpecs = ({ config }) =>
             group: "Compute",
             createOnly: true,
           },
-          loadBalancerBackendAddressPool: {
+          loadBalancerBackendAddressPools: {
             type: "LoadBalancerBackendAddressPool",
             group: "Network",
             createOnly: true,
+            list: true,
           },
         },
         environmentVariables: [
@@ -620,7 +654,7 @@ exports.fnSpecs = ({ config }) =>
                 assign({
                   virtualMachineProfile: pipe([
                     get("virtualMachineProfile"),
-                    filterVirtualMachineProperties(context),
+                    filterVirtualMachineProperties({ config })(context),
                   ]),
                 }),
                 ,
@@ -763,7 +797,7 @@ exports.fnSpecs = ({ config }) =>
             assign({
               properties: pipe([
                 get("properties"),
-                filterVirtualMachineProperties(context),
+                filterVirtualMachineProperties({ config })({ context }),
               ]),
             }),
           ]),
