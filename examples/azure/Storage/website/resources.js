@@ -7,6 +7,21 @@ const createResources = ({ provider }) => {
     name: "rg-storage-web",
   });
 
+  provider.Storage.makeBlob({
+    properties: ({}) => ({
+      name: "index.html",
+      properties: {
+        contentType: "text/html",
+      },
+      source: "assets/index.html",
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+      container:
+        resources.Storage.BlobContainer["rg-storage-web::gcstorageweb::$web"],
+    }),
+  });
+
   provider.Storage.makeBlobContainer({
     name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({
@@ -29,6 +44,10 @@ const createResources = ({ provider }) => {
     name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
       properties: {
+        staticWebsite: {
+          enabled: true,
+          indexDocument: "index.html",
+        },
         deleteRetentionPolicy: {
           enabled: true,
           days: 7,

@@ -1006,8 +1006,17 @@ const writeEnv =
       ),
     ])();
 
-const matchId = (id) =>
-  pipe([get("id"), callProp("match", new RegExp(`^${id}$`, "ig"))]);
+const matchId = (idToMatch = "") =>
+  pipe([
+    tap((params) => {
+      //assert(idToMatch);
+    }),
+    get("id"),
+    tap((id) => {
+      assert(id);
+    }),
+    eq(callProp("toUpperCase"), idToMatch?.toUpperCase()),
+  ]);
 
 const isEqualById = ({ type, group, providerName, id }) =>
   pipe([

@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ Resources
 ++++ ResourceGroup (1)
 +++ Storage
+++++ Blob (1)
 ++++ BlobContainer (1)
 ++++ BlobServiceProperties (1)
 ++++ StorageAccount (1)

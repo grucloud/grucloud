@@ -324,7 +324,10 @@ exports.fnSpecs = ({ config }) =>
                 providerName: config.providerName,
               }),
             get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
-            callProp("match", new RegExp(`^${live.id}$`, "ig")),
+            eq(
+              callProp("toUpperCase"),
+              pipe([() => live, get("id"), callProp("toUpperCase")])()
+            ),
           ])(),
         //TODO default configDefault should be this
         configDefault: ({ properties, dependencies, config, spec }) =>

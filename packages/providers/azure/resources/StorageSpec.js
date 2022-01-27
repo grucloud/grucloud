@@ -1,90 +1,34 @@
 const assert = require("assert");
-const { pipe, assign, get, tap, map, pick, tryCatch } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const fs = require("fs").promises;
+const path = require("path");
 const {
-  BlobServiceClient,
-  StorageSharedKeyCredential,
-} = require("@azure/storage-blob");
+  pipe,
+  assign,
+  get,
+  tap,
+  map,
+  pick,
+  fork,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, callProp, flatten, prepend } = require("rubico/x");
+
+const { md5FileBase64, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  getSharedAccessKeys,
+  createContainerClient,
+  getBlobServiceProperties,
+  getBlobsByContainer,
+  getContainerClient,
+  getContainerName,
+  setBlobServiceProperties,
+  upsertBlob,
+  getBlobName,
+} = require("./StorageUtils");
 
 const { findDependenciesResourceGroup } = require("../AzureCommon");
 
 const group = "Storage";
-
-const getSharedAccessKeys =
-  ({ axios }) =>
-  (account) =>
-    pipe([
-      tap(() => {
-        assert(account);
-        assert(axios);
-      }),
-      tryCatch(
-        pipe([
-          () => axios.post(`${account.id}/listKeys?api-version=2021-04-01`),
-          get("data.keys"),
-          tap((keys) => {
-            assert(keys);
-          }),
-        ]),
-        (error) =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => error,
-          ])()
-      ),
-    ])();
-
-const createBlobServiceClient = ({ name, sharedAccessKeys }) =>
-  pipe([
-    tap(() => {
-      assert(name);
-      assert(sharedAccessKeys);
-    }),
-    () => new StorageSharedKeyCredential(name, sharedAccessKeys[0].value),
-    (sharedKeyCredential) =>
-      new BlobServiceClient(
-        `https://${name}.blob.core.windows.net`,
-        sharedKeyCredential
-      ),
-  ])();
-
-const getBlobServiceProperties = ({ live, name }) =>
-  pipe([
-    tap(() => {
-      assert(live);
-      assert(live.name);
-      assert(name);
-    }),
-    () => live,
-    createBlobServiceClient,
-    callProp("getProperties"),
-    tap((props) => {
-      assert(props);
-    }),
-    //TODO more?
-    pick(["staticWebsite", "cors", "deleteRetentionPolicy"]),
-    (properties) => ({
-      name: live.name,
-      storageAccountName: name,
-      id: live.id,
-      properties,
-    }),
-  ])();
-
-const setBlobServiceProperties =
-  ({ payload }) =>
-  ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live);
-        assert(payload);
-      }),
-      () => live,
-      createBlobServiceClient,
-      callProp("setProperties", payload.properties),
-    ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -144,7 +88,6 @@ exports.fnSpecs = ({ config }) =>
                   tap((params) => {
                     assert(name);
                     assert(payload);
-                    //assert(resolvedDependencies);
                     assert(lives);
                   }),
                   () =>
@@ -159,13 +102,11 @@ exports.fnSpecs = ({ config }) =>
                   }),
                   setBlobServiceProperties({ payload }),
                 ])(),
-              update: ({ name, payload, resolvedDependencies, live, lives }) =>
+              update: ({ name, payload, lives }) =>
                 pipe([
                   tap((params) => {
                     assert(name);
-                    assert(live);
                     assert(payload);
-                    assert(resolvedDependencies);
                     assert(lives);
                   }),
                   () =>
@@ -203,6 +144,198 @@ exports.fnSpecs = ({ config }) =>
                       providerName: config.providerName,
                     }),
                   map.pool(10, getBlobServiceProperties),
+                ])(),
+            }),
+          ])(),
+      },
+      {
+        type: "Blob",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          account: {
+            type: "StorageAccount",
+            group: "Storage",
+            parent: true,
+          },
+          container: {
+            type: "BlobContainer",
+            group: "Storage",
+            parent: true,
+          },
+        },
+        propertiesDefault: {
+          properties: { serverEncrypted: true, accessTier: "Hot" },
+        },
+        pickProperties: [
+          "properties.contentType",
+          "properties.contentEncoding",
+          "properties.contentLanguage",
+        ],
+        pickPropertiesCreate: [
+          "name",
+          "properties.contentType",
+          "properties.contentEncoding",
+          "properties.contentLanguage",
+        ],
+        compare: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          fork({
+            targetMd5: ({ target, programOptions }) =>
+              pipe([
+                tap(() => {
+                  assert(target);
+                  assert(programOptions);
+                }),
+                () => target,
+                get("source"),
+                (source) =>
+                  path.resolve(programOptions.workingDirectory, source),
+                md5FileBase64,
+              ])(),
+            liveMd5: pipe([
+              get("live.properties.contentMD5"),
+              (contentMD5) =>
+                new Buffer.from(contentMD5, "hex").toString("base64"),
+            ]),
+          }),
+          switchCase([
+            ({ targetMd5, liveMd5 }) => targetMd5 != liveMd5,
+            ({ targetMd5, liveMd5 }) => ({
+              liveDiff: { updated: { md5: liveMd5 } },
+              targetDiff: { updated: { md5: targetMd5 } },
+            }),
+            () => ({}),
+          ]),
+        ]),
+        inferName: ({ properties, dependencies }) =>
+          pipe([
+            tap((params) => {
+              assert(dependencies);
+              assert(properties);
+              assert(properties.name);
+            }),
+            dependencies,
+            tap(({ container }) => {
+              assert(container);
+            }),
+            ({ container }) => `${container.name}::${properties.name}`,
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([
+            tap((params) => {
+              assert(pickPropertiesCreate);
+            }),
+            pick(pickPropertiesCreate),
+            omitIfEmpty([
+              "properties.contentEncoding",
+              "properties.contentLanguage",
+            ]),
+            assign({
+              source: pipe([get("name"), prepend("assets/")]),
+            }),
+          ]),
+        Client: ({ spec, config }) =>
+          pipe([
+            () => ({
+              spec,
+              findId: pipe([
+                get("live.id"),
+                tap((id) => {
+                  assert(id);
+                }),
+              ]),
+              findName: pipe([
+                get("live"),
+                ({ name, containerName }) => `${containerName}::${name}`,
+              ]),
+              findDependencies: ({ live, lives }) => [
+                findDependenciesResourceGroup({ live, lives, config }),
+                // {
+                //   type: "StorageAccount",
+                //   group: "Storage",
+                //   ids: [pipe([() => live, get("id")])()],
+                // },
+                {
+                  type: "BlobContainer",
+                  group: "Storage",
+                  ids: [
+                    pipe([
+                      () => live,
+                      get("id"),
+                      callProp("split", "/"),
+                      callProp("slice", 0, -1),
+                      callProp("join", "/"),
+                    ])(),
+                  ],
+                },
+              ],
+              create: upsertBlob({ config }),
+              update: upsertBlob({ config }),
+              destroy: ({ name, lives }) =>
+                pipe([
+                  getContainerClient({ name, config, lives }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  callProp("deleteBlob", getBlobName(name)),
+                ])(),
+              getByName: ({ lives, name }) =>
+                pipe([
+                  tap(() => {
+                    assert(name);
+                  }),
+                  () => name,
+                  callProp("split", "::"),
+                  callProp("slice", 0, -2),
+                  callProp("join", "::"),
+                  (name) =>
+                    lives.getByName({
+                      name,
+                      type: "StorageAccount",
+                      group: "Storage",
+                      providerName: config.providerName,
+                    }),
+                  tap((storageAccount) => {
+                    assert(storageAccount);
+                  }),
+                  (storageAccount) =>
+                    pipe([
+                      () => storageAccount,
+                      get("live"),
+                      createContainerClient({
+                        containerName: getContainerName(name),
+                      }),
+                      callProp("getBlobClient", getBlobName(name)),
+                      callProp("getProperties"),
+                      (properties) => ({
+                        id: `${storageAccount.id}/${getContainerName(
+                          name
+                        )}/${getBlobName(name)}`,
+                        name,
+                        properties,
+                      }),
+                    ])(),
+                ])(),
+              getList: ({ lives }) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "BlobContainer",
+                      group: "Storage",
+                      providerName: config.providerName,
+                    }),
+                  map.pool(10, getBlobsByContainer({ config, lives })),
+                  flatten,
                 ])(),
             }),
           ])(),
