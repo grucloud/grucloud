@@ -23,6 +23,105 @@ exports.fnSpecs = ({ config }) => {
   return pipe([
     () => [
       {
+        type: "ApplicationGateway",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          managedIdentities: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          firewallPolicy: {
+            type: "FirewallPolicy",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.firewallPolicy.id",
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.frontendIPConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.gatewayIPConfigurations"),
+              pluck("properties.subnet.id"),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          },
+        ],
+        filterLive: ({ lives }) =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                assign({
+                  gatewayIPConfigurations: pipe([
+                    get("gatewayIPConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["subnet"]),
+                            assign({
+                              subnet: pipe([
+                                get("subnet"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "Subnet",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      },
+      {
         type: "RouteTable",
         omitProperties: ["properties.routes"],
         filterLive: ({ pickPropertiesCreate }) =>
@@ -128,11 +227,7 @@ exports.fnSpecs = ({ config }) => {
                         assign({
                           properties: pipe([
                             get("properties"),
-                            pick([
-                              "publicIPAddress",
-                              //"outboundRules",
-                              //"loadBalancingRules",
-                            ]),
+                            pick(["publicIPAddress"]),
                             assign({
                               publicIPAddress: pipe([
                                 get("publicIPAddress"),
@@ -157,9 +252,6 @@ exports.fnSpecs = ({ config }) => {
                           properties: pipe([
                             get("properties"),
                             omit(["provisioningState", "backendAddressPool"]),
-                            //TODO
-                            // frontendIPConfiguration
-                            // probe
                             assign({
                               backendAddressPools: pipe([
                                 get("backendAddressPools"),
@@ -172,19 +264,6 @@ exports.fnSpecs = ({ config }) => {
                                 ),
                               ]),
                             }),
-                            //TODO
-                            // assign({
-                            //   frontendIPConfigurations: pipe([
-                            //     get("frontendIPConfigurations"),
-                            //     map(
-                            //       assignDependenciesId({
-                            //         group: "Network",
-                            //         type: "PublicIPAddress",
-                            //         lives,
-                            //       })
-                            //     ),
-                            //   ]),
-                            // }),
                           ]),
                         }),
                       ])
@@ -204,7 +283,6 @@ exports.fnSpecs = ({ config }) => {
                               "requestPath",
                               "intervalInSeconds",
                               "numberOfProbes",
-                              //"loadBalancingRules",
                             ]),
                           ]),
                         }),
@@ -237,19 +315,6 @@ exports.fnSpecs = ({ config }) => {
                                 }),
                               ]),
                             }),
-                            //TODO
-                            // assign({
-                            //   frontendIPConfigurations: pipe([
-                            //     get("frontendIPConfigurations"),
-                            //     map(
-                            //       assignDependenciesId({
-                            //         group: "Network",
-                            //         type: "PublicIPAddress",
-                            //         lives,
-                            //       })
-                            //     ),
-                            //   ]),
-                            // }),
                           ]),
                         }),
                       ])
