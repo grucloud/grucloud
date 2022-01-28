@@ -1063,9 +1063,15 @@ const ignoreDefault =
         assert(resource);
       }),
       () => resource,
-      and([
-        or([get("managedByOther") /*, get("cannotBeDeleted")*/]),
-        pipe([get("usedBy", []), not(find(eq(get("managedByOther"), false)))]),
+      or([
+        and([
+          or([get("managedByOther") /*, get("cannotBeDeleted")*/]),
+          pipe([
+            get("usedBy", []),
+            not(find(eq(get("managedByOther"), false))),
+          ]),
+        ]),
+        pipe([get("name"), callProp("startsWith", "mc_")]),
       ]),
       tap.if(identity, (xxx) => {
         // console.log(

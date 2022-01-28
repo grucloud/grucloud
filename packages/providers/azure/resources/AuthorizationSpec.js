@@ -9,7 +9,6 @@ const {
   set,
   switchCase,
   pick,
-  assign,
   omit,
   or,
   and,
@@ -20,16 +19,11 @@ const {
   pluck,
   flatten,
   find,
-  isEmpty,
   when,
   callProp,
-  prepend,
-  append,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const { configDefaultDependenciesId, shortName } = require("../AzureCommon");
 
 const group = "Authorization";
 
@@ -77,6 +71,11 @@ exports.fnSpecs = ({ config }) =>
             group: "Authorization",
             createOnly: true,
             pathId: "properties.roleDefinitionId",
+          },
+          principalManagedCluster: {
+            type: "ManagedCluster",
+            group: "ContainerService",
+            createOnly: true,
           },
           principalDiskEncryptionSet: {
             type: "DiskEncryptionSet",
@@ -174,6 +173,13 @@ exports.fnSpecs = ({ config }) =>
                   get("live.identity.principalId"),
                   live.properties.principalId
                 ),
+                //AKS
+                eq(
+                  get(
+                    "live.properties.identityProfile.kubeletidentity.objectId"
+                  ),
+                  live.properties.principalId
+                ),
               ])
             ),
             map(({ group, type, id }) => ({ group, type, ids: [id] })),
@@ -211,6 +217,12 @@ exports.fnSpecs = ({ config }) =>
                   ])
                 )(),
                 principalId: switchCase([
+                  () => dependencies.principalManagedCluster,
+                  () =>
+                    getField(
+                      dependencies.principalManagedCluster,
+                      "properties.identityProfile.kubeletidentity.objectId"
+                    ),
                   () => dependencies.principalDiskEncryptionSet,
                   () =>
                     getField(

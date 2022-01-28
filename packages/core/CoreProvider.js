@@ -1634,6 +1634,7 @@ function CoreProvider({
                 diff: engine.spec.compare({
                   live,
                   target: input,
+                  //TODO add omit and pick
                   propertiesDefault: engine.spec.propertiesDefault,
                   config: getProviderConfig(),
                   programOptions,

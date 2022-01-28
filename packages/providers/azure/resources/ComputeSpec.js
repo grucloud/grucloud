@@ -25,7 +25,8 @@ const {
 const fs = require("fs").promises;
 const path = require("path");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, compare } = require("@grucloud/core/Common");
+
 const {
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
@@ -67,17 +68,20 @@ const filterVirtualMachineProperties =
                 tap((params) => {
                   assert(true);
                 }),
-                assign({
-                  id: pipe([
-                    get("id"),
-                    callProp(
-                      "replace",
-                      config.subscriptionId,
-                      "${config.subscriptionId}"
-                    ),
-                    (id) => () => "`" + id + "`",
-                  ]),
-                }),
+                when(
+                  get("id"),
+                  assign({
+                    id: pipe([
+                      get("id"),
+                      callProp(
+                        "replace",
+                        config.subscriptionId,
+                        "${config.subscriptionId}"
+                      ),
+                      (id) => () => "`" + id + "`",
+                    ]),
+                  })
+                ),
               ]),
             })
           ),
@@ -391,6 +395,7 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           vault: {
             type: "Vault",
@@ -500,6 +505,7 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           subnets: {
             type: "Subnet",
@@ -574,6 +580,28 @@ exports.fnSpecs = ({ config }) =>
           "properties.virtualMachineProfile.osProfile.adminPassword",
           "properties.virtualMachineProfile.osProfile.secrets",
         ],
+        compare: compare({
+          filterAll: pipe([
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                pick(["virtualMachineProfile"]),
+                assign({
+                  virtualMachineProfile: pipe([
+                    get("virtualMachineProfile"),
+                    // TODO
+                    omit(["extensionProfile", "osProfile"]),
+                    omitIfEmpty(["networkProfile"]),
+                  ]),
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        }),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives }),
           findDependenciesUserAssignedIdentity({ live }),
@@ -699,6 +727,7 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           networkInterfaces: {
             type: "NetworkInterface",

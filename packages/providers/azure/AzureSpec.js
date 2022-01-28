@@ -29,12 +29,14 @@ const {
 const { compare } = require("@grucloud/core/Common");
 
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
+const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
 const KeyVaultSpec = require("./resources/KeyVaultSpec");
 const NetworkSpec = require("./resources/NetworkSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
 const ResourceManagementSpec = require("./resources/ResourcesSpec");
+
 const StorageSpec = require("./resources/StorageSpec");
 const WebSpec = require("./resources/WebSpec");
 
@@ -49,6 +51,7 @@ const createSpecsOveride = (config) =>
     () => [
       AuthorizationSpec,
       ComputeSpec,
+      ContainerServiceSpec,
       DBForPortgreSQLSpec,
       KeyVaultSpec,
       NetworkSpec,
@@ -98,6 +101,7 @@ const buildDefaultSpec = fork({
                     tap((depName) => {
                       assert(depName);
                     }),
+                    //TODO
                     callProp("toLowerCase"),
                     (depName) => [...acc, depName],
                   ])
@@ -130,7 +134,7 @@ const buildDefaultSpec = fork({
       }),
       () => dependencies,
       values,
-      filter(not(get("createOnly"))),
+      filter(get("parent")),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
   Client:
@@ -176,6 +180,7 @@ const buildDefaultSpec = fork({
         omit(omitProperties),
         omit([
           "type",
+          //TODO keep the name and add inferName
           "name",
           "properties.provisioningState",
           "etag",

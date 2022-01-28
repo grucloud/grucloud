@@ -19,6 +19,7 @@ exports.fnSpecs = ({ config }) => {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
+            parent: true,
           },
           workspace: {
             type: "Workspace",
@@ -131,10 +132,12 @@ exports.fnSpecs = ({ config }) => {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
+            parent: true,
           },
           kubeEnvironment: {
             type: "KubeEnvironment",
             group: "Web",
+            createOnly: true,
           },
         },
         methods: {

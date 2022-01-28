@@ -4,11 +4,11 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "rg-load-balancer::vm_key",
+    name: "rg-load-balancer::vmss_key",
     properties: ({}) => ({
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLvH4OrzJFkq2Ak7NokSgv+EOH\r\nLdstFxBNsB5jiU/Hz0wjdjFsK9etGjKPCTohKT9/wIGz3Fzy4vRjRljqqjx0CuGa\r\nPp6vV1JJHUcSOyJTJE5wSauBsDsZ34ydf05M04YTPpYT6SPa3DVWJ0VkcoPjj5BO\r\nTX0EcxrthMZSMbQ5Ceo5xW1TDmr5hq1wtRoBAhqo+4GcPkfBUZSo5dbZeE04T5yj\r\nDmqtpY8ZmGvPwJgD/1Sx2VnVitXRurwo17Y+xILSgYcajCaa/zO4aYldMlNmfbod\r\nhYYtFFv/9zWFZHUYt7i0uKb+JjfvubJFZjiYx5CdyN4hVtwTroVE6q9G57K7vr3G\r\nR6lTCAH/BuZ6NLob+m5HmSqhqySVDBZd/GCRnDRLpljvV1mh48Px4pZrp18oVOry\r\n7bW1B4htgcUkW2rHUnNrAEj9rUxKDoMprii3f61TuFgbufSlwm4kFplk4s5aDJ/t\r\nDw6meVQlvhlR40UA/qe95fmL88UOUbTh6svQeGE= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",
       },
     }),
     dependencies: ({ resources }) => ({
@@ -17,12 +17,12 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-load-balancer::vm-scale-set",
+    name: "rg-load-balancer::vmss",
     properties: ({ getId }) => ({
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
-        capacity: 2,
+        capacity: 1,
       },
       properties: {
         singlePlacementGroup: false,
@@ -34,7 +34,7 @@ const createResources = ({ provider }) => {
         },
         virtualMachineProfile: {
           osProfile: {
-            computerNamePrefix: "vm-scale-",
+            computerNamePrefix: "vmssfxzig",
             adminUsername: "azureuser",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
@@ -48,8 +48,7 @@ const createResources = ({ provider }) => {
               provisionVMAgent: true,
             },
             allowExtensionOperations: true,
-            adminPassword:
-              process.env.RG_LOAD_BALANCER_VM_SCALE_SET_ADMIN_PASSWORD,
+            adminPassword: process.env.RG_LOAD_BALANCER_VMSS_ADMIN_PASSWORD,
           },
           storageProfile: {
             osDisk: {
@@ -109,7 +108,7 @@ const createResources = ({ provider }) => {
                             id: getId({
                               type: "LoadBalancerBackendAddressPool",
                               group: "Network",
-                              name: "rg-load-balancer::load-balancer::backend-pool",
+                              name: "rg-load-balancer::load-balancer::backendpool",
                             }),
                           },
                         ],
@@ -119,7 +118,6 @@ const createResources = ({ provider }) => {
                 },
               },
             ],
-            networkInterfaces: undefined,
           },
         },
         overprovision: false,
@@ -131,17 +129,18 @@ const createResources = ({ provider }) => {
       resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
       subnets: [resources.Network.Subnet["rg-load-balancer::vnet::default"]],
       sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-load-balancer::vm_key"],
+        resources.Compute.SshPublicKey["rg-load-balancer::vmss_key"],
       ],
       networkSecurityGroups: [
         resources.Network.NetworkSecurityGroup[
           "rg-load-balancer::basicnsgvnet-nic01"
         ],
       ],
-      loadBalancerBackendAddressPool:
+      loadBalancerBackendAddressPools: [
         resources.Network.LoadBalancerBackendAddressPool[
-          "rg-load-balancer::load-balancer::backend-pool"
+          "rg-load-balancer::load-balancer::backendpool"
         ],
+      ],
     }),
   });
 
@@ -157,21 +156,14 @@ const createResources = ({ provider }) => {
           {
             name: "frontend",
             properties: {
-              provisioningState: "Succeeded",
-              privateIPAllocationMethod: "Dynamic",
               publicIPAddress: {
                 id: getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "rg-load-balancer::ip-address",
+                  name: "rg-load-balancer::ip",
                 }),
               },
             },
-          },
-        ],
-        backendAddressPools: [
-          {
-            name: "backend-pool",
           },
         ],
         loadBalancingRules: [],
@@ -184,13 +176,13 @@ const createResources = ({ provider }) => {
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
       publicIPAddresses: [
-        resources.Network.PublicIPAddress["rg-load-balancer::ip-address"],
+        resources.Network.PublicIPAddress["rg-load-balancer::ip"],
       ],
     }),
   });
 
   provider.Network.makeLoadBalancerBackendAddressPool({
-    name: "rg-load-balancer::load-balancer::backend-pool",
+    name: "rg-load-balancer::load-balancer::backendpool",
     properties: ({}) => ({
       properties: {},
     }),
@@ -214,7 +206,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-load-balancer::ip-address",
+    name: "rg-load-balancer::ip",
     properties: ({}) => ({
       sku: {
         name: "Standard",

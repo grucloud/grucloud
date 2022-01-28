@@ -1,5 +1,16 @@
 ## Bugs
 
+remove aks-managed-createOperationID from tags
+
+- tags: {
+  "aks-managed-createOperationID": "fd8c6df9-abfd-4547-b838-643b0a994d6a",
+  creationSource: "vmssclient-aks-agentpool-16282925-vmss",
+  orchestrator: "Kubernetes:1.21.7",
+  poolName: "agentpool",
+  resourceNameSuffix: "18663747",
+  },
+
+- az aks get-credentials --resource-group myResourceGroup --name myManagedCluster
 - az aks: gc d
 
 ✖ ContainerService::AgentPool 0/1 There has to be at least one agent pool.

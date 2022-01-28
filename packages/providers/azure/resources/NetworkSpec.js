@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  eq,
-  get,
-  tap,
-  pick,
-  map,
-  assign,
-  omit,
-  switchCase,
-} = require("rubico");
+const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
 const { defaultsDeep, pluck, isObject, when, flatten } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
@@ -33,12 +23,32 @@ exports.fnSpecs = ({ config }) => {
   return pipe([
     () => [
       {
+        type: "RouteTable",
+        omitProperties: ["properties.routes"],
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([
+            tap((params) => {
+              assert(pickPropertiesCreate);
+            }),
+            pick(pickPropertiesCreate),
+            omit(["properties.routes"]),
+          ]),
+        // configDefault: ({ properties, dependencies, config, spec }) =>
+        //   pipe([() => properties])(),
+      },
+      {
+        type: "Route",
+        configDefault: ({ properties, dependencies, config, spec }) =>
+          pipe([() => properties])(),
+      },
+      {
         type: "LoadBalancer",
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           publicIPAddresses: {
             type: "PublicIPAddress",
@@ -49,18 +59,6 @@ exports.fnSpecs = ({ config }) => {
         },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "LoadBalancerBackendAddressPool",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.backendAddressPools"),
-              pluck("properties"),
-              pluck("loadBalancerBackendAddresses"),
-              flatten,
-              pluck("id"),
-            ])(),
-          },
           {
             type: "PublicIPAddress",
             group: "Network",
@@ -73,17 +71,54 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
-        omitProperties: [
-          "properties.frontendIPConfigurations",
-          "properties.backendAddressPools",
-        ],
+        //TODO
+        // omitProperties: [
+        //   "properties.frontendIPConfigurations",
+        //   "properties.backendAddressPools",
+        // ],
+        compare: compare({
+          filterAll: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "properties.frontendIPConfigurations",
+              "properties.backendAddressPools",
+            ]),
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "resourceGuid"]),
+                assign({
+                  outboundRules: pipe([
+                    get("outboundRules"),
+                    map(
+                      pipe([
+                        omit(["properties.provisioningState"]),
+                        pick(["properties"]),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        }),
         filterLive: ({ lives }) =>
           pipe([
             pick(["sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
-                omit(["provisioningState", "resourceGuid"]),
+                omit([
+                  "provisioningState",
+                  "resourceGuid",
+                  "backendAddressPools",
+                ]),
                 assign({
                   frontendIPConfigurations: pipe([
                     get("frontendIPConfigurations"),
@@ -93,6 +128,11 @@ exports.fnSpecs = ({ config }) => {
                         assign({
                           properties: pipe([
                             get("properties"),
+                            pick([
+                              "publicIPAddress",
+                              //"outboundRules",
+                              //"loadBalancingRules",
+                            ]),
                             assign({
                               publicIPAddress: pipe([
                                 get("publicIPAddress"),
@@ -108,29 +148,117 @@ exports.fnSpecs = ({ config }) => {
                       ])
                     ),
                   ]),
-                  backendAddressPools: pipe([
-                    get("backendAddressPools"),
-                    tap((params) => {
-                      assert(true);
-                    }),
+                  loadBalancingRules: pipe([
+                    get("loadBalancingRules"),
                     map(
                       pipe([
-                        tap((params) => {
-                          assert(true);
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState", "backendAddressPool"]),
+                            //TODO
+                            // frontendIPConfiguration
+                            // probe
+                            assign({
+                              backendAddressPools: pipe([
+                                get("backendAddressPools"),
+                                map(
+                                  assignDependenciesId({
+                                    group: "Network",
+                                    type: "LoadBalancerBackendAddressPool",
+                                    lives,
+                                  })
+                                ),
+                              ]),
+                            }),
+                            //TODO
+                            // assign({
+                            //   frontendIPConfigurations: pipe([
+                            //     get("frontendIPConfigurations"),
+                            //     map(
+                            //       assignDependenciesId({
+                            //         group: "Network",
+                            //         type: "PublicIPAddress",
+                            //         lives,
+                            //       })
+                            //     ),
+                            //   ]),
+                            // }),
+                          ]),
                         }),
-                        pick(["name" /*"properties"*/]),
-                        // assign({
-                        //   properties: pipe([get("properties")]),
-                        // }),
+                      ])
+                    ),
+                  ]),
+                  probes: pipe([
+                    get("probes"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick([
+                              "protocol",
+                              "port",
+                              "requestPath",
+                              "intervalInSeconds",
+                              "numberOfProbes",
+                              //"loadBalancingRules",
+                            ]),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  outboundRules: pipe([
+                    get("outboundRules"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick([
+                              "allocatedOutboundPorts",
+                              "protocol",
+                              "enableTcpReset",
+                              "idleTimeoutInMinutes",
+                              "backendAddressPool",
+                              "frontendIPConfigurations",
+                            ]),
+                            assign({
+                              backendAddressPool: pipe([
+                                get("backendAddressPool"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "LoadBalancerBackendAddressPool",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                            //TODO
+                            // assign({
+                            //   frontendIPConfigurations: pipe([
+                            //     get("frontendIPConfigurations"),
+                            //     map(
+                            //       assignDependenciesId({
+                            //         group: "Network",
+                            //         type: "PublicIPAddress",
+                            //         lives,
+                            //       })
+                            //     ),
+                            //   ]),
+                            // }),
+                          ]),
+                        }),
                       ])
                     ),
                   ]),
                   /*
-                  loadBalancingRules: [],
-        probes: [],
+                  //TODO
         inboundNatRules: [],
         inboundNatPools: [],
-        outboundRules: [],
                   */
                 }),
               ]),
@@ -147,11 +275,13 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           loadBalancer: {
             type: "LoadBalancer",
             group: "Network",
             name: "loadBalancerName",
+            parent: true,
           },
           virtualNetworks: {
             type: "VirtualNetwork",
@@ -182,10 +312,15 @@ exports.fnSpecs = ({ config }) => {
             assign({
               properties: pipe([
                 get("properties"),
+                tap((params) => {
+                  assert(true);
+                }),
                 omit([
                   "provisioningState",
                   "backendIPConfigurations",
                   "loadBalancerBackendAddresses",
+                  "loadBalancingRules",
+                  "outboundRules",
                 ]),
                 // assign({
                 //   loadBalancerBackendAddresses: pipe([
@@ -230,6 +365,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           // "natGateway": {
           //     "type": "NatGateway",
@@ -271,6 +407,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           //TODO
           // dscpConfiguration: {
@@ -326,6 +463,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           //TODO
           // dscpConfiguration: {
@@ -395,6 +533,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           subnets: {
             type: "Subnet",
@@ -564,6 +703,7 @@ exports.fnSpecs = ({ config }) => {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
+            parent: true,
           },
           virtualNetwork: {
             type: "VirtualNetwork",
@@ -716,6 +856,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           //TODO
           // workspace: {
@@ -737,6 +878,7 @@ exports.fnSpecs = ({ config }) => {
             type: "VirtualNetwork",
             group: "Network",
             name: "virtualNetworkName",
+            parent: true,
           },
           natGateway: {
             type: "NatGateway",
@@ -745,6 +887,10 @@ exports.fnSpecs = ({ config }) => {
             pathId: "properties.natGateway.id",
           },
         },
+        omitProperties: [
+          "properties.routeTable",
+          "properties.networkSecurityGroup",
+        ],
         pickProperties: [
           "properties.addressPrefix",
           "properties.addressPrefixes",
@@ -772,6 +918,8 @@ exports.fnSpecs = ({ config }) => {
             omit([
               "properties.provisioningState",
               "properties.ipConfigurations",
+              "properties.routeTable",
+              "properties.networkSecurityGroup",
             ]),
             omitIfEmpty(["properties.delegations"]),
             pick(["properties"]),
@@ -857,6 +1005,7 @@ exports.fnSpecs = ({ config }) => {
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           publicIpAddresses: {
             type: "PublicIPAddress",

@@ -10,7 +10,13 @@ const {
   map,
   not,
 } = require("rubico");
-const { isEmpty, defaultsDeep, flatten, unless } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  flatten,
+  unless,
+  includes,
+} = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreClient" });
 const { tos } = require("./tos");
@@ -349,7 +355,10 @@ module.exports = CoreClient = ({
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },
                   isExpectedException: eq(get("response.status"), 404),
-                  shouldRetryOnException: eq(get("error.response.status"), 409),
+                  shouldRetryOnException: pipe([
+                    get("error.response.status"),
+                    (status) => pipe([() => [409, 429], includes(status)])(),
+                  ]),
                 }),
               get("data"),
               onResponseDelete,

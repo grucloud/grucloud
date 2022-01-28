@@ -84,6 +84,7 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           subnets: {
             type: "Subnet",
@@ -151,6 +152,7 @@ exports.fnSpecs = ({ config }) =>
           "id",
           "name",
           "type",
+          "location",
           "systemData",
           "properties.vaultUri", // fix azure spec
           "properties.tenantId",

@@ -36,6 +36,7 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             name: "resourceGroupName",
+            parent: true,
           },
           subnet: {
             type: "Subnet",

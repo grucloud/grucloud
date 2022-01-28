@@ -57,7 +57,7 @@ exports.ResourceMaker = ({
   const { type, group, groupType } = spec;
   assert(groupType);
 
-  const getId = ({ group, type, name }) =>
+  const getId = ({ group, type, name, path = "id" }) =>
     pipe([
       tap(() => {
         assert(group);
@@ -71,7 +71,10 @@ exports.ResourceMaker = ({
           type,
           providerName: config.providerName,
         }),
-      get("id", `id of ${group}::${type}::${name} not vailable yet`),
+      get(
+        path,
+        `<< ${path} of ${group}::${type}::${name} not available yet >>`
+      ),
       tap((params) => {
         assert(true);
       }),

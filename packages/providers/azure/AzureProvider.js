@@ -204,8 +204,7 @@ exports.AzureProvider = ({
         ({ group, type, dependencies }) =>
           pipe([
             () => dependencies,
-            // filter(not(get("createOnly"))), => filter(get("parent")),
-            filter(not(get("createOnly"))),
+            filter(get("parent")),
             filter(not(eq(get("type"), "ResourceGroup"))),
             values,
             (deps) => [...deps, { group, type }],

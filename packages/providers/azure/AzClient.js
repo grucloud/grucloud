@@ -137,7 +137,7 @@ module.exports = AzClient = ({
         assert(dependencies);
       }),
       () => dependencies,
-      filter(not(get("createOnly"))),
+      filter(get("parent")),
       map.entries(([key, { group, type, name }]) => [
         key,
         {
@@ -405,7 +405,7 @@ module.exports = AzClient = ({
         pipe([
           () => dependencies,
           values,
-          filter(not(get("createOnly"))),
+          filter(get("parent")),
           last,
           tap((dep) => {
             if (!dep) {

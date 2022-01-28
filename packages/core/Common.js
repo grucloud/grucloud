@@ -147,7 +147,7 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
     }),
   ])();
 
-exports.axiosErrorToJSON = (error) => ({
+exports.axiosErrorToJSON = (error = {}) => ({
   isAxiosError: error.isAxiosError,
   message: get("response.data.message", error.message)(error),
   name: error.name,
@@ -293,7 +293,7 @@ exports.isDownByIdCore =
   };
 const errorToString = tryCatch(JSON.stringify, callProp("toString"));
 
-exports.logError = (prefix, error) => {
+exports.logError = (prefix, error = {}) => {
   logger.error(`${prefix} error:${errorToString(error)}`);
   error.stack && logger.error(error.stack);
 

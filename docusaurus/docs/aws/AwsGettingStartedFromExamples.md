@@ -308,7 +308,7 @@ gc list --graph --all
 
 This will include the default AWS resources such as VPC, subnet, internet gateway, and security group.
 
-![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/artifacts/diagram-live.svg)
+![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-simple/artifacts/diagram-live.svg)
 
 To list only the resources created by GruCloud:
 

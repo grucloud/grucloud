@@ -52,7 +52,6 @@ const createResources = ({ provider }) => {
   provider.KeyVault.makeVault({
     name: "rg-keyvault-rbac::gc-vault-rbac",
     properties: ({ config }) => ({
-      location: "centralus",
       properties: {
         sku: {
           family: "A",

@@ -107,7 +107,6 @@ const createResources = ({ provider }) => {
   provider.KeyVault.makeVault({
     name: "rg-vm-vault::gc-vault-vm",
     properties: ({ config }) => ({
-      location: "centralus",
       properties: {
         sku: {
           family: "A",

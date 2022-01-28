@@ -69,7 +69,7 @@ const findResourceById =
       ),
     ])();
 
-exports.assignDependenciesId = ({ group, type, lives }) =>
+exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
   pipe([
     tap((params) => {
       assert(group);
@@ -77,10 +77,12 @@ exports.assignDependenciesId = ({ group, type, lives }) =>
       assert(lives);
     }),
     assign({
-      id: pipe([
-        get("id"),
+      [propertyName]: pipe([
+        get(propertyName),
         tap((id) => {
-          assert(id, `no id for ${type}`);
+          if (!id) {
+            assert(id, `no id for ${type}, propertyName: ${propertyName}`);
+          }
         }),
         findResourceById({
           groupType: `${group}::${type}`,
@@ -91,7 +93,7 @@ exports.assignDependenciesId = ({ group, type, lives }) =>
         }),
         get("name"),
         (name) => () =>
-          `getId({ type: "${type}", group: "${group}", name: "${name}" })`,
+          `getId({ type: "${type}", group: "${group}", name: "${name}"})`,
       ]),
     }),
   ]);
