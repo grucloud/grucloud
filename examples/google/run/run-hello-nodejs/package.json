@@ -1,6 +1,6 @@
 {
   "name": "run-hello-nodejs",
-  "version": "3.5.0",
+  "version": "3.5.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.5.0",
-    "@grucloud/provider-google": "^3.5.0",
+    "@grucloud/core": "^3.5.2",
+    "@grucloud/provider-google": "^3.5.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
