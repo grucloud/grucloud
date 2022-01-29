@@ -197,20 +197,7 @@ exports.fnSpecs = ({ config }) => {
                       pipe([
                         pick(["name", "properties"]),
                         assign({
-                          properties: pipe([
-                            get("properties"),
-                            pick(["port", "httpListeners"]),
-                            // assign({
-                            //   httpListeners: pipe([
-                            //     get("httpListeners"),
-                            //     map(
-                            //       assignApplicationGatewayDependencyId({
-                            //         config,
-                            //       })
-                            //     ),
-                            //   ]),
-                            // }),
-                          ]),
+                          properties: pipe([get("properties"), pick(["port"])]),
                         }),
                       ])
                     ),
@@ -226,6 +213,7 @@ exports.fnSpecs = ({ config }) => {
                             omit([
                               "provisioningState",
                               "backendAddresses",
+                              "backendIPConfigurations",
                               "requestRoutingRules",
                             ]),
                           ]),

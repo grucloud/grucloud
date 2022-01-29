@@ -178,24 +178,13 @@ const createResources = ({ provider }) => {
             name: "port_80",
             properties: {
               port: 80,
-              httpListeners: [
-                {
-                  id: "/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/listener",
-                },
-              ],
             },
           },
         ],
         backendAddressPools: [
           {
             name: "backendpool",
-            properties: {
-              backendIPConfigurations: [
-                {
-                  id: "/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-ag/providers/Microsoft.Compute/virtualMachineScaleSets/vmss/virtualMachines/0/networkInterfaces/vnet-nic01/ipConfigurations/vnet-nic01-defaultIpConfiguration",
-                },
-              ],
-            },
+            properties: {},
           },
         ],
         backendHttpSettingsCollection: [
