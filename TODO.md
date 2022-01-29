@@ -1,6 +1,9 @@
 ## Bugs
 
 - implement : z aks get-credentials --resource-group myResourceGroup --name myManagedCluster
+- gcloud container clusters get-credentials cluster-1
+
+# --zone=us-central1-c
 
 NetworkSecurityGroup defaultSecurityRules in gencode
 

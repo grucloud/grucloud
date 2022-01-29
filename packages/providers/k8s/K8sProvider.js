@@ -39,7 +39,7 @@ const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { detailedDiff } = require("deep-object-diff");
 
-const { compareK8s, isOurMinion } = require("./K8sCommon");
+const { compareK8s, isOurMinion, findUser } = require("./K8sCommon");
 const { K8sUtils, toApiVersion } = require("./K8sUtils");
 const {
   createResourceNamespaceless,
@@ -736,41 +736,97 @@ const readKubeConfig = ({
     }
   )();
 
+//AWS EKS
+const getAuthTokenExec = pipe([
+  get("exec"),
+  ({ command, args }) => `${command} ${args.join(" ")}`,
+  (fullCommand) =>
+    pipe([
+      tap(() => {
+        logger.debug(`getAuthTokenExec: ${fullCommand}`);
+      }),
+      () =>
+        shell.exec(fullCommand, {
+          silent: true,
+        }),
+      switchCase([
+        eq(get("code"), 0),
+        get("stdout"),
+        (result) => {
+          throw {
+            message: `command '${fullCommand}' failed`,
+            ...result,
+          };
+        },
+      ]),
+    ])(),
+  JSON.parse,
+  get("status.token"),
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
+//GCP GKE
+const getAuthTokenAuthProvider = pipe([
+  get("auth-provider.config"),
+  (cmd) => `${cmd["cmd-path"]} ${cmd["cmd-args"]}`,
+  (fullCommand) =>
+    pipe([
+      tap(() => {
+        logger.debug(`getAuthTokenAuthProvider: ${fullCommand}`);
+      }),
+      () =>
+        shell.exec(fullCommand, {
+          silent: true,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      switchCase([
+        eq(get("code"), 0),
+        get("stdout"),
+        (result) => {
+          throw {
+            message: `command '${fullCommand}' failed`,
+            ...result,
+          };
+        },
+      ]),
+    ])(),
+  tap((params) => {
+    assert(true);
+  }),
+  JSON.parse,
+  get("credential.access_token"),
+]);
+
 const getAuthToken = ({ kubeConfig }) =>
   pipe([
-    () => kubeConfig.contexts,
-    find(eq(get("name"), kubeConfig["current-context"])),
-    get("context.user"),
-    (user) => find(eq(get("name"), user))(kubeConfig.users),
-    get("user.exec"),
+    () => kubeConfig,
+    findUser,
+    tap((params) => {
+      assert(true);
+    }),
     switchCase([
-      isEmpty,
+      // GCP GKE
+      get("auth-provider.config"),
+      getAuthTokenAuthProvider,
+      // AWS ELS
+      get("exec"),
+      getAuthTokenExec,
+      // Azure AKS
+      get("token"),
+      get("token"),
       () => {
-        logger.error(`getAuthToken: no user in kubeConfig`);
+        logger.error(`getAuthToken: cannot get token`);
         return undefined;
       },
-      pipe([
-        ({ command, args }) => {
-          logger.debug(`getAuthToken: ${command}, args: ${args}`);
-          const fullCommand = `${command} ${args.join(" ")}`;
-          const { stdout, stderr, code } = shell.exec(fullCommand, {
-            silent: true,
-          });
-          if (code !== 0) {
-            throw {
-              message: `command '${fullCommand}' failed`,
-              stdout,
-              stderr,
-              code,
-            };
-          }
-          return stdout;
-        },
-        JSON.parse,
-        get("status.token"),
-      ]),
     ]),
-  ])(kubeConfig);
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const providerType = "k8s";
 

@@ -1,6 +1,18 @@
 const assert = require("assert");
-const { pipe, tap, map, pick, omit, assign, get } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const shell = require("shelljs");
+const {
+  pipe,
+  tap,
+  map,
+  pick,
+  omit,
+  assign,
+  get,
+  fork,
+  not,
+  eq,
+} = require("rubico");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 
 const {
@@ -8,7 +20,75 @@ const {
   assignDependenciesId,
 } = require("../AzureCommon");
 
+const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
+
 const group = "ContainerService";
+
+const kubeConfigUpdate = ({ id, name }) =>
+  pipe([
+    tap(() => {
+      assert(name);
+      assert(id);
+    }),
+    tap.if(
+      () => !process.env.CONTINUOUS_INTEGRATION,
+      pipe([
+        () => id,
+        callProp("split", "/"),
+        fork({
+          resourceGroup: (ids) => ids[4],
+        }),
+        ({ resourceGroup }) =>
+          `az aks get-credentials --resource-group ${resourceGroup} --name ${name} --overwrite-existing`,
+        (command) =>
+          pipe([
+            tap((params) => {
+              logger.info(`kubeConfigUpdate: command: ${command}`);
+            }),
+            () =>
+              shell.exec(command, {
+                silent: true,
+              }),
+            tap.if(not(eq(get("code"), 0)), (result) => {
+              throw {
+                message: `command '${command}' failed`,
+                ...result,
+              };
+            }),
+          ])(),
+      ])
+    ),
+  ])();
+const kubeConfigRemove = ({ name }) =>
+  pipe([
+    tap(() => {
+      assert(name);
+      logger.debug(`kubeConfigRemove: ${name}`);
+    }),
+    tap.if(
+      () => !process.env.CONTINUOUS_INTEGRATION && name,
+      pipe([
+        () =>
+          `kubectl config delete-context ${name}; kubectl config delete-cluster ${name}`,
+        (command) =>
+          pipe([
+            () =>
+              shell.exec(command, {
+                silent: true,
+              }),
+            tap.if(not(eq(get("code"), 0)), (result) => {
+              logger.error(
+                `command '${command}' failed, ${JSON.stringify(
+                  result,
+                  4,
+                  null
+                )}`
+              );
+            }),
+          ])(),
+      ])
+    ),
+  ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -49,6 +129,8 @@ exports.fnSpecs = ({ config }) =>
         propertiesDefault: {
           properties: { maxAgentPools: 100 },
         },
+        postCreate: () => kubeConfigUpdate,
+        postDestroy: () => kubeConfigRemove,
         compare: compare({
           filterAll: pipe([
             tap((params) => {
@@ -74,6 +156,24 @@ exports.fnSpecs = ({ config }) =>
                     get("agentPoolProfiles"),
                     map(pipe([omit(["provisioningState", "powerState"])])),
                   ]),
+                  addonProfiles: pipe([
+                    get("addonProfiles"),
+                    when(
+                      get("ingressApplicationGateway"),
+                      assign({
+                        ingressApplicationGateway: pipe([
+                          get("ingressApplicationGateway"),
+                          pick(["enabled", "config"]),
+                          assign({
+                            config: pipe([
+                              get("config"),
+                              pick(["applicationGatewayName", "subnetCIDR"]),
+                            ]),
+                          }),
+                        ]),
+                      })
+                    ),
+                  ]),
                 }),
               ]),
             }),
@@ -95,7 +195,11 @@ exports.fnSpecs = ({ config }) =>
             assign({
               properties: pipe([
                 get("properties"),
-                omit(["identityProfile", "nodeResourceGroup"]),
+                omit([
+                  "identityProfile",
+                  "nodeResourceGroup",
+                  "windowsProfile", // For now no windows need to add the password as env var
+                ]),
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),
@@ -103,6 +207,21 @@ exports.fnSpecs = ({ config }) =>
                   ]),
                   addonProfiles: pipe([
                     get("addonProfiles"),
+                    when(
+                      get("ingressApplicationGateway"),
+                      assign({
+                        ingressApplicationGateway: pipe([
+                          get("ingressApplicationGateway"),
+                          pick(["enabled", "config"]),
+                          assign({
+                            config: pipe([
+                              get("config"),
+                              pick(["applicationGatewayName", "subnetCIDR"]),
+                            ]),
+                          }),
+                        ]),
+                      })
+                    ),
                     when(
                       get("httpApplicationRouting"),
                       assign({

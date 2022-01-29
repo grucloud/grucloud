@@ -45,7 +45,7 @@ const isGcloudPresent = pipe([
     ]),
     (error) => {
       console.error(
-        "The gcloud CLI is not installed.\nVisit https://https://cloud.google.com/sdk/docs/install to install gcloud\n"
+        "The gcloud CLI is not installed.\nVisit https://cloud.google.com/sdk/docs/install to install gcloud\n"
       );
       process.exit(-1);
     }

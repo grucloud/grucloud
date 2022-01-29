@@ -56,6 +56,8 @@ const SpecDefault = ({ providerName }) => ({
   propertiesDefault: {},
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
+  postCreate: () => identity,
+  postDestroy: () => identity,
   displayResource: () => identity,
   managedByOther: () => false,
   cannotBeDeleted: () => false,
