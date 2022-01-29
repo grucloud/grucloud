@@ -133,6 +133,7 @@ const createResources = ({ provider }) => {
       networkSecurityGroups: [
         resources.Network.NetworkSecurityGroup["rg-ag::basicnsgvnet-nic01"],
       ],
+      applicationGateways: [resources.Network.ApplicationGateway["rg-ag::ag"]],
     }),
   });
 
@@ -177,11 +178,6 @@ const createResources = ({ provider }) => {
             name: "port_80",
             properties: {
               port: 80,
-              // httpListeners: [
-              //   {
-              //     id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/listener`,
-              //   },
-              // ],
             },
           },
         ],
