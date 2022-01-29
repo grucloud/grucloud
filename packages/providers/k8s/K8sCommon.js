@@ -153,19 +153,47 @@ exports.getServerUrl = (kubeConfig) =>
 
 exports.createAxiosMakerK8s = ({ config, contentType }) =>
   pipe([
-    () => config.kubeConfig(),
+    config.kubeConfig,
     (kubeConfig) =>
       pipe([
-        get("users"),
+        tap(() => {
+          assert(kubeConfig["current-context"]);
+          assert(kubeConfig.users);
+        }),
+        () => kubeConfig,
+        get("contexts"),
         find(eq(get("name"), kubeConfig["current-context"])),
-        get("user"),
-      ])(kubeConfig),
+        tap((context) => {
+          assert(context);
+        }),
+        get("context.user"),
+        tap((user) => {
+          assert(user);
+        }),
+        (user) =>
+          pipe([
+            () => kubeConfig.users,
+            find(eq(get("name"), user)),
+            get("user"),
+          ])(),
+      ])(),
+    tap((user) => {
+      assert(user);
+    }),
     (user) => ({
       rejectUnauthorized: false,
+      //AWS
       ...(user["client-certificate"] && {
         cert: fs.readFileSync(user["client-certificate"]),
       }),
       ...(user["client-key"] && { key: fs.readFileSync(user["client-key"]) }),
+      //Azure
+      ...(user["client-certificate-data"] && {
+        cert: Buffer.from(user["client-certificate-data"], "base64"),
+      }),
+      ...(user["client-key-data"] && {
+        key: Buffer.from(user["client-key-data"], "base64"),
+      }),
     }),
     tap(({ cert, key }) => {
       logger.debug(
