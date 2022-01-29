@@ -20,6 +20,8 @@ provider.Authorization.makeRoleAssignment({
     scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalManagedCluster:
+      resources.ContainerService.ManagedCluster["myManagedCluster"],
     principalDiskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     principalVirtualMachine:
@@ -45,6 +47,8 @@ provider.Authorization.makeRoleAssignment({
     scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalManagedCluster:
+      resources.ContainerService.ManagedCluster["myManagedCluster"],
     principalDiskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     principalVirtualMachine:
@@ -70,6 +74,8 @@ provider.Authorization.makeRoleAssignment({
     scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
     scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
     roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
+    principalManagedCluster:
+      resources.ContainerService.ManagedCluster["myManagedCluster"],
     principalDiskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
     principalVirtualMachine:
@@ -82,6 +88,7 @@ provider.Authorization.makeRoleAssignment({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
 - [RoleDefinition](../Authorization/RoleDefinition.md)
+- [ManagedCluster](../ContainerService/ManagedCluster.md)
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
 ## Swagger Schema

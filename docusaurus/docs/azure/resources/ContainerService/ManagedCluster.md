@@ -72,6 +72,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -133,6 +134,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -194,6 +196,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -255,6 +258,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -321,6 +325,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -387,6 +392,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -455,6 +461,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -515,6 +522,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -575,6 +583,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -635,6 +644,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -698,6 +708,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -760,6 +771,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -819,6 +831,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -880,6 +893,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -940,6 +954,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1005,6 +1020,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1057,6 +1073,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1116,6 +1133,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1174,6 +1192,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1238,6 +1257,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1306,6 +1326,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1380,6 +1401,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1441,6 +1463,7 @@ provider.ContainerService.makeManagedCluster({
     ],
     diskEncryptionSet:
       resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
+    routes: [resources.Network.Route["myRoute"]],
   }),
 });
 
@@ -1449,6 +1472,7 @@ provider.ContainerService.makeManagedCluster({
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
+- [Route](../Network/Route.md)
 ## Swagger Schema
 ```js
 {

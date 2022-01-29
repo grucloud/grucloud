@@ -24,6 +24,16 @@ const identity = (x) => x;
 const { retryCall, retryCallOnError } = require("./Retry");
 const { getByNameCore, logError, axiosErrorToJSON } = require("./Common");
 
+const shouldRetryOnExceptionCreateDefault = pipe([
+  get("error.response.status"),
+  (status) => pipe([() => [429], includes(status)])(),
+]);
+
+const shouldRetryOnExceptionDeleteDefault = pipe([
+  get("error.response.status"),
+  (status) => pipe([() => [409, 429], includes(status)])(),
+]);
+
 module.exports = CoreClient = ({
   spec,
   type,
@@ -64,7 +74,8 @@ module.exports = CoreClient = ({
   isDefault,
   managedByOther = () => false,
   cannotBeDeleted,
-  shouldRetryOnException,
+  shouldRetryOnExceptionCreate = shouldRetryOnExceptionCreateDefault,
+  shouldRetryOnExceptionDelete = shouldRetryOnExceptionDeleteDefault,
   onCreateExpectedException,
   findDependencies,
   isUpById,
@@ -94,7 +105,6 @@ module.exports = CoreClient = ({
       isDefault,
       managedByOther,
       cannotBeDeleted: cannotBeDeleted || managedByOther,
-      shouldRetryOnException,
       isUpById,
       isDownById,
       getList,
@@ -225,7 +235,7 @@ module.exports = CoreClient = ({
                     retryCallOnError({
                       name: `create ${spec.type}/${name}`,
                       isExpectedException: onCreateExpectedException,
-                      shouldRetryOnException,
+                      shouldRetryOnException: shouldRetryOnExceptionCreate,
                       fn: () =>
                         axios.request(path, {
                           method: verbCreate,
@@ -355,10 +365,7 @@ module.exports = CoreClient = ({
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },
                   isExpectedException: eq(get("response.status"), 404),
-                  shouldRetryOnException: pipe([
-                    get("error.response.status"),
-                    (status) => pipe([() => [409, 429], includes(status)])(),
-                  ]),
+                  shouldRetryOnException: shouldRetryOnExceptionDelete,
                 }),
               get("data"),
               onResponseDelete,

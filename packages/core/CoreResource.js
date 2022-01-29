@@ -20,6 +20,7 @@ const {
 } = require("rubico");
 
 const {
+  append,
   isEmpty,
   isString,
   isFunction,
@@ -57,7 +58,7 @@ exports.ResourceMaker = ({
   const { type, group, groupType } = spec;
   assert(groupType);
 
-  const getId = ({ group, type, name, path = "id" }) =>
+  const getId = ({ group, type, name, path = "id", suffix = "" }) =>
     pipe([
       tap(() => {
         assert(group);
@@ -75,6 +76,7 @@ exports.ResourceMaker = ({
         path,
         `<< ${path} of ${group}::${type}::${name} not available yet >>`
       ),
+      append(suffix),
       tap((params) => {
         assert(true);
       }),

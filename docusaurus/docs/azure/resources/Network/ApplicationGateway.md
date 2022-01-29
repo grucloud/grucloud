@@ -289,13 +289,9 @@ provider.Network.makeApplicationGateway({
     managedIdentities: [
       resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
     ],
-    subnet: resources.Network.Subnet["mySubnet"],
-    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+    subnets: [resources.Network.Subnet["mySubnet"]],
+    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
     firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
   }),
 });
 
@@ -306,7 +302,6 @@ provider.Network.makeApplicationGateway({
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
-- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 ## Swagger Schema
 ```js
 {

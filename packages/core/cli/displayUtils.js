@@ -446,7 +446,9 @@ const displayPlanItemUpdate =
           tableItem.push([
             {
               content: colors.red(
-                `- ${YAML.stringify(diff.targetDiff.updated[key])}`
+                `- ${YAML.stringify(
+                  diff.targetDiff.updated ? diff.targetDiff.updated[key] : ""
+                )}`
               ),
             },
             {

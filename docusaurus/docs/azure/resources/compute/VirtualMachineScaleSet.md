@@ -83,6 +83,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -178,6 +181,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -261,6 +267,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -350,6 +359,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -449,6 +461,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -537,6 +552,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -629,6 +647,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -713,6 +734,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -803,6 +827,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -883,6 +910,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -975,6 +1005,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1055,6 +1088,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -1146,6 +1182,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1235,6 +1274,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -1326,6 +1368,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1410,6 +1455,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -1511,6 +1559,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1600,6 +1651,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -1707,6 +1761,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1796,6 +1853,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -1899,6 +1959,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -1987,6 +2050,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2068,6 +2134,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2143,6 +2212,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -2228,6 +2300,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -2329,6 +2404,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2413,6 +2491,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -2520,6 +2601,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2609,6 +2693,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2696,6 +2783,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -2809,6 +2899,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -2896,6 +2989,9 @@ provider.Compute.makeVirtualMachineScaleSet({
       resources.Network.LoadBalancerBackendAddressPool[
         "myLoadBalancerBackendAddressPool"
       ],
+    ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
     ],
   }),
 });
@@ -2988,6 +3084,9 @@ provider.Compute.makeVirtualMachineScaleSet({
         "myLoadBalancerBackendAddressPool"
       ],
     ],
+    applicationGateways: [
+      resources.Network.ApplicationGateway["myApplicationGateway"],
+    ],
   }),
 });
 
@@ -3005,6 +3104,7 @@ provider.Compute.makeVirtualMachineScaleSet({
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
 ## Swagger Schema
 ```js
 {

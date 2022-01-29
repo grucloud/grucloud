@@ -112,7 +112,6 @@ const createResources = ({ provider }) => {
                 },
               },
             ],
-            networkInterfaces: undefined,
           },
         },
         overprovision: false,

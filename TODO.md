@@ -1,5 +1,7 @@
 ## Bugs
 
+NetworkSecurityGroup defaultSecurityRules in gencode
+
 remove aks-managed-createOperationID from tags
 
 - tags: {

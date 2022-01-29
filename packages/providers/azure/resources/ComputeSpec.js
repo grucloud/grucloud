@@ -174,17 +174,42 @@ const filterVirtualMachineProperties =
                               assign({
                                 properties: pipe([
                                   get("properties"),
+                                  when(
+                                    get("loadBalancerBackendAddressPools"),
+                                    assign({
+                                      loadBalancerBackendAddressPools: pipe([
+                                        get("loadBalancerBackendAddressPools"),
+                                        map(
+                                          assignDependenciesId({
+                                            group: "Network",
+                                            type: "LoadBalancerBackendAddressPool",
+                                            lives,
+                                          })
+                                        ),
+                                      ]),
+                                    })
+                                  ),
+                                  when(
+                                    get(
+                                      "applicationGatewayBackendAddressPools"
+                                    ),
+                                    assign({
+                                      applicationGatewayBackendAddressPools:
+                                        pipe([
+                                          get(
+                                            "applicationGatewayBackendAddressPools"
+                                          ),
+                                          map(
+                                            assignDependenciesId({
+                                              group: "Network",
+                                              type: "ApplicationGateway",
+                                              lives,
+                                            })
+                                          ),
+                                        ]),
+                                    })
+                                  ),
                                   assign({
-                                    loadBalancerBackendAddressPools: pipe([
-                                      get("loadBalancerBackendAddressPools"),
-                                      map(
-                                        assignDependenciesId({
-                                          group: "Network",
-                                          type: "LoadBalancerBackendAddressPool",
-                                          lives,
-                                        })
-                                      ),
-                                    ]),
                                     //TODO
                                     // loadBalancerInboundNatPools: pipe([
                                     //   get("loadBalancerInboundNatPools"),
@@ -205,9 +230,6 @@ const filterVirtualMachineProperties =
                                       }),
                                     ]),
                                   }),
-                                  omitIfEmpty([
-                                    "loadBalancerBackendAddressPools",
-                                  ]),
                                 ]),
                               }),
                             ])
@@ -569,6 +591,12 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
+          applicationGateways: {
+            type: "ApplicationGateway",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
         },
         environmentVariables: [
           {
@@ -656,6 +684,30 @@ exports.fnSpecs = ({ config }) =>
               pluck("loadBalancerBackendAddressPools"),
               flatten,
               pluck("id"),
+            ])(),
+          },
+          {
+            type: "ApplicationGateway",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get(
+                "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations"
+              ),
+              pluck("properties"),
+              pluck("ipConfigurations"),
+              flatten,
+              pluck("properties"),
+              pluck("applicationGatewayBackendAddressPools"),
+              flatten,
+              pluck("id"),
+              map(
+                pipe([
+                  callProp("split", "/"),
+                  callProp("slice", 0, -2),
+                  callProp("join", "/"),
+                ])
+              ),
             ])(),
           },
           //TODO common

@@ -1,6 +1,14 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
-const { defaultsDeep, pluck, isObject, when, flatten } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  isObject,
+  when,
+  isEmpty,
+  unless,
+  callProp,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -17,11 +25,328 @@ const {
 
 const group = "Network";
 
+const pickSubProps = pipe([
+  pick(["properties"]),
+  omit(["properties.provisioningState"]),
+]);
+
+const assignApplicationGatewayDependencyId = ({ config }) =>
+  assign({
+    id: pipe([
+      get("id"),
+      tap((id) => {
+        assert(id);
+      }),
+      callProp("replace", config.subscriptionId, "${config.subscriptionId}"),
+      (id) => () => "`" + id + "`",
+    ]),
+  });
+
+const applicationGatewayOmitIfEmpty = omitIfEmpty([
+  "sslCertificates",
+  "trustedRootCertificates",
+  "trustedClientCertificates",
+  "sslProfiles",
+  "loadDistributionPolicies",
+  "urlPathMaps",
+  "probes",
+  "rewriteRuleSets",
+  "redirectConfigurations",
+  "privateLinkConfigurations",
+  "privateEndpointConnections",
+]);
+
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
 
   return pipe([
     () => [
+      {
+        type: "ApplicationGateway",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          managedIdentities: {
+            type: "UserAssignedIdentity",
+            group: "ManagedIdentity",
+            createOnly: true,
+            list: true,
+          },
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          publicIpAddresses: {
+            type: "PublicIPAddress",
+            group: "Network",
+            createOnly: true,
+            list: true,
+          },
+          firewallPolicy: {
+            type: "FirewallPolicy",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.firewallPolicy.id",
+          },
+        },
+        findDependencies: ({ live, lives }) => [
+          findDependenciesResourceGroup({ live, lives, config }),
+          {
+            type: "PublicIPAddress",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.frontendIPConfigurations"),
+              pluck("properties"),
+              pluck("publicIPAddress"),
+              pluck("id"),
+            ])(),
+          },
+          {
+            type: "Subnet",
+            group: "Network",
+            ids: pipe([
+              () => live,
+              get("properties.gatewayIPConfigurations"),
+              pluck("properties.subnet.id"),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          },
+        ],
+        // propertiesDefault: {
+        //   sslCertificates: [],
+        //   trustedRootCertificates: [],
+        //   trustedClientCertificates: [],
+        //   sslProfiles: [],
+        //   loadDistributionPolicies: [],
+        //   urlPathMaps: [],
+        //   probes: [],
+        //   rewriteRuleSets: [],
+        //   redirectConfigurations: [],
+        //   privateLinkConfigurations: [],
+        //   privateEndpointConnections: [],
+        // },
+        filterLive: ({ lives }) =>
+          pipe([
+            pick(["sku", "tags", "properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "resourceGuid", "operationalState"]),
+                applicationGatewayOmitIfEmpty,
+                assign({
+                  gatewayIPConfigurations: pipe([
+                    get("gatewayIPConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["subnet"]),
+                            assign({
+                              subnet: pipe([
+                                get("subnet"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "Subnet",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  frontendIPConfigurations: pipe([
+                    get("frontendIPConfigurations"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["publicIPAddress"]),
+                            assign({
+                              publicIPAddress: pipe([
+                                get("publicIPAddress"),
+                                assignDependenciesId({
+                                  group: "Network",
+                                  type: "PublicIPAddress",
+                                  lives,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  frontendPorts: pipe([
+                    get("frontendPorts"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            pick(["port", "httpListeners"]),
+                            // assign({
+                            //   httpListeners: pipe([
+                            //     get("httpListeners"),
+                            //     map(
+                            //       assignApplicationGatewayDependencyId({
+                            //         config,
+                            //       })
+                            //     ),
+                            //   ]),
+                            // }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  backendAddressPools: pipe([
+                    get("backendAddressPools"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit([
+                              "provisioningState",
+                              "backendAddresses",
+                              "requestRoutingRules",
+                            ]),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  backendHttpSettingsCollection: pipe([
+                    get("backendHttpSettingsCollection"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState", "requestRoutingRules"]),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  httpListeners: pipe([
+                    get("httpListeners"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState", "requestRoutingRules"]),
+                            assign({
+                              frontendIPConfiguration: pipe([
+                                get("frontendIPConfiguration"),
+                                assignApplicationGatewayDependencyId({
+                                  config,
+                                }),
+                              ]),
+                            }),
+                            assign({
+                              frontendPort: pipe([
+                                get("frontendPort"),
+                                assignApplicationGatewayDependencyId({
+                                  config,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                  requestRoutingRules: pipe([
+                    get("requestRoutingRules"),
+                    map(
+                      pipe([
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState"]),
+                            assign({
+                              httpListener: pipe([
+                                get("httpListener"),
+                                assignApplicationGatewayDependencyId({
+                                  config,
+                                }),
+                              ]),
+                            }),
+                            assign({
+                              backendAddressPool: pipe([
+                                get("backendAddressPool"),
+                                assignApplicationGatewayDependencyId({
+                                  config,
+                                }),
+                              ]),
+                            }),
+                            assign({
+                              backendHttpSettings: pipe([
+                                get("backendHttpSettings"),
+                                assignApplicationGatewayDependencyId({
+                                  config,
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
+        compare: compare({
+          filterAll: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["properties"]),
+            assign({
+              properties: pipe([
+                get("properties"),
+                omit(["provisioningState", "resourceGuid", "operationalState"]),
+                applicationGatewayOmitIfEmpty,
+                assign({
+                  gatewayIPConfigurations: pickSubProps,
+                  frontendIPConfigurations: pickSubProps,
+                  frontendPorts: pickSubProps,
+                  backendAddressPools: pickSubProps,
+                  backendHttpSettingsCollection: pickSubProps,
+                  httpListeners: pickSubProps,
+                  requestRoutingRules: pickSubProps,
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        }),
+      },
       {
         type: "RouteTable",
         omitProperties: ["properties.routes"],
@@ -33,8 +358,6 @@ exports.fnSpecs = ({ config }) => {
             pick(pickPropertiesCreate),
             omit(["properties.routes"]),
           ]),
-        // configDefault: ({ properties, dependencies, config, spec }) =>
-        //   pipe([() => properties])(),
       },
       {
         type: "Route",
@@ -128,11 +451,7 @@ exports.fnSpecs = ({ config }) => {
                         assign({
                           properties: pipe([
                             get("properties"),
-                            pick([
-                              "publicIPAddress",
-                              //"outboundRules",
-                              //"loadBalancingRules",
-                            ]),
+                            pick(["publicIPAddress"]),
                             assign({
                               publicIPAddress: pipe([
                                 get("publicIPAddress"),
@@ -157,9 +476,6 @@ exports.fnSpecs = ({ config }) => {
                           properties: pipe([
                             get("properties"),
                             omit(["provisioningState", "backendAddressPool"]),
-                            //TODO
-                            // frontendIPConfiguration
-                            // probe
                             assign({
                               backendAddressPools: pipe([
                                 get("backendAddressPools"),
@@ -172,19 +488,6 @@ exports.fnSpecs = ({ config }) => {
                                 ),
                               ]),
                             }),
-                            //TODO
-                            // assign({
-                            //   frontendIPConfigurations: pipe([
-                            //     get("frontendIPConfigurations"),
-                            //     map(
-                            //       assignDependenciesId({
-                            //         group: "Network",
-                            //         type: "PublicIPAddress",
-                            //         lives,
-                            //       })
-                            //     ),
-                            //   ]),
-                            // }),
                           ]),
                         }),
                       ])
@@ -204,7 +507,6 @@ exports.fnSpecs = ({ config }) => {
                               "requestPath",
                               "intervalInSeconds",
                               "numberOfProbes",
-                              //"loadBalancingRules",
                             ]),
                           ]),
                         }),
@@ -237,19 +539,6 @@ exports.fnSpecs = ({ config }) => {
                                 }),
                               ]),
                             }),
-                            //TODO
-                            // assign({
-                            //   frontendIPConfigurations: pipe([
-                            //     get("frontendIPConfigurations"),
-                            //     map(
-                            //       assignDependenciesId({
-                            //         group: "Network",
-                            //         type: "PublicIPAddress",
-                            //         lives,
-                            //       })
-                            //     ),
-                            //   ]),
-                            // }),
                           ]),
                         }),
                       ])
@@ -890,6 +1179,7 @@ exports.fnSpecs = ({ config }) => {
         omitProperties: [
           "properties.routeTable",
           "properties.networkSecurityGroup",
+          "properties.applicationGatewayIPConfigurations",
         ],
         pickProperties: [
           "properties.addressPrefix",
@@ -898,7 +1188,6 @@ exports.fnSpecs = ({ config }) => {
           "properties.serviceEndpointPolicies",
           "properties.privateEndpointNetworkPolicies",
           "properties.privateLinkServiceNetworkPolicies",
-          "properties.applicationGatewayIpConfigurations",
         ],
         pickPropertiesCreate: [
           "properties.addressPrefix",
@@ -907,7 +1196,6 @@ exports.fnSpecs = ({ config }) => {
           "properties.serviceEndpointPolicies",
           "properties.privateEndpointNetworkPolicies",
           "properties.privateLinkServiceNetworkPolicies",
-          "properties.applicationGatewayIpConfigurations",
         ],
         //TODO use filterLive in compare
         compare: compare({
@@ -920,18 +1208,23 @@ exports.fnSpecs = ({ config }) => {
               "properties.ipConfigurations",
               "properties.routeTable",
               "properties.networkSecurityGroup",
+              "properties.applicationGatewayIPConfigurations",
             ]),
             omitIfEmpty(["properties.delegations"]),
             pick(["properties"]),
             assign({
               properties: pipe([
                 get("properties"),
-                assign({
-                  serviceEndpoints: pipe([
-                    get("serviceEndpoints"),
-                    map(omit(["provisioningState"])),
-                  ]),
-                }),
+                unless(
+                  pipe([get("serviceEndpoints"), isEmpty]),
+                  assign({
+                    serviceEndpoints: pipe([
+                      get("serviceEndpoints"),
+                      map(omit(["provisioningState"])),
+                    ]),
+                  })
+                ),
+                omitIfEmpty(["serviceEndpoints"]),
               ]),
             }),
             tap((params) => {
