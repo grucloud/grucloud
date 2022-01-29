@@ -13,6 +13,7 @@ const {
   and,
 } = require("rubico");
 const {
+  append,
   isFunction,
   find,
   callProp,
@@ -53,18 +54,27 @@ exports.isSubstituable = callProp("startsWith", "{");
 
 const findResourceById =
   ({ groupType, lives }) =>
-  (id) =>
+  (idToMatch) =>
     pipe([
       tap(() => {
         assert(lives);
         assert(groupType);
-        assert(id);
+        assert(idToMatch);
       }),
       () => lives,
       find(
         and([
           eq(get("groupType"), groupType),
-          pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())]),
+          pipe([
+            get("id"),
+            callProp("toUpperCase"),
+            (id) =>
+              pipe([
+                () => idToMatch,
+                callProp("toUpperCase"),
+                callProp("startsWith", id),
+              ])(),
+          ]),
         ])
       ),
     ])();
@@ -84,16 +94,41 @@ exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
             assert(id, `no id for ${type}, propertyName: ${propertyName}`);
           }
         }),
-        findResourceById({
-          groupType: `${group}::${type}`,
-          lives,
-        }),
-        tap((resource) => {
-          assert(resource);
-        }),
-        get("name"),
-        (name) => () =>
-          `getId({ type: "${type}", group: "${group}", name: "${name}"})`,
+        (id) =>
+          pipe([
+            () => id,
+            findResourceById({
+              groupType: `${group}::${type}`,
+              lives,
+            }),
+            tap((resource) => {
+              assert(resource);
+            }),
+            ({ name, id: idResource }) =>
+              pipe([
+                () => "",
+                append("getId({ type:'"),
+                append(type),
+                append("', group:'"),
+                append(group),
+                append("', name:'"),
+                append(name),
+                append("'"),
+                unless(
+                  pipe([() => id.replace(idResource, ""), isEmpty]),
+                  pipe([
+                    append(", suffix:'"),
+                    append(id.replace(idResource, "")),
+                    append("'"),
+                  ])
+                ),
+                append("})"),
+                tap((params) => {
+                  assert(true);
+                }),
+                (fun) => () => fun,
+              ])(),
+          ])(),
       ]),
     }),
   ]);

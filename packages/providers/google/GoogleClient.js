@@ -33,11 +33,12 @@ module.exports = GoogleClient = ({
   managedByOther,
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
+  //TODO rubico
   onCreateExpectedException = (error) => {
     logger.info(`onCreateExpectedException ${tos(error)}`);
     return error.response?.status === 409;
   },
-  shouldRetryOnException = ({ error, name }) => {
+  shouldRetryOnExceptionCreate = ({ error, name }) => {
     logger.error(`shouldRetryOnException ${tos({ name, error })}`);
     const { response } = error;
     if (!response) return false;
@@ -84,7 +85,7 @@ module.exports = GoogleClient = ({
     managedByOther,
     findTargetId,
     cannotBeDeleted,
-    shouldRetryOnException,
+    shouldRetryOnExceptionCreate,
     onCreateExpectedException,
     findDependencies,
     axios: createAxiosMakerGoogle({

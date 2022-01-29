@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project application-gateway
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ SshPublicKey (1)
+++++ VirtualMachineScaleSet (1)
++++ Network
+++++ ApplicationGateway (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (2)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap
