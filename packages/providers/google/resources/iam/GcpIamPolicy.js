@@ -19,10 +19,7 @@ const {
   logError,
   omitIfEmpty,
 } = require("@grucloud/core/Common");
-const {
-  createAxiosMakerGoogle,
-  shouldRetryOnException,
-} = require("../../GoogleCommon");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 // https://cloud.google.com/iam/docs/granting-changing-revoking-access#iam-modify-policy-role-rests
 exports.GcpIamPolicy = ({ spec, config }) => {
@@ -125,7 +122,6 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     getByName,
     configDefault,
     cannotBeDeleted: () => true,
-    shouldRetryOnException,
   };
 };
 
