@@ -150,6 +150,7 @@ exports.fnSpecs = ({ config }) =>
                   "azurePortalFQDN",
                   "identityProfile",
                   "nodeResourceGroup",
+                  "windowsProfile",
                 ]),
                 assign({
                   agentPoolProfiles: pipe([
