@@ -8,6 +8,7 @@ const {
   switchCase,
   assign,
   or,
+  and,
   pick,
   map,
   not,
@@ -151,46 +152,126 @@ exports.getServerUrl = (kubeConfig) =>
     }),
   ])();
 
+const findCluster = (kubeConfig) =>
+  pipe([
+    tap(() => {
+      //assert(kubeConfig["current-context"]);
+    }),
+    () => kubeConfig,
+    get("clusters"),
+    find(eq(get("name"), kubeConfig["current-context"])),
+    tap((cluster) => {
+      assert(cluster);
+    }),
+  ])();
+
+const findContext = (kubeConfig) =>
+  pipe([
+    tap(() => {
+      //assert(kubeConfig["current-context"]);
+    }),
+    () => kubeConfig,
+    get("contexts"),
+    find(eq(get("name"), kubeConfig["current-context"])),
+    tap((context) => {
+      //assert(context);
+    }),
+  ])();
+
+exports.findContext = findContext;
+
+const findUser = (kubeConfig) =>
+  pipe([
+    tap(() => {
+      assert(kubeConfig);
+      //assert(kubeConfig["current-context"]);
+      //assert(kubeConfig.users);
+    }),
+    () => kubeConfig,
+    findContext,
+    get("context.user"),
+    tap((user) => {
+      //assert(user);
+    }),
+    (user) =>
+      pipe([
+        () => kubeConfig.users,
+        find(eq(get("name"), user)),
+        get("user"),
+      ])(),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+exports.findUser = findUser;
+
 exports.createAxiosMakerK8s = ({ config, contentType }) =>
   pipe([
-    () => config.kubeConfig(),
+    config.kubeConfig,
     (kubeConfig) =>
       pipe([
-        get("users"),
-        find(eq(get("name"), kubeConfig["current-context"])),
-        get("user"),
-      ])(kubeConfig),
-    (user) => ({
-      rejectUnauthorized: false,
-      ...(user["client-certificate"] && {
-        cert: fs.readFileSync(user["client-certificate"]),
-      }),
-      ...(user["client-key"] && { key: fs.readFileSync(user["client-key"]) }),
-    }),
-    tap(({ cert, key }) => {
-      logger.debug(
-        `createAxiosMakerK8s agentParam hasCert ${!!cert}, hasKey ${!!key}`
-      );
-    }),
-    (agentParam) => new https.Agent(agentParam),
-    (httpsAgent) =>
-      AxiosMaker({
-        contentType,
-        httpsAgent,
-        onHeaders: pipe([
-          tap(() => {
-            assert(config.accessToken, "config.accessToken function not set");
-          }),
-          () => config.accessToken(),
-          switchCase([
-            isEmpty,
-            () => ({}),
-            (accessToken) => ({
-              Authorization: `Bearer ${accessToken}`,
+        () => kubeConfig,
+        findUser,
+        tap((user) => {
+          //assert(user);
+        }),
+        switchCase([
+          // GCP GKE
+          get("auth-provider.config"),
+          pipe([
+            () => kubeConfig,
+            findCluster,
+            get("cluster"),
+            tap((cluster) => {
+              assert(cluster);
             }),
+            (cluster) =>
+              new https.Agent({
+                ca: [
+                  Buffer.from(cluster["certificate-authority-data"], "base64"),
+                ],
+              }),
           ]),
+          // AWS EKS, minikube
+          and([get("client-certificate"), get("client-key")]),
+          (user) =>
+            new https.Agent({
+              rejectUnauthorized: false,
+              cert: fs.readFileSync(user["client-certificate"]),
+              key: fs.readFileSync(user["client-key"]),
+            }),
+          // Azure AKS
+          and([get("client-certificate-data"), get("client-key-data")]),
+          (user) =>
+            new https.Agent({
+              rejectUnauthorized: false,
+              cert: Buffer.from(user["client-certificate-data"], "base64"),
+              key: Buffer.from(user["client-key-data"], "base64"),
+            }),
+          () => undefined,
         ]),
-      }),
+        (httpsAgent) =>
+          AxiosMaker({
+            contentType,
+            httpsAgent,
+            onHeaders: pipe([
+              tap(() => {
+                assert(
+                  config.accessToken,
+                  "config.accessToken function not set"
+                );
+              }),
+              () => config.accessToken(),
+              switchCase([
+                isEmpty,
+                () => ({}),
+                (accessToken) => ({
+                  Authorization: `Bearer ${accessToken}`,
+                }),
+              ]),
+            ]),
+          }),
+      ])(),
   ])();
 
 exports.isOurMinion = ({ live, lives, config }) =>

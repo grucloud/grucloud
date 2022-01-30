@@ -1,5 +1,10 @@
 ## Bugs
 
+- implement : z aks get-credentials --resource-group myResourceGroup --name myManagedCluster
+- gcloud container clusters get-credentials cluster-1
+
+# --zone=us-central1-c
+
 NetworkSecurityGroup defaultSecurityRules in gencode
 
 remove aks-managed-createOperationID from tags
@@ -11,13 +16,6 @@ remove aks-managed-createOperationID from tags
   poolName: "agentpool",
   resourceNameSuffix: "18663747",
   },
-
-- az aks get-credentials --resource-group myResourceGroup --name myManagedCluster
-- az aks: gc d
-
-✖ ContainerService::AgentPool 0/1 There has to be at least one agent pool.
-✖ Network::RouteTable 0/1 Request failed with status code 400 Route table aks-agentpool-18663747-routetable is in use and cannot be
-deleted
 
 - makeFirewallPolicy - logAnalyticsResources workspace dep as an array
 - key or vault dependencies ?

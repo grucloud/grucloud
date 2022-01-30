@@ -9,7 +9,8 @@ const {
   map,
   assign,
   omit,
-  and,
+  filter,
+  not,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -701,6 +702,7 @@ exports.fnSpecs = ({ config }) =>
               pluck("applicationGatewayBackendAddressPools"),
               flatten,
               pluck("id"),
+              filter(not(isEmpty)),
               map(
                 pipe([
                   callProp("split", "/"),

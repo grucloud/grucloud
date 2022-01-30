@@ -288,7 +288,8 @@ module.exports = CoreClient = ({
                                     isUpById({ type: spec.type, name, id }),
                                   config,
                                 }),
-                              () => onResponseGet({ id, data }),
+                              () => data,
+                              spec.postCreate({ name, id }),
                             ])(),
                         ])(),
                     ]),
@@ -333,6 +334,7 @@ module.exports = CoreClient = ({
                   config,
                 })
               ),
+              spec.postDestroy({ name, id }),
               tap((data) => {
                 logger.info(`update ${tos({ name, type, id, data })} updated`);
               }),

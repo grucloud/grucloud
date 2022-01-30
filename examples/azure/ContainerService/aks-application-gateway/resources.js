@@ -4,26 +4,24 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
-    name: "7d846c80-f67b-4249-a322-a9eec7225e57",
+    name: "eef1bc65-5f03-4a78-8610-41dd1f4f7efb",
     properties: ({}) => ({
       properties: {
         roleName: "Contributor",
-        principalName: "rg-aks-basic::cluster",
+        principalName: "rg-aks-ag::cluster",
         principalType: "ServicePrincipal",
       },
     }),
     dependencies: ({ resources }) => ({
       scopeResourceGroup:
-        resources.Resources.ResourceGroup[
-          "mc_rg-aks-basic_cluster_canadacentral"
-        ],
+        resources.Resources.ResourceGroup["mc_rg-aks-ag_cluster_canadacentral"],
       principalManagedCluster:
-        resources.ContainerService.ManagedCluster["rg-aks-basic::cluster"],
+        resources.ContainerService.ManagedCluster["rg-aks-ag::cluster"],
     }),
   });
 
   provider.ContainerService.makeManagedCluster({
-    name: "rg-aks-basic::cluster",
+    name: "rg-aks-ag::cluster",
     properties: ({}) => ({
       sku: {
         name: "Basic",
@@ -34,35 +32,47 @@ const createResources = ({ provider }) => {
       },
       properties: {
         kubernetesVersion: "1.21.7",
-        dnsPrefix: "cluster-dns",
+        dnsPrefix: "cluster-rg-aks-ag-e012cd",
         agentPoolProfiles: [
           {
-            name: "agentpool",
-            count: 1,
-            vmSize: "Standard_B4ms",
+            name: "nodepool1",
+            count: 3,
+            vmSize: "Standard_DS2_v2",
             osDiskSizeGB: 128,
             osDiskType: "Managed",
             kubeletDiskType: "OS",
-            maxPods: 110,
+            maxPods: 30,
             type: "VirtualMachineScaleSets",
             enableAutoScaling: false,
             orchestratorVersion: "1.21.7",
             enableNodePublicIP: false,
             mode: "System",
+            enableEncryptionAtHost: false,
+            enableUltraSSD: false,
             osType: "Linux",
             osSKU: "Ubuntu",
             nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.19",
             enableFIPS: false,
           },
         ],
-        addonProfiles: {
-          azurepolicy: {
-            enabled: false,
-            config: null,
+        linuxProfile: {
+          adminUsername: "azureuser",
+          ssh: {
+            publicKeys: [
+              {
+                keyData:
+                  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com\n",
+              },
+            ],
           },
-          httpApplicationRouting: {
-            enabled: false,
-            config: null,
+        },
+        addonProfiles: {
+          ingressApplicationGateway: {
+            enabled: true,
+            config: {
+              applicationGatewayName: "ag",
+              subnetCIDR: "10.2.0.0/16",
+            },
           },
         },
         oidcIssuerProfile: {
@@ -70,8 +80,7 @@ const createResources = ({ provider }) => {
         },
         enableRBAC: true,
         networkProfile: {
-          networkPlugin: "kubenet",
-          podCidr: "10.244.0.0/16",
+          networkPlugin: "azure",
           serviceCidr: "10.0.0.0/16",
           dnsServiceIP: "10.0.0.10",
           dockerBridgeCidr: "172.17.0.1/16",
@@ -83,21 +92,19 @@ const createResources = ({ provider }) => {
             },
           },
         },
-        apiServerAccessProfile: {
-          enablePrivateCluster: false,
-        },
+        disableLocalAccounts: false,
         servicePrincipalProfile: {
           clientId: "msi",
         },
       },
     }),
     dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-aks-basic"],
+      resourceGroup: resources.Resources.ResourceGroup["rg-aks-ag"],
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-aks-basic",
+    name: "rg-aks-ag",
   });
 };
 

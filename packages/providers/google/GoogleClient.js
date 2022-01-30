@@ -39,7 +39,7 @@ module.exports = GoogleClient = ({
     return error.response?.status === 409;
   },
   shouldRetryOnExceptionCreate = ({ error, name }) => {
-    logger.error(`shouldRetryOnException ${tos({ name, error })}`);
+    logger.error(`shouldRetryOnExceptionCreate ${tos({ name, error })}`);
     const { response } = error;
     if (!response) return false;
     if (
@@ -48,7 +48,7 @@ module.exports = GoogleClient = ({
         (error) => error.reason === "resourceNotReady"
       )
     ) {
-      logger.info("shouldRetryOnException retrying");
+      logger.info("shouldRetryOnExceptionCreate retrying");
       return true;
     }
     logger.info("shouldRetryOnException NOT retrying");

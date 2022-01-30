@@ -30,10 +30,7 @@ const { isDownByIdCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpIamBinding" });
 const { tos } = require("@grucloud/core/tos");
 const { axiosErrorToJSON, logError } = require("@grucloud/core/Common");
-const {
-  createAxiosMakerGoogle,
-  shouldRetryOnException,
-} = require("../../GoogleCommon");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 const findName = get("live.role");
 const findId = findName;
@@ -249,7 +246,6 @@ exports.GcpIamBinding = ({ spec, config }) => {
     getByName,
     configDefault,
     cannotBeDeleted,
-    shouldRetryOnException,
     findDependencies,
   };
 };
