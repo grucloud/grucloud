@@ -102,9 +102,17 @@ const findNamespaceFromProps = (properties) =>
   tryCatch(
     pipe([
       () => properties({ dependencies: {} }),
-      get("metadata.namespace", ""),
+      tap((params) => {
+        assert(true);
+      }),
+      get("metadata.namespace", "default"),
     ]),
-    () => ""
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => "",
+    ])
   )();
 
 const findNamespaceFromLive = get("metadata.namespace", "");
@@ -118,6 +126,9 @@ const buildNamespaceKey = ({
 }) =>
   pipe([
     () => findNamespaceFromProps(properties),
+    tap((params) => {
+      assert(true);
+    }),
     when(isEmpty, () => findNamespaceFromLive(live)),
     when(isEmpty, () =>
       tryCatch(
@@ -126,6 +137,9 @@ const buildNamespaceKey = ({
       )()
     ),
     unless(isEmpty, prepend("::")),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const resourceKey = pipe([
@@ -508,6 +522,18 @@ const fnSpecs = pipe([
         ],
       }),
       listOnly: true,
+    },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#pod-v1-core
+    {
+      type: "Pod",
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/pods`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/pods`,
+        configKey: "pod",
+        apiVersion: "core/v1",
+        kind: "Pod",
+      }),
     },
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
     {

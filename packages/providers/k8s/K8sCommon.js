@@ -98,9 +98,13 @@ exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
     }),
     () => ({
       namespaceDependencies: get("namespace.name")(dependencies()),
-      namespaceProperties: get("metadata.namespace")(
-        properties({ dependencies: {} })
-      ),
+      namespaceProperties: get(
+        "metadata.namespace",
+        "default"
+      )(properties({ dependencies: {} })),
+    }),
+    tap((params) => {
+      assert(true);
     }),
     find(not(isEmpty)),
     (namespace) => `${namespace}::${name}`,

@@ -5,18 +5,24 @@ exports.createResources = ({ provider }) => {
     name: config.namespace,
   });
 
-  const mySecret = provider.makeSecret({
+  provider.makeSecret({
     name: "my-secret",
     properties: () => ({
       type: "Opaque",
       data: { dbUrl: Buffer.from(process.env.DB_URL).toString("base64") },
+      metadata: {
+        namespace: config.namespace,
+      },
     }),
   });
 
-  const service = provider.makeService({
+  provider.makeService({
     name: config.service.name,
     dependencies: { namespace },
     properties: () => ({
+      metadata: {
+        namespace: config.namespace,
+      },
       spec: {
         selector: {
           app: config.appLabel,
@@ -34,7 +40,7 @@ exports.createResources = ({ provider }) => {
     }),
   });
 
-  const deployment = provider.makeDeployment({
+  provider.makeDeployment({
     name: config.deployment.name,
     dependencies: { namespace },
     properties: ({}) => ({
@@ -42,6 +48,7 @@ exports.createResources = ({ provider }) => {
         labels: {
           app: config.appLabel,
         },
+        namespace: config.namespace,
       },
       spec: {
         replicas: 1,

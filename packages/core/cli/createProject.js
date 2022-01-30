@@ -11,6 +11,7 @@ const live = require("shelljs-live/promise");
 const { createProjectAws } = require("./providers/createProjectAws");
 const { createProjectGoogle } = require("./providers/createProjectGoogle");
 const { createProjectAzure } = require("./providers/createProjectAzure");
+const { createProjectK8s } = require("./providers/createProjectK8s");
 
 const promptProvider = pipe([
   () => ({
@@ -29,6 +30,11 @@ const promptProvider = pipe([
         description: "Google Cloud Platform",
         value: "google",
       },
+      {
+        title: "K8s",
+        description: "Kubernetes",
+        value: "k8s",
+      },
     ],
   }),
   prompts,
@@ -40,7 +46,6 @@ const promptProjectName = pipe([
     type: "text",
     name: "projectName",
     message: "Project's name",
-
     validate: (projectName) =>
       isEmpty(projectName) ? `should not be empty` : true,
   }),
@@ -155,6 +160,7 @@ exports.createProject =
       when(eq(get("provider"), "aws"), createProjectAws),
       when(eq(get("provider"), "google"), createProjectGoogle),
       when(eq(get("provider"), "azure"), createProjectAzure),
+      when(eq(get("provider"), "k8s"), createProjectK8s),
       tap((params) => {
         assert(true);
       }),

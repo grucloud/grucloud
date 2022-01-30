@@ -8,11 +8,11 @@ const {
   includes,
   callProp,
   first,
+  identity,
 } = require("rubico/x");
 const prompts = require("prompts");
 const shell = require("shelljs");
 const { execCommandShell } = require("./createProjectCommon");
-const { identity } = require("rxjs");
 
 const awsExecCommand =
   ({ displayText } = {}) =>

@@ -79,4 +79,23 @@ describe("createProject", function () {
       }
     )();
   });
+  it("createProject k8s", async function () {
+    await tryCatch(
+      pipe([
+        tap(() => {
+          prompts.inject(["k8s", "my-k8s-project"]);
+        }),
+        () => fs.mkdtemp(path.join(os.tmpdir(), "gc-")),
+        (tempPath) =>
+          createProject({
+            programOptions: {
+              workingDirectory: tempPath,
+            },
+          })({}),
+      ]),
+      (error) => {
+        throw error;
+      }
+    )();
+  });
 });
