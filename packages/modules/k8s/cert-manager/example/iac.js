@@ -2,8 +2,12 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const ModuleCertManager = require("../iac");
 
 const createResources = async ({ provider }) => {
-  const namespace = provider.makeNamespace({
-    name: "example",
+  provider.makeNamespace({
+    properties: () => ({
+      metadata: {
+        name: "cert-manager",
+      },
+    }),
   });
 
   const resources = await ModuleCertManager.createResources({ provider });

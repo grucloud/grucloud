@@ -9,6 +9,7 @@ describe.skip(title, async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
+      destroyAll: false,
       steps: [{ createStack, configs: [] }],
     });
   }).timeout(10 * 60e3);

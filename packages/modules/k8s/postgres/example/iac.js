@@ -5,13 +5,19 @@ const PostgresStack = require("@grucloud/module-k8s-postgres");
 // TODO use PostgresStack.hook
 const createResources = async ({ provider }) => {
   const namespace = provider.makeNamespace({
-    name: "test-postgres",
+    properties: ({}) => ({
+      metadata: {
+        name: "test-postgres",
+      },
+    }),
   });
 
-  const persistentVolume = provider.makePersistentVolume({
-    name: provider.config.postgres.pvName,
-    dependencies: { namespace },
+  provider.makePersistentVolume({
     properties: () => ({
+      metadata: {
+        name: provider.config.postgres.pvName,
+        //namespace: namespace.name,
+      },
       spec: {
         accessModes: ["ReadWriteOnce"],
         capacity: {
@@ -24,7 +30,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const resourcesPostgres = await PostgresStack.createResources({
+  await PostgresStack.createResources({
     provider,
     resources: { namespace },
   });

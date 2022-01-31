@@ -119,6 +119,7 @@ exports.ProviderGru = ({
       pipe([
         tap(() => {
           assert(provider);
+          assert(provider.register);
         }),
         () => provider.register({ resources, hooks }),
         () => provider.setLives(lives),

@@ -10,14 +10,13 @@ Provides a [Kubernetes ConfigMap](https://kubernetes.io/docs/concepts/configurat
 ### Create a config map
 
 ```js
-const namespace = provider.makeNamespace({
-  name: "myNamespace",
-});
-
 const configMap = provider.makeConfigMap({
   name: "myConfigMap",
-  dependencies: { namespace },
   properties: () => ({
+    metadata: {
+      name: "myConfigMap",
+      namespace: "myNamespace",
+    },
     data: {
       POSTGRES_USER: "dbuser",
       POSTGRES_PASSWORD: "peggy went to the market",

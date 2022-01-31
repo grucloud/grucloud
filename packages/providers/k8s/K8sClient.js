@@ -20,6 +20,7 @@ const {
   isEmpty,
   includes,
   isFunction,
+  append,
 } = require("rubico/x");
 
 const { retryCall, retryCallOnError } = require("@grucloud/core/Retry");
@@ -33,6 +34,7 @@ const {
   getNamespace,
   displayNameResourceNamespace,
   displayNameNamespace,
+  inferNameNamespace,
 } = require("./K8sCommon");
 
 module.exports = K8sClient = ({
@@ -64,13 +66,34 @@ module.exports = K8sClient = ({
 
   assert(providerName);
 
-  const findName = ({ live }) =>
+  const findNameShort = ({ live }) =>
     pipe([
       tap(() => {
         assert(live, `findName: no live`);
       }),
       () => live,
       get("metadata.name"),
+    ])();
+
+  const findName = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(live, `findName: no live`);
+      }),
+      () => live,
+      get("metadata"),
+      ({ name, namespace }) =>
+        pipe([
+          tap(() => {
+            assert(name);
+          }),
+          () => namespace,
+          switchCase([isEmpty, () => "", append("::")]),
+          append(name),
+        ])(),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const findMeta = ({ live }) =>
@@ -95,11 +118,11 @@ module.exports = K8sClient = ({
         assert(live, `findNamespace: no live`);
       }),
       () => live,
-      get("metadata.namespace", "default"),
+      get("metadata.namespace", ""),
     ])();
 
   const findNamespaceFromTarget = ({ properties }) =>
-    get("live.metadata.namespace", "default")(properties({ dependencies: {} }));
+    get("live.metadata.namespace", "")(properties({ dependencies: {} }));
 
   const axios = () => createAxiosMakerK8s({ config });
 
@@ -159,7 +182,7 @@ module.exports = K8sClient = ({
       pipe([
         tap(() => {
           logger.info(`getByKey ${JSON.stringify({ name, namespace })}`);
-          assert(name);
+          //assert(name);
           //assert(namespace);
         }),
         () => resolvePath({ name, namespace }),
@@ -194,17 +217,15 @@ module.exports = K8sClient = ({
       (props) =>
         getByKey({
           resolvePath: pathGet,
-          name,
-          namespace:
-            get("metadata.namespace")(props) ||
-            getNamespace(dependencies().namespace),
+          name: get("metadata.name", name)(props),
+          namespace: get("metadata.namespace")(props),
         }),
     ])();
 
   const getById = ({ live }) =>
     getByKey({
       resolvePath: pathGetStatus || pathGet,
-      name: findName({ live }),
+      name: findNameShort({ live }),
       namespace: get("namespace")(findMeta({ live })),
     });
 
@@ -223,9 +244,7 @@ module.exports = K8sClient = ({
           pathCreate({
             name,
             apiVersion: payload.apiVersion,
-            namespace:
-              payload.metadata.namespace ||
-              getNamespace(dependencies().namespace),
+            namespace: payload.metadata.namespace,
           }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
@@ -240,6 +259,7 @@ module.exports = K8sClient = ({
               pipe([
                 () => error,
                 get("response.status"),
+                //TODO 404 on Create ?
                 (status) => includes(status)([404, 500]),
                 tap((retry) => {
                   logger.info(
@@ -319,7 +339,7 @@ module.exports = K8sClient = ({
           assert(!isEmpty(live), `destroy invalid live`);
         }),
         () => ({
-          name: findName({ live }),
+          name: findNameShort({ live }),
           namespace: findMeta({ live }).namespace,
         }),
         tap((params) => {

@@ -13,14 +13,12 @@ Provides a [Kubernetes StatefulSet](https://kubernetes.io/docs/concepts/workload
 const label = "myLabel";
 const pvName = "pv-db";
 
-const namespace = provider.makeNamespace({
-  name: "myNamespace",
-});
-
 const persistentVolume = provider.makePersistentVolume({
-  name: pvName,
-  dependencies: { namespace },
   properties: () => ({
+    metadata: {
+      name: pvName,
+      namespace: "pg",
+    },
     spec: {
       accessModes: ["ReadWriteOnce"],
       capacity: {
@@ -35,9 +33,11 @@ const persistentVolume = provider.makePersistentVolume({
 
 const statefulSetPostgres = provider.makeStatefulSet({
   name: "myStatefulSet",
-  dependencies: { namespace, persistentVolume },
+  dependencies: { persistentVolume },
   properties: () => ({
     metadata: {
+      name: pvName,
+      namespace: "pg",
       labels: {
         app: label,
       },

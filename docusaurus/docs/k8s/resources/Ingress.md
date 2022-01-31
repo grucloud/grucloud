@@ -16,14 +16,14 @@ exports.createIngress = async ({
   resources: { namespace, serviceWebServer, serviceRestServer },
 }) => {
   return provider.makeIngress({
-    name: "ingress",
     dependencies: {
-      namespace,
       serviceWebServer,
       serviceRestServer,
     },
     properties: () => ({
       metadata: {
+        name: "ingress",
+        namespace: "myNamespace"
         annotations: {
           "nginx.ingress.kubernetes.io/use-regex": "true",
         },

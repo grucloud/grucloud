@@ -31,7 +31,11 @@ describe.skip("K8sStatefulSet", async function () {
     });
 
     namespace = provider.makeNamespace({
-      name: myNamespace,
+      properties: ({}) => ({
+        metadata: {
+          name: myNamespace,
+        },
+      }),
     });
 
     persistentVolume = provider.makePersistentVolume({

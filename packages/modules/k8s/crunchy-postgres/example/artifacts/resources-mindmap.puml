@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project K8S Crunchy Postgres Module
+skinparam monochrome true
++ Infra
+++ k8s
++++ Namespace (1)
++++ ServiceAccount (1)
++++ ClusterRole (1)
++++ ConfigMap (1)
++++ ClusterRoleBinding (1)
++++ Job (1)
+@endmindmap

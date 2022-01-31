@@ -18,10 +18,10 @@ const createResources = ({ provider, resources: { namespace } }) => {
   assert(redis.port);
 
   const statefulSet = provider.makeStatefulSet({
-    name: redis.statefulSetName,
-    dependencies: { namespace },
     properties: ({}) => ({
       metadata: {
+        name: redis.statefulSetName,
+        namespace: namespace.name,
         labels: {
           app: redis.label,
         },
@@ -74,9 +74,12 @@ const createResources = ({ provider, resources: { namespace } }) => {
   });
 
   const service = provider.makeService({
-    name: redis.serviceName,
-    dependencies: { namespace, statefulSet },
+    dependencies: { statefulSet },
     properties: () => ({
+      metadata: {
+        name: redis.serviceName,
+        namespace: namespace.name,
+      },
       spec: {
         selector: {
           app: redis.label,

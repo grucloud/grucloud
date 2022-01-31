@@ -14,7 +14,11 @@ const createResources = async ({ provider }) => {
   assert(config.namespaceName);
 
   const namespace = provider.makeNamespace({
-    name: config.namespaceName,
+    properties: () => ({
+      metadata: {
+        name: config.namespaceName,
+      },
+    }),
   });
 
   const postgresResources = await PostgresStack.createResources({

@@ -7,10 +7,11 @@ exports.createResources = async ({ provider }) => {
 
   assert(provider.config.postgres.pvName);
 
-  const persistentVolume = provider.makePersistentVolume({
-    name: provider.config.postgres.pvName,
-    dependencies: { namespace: resources.namespace },
+  provider.makePersistentVolume({
     properties: () => ({
+      metadata: {
+        name: provider.config.postgres.pvName,
+      },
       spec: {
         accessModes: ["ReadWriteOnce"],
         capacity: {

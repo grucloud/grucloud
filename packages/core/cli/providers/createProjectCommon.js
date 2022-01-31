@@ -38,7 +38,7 @@ const execCommand =
                   text: `${textError || textStart}, error: ${error}`,
                 });
               }),
-              () => {
+              (error) => {
                 throw error;
               },
             ])

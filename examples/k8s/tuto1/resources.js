@@ -1,22 +1,28 @@
 exports.createResources = ({ provider }) => {
   const { config } = provider;
 
-  const namespace = provider.makeNamespace({
-    name: config.namespace,
-  });
-
-  const mySecret = provider.makeSecret({
-    name: "my-secret",
-    properties: () => ({
-      type: "Opaque",
-      data: { dbUrl: Buffer.from(process.env.DB_URL).toString("base64") },
+  provider.makeNamespace({
+    properties: ({}) => ({
+      metadata: {
+        name: config.namespace,
+      },
     }),
   });
 
-  const service = provider.makeService({
-    name: config.service.name,
-    dependencies: { namespace },
+  provider.makeSecret({
     properties: () => ({
+      type: "Opaque",
+      data: { dbUrl: Buffer.from(process.env.DB_URL).toString("base64") },
+      metadata: { name: "my-secret", namespace: config.namespace },
+    }),
+  });
+
+  provider.makeService({
+    properties: () => ({
+      metadata: {
+        name: config.service.name,
+        namespace: config.namespace,
+      },
       spec: {
         selector: {
           app: config.appLabel,
@@ -34,11 +40,11 @@ exports.createResources = ({ provider }) => {
     }),
   });
 
-  const deployment = provider.makeDeployment({
-    name: config.deployment.name,
-    dependencies: { namespace },
+  provider.makeDeployment({
     properties: ({}) => ({
       metadata: {
+        name: config.deployment.name,
+        namespace: config.namespace,
         labels: {
           app: config.appLabel,
         },
