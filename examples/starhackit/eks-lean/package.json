@@ -1,7 +1,7 @@
 {
   "name": "starhackit-eks-lean",
   "projectName": "starhackit",
-  "version": "3.6.2",
+  "version": "3.7.0",
   "private": true,
   "description": "Deploying starhackit on AWS EKS",
   "main": "index.js",
@@ -15,9 +15,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.6.2",
-    "@grucloud/provider-aws": "^3.6.2",
-    "@grucloud/provider-k8s": "^3.6.2",
+    "@grucloud/core": "^3.7.0",
+    "@grucloud/provider-aws": "^3.7.0",
+    "@grucloud/provider-k8s": "^3.7.0",
     "axios": "^0.21.1",
     "rubico": "^1.6.27"
   },
