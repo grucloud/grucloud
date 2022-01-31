@@ -225,7 +225,7 @@ module.exports = K8sClient = ({
             apiVersion: payload.apiVersion,
             namespace:
               payload.metadata.namespace ||
-              getNamespace(dependencies().namespace),
+              getNamespace(dependencies().namespace), //TODO check this
           }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
@@ -240,6 +240,7 @@ module.exports = K8sClient = ({
               pipe([
                 () => error,
                 get("response.status"),
+                //TODO 404 on Create ?
                 (status) => includes(status)([404, 500]),
                 tap((retry) => {
                   logger.info(

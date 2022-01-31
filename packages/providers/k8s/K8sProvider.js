@@ -255,6 +255,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps
     {
       type: "DaemonSet",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/daemonsets`,
@@ -362,6 +363,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch
     {
       type: "Job",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/jobs`,
@@ -526,6 +528,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#pod-v1-core
     {
       type: "Pod",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/pods`,
@@ -538,6 +541,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
     {
       type: "PodDisruptionBudget",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/poddisruptionbudgets`,
@@ -552,6 +556,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#role-v1beta1-rbac-authorization-k8s-io
     {
       type: "Role",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/roles`,
@@ -588,6 +593,7 @@ const fnSpecs = pipe([
     },
     {
       type: "Secret",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/secrets`,
@@ -646,6 +652,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#serviceaccount-v1-core
     {
       type: "ServiceAccount",
+      dependsOn: ["Namespace"],
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/serviceaccounts`,
