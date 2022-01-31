@@ -11,7 +11,11 @@ Provides a [Kubernetes Namespace](https://kubernetes.io/docs/concepts/overview/w
 
 ```js
 const namespace = provider.makeNamespace({
-  name: "myNamespace",
+  properties: () => ({
+    metadata: {
+      name: "myNamespace",
+    },
+  }),
 });
 ```
 

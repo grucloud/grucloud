@@ -11,9 +11,9 @@ Provides a [Kubernetes Cluster Role Binding](https://kubernetes.io/docs/referenc
 
 ```js
 const roleBinding = provider.makeClusterRoleBinding({
-  name: "aws-load-balancer-controller-rolebinding",
   properties: () => ({
     metadata: {
+      name: "aws-load-balancer-controller-rolebinding",
       labels: {
         "app.kubernetes.io/name": "aws-load-balancer-controller",
       },

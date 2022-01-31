@@ -11,9 +11,9 @@ Provides a [Kubernetes Cluster Role](https://kubernetes.io/docs/reference/access
 
 ```js
 const clusterRole = provider.makeClusterRole({
-  name: "aws-load-balancer-controller-role",
   properties: () => ({
     metadata: {
+      name: "aws-load-balancer-controller-role",
       labels: {
         "app.kubernetes.io/name": "alb-ingress-controller",
       },

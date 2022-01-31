@@ -10,14 +10,12 @@ Provides a [Kubernetes PersistentVolume](https://kubernetes.io/docs/concepts/sto
 ### Create a Persistent Volume
 
 ```js
-const namespace = provider.makeNamespace({
-  name: "myNamespace",
-});
-
 const persistentVolume = provider.makePersistentVolume({
-  name: "myPvName",
-  dependencies: { namespace },
   properties: () => ({
+    metadata: {
+      name: "myPvName",
+      namespace: "myNamespace",
+    },
     spec: {
       accessModes: ["ReadWriteOnce"],
       capacity: {

@@ -11,10 +11,10 @@ Provides a [Kubernetes Service Account](https://kubernetes.io/docs/tasks/configu
 
 ```js
 const serviceAccount = provider.makeServiceAccount({
-  name: "aws-load-balancer-controller",
   dependencies: { role: resources.roleLoadBalancer },
   properties: ({ dependencies: { role } }) => ({
     metadata: {
+      name: "aws-load-balancer-controller",
       annotations: {
         "eks.amazonaws.com/role-arn": role?.live?.Arn,
       },

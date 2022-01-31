@@ -10,14 +10,14 @@ Provides a [Kubernetes Role](https://kubernetes.io/docs/reference/access-authn-a
 ### Create a Role
 
 ```js
-const role = provider.makeRole({
-  name: "aws-load-balancer-controller-leader-election-role",
+provider.makeRole({
   properties: () => ({
     metadata: {
+      name: "aws-load-balancer-controller-leader-election-role",
+      namespace: "kube-system",
       labels: {
         "app.kubernetes.io/name": "aws-load-balancer-controller",
       },
-      namespace: "kube-system",
     },
     rules: [
       {
