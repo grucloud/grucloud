@@ -105,17 +105,24 @@ Let's create the _iac.js_ with the following content:
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
 // Create a namespace, service and deployment
-const createResource = async ({ provider }) => {
+const createResources = async ({ provider }) => {
   const { config } = provider;
 
   const namespace = provider.makeNamespace({
-    name: config.namespace,
+    properties: ({}) => ({
+      metadata: {
+        name: config.namespace,
+      },
+    }),
   });
 
   const service = provider.makeService({
     name: config.service.name,
-    dependencies: { namespace },
     properties: () => ({
+      metadata: {
+        name: config.service.name,
+        namespace: config.namespace,
+      },
       spec: {
         selector: {
           app: config.appLabel,
@@ -134,10 +141,10 @@ const createResource = async ({ provider }) => {
   });
 
   const deployment = provider.makeDeployment({
-    name: config.deployment.name,
-    dependencies: { namespace },
     properties: ({}) => ({
       metadata: {
+        name: config.deployment.name,
+        namespace: config.namespace,
         labels: {
           app: config.appLabel,
         },
@@ -177,9 +184,13 @@ const createResource = async ({ provider }) => {
 };
 
 exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(K8sProvider, { config: require("./config") });
-  const resources = await createResource({ provider });
-  return { provider, resources, hooks: [require("./hook")] };
+  return {
+    provider: createProvider(K8sProvider, {
+      createResources,
+      config: require("./config"),
+    }),
+    hooks: [require("./hook")],
+  };
 };
 ```
 

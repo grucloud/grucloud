@@ -2,7 +2,6 @@
 const assert = require("assert");
 exports.createResources = ({ provider }) => {
   const monitoringmainAlertmanager = provider.makeAlertmanager({
-    name: "main",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -53,7 +52,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringalertmanagerMainPodDisruptionBudget = provider.makePodDisruptionBudget(
     {
-      name: "alertmanager-main",
       properties: () => ({
         apiVersion: "policy/v1beta1",
         metadata: {
@@ -83,7 +81,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringalertmanagerMainRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "alertmanager-main-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -248,7 +245,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringalertmanagerMainSecret = provider.makeSecret({
-    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -271,7 +267,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringalertmanagerMainService = provider.makeService({
-    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -306,7 +301,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringalertmanagerMainServiceAccount = provider.makeServiceAccount({
-    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -324,7 +318,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringalertmanagerServiceMonitor = provider.makeServiceMonitor({
-    name: "alertmanager",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -357,7 +350,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const blackboxExporterClusterRole = provider.makeClusterRole({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -379,7 +371,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const blackboxExporterClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -402,7 +393,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringblackboxExporterConfigurationConfigMap = provider.makeConfigMap(
     {
-      name: "blackbox-exporter-configuration",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -424,7 +414,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringblackboxExporterDeployment = provider.makeDeployment({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -577,7 +566,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringblackboxExporterService = provider.makeService({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -613,7 +601,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringblackboxExporterServiceAccount = provider.makeServiceAccount({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -624,7 +611,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringblackboxExporterServiceMonitor = provider.makeServiceMonitor({
-    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -663,7 +649,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaDatasourcesSecret = provider.makeSecret({
-    name: "grafana-datasources",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -685,7 +670,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaDashboardApiserverConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-apiserver",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -707,7 +691,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardClusterTotalConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-cluster-total",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -730,7 +713,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardControllerManagerConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-controller-manager",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -753,7 +735,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesClusterConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-cluster",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -776,7 +757,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesNamespaceConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-namespace",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -799,7 +779,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesNodeConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-node",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -822,7 +801,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesPodConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-pod",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -845,7 +823,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesWorkloadConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-workload",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -868,7 +845,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardK8sResourcesWorkloadsNamespaceConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-k8s-resources-workloads-namespace",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -890,7 +866,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringgrafanaDashboardKubeletConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-kubelet",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -912,7 +887,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardNamespaceByPodConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-namespace-by-pod",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -935,7 +909,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardNamespaceByWorkloadConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-namespace-by-workload",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -958,7 +931,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardNodeClusterRsrcUseConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-node-cluster-rsrc-use",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -981,7 +953,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardNodeRsrcUseConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-node-rsrc-use",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1003,7 +974,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringgrafanaDashboardNodesConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-nodes",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1025,7 +995,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardPersistentvolumesusageConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-persistentvolumesusage",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1047,7 +1016,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringgrafanaDashboardPodTotalConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-pod-total",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1069,7 +1037,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardPrometheusRemoteWriteConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-prometheus-remote-write",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1091,7 +1058,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringgrafanaDashboardPrometheusConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-prometheus",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1112,7 +1078,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaDashboardProxyConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-proxy",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1133,7 +1098,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaDashboardSchedulerConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboard-scheduler",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1155,7 +1119,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardStatefulsetConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-statefulset",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1178,7 +1141,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringgrafanaDashboardWorkloadTotalConfigMap = provider.makeConfigMap(
     {
-      name: "grafana-dashboard-workload-total",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1200,7 +1162,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringgrafanaDashboardsConfigMap = provider.makeConfigMap({
-    name: "grafana-dashboards",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1221,7 +1182,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaDeployment = provider.makeDeployment({
-    name: "grafana",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -1603,7 +1563,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaService = provider.makeService({
-    name: "grafana",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -1634,7 +1593,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaServiceAccount = provider.makeServiceAccount({
-    name: "grafana",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -1645,7 +1603,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringgrafanaServiceMonitor = provider.makeServiceMonitor({
-    name: "grafana",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -1676,7 +1633,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringkubePrometheusRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "kube-prometheus-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -1803,7 +1759,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const kubeStateMetricsClusterRole = provider.makeClusterRole({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -1902,7 +1857,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const kubeStateMetricsClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -1930,7 +1884,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringkubeStateMetricsDeployment = provider.makeDeployment({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -2065,7 +2018,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringkubeStateMetricsRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "kube-state-metrics-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -2128,7 +2080,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringkubeStateMetricsService = provider.makeService({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -2165,7 +2116,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringkubeStateMetricsServiceAccount = provider.makeServiceAccount({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -2182,7 +2132,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringkubeStateMetricsServiceMonitor = provider.makeServiceMonitor({
-    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -2240,7 +2189,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringkubernetesMonitoringRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "kubernetes-monitoring-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -3727,7 +3675,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringkubeApiserverServiceMonitor = provider.makeServiceMonitor({
-    name: "kube-apiserver",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -3839,7 +3786,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringcorednsServiceMonitor = provider.makeServiceMonitor({
-    name: "coredns",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -3873,7 +3819,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringkubeControllerManagerServiceMonitor = provider.makeServiceMonitor(
     {
-      name: "kube-controller-manager",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -3966,7 +3911,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringkubeSchedulerServiceMonitor = provider.makeServiceMonitor({
-    name: "kube-scheduler",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -4003,7 +3947,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringkubeletServiceMonitor = provider.makeServiceMonitor({
-    name: "kubelet",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -4142,7 +4085,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const nodeExporterClusterRole = provider.makeClusterRole({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4170,7 +4112,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const nodeExporterClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4198,7 +4139,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringnodeExporterDaemonSet = provider.makeDaemonSet({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -4354,7 +4294,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringnodeExporterRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "node-exporter-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -4708,7 +4647,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringnodeExporterService = provider.makeService({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -4740,7 +4678,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringnodeExporterServiceAccount = provider.makeServiceAccount({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -4757,7 +4694,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringnodeExporterServiceMonitor = provider.makeServiceMonitor({
-    name: "node-exporter",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -4805,7 +4741,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const v1beta1MetricsK8sIoAPIService = provider.makeAPIService({
-    name: "v1beta1.metrics.k8s.io",
     properties: () => ({
       apiVersion: "apiregistration.k8s.io/v1",
       metadata: {
@@ -4832,7 +4767,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const prometheusAdapterClusterRole = provider.makeClusterRole({
-    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4855,7 +4789,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const systemAggregatedMetricsReaderClusterRole = provider.makeClusterRole({
-    name: "system:aggregated-metrics-reader",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4881,7 +4814,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const prometheusAdapterClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4910,7 +4842,6 @@ exports.createResources = ({ provider }) => {
 
   const resourceMetricsSystemAuthDelegatorClusterRoleBinding = provider.makeClusterRoleBinding(
     {
-      name: "resource-metrics:system:auth-delegator",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -4939,7 +4870,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const resourceMetricsServerResourcesClusterRole = provider.makeClusterRole({
-    name: "resource-metrics-server-resources",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -4962,7 +4892,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringadapterConfigConfigMap = provider.makeConfigMap({
-    name: "adapter-config",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -4983,7 +4912,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusAdapterDeployment = provider.makeDeployment({
-    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -5085,7 +5013,6 @@ exports.createResources = ({ provider }) => {
 
   const kubeSystemresourceMetricsAuthReaderRoleBinding = provider.makeRoleBinding(
     {
-      name: "resource-metrics-auth-reader",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -5115,7 +5042,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringprometheusAdapterService = provider.makeService({
-    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -5147,7 +5073,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusAdapterServiceAccount = provider.makeServiceAccount(
     {
-      name: "prometheus-adapter",
       properties: () => ({
         apiVersion: "v1",
         metadata: {
@@ -5166,7 +5091,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusAdapterServiceMonitor = provider.makeServiceMonitor(
     {
-      name: "prometheus-adapter",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5205,7 +5129,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const prometheusK8sClusterRole = provider.makeClusterRole({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5232,7 +5155,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const prometheusK8sClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5261,7 +5183,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusOperatorRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "prometheus-operator-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5405,7 +5326,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusOperatorServiceMonitor = provider.makeServiceMonitor(
     {
-      name: "prometheus-operator",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5446,7 +5366,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusK8sPodDisruptionBudget = provider.makePodDisruptionBudget(
     {
-      name: "prometheus-k8s",
       properties: () => ({
         apiVersion: "policy/v1beta1",
         metadata: {
@@ -5475,7 +5394,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringk8sPrometheus = provider.makePrometheus({
-    name: "k8s",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -5544,7 +5462,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusK8sPrometheusRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "prometheus-k8s-prometheus-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5840,7 +5757,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const monitoringprometheusK8sConfigRoleBinding = provider.makeRoleBinding({
-    name: "prometheus-k8s-config",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5869,7 +5785,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const defaultprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5898,7 +5813,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const kubeSystemprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5927,7 +5841,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5956,7 +5869,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sConfigRole = provider.makeRole({
-    name: "prometheus-k8s-config",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5980,7 +5892,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const defaultprometheusK8sRole = provider.makeRole({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -6014,7 +5925,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const kubeSystemprometheusK8sRole = provider.makeRole({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -6048,7 +5958,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sRole = provider.makeRole({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -6082,7 +5991,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sService = provider.makeService({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -6117,7 +6025,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sServiceAccount = provider.makeServiceAccount({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -6134,7 +6041,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusK8sServiceMonitor = provider.makeServiceMonitor({
-    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -6167,7 +6073,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringNamespace = provider.makeNamespace({
-    name: "monitoring",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -6178,7 +6083,6 @@ exports.createResources = ({ provider }) => {
 
   const alertmanagerconfigsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "alertmanagerconfigs.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -9051,7 +8955,6 @@ exports.createResources = ({ provider }) => {
 
   const alertmanagersMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "alertmanagers.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -14154,7 +14057,6 @@ exports.createResources = ({ provider }) => {
 
   const podmonitorsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "podmonitors.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -14710,7 +14612,6 @@ exports.createResources = ({ provider }) => {
 
   const probesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "probes.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -15248,7 +15149,6 @@ exports.createResources = ({ provider }) => {
 
   const prometheusesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "prometheuses.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -22282,7 +22182,6 @@ exports.createResources = ({ provider }) => {
 
   const prometheusrulesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "prometheusrules.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -22417,7 +22316,6 @@ exports.createResources = ({ provider }) => {
 
   const servicemonitorsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "servicemonitors.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -23002,7 +22900,6 @@ exports.createResources = ({ provider }) => {
 
   const thanosrulersMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
     {
-      name: "thanosrulers.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
         metadata: {
@@ -28295,7 +28192,6 @@ exports.createResources = ({ provider }) => {
   );
 
   const prometheusOperatorClusterRole = provider.makeClusterRole({
-    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -28375,7 +28271,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const prometheusOperatorClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -28403,7 +28298,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusOperatorDeployment = provider.makeDeployment({
-    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -28511,7 +28405,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const monitoringprometheusOperatorService = provider.makeService({
-    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -28544,7 +28437,6 @@ exports.createResources = ({ provider }) => {
 
   const monitoringprometheusOperatorServiceAccount = provider.makeServiceAccount(
     {
-      name: "prometheus-operator",
       properties: () => ({
         apiVersion: "v1",
         metadata: {

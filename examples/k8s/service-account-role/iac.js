@@ -58,13 +58,20 @@ const createK8sStack = async ({
   const serviceAccountName = "service-account-aws";
 
   const namespace = provider.makeNamespace({
-    name: namespaceName,
+    properties: ({}) => ({
+      metadata: {
+        name: namespaceName,
+      },
+    }),
   });
 
   const serviceAccount = provider.makeServiceAccount({
-    name: serviceAccountName,
-    dependencies: { namespace, rolePod },
+    dependencies: { rolePod },
     properties: ({ dependencies: { rolePod } }) => ({
+      metadata: {
+        name: serviceAccountName,
+        namespace: namespace.name,
+      },
       annotations: {
         "eks.amazonaws.com/role-arn": get(
           "live.Arn",
@@ -75,12 +82,10 @@ const createK8sStack = async ({
   });
 
   const ingress = provider.makeIngress({
-    name: "ingress",
-    dependencies: {
-      namespace,
-    },
     properties: () => ({
       metadata: {
+        name: "ingress",
+        namespace: namespace.name,
         annotations: {
           "nginx.ingress.kubernetes.io/use-regex": "true",
         },

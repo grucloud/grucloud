@@ -53,7 +53,11 @@ describe("K8sProvider", async function () {
     });
 
     namespace = provider.makeNamespace({
-      name: myNamespace,
+      properties: ({}) => ({
+        metadata: {
+          name: myNamespace,
+        },
+      }),
     });
 
     serviceAccount = provider.makeServiceAccount({

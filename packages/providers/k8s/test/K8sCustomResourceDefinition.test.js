@@ -29,7 +29,11 @@ describe.skip("K8sCustomResourceDefinition", async function () {
     });
 
     namespace = provider.makeNamespace({
-      name: myNamespace,
+      properties: ({}) => ({
+        metadata: {
+          name: myNamespace,
+        },
+      }),
     });
 
     mutatingWebhookConfiguration = provider.makeMutatingWebhookConfiguration({

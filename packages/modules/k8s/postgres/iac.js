@@ -20,18 +20,18 @@ const createResources = ({ provider, resources: { namespace } }) => {
 
   const configMapName = "postgres";
   const configMap = provider.makeConfigMap({
-    name: configMapName,
-    dependencies: { namespace },
     properties: () => ({
+      metadata: { name: configMapName, namespace: namespace.name },
       data: postgres.env,
     }),
   });
 
   const statefulSet = provider.makeStatefulSet({
-    name: postgres.statefulSetName,
-    dependencies: { namespace, configMap },
+    dependencies: { configMap },
     properties: () => ({
       metadata: {
+        name: postgres.statefulSetName,
+        namespace: namespace.name,
         labels: {
           app: postgres.label,
         },
@@ -159,9 +159,9 @@ const createResources = ({ provider, resources: { namespace } }) => {
   });
 
   const service = provider.makeService({
-    name: postgres.serviceName,
-    dependencies: { namespace, statefulSet },
+    dependencies: { statefulSet },
     properties: () => ({
+      metadata: { name: postgres.serviceName, namespace: namespace.name },
       spec: {
         selector: {
           app: postgres.label,

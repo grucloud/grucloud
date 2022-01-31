@@ -4,7 +4,11 @@ const RedisStack = require("@grucloud/module-k8s-redis");
 
 exports.createResources = ({ provider }) => {
   const namespace = provider.makeNamespace({
-    name: "test-redis",
+    properties: ({}) => ({
+      metadata: {
+        name: "test-redis",
+      },
+    }),
   });
 
   const resourcesRedis = RedisStack.createResources({

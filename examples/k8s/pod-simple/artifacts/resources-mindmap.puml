@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project pod-simple
+skinparam monochrome true
++ Infra
+++ k8s
++++ Pod (1)
++++ Service (1)
+@endmindmap

@@ -3,8 +3,12 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const Prometheus = require("../iac");
 
 const createResources = async ({ provider }) => {
-  const namespace = provider.makeNamespace({
-    name: "pgo",
+  provider.makeNamespace({
+    properties: () => ({
+      metadata: {
+        name: "pgo",
+      },
+    }),
   });
 
   await Prometheus.createResources({ provider });

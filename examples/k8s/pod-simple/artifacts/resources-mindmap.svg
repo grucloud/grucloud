@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="172px" preserveAspectRatio="none" style="width:330px;height:172px;background:#FFFFFF;" version="1.1" viewBox="0 0 330 172" width="330px" zoomAndPan="magnify"><defs><filter height="300%" id="f1d29stwylc43r" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="none" height="26.4883" style="stroke:none;stroke-width:1.0;" width="254" x="15" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="244" x="20" y="33.5352">Resources for project pod-simple</text><rect fill="#F8F8F8" filter="url(#f1d29stwylc43r)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="52" x="24" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="34" y="109.2676">Infra</text><rect fill="#F8F8F8" filter="url(#f1d29stwylc43r)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="44" x="126" y="85.7324"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="24" x="136" y="109.2676">k8s</text><rect fill="#F8F8F8" filter="url(#f1d29stwylc43r)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="69" x="220" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="49" x="230" y="81.0234">Pod (1)</text><path d="M170,103.9766 L180,103.9766 C195,103.9766 195,75.7324 210,75.7324 L220,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><rect fill="#F8F8F8" filter="url(#f1d29stwylc43r)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="91" x="220" y="113.9766"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="230" y="137.5117">Service (1)</text><path d="M170,103.9766 L180,103.9766 C195,103.9766 195,132.2207 210,132.2207 L220,132.2207 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M76,103.9766 L86,103.9766 C101,103.9766 101,103.9766 116,103.9766 L126,103.9766 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[55e5df03b25b1fa642c9e47018b86d31]
+@startmindmap
+title Resources for project pod-simple
+skinparam monochrome true
++ Infra
+++ k8s
++++ Pod (1)
++++ Service (1)
+@endmindmap
+
+PlantUML version 1.2021.8(Sat Jun 26 03:20:59 COT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

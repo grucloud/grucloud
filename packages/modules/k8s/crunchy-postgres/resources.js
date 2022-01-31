@@ -2,7 +2,6 @@
 const assert = require("assert");
 exports.createResources = ({ provider }) => {
   const pgopgoDeployerSaServiceAccount = provider.makeServiceAccount({
-    name: "pgo-deployer-sa",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -13,7 +12,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const pgoDeployerCrClusterRole = provider.makeClusterRole({
-    name: "pgo-deployer-cr",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -85,7 +83,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const pgopgoDeployerCmConfigMap = provider.makeConfigMap({
-    name: "pgo-deployer-cm",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -100,7 +97,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const pgoDeployerCrbClusterRoleBinding = provider.makeClusterRoleBinding({
-    name: "pgo-deployer-crb",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -122,7 +118,6 @@ exports.createResources = ({ provider }) => {
   });
 
   const pgopgoDeployJob = provider.makeJob({
-    name: "pgo-deploy",
     properties: () => ({
       apiVersion: "batch/v1",
       metadata: {

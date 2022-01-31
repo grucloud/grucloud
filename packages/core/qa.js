@@ -18,6 +18,7 @@ exports.testEnd2End = ({
   listOptions,
   steps = [],
   doGraph = !process.env.CONTINUOUS_INTEGRATION,
+  destroyAll = true,
 }) =>
   tryCatch(
     pipe([
@@ -52,7 +53,7 @@ exports.testEnd2End = ({
           ),
           () =>
             cli.planDestroy({
-              commandOptions: { force: true, all: true },
+              commandOptions: { force: true, all: destroyAll },
             }),
           () =>
             cli.list({

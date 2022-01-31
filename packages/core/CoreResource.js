@@ -94,7 +94,7 @@ exports.ResourceMaker = ({
         tap((params) => {
           assert(
             spec.inferName,
-            `resource without name must implement 'inferName'`
+            `resource ${spec.type} without name must implement 'inferName'`
           );
         }),
         () => ({
@@ -213,7 +213,11 @@ exports.ResourceMaker = ({
               () => resources,
               find(({ live }) =>
                 pipe([
-                  () => getClient().findName({ live, lives: provider.lives }),
+                  getClient,
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  (client) => client.findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${group}::${type} resourceName: ${getResourceName()} liveName: ${liveName}`

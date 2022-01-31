@@ -9,7 +9,9 @@ module.exports = ({ provider }) => {
   const localPort = 8081;
   const url = `http://localhost:${localPort}`;
   const resources = provider.resources();
-  const service = resources.Service["nginx-service"];
+  const serviceName = "nginx-service";
+  const service = resources.Service[`myapp::${serviceName}`];
+  assert(service);
   const servicePort = pipe([
     () => service.properties({}),
     get("spec.ports"),
@@ -18,7 +20,7 @@ module.exports = ({ provider }) => {
   ])();
   assert(servicePort);
 
-  const kubectlPortForwardCommand = `kubectl --namespace ${resources.Namespace.myapp.name} port-forward svc/${service.name} ${localPort}:${servicePort}`;
+  const kubectlPortForwardCommand = `kubectl --namespace ${resources.Namespace.myapp.name} port-forward svc/${serviceName} ${localPort}:${servicePort}`;
 
   const axios = Axios.create({
     timeout: 15e3,

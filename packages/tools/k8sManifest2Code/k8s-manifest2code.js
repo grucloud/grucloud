@@ -60,7 +60,6 @@ const writeResources = map((manifest) =>
         (name) => `const ${buildResourceVariableName(
           manifest
         )} = provider.make${manifest.kind}({
-    name: "${name}",
     properties: () => (${JSON.stringify(omit(["kind"])(manifest), null, 4)})
 })
 `,

@@ -16,7 +16,6 @@ const {
 const {
   defaultsDeep,
   first,
-  find,
   isFunction,
   includes,
   pluck,
@@ -24,9 +23,6 @@ const {
   isEmpty,
   identity,
   uniq,
-  when,
-  unless,
-  prepend,
 } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
@@ -39,7 +35,13 @@ const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { detailedDiff } = require("deep-object-diff");
 
-const { compareK8s, isOurMinion, findUser } = require("./K8sCommon");
+const {
+  compareK8s,
+  isOurMinion,
+  findUser,
+  inferNameNamespace,
+  inferNameNamespaceLess,
+} = require("./K8sCommon");
 const { K8sUtils, toApiVersion } = require("./K8sUtils");
 const {
   createResourceNamespaceless,
@@ -79,7 +81,7 @@ const findDependenciesService = ({ live, lives, config }) =>
       ])(),
   ])();
 
-const findNamespace = get("metadata.namespace", "default");
+const findNamespace = get("metadata.namespace", "");
 
 const findDependenciesConfig = ({ live }) =>
   pipe([
@@ -98,73 +100,17 @@ const findDependenciesConfig = ({ live }) =>
     map((name) => ({ name, namespace: findNamespace(live) })),
   ])();
 
-const findNamespaceFromProps = (properties) =>
-  tryCatch(
-    pipe([
-      () => properties({ dependencies: {} }),
-      tap((params) => {
-        assert(true);
-      }),
-      get("metadata.namespace", "default"),
-    ]),
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => "",
-    ])
-  )();
-
-const findNamespaceFromLive = get("metadata.namespace", "");
-
-const findNamespaceFromDeps = get("namespace.name", "");
-
-const buildNamespaceKey = ({
-  properties = () => undefined,
-  dependencies = () => undefined,
-  live,
-}) =>
-  pipe([
-    () => findNamespaceFromProps(properties),
-    tap((params) => {
-      assert(true);
-    }),
-    when(isEmpty, () => findNamespaceFromLive(live)),
-    when(isEmpty, () =>
-      tryCatch(
-        () => findNamespaceFromDeps(dependencies()),
-        () => ""
-      )()
-    ),
-    unless(isEmpty, prepend("::")),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
 const resourceKey = pipe([
   tap((resource) => {
     assert(resource.providerName);
     assert(resource.type);
     assert(resource.name);
   }),
-  ({
-    providerName,
-    type,
-    group = "",
-    properties,
-    name,
-    dependencies,
-    id,
-    live,
-  }) =>
-    `${providerName}${type}${buildNamespaceKey({
-      properties,
-      dependencies,
-      live,
-      name,
-      type,
-    })}::${name || id}`,
+  ({ providerName, type, properties, name, id }) =>
+    `${providerName}${type}::${name || id}`,
+  tap((params) => {
+    assert(true);
+  }),
 ]);
 
 const fnSpecs = pipe([
@@ -172,6 +118,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#apiservice-v1-apiregistration-k8s-io
     {
       type: "APIService",
+      inferName: inferNameNamespaceLess,
       Client: ({ config, spec }) =>
         createResourceNamespaceless({
           baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/apiservices`,
@@ -183,6 +130,7 @@ const fnSpecs = pipe([
     {
       type: "ConfigMap",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/configmaps`,
@@ -196,6 +144,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#clusterrole-v1-rbac-authorization-k8s-io
     {
       type: "ClusterRole",
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterroles`,
         configKey: "clusterRole",
@@ -208,6 +157,7 @@ const fnSpecs = pipe([
     {
       type: "ClusterRoleBinding",
       dependsOn: ["ClusterRole", "ServiceAccount"],
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterrolebindings`,
         configKey: "clusterRoleBinding",
@@ -241,6 +191,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
     {
       type: "CustomResourceDefinition",
+      inferName: inferNameNamespaceLess,
       Client: ({ config, spec }) =>
         createResourceNamespaceless({
           baseUrl: ({ apiVersion }) =>
@@ -256,6 +207,7 @@ const fnSpecs = pipe([
     {
       type: "DaemonSet",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/daemonsets`,
@@ -274,6 +226,7 @@ const fnSpecs = pipe([
         "ServiceAccount",
         "CustomResourceDefinition",
       ],
+      inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
           baseUrl: ({ namespace, apiVersion }) =>
@@ -299,6 +252,7 @@ const fnSpecs = pipe([
     {
       type: "Ingress",
       dependsOn: ["Namespace", "Deployment"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/ingresses`,
@@ -364,6 +318,7 @@ const fnSpecs = pipe([
     {
       type: "Job",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/jobs`,
@@ -376,6 +331,7 @@ const fnSpecs = pipe([
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
     {
       type: "MutatingWebhookConfiguration",
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) =>
           `/apis/${apiVersion}/mutatingwebhookconfigurations`,
@@ -387,6 +343,7 @@ const fnSpecs = pipe([
     },
     {
       type: "Namespace",
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/api/${apiVersion}/namespaces`,
         configKey: "namespace",
@@ -404,7 +361,8 @@ const fnSpecs = pipe([
     },
     {
       type: "PersistentVolume",
-      dependsOn: ["Namespace", "StorageClass"],
+      dependsOn: ["StorageClass"],
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/api/${apiVersion}/persistentvolumes`,
         configKey: "persistentVolume",
@@ -417,6 +375,7 @@ const fnSpecs = pipe([
     {
       type: "PersistentVolumeClaim",
       dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
+      inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
           baseUrl: ({ namespace, apiVersion }) =>
@@ -457,6 +416,7 @@ const fnSpecs = pipe([
         "StatefulSet",
         "Deployment",
       ],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/pods`,
@@ -523,25 +483,12 @@ const fnSpecs = pipe([
           },
         ],
       }),
-      listOnly: true,
-    },
-    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#pod-v1-core
-    {
-      type: "Pod",
-      dependsOn: ["Namespace"],
-      Client: createResourceNamespace({
-        baseUrl: ({ namespace, apiVersion }) =>
-          `/apis/${apiVersion}/namespaces/${namespace}/pods`,
-        pathList: ({ apiVersion }) => `/apis/${apiVersion}/pods`,
-        configKey: "pod",
-        apiVersion: "core/v1",
-        kind: "Pod",
-      }),
     },
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
     {
       type: "PodDisruptionBudget",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/poddisruptionbudgets`,
@@ -557,6 +504,7 @@ const fnSpecs = pipe([
     {
       type: "Role",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/roles`,
@@ -571,6 +519,7 @@ const fnSpecs = pipe([
     {
       type: "RoleBinding",
       dependsOn: ["Namespace", "Role", "ServiceAccount"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/rolebindings`,
@@ -594,6 +543,7 @@ const fnSpecs = pipe([
     {
       type: "Secret",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/secrets`,
@@ -639,6 +589,7 @@ const fnSpecs = pipe([
     {
       type: "Service",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/services`,
@@ -653,6 +604,7 @@ const fnSpecs = pipe([
     {
       type: "ServiceAccount",
       dependsOn: ["Namespace"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
           `/api/${apiVersion}/namespaces/${namespace}/serviceaccounts`,
@@ -676,6 +628,7 @@ const fnSpecs = pipe([
     {
       type: "StatefulSet",
       dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
+      inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
           baseUrl: ({ namespace, apiVersion }) =>
@@ -700,6 +653,7 @@ const fnSpecs = pipe([
     },
     {
       type: "StorageClass",
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/storageclasses`,
         configKey: "storageClass",
@@ -711,6 +665,7 @@ const fnSpecs = pipe([
     {
       type: "ReplicaSet",
       dependsOn: ["Namespace", "ConfigMap", "Secret"],
+      inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ apiVersion, namespace }) =>
           `/apis/${apiVersion}/namespaces/${namespace}/replicasets`,
@@ -734,6 +689,7 @@ const fnSpecs = pipe([
     //https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#validatingwebhookconfiguration-v1-admissionregistration-k8s-io
     {
       type: "ValidatingWebhookConfiguration",
+      inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) =>
           `/apis/${apiVersion}/validatingwebhookconfigurations`,
@@ -944,7 +900,8 @@ exports.K8sProvider = ({
           () => scope === "Namespaced",
           () => ({
             type: names.kind,
-            dependsOn: ["CustomResourceDefinition"],
+            inferName: inferNameNamespace,
+            dependsOn: ["Namespace", "CustomResourceDefinition"],
             Client: createResourceNamespace({
               baseUrl: ({ namespace, apiVersion }) =>
                 `/apis/${apiVersion}/namespaces/${namespace}/${names.plural}`,
@@ -959,6 +916,7 @@ exports.K8sProvider = ({
           }),
           () => ({
             type: names.kind,
+            inferName: inferNameNamespaceLess,
             dependsOn: ["CustomResourceDefinition"],
             Client: createResourceNamespaceless({
               baseUrl: ({ apiVersion }) =>

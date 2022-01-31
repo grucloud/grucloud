@@ -14,7 +14,15 @@ const {
   not,
   omit,
 } = require("rubico");
-const { find, first, isEmpty, isFunction, identity } = require("rubico/x");
+const {
+  find,
+  first,
+  isEmpty,
+  isFunction,
+  identity,
+  append,
+  unless,
+} = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -22,6 +30,31 @@ const logger = require("@grucloud/core/logger")({ prefix: "K8sCommon" });
 const { tos } = require("@grucloud/core/tos");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 const { isOurMinionObject, omitIfEmpty } = require("@grucloud/core/Common");
+
+exports.inferNameNamespace = ({ properties }) =>
+  pipe([
+    tap(() => {
+      assert(properties);
+    }),
+    () => properties,
+    get("metadata"),
+    ({ name, namespace = "default" }) => `${namespace}::${name}`,
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+exports.inferNameNamespaceLess = ({ properties }) =>
+  pipe([
+    tap(() => {
+      assert(properties);
+    }),
+    () => properties,
+    get("metadata.name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ])();
 
 const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),
@@ -96,18 +129,7 @@ exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
       assert(isFunction(properties));
       assert(isFunction(dependencies));
     }),
-    () => ({
-      namespaceDependencies: get("namespace.name")(dependencies()),
-      namespaceProperties: get(
-        "metadata.namespace",
-        "default"
-      )(properties({ dependencies: {} })),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-    find(not(isEmpty)),
-    (namespace) => `${namespace}::${name}`,
+    () => name,
   ])();
 
 exports.displayNameDefault = pipe([
@@ -116,18 +138,12 @@ exports.displayNameDefault = pipe([
   }),
   get("name"),
 ]);
-exports.displayNameNamespace = ({ name, meta }) =>
+exports.displayNameNamespace = ({ name }) =>
   pipe([
     tap(() => {
-      assert(meta);
       assert(name);
-      assert(meta.namespace);
     }),
-    switchCase([
-      () => isEmpty(meta.namespace),
-      () => name,
-      () => `${meta.namespace}::${name}`,
-    ]),
+    () => name,
     tap((name) => {
       assert(name);
     }),

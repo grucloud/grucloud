@@ -11,6 +11,7 @@ describe(title, async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
+      destroyAll: false,
       steps: [{ createStack, configs: [config] }],
     });
   }).timeout(30 * 60e3);

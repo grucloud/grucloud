@@ -6,7 +6,11 @@ exports.createStack = ({ createProvider }) => ({
     createResources: [
       ({ provider }) => {
         provider.makeNamespace({
-          name: "pgo",
+          properties: ({}) => ({
+            metadata: {
+              name: "pgo",
+            },
+          }),
         });
       },
       CrunchyPostgres.createResources,

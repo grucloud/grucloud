@@ -34,7 +34,6 @@ exports.createResourceNamespaceless =
         apiVersion,
         kind,
         metadata: {
-          name,
           annotations: buildTagsObject({ name, config }),
         },
       })(properties);
@@ -86,17 +85,20 @@ exports.createResourceNamespace =
         apiVersion: getApiVersion(),
         kind,
         metadata: {
-          name,
           annotations: buildTagsObject({ name, config }),
-          namespace: getNamespace(dependencies.namespace?.resource),
         },
       })(properties);
 
-    const pathGet = ({ name, namespace, apiVersion = getApiVersion() }) =>
-      `${baseUrl({ namespace, apiVersion })}/${name}`;
+    const pathGet = ({
+      name,
+      namespace = "default",
+      apiVersion = getApiVersion(),
+    }) => `${baseUrl({ namespace, apiVersion })}/${name}`;
 
-    const pathCreate = ({ namespace, apiVersion = getApiVersion() }) =>
-      baseUrl({ namespace, apiVersion });
+    const pathCreate = ({
+      namespace = "default",
+      apiVersion = getApiVersion(),
+    }) => baseUrl({ namespace, apiVersion });
 
     const pathUpdate = pathGet;
     const pathDelete = pathGet;
