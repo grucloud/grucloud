@@ -2,6 +2,87 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({}) => {};
+const createResources = ({ provider }) => {
+  provider.KeyVault.makeVault({
+    name: "rg-vault-ap::gcvaultaccesspolicy",
+    properties: ({ config }) => ({
+      location: "canadacentral",
+      properties: {
+        sku: {
+          family: "A",
+          name: "standard",
+        },
+        accessPolicies: [
+          {
+            tenantId: `${config.tenantId}`,
+            objectId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
+            permissions: {
+              keys: [
+                "Get",
+                "Create",
+                "Delete",
+                "List",
+                "Update",
+                "Import",
+                "Backup",
+                "Restore",
+                "Recover",
+              ],
+              secrets: [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Backup",
+                "Restore",
+                "Recover",
+              ],
+              certificates: [
+                "Get",
+                "List",
+                "Delete",
+                "Create",
+                "Import",
+                "Update",
+                "ManageContacts",
+                "GetIssuers",
+                "ListIssuers",
+                "SetIssuers",
+                "DeleteIssuers",
+                "ManageIssuers",
+                "Recover",
+              ],
+              storage: [
+                "get",
+                "list",
+                "delete",
+                "set",
+                "update",
+                "regeneratekey",
+                "setsas",
+                "listsas",
+                "getsas",
+                "deletesas",
+              ],
+            },
+          },
+        ],
+        enabledForDeployment: false,
+        enabledForDiskEncryption: false,
+        enabledForTemplateDeployment: false,
+        enablePurgeProtection: true,
+        publicNetworkAccess: "Enabled",
+        tenantId: `${config.tenantId}`,
+      },
+    }),
+    dependencies: ({ resources }) => ({
+      resourceGroup: resources.Resources.ResourceGroup["rg-vault-ap"],
+    }),
+  });
+
+  provider.Resources.makeResourceGroup({
+    name: "rg-vault-ap",
+  });
+};
 
 exports.createResources = createResources;

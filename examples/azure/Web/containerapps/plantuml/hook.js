@@ -29,10 +29,7 @@ module.exports = ({ provider }) => {
             await retryCallOnError({
               name: `get ${url}`,
               fn: () => axios.get(url),
-              isExpectedResult: (result) => {
-                return [200].includes(result.status);
-              },
-              config: { retryCount: 20, retryDelay: 5e3 },
+              config: { retryCount: 50, retryDelay: 5e3 },
             });
           },
         },

@@ -318,6 +318,9 @@ function CoreProvider({
 
   const targetResourcesBuildMap = pipe([
     () => resourcesSet,
+    tap((params) => {
+      assert(true);
+    }),
     forEach(tryCatch(targetResourceAdd, () => undefined)),
     tap((params) => {
       assert(true);

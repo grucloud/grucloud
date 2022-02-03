@@ -97,11 +97,15 @@ exports.ResourceMaker = ({
             `resource ${spec.type} without name must implement 'inferName'`
           );
         }),
-        () => ({
+        provider.resources,
+        tap((resources) => {
+          assert(resources);
+        }),
+        (resources) => ({
           properties: properties({ config, getId }),
           dependencies: () =>
             dependencies({
-              resources: provider.resources(),
+              resources,
               config,
             }),
         }),

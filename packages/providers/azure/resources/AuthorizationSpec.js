@@ -267,6 +267,7 @@ exports.fnSpecs = ({ config }) =>
         filterLive: ({}) =>
           pipe([
             pick([
+              "name",
               "properties.roleName",
               "properties.principalName",
               "properties.principalId",

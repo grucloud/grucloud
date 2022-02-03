@@ -15,7 +15,13 @@ const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
 
-const RolesDefault = ["Owner", "Key Vault Secrets Officer"];
+const RolesDefault = [
+  "Owner",
+  "Key Vault Administrator",
+  "Key Vault Certificates Officer",
+  "Key Vault Crypto Officer",
+  "Key Vault Secrets Officer",
+];
 
 const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
 

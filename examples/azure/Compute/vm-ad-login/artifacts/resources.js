@@ -6,6 +6,7 @@ const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
     name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
     properties: ({}) => ({
+      name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
       properties: {
         roleName: "Virtual Machine User Login",
         principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
@@ -19,6 +20,7 @@ const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
     name: "rg-vm-ad-login::keypair",
     properties: ({}) => ({
+      name: "keypair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8SzGkGNI3Ygk6VRCpozwO7xo1\r\nRW50+mHnXNwGMJUlp2GklCjrxYHmKU/1EcoJtc3A7HObBJu/7ckjK8pzl++qi479\r\n7z69qJipkWZsAI5ff6dsdJtDZLJctHfp0fost90LOWUBP+9WKBMgSCg7LM9QQC3C\r\n4A+iZKoqAmlUM6nzvfS90MxHavJR351aaTQIQg/jUHQoJ3PVeE9IpDhselTJQRDy\r\n0dVGcvjSvglw1q7s8hMCueZQNGS2e5sMS4oKhNsi9Rjawe9Iw9maeNnNiZJQwKJi\r\np/o62B48p2k+jIsr8PHE7C8JbIPuE89fRMOE8OgUBOVN0ZL4vRArjiKcFNkf5s7r\r\nl3j6SrqoUvODxedq4YG3IE3NOabqZ5JvzVIWvNhrO0f5MPty3bzucpOUvg2qjXY7\r\nZc8wsBHHWcLb1hhwOMfhqz7kY0MAsOFR6Kn1OvH0Na+R1Zke+z1YMh85FdoPOpmP\r\nboGjezMbAEQCDQJwAVfP2qBQYL1KuyULMmYUQ90= generated-by-azure\r\n",
@@ -105,6 +107,7 @@ const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachineExtension({
     name: "rg-vm-ad-login::vm::aadsshloginforlinux",
     properties: ({}) => ({
+      name: "aadsshloginforlinux",
       properties: {
         publisher: "Microsoft.Azure.ActiveDirectory",
         type: "AADSSHLoginForLinux",
@@ -147,6 +150,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-vm-ad-login::vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -172,6 +176,9 @@ const createResources = ({ provider }) => {
 
   provider.Network.makePublicIPAddress({
     name: "rg-vm-ad-login::vm-ip",
+    properties: ({}) => ({
+      name: "vm-ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
     }),
@@ -194,6 +201,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeVirtualNetwork({
     name: "rg-vm-ad-login::vnet",
     properties: ({}) => ({
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -207,6 +215,9 @@ const createResources = ({ provider }) => {
 
   provider.Resources.makeResourceGroup({
     name: "rg-vm-ad-login",
+    properties: ({}) => ({
+      name: "rg-vm-ad-login",
+    }),
   });
 };
 

@@ -11,10 +11,10 @@ module.exports = ({ resources, provider }) => {
         const secretName = "my-secret";
 
         // Authenticate to Azure
-        const credential = new DefaultAzureCredential();
-        const client = new SecretClient(keyVaultUri, credential);
+        // const credential = new DefaultAzureCredential();
+        // const client = new SecretClient(keyVaultUri, credential);
 
-        const secret = await client.getSecret(secretName);
+        // const secret = await client.getSecret(secretName);
 
         return {};
       },

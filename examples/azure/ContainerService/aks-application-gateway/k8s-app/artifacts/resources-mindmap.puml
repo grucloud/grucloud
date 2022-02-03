@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project k8s-app
+skinparam monochrome true
++ Infra
+++ k8s
++++ Pod (1)
++++ Service (1)
++++ Ingress (1)
+@endmindmap

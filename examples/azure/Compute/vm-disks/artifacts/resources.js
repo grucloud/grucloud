@@ -6,6 +6,7 @@ const createResources = ({ provider }) => {
   provider.Compute.makeDisk({
     name: "rg-vm-disks::vm_datadisk_0",
     properties: ({}) => ({
+      name: "vm_datadisk_0",
       sku: {
         name: "Premium_LRS",
       },
@@ -32,6 +33,7 @@ const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
     name: "rg-vm-disks::keypair",
     properties: ({}) => ({
+      name: "keypair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDML7vLyGtMh/cmqV31Kx7xJbAk\r\nmVFUgaB3cRs7QTj9FzAJywGnF+YAB6Kg/7KhGNrbeddMH7Dal2t3GeGhWuJHQXrb\r\nPI6+XrkkNZBIgea0/yk2/DLcrbsXeO+vF21R/qXgSrbK1F4hG7UYl0XIXxlpf3XR\r\nmni+Cr0TTc0lrjUk+CsxxEX/tBUI03C2hMwppe2j2bMeNMN93jpj63Z0BDIS8laf\r\nZPrnHZconfgKwVx6DzpV303SpaVkyxisWTKlIhuKKcN4LDxtpt+emWhYxCfx6scr\r\nW3zBnfhK0WvZJihP2Dr5j+CrMzP1SByyzJGiz69IlnoRK1yTyP6kM4Nc3RfnE/xJ\r\ny9XPFXBF6aPWm6zQTeUjcb6AHPy84kixX5l87LGYxHMfipyEoEYTEEN6RmgO2mpk\r\nzvuL27ewD/FMd+uigx0vd6SfdJR4dyc5WkCA8PkmpVbFtSR995hvTuVgaknAG1wd\r\noAVIBoekRLIwca9DcIOjTqaU0EWF8Gkt8FDhkIE= generated-by-azure\r\n",
@@ -160,6 +162,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-vm-disks::vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -185,6 +188,9 @@ const createResources = ({ provider }) => {
 
   provider.Network.makePublicIPAddress({
     name: "rg-vm-disks::vm-ip",
+    properties: ({}) => ({
+      name: "vm-ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
     }),
@@ -208,6 +214,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeVirtualNetwork({
     name: "rg-vm-disks::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -221,6 +228,9 @@ const createResources = ({ provider }) => {
 
   provider.Resources.makeResourceGroup({
     name: "rg-vm-disks",
+    properties: ({}) => ({
+      name: "rg-vm-disks",
+    }),
   });
 };
 

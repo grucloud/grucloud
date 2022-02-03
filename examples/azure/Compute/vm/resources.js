@@ -84,6 +84,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-vm::security-group",
     properties: ({}) => ({
+      name: "security-group",
       properties: {
         securityRules: [
           {
@@ -122,6 +123,9 @@ const createResources = ({ provider }) => {
 
   provider.Network.makePublicIPAddress({
     name: "rg-vm::ip",
+    properties: ({}) => ({
+      name: "ip",
+    }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
     }),
@@ -145,6 +149,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeVirtualNetwork({
     name: "rg-vm::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
@@ -158,6 +163,9 @@ const createResources = ({ provider }) => {
 
   provider.Resources.makeResourceGroup({
     name: "rg-vm",
+    properties: ({}) => ({
+      name: "rg-vm",
+    }),
   });
 };
 

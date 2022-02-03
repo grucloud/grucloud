@@ -6,6 +6,7 @@ const createResources = ({ provider }) => {
   provider.DBforPostgreSQL.makeConfiguration({
     name: "rg-postgres::gc-server::shared_preload_libraries",
     properties: ({}) => ({
+      name: "shared_preload_libraries",
       properties: {
         value: "pg_cron,pg_stat_statements",
         source: "user-override",
@@ -21,6 +22,7 @@ const createResources = ({ provider }) => {
   provider.DBforPostgreSQL.makeFirewallRule({
     name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
     properties: ({}) => ({
+      name: "allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
       properties: {
         startIpAddress: "0.0.0.0",
         endIpAddress: "0.0.0.0",
@@ -36,6 +38,7 @@ const createResources = ({ provider }) => {
   provider.DBforPostgreSQL.makeFlexibleServer({
     name: "rg-postgres::gc-server",
     properties: ({}) => ({
+      name: "gc-server",
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",
@@ -57,6 +60,9 @@ const createResources = ({ provider }) => {
 
   provider.Resources.makeResourceGroup({
     name: "rg-postgres",
+    properties: ({}) => ({
+      name: "rg-postgres",
+    }),
   });
 };
 

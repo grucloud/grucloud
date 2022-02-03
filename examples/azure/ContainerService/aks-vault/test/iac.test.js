@@ -6,13 +6,12 @@ const config = require("../config");
 
 const title = pkg.name;
 
-describe.skip(title, async function () {
+describe(title, async function () {
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
-      destroyAll: false,
       steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(30 * 60e3);
+  }).timeout(15 * 60e3);
 });
