@@ -25,20 +25,28 @@ module.exports = () =>
     {
       type: "HostedZone",
       dependsOn: ["Route53Domains::Domain"],
+      dependencies: {
+        domain: { type: "Domain", group: "Route53Domains" },
+        hostedZone: { type: "HostedZone", group: "Route53" },
+      },
       Client: Route53HostedZone,
       isOurMinion,
       compare: compareHostedZone,
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
-      dependencies: {
-        domain: { type: "Domain", group: "Route53Domains" },
-        hostedZone: { type: "HostedZone", group: "Route53" },
-      },
     },
     {
       type: "Record",
       dependsOn: ["Route53::HostedZone", "ACM::Certificate"],
       dependsOnList: ["Route53::HostedZone"],
+      dependencies: {
+        hostedZone: { type: "HostedZone", group: "Route53" },
+        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+        certificate: { type: "Certificate", group: "ACM" },
+        distribution: { type: "Distribution", group: "CloudFront" },
+        apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
+        apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
+      },
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
@@ -91,14 +99,7 @@ module.exports = () =>
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
           ]),
         ])(),
-      dependencies: {
-        hostedZone: { type: "HostedZone", group: "Route53" },
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
-        certificate: { type: "Certificate", group: "ACM" },
-        distribution: { type: "Distribution", group: "CloudFront" },
-        apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
-        apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
-      },
+
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },

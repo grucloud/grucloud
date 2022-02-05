@@ -1,5 +1,5 @@
 const createResources = ({ provider }) => {
-  const serviceAccount = provider.iam.makeServiceAccount({
+  provider.iam.makeServiceAccount({
     name: `sa-example-policy`,
     properties: () => ({
       serviceAccount: {
@@ -10,7 +10,7 @@ const createResources = ({ provider }) => {
 
   const iamPolicy = provider.iam.makePolicy({
     name: "policy",
-    dependencies: { serviceAccount },
+    dependencies: { serviceAccount: "sa-example-policy" },
     properties: ({ dependencies: { serviceAccount } }) => ({
       policy: {
         bindings: [

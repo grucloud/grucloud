@@ -215,7 +215,7 @@ const displayErrorResults = ({ results = [], name }) => {
     pipe([
       //TODO
       tap((results) => {
-        //logger.debug(`displayErrorResults ${tos(results)}`);
+        assert(true);
       }),
       filter(get("error")),
       forEach(({ result, error, resultQuery }) => {
@@ -341,12 +341,13 @@ const doPlanQuery = ({ commandOptions } = {}) =>
     assign({ error: any(get("error")) }),
     //TODO create own function
     tap.if(
-      not(get("error")),
+      //not(get("error")),
+      () => true,
       pipe([
         tap((result) => {
           assert(result);
         }),
-        get("resultQuery.results"),
+        get("resultQuery.results", []),
         tap((result) => {
           assert(result);
         }),
@@ -1202,9 +1203,10 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     map((provider) =>
       pipe([
         () => provider.start(),
+        //TODO group is optional
         () =>
           provider.getResource({
-            uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
+            uri: `${provider.name}::${commandOptions.group}::${commandOptions.type}::${commandOptions.name}`,
           }),
       ])()
     ),

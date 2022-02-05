@@ -9,15 +9,15 @@ describe("MockProviderCornerCase", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
       createResources: ({ provider }) => {
-        provider.makeServer({
+        provider.Compute.makeServer({
           name: "web-server",
-          dependencies: { volume: undefined },
+          dependencies: () => ({ volume: undefined }),
           properties: () => ({}),
         });
       },
     });
     const resources = provider.resources();
-    const server = resources.Server["web-server"];
+    const server = resources.Compute.Server["web-server"];
 
     assert(server);
     const deps = server.getDependencyList();
@@ -29,12 +29,12 @@ describe("MockProviderCornerCase", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
       createResources: ({ provider }) => {
-        provider.makeServer({
+        provider.Compute.makeServer({
           name: "web-server",
           dependencies: {},
           properties: () => ({}),
         });
-        provider.makeIp({
+        provider.Compute.makeIp({
           name: "web-server",
           dependencies: {},
           properties: () => ({}),
@@ -47,7 +47,7 @@ describe("MockProviderCornerCase", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
       createResources: ({ provider }) => {
-        provider.makeSecurityGroup({
+        provider.Compute.makeSecurityGroup({
           name: "sg",
           dependencies: ({ resources }) => ({
             securityGroup: resources.SecurityGroup.sg,

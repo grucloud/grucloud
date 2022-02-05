@@ -12,6 +12,7 @@ const {
   get,
   assign,
   any,
+  or,
   reduce,
   eq,
   not,
@@ -224,8 +225,11 @@ function CoreProvider({
     ])();
 
   // Target Resources
+  const mapTypeToResources = new Map();
+  let resourcesObj = {};
   const resourcesSet = new Set();
   const mapNameToResource = new Map();
+
   const getMapNameToResource = () => mapNameToResource;
 
   const getResourceFromLive = ({ uri }) =>
@@ -241,8 +245,6 @@ function CoreProvider({
       }),
     ])();
 
-  const mapTypeToResources = new Map();
-  let resourcesObj = {};
   const getTargetGroupTypes = pipe([
     () => [...mapTypeToResources.keys()],
     tap((params) => {
@@ -276,7 +278,7 @@ function CoreProvider({
     assert(type);
     assert(spec.groupType);
     const resourceKey = resource.toString();
-    logger.debug(`targetResourcesAdd ${resourceKey}`);
+    logger.debug(`targetResourceAddToMap ${resourceKey}`);
     if (mapNameToResource.has(resourceKey)) {
       if (spec.listOnly) {
         return;
@@ -332,21 +334,22 @@ function CoreProvider({
 
   const getTargetResources = () => [...mapNameToResource.values()];
 
-  const getResource = pipe([
-    get("uri"),
+  const getResourceByName = pipe([
     tap((uri) => {
       assert(uri, "getResource no uri");
     }),
-    (uri) =>
+    (name) =>
       pipe([
-        () => mapNameToResource.get(uri),
+        () => mapNameToResource.get(name),
         tap((resource) => {
           if (!resource) {
-            assert(false, `no resource for ${uri}`);
+            assert(false, `no resource for ${name}`);
           }
         }),
       ])(),
   ]);
+
+  const getResource = pipe([get("uri"), getResourceByName]);
 
   const getSpecs = pipe([
     getProviderConfig,
@@ -1491,7 +1494,12 @@ function CoreProvider({
       tap((result) => {
         assert(result);
       }),
-      assign({ error: any(get("error")) }),
+      assign({
+        error: or([
+          pipe([get("resultCreate"), any(get("error"))]),
+          pipe([get("resultDestroy"), any(get("error"))]),
+        ]),
+      }),
       tap((result) => {
         assert(result);
       }),
@@ -1940,7 +1948,10 @@ List of resources for provider ${providerName}:\n
     unInit,
     start: startBase,
     getSpecs,
+    //TODO remove
     mapNameToResource,
+    getResourceByName,
+    getMapNameToResource,
     generateCode,
     targetResourcesBuildMap,
   };

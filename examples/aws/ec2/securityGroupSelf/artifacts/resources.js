@@ -16,8 +16,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Communication between all nodes in the cluster",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -30,9 +30,9 @@ const createResources = ({ provider }) => {
         ToPort: -1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["ClusterSharedNode"],
-      securityGroupFrom: resources.EC2.SecurityGroup["ClusterSharedNode"],
+    dependencies: () => ({
+      securityGroup: "ClusterSharedNode",
+      securityGroupFrom: "ClusterSharedNode",
     }),
   });
 };

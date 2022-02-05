@@ -21,11 +21,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy["AmazonEKSWorkerNodePolicy"],
-        resources.IAM.Policy["policy-allow-ec2"],
-      ],
+    dependencies: () => ({
+      policies: ["AmazonEKSWorkerNodePolicy", "policy-allow-ec2"],
     }),
   });
 

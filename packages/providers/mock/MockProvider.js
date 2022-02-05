@@ -20,7 +20,7 @@ const fnSpecs = (config) => {
   const { createAxios } = config;
   assert(createAxios);
 
-  const configDefault = async ({ name, properties }) => ({
+  const configDefault = ({ name, properties }) => ({
     name,
     tags: [toTagName(name, config.tag)],
     ...properties,
@@ -47,7 +47,6 @@ const fnSpecs = (config) => {
             config,
             configDefault,
           }),
-
         type: "Volume",
       },
       {
@@ -71,7 +70,21 @@ const fnSpecs = (config) => {
         type: "SecurityGroup",
       },
       {
-        dependsOn: ["SecurityGroup", "Ip"],
+        dependencies: {
+          securityGroups: {
+            type: "SecurityGroup",
+            group: "Compute",
+            list: true,
+          },
+          ip: {
+            type: "Ip",
+            group: "Compute",
+          },
+          volume: {
+            type: "Volume",
+            group: "Compute",
+          },
+        },
         Client: ({ spec }) =>
           MockClient({
             spec,
@@ -126,6 +139,7 @@ const fnSpecs = (config) => {
       defaultsDeep({
         isOurMinion,
         compare: compare({ filterLive: omit(["id"]) }),
+        group: "Compute",
       })
     ),
   ])();

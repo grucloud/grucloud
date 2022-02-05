@@ -1,32 +1,17 @@
-const assert = require("assert");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { Cli } = require("@grucloud/core/cli/cliCommands");
+const pkg = require("../package.json");
+const path = require("path");
+const { testEnd2End } = require("@grucloud/core/qa");
+const { createStack } = require("../iac");
+const config = require("../config");
 
-const MockStack1 = require("../iac");
-const MockStack2 = require("../../mock-simple/iac");
+const title = "Mock";
 
-describe("Mock Multi", async function () {
-  let config;
-
-  before(async function () {});
-  it("run mocks example", async function () {
-    const cli1 = await Cli({ createStack: MockStack1.createStack, config });
-    const cli2 = await Cli({ createStack: MockStack2.createStack, config });
-
-    await cli2.planApply({
-      commandOptions: { force: true },
+describe(title, async function () {
+  it("run", async function () {
+    await testEnd2End({
+      programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      title,
+      steps: [{ createStack, configs: [config] }],
     });
-
-    await cli1.planApply({
-      commandOptions: { force: true },
-    });
-
-    await cli2.planDestroy({
-      commandOptions: { force: true },
-    });
-
-    await cli1.planDestroy({
-      commandOptions: { force: true },
-    });
-  });
+  }).timeout(10 * 60e3);
 });

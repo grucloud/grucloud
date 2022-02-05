@@ -80,9 +80,9 @@ const createResources = ({ provider }) => {
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
-    dependencies: ({ resources }) => ({
-      ip: resources.compute.Address["ip-webserver"],
-      disks: [resources.compute.Disk["disk"]],
+    dependencies: () => ({
+      ip: "ip-webserver",
+      disks: ["disk"],
     }),
   });
 };

@@ -13,8 +13,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.useDefaultRouteTable({
     name: "rt-default-vpc-default",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-default"],
+    dependencies: () => ({
+      vpc: "vpc-default",
     }),
   });
 
@@ -22,9 +22,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc-default"],
-      ig: resources.EC2.InternetGateway["ig-default"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc-default",
+      ig: "ig-default",
     }),
   });
 };

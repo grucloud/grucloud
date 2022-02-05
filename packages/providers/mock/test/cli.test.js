@@ -3,7 +3,6 @@ const path = require("path");
 const shell = require("shelljs");
 const { map } = require("rubico");
 const { main } = require("@grucloud/core/cli/cliMain");
-const { tos } = require("@grucloud/core/tos");
 
 const filename = "./test/MockStack.js";
 const configFileDefault = "./test/config.js";
@@ -88,13 +87,25 @@ describe("cli", function () {
   });
   it("output", async function () {
     await runProgram({
-      cmds: ["output", "--type", "Ip", "--name", "myip", "--field", "id"],
+      cmds: [
+        "output",
+        "--group",
+        "Compute",
+        "--type",
+        "Ip",
+        "--name",
+        "myip",
+        "--field",
+        "id",
+      ],
     });
   });
   it("output name not found", async function () {
     await runProgram({
       cmds: [
         "output",
+        "--group",
+        "Compute",
         "--type",
         "Ip",
         "--name",

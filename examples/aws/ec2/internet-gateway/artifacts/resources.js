@@ -12,8 +12,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 };

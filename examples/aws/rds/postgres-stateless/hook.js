@@ -81,7 +81,7 @@ module.exports = ({ provider }) => {
               fn: async () => {
                 const connection = await sshConnect({
                   host,
-                  keyName: provider.config.keyPair.name,
+                  keyName: "kp-postgres-stateless",
                 });
                 const command = commandFactory(connection);
                 await command("sudo yum -y install docker");

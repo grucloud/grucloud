@@ -24,8 +24,8 @@ const createResources = ({ provider }) => {
         '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
       State: "ENABLED",
     }),
-    dependencies: ({ resources }) => ({
-      eventBus: resources.CloudWatchEvents.EventBus["bus-test"],
+    dependencies: () => ({
+      eventBus: "bus-test",
     }),
   });
 };

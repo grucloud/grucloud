@@ -5,8 +5,8 @@ const {} = require("rubico/x");
 const createResources = ({ provider }) => {
   provider.APIGateway.makeAccount({
     name: "default",
-    dependencies: ({ resources }) => ({
-      cloudwatchRole: resources.IAM.Role["roleApiGatewayCloudWatch"],
+    dependencies: () => ({
+      cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   });
 
@@ -50,8 +50,8 @@ const createResources = ({ provider }) => {
       cacheClusterSize: "0.5",
       tracingEnabled: false,
     }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi["PetStore"],
+    dependencies: () => ({
+      restApi: "PetStore",
     }),
   });
 
@@ -62,8 +62,8 @@ const createResources = ({ provider }) => {
       cacheClusterEnabled: false,
       tracingEnabled: false,
     }),
-    dependencies: ({ resources }) => ({
-      restApi: resources.APIGateway.RestApi["PetStore"],
+    dependencies: () => ({
+      restApi: "PetStore",
     }),
   });
 
@@ -89,8 +89,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["AmazonAPIGatewayPushToCloudWatchLogs"]],
+    dependencies: () => ({
+      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
     }),
   });
 

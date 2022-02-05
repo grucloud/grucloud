@@ -3,10 +3,10 @@ const { MockProvider } = require("../MockProvider");
 
 const createResources = ({ provider }) => {
   // Ip
-  const ip = provider.makeIp({ name: "myip" });
+  provider.Compute.makeIp({ name: "myip" });
 
   // Boot images
-  // const image = provider.useImage({
+  // const image = provider.ComputeuseImage({
   //   name: "ubuntu",
   //   filterLives: ({ resources }) => {
   //     const image = resources.find(
@@ -21,14 +21,14 @@ const createResources = ({ provider }) => {
   //   },
   // });
 
-  const volume = provider.makeVolume({
+  provider.Compute.makeVolume({
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
   });
   // SecurityGroup
-  const sg = provider.makeSecurityGroup({
+  provider.Compute.makeSecurityGroup({
     name: "sg",
     properties: () => ({
       securityRules: [
@@ -49,9 +49,13 @@ const createResources = ({ provider }) => {
     }),
   });
   //Server
-  const server = provider.makeServer({
+  provider.Compute.makeServer({
     name: "web-server",
-    dependencies: () => ({ volume, sg: [sg], ip }),
+    dependencies: () => ({
+      volume: "volume1",
+      securityGroups: ["sg"],
+      ip: "myip",
+    }),
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",
@@ -61,11 +65,12 @@ const createResources = ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ name = "mock", createProvider }) => {
-  const provider = createProvider(MockProvider, {
-    name,
-    createResources,
-    config: require("./config"),
-  });
-  return { provider };
+exports.createStack = ({ name = "mock", createProvider }) => {
+  return {
+    provider: createProvider(MockProvider, {
+      name,
+      createResources,
+      config: require("./config"),
+    }),
+  };
 };

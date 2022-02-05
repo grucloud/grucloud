@@ -5,14 +5,18 @@ const {} = require("rubico/x");
 const createResources = ({ provider }) => {
   provider.Resources.makeResourceGroup({
     name: "rg-storage-web",
+    properties: ({}) => ({
+      name: "rg-storage-web",
+    }),
   });
 
   provider.Storage.makeBlob({
     properties: ({}) => ({
-      properties: {
-        contentType: "application/octet-stream",
-      },
       name: "index.html",
+      properties: {
+        contentType: "text/html",
+      },
+      source: "assets/index.html",
     }),
     dependencies: ({ resources }) => ({
       resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
@@ -24,6 +28,7 @@ const createResources = ({ provider }) => {
   provider.Storage.makeBlobContainer({
     name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({
+      name: "$web",
       properties: {
         defaultEncryptionScope: "$account-encryption-key",
         denyEncryptionScopeOverride: false,
@@ -42,7 +47,12 @@ const createResources = ({ provider }) => {
   provider.Storage.makeBlobServiceProperties({
     name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
+      name: "gcstorageweb",
       properties: {
+        staticWebsite: {
+          enabled: true,
+          indexDocument: "index.html",
+        },
         deleteRetentionPolicy: {
           enabled: true,
           days: 7,
@@ -58,6 +68,7 @@ const createResources = ({ provider }) => {
   provider.Storage.makeStorageAccount({
     name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
+      name: "gcstorageweb",
       sku: {
         name: "Standard_RAGRS",
       },

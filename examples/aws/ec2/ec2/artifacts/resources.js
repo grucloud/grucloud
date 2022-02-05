@@ -17,9 +17,9 @@ const createResources = ({ provider }) => {
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
     }),
-    dependencies: ({ resources }) => ({
-      keyPair: resources.EC2.KeyPair["kp-ec2-example"],
-      eip: resources.EC2.ElasticIpAddress["eip"],
+    dependencies: () => ({
+      keyPair: "kp-ec2-example",
+      eip: "eip",
     }),
   });
 };

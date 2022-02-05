@@ -1,11 +1,12 @@
+const pkg = require("../package.json");
 const path = require("path");
 const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-const title = "Cognito";
+const title = "Mock Simple";
 
-describe.skip(title, async function () {
+describe(title, async function () {
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },

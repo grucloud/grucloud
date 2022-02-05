@@ -21,8 +21,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["lambda-policy"]],
+    dependencies: () => ({
+      policies: ["lambda-policy"],
     }),
   });
 
@@ -59,8 +59,8 @@ const createResources = ({ provider }) => {
       Timeout: 3,
       MemorySize: 128,
     }),
-    dependencies: ({ resources }) => ({
-      role: resources.IAM.Role["lambda-role"],
+    dependencies: () => ({
+      role: "lambda-role",
     }),
   });
 
@@ -69,11 +69,10 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
-      FunctionResponseTypes: [],
     }),
-    dependencies: ({ resources }) => ({
-      lambdaFunction: resources.Lambda.Function["lambda-hello-world"],
-      sqsQueue: resources.SQS.Queue["my-queue-lambda"],
+    dependencies: () => ({
+      lambdaFunction: "lambda-hello-world",
+      sqsQueue: "my-queue-lambda",
     }),
   });
 

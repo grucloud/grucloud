@@ -103,37 +103,30 @@ const createResources = ({ provider }) => {
         Prefix: "",
       },
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
-      certificate:
-        resources.ACM.Certificate["dev.cloudfront.aws.test.grucloud.org"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      certificate: "dev.cloudfront.aws.test.grucloud.org",
     }),
   });
 
   provider.Route53.makeHostedZone({
     name: "dev.cloudfront.aws.test.grucloud.org.",
-    dependencies: ({ resources }) => ({
-      domain: resources.Route53Domains.Domain["grucloud.org"],
+    dependencies: () => ({
+      domain: "grucloud.org",
     }),
   });
 
   provider.Route53.makeRecord({
-    dependencies: ({ resources }) => ({
-      hostedZone:
-        resources.Route53.HostedZone["dev.cloudfront.aws.test.grucloud.org."],
-      certificate:
-        resources.ACM.Certificate["dev.cloudfront.aws.test.grucloud.org"],
+    dependencies: () => ({
+      hostedZone: "dev.cloudfront.aws.test.grucloud.org.",
+      certificate: "dev.cloudfront.aws.test.grucloud.org",
     }),
   });
 
   provider.Route53.makeRecord({
-    dependencies: ({ resources }) => ({
-      hostedZone:
-        resources.Route53.HostedZone["dev.cloudfront.aws.test.grucloud.org."],
-      distribution:
-        resources.CloudFront.Distribution[
-          "distribution-cloudfront.aws.test.grucloud.org-dev"
-        ],
+    dependencies: () => ({
+      hostedZone: "dev.cloudfront.aws.test.grucloud.org.",
+      distribution: "distribution-cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 
@@ -162,8 +155,8 @@ const createResources = ({ provider }) => {
       ContentType: "text/css",
       source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.css.css",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 
@@ -173,8 +166,8 @@ const createResources = ({ provider }) => {
       ContentType: "application/javascript",
       source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.js.js",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 
@@ -184,8 +177,8 @@ const createResources = ({ provider }) => {
       ContentType: "image/png",
       source: "s3/cloudfront.aws.test.grucloud.org-dev/favicon.png.png",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 
@@ -195,8 +188,8 @@ const createResources = ({ provider }) => {
       ContentType: "text/css",
       source: "s3/cloudfront.aws.test.grucloud.org-dev/global.css.css",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 
@@ -206,8 +199,8 @@ const createResources = ({ provider }) => {
       ContentType: "text/html",
       source: "s3/cloudfront.aws.test.grucloud.org-dev/index.html.html",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"],
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
     }),
   });
 };

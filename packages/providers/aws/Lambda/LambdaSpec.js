@@ -115,8 +115,10 @@ module.exports = () =>
           defaultsDeep({
             BatchSize: 10,
             MaximumBatchingWindowInSeconds: 0,
+            FunctionResponseTypes: [],
           }),
           omit(["FunctionName", "Tags"]),
+          omitIfEmpty(["FunctionResponseTypes"]),
         ]),
         filterLive: pipe([
           omit([
@@ -138,7 +140,7 @@ module.exports = () =>
             "TumblingWindowInSeconds",
             "FunctionResponseTypes",
           ]),
-        ]), //TODO
+        ]),
       }),
       filterLive:
         ({ resource }) =>
@@ -161,6 +163,7 @@ module.exports = () =>
               "TumblingWindowInSeconds",
               "FunctionResponseTypes",
             ]),
+            omitIfEmpty(["FunctionResponseTypes"]),
           ])(),
       dependencies: {
         lambdaFunction: { type: "Function", group: "Lambda" },

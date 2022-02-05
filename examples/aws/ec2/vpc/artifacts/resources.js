@@ -12,16 +12,16 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.makeNatGateway({
     name: "nat-gateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet["subnet-public-a"],
-      eip: resources.EC2.ElasticIpAddress["eip"],
+    dependencies: () => ({
+      subnet: "subnet-public-a",
+      eip: "eip",
     }),
   });
 
@@ -31,8 +31,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -42,8 +42,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -54,8 +54,8 @@ const createResources = ({ provider }) => {
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -66,57 +66,57 @@ const createResources = ({ provider }) => {
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "route-table-private-a",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "route-table-private-b",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.useDefaultRouteTable({
     name: "rt-default-vpc",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-private-a"],
-      subnet: resources.EC2.Subnet["subnet-private-a"],
+    dependencies: () => ({
+      routeTable: "route-table-private-a",
+      subnet: "subnet-private-a",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-private-b"],
-      subnet: resources.EC2.Subnet["subnet-private-b"],
+    dependencies: () => ({
+      routeTable: "route-table-private-b",
+      subnet: "subnet-private-b",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      subnet: resources.EC2.Subnet["subnet-public-a"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      subnet: "subnet-public-a",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      subnet: resources.EC2.Subnet["subnet-public-b"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      subnet: "subnet-public-b",
     }),
   });
 
@@ -124,9 +124,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-private-a"],
-      natGateway: resources.EC2.NatGateway["nat-gateway"],
+    dependencies: () => ({
+      routeTable: "route-table-private-a",
+      natGateway: "nat-gateway",
     }),
   });
 
@@ -134,9 +134,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-private-b"],
-      natGateway: resources.EC2.NatGateway["nat-gateway"],
+    dependencies: () => ({
+      routeTable: "route-table-private-b",
+      natGateway: "nat-gateway",
     }),
   });
 
@@ -144,9 +144,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      ig: resources.EC2.InternetGateway["internet-gateway"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      ig: "internet-gateway",
     }),
   });
 

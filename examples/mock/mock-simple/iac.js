@@ -13,34 +13,26 @@ const createAxios = ({ url }) => {
   });
 };
 
-const createResources = async ({ provider }) => {
+const createResources = ({ provider }) => {
   //Server
-  const server = provider.makeServer({
+  provider.Compute.makeServer({
     name: "db-server",
     properties: () => ({
       diskSizeGb: "50",
       machineType: "f1-micro",
     }),
   });
-
-  return { server };
 };
 exports.createResources = createResources;
 
-//TODO
-exports.createStack = async ({ config }) => {
-  const provider = MockProvider({
-    name: "mock",
-    config: () => ({
-      ...config,
-      createAxios,
-    }),
-  });
-
-  const resources = await createResources({ provider });
-
+exports.createStack = ({ createProvider }) => {
   return {
-    provider,
-    resources,
+    provider: createProvider(MockProvider, {
+      name: "mock",
+      createResources,
+      config: () => ({
+        createAxios,
+      }),
+    }),
   };
 };

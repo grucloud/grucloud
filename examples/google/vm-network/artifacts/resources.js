@@ -19,8 +19,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       ipCidrRange: "10.164.0.0/20",
     }),
-    dependencies: ({ resources }) => ({
-      network: resources.compute.Network["vpc"],
+    dependencies: () => ({
+      network: "vpc",
     }),
   });
 
@@ -41,8 +41,8 @@ const createResources = ({ provider }) => {
         enable: false,
       },
     }),
-    dependencies: ({ resources }) => ({
-      network: resources.compute.Network["vpc"],
+    dependencies: () => ({
+      network: "vpc",
     }),
   });
 
@@ -61,8 +61,8 @@ const createResources = ({ provider }) => {
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
-    dependencies: ({ resources }) => ({
-      subNetwork: resources.compute.SubNetwork["subnetwork"],
+    dependencies: () => ({
+      subNetwork: "subnetwork",
     }),
   });
 };

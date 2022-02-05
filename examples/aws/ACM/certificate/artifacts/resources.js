@@ -9,15 +9,15 @@ const createResources = ({ provider }) => {
 
   provider.Route53.makeHostedZone({
     name: "grucloud.org.",
-    dependencies: ({ resources }) => ({
-      domain: resources.Route53Domains.Domain["grucloud.org"],
+    dependencies: () => ({
+      domain: "grucloud.org",
     }),
   });
 
   provider.Route53.makeRecord({
-    dependencies: ({ resources }) => ({
-      hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      certificate: resources.ACM.Certificate["grucloud.org"],
+    dependencies: () => ({
+      hostedZone: "grucloud.org.",
+      certificate: "grucloud.org",
     }),
   });
 

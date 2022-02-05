@@ -14,12 +14,15 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInstance({
     name: "server-4-test-volume",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
     }),
-    dependencies: ({ resources }) => ({
-      volumes: [resources.EC2.Volume["volume-test-volume"]],
+    dependencies: () => ({
+      volumes: ["volume-test-volume"],
     }),
   });
 };

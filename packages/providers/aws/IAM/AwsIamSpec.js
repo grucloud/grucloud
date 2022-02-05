@@ -205,8 +205,7 @@ module.exports = () =>
                   switchCase([
                     isEmpty,
                     () => `"${id}"`,
-                    ({ group = "compute", type, name }) =>
-                      `resources.${group}.${type}["${name}"]`,
+                    ({ name }) => `'${name}'`,
                   ]),
                 ])()
               ),

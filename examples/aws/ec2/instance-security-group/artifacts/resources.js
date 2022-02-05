@@ -16,8 +16,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "my security group",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-default"],
+    dependencies: () => ({
+      vpc: "vpc-default",
     }),
   });
 
@@ -35,8 +35,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["my-security-group"],
+    dependencies: () => ({
+      securityGroup: "my-security-group",
     }),
   });
 
@@ -46,9 +46,9 @@ const createResources = ({ provider }) => {
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
     }),
-    dependencies: ({ resources }) => ({
-      keyPair: resources.EC2.KeyPair["kp-ec2"],
-      securityGroups: [resources.EC2.SecurityGroup["my-security-group"]],
+    dependencies: () => ({
+      keyPair: "kp-ec2",
+      securityGroups: ["my-security-group"],
     }),
   });
 };

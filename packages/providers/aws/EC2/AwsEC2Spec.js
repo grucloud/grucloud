@@ -462,7 +462,13 @@ module.exports = () =>
           }),
           ({ routeTable, ig, natGateway }) =>
             pipe([
+              tap(() => {
+                assert(routeTable);
+              }),
               () => routeTable.name,
+              tap((name) => {
+                assert(name);
+              }),
               switchCase([
                 () => ig,
                 append("-igw"),
@@ -629,12 +635,21 @@ module.exports = () =>
       propertiesDefault: {
         MaxCount: 1,
         MinCount: 1,
+        Placement: { GroupName: "", Tenancy: "default" },
       },
       compare: compareEC2Instance,
       isOurMinion: isOurMinionEC2Instance,
       filterLive: () =>
         pipe([
-          pick(["InstanceType", "ImageId", "UserData"]),
+          pick(["InstanceType", "ImageId", "UserData", "Placement"]),
+          assign({
+            Placement: pipe([
+              get("Placement"),
+              assign({
+                AvailabilityZone: buildAvailabilityZone,
+              }),
+            ]),
+          }),
           tap((params) => {
             assert(true);
           }),

@@ -5,12 +5,15 @@ const {} = require("rubico/x");
 const createResources = ({ provider }) => {
   provider.EC2.makeInstance({
     name: "web-iam",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
     }),
-    dependencies: ({ resources }) => ({
-      iamInstanceProfile: resources.IAM.InstanceProfile["my-profile"],
+    dependencies: () => ({
+      iamInstanceProfile: "my-profile",
     }),
   });
 
@@ -19,9 +22,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Path: "/",
     }),
-    dependencies: ({ resources }) => ({
-      iamGroups: [resources.IAM.Group["Admin"]],
-      policies: [resources.IAM.Policy["myPolicy-to-user"]],
+    dependencies: () => ({
+      iamGroups: ["Admin"],
+      policies: ["myPolicy-to-user"],
     }),
   });
 
@@ -30,8 +33,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Path: "/",
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["myPolicy-to-group"]],
+    dependencies: () => ({
+      policies: ["myPolicy-to-group"],
     }),
   });
 
@@ -53,11 +56,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy["AmazonEKSWorkerNodePolicy"],
-        resources.IAM.Policy["myPolicy-to-role"],
-      ],
+    dependencies: () => ({
+      policies: ["AmazonEKSWorkerNodePolicy", "myPolicy-to-role"],
     }),
   });
 
@@ -124,8 +124,8 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeInstanceProfile({
     name: "my-profile",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role["role-allow-assume-role"]],
+    dependencies: () => ({
+      roles: ["role-allow-assume-role"],
     }),
   });
 };

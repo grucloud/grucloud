@@ -11,15 +11,10 @@ const createResources = ({ provider }) => {
       DesiredCapacity: 1,
       HealthCheckGracePeriod: 0,
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["PubSubnetAz1"],
-        resources.EC2.Subnet["PubSubnetAz2"],
-      ],
+    dependencies: () => ({
+      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchConfiguration:
-        resources.AutoScaling.LaunchConfiguration[
-          "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV"
-        ],
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
     }),
   });
 
@@ -37,12 +32,10 @@ const createResources = ({ provider }) => {
       EbsOptimized: false,
       AssociatePublicIpAddress: true,
     }),
-    dependencies: ({ resources }) => ({
+    dependencies: () => ({
       instanceProfile:
-        resources.IAM.InstanceProfile[
-          "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK"
-        ],
-      securityGroups: [resources.EC2.SecurityGroup["EcsSecurityGroup"]],
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
+      securityGroups: ["EcsSecurityGroup"],
     }),
   });
 
@@ -70,8 +63,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -87,8 +80,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -104,8 +97,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -119,22 +112,22 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      subnet: resources.EC2.Subnet["PubSubnetAz1"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      subnet: "PubSubnetAz1",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      subnet: resources.EC2.Subnet["PubSubnetAz2"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      subnet: "PubSubnetAz2",
     }),
   });
 
@@ -142,9 +135,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      ig: resources.EC2.InternetGateway["InternetGateway"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      ig: "InternetGateway",
     }),
   });
 
@@ -159,8 +152,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -178,8 +171,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["EcsSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "EcsSecurityGroup",
     }),
   });
 
@@ -218,8 +211,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["AmazonEC2ContainerServiceforEC2Role"]],
+    dependencies: () => ({
+      policies: ["AmazonEC2ContainerServiceforEC2Role"],
     }),
   });
 
@@ -232,12 +225,8 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeInstanceProfile({
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
-    dependencies: ({ resources }) => ({
-      roles: [
-        resources.IAM.Role[
-          "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6"
-        ],
-      ],
+    dependencies: () => ({
+      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6"],
     }),
   });
 };

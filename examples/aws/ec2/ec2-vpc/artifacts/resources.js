@@ -25,8 +25,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "ig",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-ec2-example"],
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
     }),
   });
 
@@ -36,22 +36,22 @@ const createResources = ({ provider }) => {
       CidrBlock: "10.1.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-ec2-example"],
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "route-table",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-ec2-example"],
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table"],
-      subnet: resources.EC2.Subnet["subnet"],
+    dependencies: () => ({
+      routeTable: "route-table",
+      subnet: "subnet",
     }),
   });
 
@@ -59,9 +59,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table"],
-      ig: resources.EC2.InternetGateway["ig"],
+    dependencies: () => ({
+      routeTable: "route-table",
+      ig: "ig",
     }),
   });
 
@@ -70,8 +70,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-ec2-example"],
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
     }),
   });
 
@@ -94,8 +94,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["security-group"],
+    dependencies: () => ({
+      securityGroup: "security-group",
     }),
   });
 
@@ -118,8 +118,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["security-group"],
+    dependencies: () => ({
+      securityGroup: "security-group",
     }),
   });
 
@@ -135,12 +135,12 @@ const createResources = ({ provider }) => {
       UserData:
         "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
     }),
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet["subnet"],
-      keyPair: resources.EC2.KeyPair["kp-ec2-vpc"],
-      eip: resources.EC2.ElasticIpAddress["myip"],
-      securityGroups: [resources.EC2.SecurityGroup["security-group"]],
-      volumes: [resources.EC2.Volume["volume"]],
+    dependencies: () => ({
+      subnet: "subnet",
+      keyPair: "kp-ec2-vpc",
+      eip: "myip",
+      securityGroups: ["security-group"],
+      volumes: ["volume"],
     }),
   });
 };
