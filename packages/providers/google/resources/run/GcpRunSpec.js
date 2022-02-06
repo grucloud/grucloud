@@ -77,8 +77,9 @@ module.exports = () =>
     {
       type: "ServiceIamMember",
       Client: GcpRunServiceIamMember,
+      dependsOnList: ["run::Service"],
       dependencies: {
-        service: { type: "Service", group: "run" },
+        service: { type: "Service", group: "run", parent: true },
       },
       inferName: ({ properties, dependencies }) =>
         pipe([

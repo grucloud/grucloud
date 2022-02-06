@@ -16,9 +16,9 @@ provider.ApiGatewayV2.makeStage({
         '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
     },
   }),
-  dependencies: ({ resources }) => ({
-    api: resources.ApiGatewayV2.Api.myApi,
-    logGroup: resources.CloudWatchLogs.LogGroup.lgHttpTest,
+  dependencies: ({}) => ({
+    api: "my-api",
+    logGroup: "lgHttpTest",
   }),
 });
 ```

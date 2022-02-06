@@ -166,7 +166,7 @@ module.exports = () =>
             omitIfEmpty(["FunctionResponseTypes"]),
           ])(),
       dependencies: {
-        lambdaFunction: { type: "Function", group: "Lambda" },
+        lambdaFunction: { type: "Function", group: "Lambda", parent: true },
         sqsQueue: { type: "Queue", group: "SQS" },
         //TODO other event source
       },

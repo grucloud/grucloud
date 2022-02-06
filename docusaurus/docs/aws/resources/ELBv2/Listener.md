@@ -11,25 +11,25 @@ Manage an [ELB Listener](https://docs.aws.amazon.com/elasticloadbalancing/latest
 
 ```js
 provider.ELBv2.makeListener({
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     Port: 80,
     Protocol: "HTTP",
   }),
-  dependencies: ({ resources }) => ({
-    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
-    targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+  dependencies: () => ({
+    loadBalancer: "load-balancer",
+    targetGroup: "target-group-web",
   }),
 });
 
 provider.ELBv2.makeListener({
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     Port: 443,
     Protocol: "HTTPS",
   }),
-  dependencies: ({ resources }) => ({
-    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
-    targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
-    certificate: resources.ACM.Certificate["grucloud.org"],
+  dependencies: () => ({
+    loadBalancer: "load-balancer",
+    targetGroup: "target-group-web",
+    certificate: "grucloud.org",
   }),
 });
 ```

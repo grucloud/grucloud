@@ -111,7 +111,7 @@ module.exports = () =>
           }),
         ]),
       dependencies: {
-        bucket: { type: "Bucket", group: "S3" },
+        bucket: { type: "Bucket", group: "S3", parent: true },
       },
     },
   ]);

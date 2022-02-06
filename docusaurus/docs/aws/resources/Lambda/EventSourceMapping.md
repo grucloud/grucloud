@@ -13,20 +13,20 @@ Provides an [Event Source Mapping](https://console.aws.amazon.com/lambda/home)
 const lambdaPolicy = require("./lambdaPolicy.json");
 const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 
-const iamPolicy = provider.IAM.makePolicy({
+provider.IAM.makePolicy({
   name: "lambda-policy",
   properties: () => lambdaPolicy,
 });
 
-const iamRole = provider.IAM.makeRole({
+provider.IAM.makeRole({
   name: "lambda-role",
-  dependencies: { policies: [iamPolicy] },
+  dependencies: { policies: ["lambda-policy"] },
   properties: () => lambdaAssumePolicy,
 });
 
-const lambdaFunction = provider.Lambda.makeFunction({
+provider.Lambda.makeFunction({
   name: "lambda-hello-world", // Source must be located in the direcory 'lambda-hello-world'
-  dependencies: { role: iamRole },
+  dependencies: { role: "lambda-role" },
   properties: () => ({
     PackageType: "Zip",
     Handler: "helloworld.handler", // The handler function must de defined in lambda-hello-world/helloworkd.js
@@ -34,7 +34,7 @@ const lambdaFunction = provider.Lambda.makeFunction({
   }),
 });
 
-const sqsQueue = provider.SQS.makeQueue({
+provider.SQS.makeQueue({
   name: "my-queue",
   properties: () => ({
     Attributes: {
@@ -52,8 +52,7 @@ const sqsQueue = provider.SQS.makeQueue({
 
 provider.Lambda.makeEventSourceMapping({
   name: "mapping-lambda-hello-world-my-queue",
-  dependencies: { lambdaFunction, sqsQueue },
-  properties: () => ({}),
+  dependencies: { lambdaFunction: "lambda-hello-world", sqsQueue: "my-queue" },
 });
 ```
 

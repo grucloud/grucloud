@@ -10,7 +10,7 @@ Manages an [Launch Configuration](https://console.aws.amazon.com/ec2/v2/home?#La
 ```js
 provider.AutoScaling.makeLaunchConfiguration({
   name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     InstanceType: "t2.small",
     ImageId: "ami-0e43fd2a4ef14f476",
     UserData:
@@ -22,12 +22,10 @@ provider.AutoScaling.makeLaunchConfiguration({
     EbsOptimized: false,
     AssociatePublicIpAddress: true,
   }),
-  dependencies: ({ resources }) => ({
+  dependencies: () => ({
     instanceProfile:
-      resources.IAM.InstanceProfile[
-        "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK"
-      ],
-    securityGroups: [resources.EC2.SecurityGroup["EcsSecurityGroup"]],
+      "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
+    securityGroups: ["EcsSecurityGroup"],
   }),
 });
 ```

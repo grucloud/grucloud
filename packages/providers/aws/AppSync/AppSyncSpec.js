@@ -133,8 +133,9 @@ module.exports = () =>
           ]),
         ]),
       dependencies: {
+        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         serviceRole: { type: "Role", group: "IAM" },
-        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+
         dbCluster: { type: "DBCluster", group: "RDS" },
         lambdaFunction: { type: "Function", group: "Lambda" },
         //TODO
@@ -183,7 +184,7 @@ module.exports = () =>
           "kind",
         ]),
       dependencies: {
-        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         type: { type: "Type", group: "AppSync" },
         dataSource: { type: "DataSource", group: "AppSync" },
         dynamoDbTable: { type: "Table", group: "DynamoDB" },

@@ -160,7 +160,7 @@ module.exports = () =>
           when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
         ]),
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS" },
+        cluster: { type: "Cluster", group: "ECS", parent: true },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
         loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
       },
@@ -169,6 +169,10 @@ module.exports = () =>
       type: "TaskSet",
       dependsOn: ["ECS::Cluster", "ECS::Service"],
       dependsOnList: ["ECS::Service"],
+      dependencies: {
+        cluster: { type: "Cluster", group: "ECS" },
+        service: { type: "Service", group: "ECS", parent: true },
+      },
       Client: ECSTaskSet,
       isOurMinion,
       compare: compare({
@@ -195,7 +199,7 @@ module.exports = () =>
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS" },
+        cluster: { type: "Cluster", group: "ECS", parent: true },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },

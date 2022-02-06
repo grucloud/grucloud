@@ -10,55 +10,16 @@ Manage an AWS Load Balancer.
 ### Load Balancer in a VPC
 
 ```js
-provider.EC2.makeVpc({
-  name: "vpc",
-  properties: ({ config }) => ({
-    CidrBlock: "192.168.0.0/16",
-  }),
-});
-
-provider.EC2.makeSubnet({
-  name: "subnet-a",
-  properties: ({ config }) => ({
-    CidrBlock: "192.168.0.0/19",
-    AvailabilityZone: `${config.region}a`,
-  }),
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["vpc"],
-  }),
-});
-
-provider.EC2.makeSubnet({
-  name: "subnet-b",
-  properties: ({ config }) => ({
-    CidrBlock: "192.168.32.0/19",
-    AvailabilityZone: `${config.region}b`,
-  }),
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["vpc"],
-  }),
-});
-
-provider.EC2.useDefaultSecurityGroup({
-  name: "sg-default-vpc",
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["vpc"],
-  }),
-});
-
 provider.ELBv2.makeLoadBalancer({
   name: "load-balancer",
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     Scheme: "internet-facing",
     Type: "application",
     IpAddressType: "ipv4",
   }),
-  dependencies: ({ resources }) => ({
-    subnets: [
-      resources.EC2.Subnet["subnet-a"],
-      resources.EC2.Subnet["subnet-b"],
-    ],
-    securityGroups: [resources.EC2.SecurityGroup["sg-default-vpc"]],
+  dependencies: () => ({
+    subnets: ["subnet-a", "subnet-b"],
+    securityGroups: ["sg-default-vpc"],
   }),
 });
 ```
@@ -92,14 +53,14 @@ provider.ELBv2.useLoadBalancer({
 provider.Route53.makeHostedZone({
   name: "grucloud.org.",
   dependencies: ({ resources }) => ({
-    domain: resources.Route53Domains.Domain["grucloud.org"],
+    domain: "grucloud.org",
   }),
 });
 
 provider.Route53.makeRecord({
   dependencies: ({ resources }) => ({
-    hostedZone: resources.Route53.HostedZone["grucloud.org."],
-    loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    hostedZone: "grucloud.org."
+    loadBalancer: "load-balancer"
   }),
 });
 

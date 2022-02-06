@@ -6,6 +6,7 @@ const createResources = ({ provider }) => {
   provider.Network.makeNatGateway({
     name: "rg-natgateway::nat-gw",
     properties: ({}) => ({
+      name: "nat-gw",
       sku: {
         name: "Standard",
       },
@@ -13,17 +14,16 @@ const createResources = ({ provider }) => {
         idleTimeoutInMinutes: 4,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-      publicIpAddresses: [
-        resources.Network.PublicIPAddress["rg-natgateway::ip-address"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
+      publicIpAddresses: ["rg-natgateway::ip-address"],
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-natgateway::ip-address",
     properties: ({}) => ({
+      name: "ip-address",
       sku: {
         name: "Standard",
       },
@@ -31,8 +31,8 @@ const createResources = ({ provider }) => {
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
     }),
   });
 
@@ -44,29 +44,32 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-natgateway::virtual-network"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
+      virtualNetwork: "rg-natgateway::virtual-network",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-natgateway::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-natgateway",
+    properties: ({}) => ({
+      name: "rg-natgateway",
+    }),
   });
 };
 

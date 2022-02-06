@@ -8,21 +8,18 @@ Manages an [Api Gateway V2 Deployment](https://console.aws.amazon.com/apigateway
 ## Sample code
 
 ```js
-const api = provider.ApiGatewayV2.makeApi({
+provider.ApiGatewayV2.makeApi({
   name: "my-api",
-  properties: () => ({}),
 });
 
-const stage = provider.ApiGatewayV2.makeStage({
+provider.ApiGatewayV2.makeStage({
   name: "my-api-stage-dev",
-  dependencies: { api },
-  properties: () => ({}),
+  dependencies: { api: "my-api" },
 });
 
 provider.ApiGatewayV2.makeDeployment({
   name: "my-api-deployment",
-  dependencies: { api, stage },
-  properties: () => ({}),
+  dependencies: { api: "my-api", stage: "my-api-stage-dev" },
 });
 ```
 

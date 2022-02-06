@@ -46,24 +46,18 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
-      subnets: [
-        resources.Network.Subnet[
-          "rg-firewall::virtual-network::azurefirewallsubnet"
-        ],
-      ],
-      publicIpAddresses: [
-        resources.Network.PublicIPAddress["rg-firewall::ip-address"],
-      ],
-      firewallPolicy:
-        resources.Network.FirewallPolicy["rg-firewall::firewall-policy"],
+    dependencies: () => ({
+      resourceGroup: "rg-firewall",
+      subnets: ["rg-firewall::virtual-network::azurefirewallsubnet"],
+      publicIpAddresses: ["rg-firewall::ip-address"],
+      firewallPolicy: "rg-firewall::firewall-policy",
     }),
   });
 
   provider.Network.makeFirewallPolicy({
     name: "rg-firewall::firewall-policy",
     properties: ({}) => ({
+      name: "firewall-policy",
       properties: {
         threatIntelMode: "Alert",
         sku: {
@@ -71,14 +65,15 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
+    dependencies: () => ({
+      resourceGroup: "rg-firewall",
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-firewall::ip-address",
     properties: ({}) => ({
+      name: "ip-address",
       sku: {
         name: "Standard",
       },
@@ -86,42 +81,45 @@ const createResources = ({ provider }) => {
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
+    dependencies: () => ({
+      resourceGroup: "rg-firewall",
     }),
   });
 
   provider.Network.makeSubnet({
     name: "rg-firewall::virtual-network::azurefirewallsubnet",
     properties: ({}) => ({
-      name: "AzureFirewallSubnet",
+      name: "azurefirewallsubnet",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-firewall::virtual-network"],
+    dependencies: () => ({
+      resourceGroup: "rg-firewall",
+      virtualNetwork: "rg-firewall::virtual-network",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-firewall::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-firewall"],
+    dependencies: () => ({
+      resourceGroup: "rg-firewall",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-firewall",
+    properties: ({}) => ({
+      name: "rg-firewall",
+    }),
   });
 };
 

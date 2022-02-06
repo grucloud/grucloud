@@ -36,8 +36,8 @@ provider.IAM.makeRole({
 
 provider.APIGateway.makeAccount({
   name: "default",
-  dependencies: ({ resources }) => ({
-    cloudwatchRole: resources.IAM.Role.roleApiGatewayCloudWatch,
+  dependencies: ({}) => ({
+    cloudwatchRole: "roleApiGatewayCloudWatch",
   }),
 });
 ```

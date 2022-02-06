@@ -9,9 +9,9 @@ Attach a TargetGroup to an AutoScalingGroup.
 
 ```js
 provider.AutoScaling.makeAutoScalingAttachment({
-  dependencies: ({ resources }) => ({
-    autoScalingGroup: resources.AutoScaling.AutoScalingGroup["ag"],
-    targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+  dependencies: () => ({
+    autoScalingGroup: "asg-ng-1",
+    targetGroup: "target-group-rest",
   }),
 });
 ```

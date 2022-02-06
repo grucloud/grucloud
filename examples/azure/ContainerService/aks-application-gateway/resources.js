@@ -4,19 +4,18 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
-    name: "eef1bc65-5f03-4a78-8610-41dd1f4f7efb",
+    name: "daef2251-2f50-434a-93f9-da2cc016e5d0",
     properties: ({}) => ({
+      name: "daef2251-2f50-434a-93f9-da2cc016e5d0",
       properties: {
         roleName: "Contributor",
         principalName: "rg-aks-ag::cluster",
         principalType: "ServicePrincipal",
       },
     }),
-    dependencies: ({ resources }) => ({
-      scopeResourceGroup:
-        resources.Resources.ResourceGroup["mc_rg-aks-ag_cluster_canadacentral"],
-      principalManagedCluster:
-        resources.ContainerService.ManagedCluster["rg-aks-ag::cluster"],
+    dependencies: () => ({
+      scopeResourceGroup: "mc_rg-aks-ag_cluster_canadacentral",
+      principalManagedCluster: "rg-aks-ag::cluster",
     }),
   });
 
@@ -98,13 +97,16 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-aks-ag"],
+    dependencies: () => ({
+      resourceGroup: "rg-aks-ag",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-aks-ag",
+    properties: ({}) => ({
+      name: "rg-aks-ag",
+    }),
   });
 };
 

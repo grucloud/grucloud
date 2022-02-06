@@ -258,7 +258,7 @@ module.exports = () =>
           }),
         ]),
       dependencies: {
-        restApi: { type: "RestApi", group: "APIGateway" },
+        restApi: { type: "RestApi", group: "APIGateway", parent: true },
       },
     },
     {
@@ -288,7 +288,7 @@ module.exports = () =>
           omit(["id", "name", "restApiId", "providerARNs"]),
         ]),
       dependencies: {
-        restApi: { type: "RestApi", group: "APIGateway" },
+        restApi: { type: "RestApi", group: "APIGateway", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
         userPool: { type: "UserPool", group: "Cognito" },
       },

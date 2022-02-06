@@ -10,26 +10,23 @@ const createResources = ({ provider }) => {
       MaxSize: 1,
       DesiredCapacity: 1,
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["subnet-a"],
-        resources.EC2.Subnet["subnet-b"],
-      ],
-      launchTemplate: resources.EC2.LaunchTemplate["my-template"],
+    dependencies: () => ({
+      subnets: ["subnet-a", "subnet-b"],
+      launchTemplate: "my-template",
     }),
   });
 
   provider.AutoScaling.makeAutoScalingAttachment({
-    dependencies: ({ resources }) => ({
-      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["ag"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    dependencies: () => ({
+      autoScalingGroup: "ag",
+      targetGroup: "target-group-rest",
     }),
   });
 
   provider.AutoScaling.makeAutoScalingAttachment({
-    dependencies: ({ resources }) => ({
-      autoScalingGroup: resources.AutoScaling.AutoScalingGroup["ag"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+    dependencies: () => ({
+      autoScalingGroup: "ag",
+      targetGroup: "target-group-web",
     }),
   });
 
@@ -46,8 +43,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "internet-gateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -57,8 +54,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -68,29 +65,29 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.useDefaultRouteTable({
     name: "rt-default-vpc",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      subnet: resources.EC2.Subnet["subnet-a"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      subnet: "subnet-a",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      subnet: resources.EC2.Subnet["subnet-b"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      subnet: "subnet-b",
     }),
   });
 
@@ -98,16 +95,16 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["rt-default-vpc"],
-      ig: resources.EC2.InternetGateway["internet-gateway"],
+    dependencies: () => ({
+      routeTable: "rt-default-vpc",
+      ig: "internet-gateway",
     }),
   });
 
   provider.EC2.useDefaultSecurityGroup({
     name: "sg-default-vpc",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -128,12 +125,9 @@ const createResources = ({ provider }) => {
       Type: "application",
       IpAddressType: "ipv4",
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["subnet-a"],
-        resources.EC2.Subnet["subnet-b"],
-      ],
-      securityGroups: [resources.EC2.SecurityGroup["sg-default-vpc"]],
+    dependencies: () => ({
+      subnets: ["subnet-a", "subnet-b"],
+      securityGroups: ["sg-default-vpc"],
     }),
   });
 
@@ -155,8 +149,8 @@ const createResources = ({ provider }) => {
       TargetType: "instance",
       ProtocolVersion: "HTTP1",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -178,8 +172,8 @@ const createResources = ({ provider }) => {
       TargetType: "instance",
       ProtocolVersion: "HTTP1",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc"],
+    dependencies: () => ({
+      vpc: "vpc",
     }),
   });
 
@@ -188,9 +182,9 @@ const createResources = ({ provider }) => {
       Port: 80,
       Protocol: "HTTP",
     }),
-    dependencies: ({ resources }) => ({
-      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+    dependencies: () => ({
+      loadBalancer: "load-balancer",
+      targetGroup: "target-group-web",
     }),
   });
 
@@ -199,10 +193,10 @@ const createResources = ({ provider }) => {
       Port: 443,
       Protocol: "HTTPS",
     }),
-    dependencies: ({ resources }) => ({
-      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
-      certificate: resources.ACM.Certificate["grucloud.org"],
+    dependencies: () => ({
+      loadBalancer: "load-balancer",
+      targetGroup: "target-group-rest",
+      certificate: "grucloud.org",
     }),
   });
 
@@ -230,8 +224,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      listener: resources.ELBv2.Listener["listener::load-balancer::HTTP::80"],
+    dependencies: () => ({
+      listener: "listener::load-balancer::HTTP::80",
     }),
   });
 
@@ -245,9 +239,9 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      listener: resources.ELBv2.Listener["listener::load-balancer::HTTPS::443"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+    dependencies: () => ({
+      listener: "listener::load-balancer::HTTPS::443",
+      targetGroup: "target-group-rest",
     }),
   });
 
@@ -261,23 +255,23 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      listener: resources.ELBv2.Listener["listener::load-balancer::HTTPS::443"],
-      targetGroup: resources.ELBv2.TargetGroup["target-group-web"],
+    dependencies: () => ({
+      listener: "listener::load-balancer::HTTPS::443",
+      targetGroup: "target-group-web",
     }),
   });
 
   provider.Route53.makeHostedZone({
     name: "grucloud.org.",
-    dependencies: ({ resources }) => ({
-      domain: resources.Route53Domains.Domain["grucloud.org"],
+    dependencies: () => ({
+      domain: "grucloud.org",
     }),
   });
 
   provider.Route53.makeRecord({
-    dependencies: ({ resources }) => ({
-      hostedZone: resources.Route53.HostedZone["grucloud.org."],
-      loadBalancer: resources.ELBv2.LoadBalancer["load-balancer"],
+    dependencies: () => ({
+      hostedZone: "grucloud.org.",
+      loadBalancer: "load-balancer",
     }),
   });
 

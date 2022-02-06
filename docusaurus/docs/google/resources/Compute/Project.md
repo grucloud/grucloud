@@ -6,7 +6,7 @@ title: Project
 Manages a [Project](https://cloud.google.com/resource-manager/reference/rest/v1/projects)
 
 ```js
-const project = provider.makeProject({ name: "myproject" });
+provider.makeProject({ name: "myproject" });
 ```
 
 ### Examples

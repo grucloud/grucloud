@@ -8,15 +8,13 @@ Manages an [Api Gateway V2 Authorizer](https://console.aws.amazon.com/apigateway
 ## Sample code
 
 ```js
-const api = provider.ApiGatewayV2.makeApi({
+provider.ApiGatewayV2.makeApi({
   name: "my-api",
-  properties: () => ({}),
 });
 
-const authorizer = provider.ApiGatewayV2.makeAuthorizer({
+provider.ApiGatewayV2.makeAuthorizer({
   name: "my-authorizer-stage-dev",
-  dependencies: { api },
-  properties: () => ({}),
+  dependencies: { api: "my-api" },
 });
 ```
 

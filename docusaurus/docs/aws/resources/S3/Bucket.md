@@ -12,7 +12,6 @@ Manages [S3 Buckets](https://docs.aws.amazon.com/s3/index.html)
 ```js
 const s3Bucket = provider.S3.makeBucket({
   name: "yourgloballyuniquebucketnamehere",
-  properties: () => ({}),
 });
 ```
 
@@ -66,7 +65,7 @@ See the
 [ServerSideEncryptionConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property) for a full list of supported options.
 
 ```js
-const s3Encryption = provider.S3.makeBucket({
+provider.S3.makeBucket({
   name: `yourgloballyuniquebucketnamehere`,
   properties: () => ({
     ServerSideEncryptionConfiguration: {

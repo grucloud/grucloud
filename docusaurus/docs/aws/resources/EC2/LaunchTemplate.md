@@ -9,40 +9,16 @@ Manages an EC2 [Launch Template](https://console.aws.amazon.com/ec2/v2/home?regi
 
 ```js
 provider.EC2.makeLaunchTemplate({
-  name: "lt-ecs",
-  properties: ({ config }) => ({
+  name: "lt-ec2-micro",
+  properties: ({}) => ({
     LaunchTemplateData: {
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/xvda",
-          Ebs: {
-            DeleteOnTermination: true,
-            VolumeSize: 20,
-            VolumeType: "gp2",
-          },
-        },
-      ],
-      ImageId: "ami-0e6732e69988617b8",
-      InstanceType: "t2.medium",
-      MetadataOptions: {
-        HttpPutResponseHopLimit: 2,
-      },
+      ImageId: "ami-02e136e904f3da870",
+      InstanceType: "t2.micro",
     },
-    Tags: [
-      {
-        Key: "eks:cluster-name",
-        Value: "cluster",
-      },
-      {
-        Key: "eks:nodegroup-name",
-        Value: "node-group-private-cluster",
-      },
-    ],
   }),
-  dependencies: ({ resources }) => ({
-    keyPair: resources.EC2.KeyPair.kpEcs,
-    iamInstanceProfile: resources.IAM.InstanceProfile.roleEcs,
-    securityGroups: [resources.EC2.SecurityGroup.ecsSecurityGroup],
+  dependencies: () => ({
+    keyPair: "kp-ecs",
+    iamInstanceProfile: "role-ecs",
   }),
 });
 ```

@@ -8,17 +8,17 @@ Manages a [Peristent Disk](https://cloud.google.com/compute/docs/disks#pdspecs)
 Create a disk and attach it to a virtual machine:
 
 ```js
-const disk = provider.compute.makeDisk({
+provider.compute.makeDisk({
   name: `my-disk`,
   properties: () => ({
     sizeGb: "50",
   }),
 });
 
-const server = provider.compute.makeVmInstance({
+provider.compute.makeVmInstance({
   name: `webserver`,
   dependencies: {
-    disks: [disk],
+    disks: ["my-disk"),
   },
   properties: () => ({
     diskSizeGb: "20",

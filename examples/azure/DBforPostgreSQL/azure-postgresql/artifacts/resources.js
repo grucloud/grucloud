@@ -12,10 +12,9 @@ const createResources = ({ provider }) => {
         source: "user-override",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
@@ -28,10 +27,9 @@ const createResources = ({ provider }) => {
         endIpAddress: "0.0.0.0",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
@@ -53,8 +51,8 @@ const createResources = ({ provider }) => {
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
     }),
   });
 

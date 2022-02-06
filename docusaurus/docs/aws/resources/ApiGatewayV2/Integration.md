@@ -15,9 +15,9 @@ provider.ApiGatewayV2.makeIntegration({
     IntegrationType: "AWS_PROXY",
     PayloadFormatVersion: "2.0",
   }),
-  dependencies: ({ resources }) => ({
-    api: resources.ApiGatewayV2.Api.myApi,
-    lambdaFunction: resources.Lambda.Function.myFunction,
+  dependencies: ({}) => ({
+    api: "my-api",
+    lambdaFunction: "my-function",
   }),
 });
 ```

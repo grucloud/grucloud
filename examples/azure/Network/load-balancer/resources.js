@@ -6,19 +6,21 @@ const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
     name: "rg-load-balancer::vmss_key",
     properties: ({}) => ({
+      name: "vmss_key",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
     name: "rg-load-balancer::vmss",
     properties: ({ getId }) => ({
+      name: "vmss",
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
@@ -125,21 +127,13 @@ const createResources = ({ provider }) => {
         platformFaultDomainCount: 1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      subnets: [resources.Network.Subnet["rg-load-balancer::vnet::default"]],
-      sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-load-balancer::vmss_key"],
-      ],
-      networkSecurityGroups: [
-        resources.Network.NetworkSecurityGroup[
-          "rg-load-balancer::basicnsgvnet-nic01"
-        ],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      subnets: ["rg-load-balancer::vnet::default"],
+      sshPublicKeys: ["rg-load-balancer::vmss_key"],
+      networkSecurityGroups: ["rg-load-balancer::basicnsgvnet-nic01"],
       loadBalancerBackendAddressPools: [
-        resources.Network.LoadBalancerBackendAddressPool[
-          "rg-load-balancer::load-balancer::backendpool"
-        ],
+        "rg-load-balancer::load-balancer::backendpool",
       ],
     }),
   });
@@ -173,11 +167,9 @@ const createResources = ({ provider }) => {
         inboundNatPools: [],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      publicIPAddresses: [
-        resources.Network.PublicIPAddress["rg-load-balancer::ip"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      publicIPAddresses: ["rg-load-balancer::ip"],
     }),
   });
 
@@ -186,28 +178,29 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       properties: {},
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      loadBalancer:
-        resources.Network.LoadBalancer["rg-load-balancer::load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      loadBalancer: "rg-load-balancer::load-balancer",
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-load-balancer::basicnsgvnet-nic01",
     properties: ({}) => ({
+      name: "basicnsgvnet-nic01",
       properties: {
         securityRules: [],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-load-balancer::ip",
     properties: ({}) => ({
+      name: "ip",
       sku: {
         name: "Standard",
       },
@@ -215,8 +208,8 @@ const createResources = ({ provider }) => {
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
@@ -228,29 +221,32 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/16",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-load-balancer::vnet"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      virtualNetwork: "rg-load-balancer::vnet",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-load-balancer::vnet",
     properties: ({}) => ({
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-load-balancer",
+    properties: ({}) => ({
+      name: "rg-load-balancer",
+    }),
   });
 };
 

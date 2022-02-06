@@ -10,7 +10,7 @@ Manages an [API Gateway Domain Name](https://console.aws.amazon.com/apigateway/m
 ```js
 const apiGatewayDomainName = provider.APIGateway.makeDomainName({
   name: config.domainName,
-  dependencies: { certificate },
+  dependencies: { certificate: "grucloud.org." },
   properties: () => ({}),
 });
 ```

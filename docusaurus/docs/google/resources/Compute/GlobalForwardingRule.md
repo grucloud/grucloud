@@ -8,43 +8,42 @@ Provides [global forwarding rule](https://console.cloud.google.com/net-services/
 ```js
 const bucketName = "mybucketname";
 
-const sslCertificate = provider.compute.makeSslCertificate({
+provider.compute.makeSslCertificate({
   name: "ssl-certificate",
   properties: () => ({
     managed: {
-      domains: [domain],
+      domains: ["mydomain.com"],
     },
   }),
 });
 
-const myBucket = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: bucketName,
-  properties: () => ({}),
 });
 
-const backendBucket = provider.compute.makeBackendBucket({
+provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,
   }),
 });
 
-const urlMap = provider.compute.makeUrlMap({
+provider.compute.makeUrlMap({
   name: "url-map",
-  dependencies: { service: backendBucket },
-  properties: () => ({}),
+  dependencies: () => ({ service: "backend-bucket" }),
 });
 
-const httpsTargetProxy = provider.compute.makeHttpsTargetProxy({
+provider.compute.makeHttpsTargetProxy({
   name: "https-target-proxy",
-  dependencies: { sslCertificate, urlMap },
-  properties: () => ({}),
+  dependencies: () => ({
+    sslCertificate: "ssl-certificate",
+    urlMap: "url-map",
+  }),
 });
 
-const globalForwardingRule = provider.compute.makeGlobalForwardingRule({
+provider.compute.makeGlobalForwardingRule({
   name: "global-forwarding-rule",
-  dependencies: { httpsTargetProxy },
-  properties: () => ({}),
+  dependencies: () => ({ httpsTargetProxy: "https-target-proxy" }),
 });
 ```
 

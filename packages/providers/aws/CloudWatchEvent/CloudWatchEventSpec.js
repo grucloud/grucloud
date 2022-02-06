@@ -45,7 +45,7 @@ module.exports = () =>
       filterLive: () =>
         pipe([omit(["Name", "Arn", "EventBusName"]), omitIfEmpty(["Targets"])]),
       dependencies: {
-        eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+        eventBus: { type: "EventBus", group: "CloudWatchEvents", parent: true },
       },
     },
   ]);

@@ -40,7 +40,7 @@ module.exports = () =>
       dependsOn: ["Route53::HostedZone", "ACM::Certificate"],
       dependsOnList: ["Route53::HostedZone"],
       dependencies: {
-        hostedZone: { type: "HostedZone", group: "Route53" },
+        hostedZone: { type: "HostedZone", group: "Route53", parent: true },
         loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },

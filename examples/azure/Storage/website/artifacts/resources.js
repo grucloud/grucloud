@@ -18,10 +18,9 @@ const createResources = ({ provider }) => {
       },
       source: "assets/index.html",
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      container:
-        resources.Storage.BlobContainer["rg-storage-web::gcstorageweb::$web"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      container: "rg-storage-web::gcstorageweb::$web",
     }),
   });
 
@@ -38,9 +37,9 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      account: "rg-storage-web::gcstorageweb",
     }),
   });
 
@@ -59,9 +58,9 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      account: "rg-storage-web::gcstorageweb",
     }),
   });
 
@@ -101,8 +100,8 @@ const createResources = ({ provider }) => {
         defaultToOAuthAuthentication: false,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
     }),
   });
 };

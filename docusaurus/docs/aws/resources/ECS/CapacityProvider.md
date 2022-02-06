@@ -9,8 +9,8 @@ Manages an [ECS Capacity Provider](https://console.aws.amazon.com/ecs/home?#/clu
 
 ```js
 provider.ECS.makeCapacityProvider({
-  name: "my-capacity-provider"
-  properties: () => ({
+  name: "cp",
+  properties: ({}) => ({
     autoScalingGroupProvider: {
       managedScaling: {
         status: "ENABLED",
@@ -22,8 +22,8 @@ provider.ECS.makeCapacityProvider({
       managedTerminationProtection: "DISABLED",
     },
   }),
-  dependencies: ({ resources }) => ({
-    autoScalingGroup: resources.AutoScaling.AutoScalingGroup.ecsInstanceAsg,
+  dependencies: () => ({
+    autoScalingGroup: "EcsInstanceAsg",
   }),
 });
 ```

@@ -10,8 +10,8 @@ Manages an [Api Gateway V2 Domain Name](https://console.aws.amazon.com/apigatewa
 ```js
 provider.ApiGatewayV2.makeDomainName({
   name: "grucloud.org",
-  dependencies: ({ resources }) => ({
-    certificate: resources.ACM.Certificate.grucloudOrg,
+  dependencies: ({}) => ({
+    certificate: "grucloud.org",
   }),
 });
 ```

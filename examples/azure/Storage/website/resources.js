@@ -5,6 +5,9 @@ const {} = require("rubico/x");
 const createResources = ({ provider }) => {
   provider.Resources.makeResourceGroup({
     name: "rg-storage-web",
+    properties: ({}) => ({
+      name: "rg-storage-web",
+    }),
   });
 
   provider.Storage.makeBlob({
@@ -15,16 +18,16 @@ const createResources = ({ provider }) => {
       },
       source: "assets/index.html",
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      container:
-        resources.Storage.BlobContainer["rg-storage-web::gcstorageweb::$web"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      container: "rg-storage-web::gcstorageweb::$web",
     }),
   });
 
   provider.Storage.makeBlobContainer({
     name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({
+      name: "$web",
       properties: {
         defaultEncryptionScope: "$account-encryption-key",
         denyEncryptionScopeOverride: false,
@@ -34,15 +37,16 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      account: "rg-storage-web::gcstorageweb",
     }),
   });
 
   provider.Storage.makeBlobServiceProperties({
     name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
+      name: "gcstorageweb",
       properties: {
         staticWebsite: {
           enabled: true,
@@ -54,15 +58,16 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      account: resources.Storage.StorageAccount["rg-storage-web::gcstorageweb"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      account: "rg-storage-web::gcstorageweb",
     }),
   });
 
   provider.Storage.makeStorageAccount({
     name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
+      name: "gcstorageweb",
       sku: {
         name: "Standard_RAGRS",
       },
@@ -95,8 +100,8 @@ const createResources = ({ provider }) => {
         defaultToOAuthAuthentication: false,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
     }),
   });
 };

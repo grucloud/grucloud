@@ -123,7 +123,7 @@ module.exports = () =>
           omit(["AccessLogSettings.DestinationArn"]),
         ]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
       },
     },
@@ -160,7 +160,7 @@ module.exports = () =>
           "JwtConfiguration",
         ]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: filterTargetDefaut },
       },
     },
     {
@@ -209,8 +209,8 @@ module.exports = () =>
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
-        domainName: { type: "DomainName", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        domainName: { type: "DomainName", group: "ApiGatewayV2", parent: true },
         stage: { type: "Stage", group: "ApiGatewayV2" },
       },
     },
@@ -267,7 +267,7 @@ module.exports = () =>
           "PayloadFormatVersion",
         ]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
       },
     },
@@ -312,8 +312,12 @@ module.exports = () =>
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
-        integration: { type: "Integration", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        integration: {
+          type: "Integration",
+          group: "ApiGatewayV2",
+          parent: true,
+        },
         authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
       },
     },
@@ -361,8 +365,8 @@ module.exports = () =>
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2" },
-        stage: { type: "Stage", group: "ApiGatewayV2" },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
       },
     },
   ]);
