@@ -65,6 +65,9 @@ module.exports = () =>
     },
     {
       type: "Policy",
+      dependencies: {
+        serviceAccount: { type: "ServiceAccount", group: "iam" },
+      },
       singleton: true,
       Client: GcpIamPolicy,
       isOurMinion: () => true,
@@ -74,7 +77,9 @@ module.exports = () =>
     },
     {
       type: "Binding",
-      dependsOn: ["iam::ServiceAccount"],
+      dependencies: {
+        serviceAccount: { type: "ServiceAccount", group: "iam" },
+      },
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
       compare: compareIamBinding,

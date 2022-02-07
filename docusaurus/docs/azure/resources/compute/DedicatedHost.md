@@ -14,11 +14,10 @@ provider.Compute.makeDedicatedHost({
     properties: { platformFaultDomain: 1 },
     sku: { name: "DSv3-Type1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    hostGroup: resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    hostGroup: "myDedicatedHostGroup",
   }),
 });
 

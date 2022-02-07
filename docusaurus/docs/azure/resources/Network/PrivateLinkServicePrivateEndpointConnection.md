@@ -20,9 +20,9 @@ provider.Network.makePrivateLinkServicePrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    service: resources.Network.PrivateLinkService["myPrivateLinkService"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    service: "myPrivateLinkService",
   }),
 });
 

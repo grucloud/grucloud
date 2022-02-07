@@ -13,16 +13,16 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "InternetGateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
   provider.EC2.makeNatGateway({
     name: "NATGateway",
-    dependencies: ({ resources }) => ({
-      subnet: resources.EC2.Subnet["SubnetPublicUSEAST1F"],
-      eip: resources.EC2.ElasticIpAddress["NATIP"],
+    dependencies: () => ({
+      subnet: "SubnetPublicUSEAST1F",
+      eip: "NATIP",
     }),
   });
 
@@ -38,8 +38,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -55,8 +55,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -73,8 +73,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -91,57 +91,57 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "PrivateRouteTableUSEAST1D",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "PrivateRouteTableUSEAST1F",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "PublicRouteTable",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PrivateRouteTableUSEAST1D"],
-      subnet: resources.EC2.Subnet["SubnetPrivateUSEAST1D"],
+    dependencies: () => ({
+      routeTable: "PrivateRouteTableUSEAST1D",
+      subnet: "SubnetPrivateUSEAST1D",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PrivateRouteTableUSEAST1F"],
-      subnet: resources.EC2.Subnet["SubnetPrivateUSEAST1F"],
+    dependencies: () => ({
+      routeTable: "PrivateRouteTableUSEAST1F",
+      subnet: "SubnetPrivateUSEAST1F",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PublicRouteTable"],
-      subnet: resources.EC2.Subnet["SubnetPublicUSEAST1D"],
+    dependencies: () => ({
+      routeTable: "PublicRouteTable",
+      subnet: "SubnetPublicUSEAST1D",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PublicRouteTable"],
-      subnet: resources.EC2.Subnet["SubnetPublicUSEAST1F"],
+    dependencies: () => ({
+      routeTable: "PublicRouteTable",
+      subnet: "SubnetPublicUSEAST1F",
     }),
   });
 
@@ -149,9 +149,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PrivateRouteTableUSEAST1D"],
-      natGateway: resources.EC2.NatGateway["NATGateway"],
+    dependencies: () => ({
+      routeTable: "PrivateRouteTableUSEAST1D",
+      natGateway: "NATGateway",
     }),
   });
 
@@ -159,9 +159,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PrivateRouteTableUSEAST1F"],
-      natGateway: resources.EC2.NatGateway["NATGateway"],
+    dependencies: () => ({
+      routeTable: "PrivateRouteTableUSEAST1F",
+      natGateway: "NATGateway",
     }),
   });
 
@@ -169,9 +169,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["PublicRouteTable"],
-      ig: resources.EC2.InternetGateway["InternetGateway"],
+    dependencies: () => ({
+      routeTable: "PublicRouteTable",
+      ig: "InternetGateway",
     }),
   });
 
@@ -180,8 +180,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Communication between all nodes in the cluster",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -191,8 +191,8 @@ const createResources = ({ provider }) => {
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["VPC"],
+    dependencies: () => ({
+      vpc: "VPC",
     }),
   });
 
@@ -224,11 +224,9 @@ const createResources = ({ provider }) => {
         ToPort: -1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup:
-        resources.EC2.SecurityGroup["ClusterSharedNodeSecurityGroup"],
-      securityGroupFrom:
-        resources.EC2.SecurityGroup["ClusterSharedNodeSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
     }),
   });
 
@@ -241,11 +239,9 @@ const createResources = ({ provider }) => {
         ToPort: -1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup:
-        resources.EC2.SecurityGroup["ClusterSharedNodeSecurityGroup"],
-      securityGroupFrom:
-        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
+    dependencies: () => ({
+      securityGroup: "ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: "eks-cluster-sg-my-cluster-1909614887",
     }),
   });
 
@@ -258,11 +254,9 @@ const createResources = ({ provider }) => {
         ToPort: -1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup:
-        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
-      securityGroupFrom:
-        resources.EC2.SecurityGroup["ClusterSharedNodeSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
+      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
     }),
   });
 
@@ -291,10 +285,8 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroups: [
-        resources.EC2.SecurityGroup["eks-cluster-sg-my-cluster-1909614887"],
-      ],
+    dependencies: () => ({
+      securityGroups: ["eks-cluster-sg-my-cluster-1909614887"],
     }),
   });
 
@@ -303,19 +295,15 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       version: "1.20",
     }),
-    dependencies: ({ resources }) => ({
+    dependencies: () => ({
       subnets: [
-        resources.EC2.Subnet["SubnetPrivateUSEAST1D"],
-        resources.EC2.Subnet["SubnetPrivateUSEAST1F"],
-        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
-        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
+        "SubnetPrivateUSEAST1D",
+        "SubnetPrivateUSEAST1F",
+        "SubnetPublicUSEAST1D",
+        "SubnetPublicUSEAST1F",
       ],
-      securityGroups: [
-        resources.EC2.SecurityGroup["ControlPlaneSecurityGroup"],
-      ],
-      role: resources.IAM.Role[
-        "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB"
-      ],
+      securityGroups: ["ControlPlaneSecurityGroup"],
+      role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     }),
   });
 
@@ -329,21 +317,15 @@ const createResources = ({ provider }) => {
         desiredSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/cluster-name": "my-cluster",
         "alpha.eksctl.io/nodegroup-name": "ng-1",
+        "alpha.eksctl.io/cluster-name": "my-cluster",
       },
     }),
-    dependencies: ({ resources }) => ({
-      cluster: resources.EKS.Cluster["my-cluster"],
-      subnets: [
-        resources.EC2.Subnet["SubnetPublicUSEAST1D"],
-        resources.EC2.Subnet["SubnetPublicUSEAST1F"],
-      ],
-      role: resources.IAM.Role[
-        "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI"
-      ],
-      launchTemplate:
-        resources.EC2.LaunchTemplate["eksctl-my-cluster-nodegroup-ng-1"],
+    dependencies: () => ({
+      cluster: "my-cluster",
+      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
+      launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
     }),
   });
 
@@ -396,11 +378,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy["AmazonEKSClusterPolicy"],
-        resources.IAM.Policy["AmazonEKSVPCResourceController"],
-      ],
+    dependencies: () => ({
+      policies: ["AmazonEKSClusterPolicy", "AmazonEKSVPCResourceController"],
     }),
   });
 
@@ -421,12 +400,12 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
+    dependencies: () => ({
       policies: [
-        resources.IAM.Policy["AmazonEC2ContainerRegistryReadOnly"],
-        resources.IAM.Policy["AmazonEKSWorkerNodePolicy"],
-        resources.IAM.Policy["AmazonEKS_CNI_Policy"],
-        resources.IAM.Policy["AmazonSSMManagedInstanceCore"],
+        "AmazonEC2ContainerRegistryReadOnly",
+        "AmazonEKSWorkerNodePolicy",
+        "AmazonEKS_CNI_Policy",
+        "AmazonSSMManagedInstanceCore",
       ],
     }),
   });

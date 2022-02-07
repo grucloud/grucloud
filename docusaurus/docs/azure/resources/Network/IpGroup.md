@@ -15,9 +15,7 @@ provider.Network.makeIpGroup({
       ipAddresses: ["13.64.39.16/32", "40.74.146.80/31", "40.74.147.32/28"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

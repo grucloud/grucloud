@@ -20,12 +20,10 @@ provider.ContainerRegistry.makeExportPipeline({
       options: ["OverwriteBlobs"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 

@@ -21,8 +21,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["lambda-policy"]],
+    dependencies: () => ({
+      policies: ["lambda-policy"],
     }),
   });
 
@@ -63,9 +63,9 @@ const createResources = ({ provider }) => {
       Timeout: 3,
       MemorySize: 128,
     }),
-    dependencies: ({ resources }) => ({
-      layers: [resources.Lambda.Layer["lambda-layer"]],
-      role: resources.IAM.Role["lambda-role"],
+    dependencies: () => ({
+      layers: ["lambda-layer"],
+      role: "lambda-role",
     }),
   });
 };

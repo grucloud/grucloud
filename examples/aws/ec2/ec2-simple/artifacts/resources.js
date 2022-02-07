@@ -5,9 +5,12 @@ const {} = require("rubico/x");
 const createResources = ({ provider }) => {
   provider.EC2.makeInstance({
     name: "web-server-ec2-simple",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
     }),
   });
 };

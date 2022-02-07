@@ -4,6 +4,7 @@ const path = require("path");
 const { pipe, tap, get, eq } = require("rubico");
 const { find } = require("rubico/x");
 
+const specDir = "node_modules/azure-rest-api-specs/specification/";
 const {
   processSwaggerFiles,
   processSwagger,
@@ -22,7 +23,7 @@ describe("AzureRestApi", function () {
       processSwagger({
         dir: path.resolve(
           process.cwd(),
-          "azure-rest-api-specs/specification/",
+          specDir,
           "compute/resource-manager/Microsoft.Compute/stable/2021-07-01"
         ),
         group: "Microsoft.Compute",
@@ -39,7 +40,7 @@ describe("AzureRestApi", function () {
       () =>
         path.resolve(
           process.cwd(),
-          "azure-rest-api-specs/specification/",
+          specDir,
           "compute/resource-manager/Microsoft.Compute/stable/2021-07-01",
           "compute.json"
         ),
@@ -62,7 +63,7 @@ describe("AzureRestApi", function () {
       () =>
         path.resolve(
           process.cwd(),
-          "azure-rest-api-specs/specification/",
+          specDir,
           "compute/resource-manager/Microsoft.Compute/stable/2021-04-01",
           "disk.json"
         ),
@@ -85,7 +86,7 @@ describe("AzureRestApi", function () {
       () =>
         path.resolve(
           process.cwd(),
-          "azure-rest-api-specs/specification/",
+          specDir,
           "keyvault/resource-manager/Microsoft.KeyVault/preview/2021-06-01-preview/",
           "keyvault.json"
         ),
@@ -112,7 +113,7 @@ describe("AzureRestApi", function () {
       processSwagger({
         dir: path.resolve(
           process.cwd(),
-          "azure-rest-api-specs/specification/",
+          specDir,
           "web/resource-manager/Microsoft.Web/stable/2021-02-01"
         ),
         group: "Microsoft.Web",
@@ -142,10 +143,7 @@ describe("AzureRestApi", function () {
   it("processSwaggerFiles", async function () {
     await pipe([
       () => ({
-        directorySpec: path.resolve(
-          process.cwd(),
-          "azure-rest-api-specs/specification"
-        ),
+        directorySpec: path.resolve(process.cwd(), specDir),
         directoryDoc: path.resolve(
           process.cwd(),
           "../../../docusaurus/docs/azure/resources/"

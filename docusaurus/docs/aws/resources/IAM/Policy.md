@@ -12,7 +12,7 @@ The examples below create or reference a policy, and add it to a role, a user or
 Let's create a policy and a user, the policy is attached to the user via the _dependencies_ field:
 
 ```js
-const iamPolicy = provider.IAM.makePolicy({
+provider.IAM.makePolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -30,9 +30,9 @@ const iamPolicy = provider.IAM.makePolicy({
   }),
 });
 
-const iamRole = provider.IAM.makeRole({
+provider.IAM.makeRole({
   name: "my-role",
-  dependencies: () => ({ policies: [iamPolicy] }),
+  dependencies: () => ({ policies: ["my-policy"] }),
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",

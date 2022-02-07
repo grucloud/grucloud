@@ -19,16 +19,14 @@ provider.Network.makeVirtualHub({
       sku: "Basic",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualWan: resources.Network.VirtualWan["myVirtualWan"],
-    vpnGateway: resources.Network.VpnGateway["myVpnGateway"],
-    p2sVpnGateway: resources.Network.P2sVpnGateway["myP2sVpnGateway"],
-    expressRouteGateway:
-      resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
-    azureFirewall: resources.Network.AzureFirewall["myAzureFirewall"],
-    securityPartnerProvider:
-      resources.Network.SecurityPartnerProvider["mySecurityPartnerProvider"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualWan: "myVirtualWan",
+    vpnGateway: "myVpnGateway",
+    p2sVpnGateway: "myP2sVpnGateway",
+    expressRouteGateway: "myExpressRouteGateway",
+    azureFirewall: "myAzureFirewall",
+    securityPartnerProvider: "mySecurityPartnerProvider",
   }),
 });
 

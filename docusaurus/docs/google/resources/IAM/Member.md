@@ -16,7 +16,7 @@ const serviceAccount = provider.iam.makeServiceAccount({
 
 const iamMember = provider.makeProjectIamMember({
   name: "iam-member",
-  dependencies: { serviceAccount },
+  dependencies: () => ({ serviceAccount: "sa" }),
   properties: () => ({
     roles: ["roles/storage.objectViewer", "roles/logging.logWriter"],
   }),

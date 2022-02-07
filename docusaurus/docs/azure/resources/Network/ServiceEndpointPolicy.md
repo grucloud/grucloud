@@ -9,9 +9,7 @@ Provides a **ServiceEndpointPolicy** from the **Network** group
 provider.Network.makeServiceEndpointPolicy({
   name: "myServiceEndpointPolicy",
   properties: () => ({ location: "westus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -39,9 +37,7 @@ provider.Network.makeServiceEndpointPolicy({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

@@ -12,7 +12,11 @@ Deploy a postgres database:
 ```js
 const dbCluster = provider.RDS.makeDBInstance({
   name: "instance-1",
-  dependencies: { dbSubnetGroup, securityGroups, kmsKey },
+  dependencies: {
+    dbSubnetGroup: "subnet-group",
+    securityGroups: ["sg"],
+    kmsKey: "key",
+  },
   properties: () => ({
     DBInstanceClass: "db.t2.micro",
     Engine: "postgres",

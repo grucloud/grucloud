@@ -16,10 +16,10 @@ provider.KeyVault.makeMHSMPrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
-    name: resources.KeyVault.ManagedHsm["myManagedHsm"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    privateEndpoint: "myPrivateEndpoint",
+    name: "myManagedHsm",
   }),
 });
 

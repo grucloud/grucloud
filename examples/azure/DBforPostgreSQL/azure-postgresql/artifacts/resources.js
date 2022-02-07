@@ -6,36 +6,37 @@ const createResources = ({ provider }) => {
   provider.DBforPostgreSQL.makeConfiguration({
     name: "rg-postgres::gc-server::shared_preload_libraries",
     properties: ({}) => ({
+      name: "shared_preload_libraries",
       properties: {
         value: "pg_cron,pg_stat_statements",
         source: "user-override",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
   provider.DBforPostgreSQL.makeFirewallRule({
     name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
     properties: ({}) => ({
+      name: "allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
       properties: {
         startIpAddress: "0.0.0.0",
         endIpAddress: "0.0.0.0",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
   provider.DBforPostgreSQL.makeFlexibleServer({
     name: "rg-postgres::gc-server",
     properties: ({}) => ({
+      name: "gc-server",
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",
@@ -50,13 +51,16 @@ const createResources = ({ provider }) => {
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-postgres",
+    properties: ({}) => ({
+      name: "rg-postgres",
+    }),
   });
 };
 

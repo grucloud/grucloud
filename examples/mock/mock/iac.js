@@ -1,32 +1,33 @@
 const assert = require("assert");
+const { tap, pipe } = require("rubico");
 const { MockProvider } = require("@grucloud/provider-mock");
 const hook = require("./hook");
 
-const createResources = async ({ provider }) => {
+const createResources = ({ provider }) => {
   // Ip
-  const ip = provider.makeIp({ name: "myip" });
+  provider.Compute.makeIp({ name: "myip" });
 
   // Boot images
-  const image = provider.useImage({
-    name: "ubuntu",
-    filterLives: ({ resources }) => {
-      assert(images);
-      const image = resources.find(
-        (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
-      );
-      //assert(image);
-      return image;
-    },
-  });
+  // const image = provider.useImage({
+  //   name: "ubuntu",
+  //   filterLives: ({ resources }) => {
+  //     assert(images);
+  //     const image = resources.find(
+  //       (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
+  //     );
+  //     //assert(image);
+  //     return image;
+  //   },
+  // });
 
-  const volume = provider.makeVolume({
+  provider.Compute.makeVolume({
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
   });
   // SecurityGroup
-  const sg = provider.makeSecurityGroup({
+  provider.Compute.makeSecurityGroup({
     name: "sg",
     properties: () => ({
       securityRules: [
@@ -47,32 +48,28 @@ const createResources = async ({ provider }) => {
     }),
   });
   //Server
-  const server = provider.makeServer({
+  provider.Compute.makeServer({
     name: "web-server",
-    dependencies: { volume, sg: [sg], ip },
+    dependencies: () => ({
+      volume: "volume1",
+      securityGroups: ["sg"],
+      ip: "myip",
+    }),
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",
     }),
   });
-
-  return { ip, volume, server, image };
 };
+
 exports.createResources = createResources;
 
-//TODO
-exports.createStack = async ({ config }) => {
-  const provider = MockProvider({
-    config,
-  });
-
-  const resources = await createResources({ provider });
-
-  const hooksExtra = require("./hooksExtra");
-
+exports.createStack = ({ createProvider }) => {
   return {
-    provider,
-    resources,
-    hooks: [hook, hooksExtra],
+    provider: createProvider(MockProvider, {
+      createResources,
+      config: require("./config"),
+    }),
+    hooks: [hook, require("./hooksExtra")],
   };
 };

@@ -87,19 +87,20 @@ const findDependencyNames = ({
     find(eq(get("groupType"), `${group}::${type}`)),
     get("ids"),
     tap((ids) => {
+      assert(true);
       //console.log(resource.uri, "#ids ", size(ids));
     }),
     map(findLiveById({ type, group, lives, providerName })),
     tap((deps) => {
+      assert(true);
       //console.log(resource.uri, "#deps ", size(deps));
     }),
     filter(not(isEmpty)),
     filter(filterDependency({ resource })),
-    //TODO openstack should set its group
-    map(
-      ({ group = "compute", type, name }) =>
-        `resources.${group}.${type}['${name}']`
-    ),
+    tap((params) => {
+      assert(true);
+    }),
+    map(({ name }) => `'${name}'`),
     tap((params) => {
       assert(true);
     }),
@@ -125,6 +126,7 @@ const buildProperties = ({
   programOptions,
   filterLive = () => identity,
   propertiesDefault = {},
+  omitProperties = [],
   pickPropertiesCreate = [],
 }) =>
   pipe([
@@ -132,6 +134,7 @@ const buildProperties = ({
       assert(environmentVariables);
       assert(filterLive);
       assert(pickPropertiesCreate);
+      assert(resource);
     }),
     () => resource,
     get("live"),
@@ -142,6 +145,7 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
+      omitProperties,
       pickPropertiesCreate,
     }),
     tap((params) => {
@@ -292,10 +296,7 @@ const dependencyValue = ({ key, list, resource }) =>
       }
     }),
     callProp("sort"),
-    when(
-      () => list,
-      (values) => `[${values}]`
-    ),
+    when(() => list, pipe([(values) => `[${values}]`])),
   ]);
 
 const buildDependencies = ({
@@ -357,7 +358,7 @@ const buildDependencies = ({
       switchCase([
         isEmpty,
         () => "",
-        (values) => `dependencies: ({resources}) =>({ 
+        (values) => `dependencies: () =>({ 
        ${values.join(",\n")}
      }),`,
       ]),
@@ -618,6 +619,7 @@ const hasResourceInDependency = (resource) =>
       assert(resource);
       assert(resource.id);
       assert(resourceIn.id);
+      //console.log("resource", resource.id, resourceIn.id);
     }),
     get("dependencies"),
     find(
@@ -685,6 +687,7 @@ const findUsedBy =
   (resource) =>
     pipe([
       tap(() => {
+        console.log("findUsedBy", resource.id);
         assert(resource);
         assert(resource.id);
         assert(resource.groupType);
@@ -1006,24 +1009,28 @@ const writeEnv =
       ),
     ])();
 
-const matchId = (idToMatch = "") =>
-  pipe([
-    tap((params) => {
-      //assert(idToMatch);
-    }),
-    get("id"),
-    tap((id) => {
-      assert(id);
-    }),
-    eq(callProp("toUpperCase"), idToMatch?.toUpperCase()),
+const matchId = (idToMatch) =>
+  switchCase([
+    () => isString(idToMatch),
+    pipe([
+      tap((params) => {}),
+      fork({
+        id: pipe([get("id"), callProp("toUpperCase")]),
+        idToMatchUC: pipe([() => idToMatch.toUpperCase()]),
+      }),
+      ({ id, idToMatchUC }) => id === idToMatchUC,
+    ]),
+    () => false,
   ]);
 
 const isEqualById = ({ type, group, providerName, id }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(id);
     }),
     and([
+      //TODO
+      //or([and([() => isString(id), matchId(id)]), matchId(id?.id)]),
       or([matchId(id), matchId(id?.id)]),
       eq(get("type"), type),
       eq(get("group"), group),
@@ -1046,6 +1053,7 @@ const findLiveById =
       find(isEqualById({ type, group, providerName, id })),
       tap((live) => {
         if (!live) {
+          assert(true);
           //console.error(`no live for ${type}, id: ${id},`);
           //assert(live, `no live for ${type}, id: ${id},`);
         }
@@ -1094,6 +1102,7 @@ const writeResource =
     resourceName = identity,
     filterLive,
     propertiesDefault,
+    omitProperties,
     pickPropertiesCreate,
     codeBuildProperties,
     hasNoProperty,
@@ -1133,6 +1142,7 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
+                  omitProperties,
                   pickPropertiesCreate,
                   propertiesDefault,
                   dependencies,
@@ -1192,6 +1202,7 @@ const writeResources =
     providerName,
     filterLive,
     propertiesDefault,
+    omitProperties,
     pickPropertiesCreate,
     properties,
     dependencies,
@@ -1242,6 +1253,7 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
+                omitProperties,
                 propertiesDefault,
                 pickPropertiesCreate,
                 inferName,

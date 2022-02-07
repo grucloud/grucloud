@@ -223,6 +223,7 @@ exports.createProgram = () => {
     .alias("o")
     .requiredOption("-n, --name <value>", "resource name")
     .requiredOption("-t, --type <value>", "resource type")
+    .option("-g, --group <value>", "resource group")
     .requiredOption("-f, --field <value>", "the resource field to get")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));

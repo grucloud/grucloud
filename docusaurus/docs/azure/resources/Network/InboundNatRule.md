@@ -21,13 +21,10 @@ provider.Network.makeInboundNatRule({
       enableFloatingIP: false,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
+    loadBalancer: "myLoadBalancer",
   }),
 });
 

@@ -9,14 +9,14 @@ Manages an [AppSync Resolver](https://console.aws.amazon.com/appsync/home?#/apis
 
 ```js
 provider.AppSync.makeResolver({
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     typeName: "Mutation",
     fieldName: "createNote",
     kind: "UNIT",
   }),
-  dependencies: ({ resources }) => ({
-    graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-    dataSource: resources.AppSync.DataSource.lambdaDatasource,
+  dependencies: () => ({
+    graphqlApi: "cdk-notes-appsync-api",
+    dataSource: "lambdaDatasource",
   }),
 });
 ```

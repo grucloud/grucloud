@@ -8,7 +8,7 @@ Provides an Iam Instance Profile.
 The following example create an instance profile, a role attached to this instance profile, and create an ec2 instance under this profile:
 
 ```js
-const role = provider.IAM.makeRole({
+provider.IAM.makeRole({
   name: "my-role",
   properties: () => ({
     Path: "/",
@@ -28,42 +28,29 @@ const role = provider.IAM.makeRole({
   }),
 });
 
-const iamInstanceProfile = provider.IAM.makeInstanceProfile({
+provider.IAM.makeInstanceProfile({
   name: "my-instance-profile",
-  dependencies: () => ({ roles: [role] }),
+  dependencies: () => ({ roles: ["my-role"] }),
   properties: () => ({
     Path: "/",
   }),
 });
 
-const image = provider.EC2.useImage({
-  name: "Amazon Linux 2",
-  properties: () => ({
-    Filters: [
-      {
-        Name: "architecture",
-        Values: ["x86_64"],
-      },
-      {
-        Name: "description",
-        Values: ["Amazon Linux 2 AMI *"],
-      },
-    ],
-  }),
-});
-
-const server = provider.EC2.makeInstance({
+provider.EC2.makeInstance({
   name: "web-iam",
-  dependencies: () => ({ image, keyPair, iamInstanceProfile }),
-  properties: () => ({
+  properties: ({ config }) => ({
     InstanceType: "t2.micro",
+    ImageId: "ami-02e136e904f3da870",
+  }),
+  dependencies: ({ resources }) => ({
+    iamInstanceProfile: "my-profile",
   }),
 });
 ```
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/resources.js)
 
 ### Properties
 

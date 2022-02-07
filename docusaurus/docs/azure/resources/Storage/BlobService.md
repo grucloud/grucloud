@@ -55,9 +55,9 @@ provider.Storage.makeBlobService({
       changeFeed: { enabled: true, retentionInDays: 7 },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -77,9 +77,9 @@ provider.Storage.makeBlobService({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

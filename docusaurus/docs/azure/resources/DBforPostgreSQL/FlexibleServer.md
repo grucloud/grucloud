@@ -29,9 +29,9 @@ provider.DBforPostgreSQL.makeFlexibleServer({
     },
     tags: { ElasticServer: "1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
   }),
 });
 
@@ -50,9 +50,9 @@ provider.DBforPostgreSQL.makeFlexibleServer({
       pointInTimeUTC: "2021-06-27T00:04:59.4078005+00:00",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
   }),
 });
 

@@ -9,9 +9,7 @@ Provides a **ApplicationSecurityGroup** from the **Network** group
 provider.Network.makeApplicationSecurityGroup({
   name: "myApplicationSecurityGroup",
   properties: () => ({ location: "westus", properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

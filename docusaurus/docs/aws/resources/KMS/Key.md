@@ -14,7 +14,6 @@ Create a symmetric key, for instance used by an [EKS Cluster](../EKS/Cluster.md)
 ```js
 const cmk = provider.KMS.makeKey({
   name: "my-secret-key",
-  properties: () => ({}),
 });
 ```
 

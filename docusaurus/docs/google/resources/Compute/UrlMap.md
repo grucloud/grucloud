@@ -10,12 +10,11 @@ Provides a [URL Map](https://console.cloud.google.com/net-services/loadbalancing
 ```js
 const bucketName = "mybucketname";
 
-const myBucket = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: bucketName,
-  properties: () => ({}),
 });
 
-const backendBucket = provider.compute.makeBackendBucket({
+provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,
@@ -24,8 +23,7 @@ const backendBucket = provider.compute.makeBackendBucket({
 
 const urlMap = provider.compute.makeUrlMap({
   name: "url-map",
-  dependencies: { service: backendBucket },
-  properties: () => ({}),
+  dependencies: { service: "backend-bucket" },
 });
 ```
 

@@ -77,14 +77,11 @@ provider.Network.makeVirtualNetworkGateway({
     },
     location: "centralus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
+    publicIpAddress: "myPublicIPAddress",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
   }),
 });
 

@@ -21,17 +21,11 @@ provider.Network.makeExpressRouteCircuitConnection({
       ipv6CircuitConnectionConfig: { addressPrefix: "aa:bb::/125" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    expressRouteCircuitPeering:
-      resources.Network.ExpressRouteCircuitPeering[
-        "myExpressRouteCircuitPeering"
-      ],
-    circuit: resources.Network.ExpressRouteCircuit["myExpressRouteCircuit"],
-    peering:
-      resources.Network.ExpressRouteCircuitPeering[
-        "myExpressRouteCircuitPeering"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    expressRouteCircuitPeering: "myExpressRouteCircuitPeering",
+    circuit: "myExpressRouteCircuit",
+    peering: "myExpressRouteCircuitPeering",
   }),
 });
 

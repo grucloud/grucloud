@@ -12,22 +12,23 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ```js
 provider.EKS.makeNodeGroup({
   name: "ng-1",
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     capacityType: "ON_DEMAND",
     scalingConfig: {
       minSize: 1,
       maxSize: 1,
       desiredSize: 1,
     },
+    labels: {
+      "alpha.eksctl.io/nodegroup-name": "ng-1",
+      "alpha.eksctl.io/cluster-name": "my-cluster",
+    },
   }),
-  dependencies: ({ resources }) => ({
-    cluster: resources.EKS.Cluster.myCluster,
-    subnets: [
-      resources.EC2.Subnet.subnetPublicUseast1A,
-      resources.EC2.Subnet.subnetPublicUseast1D,
-    ],
-    role: resources.IAM.Role.eksctlMyClusterNodegroupNg_1NodeInstanceRole,
-    launchTemplate: resources.EC2.LaunchTemplate.eksctlMyClusterNodegroupNg_1,
+  dependencies: () => ({
+    cluster: "my-cluster",
+    subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+    role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
+    launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
   }),
 });
 ```

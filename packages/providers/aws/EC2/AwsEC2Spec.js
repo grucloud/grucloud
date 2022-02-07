@@ -399,7 +399,7 @@ module.exports = () =>
           ]),
         ]),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
+        vpc: { type: "Vpc", group: "EC2", parent: true },
       },
     },
     {
@@ -429,7 +429,7 @@ module.exports = () =>
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
       dependencies: {
-        routeTable: { type: "RouteTable", group: "EC2" },
+        routeTable: { type: "RouteTable", group: "EC2", parent: true },
         subnet: { type: "Subnet", group: "EC2" },
       },
     },
@@ -462,7 +462,13 @@ module.exports = () =>
           }),
           ({ routeTable, ig, natGateway }) =>
             pipe([
+              tap(() => {
+                assert(routeTable);
+              }),
               () => routeTable.name,
+              tap((name) => {
+                assert(name);
+              }),
               switchCase([
                 () => ig,
                 append("-igw"),
@@ -539,7 +545,6 @@ module.exports = () =>
       type: "SecurityGroupRuleIngress",
       dependsOn: ["EC2::SecurityGroup"],
       dependsOnList: ["EC2::SecurityGroup"],
-
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       isOurMinion,
@@ -549,6 +554,7 @@ module.exports = () =>
         securityGroup: {
           type: "SecurityGroup",
           group: "EC2",
+          parent: true,
           filterDependency:
             ({ resource }) =>
             (dependency) =>
@@ -585,7 +591,7 @@ module.exports = () =>
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: {
-        securityGroup: { type: "SecurityGroup", group: "EC2" },
+        securityGroup: { type: "SecurityGroup", group: "EC2", parent: true },
       },
     },
     {
@@ -629,12 +635,21 @@ module.exports = () =>
       propertiesDefault: {
         MaxCount: 1,
         MinCount: 1,
+        Placement: { GroupName: "", Tenancy: "default" },
       },
       compare: compareEC2Instance,
       isOurMinion: isOurMinionEC2Instance,
       filterLive: () =>
         pipe([
-          pick(["InstanceType", "ImageId", "UserData"]),
+          pick(["InstanceType", "ImageId", "UserData", "Placement"]),
+          assign({
+            Placement: pipe([
+              get("Placement"),
+              assign({
+                AvailabilityZone: buildAvailabilityZone,
+              }),
+            ]),
+          }),
           tap((params) => {
             assert(true);
           }),

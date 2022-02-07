@@ -9,9 +9,9 @@ Provides a **Replication** from the **ContainerRegistry** group
 provider.ContainerRegistry.makeReplication({
   name: "myReplication",
   properties: () => ({ location: "eastus", tags: { key: "value" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 
@@ -26,9 +26,9 @@ provider.ContainerRegistry.makeReplication({
     tags: { key: "value" },
     properties: { regionEndpointEnabled: true, zoneRedundancy: "Enabled" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 

@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project Mock
+skinparam monochrome true
++ Infra
+++ mock
++++ Compute
+++++ Ip (1)
+++++ Volume (1)
+++++ SecurityGroup (1)
+++++ Server (1)
+@endmindmap

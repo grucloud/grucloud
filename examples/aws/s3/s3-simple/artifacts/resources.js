@@ -24,8 +24,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.S3.Bucket["grucloud-simple-bucket"],
+    dependencies: () => ({
+      bucket: "grucloud-simple-bucket",
     }),
   });
 };

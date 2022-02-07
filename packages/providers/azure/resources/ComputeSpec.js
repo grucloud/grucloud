@@ -31,7 +31,6 @@ const { omitIfEmpty, compare } = require("@grucloud/core/Common");
 const {
   findDependenciesResourceGroup,
   findDependenciesUserAssignedIdentity,
-  configDefaultDependenciesId,
   configDefaultGeneric,
   assignDependenciesId,
 } = require("../AzureCommon");
@@ -40,10 +39,9 @@ const group = "Compute";
 
 const filterVirtualMachineProperties =
   ({ config }) =>
-  ({ resource, lives }) =>
+  ({ lives }) =>
     pipe([
-      tap((params) => {
-        assert(resource);
+      tap(() => {
         assert(lives);
         assert(config);
       }),
@@ -389,27 +387,6 @@ exports.fnSpecs = ({ config }) =>
               pipe([() => live, get("id"), callProp("toUpperCase")])()
             ),
           ])(),
-        //TODO default configDefault should be this
-        configDefault: ({ properties, dependencies, config, spec }) =>
-          pipe([
-            () => properties,
-            defaultsDeep(
-              configDefaultGeneric({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-            defaultsDeep(
-              configDefaultDependenciesId({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-          ])(),
       },
       {
         type: "DiskEncryptionSet",
@@ -435,11 +412,10 @@ exports.fnSpecs = ({ config }) =>
           "properties.encryptionType",
           "properties.rotationToLatestKeyVersionEnabled",
         ],
-        filterLive: () =>
-          pipe([
-            pick(["tags", "properties"]),
-            omit(["properties.activeKey", "properties.provisioningState"]),
-          ]),
+        pickPropertiesCreate: [
+          "properties.encryptionType",
+          "properties.rotationToLatestKeyVersionEnabled",
+        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -477,7 +453,7 @@ exports.fnSpecs = ({ config }) =>
             ],
           },
         ],
-        configDefault: ({ properties, dependencies, config }) =>
+        configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             tap(() => {
               assert(dependencies.vault);
@@ -496,13 +472,7 @@ exports.fnSpecs = ({ config }) =>
                   keyUrl: pipe([
                     () => getField(dependencies.key, "versions"),
                     first,
-                    get("kid"),
-                    tap((kid) => {
-                      assert(
-                        kid,
-                        `Cannot found key version, check role assignment`
-                      );
-                    }),
+                    get("kid", "<< Not available yet >>"),
                   ])(),
                 },
               },
@@ -512,6 +482,7 @@ exports.fnSpecs = ({ config }) =>
                 properties,
                 dependencies,
                 config,
+                spec,
               })
             ),
           ])(),
@@ -728,7 +699,7 @@ exports.fnSpecs = ({ config }) =>
         ],
         filterLive: (context) =>
           pipe([
-            pick(["sku", "identity.type", "properties", "tags"]),
+            pick(["name", "sku", "identity.type", "properties", "tags"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -743,7 +714,7 @@ exports.fnSpecs = ({ config }) =>
               ]),
             }),
           ]),
-        configDefault: ({ properties, dependencies, config }) =>
+        configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             tap(() => {
               assert(true);
@@ -766,7 +737,7 @@ exports.fnSpecs = ({ config }) =>
               })
             ),
             defaultsDeep(
-              configDefaultGeneric({ properties, dependencies, config })
+              configDefaultGeneric({ properties, dependencies, config, spec })
             ),
             tap((params) => {
               assert(true);
@@ -880,7 +851,7 @@ exports.fnSpecs = ({ config }) =>
             assign({
               properties: pipe([
                 get("properties"),
-                filterVirtualMachineProperties({ config })({ context }),
+                filterVirtualMachineProperties({ config })(context),
               ]),
             }),
           ]),
@@ -925,7 +896,7 @@ exports.fnSpecs = ({ config }) =>
             ],
           },
         ],
-        configDefault: ({ properties, dependencies, config }) =>
+        configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             tap(() => {
               assert(
@@ -962,7 +933,7 @@ exports.fnSpecs = ({ config }) =>
               },
             }),
             defaultsDeep(
-              configDefaultGeneric({ properties, dependencies, config })
+              configDefaultGeneric({ properties, dependencies, config, spec })
             ),
           ])(),
       },

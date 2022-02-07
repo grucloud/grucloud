@@ -9,9 +9,7 @@ Provides a **DdosProtectionPlan** from the **Network** group
 provider.Network.makeDdosProtectionPlan({
   name: "myDdosProtectionPlan",
   properties: () => ({ location: "westus", properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

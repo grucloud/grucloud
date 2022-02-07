@@ -19,15 +19,11 @@ provider.Network.makeExpressRouteConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    expressRouteCircuitPeering:
-      resources.Network.ExpressRouteCircuitPeering[
-        "myExpressRouteCircuitPeering"
-      ],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
-    expressRouteGateway:
-      resources.Network.ExpressRouteGateway["myExpressRouteGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    expressRouteCircuitPeering: "myExpressRouteCircuitPeering",
+    routeTable: "myRouteTable",
+    expressRouteGateway: "myExpressRouteGateway",
   }),
 });
 

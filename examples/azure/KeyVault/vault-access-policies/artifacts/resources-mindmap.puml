@@ -3,5 +3,8 @@ title Resources for project vault-access-policies
 skinparam monochrome true
 + Infra
 ++ azure
-
++++ KeyVault
+++++ Vault (1)
++++ Resources
+++++ ResourceGroup (1)
 @endmindmap

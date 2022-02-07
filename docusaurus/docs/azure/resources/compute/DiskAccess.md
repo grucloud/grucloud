@@ -9,9 +9,7 @@ Provides a **DiskAccess** from the **Compute** group
 provider.Compute.makeDiskAccess({
   name: "myDiskAccess",
   properties: () => ({ location: "West US" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

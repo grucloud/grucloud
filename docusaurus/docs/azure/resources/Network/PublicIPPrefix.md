@@ -13,10 +13,10 @@ provider.Network.makePublicIPPrefix({
     properties: { prefixLength: 30 },
     sku: { name: "Standard" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    customIpPrefix: resources.Network.CustomIPPrefix["myCustomIPPrefix"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    loadBalancer: "myLoadBalancer",
+    customIpPrefix: "myCustomIPPrefix",
   }),
 });
 
@@ -27,10 +27,10 @@ provider.Network.makePublicIPPrefix({
 provider.Network.makePublicIPPrefix({
   name: "myPublicIPPrefix",
   properties: () => ["1"],
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    customIpPrefix: resources.Network.CustomIPPrefix["myCustomIPPrefix"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    loadBalancer: "myLoadBalancer",
+    customIpPrefix: "myCustomIPPrefix",
   }),
 });
 

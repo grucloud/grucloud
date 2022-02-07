@@ -6,19 +6,21 @@ const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
     name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
     properties: ({}) => ({
+      name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
       properties: {
         roleName: "Virtual Machine User Login",
         principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
       },
     }),
-    dependencies: ({ resources }) => ({
-      scopeResourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
+    dependencies: () => ({
+      scopeResourceGroup: "rg-vm-ad-login",
     }),
   });
 
   provider.Compute.makeDisk({
     name: "rg-vm-disks::vm_datadisk_0",
     properties: ({}) => ({
+      name: "vm_datadisk_0",
       sku: {
         name: "Premium_LRS",
       },
@@ -37,154 +39,50 @@ const createResources = ({ provider }) => {
         publicNetworkAccess: "Enabled",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
     }),
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-load-balancer::vm_key",
+    name: "rg-load-balancer::vmss_key",
     properties: ({}) => ({
+      name: "vmss_key",
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLvH4OrzJFkq2Ak7NokSgv+EOH\r\nLdstFxBNsB5jiU/Hz0wjdjFsK9etGjKPCTohKT9/wIGz3Fzy4vRjRljqqjx0CuGa\r\nPp6vV1JJHUcSOyJTJE5wSauBsDsZ34ydf05M04YTPpYT6SPa3DVWJ0VkcoPjj5BO\r\nTX0EcxrthMZSMbQ5Ceo5xW1TDmr5hq1wtRoBAhqo+4GcPkfBUZSo5dbZeE04T5yj\r\nDmqtpY8ZmGvPwJgD/1Sx2VnVitXRurwo17Y+xILSgYcajCaa/zO4aYldMlNmfbod\r\nhYYtFFv/9zWFZHUYt7i0uKb+JjfvubJFZjiYx5CdyN4hVtwTroVE6q9G57K7vr3G\r\nR6lTCAH/BuZ6NLob+m5HmSqhqySVDBZd/GCRnDRLpljvV1mh48Px4pZrp18oVOry\r\n7bW1B4htgcUkW2rHUnNrAEj9rUxKDoMprii3f61TuFgbufSlwm4kFplk4s5aDJ/t\r\nDw6meVQlvhlR40UA/qe95fmL88UOUbTh6svQeGE= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-    }),
-  });
-
-  provider.Compute.makeSshPublicKey({
-    name: "rg-user-managed-identity::keypair",
-    properties: ({}) => ({
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDN2bsPENDfUWBy81C6uvY3IvP/\r\nsBr1pCg0QZiZ6OtAo1fvNVk9rG4ApA9NlbDeECNn5idqXzb68jQ2YPWjOgfxY2KW\r\n/kpZrrkuksYOw7O7ylZp9bIL4kD+8FzFB8A1EogIbZb2wZ1gqFawrpdtHvCuOTGG\r\n2EUwowDvo5++Jm6ee3tzGxdnBj+ciJOFv4NHrJl0y1Dbh8WzISbgkVL5gwrJvmj+\r\nxIUIOUesabSccAw08TX0vEt5G/yB3Q1EGPQ8fib4Og3tJOJ4+IBpnEi4RM9vEjgZ\r\nYvwEmuUb7Vx78uTZ8DUChQ74Ot4DvTAioSSXHJMOmY3yyGJBmzbGtbl6c8nx9tq2\r\nhlznqM8emKEuSHAV7zhB9Pk3f2C1XFCtUApWpY7CZ/huBv9EP1nohWp2tRCJFERt\r\ne5u6Sz+g0Lgz9roPfFRSExS7F+vP96TRV+KmzYzgHAXHD57h59qqYOiUxjjieCrm\r\n8C8ZUQjG3GPJaMnd4eCNsk5xanrRxxbiVw9OPKU= generated-by-azure\r\n",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-    }),
-  });
-
-  provider.Compute.makeSshPublicKey({
-    name: "rg-virtual-machine-scale-set::keypair",
-    properties: ({}) => ({
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Compute.makeSshPublicKey({
     name: "rg-vm-ad-login::keypair",
     properties: ({}) => ({
+      name: "keypair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8SzGkGNI3Ygk6VRCpozwO7xo1\r\nRW50+mHnXNwGMJUlp2GklCjrxYHmKU/1EcoJtc3A7HObBJu/7ckjK8pzl++qi479\r\n7z69qJipkWZsAI5ff6dsdJtDZLJctHfp0fost90LOWUBP+9WKBMgSCg7LM9QQC3C\r\n4A+iZKoqAmlUM6nzvfS90MxHavJR351aaTQIQg/jUHQoJ3PVeE9IpDhselTJQRDy\r\n0dVGcvjSvglw1q7s8hMCueZQNGS2e5sMS4oKhNsi9Rjawe9Iw9maeNnNiZJQwKJi\r\np/o62B48p2k+jIsr8PHE7C8JbIPuE89fRMOE8OgUBOVN0ZL4vRArjiKcFNkf5s7r\r\nl3j6SrqoUvODxedq4YG3IE3NOabqZ5JvzVIWvNhrO0f5MPty3bzucpOUvg2qjXY7\r\nZc8wsBHHWcLb1hhwOMfhqz7kY0MAsOFR6Kn1OvH0Na+R1Zke+z1YMh85FdoPOpmP\r\nboGjezMbAEQCDQJwAVfP2qBQYL1KuyULMmYUQ90= generated-by-azure\r\n",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
     }),
   });
 
   provider.Compute.makeSshPublicKey({
     name: "rg-vm-disks::keypair",
     properties: ({}) => ({
+      name: "keypair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDML7vLyGtMh/cmqV31Kx7xJbAk\r\nmVFUgaB3cRs7QTj9FzAJywGnF+YAB6Kg/7KhGNrbeddMH7Dal2t3GeGhWuJHQXrb\r\nPI6+XrkkNZBIgea0/yk2/DLcrbsXeO+vF21R/qXgSrbK1F4hG7UYl0XIXxlpf3XR\r\nmni+Cr0TTc0lrjUk+CsxxEX/tBUI03C2hMwppe2j2bMeNMN93jpj63Z0BDIS8laf\r\nZPrnHZconfgKwVx6DzpV303SpaVkyxisWTKlIhuKKcN4LDxtpt+emWhYxCfx6scr\r\nW3zBnfhK0WvZJihP2Dr5j+CrMzP1SByyzJGiz69IlnoRK1yTyP6kM4Nc3RfnE/xJ\r\ny9XPFXBF6aPWm6zQTeUjcb6AHPy84kixX5l87LGYxHMfipyEoEYTEEN6RmgO2mpk\r\nzvuL27ewD/FMd+uigx0vd6SfdJR4dyc5WkCA8PkmpVbFtSR995hvTuVgaknAG1wd\r\noAVIBoekRLIwca9DcIOjTqaU0EWF8Gkt8FDhkIE= generated-by-azure\r\n",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-    }),
-  });
-
-  provider.Compute.makeVirtualMachine({
-    name: "rg-user-managed-identity::vm",
-    properties: ({ getId }) => ({
-      properties: {
-        hardwareProfile: {
-          vmSize: "Standard_B1ls",
-        },
-        osProfile: {
-          computerName: "vm",
-          adminUsername: "azureuser",
-          linuxConfiguration: {
-            disablePasswordAuthentication: true,
-            ssh: {
-              publicKeys: [
-                {
-                  path: "/home/azureuser/.ssh/authorized_keys",
-                },
-              ],
-            },
-          },
-          adminPassword: process.env.RG_USER_MANAGED_IDENTITY_VM_ADMIN_PASSWORD,
-        },
-        storageProfile: {
-          imageReference: {
-            publisher: "canonical",
-            offer: "0001-com-ubuntu-server-focal",
-            sku: "20_04-lts",
-            version: "latest",
-          },
-          osDisk: {
-            osType: "Linux",
-            name: "vm_disk1_bb67c59163eb4d1a82700ee86e65ca81",
-            createOption: "FromImage",
-            caching: "ReadWrite",
-            managedDisk: {
-              storageAccountType: "Premium_LRS",
-            },
-            deleteOption: "Detach",
-            diskSizeGB: 30,
-          },
-        },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            enabled: true,
-          },
-        },
-        networkProfile: {
-          networkInterfaces: [
-            {
-              id: getId({
-                type: "NetworkInterface",
-                group: "Network",
-                name: "rg-user-managed-identity::vm180",
-              }),
-            },
-          ],
-        },
-      },
-      identity: {
-        type: "UserAssigned",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-      networkInterfaces: [
-        resources.Network.NetworkInterface["rg-user-managed-identity::vm180"],
-      ],
-      managedIdentities: [
-        resources.ManagedIdentity.UserAssignedIdentity[
-          "rg-user-managed-identity::identity-vault"
-        ],
-      ],
-      sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-user-managed-identity::keypair"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
     }),
   });
 
@@ -250,14 +148,10 @@ const createResources = ({ provider }) => {
         type: "SystemAssigned",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
-      networkInterfaces: [
-        resources.Network.NetworkInterface["rg-vm-ad-login::vm514"],
-      ],
-      sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-vm-ad-login::keypair"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
+      networkInterfaces: ["rg-vm-ad-login::vm514"],
+      sshPublicKeys: ["rg-vm-ad-login::keypair"],
     }),
   });
 
@@ -340,71 +234,18 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      networkInterfaces: [
-        resources.Network.NetworkInterface["rg-vm-disks::vm537"],
-      ],
-      disks: [resources.Compute.Disk["rg-vm-disks::vm_datadisk_0"]],
-      sshPublicKeys: [resources.Compute.SshPublicKey["rg-vm-disks::keypair"]],
-    }),
-  });
-
-  provider.Compute.makeVirtualMachine({
-    name: "rg-vm::vm",
-    properties: ({ getId }) => ({
-      properties: {
-        hardwareProfile: {
-          vmSize: "Standard_A1_v2",
-        },
-        osProfile: {
-          computerName: "myVM",
-          adminUsername: "ops",
-          adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
-        },
-        storageProfile: {
-          imageReference: {
-            publisher: "Canonical",
-            offer: "UbuntuServer",
-            sku: "18.04-LTS",
-            version: "latest",
-          },
-          osDisk: {
-            osType: "Linux",
-            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
-            createOption: "FromImage",
-            caching: "ReadWrite",
-            managedDisk: {
-              storageAccountType: "Standard_LRS",
-            },
-            deleteOption: "Detach",
-            diskSizeGB: 30,
-          },
-        },
-        networkProfile: {
-          networkInterfaces: [
-            {
-              id: getId({
-                type: "NetworkInterface",
-                group: "Network",
-                name: "rg-vm::network-interface",
-              }),
-            },
-          ],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
-      networkInterfaces: [
-        resources.Network.NetworkInterface["rg-vm::network-interface"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
+      networkInterfaces: ["rg-vm-disks::vm537"],
+      disks: ["rg-vm-disks::vm_datadisk_0"],
+      sshPublicKeys: ["rg-vm-disks::keypair"],
     }),
   });
 
   provider.Compute.makeVirtualMachineExtension({
     name: "rg-vm-ad-login::vm::aadsshloginforlinux",
     properties: ({}) => ({
+      name: "aadsshloginforlinux",
       properties: {
         publisher: "Microsoft.Azure.ActiveDirectory",
         type: "AADSSHLoginForLinux",
@@ -412,19 +253,20 @@ const createResources = ({ provider }) => {
         autoUpgradeMinorVersion: true,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
-      vm: resources.Compute.VirtualMachine["rg-vm-ad-login::vm"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
+      vm: "rg-vm-ad-login::vm",
     }),
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-load-balancer::vm-scale-set",
+    name: "rg-load-balancer::vmss",
     properties: ({ getId }) => ({
+      name: "vmss",
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
-        capacity: 2,
+        capacity: 1,
       },
       properties: {
         singlePlacementGroup: false,
@@ -436,7 +278,7 @@ const createResources = ({ provider }) => {
         },
         virtualMachineProfile: {
           osProfile: {
-            computerNamePrefix: "vm-scale-",
+            computerNamePrefix: "vmssfxzig",
             adminUsername: "azureuser",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
@@ -450,8 +292,7 @@ const createResources = ({ provider }) => {
               provisionVMAgent: true,
             },
             allowExtensionOperations: true,
-            adminPassword:
-              process.env.RG_LOAD_BALANCER_VM_SCALE_SET_ADMIN_PASSWORD,
+            adminPassword: process.env.RG_LOAD_BALANCER_VMSS_ADMIN_PASSWORD,
           },
           storageProfile: {
             osDisk: {
@@ -511,7 +352,7 @@ const createResources = ({ provider }) => {
                             id: getId({
                               type: "LoadBalancerBackendAddressPool",
                               group: "Network",
-                              name: "rg-load-balancer::load-balancer::backend-pool",
+                              name: "rg-load-balancer::load-balancer::backendpool",
                             }),
                           },
                         ],
@@ -521,7 +362,6 @@ const createResources = ({ provider }) => {
                 },
               },
             ],
-            networkInterfaces: undefined,
           },
         },
         overprovision: false,
@@ -529,179 +369,124 @@ const createResources = ({ provider }) => {
         platformFaultDomainCount: 1,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      subnets: [resources.Network.Subnet["rg-load-balancer::vnet::default"]],
-      sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-load-balancer::vm_key"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      subnets: ["rg-load-balancer::vnet::default"],
+      sshPublicKeys: ["rg-load-balancer::vmss_key"],
+      networkSecurityGroups: ["rg-load-balancer::basicnsgvnet-nic01"],
+      loadBalancerBackendAddressPools: [
+        "rg-load-balancer::load-balancer::backendpool",
       ],
-      networkSecurityGroups: [
-        resources.Network.NetworkSecurityGroup[
-          "rg-load-balancer::basicnsgvnet-nic01"
-        ],
-      ],
-      loadBalancerBackendAddressPool:
-        resources.Network.LoadBalancerBackendAddressPool[
-          "rg-load-balancer::load-balancer::backend-pool"
-        ],
     }),
   });
 
-  provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-virtual-machine-scale-set::vm-scale-set",
-    properties: ({ getId }) => ({
+  provider.ContainerService.makeManagedCluster({
+    name: "rg-aks-basic::cluster",
+    properties: ({}) => ({
       sku: {
-        name: "Standard_B1ls",
-        tier: "Standard",
-        capacity: 2,
+        name: "Basic",
+        tier: "Free",
+      },
+      identity: {
+        type: "SystemAssigned",
       },
       properties: {
-        singlePlacementGroup: false,
-        upgradePolicy: {
-          mode: "Manual",
-        },
-        scaleInPolicy: {
-          rules: ["Default"],
-        },
-        virtualMachineProfile: {
-          osProfile: {
-            computerNamePrefix: "vm-scale-",
-            adminUsername: "azureuser",
-            linuxConfiguration: {
-              disablePasswordAuthentication: true,
-              ssh: {
-                publicKeys: [
-                  {
-                    path: "/home/azureuser/.ssh/authorized_keys",
-                  },
-                ],
-              },
-              provisionVMAgent: true,
-            },
-            allowExtensionOperations: true,
-            adminPassword:
-              process.env
-                .RG_VIRTUAL_MACHINE_SCALE_SET_VM_SCALE_SET_ADMIN_PASSWORD,
+        kubernetesVersion: "1.21.7",
+        dnsPrefix: "cluster-dns",
+        agentPoolProfiles: [
+          {
+            name: "agentpool",
+            count: 1,
+            vmSize: "Standard_B4ms",
+            osDiskSizeGB: 128,
+            osDiskType: "Managed",
+            kubeletDiskType: "OS",
+            maxPods: 110,
+            type: "VirtualMachineScaleSets",
+            enableAutoScaling: false,
+            orchestratorVersion: "1.21.7",
+            enableNodePublicIP: false,
+            mode: "System",
+            osType: "Linux",
+            osSKU: "Ubuntu",
+            nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.19",
+            enableFIPS: false,
           },
-          storageProfile: {
-            osDisk: {
-              osType: "Linux",
-              createOption: "FromImage",
-              caching: "ReadWrite",
-              managedDisk: {
-                storageAccountType: "Premium_LRS",
-              },
-              diskSizeGB: 30,
-            },
-            imageReference: {
-              publisher: "canonical",
-              offer: "0001-com-ubuntu-server-focal",
-              sku: "20_04-lts",
-              version: "latest",
-            },
+        ],
+        addonProfiles: {
+          azurepolicy: {
+            enabled: false,
+            config: null,
           },
-          diagnosticsProfile: {
-            bootDiagnostics: {
-              enabled: true,
-            },
-          },
-          networkProfile: {
-            networkInterfaceConfigurations: [
-              {
-                name: "virtual-network-nic01",
-                properties: {
-                  primary: true,
-                  enableAcceleratedNetworking: false,
-                  networkSecurityGroup: {
-                    id: getId({
-                      type: "NetworkSecurityGroup",
-                      group: "Network",
-                      name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
-                    }),
-                  },
-                  dnsSettings: {
-                    dnsServers: [],
-                  },
-                  enableIPForwarding: false,
-                  ipConfigurations: [
-                    {
-                      name: "virtual-network-nic01-defaultIpConfiguration",
-                      properties: {
-                        primary: true,
-                        subnet: {
-                          id: getId({
-                            type: "Subnet",
-                            group: "Network",
-                            name: "rg-virtual-machine-scale-set::virtual-network::default",
-                          }),
-                        },
-                        privateIPAddressVersion: "IPv4",
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            networkInterfaces: undefined,
+          httpApplicationRouting: {
+            enabled: false,
           },
         },
-        overprovision: false,
-        doNotRunExtensionsOnOverprovisionedVMs: false,
-        platformFaultDomainCount: 1,
+        oidcIssuerProfile: {
+          enabled: false,
+        },
+        enableRBAC: true,
+        networkProfile: {
+          networkPlugin: "kubenet",
+          podCidr: "10.244.0.0/16",
+          serviceCidr: "10.0.0.0/16",
+          dnsServiceIP: "10.0.0.10",
+          dockerBridgeCidr: "172.17.0.1/16",
+          outboundType: "loadBalancer",
+          loadBalancerSku: "Standard",
+          loadBalancerProfile: {
+            managedOutboundIPs: {
+              count: 1,
+            },
+          },
+        },
+        apiServerAccessProfile: {
+          enablePrivateCluster: false,
+        },
+        servicePrincipalProfile: {
+          clientId: "msi",
+        },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
-      subnets: [
-        resources.Network.Subnet[
-          "rg-virtual-machine-scale-set::virtual-network::default"
-        ],
-      ],
-      sshPublicKeys: [
-        resources.Compute.SshPublicKey["rg-virtual-machine-scale-set::keypair"],
-      ],
-      networkSecurityGroups: [
-        resources.Network.NetworkSecurityGroup[
-          "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01"
-        ],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-aks-basic",
     }),
   });
 
   provider.DBforPostgreSQL.makeConfiguration({
     name: "rg-postgres::gc-server::shared_preload_libraries",
     properties: ({}) => ({
+      name: "shared_preload_libraries",
       properties: {
         value: "pg_cron,pg_stat_statements",
         source: "user-override",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
   provider.DBforPostgreSQL.makeFirewallRule({
     name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
     properties: ({}) => ({
+      name: "allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
       properties: {
         startIpAddress: "0.0.0.0",
         endIpAddress: "0.0.0.0",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-      server:
-        resources.DBforPostgreSQL.FlexibleServer["rg-postgres::gc-server"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
+      server: "rg-postgres::gc-server",
     }),
   });
 
   provider.DBforPostgreSQL.makeFlexibleServer({
     name: "rg-postgres::gc-server",
     properties: ({}) => ({
+      name: "gc-server",
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",
@@ -716,16 +501,8 @@ const createResources = ({ provider }) => {
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-postgres"],
-    }),
-  });
-
-  provider.ManagedIdentity.makeUserAssignedIdentity({
-    name: "rg-user-managed-identity::identity-vault",
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
+    dependencies: () => ({
+      resourceGroup: "rg-postgres",
     }),
   });
 
@@ -741,21 +518,14 @@ const createResources = ({ provider }) => {
           {
             name: "frontend",
             properties: {
-              provisioningState: "Succeeded",
-              privateIPAllocationMethod: "Dynamic",
               publicIPAddress: {
                 id: getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "rg-load-balancer::ip-address",
+                  name: "rg-load-balancer::ip",
                 }),
               },
             },
-          },
-        ],
-        backendAddressPools: [
-          {
-            name: "backend-pool",
           },
         ],
         loadBalancingRules: [],
@@ -765,29 +535,27 @@ const createResources = ({ provider }) => {
         inboundNatPools: [],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      publicIPAddresses: [
-        resources.Network.PublicIPAddress["rg-load-balancer::ip-address"],
-      ],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      publicIPAddresses: ["rg-load-balancer::ip"],
     }),
   });
 
   provider.Network.makeLoadBalancerBackendAddressPool({
-    name: "rg-load-balancer::load-balancer::backend-pool",
+    name: "rg-load-balancer::load-balancer::backendpool",
     properties: ({}) => ({
       properties: {},
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      loadBalancer:
-        resources.Network.LoadBalancer["rg-load-balancer::load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      loadBalancer: "rg-load-balancer::load-balancer",
     }),
   });
 
   provider.Network.makeNatGateway({
     name: "rg-natgateway::nat-gw",
     properties: ({}) => ({
+      name: "nat-gw",
       sku: {
         name: "Standard",
       },
@@ -795,42 +563,9 @@ const createResources = ({ provider }) => {
         idleTimeoutInMinutes: 4,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-      publicIpAddresses: [
-        resources.Network.PublicIPAddress["rg-natgateway::ip-address"],
-      ],
-    }),
-  });
-
-  provider.Network.makeNetworkInterface({
-    name: "rg-user-managed-identity::vm180",
-    properties: ({}) => ({
-      name: "vm180",
-      properties: {
-        ipConfigurations: [
-          {
-            name: "ipconfig1",
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-user-managed-identity::vnet"],
-      publicIpAddress:
-        resources.Network.PublicIPAddress["rg-user-managed-identity::vm-ip"],
-      securityGroup:
-        resources.Network.NetworkSecurityGroup[
-          "rg-user-managed-identity::vm-nsg"
-        ],
-      subnet:
-        resources.Network.Subnet["rg-user-managed-identity::vnet::default"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
+      publicIpAddresses: ["rg-natgateway::ip-address"],
     }),
   });
 
@@ -849,14 +584,12 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
-      virtualNetwork: resources.Network.VirtualNetwork["rg-vm-ad-login::vnet"],
-      publicIpAddress:
-        resources.Network.PublicIPAddress["rg-vm-ad-login::vm-ip"],
-      securityGroup:
-        resources.Network.NetworkSecurityGroup["rg-vm-ad-login::vm-nsg"],
-      subnet: resources.Network.Subnet["rg-vm-ad-login::vnet::default"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
+      virtualNetwork: "rg-vm-ad-login::vnet",
+      publicIpAddress: "rg-vm-ad-login::vm-ip",
+      securityGroup: "rg-vm-ad-login::vm-nsg",
+      subnet: "rg-vm-ad-login::vnet::default",
     }),
   });
 
@@ -875,111 +608,32 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm-disks::virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["rg-vm-disks::vm-ip"],
-      securityGroup:
-        resources.Network.NetworkSecurityGroup["rg-vm-disks::vm-nsg"],
-      subnet: resources.Network.Subnet["rg-vm-disks::virtual-network::default"],
-    }),
-  });
-
-  provider.Network.makeNetworkInterface({
-    name: "rg-vm::network-interface",
-    properties: ({}) => ({
-      name: "network-interface",
-      properties: {
-        ipConfigurations: [
-          {
-            name: "ipconfig",
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
-      publicIpAddress: resources.Network.PublicIPAddress["rg-vm::ip"],
-      securityGroup:
-        resources.Network.NetworkSecurityGroup["rg-vm::security-group"],
-      subnet: resources.Network.Subnet["rg-vm::virtual-network::subnet"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
+      virtualNetwork: "rg-vm-disks::virtual-network",
+      publicIpAddress: "rg-vm-disks::vm-ip",
+      securityGroup: "rg-vm-disks::vm-nsg",
+      subnet: "rg-vm-disks::virtual-network::default",
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-load-balancer::basicnsgvnet-nic01",
     properties: ({}) => ({
+      name: "basicnsgvnet-nic01",
       properties: {
         securityRules: [],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-    }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
-    name: "rg-user-managed-identity::vm-nsg",
-    properties: ({}) => ({
-      properties: {
-        securityRules: [
-          {
-            name: "SSH",
-            properties: {
-              protocol: "TCP",
-              sourcePortRange: "*",
-              destinationPortRange: "22",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 300,
-              direction: "Inbound",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-    }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
-    name: "rg-virtual-machine-scale-set::basicnsgrg-virtual-machine-scale-set-vnet-nic01",
-    properties: ({}) => ({
-      properties: {
-        securityRules: [],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
-    }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
-    name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
-    properties: ({}) => ({
-      properties: {
-        securityRules: [],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-vm-ad-login::vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -998,14 +652,15 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
     }),
   });
 
   provider.Network.makeNetworkSecurityGroup({
     name: "rg-vm-disks::vm-nsg",
     properties: ({}) => ({
+      name: "vm-nsg",
       properties: {
         securityRules: [
           {
@@ -1024,53 +679,15 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-    }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm::security-group",
-    properties: ({}) => ({
-      properties: {
-        securityRules: [
-          {
-            name: "SSH",
-            properties: {
-              protocol: "Tcp",
-              sourcePortRange: "*",
-              destinationPortRange: "22",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 1000,
-              direction: "Inbound",
-            },
-          },
-          {
-            name: "ICMP",
-            properties: {
-              protocol: "Icmp",
-              sourcePortRange: "*",
-              destinationPortRange: "*",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 1001,
-              direction: "Inbound",
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
     }),
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-load-balancer::ip-address",
+    name: "rg-load-balancer::ip",
     properties: ({}) => ({
+      name: "ip",
       sku: {
         name: "Standard",
       },
@@ -1078,14 +695,15 @@ const createResources = ({ provider }) => {
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-natgateway::ip-address",
     properties: ({}) => ({
+      name: "ip-address",
       sku: {
         name: "Standard",
       },
@@ -1093,37 +711,28 @@ const createResources = ({ provider }) => {
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-    }),
-  });
-
-  provider.Network.makePublicIPAddress({
-    name: "rg-user-managed-identity::vm-ip",
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-vm-ad-login::vm-ip",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
+    properties: ({}) => ({
+      name: "vm-ip",
+    }),
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
     }),
   });
 
   provider.Network.makePublicIPAddress({
     name: "rg-vm-disks::vm-ip",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
+    properties: ({}) => ({
+      name: "vm-ip",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
-    name: "rg-vm::ip",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
     }),
   });
 
@@ -1135,10 +744,9 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/16",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-load-balancer::vnet"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
+      virtualNetwork: "rg-load-balancer::vnet",
     }),
   });
 
@@ -1150,44 +758,9 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-natgateway::virtual-network"],
-    }),
-  });
-
-  provider.Network.makeSubnet({
-    name: "rg-user-managed-identity::vnet::default",
-    properties: ({}) => ({
-      name: "default",
-      properties: {
-        addressPrefix: "10.1.0.0/24",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-user-managed-identity::vnet"],
-    }),
-  });
-
-  provider.Network.makeSubnet({
-    name: "rg-virtual-machine-scale-set::virtual-network::default",
-    properties: ({}) => ({
-      name: "default",
-      properties: {
-        addressPrefix: "10.0.0.0/24",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork[
-          "rg-virtual-machine-scale-set::virtual-network"
-        ],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
+      virtualNetwork: "rg-natgateway::virtual-network",
     }),
   });
 
@@ -1199,9 +772,9 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
-      virtualNetwork: resources.Network.VirtualNetwork["rg-vm-ad-login::vnet"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
+      virtualNetwork: "rg-vm-ad-login::vnet",
     }),
   });
 
@@ -1213,131 +786,76 @@ const createResources = ({ provider }) => {
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm-disks::virtual-network"],
-    }),
-  });
-
-  provider.Network.makeSubnet({
-    name: "rg-vm::virtual-network::subnet",
-    properties: ({}) => ({
-      name: "subnet",
-      properties: {
-        addressPrefix: "10.0.0.0/24",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
-      virtualNetwork:
-        resources.Network.VirtualNetwork["rg-vm::virtual-network"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
+      virtualNetwork: "rg-vm-disks::virtual-network",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-load-balancer::vnet",
     properties: ({}) => ({
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-load-balancer"],
+    dependencies: () => ({
+      resourceGroup: "rg-load-balancer",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-natgateway::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-natgateway"],
-    }),
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "rg-user-managed-identity::vnet",
-    properties: ({}) => ({
-      properties: {
-        addressSpace: {
-          addressPrefixes: ["10.1.0.0/16"],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-user-managed-identity"],
-    }),
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "rg-virtual-machine-scale-set::virtual-network",
-    properties: ({}) => ({
-      properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup:
-        resources.Resources.ResourceGroup["rg-virtual-machine-scale-set"],
+    dependencies: () => ({
+      resourceGroup: "rg-natgateway",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-vm-ad-login::vnet",
     properties: ({}) => ({
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-ad-login"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-ad-login",
     }),
   });
 
   provider.Network.makeVirtualNetwork({
     name: "rg-vm-disks::virtual-network",
     properties: ({}) => ({
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm-disks"],
-    }),
-  });
-
-  provider.Network.makeVirtualNetwork({
-    name: "rg-vm::virtual-network",
-    properties: ({}) => ({
-      properties: {
-        addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
-        },
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vm"],
+    dependencies: () => ({
+      resourceGroup: "rg-vm-disks",
     }),
   });
 
   provider.OperationalInsights.makeWorkspace({
     name: "rg-plantuml::logs",
     properties: ({}) => ({
+      name: "logs",
       properties: {
         sku: {
           name: "pergb2018",
@@ -1345,45 +863,58 @@ const createResources = ({ provider }) => {
         retentionInDays: 30,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
+    }),
+  });
+
+  provider.Resources.makeResourceGroup({
+    name: "rg-aks-basic",
+    properties: ({}) => ({
+      name: "rg-aks-basic",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-load-balancer",
+    properties: ({}) => ({
+      name: "rg-load-balancer",
+    }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-natgateway",
+    properties: ({}) => ({
+      name: "rg-natgateway",
+    }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-plantuml",
+    properties: ({}) => ({
+      name: "rg-plantuml",
+    }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-postgres",
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "rg-user-managed-identity",
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "rg-virtual-machine-scale-set",
-  });
-
-  provider.Resources.makeResourceGroup({
-    name: "rg-vm",
+    properties: ({}) => ({
+      name: "rg-postgres",
+    }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-vm-ad-login",
+    properties: ({}) => ({
+      name: "rg-vm-ad-login",
+    }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-vm-disks",
+    properties: ({}) => ({
+      name: "rg-vm-disks",
+    }),
   });
 
   provider.Web.makeContainerApp({
@@ -1413,17 +944,20 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
-      kubeEnvironment: resources.Web.KubeEnvironment["rg-plantuml::dev"],
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
+      kubeEnvironment: "rg-plantuml::dev",
     }),
   });
 
   provider.Web.makeKubeEnvironment({
     name: "rg-plantuml::dev",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
-      workspace: resources.OperationalInsights.Workspace["rg-plantuml::logs"],
+    properties: ({}) => ({
+      name: "dev",
+    }),
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
+      workspace: "rg-plantuml::logs",
     }),
   });
 };

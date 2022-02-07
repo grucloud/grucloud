@@ -65,14 +65,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -127,14 +124,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -189,14 +183,11 @@ provider.ContainerService.makeManagedCluster({
       enableNamespaceResources: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -251,14 +242,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -318,14 +306,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -385,14 +370,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -454,14 +436,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -515,14 +494,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -576,14 +552,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -637,14 +610,11 @@ provider.ContainerService.makeManagedCluster({
       podIdentityProfile: { enabled: true, allowNetworkPluginKubenet: true },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -701,14 +671,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -764,14 +731,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -824,14 +788,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -886,14 +847,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -947,14 +905,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: false,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1013,14 +968,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1066,14 +1018,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1126,14 +1075,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1185,14 +1131,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1250,14 +1193,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: false,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1319,14 +1259,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1394,14 +1331,11 @@ provider.ContainerService.makeManagedCluster({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 
@@ -1456,14 +1390,11 @@ provider.ContainerService.makeManagedCluster({
       enablePodSecurityPolicy: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    routes: [resources.Network.Route["myRoute"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    diskEncryptionSet: "myDiskEncryptionSet",
+    routes: ["myRoute"],
   }),
 });
 

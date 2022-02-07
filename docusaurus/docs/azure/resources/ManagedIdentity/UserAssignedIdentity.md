@@ -12,9 +12,7 @@ provider.ManagedIdentity.makeUserAssignedIdentity({
     location: "eastus",
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

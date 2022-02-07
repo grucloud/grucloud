@@ -16,12 +16,9 @@ provider.Network.makeLocalNetworkGateway({
     },
     location: "Central US",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
   }),
 });
 

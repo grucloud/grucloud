@@ -17,9 +17,9 @@ provider.Network.makeVirtualRouter({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
   }),
 });
 

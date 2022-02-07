@@ -36,12 +36,10 @@ provider.Network.makeNetworkVirtualAppliance({
       virtualApplianceAsn: 10000,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    virtualHub: "myVirtualHub",
   }),
 });
 

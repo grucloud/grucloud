@@ -9,12 +9,12 @@ Provides a **PrivateLinkService** from the **Network** group
 provider.Network.makePrivateLinkService({
   name: "myPrivateLinkService",
   properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    natGateway: "myNatGateway",
+    ddosCustomPolicy: "myDdosCustomPolicy",
+    publicIpPrefix: "myPublicIPPrefix",
+    loadBalancer: "myLoadBalancer",
   }),
 });
 

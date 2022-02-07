@@ -15,8 +15,8 @@ const createResources = ({ provider }) => {
 
   provider.iam.makeBinding({
     name: "roles/firebasenotifications.viewer",
-    dependencies: ({ resources }) => ({
-      serviceAccounts: [resources.iam.ServiceAccount["sa-test-example"]],
+    dependencies: () => ({
+      serviceAccounts: ["sa-test-example"],
     }),
   });
 };

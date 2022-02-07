@@ -9,9 +9,9 @@ Provides a **ContainerService** from the **ContainerService** group
 provider.ContainerService.makeContainerService({
   name: "myContainerService",
   properties: () => ({ location: "location1" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 

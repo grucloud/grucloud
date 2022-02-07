@@ -9,8 +9,8 @@ Manages an [ECS Service](https://console.aws.amazon.com/ecs/home?#/clusters).
 
 ```js
 provider.ECS.makeService({
-  name: "my-service"
-  properties: () => ({
+  name: "service-nginx",
+  properties: ({}) => ({
     launchType: "EC2",
     desiredCount: 1,
     deploymentConfiguration: {
@@ -36,9 +36,9 @@ provider.ECS.makeService({
     enableECSManagedTags: true,
     enableExecuteCommand: false,
   }),
-  dependencies: ({ resources }) => ({
-    cluster: resources.ECS.Cluster.cluster,
-    taskDefinition: resources.ECS.TaskDefinition.nginx,
+  dependencies: () => ({
+    cluster: "cluster",
+    taskDefinition: "nginx",
   }),
 });
 ```

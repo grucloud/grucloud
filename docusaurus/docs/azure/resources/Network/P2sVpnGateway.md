@@ -52,12 +52,11 @@ provider.Network.makeP2sVpnGateway({
       isRoutingPreferenceInternet: false,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
-    vpnServerConfiguration:
-      resources.Network.VpnServerConfiguration["myVpnServerConfiguration"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHub: "myVirtualHub",
+    routeTable: "myRouteTable",
+    vpnServerConfiguration: "myVpnServerConfiguration",
   }),
 });
 

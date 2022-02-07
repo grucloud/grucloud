@@ -9,9 +9,9 @@ Provides a **VirtualRouterPeering** from the **Network** group
 provider.Network.makeVirtualRouterPeering({
   name: "myVirtualRouterPeering",
   properties: () => ({ properties: { peerIp: "192.168.1.5", peerAsn: 20000 } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualRouter: resources.Network.VirtualRouter["myVirtualRouter"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualRouter: "myVirtualRouter",
   }),
 });
 

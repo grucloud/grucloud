@@ -73,15 +73,12 @@ provider.Network.makeVpnGateway({
       enableBgpRouteTranslationForNat: false,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    vpnSite: resources.Network.VpnSite["myVpnSite"],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHub: "myVirtualHub",
+    vpnSite: "myVpnSite",
+    routeTable: "myRouteTable",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
   }),
 });
 

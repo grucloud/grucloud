@@ -3,24 +3,21 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Authorization.makeRoleAssignment({
-    name: "7d846c80-f67b-4249-a322-a9eec7225e57",
-    properties: ({}) => ({
-      properties: {
-        roleName: "Contributor",
-        principalName: "rg-aks-basic::cluster",
-        principalType: "ServicePrincipal",
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      scopeResourceGroup:
-        resources.Resources.ResourceGroup[
-          "mc_rg-aks-basic_cluster_canadacentral"
-        ],
-      principalManagedCluster:
-        resources.ContainerService.ManagedCluster["rg-aks-basic::cluster"],
-    }),
-  });
+  // provider.Authorization.makeRoleAssignment({
+  //   name: "58d30363-0623-4731-849c-9faf19cee420",
+  //   properties: ({}) => ({
+  //     name: "58d30363-0623-4731-849c-9faf19cee420",
+  //     properties: {
+  //       roleName: "Contributor",
+  //       principalName: "rg-aks-basic::cluster",
+  //       principalType: "ServicePrincipal",
+  //     },
+  //   }),
+  //   dependencies: () => ({
+  //     scopeResourceGroup: "mc_rg-aks-basic_cluster_canadacentral",
+  //     principalManagedCluster: "rg-aks-basic::cluster",
+  //   }),
+  // });
 
   provider.ContainerService.makeManagedCluster({
     name: "rg-aks-basic::cluster",
@@ -62,7 +59,6 @@ const createResources = ({ provider }) => {
           },
           httpApplicationRouting: {
             enabled: false,
-            config: null,
           },
         },
         oidcIssuerProfile: {
@@ -91,13 +87,16 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-aks-basic"],
+    dependencies: () => ({
+      resourceGroup: "rg-aks-basic",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-aks-basic",
+    properties: ({}) => ({
+      name: "rg-aks-basic",
+    }),
   });
 };
 

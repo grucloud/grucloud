@@ -20,8 +20,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -39,8 +39,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["EcsSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "EcsSecurityGroup",
     }),
   });
 
@@ -52,10 +52,10 @@ const createResources = ({ provider }) => {
         InstanceType: "t2.micro",
       },
     }),
-    dependencies: ({ resources }) => ({
-      keyPair: resources.EC2.KeyPair["kp-ecs"],
-      iamInstanceProfile: resources.IAM.InstanceProfile["role-ecs"],
-      securityGroups: [resources.EC2.SecurityGroup["EcsSecurityGroup"]],
+    dependencies: () => ({
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
+      securityGroups: ["EcsSecurityGroup"],
     }),
   });
 
@@ -80,8 +80,8 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeInstanceProfile({
     name: "role-ecs",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role["role-ecs"]],
+    dependencies: () => ({
+      roles: ["role-ecs"],
     }),
   });
 };

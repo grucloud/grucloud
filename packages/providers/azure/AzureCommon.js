@@ -79,6 +79,40 @@ const findResourceById =
       ),
     ])();
 
+const replaceId = (idResource) => callProp("replace", idResource, "");
+
+const buildGetId =
+  ({ id = "", path = "id" } = {}) =>
+  ({ type, group, name, id: idResource }) =>
+    pipe([
+      tap(() => {
+        assert(type);
+      }),
+      () => "",
+      append("getId({ type:'"),
+      append(type),
+      append("', group:'"),
+      append(group),
+      append("', name:'"),
+      append(name),
+      append("'"),
+      unless(
+        eq(path, "id"),
+        pipe([append(", path:'"), append(path), append("'")])
+      ),
+      unless(
+        pipe([() => replaceId(id)(idResource), isEmpty]),
+        pipe([
+          append(", suffix:'"),
+          append(replaceId(id)(idResource)),
+          append("'"),
+        ])
+      ),
+      append("})"),
+      (fun) => () => fun,
+    ])();
+exports.buildGetId = buildGetId;
+
 exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
   pipe([
     tap((params) => {
@@ -104,30 +138,7 @@ exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
             tap((resource) => {
               assert(resource);
             }),
-            ({ name, id: idResource }) =>
-              pipe([
-                () => "",
-                append("getId({ type:'"),
-                append(type),
-                append("', group:'"),
-                append(group),
-                append("', name:'"),
-                append(name),
-                append("'"),
-                unless(
-                  pipe([() => id.replace(idResource, ""), isEmpty]),
-                  pipe([
-                    append(", suffix:'"),
-                    append(id.replace(idResource, "")),
-                    append("'"),
-                  ])
-                ),
-                append("})"),
-                tap((params) => {
-                  assert(true);
-                }),
-                (fun) => () => fun,
-              ])(),
+            buildGetId({ id }),
           ])(),
       ]),
     }),
@@ -185,10 +196,39 @@ const isInstanceUp = switchCase([
 
 exports.isInstanceUp = isInstanceUp;
 
-const configDefaultGeneric = ({ properties, dependencies, config }) =>
+const configDefaultDependenciesId = ({ dependencies, spec }) =>
+  pipe([
+    tap(() => {
+      assert(spec);
+      assert(dependencies);
+    }),
+    () => spec,
+    get("dependencies"),
+    filter(get("pathId")),
+    map.entries(([varName, { pathId }]) => [
+      varName,
+      pipe([
+        () => ({}),
+        when(
+          () => dependencies[varName],
+          set(pathId, getField(dependencies[varName], "id"))
+        ),
+      ])(),
+    ]),
+    values,
+    reduce((acc, value) => pipe([() => acc, defaultsDeep(value)])(), {}),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+exports.configDefaultDependenciesId = configDefaultDependenciesId;
+
+const configDefaultGeneric = ({ properties, dependencies, config, spec }) =>
   pipe([
     tap(() => {
       assert(config.location);
+      assert(spec);
     }),
     () => properties,
     defaultsDeep({
@@ -221,37 +261,15 @@ const configDefaultGeneric = ({ properties, dependencies, config }) =>
         },
       })
     ),
+    defaultsDeep(
+      configDefaultDependenciesId({
+        dependencies,
+        spec,
+      })
+    ),
     tap((params) => {
       assert(true);
     }),
   ])();
 
 exports.configDefaultGeneric = configDefaultGeneric;
-
-const configDefaultDependenciesId = ({ dependencies, spec }) =>
-  pipe([
-    tap(() => {
-      assert(spec);
-      assert(dependencies);
-    }),
-    () => spec,
-    get("dependencies"),
-    filter(get("pathId")),
-    map.entries(([varName, { pathId }]) => [
-      varName,
-      pipe([
-        () => ({}),
-        when(
-          () => dependencies[varName],
-          set(pathId, getField(dependencies[varName], "id"))
-        ),
-      ])(),
-    ]),
-    values,
-    reduce((acc, value) => pipe([() => acc, defaultsDeep(value)])(), {}),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
-
-exports.configDefaultDependenciesId = configDefaultDependenciesId;

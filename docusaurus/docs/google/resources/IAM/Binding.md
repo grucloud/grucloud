@@ -30,8 +30,7 @@ const serviceAccount = provider.iam.makeServiceAccount({
 
 const iamBinding = provider.iam.makeBinding({
   name: "roles/editor",
-  dependencies: { serviceAccounts: [serviceAccount] },
-  properties: ({}) => ({}),
+  dependencies: () => ({ serviceAccounts: ["sa"] }),
 });
 ```
 

@@ -13,8 +13,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "ig-postgres",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-postgres"],
+    dependencies: () => ({
+      vpc: "vpc-postgres",
     }),
   });
 
@@ -24,8 +24,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-postgres"],
+    dependencies: () => ({
+      vpc: "vpc-postgres",
     }),
   });
 
@@ -35,29 +35,29 @@ const createResources = ({ provider }) => {
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-postgres"],
+    dependencies: () => ({
+      vpc: "vpc-postgres",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "route-table-public",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-postgres"],
+    dependencies: () => ({
+      vpc: "vpc-postgres",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-public"],
-      subnet: resources.EC2.Subnet["subnet-1"],
+    dependencies: () => ({
+      routeTable: "route-table-public",
+      subnet: "subnet-1",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-public"],
-      subnet: resources.EC2.Subnet["subnet-2"],
+    dependencies: () => ({
+      routeTable: "route-table-public",
+      subnet: "subnet-2",
     }),
   });
 
@@ -65,9 +65,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["route-table-public"],
-      ig: resources.EC2.InternetGateway["ig-postgres"],
+    dependencies: () => ({
+      routeTable: "route-table-public",
+      ig: "ig-postgres",
     }),
   });
 
@@ -76,8 +76,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-postgres"],
+    dependencies: () => ({
+      vpc: "vpc-postgres",
     }),
   });
 
@@ -100,8 +100,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["security-group"],
+    dependencies: () => ({
+      securityGroup: "security-group",
     }),
   });
 
@@ -137,11 +137,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DBSubnetGroupDescription: "db subnet group",
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["subnet-1"],
-        resources.EC2.Subnet["subnet-2"],
-      ],
+    dependencies: () => ({
+      subnets: ["subnet-1", "subnet-2"],
     }),
   });
 
@@ -160,9 +157,9 @@ const createResources = ({ provider }) => {
       MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
-    dependencies: ({ resources }) => ({
-      dbSubnetGroup: resources.RDS.DBSubnetGroup["subnet-group-postgres"],
-      securityGroups: [resources.EC2.SecurityGroup["security-group"]],
+    dependencies: () => ({
+      dbSubnetGroup: "subnet-group-postgres",
+      securityGroups: ["security-group"],
     }),
   });
 };

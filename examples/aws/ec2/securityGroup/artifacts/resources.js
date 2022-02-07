@@ -15,8 +15,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-test-sg"],
+    dependencies: () => ({
+      vpc: "vpc-test-sg",
     }),
   });
 
@@ -25,8 +25,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-test-sg"],
+    dependencies: () => ({
+      vpc: "vpc-test-sg",
     }),
   });
 
@@ -49,8 +49,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["security-group-cluster-test"],
+    dependencies: () => ({
+      securityGroup: "security-group-cluster-test",
     }),
   });
 
@@ -73,11 +73,9 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup:
-        resources.EC2.SecurityGroup["security-group-node-group-test"],
-      securityGroupFrom:
-        resources.EC2.SecurityGroup["security-group-cluster-test"],
+    dependencies: () => ({
+      securityGroup: "security-group-node-group-test",
+      securityGroupFrom: "security-group-cluster-test",
     }),
   });
 
@@ -100,8 +98,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["security-group-cluster-test"],
+    dependencies: () => ({
+      securityGroup: "security-group-cluster-test",
     }),
   });
 };

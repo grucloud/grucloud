@@ -9,8 +9,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.useDefaultSecurityGroup({
     name: "sg-default-vpc-default",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["vpc-default"],
+    dependencies: () => ({
+      vpc: "vpc-default",
     }),
   });
 
@@ -33,8 +33,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["sg-default-vpc-default"],
+    dependencies: () => ({
+      securityGroup: "sg-default-vpc-default",
     }),
   });
 
@@ -57,8 +57,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["sg-default-vpc-default"],
+    dependencies: () => ({
+      securityGroup: "sg-default-vpc-default",
     }),
   });
 };

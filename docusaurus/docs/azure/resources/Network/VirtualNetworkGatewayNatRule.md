@@ -20,14 +20,10 @@ provider.Network.makeVirtualNetworkGatewayNatRule({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
-    virtualNetworkGateway:
-      resources.Network.VirtualNetworkGateway["myVirtualNetworkGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+    virtualNetworkGateway: "myVirtualNetworkGateway",
   }),
 });
 

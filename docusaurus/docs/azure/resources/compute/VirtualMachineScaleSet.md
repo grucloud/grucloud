@@ -57,35 +57,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -155,35 +140,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -242,35 +212,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -334,35 +289,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -435,35 +375,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -527,35 +452,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -621,35 +531,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -709,35 +604,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -801,35 +681,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -885,35 +750,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -979,35 +829,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1063,35 +898,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1156,35 +976,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     zones: ["1", "3"],
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1249,35 +1054,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1342,35 +1132,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1430,35 +1205,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       automaticRepairsPolicy: { enabled: true, gracePeriod: "PT10M" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1533,35 +1293,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1626,35 +1371,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1735,35 +1465,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1828,35 +1543,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -1933,35 +1633,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2024,35 +1709,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2108,35 +1778,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2187,35 +1842,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2275,35 +1915,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2378,35 +2003,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2466,35 +2076,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       scaleInPolicy: { rules: ["OldestVM"], forceDeletion: true },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2575,35 +2170,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2667,35 +2247,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2758,35 +2323,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       spotRestorePolicy: { enabled: true, restoreTimeout: "PT1H" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2873,35 +2423,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       upgradePolicy: { mode: "Manual" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -2964,35 +2499,20 @@ provider.Compute.makeVirtualMachineScaleSet({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 
@@ -3058,35 +2578,20 @@ provider.Compute.makeVirtualMachineScaleSet({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    networkInterfaces: [
-      resources.Network.NetworkInterface["myNetworkInterface"],
-    ],
-    disks: [resources.Compute.Disk["myDisk"]],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    sshPublicKeys: [resources.Compute.SshPublicKey["mySshPublicKey"]],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    networkSecurityGroups: [
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    ],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
-    dedicatedHostGroup:
-      resources.Compute.DedicatedHostGroup["myDedicatedHostGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
-    loadBalancerBackendAddressPools: [
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
-    ],
-    applicationGateways: [
-      resources.Network.ApplicationGateway["myApplicationGateway"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    networkInterfaces: ["myNetworkInterface"],
+    disks: ["myDisk"],
+    managedIdentities: ["myUserAssignedIdentity"],
+    sshPublicKeys: ["mySshPublicKey"],
+    galleryImage: "myGalleryImage",
+    networkSecurityGroups: ["myNetworkSecurityGroup"],
+    proximityPlacementGroup: "myProximityPlacementGroup",
+    dedicatedHostGroup: "myDedicatedHostGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
+    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+    applicationGateways: ["myApplicationGateway"],
   }),
 });
 

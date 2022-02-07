@@ -16,9 +16,9 @@ provider.ContainerService.makeMaintenanceConfiguration({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    resource: resources.ContainerService.ManagedCluster["myManagedCluster"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    resource: "myManagedCluster",
   }),
 });
 

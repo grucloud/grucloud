@@ -10,14 +10,14 @@ Provides an Object storage.
 ### Simple Object
 
 ```js
-const bucket = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: "myuniquebucketname",
   properties: () => ({ storageClass: "STANDARD" }),
 });
 
-const Object = provider.storage.makeObject({
+provider.storage.makeObject({
   name: "myname",
-  dependencies: { bucket: bucket },
+  dependencies: { bucket: "myuniquebucketname" },
   properties: () => ({
     path: "/",
     contentType: "text/plain",

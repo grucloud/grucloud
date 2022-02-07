@@ -165,7 +165,7 @@ module.exports = () =>
             ])(),
       ]),
       dependencies: {
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+        loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
       },
@@ -258,7 +258,7 @@ module.exports = () =>
             `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
         ])(),
       dependencies: {
-        listener: { type: "Listener", group: "ELBv2" },
+        listener: { type: "Listener", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
       },
     },

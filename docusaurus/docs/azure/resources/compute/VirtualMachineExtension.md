@@ -46,9 +46,9 @@ provider.Compute.makeVirtualMachineExtension({
     },
     tags: { key9183: "aa" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vm: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vm: "myVirtualMachine",
   }),
 });
 
@@ -59,9 +59,9 @@ provider.Compute.makeVirtualMachineExtension({
 provider.Compute.makeVirtualMachineExtension({
   name: "myVirtualMachineExtension",
   properties: () => ({ location: "westus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vm: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vm: "myVirtualMachine",
   }),
 });
 

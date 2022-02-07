@@ -13,10 +13,10 @@ provider.ContainerRegistry.makeAgentPool({
     tags: { key: "value" },
     properties: { count: 1, tier: "S1", os: "Linux" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
+    registry: "myRegistry",
   }),
 });
 

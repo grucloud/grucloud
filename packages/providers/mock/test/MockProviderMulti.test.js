@@ -18,7 +18,7 @@ describe("MockProviderMulti", async function () {
       name: providerName1,
       config: () => ({}),
       createResources: ({ provider }) => {
-        provider.makeVolume({
+        provider.Compute.makeVolume({
           name: "volume1",
           properties: () => ({
             size: 10_000_000_000,
@@ -32,7 +32,7 @@ describe("MockProviderMulti", async function () {
       config: () => ({}),
       dependencies: { provider1 },
       createResources: ({ provider }) => {
-        provider.makeVolume({
+        provider.Compute.makeVolume({
           name: "volume2",
           properties: () => ({
             size: 10_000_000_000,

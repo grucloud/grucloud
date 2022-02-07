@@ -27,9 +27,9 @@ provider.Network.makeVirtualHubRouteTableV2({
       attachedConnections: ["All_Vnets"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHub: "myVirtualHub",
   }),
 });
 

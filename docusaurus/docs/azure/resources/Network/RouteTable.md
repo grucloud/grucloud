@@ -9,9 +9,7 @@ Provides a **RouteTable** from the **Network** group
 provider.Network.makeRouteTable({
   name: "myRouteTable",
   properties: () => ({ location: "westus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -35,9 +33,7 @@ provider.Network.makeRouteTable({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

@@ -40,8 +40,8 @@ const createResources = ({ provider }) => {
       contentType: "text/json",
       storageClass: "STANDARD",
     }),
-    dependencies: ({ resources }) => ({
-      bucket: resources.storage.Bucket["grucloud-test"],
+    dependencies: () => ({
+      bucket: "grucloud-test",
     }),
   });
 };

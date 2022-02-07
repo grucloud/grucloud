@@ -8,7 +8,7 @@ Provides a [Https Target Proxy](https://console.cloud.google.com/net-services/lo
 ```js
 const bucketName = "mybucketname";
 
-const sslCertificate = provider.compute.makeSslCertificate({
+provider.compute.makeSslCertificate({
   name: "ssl-certificate",
   properties: () => ({
     managed: {
@@ -17,27 +17,26 @@ const sslCertificate = provider.compute.makeSslCertificate({
   }),
 });
 
-const myBucket = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: bucketName,
-  properties: () => ({}),
 });
 
-const backendBucket = provider.compute.makeBackendBucket({
+provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,
   }),
 });
 
-const urlMap = provider.compute.makeUrlMap({
+provider.compute.makeUrlMap({
   name: "url-map",
-  dependencies: { service: backendBucket },
+  dependencies: { service: "backend-bucket" },
   properties: () => ({}),
 });
 
-const httpsTargetProxy = provider.compute.makeHttpsTargetProxy({
+provider.compute.makeHttpsTargetProxy({
   name: "https-target-proxy",
-  dependencies: { sslCertificate, urlMap },
+  dependencies: { sslCertificate: "ssl-certificate", urlMap: "url-map" },
   properties: () => ({}),
 });
 ```

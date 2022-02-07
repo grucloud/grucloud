@@ -10,15 +10,14 @@ Manages an [AppSync DataSource](https://console.aws.amazon.com/appsync/home?#/ap
 ```js
 provider.AppSync.makeDataSource({
   name: "lambdaDatasource",
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     type: "AWS_LAMBDA",
   }),
-  dependencies: ({ resources }) => ({
+  dependencies: () => ({
     serviceRole:
-      resources.IAM.Role
-        .appsyncCdkAppStackApilambdaDatasourceServiceRole2_1Bx1Mto4H3Kag,
-    graphqlApi: resources.AppSync.GraphqlApi.cdkNotesAppsyncApi,
-    lambdaFunction: resources.Lambda.Function.lambdaFns,
+      "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
+    graphqlApi: "cdk-notes-appsync-api",
+    lambdaFunction: "lambda-fns",
   }),
 });
 ```

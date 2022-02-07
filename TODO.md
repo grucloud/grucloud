@@ -1,9 +1,19 @@
 ## Bugs
 
-- implement : z aks get-credentials --resource-group myResourceGroup --name myManagedCluster
-- gcloud container clusters get-credentials cluster-1
+- 1 ContainerService::ManagedCluster from azure │
+  ├─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │
+  │ │ UPDATE: name: rg-aks-basic::cluster, id: /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourcegroups/rg-aks-basic/providers/M… │ │
+  │ ├───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ │
+  │ │ Key: properties │ │
+  │ ├───────────────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┤ │
+  │ │ - addonProfiles: │ │ │
+  │ │ httpApplicationRouting: │ │ │
+  │ │ config: null │ │ │
+  │ │
 
-# --zone=us-central1-c
+- az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
+  -mock multi cloud example
 
 NetworkSecurityGroup defaultSecurityRules in gencode
 
@@ -80,6 +90,12 @@ remove aks-managed-createOperationID from tags
 
 ## Azure
 
+- aks-vault:
+  "error": {
+  "code": "ConflictError",
+  "message": "A vault with the same name already exists in deleted state. You need to either recover or purge existing key vault. Follow this link https://go.microsoft.com/fwlink/?linkid=2149745 for more information on soft delete."
+  }
+
 - RestorePoint
   AppServiceEnvironments_ListMultiRolePools => AppServiceEnvironments_GetMultiRolePool
 
@@ -98,6 +114,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- ECR.makeRegistry delete
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table
 - Nat gateway handle deleting
@@ -145,6 +162,9 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+- vm-network: fix name provider.compute.makeSubNetwork({
+  name: "subnet-subnetwork",
 
 - discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
 

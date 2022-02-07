@@ -6,6 +6,7 @@ const createResources = ({ provider }) => {
   provider.OperationalInsights.makeWorkspace({
     name: "rg-plantuml::logs",
     properties: ({}) => ({
+      name: "logs",
       properties: {
         sku: {
           name: "pergb2018",
@@ -13,13 +14,16 @@ const createResources = ({ provider }) => {
         retentionInDays: 30,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-plantuml",
+    properties: ({}) => ({
+      name: "rg-plantuml",
+    }),
   });
 
   provider.Web.makeContainerApp({
@@ -49,17 +53,20 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
-      kubeEnvironment: resources.Web.KubeEnvironment["rg-plantuml::dev"],
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
+      kubeEnvironment: "rg-plantuml::dev",
     }),
   });
 
   provider.Web.makeKubeEnvironment({
     name: "rg-plantuml::dev",
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-plantuml"],
-      workspace: resources.OperationalInsights.Workspace["rg-plantuml::logs"],
+    properties: ({}) => ({
+      name: "dev",
+    }),
+    dependencies: () => ({
+      resourceGroup: "rg-plantuml",
+      workspace: "rg-plantuml::logs",
     }),
   });
 };

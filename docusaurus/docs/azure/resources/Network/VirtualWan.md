@@ -13,9 +13,7 @@ provider.Network.makeVirtualWan({
     tags: { key1: "value1" },
     properties: { disableVpnEncryption: false, type: "Basic" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

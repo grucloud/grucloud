@@ -17,10 +17,7 @@ provider.Web.makeWebAppPrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.Site["mySite"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
 });
 
 ```

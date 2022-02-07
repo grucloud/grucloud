@@ -110,12 +110,12 @@ provider.Network.makeAzureFirewall({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -227,12 +227,12 @@ provider.Network.makeAzureFirewall({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -355,12 +355,12 @@ provider.Network.makeAzureFirewall({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -386,12 +386,12 @@ provider.Network.makeAzureFirewall({
       hubIPAddresses: { publicIPs: { addresses: [], count: 1 } },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -505,12 +505,12 @@ provider.Network.makeAzureFirewall({
       additionalProperties: { key1: "value1", key2: "value2" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -622,12 +622,12 @@ provider.Network.makeAzureFirewall({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    virtualHub: "myVirtualHub",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 

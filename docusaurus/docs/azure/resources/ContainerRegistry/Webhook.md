@@ -22,9 +22,9 @@ provider.ContainerRegistry.makeWebhook({
       actions: ["push"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 

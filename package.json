@@ -6,9 +6,9 @@
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "download-manifest": "lerna run download-manifest",
-    "gen-code": "lerna run gen-code",
+    "gen-code": "lerna run --scope @grucloud/example-* gencode -- -- --no-inventory-fetch",
     "graph-target": "lerna run graph-target",
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap -- --ignore-scripts",
     "test:gcp": "cd packages/providers/google && npm test",
     "test:aws": "cd packages/providers/aws && npm test",
     "gencode": "lerna run  --scope @grucloud/example-* --stream  gencode",

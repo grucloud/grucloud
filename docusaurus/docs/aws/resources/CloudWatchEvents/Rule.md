@@ -19,8 +19,8 @@ provider.CloudWatchEvents.makeRule({
       '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
     State: "ENABLED",
   }),
-  dependencies: ({ resources }) => ({
-    eventBus: resources.CloudWatchEvents.EventBus.myEventBus,
+  dependencies: ({}) => ({
+    eventBus: "myEventBus",
   }),
 });
 ```

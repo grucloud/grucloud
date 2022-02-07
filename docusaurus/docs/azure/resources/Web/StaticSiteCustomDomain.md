@@ -9,9 +9,9 @@ Provides a **StaticSiteCustomDomain** from the **Web** group
 provider.Web.makeStaticSiteCustomDomain({
   name: "myStaticSiteCustomDomain",
   properties: () => ({ properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.StaticSite["myStaticSite"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    name: "myStaticSite",
   }),
 });
 

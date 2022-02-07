@@ -71,9 +71,9 @@ provider.KeyVault.makeVault({
       publicNetworkAccess: "Enabled",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
   }),
 });
 
@@ -103,9 +103,9 @@ provider.KeyVault.makeVault({
       enabledForTemplateDeployment: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnets: [resources.Network.Subnet["mySubnet"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnets: ["mySubnet"],
   }),
 });
 

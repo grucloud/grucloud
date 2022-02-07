@@ -14,51 +14,14 @@ Provides an SSL certificate.
 ```js
 const domainName = "your.domain.name.com";
 
-const certificate = provider.ACM.makeCertificate({
-  name: domainName,
-  properties: () => ({}),
-});
-
-const domain = provider.Route53Domain.useDomain({
-  name: domainName,
-});
-const hostedZone = provider.Route53.makeHostedZone({
-  name: `${domainName}.`,
-  dependencies: { domain },
-});
-
-const recordValidation = provider.Route53.makeRecord({
-  name: `certificate-validation-${domainName}.`,
-  dependencies: { hostedZone, certificate },
-  properties: ({ dependencies: { certificate } }) => {
-    const domainValidationOption =
-      certificate?.live?.DomainValidationOptions[0];
-    const record = domainValidationOption?.ResourceRecord;
-    if (domainValidationOption) {
-      assert(
-        record,
-        `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-          certificate.live
-        )}`
-      );
-    }
-    return {
-      Name: record?.Name,
-      ResourceRecords: [
-        {
-          Value: record?.Value,
-        },
-      ],
-      TTL: 300,
-      Type: "CNAME",
-    };
-  },
+provider.ACM.makeCertificate({
+  name: "grucloud.org",
 });
 ```
 
 ## Source Code Examples
 
-- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
+- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
 
 ## Properties
 

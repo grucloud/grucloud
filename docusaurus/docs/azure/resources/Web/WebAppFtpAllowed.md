@@ -9,10 +9,7 @@ Provides a **WebAppFtpAllowed** from the **Web** group
 provider.Web.makeWebAppFtpAllowed({
   name: "myWebAppFtpAllowed",
   properties: () => ({ properties: { allow: true } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.Site["mySite"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
 });
 
 ```

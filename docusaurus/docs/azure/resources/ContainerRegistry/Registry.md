@@ -14,11 +14,9 @@ provider.ContainerRegistry.makeRegistry({
     sku: { name: "Standard" },
     properties: { adminUserEnabled: true },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -34,11 +32,9 @@ provider.ContainerRegistry.makeRegistry({
     sku: { name: "Standard" },
     properties: { zoneRedundancy: "Enabled" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 

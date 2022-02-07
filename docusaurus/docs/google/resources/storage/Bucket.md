@@ -10,7 +10,7 @@ Provides a [bucket storage](https://console.cloud.google.com/storage/browser/) f
 ### Simple Bucket
 
 ```js
-const bucket = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: "myuniquebucketname",
   properties: () => ({ storageClass: "STANDARD" }),
 });
@@ -19,7 +19,7 @@ const bucket = provider.storage.makeBucket({
 ### Static Website Bucket
 
 ```js
-const bucketPublic = provider.storage.makeBucket({
+provider.storage.makeBucket({
   name: "demo.yourwebsite.com",
   properties: () => ({
     iamConfiguration: {

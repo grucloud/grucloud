@@ -19,10 +19,9 @@ provider.Network.makeServiceEndpointPolicyDefinition({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    serviceEndpointPolicy:
-      resources.Network.ServiceEndpointPolicy["myServiceEndpointPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    serviceEndpointPolicy: "myServiceEndpointPolicy",
   }),
 });
 

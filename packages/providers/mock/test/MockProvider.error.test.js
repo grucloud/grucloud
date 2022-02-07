@@ -37,8 +37,8 @@ describe("MockProvider errors", async function () {
       config,
       mockCloud: MockCloud(),
       createResources: ({ provider }) => {
-        provider.makeIp({ name: "myip" });
-        provider.makeIp({ name: "myip" });
+        provider.Compute.makeIp({ name: "myip" });
+        provider.Compute.makeIp({ name: "myip" });
       },
     });
     const resources = provider.resources();
@@ -50,7 +50,7 @@ describe("MockProvider errors", async function () {
       config,
       mockCloud,
       createResources: ({ provider }) => {
-        provider.makeIp({ name: "myip" });
+        provider.Compute.makeIp({ name: "myip" });
       },
     });
     const provider2 = await createMockProvider({
@@ -58,7 +58,7 @@ describe("MockProvider errors", async function () {
       config,
       mockCloud,
       createResources: ({ provider }) => {
-        provider.makeIp({ name: "myip" });
+        provider.Compute.makeIp({ name: "myip" });
       },
     });
 
@@ -77,14 +77,14 @@ describe("MockProvider errors", async function () {
         config,
         mockCloud,
         createResources: ({ provider }) => {
-          provider.makeVolume({
+          provider.Compute.makeVolume({
             name: "volume1",
             properties: () => ({
               size: 20_000_000_000,
             }),
           });
 
-          provider.makeServer({
+          provider.Compute.makeServer({
             name: "web-server",
             properties: () => ({
               diskSizeGb: "20",
@@ -92,7 +92,7 @@ describe("MockProvider errors", async function () {
             }),
           });
 
-          provider.makeIp({
+          provider.Compute.makeIp({
             name: "ip",
             properties: () => ({}),
           });

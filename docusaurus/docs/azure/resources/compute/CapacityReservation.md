@@ -14,10 +14,9 @@ provider.Compute.makeCapacityReservation({
     sku: { name: "Standard_DS1_v2", capacity: 4 },
     zones: ["1"],
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    capacityReservationGroup:
-      resources.Compute.CapacityReservationGroup["myCapacityReservationGroup"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    capacityReservationGroup: "myCapacityReservationGroup",
   }),
 });
 

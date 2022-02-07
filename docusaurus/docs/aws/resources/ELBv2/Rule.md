@@ -36,8 +36,8 @@ provider.ELBv2.makeRule({
       },
     ],
   }),
-  dependencies: ({ resources }) => ({
-    listener: resources.ELBv2.Listener["listener::load-balancer::HTTP::80"],
+  dependencies: ({}) => ({
+    listener: "listener::load-balancer::HTTP::80",
   }),
 });
 ```
@@ -57,9 +57,9 @@ provider.ELBv2.makeRule({
       },
     ],
   }),
-  dependencies: ({ resources }) => ({
-    listener: resources.ELBv2.Listener["listener::load-balancer::HTTPS::443"],
-    targetGroup: resources.ELBv2.TargetGroup["target-group-rest"],
+  dependencies: ({}) => ({
+    listener: "listener::load-balancer::HTTPS::443",
+    targetGroup: "target-group-rest",
   }),
 });
 ```

@@ -43,9 +43,9 @@ provider.Compute.makeCloudService({
       upgradeMode: "Auto",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 
@@ -107,9 +107,9 @@ provider.Compute.makeCloudService({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 
@@ -158,9 +158,9 @@ provider.Compute.makeCloudService({
     },
     location: "westus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 
@@ -220,9 +220,9 @@ provider.Compute.makeCloudService({
       upgradeMode: "Auto",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 

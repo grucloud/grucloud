@@ -43,8 +43,8 @@ provider.APIGateway.makeStage({
     cacheClusterSize: "0.5",
     tracingEnabled: false,
   }),
-  dependencies: ({ resources }) => ({
-    restApi: resources.APIGateway.RestApi.petStore,
+  dependencies: ({}) => ({
+    restApi: "petStore",
   }),
 });
 ```

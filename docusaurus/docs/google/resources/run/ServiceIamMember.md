@@ -19,8 +19,8 @@ provider.run.makeServiceIamMember({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    service: resources.run.Service["starhackit-server"],
+  dependencies: ({}) => ({
+    service: "starhackit-server",
   }),
 });
 ```

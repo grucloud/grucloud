@@ -9,9 +9,9 @@ Provides a **Configuration** from the **DBforPostgreSQL** group
 provider.DBforPostgreSQL.makeConfiguration({
   name: "myConfiguration",
   properties: () => ({ properties: { value: "on", source: "user-override" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server: resources.DBforPostgreSQL.FlexibleServer["myFlexibleServer"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    server: "myFlexibleServer",
   }),
 });
 

@@ -140,7 +140,11 @@ module.exports = () =>
 
       filterLive: () => pipe([pick([])]),
       dependencies: {
-        autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
+        autoScalingGroup: {
+          type: "AutoScalingGroup",
+          group: "AutoScaling",
+          parent: true,
+        },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
       },
     },

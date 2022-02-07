@@ -428,20 +428,16 @@ provider.Compute.makeVirtualMachineScaleSetVM({
       promotionCode: "aaaaaaaaaaaaaaaaaaaa",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    cloudServiceRoleInstance:
-      resources.Compute.CloudServiceRoleInstance["myCloudServiceRoleInstance"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    vmScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    cloudServiceRoleInstance: "myCloudServiceRoleInstance",
+    galleryImage: "myGalleryImage",
+    vault: "myVault",
+    key: "myKey",
+    networkSecurityGroup: "myNetworkSecurityGroup",
+    dscpConfiguration: "myDscpConfiguration",
+    availabilitySet: "myAvailabilitySet",
+    vmScaleSet: "myVirtualMachineScaleSet",
   }),
 });
 
@@ -452,20 +448,16 @@ provider.Compute.makeVirtualMachineScaleSetVM({
 provider.Compute.makeVirtualMachineScaleSetVM({
   name: "myVirtualMachineScaleSetVM",
   properties: () => ({ location: "westus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    cloudServiceRoleInstance:
-      resources.Compute.CloudServiceRoleInstance["myCloudServiceRoleInstance"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    networkSecurityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    dscpConfiguration:
-      resources.Network.DscpConfiguration["myDscpConfiguration"],
-    availabilitySet: resources.Compute.AvailabilitySet["myAvailabilitySet"],
-    vmScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    cloudServiceRoleInstance: "myCloudServiceRoleInstance",
+    galleryImage: "myGalleryImage",
+    vault: "myVault",
+    key: "myKey",
+    networkSecurityGroup: "myNetworkSecurityGroup",
+    dscpConfiguration: "myDscpConfiguration",
+    availabilitySet: "myAvailabilitySet",
+    vmScaleSet: "myVirtualMachineScaleSet",
   }),
 });
 

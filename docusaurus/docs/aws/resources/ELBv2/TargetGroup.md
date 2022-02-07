@@ -28,8 +28,8 @@ provider.ELBv2.makeTargetGroup({
     TargetType: "instance",
     ProtocolVersion: "HTTP1",
   }),
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["vpc"],
+  dependencies: ({}) => ({
+    vpc: "vpc",
   }),
 });
 ```

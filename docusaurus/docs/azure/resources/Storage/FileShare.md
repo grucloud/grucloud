@@ -8,9 +8,9 @@ Provides a **FileShare** from the **Storage** group
 ```js
 provider.Storage.makeFileShare({
   name: "myFileShare",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -21,9 +21,9 @@ provider.Storage.makeFileShare({
 provider.Storage.makeFileShare({
   name: "myFileShare",
   properties: () => ({ properties: { enabledProtocols: "NFS" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -34,9 +34,9 @@ provider.Storage.makeFileShare({
 provider.Storage.makeFileShare({
   name: "myFileShare",
   properties: () => ({ properties: { accessTier: "Hot" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

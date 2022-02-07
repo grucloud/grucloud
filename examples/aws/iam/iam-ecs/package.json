@@ -1,13 +1,13 @@
 {
-  "name": "@grucloud/example-aws-cognito",
+  "name": "iam-ecs",
   "version": "3.7.0",
   "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "graph-target": "gc graph",
-    "graph-live": "gc list --graph --types-exclude KeyPair",
+    "tree": "gc tree",
+    "list": "gc list -g",
     "gencode": "gc gencode"
   },
   "author": "",
@@ -15,10 +15,10 @@
   "dependencies": {
     "@grucloud/core": "^3.7.0",
     "@grucloud/provider-aws": "^3.7.0",
-    "rubico": "^1.6.27"
+    "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "mocha": "^9.0.3",
+    "mocha": "^9.1.3",
     "mocha-junit-reporter": "^2.0.2"
   }
 }

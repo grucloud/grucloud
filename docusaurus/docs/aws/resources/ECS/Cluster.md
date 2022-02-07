@@ -9,8 +9,8 @@ Manages an [ECS Cluster](https://console.aws.amazon.com/ecs/home?#/clusters).
 
 ```js
 provider.ECS.makeCluster({
-  name: "my-cluster",
-  properties: () => ({
+  name: "cluster",
+  properties: ({}) => ({
     settings: [
       {
         name: "containerInsights",
@@ -18,8 +18,8 @@ provider.ECS.makeCluster({
       },
     ],
   }),
-  dependencies: ({ resources }) => ({
-    capacityProviders: [resources.ECS.CapacityProvider.cp],
+  dependencies: () => ({
+    capacityProviders: ["cp"],
   }),
 });
 ```

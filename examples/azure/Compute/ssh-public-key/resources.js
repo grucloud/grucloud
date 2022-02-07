@@ -6,15 +6,19 @@ const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
     name: "rg-ssh-public-key::my-key-pair",
     properties: ({}) => ({
+      name: "my-key-pair",
       publicKeyFile: "keys/my-key-pair.pub",
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-ssh-public-key"],
+    dependencies: () => ({
+      resourceGroup: "rg-ssh-public-key",
     }),
   });
 
   provider.Resources.makeResourceGroup({
     name: "rg-ssh-public-key",
+    properties: ({}) => ({
+      name: "rg-ssh-public-key",
+    }),
   });
 };
 

@@ -147,7 +147,7 @@ module.exports = () =>
           omit(["launchTemplate"]),
         ]),
       dependencies: {
-        cluster: { type: "Cluster", group: "EKS" },
+        cluster: { type: "Cluster", group: "EKS", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
         role: { type: "Role", group: "IAM" },
         launchTemplate: { type: "LaunchTemplate", group: "EC2" },

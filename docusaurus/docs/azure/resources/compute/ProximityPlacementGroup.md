@@ -12,9 +12,7 @@ provider.Compute.makeProximityPlacementGroup({
     location: "westus",
     properties: { proximityPlacementGroupType: "Standard" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

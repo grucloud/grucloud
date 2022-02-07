@@ -9,9 +9,9 @@ Provides a **Key** from the **KeyVault** group
 provider.KeyVault.makeKey({
   name: "myKey",
   properties: () => ({ properties: { kty: "RSA" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 

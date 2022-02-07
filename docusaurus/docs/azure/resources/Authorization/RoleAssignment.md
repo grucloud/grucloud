@@ -16,16 +16,13 @@ provider.Authorization.makeRoleAssignment({
       principalType: "User",
     },
   }),
-  dependencies: ({ resources }) => ({
-    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
-    principalManagedCluster:
-      resources.ContainerService.ManagedCluster["myManagedCluster"],
-    principalDiskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    principalVirtualMachine:
-      resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    scopeResourceGroup: "myResourceGroup",
+    scopeVirtualMachine: "myVirtualMachine",
+    roleDefinition: "myRoleDefinition",
+    principalManagedCluster: "myManagedCluster",
+    principalDiskEncryptionSet: "myDiskEncryptionSet",
+    principalVirtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -43,16 +40,13 @@ provider.Authorization.makeRoleAssignment({
       principalType: "User",
     },
   }),
-  dependencies: ({ resources }) => ({
-    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
-    principalManagedCluster:
-      resources.ContainerService.ManagedCluster["myManagedCluster"],
-    principalDiskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    principalVirtualMachine:
-      resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    scopeResourceGroup: "myResourceGroup",
+    scopeVirtualMachine: "myVirtualMachine",
+    roleDefinition: "myRoleDefinition",
+    principalManagedCluster: "myManagedCluster",
+    principalDiskEncryptionSet: "myDiskEncryptionSet",
+    principalVirtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -70,16 +64,13 @@ provider.Authorization.makeRoleAssignment({
       principalType: "User",
     },
   }),
-  dependencies: ({ resources }) => ({
-    scopeResourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    scopeVirtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
-    roleDefinition: resources.Authorization.RoleDefinition["myRoleDefinition"],
-    principalManagedCluster:
-      resources.ContainerService.ManagedCluster["myManagedCluster"],
-    principalDiskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    principalVirtualMachine:
-      resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    scopeResourceGroup: "myResourceGroup",
+    scopeVirtualMachine: "myVirtualMachine",
+    roleDefinition: "myRoleDefinition",
+    principalManagedCluster: "myManagedCluster",
+    principalDiskEncryptionSet: "myDiskEncryptionSet",
+    principalVirtualMachine: "myVirtualMachine",
   }),
 });
 

@@ -9,12 +9,9 @@ Provides a **VirtualNetworkGatewayConnectionSharedKey** from the **Network** gro
 provider.Network.makeVirtualNetworkGatewayConnectionSharedKey({
   name: "myVirtualNetworkGatewayConnectionSharedKey",
   properties: () => ({ value: "AzureAbc123" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetworkGatewayConnection:
-      resources.Network.VirtualNetworkGatewayConnection[
-        "myVirtualNetworkGatewayConnection"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetworkGatewayConnection: "myVirtualNetworkGatewayConnection",
   }),
 });
 

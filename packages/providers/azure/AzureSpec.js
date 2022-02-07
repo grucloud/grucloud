@@ -14,7 +14,7 @@ const {
   pick,
   reduce,
   fork,
-  any,
+  switchCase,
 } = require("rubico");
 
 const {
@@ -24,6 +24,8 @@ const {
   find,
   values,
   size,
+  last,
+  append,
 } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
@@ -137,6 +139,51 @@ const buildDefaultSpec = fork({
       filter(get("parent")),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
+  // inferName:
+  //   ({ dependencies }) =>
+  //   (resource) =>
+  //     pipe([
+  //       tap(() => {
+  //         assert(dependencies);
+  //         assert(resource);
+  //       }),
+  //       () => dependencies,
+  //       filter(get("parent")),
+  //       tap((params) => {
+  //         assert(true);
+  //       }),
+  //       values,
+  //       last,
+  //       tap((params) => {
+  //         assert(true);
+  //       }),
+  //       switchCase([
+  //         isEmpty,
+  //         () => "",
+  //         ({ type, group }) =>
+  //           pipe([
+  //             resource.dependencies,
+  //             tap((params) => {
+  //               assert(resource.properties.name);
+  //               assert(type);
+  //               assert(group);
+  //             }),
+  //             find(and([eq(get("type"), type), eq(get("group"), group)])),
+  //             tap((params) => {
+  //               assert(true);
+  //             }),
+  //             switchCase([
+  //               get("name"),
+  //               pipe([get("name"), append("::")]),
+  //               () => "",
+  //             ]),
+  //           ])(),
+  //       ]),
+  //       append(resource.properties.name),
+  //       tap((params) => {
+  //         assert(true);
+  //       }),
+  //     ])(),
   Client:
     ({ dependencies }) =>
     ({ spec, config, lives }) =>
@@ -150,12 +197,11 @@ const buildDefaultSpec = fork({
     ({ pickPropertiesCreate = [] }) =>
     () =>
       pipe([
-        pick(pickPropertiesCreate),
+        pick(["name", ...pickPropertiesCreate]),
         omit([
           "properties.provisioningState",
           "etag",
           "type",
-          //"identity",
           "identity.userAssignedIdentities",
         ]),
       ]),

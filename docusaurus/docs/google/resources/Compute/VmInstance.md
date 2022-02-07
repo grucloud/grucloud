@@ -10,7 +10,7 @@ Provides a Virtual Machine instance.
 ### Simple VM
 
 ```js
-const server = provider.compute.makeVmInstance({
+provider.compute.makeVmInstance({
   name: "web-server",
   properties: () => ({
     diskSizeGb: "20",
@@ -38,13 +38,13 @@ gcloud compute images list
 ### Attach a public IP address
 
 ```js
-const ip = provider.compute.makeAddress({
+provider.compute.makeAddress({
   name: `ip-webserver`,
 });
 
 const server = provider.compute.makeVmInstance({
   name: `webserver`,
-  dependencies: { ip },
+  dependencies: { ip: `ip-webserver` },
   properties: () => ({
     diskSizeGb: "20",
     machineType: "f1-micro",
@@ -65,7 +65,7 @@ const server = provider.compute.makeVmInstance({
 ### Attach a service account
 
 ```js
-const serviceAccount = provider.iam.makeServiceAccount({
+provider.iam.makeServiceAccount({
   name: `sa-dev`,
   properties: () => ({
     serviceAccount: {
@@ -77,7 +77,7 @@ const serviceAccount = provider.iam.makeServiceAccount({
 // Allocate a server
 const server = provider.compute.makeVmInstance({
   name: `webserver`,
-  dependencies: { serviceAccount },
+  dependencies: () => ({ serviceAccount: `sa-dev` }),
   properties: () => ({
     diskSizeGb: "20",
     machineType: "f1-micro",

@@ -14,9 +14,9 @@ provider.ApiGatewayV2.makeRoute({
     AuthorizationType: "NONE",
     RouteKey: "ANY /my-function",
   }),
-  dependencies: ({ resources }) => ({
-    api: resources.ApiGatewayV2.Api.myApi,
-    integration: resources.ApiGatewayV2.Integration.integrationMyApiMyFunction,
+  dependencies: ({  }) => ({
+    api: "my-api"
+    integration: "integrationMyApiMyFunction"
   }),
 });
 ```

@@ -22,13 +22,11 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       type: "AWS_LAMBDA",
     }),
-    dependencies: ({ resources }) => ({
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
       serviceRole:
-        resources.IAM.Role[
-          "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG"
-        ],
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      lambdaFunction: resources.Lambda.Function["lambda-fns"],
+        "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
+      lambdaFunction: "lambda-fns",
     }),
   });
 
@@ -38,9 +36,9 @@ const createResources = ({ provider }) => {
       fieldName: "createNote",
       kind: "UNIT",
     }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      dataSource: resources.AppSync.DataSource["lambdaDatasource"],
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      dataSource: "lambdaDatasource",
     }),
   });
 
@@ -50,9 +48,9 @@ const createResources = ({ provider }) => {
       fieldName: "deleteNote",
       kind: "UNIT",
     }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      dataSource: resources.AppSync.DataSource["lambdaDatasource"],
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      dataSource: "lambdaDatasource",
     }),
   });
 
@@ -62,9 +60,9 @@ const createResources = ({ provider }) => {
       fieldName: "updateNote",
       kind: "UNIT",
     }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      dataSource: resources.AppSync.DataSource["lambdaDatasource"],
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      dataSource: "lambdaDatasource",
     }),
   });
 
@@ -74,9 +72,9 @@ const createResources = ({ provider }) => {
       fieldName: "getNoteById",
       kind: "UNIT",
     }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      dataSource: resources.AppSync.DataSource["lambdaDatasource"],
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      dataSource: "lambdaDatasource",
     }),
   });
 
@@ -86,9 +84,9 @@ const createResources = ({ provider }) => {
       fieldName: "listNotes",
       kind: "UNIT",
     }),
-    dependencies: ({ resources }) => ({
-      graphqlApi: resources.AppSync.GraphqlApi["cdk-notes-appsync-api"],
-      dataSource: resources.AppSync.DataSource["lambdaDatasource"],
+    dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
+      dataSource: "lambdaDatasource",
     }),
   });
 
@@ -183,8 +181,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      policies: [resources.IAM.Policy["AWSLambdaBasicExecutionRole"]],
+    dependencies: () => ({
+      policies: ["AWSLambdaBasicExecutionRole"],
     }),
   });
 
@@ -210,10 +208,8 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      role: resources.IAM.Role[
-        "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV"
-      ],
+    dependencies: () => ({
+      role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     }),
   });
 };

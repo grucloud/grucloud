@@ -18,13 +18,10 @@ provider.OperationalInsights.makeStorageInsightConfig({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    linkedStorageAccount:
-      resources.OperationalInsights.LinkedStorageAccount[
-        "myLinkedStorageAccount"
-      ],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    linkedStorageAccount: "myLinkedStorageAccount",
+    workspace: "myWorkspace",
   }),
 });
 

@@ -21,10 +21,10 @@ provider.Compute.makeDiskEncryptionSet({
       encryptionType: "EncryptionAtRestWithCustomerKey",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
+    key: "myKey",
   }),
 });
 
@@ -45,10 +45,10 @@ provider.Compute.makeDiskEncryptionSet({
       encryptionType: "EncryptionAtRestWithCustomerKey",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
+    key: "myKey",
   }),
 });
 

@@ -13,9 +13,9 @@ provider.ApiGatewayV2.makeApiMapping({
     ApiMappingKey: "",
   }),
   dependencies: ({ resources }) => ({
-    api: resources.ApiGatewayV2.Api.myApi,
-    domainName: resources.ApiGatewayV2.DomainName.grucloudOrg,
-    stage: resources.ApiGatewayV2.Stage.myApiStageDev,
+    api: "myApi"
+    domainName: "grucloud.org",
+    stage: "myApiStageDev",
   }),
 });
 ```

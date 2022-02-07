@@ -8,9 +8,9 @@ Provides a **Table** from the **Storage** group
 ```js
 provider.Storage.makeTable({
   name: "myTable",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

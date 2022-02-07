@@ -16,10 +16,9 @@ provider.Network.makeVirtualApplianceSite({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkVirtualAppliance:
-      resources.Network.NetworkVirtualAppliance["myNetworkVirtualAppliance"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    networkVirtualAppliance: "myNetworkVirtualAppliance",
   }),
 });
 

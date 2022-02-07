@@ -12,10 +12,9 @@ provider.Compute.makeAvailabilitySet({
     location: "westus",
     properties: { platformFaultDomainCount: 2, platformUpdateDomainCount: 20 },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    proximityPlacementGroup:
-      resources.Compute.ProximityPlacementGroup["myProximityPlacementGroup"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    proximityPlacementGroup: "myProximityPlacementGroup",
   }),
 });
 

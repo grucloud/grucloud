@@ -23,9 +23,9 @@ provider.Network.makeHubRouteTable({
       labels: ["label1", "label2"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHub: "myVirtualHub",
   }),
 });
 

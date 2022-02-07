@@ -11,9 +11,9 @@ provider.DBforPostgreSQL.makeDatabase({
   properties: () => ({
     properties: { charset: "utf8", collation: "en_US.utf8" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server: resources.DBforPostgreSQL.FlexibleServer["myFlexibleServer"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    server: "myFlexibleServer",
   }),
 });
 

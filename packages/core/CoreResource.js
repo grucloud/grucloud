@@ -20,6 +20,7 @@ const {
 } = require("rubico");
 
 const {
+  first,
   append,
   isEmpty,
   isString,
@@ -33,6 +34,8 @@ const {
   size,
   identity,
   unless,
+  when,
+  values,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -97,13 +100,13 @@ exports.ResourceMaker = ({
             `resource ${spec.type} without name must implement 'inferName'`
           );
         }),
-        () => ({
+        provider.resources,
+        tap((resources) => {
+          assert(resources);
+        }),
+        (resources) => ({
           properties: properties({ config, getId }),
-          dependencies: () =>
-            dependencies({
-              resources: provider.resources(),
-              config,
-            }),
+          dependencies: getDependencies(),
         }),
         tap((params) => {
           assert(true);
@@ -143,6 +146,8 @@ exports.ResourceMaker = ({
     unless(isFunction, (dependencies) => () => ({ ...dependencies })),
     (dep) => () => dep({ resources: provider.resources() }),
     (dep) => () => spec.transformDependencies({ provider })(dep()),
+    (dep) => () =>
+      mapDependenciesNameToResource(dep({ resources: provider.resources() })),
   ]);
 
   const getClient = () => provider.getClient(spec);
@@ -312,7 +317,7 @@ exports.ResourceMaker = ({
 
   const getDependencyList = () =>
     pipe([
-      tap((result) => {
+      tap(() => {
         logger.info(`getDependencyList ${type} `);
       }),
       getDependencies(),
@@ -330,6 +335,64 @@ exports.ResourceMaker = ({
       ),
     ])();
 
+  const dependencyNameToResource = ({ key: depKey, value }) =>
+    pipe([
+      tap(() => {
+        assert(depKey);
+        assert(value);
+      }),
+      () => spec.dependencies,
+      tap((dependencies) => {
+        //assert(dependencies, "missing dependency");
+      }),
+      map.entries(([key, value]) => [
+        key,
+        when(eq(key, depKey), () => value)(),
+      ]),
+      filter(not(isEmpty)),
+      values,
+      first,
+      switchCase([
+        isEmpty,
+        () => {
+          throw Error(`Cannot find the dependency ${depKey}:${value} `);
+        },
+        pipe([
+          //TODO change getResourceByName, should take an object
+          ({ type, group }) => `${provider.name}::${group}::${type}::${value}`,
+          provider.getResourceByName,
+        ]),
+      ]),
+    ])();
+
+  const mapDependenciesNameToResource = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    map.entries(([key, value]) => [
+      key,
+      pipe([
+        () => value,
+        switchCase([
+          isString,
+          pipe([() => ({ key, value }), dependencyNameToResource]),
+          Array.isArray,
+          pipe([
+            map(
+              pipe([
+                when(isString, (name) =>
+                  dependencyNameToResource({ key, value: name })
+                ),
+              ])
+            ),
+          ]),
+          identity,
+        ]),
+      ])(),
+    ]),
+    filter(not(isEmpty)),
+  ]);
+
   const resolveDependencies = ({
     dependencies,
     dependenciesMustBeUp = false,
@@ -339,7 +402,8 @@ exports.ResourceMaker = ({
         assert(isFunction(dependencies));
       }),
       dependencies,
-      filter(or([isEmpty, not(eq(callProp("toString"), toString))])),
+      //TODO
+      filter(or([not(isEmpty) /*, not(isString)*/])),
       tap((params) => {
         assert(true);
       }),

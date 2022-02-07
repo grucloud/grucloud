@@ -15,12 +15,12 @@ provider.Network.makeVirtualHubIpConfiguration({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    natGateway: "myNatGateway",
+    ddosCustomPolicy: "myDdosCustomPolicy",
+    publicIpPrefix: "myPublicIPPrefix",
+    virtualHub: "myVirtualHub",
   }),
 });
 

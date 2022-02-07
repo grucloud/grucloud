@@ -701,7 +701,7 @@ exports.fnSpecs = ({ config }) => {
         omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -765,26 +765,6 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
-        configDefault: ({ properties, dependencies, config, spec }) =>
-          pipe([
-            () => properties,
-            defaultsDeep(
-              configDefaultGeneric({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-            defaultsDeep(
-              configDefaultDependenciesId({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-          ])(),
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -927,26 +907,6 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        configDefault: ({ properties, dependencies, config, spec }) =>
-          pipe([
-            () => properties,
-            defaultsDeep(
-              configDefaultGeneric({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-            defaultsDeep(
-              configDefaultDependenciesId({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-          ])(),
       },
       {
         type: "FirewallPolicy",

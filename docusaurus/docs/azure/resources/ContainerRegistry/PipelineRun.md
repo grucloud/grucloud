@@ -21,9 +21,9 @@ provider.ContainerRegistry.makePipelineRun({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 
@@ -44,9 +44,9 @@ provider.ContainerRegistry.makePipelineRun({
       forceUpdateTag: "2020-03-04T17:23:21.9261521+00:00",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 

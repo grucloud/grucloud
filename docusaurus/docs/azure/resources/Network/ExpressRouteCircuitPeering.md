@@ -16,12 +16,11 @@ provider.Network.makeExpressRouteCircuitPeering({
       vlanId: 200,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
-    expressRouteConnection:
-      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
-    circuit: resources.Network.ExpressRouteCircuit["myExpressRouteCircuit"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    routeFilter: "myRouteFilter",
+    expressRouteConnection: "myExpressRouteConnection",
+    circuit: "myExpressRouteCircuit",
   }),
 });
 

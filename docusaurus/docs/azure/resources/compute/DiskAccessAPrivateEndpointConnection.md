@@ -16,10 +16,10 @@ provider.Compute.makeDiskAccessAPrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    privateEndpoint: "myPrivateEndpoint",
+    diskAccess: "myDiskAccess",
   }),
 });
 

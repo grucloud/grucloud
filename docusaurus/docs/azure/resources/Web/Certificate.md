@@ -12,11 +12,10 @@ provider.Web.makeCertificate({
     location: "East US",
     properties: { hostNames: ["ServerCert"], password: "<password>" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    hostingEnvironment:
-      resources.Web.HostingEnvironment["myHostingEnvironment"],
-    serverFarm: resources.Web.ServerFarm["myServerFarm"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    hostingEnvironment: "myHostingEnvironment",
+    serverFarm: "myServerFarm",
   }),
 });
 

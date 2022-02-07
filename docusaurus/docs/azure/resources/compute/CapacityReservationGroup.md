@@ -13,9 +13,7 @@ provider.Compute.makeCapacityReservationGroup({
     tags: { department: "finance" },
     zones: ["1", "2"],
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

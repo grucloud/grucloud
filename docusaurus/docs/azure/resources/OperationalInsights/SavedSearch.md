@@ -19,9 +19,9 @@ provider.OperationalInsights.makeSavedSearch({
       tags: [{ name: "Group", value: "Computer" }],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    workspace: "myWorkspace",
   }),
 });
 

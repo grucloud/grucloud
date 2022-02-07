@@ -10,7 +10,7 @@ Manages a [DB Subnet Group](https://docs.aws.amazon.com/AmazonRDS/latest/UserGui
 ```js
 const dbSubnetGroup = provider.RDS.makeDBSubnetGroup({
   name: "db-subnet-group",
-  dependencies: { subnets: [subnetA, subnetB] },
+  dependencies: { subnets: ["subnetA", "subnetB"] },
   properties: () => ({ DBSubnetGroupDescription: "db subnet group" }),
 });
 ```

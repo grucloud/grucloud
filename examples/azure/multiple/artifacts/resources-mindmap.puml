@@ -3,29 +3,27 @@ title Resources for project multiple
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Authorization
-++++ RoleAssignment (2)
 +++ ContainerService
 ++++ ManagedCluster (1)
 +++ Resources
-++++ ResourceGroup (10)
+++++ ResourceGroup (7)
++++ Authorization
+++++ RoleAssignment (1)
 +++ Compute
-++++ VirtualMachine (4)
-++++ SshPublicKey (5)
+++++ SshPublicKey (3)
+++++ VirtualMachine (2)
 ++++ VirtualMachineExtension (1)
 ++++ Disk (1)
-++++ VirtualMachineScaleSet (2)
+++++ VirtualMachineScaleSet (1)
 +++ Network
-++++ NetworkInterface (4)
-++++ NetworkSecurityGroup (7)
-++++ PublicIPAddress (6)
-++++ Subnet (7)
-++++ VirtualNetwork (7)
+++++ NetworkInterface (2)
+++++ NetworkSecurityGroup (3)
+++++ PublicIPAddress (4)
+++++ Subnet (4)
+++++ VirtualNetwork (4)
 ++++ LoadBalancer (1)
 ++++ LoadBalancerBackendAddressPool (1)
 ++++ NatGateway (1)
-+++ ManagedIdentity
-++++ UserAssignedIdentity (1)
 +++ DBforPostgreSQL
 ++++ Configuration (1)
 ++++ FirewallRule (1)

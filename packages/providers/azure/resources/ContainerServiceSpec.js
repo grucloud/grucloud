@@ -13,12 +13,7 @@ const {
   eq,
 } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const { compare } = require("@grucloud/core/Common");
-
-const {
-  findDependenciesResourceGroup,
-  assignDependenciesId,
-} = require("../AzureCommon");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 
@@ -151,7 +146,12 @@ exports.fnSpecs = ({ config }) =>
                   "identityProfile",
                   "nodeResourceGroup",
                   "windowsProfile",
+                  "addonProfiles.httpApplicationRouting.identity",
+                  "addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName",
+                  "addonProfiles.azureKeyvaultSecretsProvider.identity",
+                  "diskEncryptionSetID",
                 ]),
+                omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),
@@ -171,6 +171,15 @@ exports.fnSpecs = ({ config }) =>
                               pick(["applicationGatewayName", "subnetCIDR"]),
                             ]),
                           }),
+                        ]),
+                      })
+                    ),
+                    when(
+                      get("azureKeyvaultSecretsProvider"),
+                      assign({
+                        ingressApplicationGateway: pipe([
+                          get("azureKeyvaultSecretsProvider"),
+                          omit(["identity"]),
                         ]),
                       })
                     ),
@@ -228,21 +237,7 @@ exports.fnSpecs = ({ config }) =>
                       assign({
                         httpApplicationRouting: pipe([
                           get("httpApplicationRouting"),
-                          when(
-                            get("identity"),
-                            assign({
-                              identity: pipe([
-                                get("identity"),
-                                pick(["resourceId"]),
-                                assignDependenciesId({
-                                  group: "ManagedIdentity",
-                                  type: "UserAssignedIdentity",
-                                  lives,
-                                  propertyName: "resourceId",
-                                }),
-                              ]),
-                            })
-                          ),
+                          pick(["enabled"]),
                         ]),
                       })
                     ),

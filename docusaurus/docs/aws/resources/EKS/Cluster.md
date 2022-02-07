@@ -24,18 +24,18 @@ In order to create an EKS Cluster, a few resources need to be created before:
 ```js
 provider.EKS.makeCluster({
   name: "my-cluster",
-  properties: ({ config }) => ({
+  properties: ({}) => ({
     version: "1.20",
   }),
-  dependencies: ({ resources }) => ({
+  dependencies: () => ({
     subnets: [
-      resources.EC2.Subnet.subnetPrivateUseast1A,
-      resources.EC2.Subnet.subnetPrivateUseast1D,
-      resources.EC2.Subnet.subnetPublicUseast1A,
-      resources.EC2.Subnet.subnetPublicUseast1D,
+      "SubnetPrivateUSEAST1D",
+      "SubnetPrivateUSEAST1F",
+      "SubnetPublicUSEAST1D",
+      "SubnetPublicUSEAST1F",
     ],
-    securityGroups: [resources.EC2.SecurityGroup.controlPlaneSecurityGroup],
-    role: resources.IAM.Role.eksctlMyClusterClusterServiceRole_13Ask7Knkkbgb,
+    securityGroups: ["ControlPlaneSecurityGroup"],
+    role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
   }),
 });
 ```

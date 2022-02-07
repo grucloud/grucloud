@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project Mock Simple
+skinparam monochrome true
++ Infra
+++ mock
++++ Compute
+++++ Server (1)
+@endmindmap

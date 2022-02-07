@@ -8,7 +8,7 @@ Manages a [Firewall](https://cloud.google.com/vpc/docs/firewalls)
 Allow ingress traffic from anywhere to SSH and HTTP/HTTPS:
 
 ```js
-const firewall22_80_433 = provider.compute.makeFirewall({
+provider.compute.makeFirewall({
   name: `firewall-22-80-433-${stage}`,
   properties: () => ({
     allowed: [
@@ -24,7 +24,7 @@ const firewall22_80_433 = provider.compute.makeFirewall({
 Allow ping from anywhere:
 
 ```js
-const firewallIcmp = provider.compute.makeFirewall({
+provider.compute.makeFirewall({
   name: `firewall-icmp-${stage}`,
   properties: () => ({
     allowed: [
