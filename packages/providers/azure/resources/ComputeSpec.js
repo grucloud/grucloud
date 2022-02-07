@@ -326,7 +326,7 @@ exports.fnSpecs = ({ config }) =>
     () => [
       {
         type: "SshPublicKey",
-        configDefault: async ({
+        configDefault: ({
           properties,
           dependencies,
           config,
@@ -413,6 +413,7 @@ exports.fnSpecs = ({ config }) =>
           "properties.rotationToLatestKeyVersionEnabled",
         ],
         pickPropertiesCreate: [
+          "name",
           "properties.encryptionType",
           "properties.rotationToLatestKeyVersionEnabled",
         ],
@@ -847,7 +848,7 @@ exports.fnSpecs = ({ config }) =>
         },
         filterLive: (context) =>
           pipe([
-            pick(["tags", "properties", "identity.type"]),
+            pick(["name", "tags", "properties", "identity.type"]),
             assign({
               properties: pipe([
                 get("properties"),

@@ -18,13 +18,16 @@ const getStorageAccountName = pipe([
 ]);
 exports.getStorageAccountName = getStorageAccountName;
 
-const getContainerName = pipe([
-  callProp("split", "::"),
-  (arr) => arr[2],
-  tap((containerName) => {
-    assert(containerName);
-  }),
-]);
+const getContainerName = (fullName) =>
+  pipe([
+    () => fullName,
+    callProp("split", "::"),
+    (arr) => arr[2],
+    tap((containerName) => {
+      assert(containerName);
+    }),
+  ])();
+
 exports.getContainerName = getContainerName;
 
 const getBlobName = pipe([callProp("split", "::"), last]);

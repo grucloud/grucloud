@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "rg-virtual-machine-scale-set::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -18,7 +17,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-virtual-machine-scale-set::vm-scale-set",
     properties: ({ getId }) => ({
       name: "vm-scale-set",
       sku: {
@@ -131,7 +129,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-virtual-machine-scale-set::basicnsgrg-virtual-machine-scale-set-vnet-nic01",
     properties: ({}) => ({
       name: "basicnsgrg-virtual-machine-scale-set-vnet-nic01",
       properties: {
@@ -144,7 +141,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
     properties: ({}) => ({
       name: "basicnsgvirtual-network-nic01",
       properties: {
@@ -157,7 +153,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-virtual-machine-scale-set::virtual-network::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -171,7 +166,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-virtual-machine-scale-set::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -186,7 +180,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-virtual-machine-scale-set",
     properties: ({}) => ({
       name: "rg-virtual-machine-scale-set",
     }),

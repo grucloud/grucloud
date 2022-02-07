@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Network.makeAzureFirewall({
-    name: "rg-firewall::firewall",
     properties: ({ getId }) => ({
+      name: "firewall",
       properties: {
         sku: {
           name: "AZFW_VNet",
@@ -55,7 +55,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeFirewallPolicy({
-    name: "rg-firewall::firewall-policy",
     properties: ({}) => ({
       name: "firewall-policy",
       properties: {
@@ -71,7 +70,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-firewall::ip-address",
     properties: ({}) => ({
       name: "ip-address",
       sku: {
@@ -87,7 +85,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-firewall::virtual-network::azurefirewallsubnet",
     properties: ({}) => ({
       name: "azurefirewallsubnet",
       properties: {
@@ -101,7 +98,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-firewall::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -116,7 +112,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-firewall",
     properties: ({}) => ({
       name: "rg-firewall",
     }),

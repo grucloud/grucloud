@@ -100,12 +100,9 @@ exports.ResourceMaker = ({
             `resource ${spec.type} without name must implement 'inferName'`
           );
         }),
-        provider.resources,
-        tap((resources) => {
-          assert(resources);
-        }),
-        (resources) => ({
+        () => ({
           properties: properties({ config, getId }),
+          dependenciesSpec: dependencies(),
           dependencies: getDependencies(),
         }),
         tap((params) => {

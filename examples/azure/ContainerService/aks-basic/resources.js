@@ -20,8 +20,8 @@ const createResources = ({ provider }) => {
   // });
 
   provider.ContainerService.makeManagedCluster({
-    name: "rg-aks-basic::cluster",
     properties: ({}) => ({
+      name: "cluster",
       sku: {
         name: "Basic",
         tier: "Free",
@@ -93,7 +93,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-aks-basic",
     properties: ({}) => ({
       name: "rg-aks-basic",
     }),

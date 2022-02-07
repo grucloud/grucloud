@@ -3,25 +3,9 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  // provider.Authorization.makeRoleAssignment({
-  //   name: "58d30363-0623-4731-849c-9faf19cee420",
-  //   properties: ({}) => ({
-  //     name: "58d30363-0623-4731-849c-9faf19cee420",
-  //     properties: {
-  //       roleName: "Contributor",
-  //       principalName: "rg-aks-basic::cluster",
-  //       principalType: "ServicePrincipal",
-  //     },
-  //   }),
-  //   dependencies: () => ({
-  //     scopeResourceGroup: "mc_rg-aks-basic_cluster_canadacentral",
-  //     principalManagedCluster: "rg-aks-basic::cluster",
-  //   }),
-  // });
-
   provider.ContainerService.makeManagedCluster({
-    name: "rg-aks-basic::cluster",
     properties: ({}) => ({
+      name: "cluster",
       sku: {
         name: "Basic",
         tier: "Free",
@@ -93,7 +77,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-aks-basic",
     properties: ({}) => ({
       name: "rg-aks-basic",
     }),

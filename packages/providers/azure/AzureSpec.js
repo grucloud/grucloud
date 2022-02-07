@@ -18,6 +18,7 @@ const {
 } = require("rubico");
 
 const {
+  unless,
   when,
   defaultsDeep,
   callProp,
@@ -26,6 +27,7 @@ const {
   size,
   last,
   append,
+  isEmpty,
 } = require("rubico/x");
 
 const { compare } = require("@grucloud/core/Common");
@@ -139,51 +141,43 @@ const buildDefaultSpec = fork({
       filter(get("parent")),
       map(({ group, type }) => `${group}::${type}`),
     ])(),
-  // inferName:
-  //   ({ dependencies }) =>
-  //   (resource) =>
-  //     pipe([
-  //       tap(() => {
-  //         assert(dependencies);
-  //         assert(resource);
-  //       }),
-  //       () => dependencies,
-  //       filter(get("parent")),
-  //       tap((params) => {
-  //         assert(true);
-  //       }),
-  //       values,
-  //       last,
-  //       tap((params) => {
-  //         assert(true);
-  //       }),
-  //       switchCase([
-  //         isEmpty,
-  //         () => "",
-  //         ({ type, group }) =>
-  //           pipe([
-  //             resource.dependencies,
-  //             tap((params) => {
-  //               assert(resource.properties.name);
-  //               assert(type);
-  //               assert(group);
-  //             }),
-  //             find(and([eq(get("type"), type), eq(get("group"), group)])),
-  //             tap((params) => {
-  //               assert(true);
-  //             }),
-  //             switchCase([
-  //               get("name"),
-  //               pipe([get("name"), append("::")]),
-  //               () => "",
-  //             ]),
-  //           ])(),
-  //       ]),
-  //       append(resource.properties.name),
-  //       tap((params) => {
-  //         assert(true);
-  //       }),
-  //     ])(),
+  inferName:
+    ({ dependencies }) =>
+    (resource) =>
+      pipe([
+        tap(() => {
+          assert(dependencies);
+          assert(resource);
+          assert(resource.dependenciesSpec);
+        }),
+        () => dependencies,
+        map.entries(([key, dep]) => [key, { varName: key, ...dep }]),
+        filter(get("parent")),
+        values,
+        last,
+        switchCase([
+          isEmpty,
+          () => "",
+          ({ varName }) =>
+            pipe([
+              () => resource.dependenciesSpec,
+              get(varName),
+              tap((name) => {
+                assert(name);
+              }),
+            ])(),
+        ]),
+        unless(
+          () => isEmpty(resource.properties.name),
+          pipe([
+            unless(isEmpty, append("::")),
+            append(resource.properties.name),
+          ])
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
   Client:
     ({ dependencies }) =>
     ({ spec, config, lives }) =>

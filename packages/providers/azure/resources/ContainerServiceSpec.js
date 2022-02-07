@@ -198,6 +198,7 @@ exports.fnSpecs = ({ config }) =>
               assert(pickPropertiesCreate);
             }),
             pick([
+              "name",
               ...pickPropertiesCreate,
               "properties.servicePrincipalProfile.clientId",
               "identity.type",

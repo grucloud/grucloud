@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Resources.makeResourceGroup({
-    name: "rg-storage-web",
     properties: ({}) => ({
       name: "rg-storage-web",
     }),
@@ -25,7 +24,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Storage.makeBlobContainer({
-    name: "rg-storage-web::gcstorageweb::$web",
     properties: ({}) => ({
       name: "$web",
       properties: {
@@ -44,9 +42,7 @@ const createResources = ({ provider }) => {
   });
 
   provider.Storage.makeBlobServiceProperties({
-    name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
-      name: "gcstorageweb",
       properties: {
         staticWebsite: {
           enabled: true,
@@ -65,7 +61,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Storage.makeStorageAccount({
-    name: "rg-storage-web::gcstorageweb",
     properties: ({}) => ({
       name: "gcstorageweb",
       sku: {

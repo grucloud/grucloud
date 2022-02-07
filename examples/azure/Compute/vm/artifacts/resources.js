@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
-    name: "rg-vm::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A1_v2",
@@ -54,7 +54,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-vm::network-interface",
     properties: ({}) => ({
       name: "network-interface",
       properties: {
@@ -78,7 +77,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm::security-group",
     properties: ({}) => ({
       name: "security-group",
       properties: {
@@ -118,7 +116,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-vm::ip",
     properties: ({}) => ({
       name: "ip",
     }),
@@ -128,7 +125,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-vm::virtual-network::subnet",
     properties: ({}) => ({
       name: "subnet",
       properties: {
@@ -142,7 +138,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -157,7 +152,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm",
     properties: ({}) => ({
       name: "rg-vm",
     }),
