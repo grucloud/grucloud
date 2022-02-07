@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-vpc",
-  "version": "3.7.0",
+  "version": "4.0.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^3.7.0",
-    "@grucloud/provider-aws": "^3.7.0",
+    "@grucloud/core": "^4.0.0",
+    "@grucloud/provider-aws": "^4.0.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/mock-server",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Mock a Cloud Provider",
   "main": "MockServerRun.js",
   "directories": {
