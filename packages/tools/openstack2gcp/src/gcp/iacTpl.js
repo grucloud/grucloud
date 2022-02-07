@@ -8,15 +8,4 @@ const createResources = ({ provider }) => {
 };
 
 exports.createResources = createResources;
-
-exports.createStack = async ({ createProvider }) => {
-  const provider = createProvider(GoogleProvider, { config: require("./config") });
-  createResources({
-    provider,
-  });
-
-  return {
-    provider,
-  };
-};
 `;

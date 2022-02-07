@@ -7,10 +7,8 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ createProvider }) => {
   const provider = createProvider(AzureProvider, {
+    createResources,
     config: require("./config"),
-  });
-  createResources({
-    provider,
   });
 
   return {
