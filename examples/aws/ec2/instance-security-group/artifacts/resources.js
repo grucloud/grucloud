@@ -42,9 +42,12 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInstance({
     name: "my-ec2",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
     }),
     dependencies: () => ({
       keyPair: "kp-ec2",

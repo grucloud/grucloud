@@ -20,7 +20,8 @@
     "mime-types": "^2.1.34",
     "pluralize": "^8.0.0",
     "prettier": "^2.5.1",
-    "rubico": "^1.8.3"
+    "rubico": "^1.8.3",
+    "azure-rest-api-specs": "https://github.com/Azure/azure-rest-api-specs.git#6af1afc7c3fbdea232a80f1334894d459e1dc922"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",

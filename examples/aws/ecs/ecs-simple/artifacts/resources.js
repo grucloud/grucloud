@@ -11,15 +11,10 @@ const createResources = ({ provider }) => {
       DesiredCapacity: 1,
       HealthCheckGracePeriod: 0,
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["PubSubnetAz1"],
-        resources.EC2.Subnet["PubSubnetAz2"],
-      ],
+    dependencies: () => ({
+      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchConfiguration:
-        resources.AutoScaling.LaunchConfiguration[
-          "EC2ContainerService-cluster-EcsInstanceLc-COYK3CQZ0QRJ"
-        ],
+        "EC2ContainerService-cluster-EcsInstanceLc-COYK3CQZ0QRJ",
     }),
   });
 
@@ -44,9 +39,9 @@ const createResources = ({ provider }) => {
       ],
       EbsOptimized: false,
     }),
-    dependencies: ({ resources }) => ({
-      instanceProfile: resources.IAM.InstanceProfile["ecsInstanceRole"],
-      securityGroups: [resources.EC2.SecurityGroup["EcsSecurityGroup"]],
+    dependencies: () => ({
+      instanceProfile: "ecsInstanceRole",
+      securityGroups: ["EcsSecurityGroup"],
     }),
   });
 
@@ -59,8 +54,8 @@ const createResources = ({ provider }) => {
 
   provider.EC2.makeInternetGateway({
     name: "InternetGateway",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -71,8 +66,8 @@ const createResources = ({ provider }) => {
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -83,29 +78,29 @@ const createResources = ({ provider }) => {
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
   provider.EC2.makeRouteTable({
     name: "RouteViaIgw",
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      subnet: resources.EC2.Subnet["PubSubnetAz1"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      subnet: "PubSubnetAz1",
     }),
   });
 
   provider.EC2.makeRouteTableAssociation({
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      subnet: resources.EC2.Subnet["PubSubnetAz2"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      subnet: "PubSubnetAz2",
     }),
   });
 
@@ -113,9 +108,9 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: ({ resources }) => ({
-      routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-      ig: resources.EC2.InternetGateway["InternetGateway"],
+    dependencies: () => ({
+      routeTable: "RouteViaIgw",
+      ig: "InternetGateway",
     }),
   });
 
@@ -124,8 +119,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -143,8 +138,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["EcsSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "EcsSecurityGroup",
     }),
   });
 
@@ -162,9 +157,8 @@ const createResources = ({ provider }) => {
         managedTerminationProtection: "DISABLED",
       },
     }),
-    dependencies: ({ resources }) => ({
-      autoScalingGroup:
-        resources.AutoScaling.AutoScalingGroup["EcsInstanceAsg"],
+    dependencies: () => ({
+      autoScalingGroup: "EcsInstanceAsg",
     }),
   });
 
@@ -178,8 +172,8 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-    dependencies: ({ resources }) => ({
-      capacityProviders: [resources.ECS.CapacityProvider["cp"]],
+    dependencies: () => ({
+      capacityProviders: ["cp"],
     }),
   });
 
@@ -238,9 +232,9 @@ const createResources = ({ provider }) => {
       enableECSManagedTags: true,
       enableExecuteCommand: false,
     }),
-    dependencies: ({ resources }) => ({
-      cluster: resources.ECS.Cluster["cluster"],
-      taskDefinition: resources.ECS.TaskDefinition["nginx"],
+    dependencies: () => ({
+      cluster: "cluster",
+      taskDefinition: "nginx",
     }),
   });
 
@@ -262,12 +256,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      policies: [
-        resources.IAM.Policy[
-          "service-role/AmazonEC2ContainerServiceforEC2Role"
-        ],
-      ],
+    dependencies: () => ({
+      policies: ["service-role/AmazonEC2ContainerServiceforEC2Role"],
     }),
   });
 
@@ -280,8 +270,8 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeInstanceProfile({
     name: "ecsInstanceRole",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role["ecsInstanceRole"]],
+    dependencies: () => ({
+      roles: ["ecsInstanceRole"],
     }),
   });
 };

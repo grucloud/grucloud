@@ -10,12 +10,9 @@ const createResources = ({ provider }) => {
       MaxSize: 1,
       DesiredCapacity: 1,
     }),
-    dependencies: ({ resources }) => ({
-      subnets: [
-        resources.EC2.Subnet["PubSubnetAz1"],
-        resources.EC2.Subnet["PubSubnetAz2"],
-      ],
-      launchTemplate: resources.EC2.LaunchTemplate["lt-ec2-micro"],
+    dependencies: () => ({
+      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
+      launchTemplate: "lt-ec2-micro",
     }),
   });
 
@@ -37,8 +34,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -48,8 +45,8 @@ const createResources = ({ provider }) => {
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -58,8 +55,8 @@ const createResources = ({ provider }) => {
     properties: ({}) => ({
       Description: "Managed By GruCloud",
     }),
-    dependencies: ({ resources }) => ({
-      vpc: resources.EC2.Vpc["Vpc"],
+    dependencies: () => ({
+      vpc: "Vpc",
     }),
   });
 
@@ -77,8 +74,8 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-    dependencies: ({ resources }) => ({
-      securityGroup: resources.EC2.SecurityGroup["EcsSecurityGroup"],
+    dependencies: () => ({
+      securityGroup: "EcsSecurityGroup",
     }),
   });
 
@@ -90,9 +87,9 @@ const createResources = ({ provider }) => {
         InstanceType: "t2.micro",
       },
     }),
-    dependencies: ({ resources }) => ({
-      keyPair: resources.EC2.KeyPair["kp-ecs"],
-      iamInstanceProfile: resources.IAM.InstanceProfile["role-ecs"],
+    dependencies: () => ({
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
     }),
   });
 
@@ -117,8 +114,8 @@ const createResources = ({ provider }) => {
 
   provider.IAM.makeInstanceProfile({
     name: "role-ecs",
-    dependencies: ({ resources }) => ({
-      roles: [resources.IAM.Role["role-ecs"]],
+    dependencies: () => ({
+      roles: ["role-ecs"],
     }),
   });
 };

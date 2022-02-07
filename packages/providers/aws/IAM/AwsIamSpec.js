@@ -128,7 +128,10 @@ module.exports = () =>
               map(
                 when(isString, (name) =>
                   provider.IAM.usePolicy({
-                    name: pipe([callProp("split", "/"), last])(name),
+                    name: pipe([
+                      () => name,
+                      callProp("replace", "arn:aws:iam::aws:policy/", ""),
+                    ])(),
                     properties: () => ({
                       Arn: name,
                       Path: pipe([

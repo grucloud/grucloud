@@ -23,9 +23,9 @@ const createResources = ({ provider }) => {
       type: "AWS_LAMBDA",
     }),
     dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
       serviceRole:
         "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
-      graphqlApi: "cdk-notes-appsync-api",
       lambdaFunction: "lambda-fns",
     }),
   });

@@ -2,6 +2,6 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {};
+const createResources = ({}) => {};
 
 exports.createResources = createResources;
