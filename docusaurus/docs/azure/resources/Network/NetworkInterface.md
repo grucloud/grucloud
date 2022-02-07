@@ -27,13 +27,12 @@ provider.Network.makeNetworkInterface({
     },
     location: "eastus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
-    securityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    publicIpAddress: "myPublicIPAddress",
+    securityGroup: "myNetworkSecurityGroup",
+    subnet: "mySubnet",
   }),
 });
 
@@ -65,13 +64,12 @@ provider.Network.makeNetworkInterface({
     },
     location: "eastus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
-    securityGroup:
-      resources.Network.NetworkSecurityGroup["myNetworkSecurityGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    publicIpAddress: "myPublicIPAddress",
+    securityGroup: "myNetworkSecurityGroup",
+    subnet: "mySubnet",
   }),
 });
 

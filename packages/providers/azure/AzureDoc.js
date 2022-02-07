@@ -78,8 +78,8 @@ const buildDependencies = ({ example, dependencies }) =>
         }),
         switchCase([
           () => list,
-          () => `${dependencyName}: [resources.${group}.${type}["my${type}"]]`,
-          () => `${dependencyName}: resources.${group}.${type}["my${type}"]`,
+          () => `${dependencyName}: ["my${type}"]`,
+          () => `${dependencyName}: "my${type}"`,
         ]),
         ,
       ])(),
@@ -89,7 +89,7 @@ const buildDependencies = ({ example, dependencies }) =>
     switchCase([
       isEmpty,
       () => "",
-      pipe([prepend("dependencies:({resources}) => ({"), append("})\n")]),
+      pipe([prepend("dependencies:({}) => ({"), append("})\n")]),
     ]),
   ])();
 

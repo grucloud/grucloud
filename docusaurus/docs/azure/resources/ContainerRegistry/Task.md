@@ -58,12 +58,10 @@ provider.ContainerRegistry.makeTask({
     identity: { type: "SystemAssigned" },
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 
@@ -129,12 +127,10 @@ provider.ContainerRegistry.makeTask({
     },
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 
@@ -191,12 +187,10 @@ provider.ContainerRegistry.makeTask({
     identity: { type: "SystemAssigned" },
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 
@@ -264,12 +258,10 @@ provider.ContainerRegistry.makeTask({
     },
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 
@@ -289,12 +281,10 @@ provider.ContainerRegistry.makeTask({
     identity: null,
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    registry: "myRegistry",
   }),
 });
 

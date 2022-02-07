@@ -21,9 +21,9 @@ provider.Compute.makeGalleryImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
   }),
 });
 

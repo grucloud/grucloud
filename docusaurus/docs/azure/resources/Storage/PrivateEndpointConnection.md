@@ -16,10 +16,10 @@ provider.Storage.makePrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    privateEndpoint: "myPrivateEndpoint",
+    account: "myStorageAccount",
   }),
 });
 

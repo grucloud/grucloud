@@ -32,10 +32,10 @@ provider.Network.makeLoadBalancerBackendAddressPool({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    virtualNetworks: [resources.Network.VirtualNetwork["myVirtualNetwork"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    loadBalancer: "myLoadBalancer",
+    virtualNetworks: ["myVirtualNetwork"],
   }),
 });
 

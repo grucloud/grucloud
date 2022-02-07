@@ -9,9 +9,9 @@ Provides a **ExpressRouteCircuitAuthorization** from the **Network** group
 provider.Network.makeExpressRouteCircuitAuthorization({
   name: "myExpressRouteCircuitAuthorization",
   properties: () => ({ properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    circuit: resources.Network.ExpressRouteCircuit["myExpressRouteCircuit"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    circuit: "myExpressRouteCircuit",
   }),
 });
 

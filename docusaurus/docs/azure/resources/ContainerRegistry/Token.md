@@ -24,10 +24,10 @@ provider.ContainerRegistry.makeToken({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    scopeMap: resources.ContainerRegistry.ScopeMap["myScopeMap"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    scopeMap: "myScopeMap",
+    registry: "myRegistry",
   }),
 });
 

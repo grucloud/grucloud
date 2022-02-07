@@ -17,9 +17,9 @@ provider.OperationalInsights.makeQuery({
       tags: { "my-label": ["label1"], "my-other-label": ["label2"] },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    queryPack: resources.OperationalInsights.QueryPack["myQueryPack"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    queryPack: "myQueryPack",
   }),
 });
 

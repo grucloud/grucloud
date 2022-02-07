@@ -38,11 +38,9 @@ provider.Storage.makeStorageAccount({
     },
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -72,11 +70,9 @@ provider.Storage.makeStorageAccount({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -116,11 +112,9 @@ provider.Storage.makeStorageAccount({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -146,11 +140,9 @@ provider.Storage.makeStorageAccount({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -189,11 +181,9 @@ provider.Storage.makeStorageAccount({
     },
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -232,11 +222,9 @@ provider.Storage.makeStorageAccount({
     },
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -277,11 +265,9 @@ provider.Storage.makeStorageAccount({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -319,11 +305,9 @@ provider.Storage.makeStorageAccount({
     },
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 
@@ -361,11 +345,9 @@ provider.Storage.makeStorageAccount({
     },
     tags: { key1: "value1", key2: "value2" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
   }),
 });
 

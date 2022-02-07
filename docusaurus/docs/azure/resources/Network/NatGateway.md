@@ -24,9 +24,9 @@ provider.Network.makeNatGateway({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIpAddresses: ["myPublicIPAddress"],
   }),
 });
 

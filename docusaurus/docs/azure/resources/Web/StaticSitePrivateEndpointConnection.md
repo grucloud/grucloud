@@ -17,9 +17,9 @@ provider.Web.makeStaticSitePrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.StaticSite["myStaticSite"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    name: "myStaticSite",
   }),
 });
 

@@ -9,10 +9,10 @@ Provides a **Subnet** from the **Network** group
 provider.Network.makeSubnet({
   name: "mySubnet",
   properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    natGateway: "myNatGateway",
   }),
 });
 
@@ -28,10 +28,10 @@ provider.Network.makeSubnet({
       serviceEndpoints: [{ service: "Microsoft.Storage" }],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    natGateway: "myNatGateway",
   }),
 });
 
@@ -42,10 +42,10 @@ provider.Network.makeSubnet({
 provider.Network.makeSubnet({
   name: "mySubnet",
   properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    natGateway: "myNatGateway",
   }),
 });
 

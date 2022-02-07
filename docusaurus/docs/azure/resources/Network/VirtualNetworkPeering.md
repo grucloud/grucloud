@@ -19,9 +19,9 @@ provider.Network.makeVirtualNetworkPeering({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
   }),
 });
 
@@ -42,9 +42,9 @@ provider.Network.makeVirtualNetworkPeering({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
   }),
 });
 
@@ -65,9 +65,9 @@ provider.Network.makeVirtualNetworkPeering({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
   }),
 });
 

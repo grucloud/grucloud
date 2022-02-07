@@ -9,9 +9,7 @@ Provides a **NetworkSecurityGroup** from the **Network** group
 provider.Network.makeNetworkSecurityGroup({
   name: "myNetworkSecurityGroup",
   properties: () => ({ location: "eastus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -40,9 +38,7 @@ provider.Network.makeNetworkSecurityGroup({
     },
     location: "eastus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

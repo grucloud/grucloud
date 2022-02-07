@@ -14,9 +14,9 @@ provider.OperationalInsights.makeLinkedService({
         "/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/mms-eus/providers/Microsoft.OperationalInsights/clusters/testcluster",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    workspace: "myWorkspace",
   }),
 });
 

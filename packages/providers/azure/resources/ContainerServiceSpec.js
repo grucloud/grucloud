@@ -13,7 +13,7 @@ const {
   eq,
 } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 
@@ -151,6 +151,7 @@ exports.fnSpecs = ({ config }) =>
                   "addonProfiles.azureKeyvaultSecretsProvider.identity",
                   "diskEncryptionSetID",
                 ]),
+                omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),

@@ -13,12 +13,10 @@ provider.OperationalInsights.makeCluster({
     location: "australiasoutheast",
     tags: { tag1: "val1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    workspace: "myWorkspace",
   }),
 });
 

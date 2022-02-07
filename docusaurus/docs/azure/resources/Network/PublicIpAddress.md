@@ -9,9 +9,7 @@ Provides a **PublicIPAddress** from the **Network** group
 provider.Network.makePublicIPAddress({
   name: "myPublicIPAddress",
   properties: () => ({ location: "eastus" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -21,9 +19,7 @@ provider.Network.makePublicIPAddress({
 provider.Network.makePublicIPAddress({
   name: "myPublicIPAddress",
   properties: () => ["1"],
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -36,9 +32,7 @@ provider.Network.makePublicIPAddress({
     properties: { dnsSettings: { domainNameLabel: "dnslbl" } },
     location: "eastus",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

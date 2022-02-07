@@ -9,9 +9,7 @@ Provides a **NetworkWatcher** from the **Network** group
 provider.Network.makeNetworkWatcher({
   name: "myNetworkWatcher",
   properties: () => ({ location: "eastus", properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

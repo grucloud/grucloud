@@ -9,7 +9,7 @@ const createResources = ({ provider }) => {
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
       Placement: {
-        AvailabilityZone: `${config.region}a`,
+        AvailabilityZone: `${config.region}d`,
       },
     }),
   });

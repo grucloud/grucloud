@@ -8,9 +8,9 @@ Provides a **CloudServicesUpdateDomainUpdateDomain** from the **Compute** group
 ```js
 provider.Compute.makeCloudServicesUpdateDomainUpdateDomain({
   name: "myCloudServicesUpdateDomainUpdateDomain",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    cloudService: resources.Compute.CloudService["myCloudService"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    cloudService: "myCloudService",
   }),
 });
 

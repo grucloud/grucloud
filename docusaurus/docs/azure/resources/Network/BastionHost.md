@@ -9,10 +9,10 @@ Provides a **BastionHost** from the **Network** group
 provider.Network.makeBastionHost({
   name: "myBastionHost",
   properties: () => ({ name: "Standard" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    publicIpAddress: resources.Network.PublicIPAddress["myPublicIPAddress"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
+    publicIpAddress: "myPublicIPAddress",
   }),
 });
 

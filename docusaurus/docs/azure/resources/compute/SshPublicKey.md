@@ -12,9 +12,7 @@ provider.Compute.makeSshPublicKey({
     location: "westus",
     properties: { publicKey: "{ssh-rsa public key}" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

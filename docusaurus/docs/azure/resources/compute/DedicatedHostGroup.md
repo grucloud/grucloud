@@ -17,9 +17,7 @@ provider.Compute.makeDedicatedHostGroup({
       supportAutomaticPlacement: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

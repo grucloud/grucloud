@@ -76,9 +76,9 @@ provider.Network.makeLoadBalancer({
       inboundNatPools: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -156,9 +156,9 @@ provider.Network.makeLoadBalancer({
       outboundRules: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -235,9 +235,9 @@ provider.Network.makeLoadBalancer({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -316,9 +316,9 @@ provider.Network.makeLoadBalancer({
       outboundRules: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -370,9 +370,9 @@ provider.Network.makeLoadBalancer({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -466,9 +466,9 @@ provider.Network.makeLoadBalancer({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -549,9 +549,9 @@ provider.Network.makeLoadBalancer({
       outboundRules: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -636,9 +636,9 @@ provider.Network.makeLoadBalancer({
       outboundRules: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 
@@ -710,9 +710,9 @@ provider.Network.makeLoadBalancer({
       outboundRules: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    publicIPAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    publicIPAddresses: ["myPublicIPAddress"],
   }),
 });
 

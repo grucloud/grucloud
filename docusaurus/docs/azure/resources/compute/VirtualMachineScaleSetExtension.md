@@ -23,10 +23,9 @@ provider.Compute.makeVirtualMachineScaleSetExtension({
       suppressFailures: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vmScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vmScaleSet: "myVirtualMachineScaleSet",
   }),
 });
 
@@ -36,10 +35,9 @@ provider.Compute.makeVirtualMachineScaleSetExtension({
 ```js
 provider.Compute.makeVirtualMachineScaleSetExtension({
   name: "myVirtualMachineScaleSetExtension",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vmScaleSet:
-      resources.Compute.VirtualMachineScaleSet["myVirtualMachineScaleSet"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vmScaleSet: "myVirtualMachineScaleSet",
   }),
 });
 

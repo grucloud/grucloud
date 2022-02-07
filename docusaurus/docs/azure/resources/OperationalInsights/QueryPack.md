@@ -9,9 +9,9 @@ Provides a **QueryPack** from the **OperationalInsights** group
 provider.OperationalInsights.makeQueryPack({
   name: "myQueryPack",
   properties: () => ({ location: "South Central US", properties: {} }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    query: resources.OperationalInsights.Query["myQuery"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    query: "myQuery",
   }),
 });
 
@@ -26,9 +26,9 @@ provider.OperationalInsights.makeQueryPack({
     tags: { Tag1: "Value1" },
     properties: {},
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    query: resources.OperationalInsights.Query["myQuery"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    query: "myQuery",
   }),
 });
 

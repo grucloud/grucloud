@@ -19,10 +19,10 @@ provider.Network.makeFlowLog({
       format: { type: "JSON", version: 1 },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
-    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    workspace: "myWorkspace",
+    networkWatcher: "myNetworkWatcher",
   }),
 });
 

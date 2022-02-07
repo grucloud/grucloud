@@ -67,10 +67,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -141,10 +141,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -213,10 +213,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -285,10 +285,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -359,10 +359,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -422,10 +422,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 
@@ -449,10 +449,10 @@ provider.Compute.makeGalleryImageVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryImage: resources.Compute.GalleryImage["myGalleryImage"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryImage: "myGalleryImage",
   }),
 });
 

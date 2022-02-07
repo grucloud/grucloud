@@ -15,9 +15,9 @@ provider.Network.makeRouteFilterRule({
       communities: ["12076:5030", "12076:5040"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    routeFilter: "myRouteFilter",
   }),
 });
 

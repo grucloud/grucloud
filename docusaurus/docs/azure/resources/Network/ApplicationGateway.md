@@ -284,14 +284,12 @@ provider.Network.makeApplicationGateway({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    subnets: [resources.Network.Subnet["mySubnet"]],
-    publicIpAddresses: [resources.Network.PublicIPAddress["myPublicIPAddress"]],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    subnets: ["mySubnet"],
+    publicIpAddresses: ["myPublicIPAddress"],
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 

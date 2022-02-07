@@ -14,11 +14,10 @@ provider.Web.makeAppServicePlan({
     properties: {},
     sku: { name: "P1", tier: "Premium", size: "P1", family: "P", capacity: 1 },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    hostingEnvironment:
-      resources.Web.HostingEnvironment["myHostingEnvironment"],
-    kubeEnvironment: resources.Web.KubeEnvironment["myKubeEnvironment"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    hostingEnvironment: "myHostingEnvironment",
+    kubeEnvironment: "myKubeEnvironment",
   }),
 });
 

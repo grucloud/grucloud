@@ -9,9 +9,7 @@ Provides a **CustomIPPrefix** from the **Network** group
 provider.Network.makeCustomIPPrefix({
   name: "myCustomIPPrefix",
   properties: () => ["1"],
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

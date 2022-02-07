@@ -30,9 +30,9 @@ provider.Network.makeFirewallPolicyRuleGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -68,9 +68,9 @@ provider.Network.makeFirewallPolicyRuleGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 

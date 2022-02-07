@@ -8,9 +8,9 @@ Provides a **BlobContainer** from the **Storage** group
 ```js
 provider.Storage.makeBlobContainer({
   name: "myBlobContainer",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -26,9 +26,9 @@ provider.Storage.makeBlobContainer({
       denyEncryptionScopeOverride: true,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -41,9 +41,9 @@ provider.Storage.makeBlobContainer({
   properties: () => ({
     properties: { immutableStorageWithVersioning: { enabled: true } },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

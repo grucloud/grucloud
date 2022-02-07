@@ -13,9 +13,9 @@ provider.OperationalInsights.makeWorkspace({
     location: "australiasoutheast",
     tags: { tag1: "val1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    cluster: resources.OperationalInsights.Cluster["myCluster"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    cluster: "myCluster",
   }),
 });
 

@@ -80,12 +80,10 @@ provider.Network.makeFirewallPolicy({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    managedIdentities: [
-      resources.ManagedIdentity.UserAssignedIdentity["myUserAssignedIdentity"],
-    ],
-    workspace: [resources.OperationalInsights.Workspace["myWorkspace"]],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    managedIdentities: ["myUserAssignedIdentity"],
+    workspace: ["myWorkspace"],
   }),
 });
 

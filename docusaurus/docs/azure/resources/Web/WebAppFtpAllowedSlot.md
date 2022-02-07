@@ -9,10 +9,10 @@ Provides a **WebAppFtpAllowedSlot** from the **Web** group
 provider.Web.makeWebAppFtpAllowedSlot({
   name: "myWebAppFtpAllowedSlot",
   properties: () => ({ properties: { allow: true } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.Site["mySite"],
-    slot: resources.Web.SiteSlot["mySiteSlot"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    name: "mySite",
+    slot: "mySiteSlot",
   }),
 });
 

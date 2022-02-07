@@ -9,11 +9,10 @@ Provides a **PrivateEndpoint** from the **Network** group
 provider.Network.makePrivateEndpoint({
   name: "myPrivateEndpoint",
   properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    privateLinkService:
-      resources.Network.PrivateLinkService["myPrivateLinkService"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    natGateway: "myNatGateway",
+    privateLinkService: "myPrivateLinkService",
   }),
 });
 
@@ -52,11 +51,10 @@ provider.Network.makePrivateEndpoint({
       customNetworkInterfaceName: "testPeNic",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    privateLinkService:
-      resources.Network.PrivateLinkService["myPrivateLinkService"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    natGateway: "myNatGateway",
+    privateLinkService: "myPrivateLinkService",
   }),
 });
 
@@ -67,11 +65,10 @@ provider.Network.makePrivateEndpoint({
 provider.Network.makePrivateEndpoint({
   name: "myPrivateEndpoint",
   properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    privateLinkService:
-      resources.Network.PrivateLinkService["myPrivateLinkService"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    natGateway: "myNatGateway",
+    privateLinkService: "myPrivateLinkService",
   }),
 });
 

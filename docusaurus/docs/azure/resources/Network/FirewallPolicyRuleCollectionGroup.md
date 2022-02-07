@@ -31,9 +31,9 @@ provider.Network.makeFirewallPolicyRuleCollectionGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -69,9 +69,9 @@ provider.Network.makeFirewallPolicyRuleCollectionGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -107,9 +107,9 @@ provider.Network.makeFirewallPolicyRuleCollectionGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 
@@ -141,9 +141,9 @@ provider.Network.makeFirewallPolicyRuleCollectionGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    firewallPolicy: resources.Network.FirewallPolicy["myFirewallPolicy"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    firewallPolicy: "myFirewallPolicy",
   }),
 });
 

@@ -27,9 +27,9 @@ provider.Network.makePacketCapture({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    networkWatcher: resources.Network.NetworkWatcher["myNetworkWatcher"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    networkWatcher: "myNetworkWatcher",
   }),
 });
 

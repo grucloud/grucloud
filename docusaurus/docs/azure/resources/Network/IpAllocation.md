@@ -19,10 +19,10 @@ provider.Network.makeIpAllocation({
     },
     location: "centraluseuap",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    subnet: resources.Network.Subnet["mySubnet"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    subnet: "mySubnet",
+    virtualNetwork: "myVirtualNetwork",
   }),
 });
 

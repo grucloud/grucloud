@@ -33,13 +33,10 @@ provider.Network.makeVpnSite({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualWan: resources.Network.VirtualWan["myVirtualWan"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualWan: "myVirtualWan",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
   }),
 });
 

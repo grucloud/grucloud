@@ -17,13 +17,10 @@ provider.Network.makeVirtualHubBgpConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    hubVirtualNetworkConnection:
-      resources.Network.HubVirtualNetworkConnection[
-        "myHubVirtualNetworkConnection"
-      ],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    hubVirtualNetworkConnection: "myHubVirtualNetworkConnection",
+    virtualHub: "myVirtualHub",
   }),
 });
 

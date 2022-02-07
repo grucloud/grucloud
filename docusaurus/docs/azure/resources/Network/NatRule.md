@@ -18,13 +18,10 @@ provider.Network.makeNatRule({
       externalMappings: [{ addressSpace: "192.168.21.0/24" }],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHubIpConfiguration:
-      resources.Network.VirtualHubIpConfiguration[
-        "myVirtualHubIpConfiguration"
-      ],
-    gateway: resources.Network.VpnGateway["myVpnGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+    gateway: "myVpnGateway",
   }),
 });
 

@@ -12,9 +12,7 @@ provider.Compute.makeGallery({
     location: "West US",
     properties: { description: "This is the gallery description." },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -30,9 +28,7 @@ provider.Compute.makeGallery({
       sharingProfile: { permissions: "Groups" },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```
@@ -48,9 +44,7 @@ provider.Compute.makeGallery({
       softDeletePolicy: { isSoftDeleteEnabled: true },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

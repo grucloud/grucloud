@@ -43,11 +43,11 @@ provider.Network.makeHubVirtualNetworkConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualNetwork: resources.Network.VirtualNetwork["myVirtualNetwork"],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualNetwork: "myVirtualNetwork",
+    routeTable: "myRouteTable",
+    virtualHub: "myVirtualHub",
   }),
 });
 

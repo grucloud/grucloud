@@ -61,9 +61,9 @@ provider.Network.makeP2sVpnServerConfiguration({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualWan: resources.Network.VirtualWan["myVirtualWan"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualWan: "myVirtualWan",
   }),
 });
 

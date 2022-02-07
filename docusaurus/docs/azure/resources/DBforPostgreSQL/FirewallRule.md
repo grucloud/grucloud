@@ -11,9 +11,9 @@ provider.DBforPostgreSQL.makeFirewallRule({
   properties: () => ({
     properties: { startIpAddress: "0.0.0.0", endIpAddress: "255.255.255.255" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    server: resources.DBforPostgreSQL.FlexibleServer["myFlexibleServer"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    server: "myFlexibleServer",
   }),
 });
 

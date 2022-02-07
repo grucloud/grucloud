@@ -20,9 +20,7 @@ provider.KeyVault.makeManagedHsm({
     sku: { family: "B", name: "Standard_B1" },
     tags: { Dept: "hsm", Environment: "dogfood" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
 });
 
 ```

@@ -22,9 +22,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -49,9 +49,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -76,9 +76,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -96,9 +96,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -129,9 +129,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -164,9 +164,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -199,9 +199,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -227,9 +227,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -256,9 +256,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 
@@ -285,9 +285,9 @@ provider.Compute.makeImage({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualMachine: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualMachine: "myVirtualMachine",
   }),
 });
 

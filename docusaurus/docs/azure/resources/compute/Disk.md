@@ -12,15 +12,14 @@ provider.Compute.makeDisk({
     location: "West US",
     properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -42,15 +41,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -70,15 +68,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -98,15 +95,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -128,15 +124,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -156,15 +151,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -180,15 +174,14 @@ provider.Compute.makeDisk({
       creationData: { createOption: "Upload", uploadSizeBytes: 10737418752 },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -208,15 +201,14 @@ provider.Compute.makeDisk({
         "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskAccesses/{existing-diskAccess-name}",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -237,15 +229,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -263,15 +254,14 @@ provider.Compute.makeDisk({
       diskSizeGB: 200,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -286,15 +276,14 @@ provider.Compute.makeDisk({
     extendedLocation: { type: "EdgeZone", name: "{edge-zone-id}" },
     properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -309,15 +298,14 @@ provider.Compute.makeDisk({
     sku: { name: "Premium_ZRS" },
     properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -340,15 +328,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -376,15 +363,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -405,15 +391,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 
@@ -440,15 +425,14 @@ provider.Compute.makeDisk({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    storageAccount: resources.Storage.StorageAccount["myStorageAccount"],
-    image: resources.Compute.Image["myImage"],
-    vault: resources.KeyVault.Vault["myVault"],
-    key: resources.KeyVault.Key["myKey"],
-    diskEncryptionSet:
-      resources.Compute.DiskEncryptionSet["myDiskEncryptionSet"],
-    diskAccess: resources.Compute.DiskAccess["myDiskAccess"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    storageAccount: "myStorageAccount",
+    image: "myImage",
+    vault: "myVault",
+    key: "myKey",
+    diskEncryptionSet: "myDiskEncryptionSet",
+    diskAccess: "myDiskAccess",
   }),
 });
 

@@ -17,9 +17,9 @@ provider.Compute.makeRestorePointCollection({
     },
     tags: { myTag1: "tagValue1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    restorePoint: resources.Compute.RestorePoint["myRestorePoint"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    restorePoint: "myRestorePoint",
   }),
 });
 
@@ -38,9 +38,9 @@ provider.Compute.makeRestorePointCollection({
     },
     tags: { myTag1: "tagValue1" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    restorePoint: resources.Compute.RestorePoint["myRestorePoint"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    restorePoint: "myRestorePoint",
   }),
 });
 

@@ -22,9 +22,9 @@ provider.Compute.makeVirtualMachineRunCommandByVirtualMachine({
       timeoutInSeconds: 3600,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vm: resources.Compute.VirtualMachine["myVirtualMachine"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vm: "myVirtualMachine",
   }),
 });
 

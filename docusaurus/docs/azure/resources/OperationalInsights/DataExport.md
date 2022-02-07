@@ -17,9 +17,9 @@ provider.OperationalInsights.makeDataExport({
       tableNames: ["Heartbeat"],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    workspace: resources.OperationalInsights.Workspace["myWorkspace"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    workspace: "myWorkspace",
   }),
 });
 

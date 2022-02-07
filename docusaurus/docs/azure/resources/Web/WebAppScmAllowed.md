@@ -9,10 +9,7 @@ Provides a **WebAppScmAllowed** from the **Web** group
 provider.Web.makeWebAppScmAllowed({
   name: "myWebAppScmAllowed",
   properties: () => ({ properties: { allow: true } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.Site["mySite"],
-  }),
+  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
 });
 
 ```

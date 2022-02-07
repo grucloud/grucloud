@@ -34,11 +34,10 @@ provider.Compute.makeGalleryApplicationVersion({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    gallery: resources.Compute.Gallery["myGallery"],
-    galleryApplication:
-      resources.Compute.GalleryApplication["myGalleryApplication"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    gallery: "myGallery",
+    galleryApplication: "myGalleryApplication",
   }),
 });
 

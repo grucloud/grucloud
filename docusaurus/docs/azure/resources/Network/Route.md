@@ -14,9 +14,9 @@ provider.Network.makeRoute({
       nextHopType: "VirtualNetworkGateway",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    routeTable: "myRouteTable",
   }),
 });
 

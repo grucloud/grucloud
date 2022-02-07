@@ -16,16 +16,13 @@ provider.Network.makeVirtualNetworkTap({
     },
     location: "centraluseuap",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    loadBalancer: resources.Network.LoadBalancer["myLoadBalancer"],
-    natGateway: resources.Network.NatGateway["myNatGateway"],
-    ddosCustomPolicy: resources.Network.DdosCustomPolicy["myDdosCustomPolicy"],
-    publicIpPrefix: resources.Network.PublicIPPrefix["myPublicIPPrefix"],
-    loadBalancerBackendAddressPool:
-      resources.Network.LoadBalancerBackendAddressPool[
-        "myLoadBalancerBackendAddressPool"
-      ],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    loadBalancer: "myLoadBalancer",
+    natGateway: "myNatGateway",
+    ddosCustomPolicy: "myDdosCustomPolicy",
+    publicIpPrefix: "myPublicIPPrefix",
+    loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
   }),
 });
 

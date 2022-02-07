@@ -31,11 +31,11 @@ provider.Network.makeVpnConnection({
       trafficSelectorPolicies: [],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vpnSite: resources.Network.VpnSite["myVpnSite"],
-    routeTable: resources.Network.RouteTable["myRouteTable"],
-    gateway: resources.Network.VpnGateway["myVpnGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vpnSite: "myVpnSite",
+    routeTable: "myRouteTable",
+    gateway: "myVpnGateway",
   }),
 });
 

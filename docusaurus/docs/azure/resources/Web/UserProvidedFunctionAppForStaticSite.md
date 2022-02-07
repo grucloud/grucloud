@@ -15,13 +15,11 @@ provider.Web.makeUserProvidedFunctionAppForStaticSite({
       functionAppRegion: "West US 2",
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
     userProvidedFunctionAppForStaticSiteBuild:
-      resources.Web.UserProvidedFunctionAppForStaticSiteBuild[
-        "myUserProvidedFunctionAppForStaticSiteBuild"
-      ],
-    name: resources.Web.StaticSite["myStaticSite"],
+      "myUserProvidedFunctionAppForStaticSiteBuild",
+    name: "myStaticSite",
   }),
 });
 

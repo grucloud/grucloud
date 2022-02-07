@@ -8,9 +8,9 @@ Provides a **Queue** from the **Storage** group
 ```js
 provider.Storage.makeQueue({
   name: "myQueue",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -23,9 +23,9 @@ provider.Storage.makeQueue({
   properties: () => ({
     properties: { metadata: { sample1: "meta1", sample2: "meta2" } },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

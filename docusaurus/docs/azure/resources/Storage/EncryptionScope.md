@@ -8,9 +8,9 @@ Provides a **EncryptionScope** from the **Storage** group
 ```js
 provider.Storage.makeEncryptionScope({
   name: "myEncryptionScope",
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 
@@ -21,9 +21,9 @@ provider.Storage.makeEncryptionScope({
 provider.Storage.makeEncryptionScope({
   name: "myEncryptionScope",
   properties: () => ({ properties: { requireInfrastructureEncryption: true } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    account: resources.Storage.StorageAccount["myStorageAccount"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    account: "myStorageAccount",
   }),
 });
 

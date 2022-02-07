@@ -20,10 +20,9 @@ provider.Network.makeApplicationGatewayPrivateEndpointConnection({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    applicationGateway:
-      resources.Network.ApplicationGateway["myApplicationGateway"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    applicationGateway: "myApplicationGateway",
   }),
 });
 

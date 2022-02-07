@@ -17,9 +17,9 @@ provider.Network.makeExpressRouteGateway({
       autoScaleConfiguration: { bounds: { min: 3 } },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    virtualHub: resources.Network.VirtualHub["myVirtualHub"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    virtualHub: "myVirtualHub",
   }),
 });
 

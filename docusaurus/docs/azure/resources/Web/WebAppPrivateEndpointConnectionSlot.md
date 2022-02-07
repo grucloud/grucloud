@@ -17,10 +17,10 @@ provider.Web.makeWebAppPrivateEndpointConnectionSlot({
       },
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    name: resources.Web.Site["mySite"],
-    slot: resources.Web.SiteSlot["mySiteSlot"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    name: "mySite",
+    slot: "mySiteSlot",
   }),
 });
 

@@ -32,10 +32,10 @@ provider.ContainerRegistry.makeBuildStep({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
-    buildTask: resources.ContainerRegistry.BuildTask["myBuildTask"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
+    buildTask: "myBuildTask",
   }),
 });
 

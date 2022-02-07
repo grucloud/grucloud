@@ -9,9 +9,9 @@ Provides a **Secret** from the **KeyVault** group
 provider.KeyVault.makeSecret({
   name: "mySecret",
   properties: () => ({ properties: { value: "secret-value" } }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    vault: resources.KeyVault.Vault["myVault"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    vault: "myVault",
   }),
 });
 

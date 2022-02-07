@@ -20,9 +20,9 @@ provider.Network.makePrivateDnsZoneGroup({
       ],
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    privateEndpoint: resources.Network.PrivateEndpoint["myPrivateEndpoint"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    privateEndpoint: "myPrivateEndpoint",
   }),
 });
 

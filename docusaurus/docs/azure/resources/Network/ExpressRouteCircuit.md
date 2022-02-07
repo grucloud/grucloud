@@ -26,12 +26,11 @@ provider.Network.makeExpressRouteCircuit({
     },
     location: "Brazil South",
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
-    expressRouteConnection:
-      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
-    route: resources.Network.Route["myRoute"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    routeFilter: "myRouteFilter",
+    expressRouteConnection: "myExpressRouteConnection",
+    route: "myRoute",
   }),
 });
 
@@ -55,12 +54,11 @@ provider.Network.makeExpressRouteCircuit({
       bandwidthInGbps: 10,
     },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    routeFilter: resources.Network.RouteFilter["myRouteFilter"],
-    expressRouteConnection:
-      resources.Network.ExpressRouteConnection["myExpressRouteConnection"],
-    route: resources.Network.Route["myRoute"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    routeFilter: "myRouteFilter",
+    expressRouteConnection: "myExpressRouteConnection",
+    route: "myRoute",
   }),
 });
 

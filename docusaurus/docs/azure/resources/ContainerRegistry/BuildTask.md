@@ -27,9 +27,9 @@ provider.ContainerRegistry.makeBuildTask({
     location: "eastus",
     tags: { testkey: "value" },
   }),
-  dependencies: ({ resources }) => ({
-    resourceGroup: resources.Resources.ResourceGroup["myResourceGroup"],
-    registry: resources.ContainerRegistry.Registry["myRegistry"],
+  dependencies: ({}) => ({
+    resourceGroup: "myResourceGroup",
+    registry: "myRegistry",
   }),
 });
 
