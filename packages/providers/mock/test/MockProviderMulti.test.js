@@ -17,28 +17,32 @@ describe("MockProviderMulti", async function () {
     provider1 = createProviderMaker({})(MockProvider, {
       name: providerName1,
       config: () => ({}),
-      createResources: ({ provider }) => {
-        provider.Compute.makeVolume({
+      createResources: () => [
+        {
+          type: "Volume",
+          group: "Compute",
           name: "volume1",
           properties: () => ({
             size: 10_000_000_000,
           }),
-        });
-      },
+        },
+      ],
     });
 
     provider2 = createProviderMaker({})(MockProvider, {
       name: providerName2,
       config: () => ({}),
       dependencies: { provider1 },
-      createResources: ({ provider }) => {
-        provider.Compute.makeVolume({
+      createResources: () => [
+        {
+          type: "Volume",
+          group: "Compute",
           name: "volume2",
           properties: () => ({
             size: 10_000_000_000,
           }),
-        });
-      },
+        },
+      ],
     });
   });
 

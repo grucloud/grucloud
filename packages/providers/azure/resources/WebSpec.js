@@ -61,6 +61,7 @@ exports.fnSpecs = ({ config }) => {
           "extendedLocation.type",
         ],
         pickPropertiesCreate: [
+          "name",
           "properties.arcConfiguration.frontEndServiceConfiguration.kind",
           "properties.appLogsConfiguration.destination",
           "extendedLocation.name",
@@ -196,7 +197,7 @@ exports.fnSpecs = ({ config }) => {
         ],
         filterLive: () =>
           pipe([
-            pick(["tags", "properties"]),
+            pick(["name", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),

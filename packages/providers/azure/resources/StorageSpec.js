@@ -67,6 +67,8 @@ exports.fnSpecs = ({ config }) =>
         },
         pickProperties: ["properties"],
         pickPropertiesCreate: ["properties"],
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([pick(pickPropertiesCreate)]),
         Client: ({ spec, config }) =>
           pipe([
             () => ({
@@ -214,22 +216,6 @@ exports.fnSpecs = ({ config }) =>
             () => ({}),
           ]),
         ]),
-        inferName: ({ properties, dependencies }) =>
-          pipe([
-            tap((params) => {
-              assert(dependencies);
-              assert(properties);
-              assert(properties.name);
-            }),
-            dependencies,
-            tap(({ container }) => {
-              assert(container);
-            }),
-            ({ container }) => `${container.name}::${properties.name}`,
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
         filterLive: ({ pickPropertiesCreate }) =>
           pipe([
             tap((params) => {

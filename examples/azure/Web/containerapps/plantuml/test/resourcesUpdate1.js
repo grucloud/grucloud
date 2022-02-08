@@ -4,8 +4,8 @@ const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Web.makeContainerApp({
-    name: "plantuml",
     properties: ({ config }) => ({
+      name: "plantuml",
       properties: {
         configuration: {
           ingress: {
@@ -30,9 +30,9 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg"],
-      kubeEnvironment: resources.Web.KubeEnvironment["dev"],
+    dependencies: () => ({
+      resourceGroup: "rg",
+      kubeEnvironment: "dev",
     }),
   });
 };

@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.OperationalInsights.makeWorkspace({
-    name: "rg-plantuml::logs",
     properties: ({}) => ({
       name: "logs",
       properties: {
@@ -20,15 +19,14 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-plantuml",
     properties: ({}) => ({
       name: "rg-plantuml",
     }),
   });
 
   provider.Web.makeContainerApp({
-    name: "rg-plantuml::plantuml",
     properties: ({}) => ({
+      name: "plantuml",
       properties: {
         configuration: {
           ingress: {
@@ -60,7 +58,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Web.makeKubeEnvironment({
-    name: "rg-plantuml::dev",
     properties: ({}) => ({
       name: "dev",
     }),

@@ -12,10 +12,17 @@ const createResources = async ({ provider }) => {
   assert(DomainName);
   assert(websiteDir);
   assert(stage);
-  const files = await getFiles(websiteDir);
-  const bucketName = `${DomainName}-${stage}`;
 
-  const websiteBucket = provider.S3.makeBucket({
+  const bucketName = `${DomainName}-${stage}`;
+  const domainName = makeDomainName({
+    DomainName,
+    stage,
+  });
+  const hostedZoneName = `${domainName}.`;
+  const distributionName = `distribution-${bucketName}`;
+  const files = await getFiles(websiteDir);
+
+  provider.S3.makeBucket({
     name: bucketName,
     properties: () => ({
       ACL: "public-read",
@@ -33,7 +40,7 @@ const createResources = async ({ provider }) => {
   await map((file) =>
     provider.S3.makeObject({
       name: file,
-      dependencies: () => ({ bucket: websiteBucket }),
+      dependencies: () => ({ bucket: bucketName }),
       properties: () => ({
         ACL: "public-read",
         ContentType: mime.lookup(file) || "text/plain",
@@ -42,31 +49,39 @@ const createResources = async ({ provider }) => {
     })
   )(files);
 
-  const domainName = makeDomainName({
-    DomainName,
-    stage,
-  });
-
-  const certificate = provider.ACM.makeCertificate({
+  provider.ACM.makeCertificate({
     name: domainName,
   });
 
-  const domain = provider.Route53Domains.useDomain({
+  provider.Route53Domains.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = provider.Route53.makeHostedZone({
-    name: `${domainName}.`,
-    dependencies: () => ({ domain }),
+  provider.Route53.makeHostedZone({
+    name: hostedZoneName,
+    dependencies: () => ({ domain: rootDomainName }),
   });
 
-  const recordValidation = provider.Route53.makeRecord({
-    dependencies: () => ({ hostedZone, certificate }),
+  provider.Route53.makeRecord({
+    dependencies: () => ({
+      hostedZone: hostedZoneName,
+      certificate: domainName,
+    }),
   });
 
-  const distribution = provider.CloudFront.makeDistribution({
-    name: `distribution-${bucketName}`,
-    dependencies: () => ({ websiteBucket, certificate }),
+  provider.Route53.makeRecord({
+    dependencies: () => ({
+      hostedZone: hostedZoneName,
+      distribution: distributionName,
+    }),
+  });
+
+  provider.CloudFront.makeDistribution({
+    name: distributionName,
+    dependencies: () => ({
+      bucket: bucketName,
+      certificate: domainName,
+    }),
     properties: ({}) => {
       return {
         PriceClass: "PriceClass_100",
@@ -102,19 +117,6 @@ const createResources = async ({ provider }) => {
       };
     },
   });
-
-  const recordCloudFront = provider.Route53.makeRecord({
-    dependencies: () => ({ hostedZone, distribution }),
-  });
-
-  return {
-    certificate,
-    websiteBucket,
-    recordCloudFront,
-    distribution,
-    hostedZone,
-    recordValidation,
-  };
 };
 
 exports.createResources = createResources;

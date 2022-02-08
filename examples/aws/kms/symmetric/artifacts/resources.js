@@ -4,7 +4,7 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.KMS.makeKey({
-    name: "secret-key-test",
+    name: "key-test",
   });
 };
 

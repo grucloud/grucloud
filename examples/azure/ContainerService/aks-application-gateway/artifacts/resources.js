@@ -4,8 +4,8 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.ContainerService.makeManagedCluster({
-    name: "rg-aks-ag::cluster",
     properties: ({}) => ({
+      name: "cluster",
       sku: {
         name: "Basic",
         tier: "Free",
@@ -87,7 +87,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-aks-ag",
     properties: ({}) => ({
       name: "rg-aks-ag",
     }),

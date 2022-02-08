@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "rg-ag::admingrucloud",
     properties: ({}) => ({
       name: "admingrucloud",
       properties: {
@@ -18,7 +17,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-ag::vmss",
     properties: ({ getId }) => ({
       name: "vmss",
       sku: {
@@ -139,8 +137,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeApplicationGateway({
-    name: "rg-ag::ag",
     properties: ({ config, getId }) => ({
+      name: "ag",
       properties: {
         sku: {
           name: "Standard_v2",
@@ -248,7 +246,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-ag::basicnsgvnet-nic01",
     properties: ({}) => ({
       name: "basicnsgvnet-nic01",
       properties: {
@@ -261,7 +258,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-ag::ip",
     properties: ({}) => ({
       name: "ip",
       sku: {
@@ -277,7 +273,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-ag::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -291,7 +286,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-ag::vnet::subnet-ag",
     properties: ({}) => ({
       name: "subnet-ag",
       properties: {
@@ -305,7 +299,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-ag::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -320,7 +313,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-ag",
     properties: ({}) => ({
       name: "rg-ag",
     }),

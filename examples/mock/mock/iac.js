@@ -3,31 +3,19 @@ const { tap, pipe } = require("rubico");
 const { MockProvider } = require("@grucloud/provider-mock");
 const hook = require("./hook");
 
-const createResources = ({ provider }) => {
-  // Ip
-  provider.Compute.makeIp({ name: "myip" });
-
-  // Boot images
-  // const image = provider.useImage({
-  //   name: "ubuntu",
-  //   filterLives: ({ resources }) => {
-  //     assert(images);
-  //     const image = resources.find(
-  //       (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
-  //     );
-  //     //assert(image);
-  //     return image;
-  //   },
-  // });
-
-  provider.Compute.makeVolume({
+const createResources = () => [
+  { type: "Ip", group: "Compute", name: "myip" },
+  {
+    type: "Volume",
+    group: "Compute",
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
-  });
-  // SecurityGroup
-  provider.Compute.makeSecurityGroup({
+  },
+  {
+    group: "Compute",
+    type: "SecurityGroup",
     name: "sg",
     properties: () => ({
       securityRules: [
@@ -46,9 +34,10 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-  //Server
-  provider.Compute.makeServer({
+  },
+  {
+    group: "Compute",
+    type: "Server",
     name: "web-server",
     dependencies: () => ({
       volume: "volume1",
@@ -59,15 +48,15 @@ const createResources = ({ provider }) => {
       diskSizeGb: "20",
       machineType: "f1-micro",
     }),
-  });
-};
+  },
+];
 
 exports.createResources = createResources;
 
 exports.createStack = ({ createProvider }) => {
   return {
     provider: createProvider(MockProvider, {
-      createResources,
+      createResources: createResources,
       config: require("./config"),
     }),
     hooks: [hook, require("./hooksExtra")],

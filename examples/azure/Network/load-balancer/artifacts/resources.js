@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "rg-load-balancer::vmss_key",
     properties: ({}) => ({
       name: "vmss_key",
       properties: {
@@ -18,7 +17,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-load-balancer::vmss",
     properties: ({ getId }) => ({
       name: "vmss",
       sku: {
@@ -139,8 +137,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeLoadBalancer({
-    name: "rg-load-balancer::load-balancer",
     properties: ({ getId }) => ({
+      name: "load-balancer",
       sku: {
         name: "Standard",
         tier: "Regional",
@@ -174,8 +172,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeLoadBalancerBackendAddressPool({
-    name: "rg-load-balancer::load-balancer::backendpool",
     properties: ({}) => ({
+      name: "backendpool",
       properties: {},
     }),
     dependencies: () => ({
@@ -185,7 +183,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-load-balancer::basicnsgvnet-nic01",
     properties: ({}) => ({
       name: "basicnsgvnet-nic01",
       properties: {
@@ -198,7 +195,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-load-balancer::ip",
     properties: ({}) => ({
       name: "ip",
       sku: {
@@ -214,7 +210,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-load-balancer::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -228,7 +223,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-load-balancer::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -243,7 +237,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-load-balancer",
     properties: ({}) => ({
       name: "rg-load-balancer",
     }),

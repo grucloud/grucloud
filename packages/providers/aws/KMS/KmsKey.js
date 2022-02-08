@@ -144,14 +144,14 @@ exports.KmsKey = ({ spec, config }) => {
       () => live,
       tap.if(
         isInstanceDown,
-        tryCatch(pipe([pickId, kms().cancelKeyDeletion])),
-        (error) =>
+        tryCatch(pipe([pickId, kms().cancelKeyDeletion]), (error) =>
           pipe([
             tap(() => {
               // Ignore error
               logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
             }),
           ])()
+        )
       ),
       tap.if(
         () => get("liveDiff.updated.Enabled")(diff),

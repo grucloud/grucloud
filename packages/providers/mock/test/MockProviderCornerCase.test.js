@@ -8,13 +8,15 @@ describe("MockProviderCornerCase", async function () {
   it("undefined dependencies", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
-      createResources: ({ provider }) => {
-        provider.Compute.makeServer({
+      createResources: () => [
+        {
+          type: "Server",
+          group: "Compute",
           name: "web-server",
           dependencies: () => ({ volume: undefined }),
           properties: () => ({}),
-        });
-      },
+        },
+      ],
     });
     const resources = provider.resources();
     const server = resources.Compute.Server["web-server"];
@@ -28,29 +30,47 @@ describe("MockProviderCornerCase", async function () {
   it("same name, different type", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
-      createResources: ({ provider }) => {
-        provider.Compute.makeServer({
+      createResources: () => [
+        {
+          type: "Server",
+          group: "Compute",
           name: "web-server",
-          dependencies: {},
+          dependencies: () => ({ volume: undefined }),
           properties: () => ({}),
-        });
-        provider.Compute.makeIp({
+        },
+        {
+          type: "Ip",
+          group: "Compute",
           name: "web-server",
-          dependencies: {},
           properties: () => ({}),
-        });
-      },
+        },
+      ],
     });
     await provider.planQuery({});
   });
   it("dependency to itself", async function () {
     const provider = createProviderMaker({})(MockProvider, {
       config: () => ({}),
+      createResources: () => [
+        {
+          type: "Server",
+          group: "Compute",
+          name: "web-server",
+          dependencies: () => ({ volume: undefined }),
+          properties: () => ({}),
+        },
+        {
+          type: "SecurityGroup",
+          group: "Compute",
+          name: "sh",
+          properties: () => ({}),
+        },
+      ],
       createResources: ({ provider }) => {
         provider.Compute.makeSecurityGroup({
           name: "sg",
-          dependencies: ({ resources }) => ({
-            securityGroup: resources.SecurityGroup.sg,
+          dependencies: () => ({
+            securityGroup: "sg",
           }),
           properties: () => ({}),
         });

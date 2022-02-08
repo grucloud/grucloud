@@ -1,34 +1,19 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
 
-const createResources = ({ provider }) => {
-  // Ip
-  provider.Compute.makeIp({ name: "myip" });
-
-  // Boot images
-  // const image = provider.ComputeuseImage({
-  //   name: "ubuntu",
-  //   filterLives: ({ resources }) => {
-  //     const image = resources.find(
-  //       (image) =>
-  //         image.live.name.includes("Ubuntu") && image.live.arch === "x86_64"
-  //     );
-  //     if (!image) {
-  //       //assert(image);
-  //       assert(true);
-  //     }
-  //     return image;
-  //   },
-  // });
-
-  provider.Compute.makeVolume({
+const createResources = () => [
+  { type: "Ip", group: "Compute", name: "myip" },
+  {
+    type: "Volume",
+    group: "Compute",
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
-  });
-  // SecurityGroup
-  provider.Compute.makeSecurityGroup({
+  },
+  {
+    group: "Compute",
+    type: "SecurityGroup",
     name: "sg",
     properties: () => ({
       securityRules: [
@@ -47,9 +32,10 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-  //Server
-  provider.Compute.makeServer({
+  },
+  {
+    group: "Compute",
+    type: "Server",
     name: "web-server",
     dependencies: () => ({
       volume: "volume1",
@@ -60,8 +46,8 @@ const createResources = ({ provider }) => {
       diskSizeGb: "20",
       machineType: "f1-micro",
     }),
-  });
-};
+  },
+];
 
 exports.createResources = createResources;
 

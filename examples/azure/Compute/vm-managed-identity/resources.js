@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeSshPublicKey({
-    name: "rg-user-managed-identity::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -18,8 +17,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "rg-user-managed-identity::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -88,7 +87,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.ManagedIdentity.makeUserAssignedIdentity({
-    name: "rg-user-managed-identity::identity-vault",
     properties: ({}) => ({
       name: "identity-vault",
     }),
@@ -98,7 +96,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-user-managed-identity::vm180",
     properties: ({}) => ({
       name: "vm180",
       properties: {
@@ -122,7 +119,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-user-managed-identity::vm-nsg",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -149,7 +145,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-user-managed-identity::vm-ip",
     properties: ({}) => ({
       name: "vm-ip",
     }),
@@ -159,7 +154,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-user-managed-identity::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -173,7 +167,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-user-managed-identity::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -188,7 +181,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-user-managed-identity",
     properties: ({}) => ({
       name: "rg-user-managed-identity",
     }),

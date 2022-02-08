@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
-    name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
     properties: ({}) => ({
       name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
       properties: {
@@ -18,7 +17,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-vm-ad-login::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -32,8 +30,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "rg-vm-ad-login::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -101,7 +99,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineExtension({
-    name: "rg-vm-ad-login::vm::aadsshloginforlinux",
     properties: ({}) => ({
       name: "aadsshloginforlinux",
       properties: {
@@ -118,7 +115,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-vm-ad-login::vm514",
     properties: ({}) => ({
       name: "vm514",
       properties: {
@@ -142,7 +138,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm-ad-login::vm-nsg",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -169,7 +164,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-vm-ad-login::vm-ip",
     properties: ({}) => ({
       name: "vm-ip",
     }),
@@ -179,7 +173,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-vm-ad-login::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -193,7 +186,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-ad-login::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -208,7 +200,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-ad-login",
     properties: ({}) => ({
       name: "rg-vm-ad-login",
     }),

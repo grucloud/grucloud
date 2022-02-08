@@ -34,6 +34,7 @@ provider.OperationalInsights.makeWorkspace({
         provisioningState: {
           type: 'string',
           description: 'The provisioning state of the workspace.',
+          readOnly: true,
           enum: [
             'Creating',
             'Succeeded',

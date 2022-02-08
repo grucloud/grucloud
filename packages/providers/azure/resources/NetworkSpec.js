@@ -136,7 +136,7 @@ exports.fnSpecs = ({ config }) => {
         // },
         filterLive: ({ lives }) =>
           pipe([
-            pick(["sku", "tags", "properties"]),
+            pick(["name", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -421,7 +421,7 @@ exports.fnSpecs = ({ config }) => {
         }),
         filterLive: ({ lives }) =>
           pipe([
-            pick(["sku", "tags", "properties"]),
+            pick(["name", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -585,7 +585,7 @@ exports.fnSpecs = ({ config }) => {
         // ],
         filterLive: () =>
           pipe([
-            pick(["properties"]),
+            pick(["name", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
@@ -856,7 +856,7 @@ exports.fnSpecs = ({ config }) => {
         omitProperties: ["properties.ipConfigurations"],
         filterLive: ({ lives }) =>
           pipe([
-            pick(["sku", "tags", "properties"]),
+            pick(["name", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),

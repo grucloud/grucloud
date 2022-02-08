@@ -7,15 +7,15 @@ const createResources = ({ provider }) => {
   const { topLevelDomain, subDomainName = "", recordTxtValue } = config;
   assert(topLevelDomain);
   assert(recordTxtValue);
-
+  const hostedZoneName = `${topLevelDomain}.`;
   const hostedZone = provider.Route53.makeHostedZone({
-    name: `${topLevelDomain}.`,
+    name: hostedZoneName,
     dependencies: {},
   });
 
   const recordTxt = provider.Route53.makeRecord({
     name: `txt.${subDomainName}${topLevelDomain}.`,
-    dependencies: { hostedZone },
+    dependencies: () => ({ hostedZone: hostedZoneName }),
     properties: () => ({
       Name: `${subDomainName}${topLevelDomain}.`,
       ResourceRecords: [

@@ -27,11 +27,11 @@ const createResources = ({ provider }) => {
     }),
   });
 */
-  return {
+  const s3Buckets = {
     objects: {
       fileTest: provider.S3.makeObject({
         name: `file-test`,
-        dependencies: { bucket: bucketBasic },
+        dependencies: () => ({ bucket: bucketName }),
         properties: () => ({
           ACL: "public-read",
           ContentType: "text/plain",

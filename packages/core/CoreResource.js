@@ -51,15 +51,28 @@ exports.ResourceMaker = ({
   dependencies = () => ({}),
   filterLives,
   readOnly,
+  //isDefault,
   properties = () => ({}),
   attributes = () => ({}),
   spec,
   provider,
-  config,
   programOptions,
 }) => {
+  assert(programOptions);
+  assert(spec);
   const { type, group, groupType } = spec;
   assert(groupType);
+  //TODO
+  // const filterLives = switchCase([
+  //   () => readOnly,
+  //   () => spec.findResource,
+  //   () => isDefault,
+  //   () => spec.findDefault,
+  //   () => undefined,
+  // ])();
+
+  assert(provider);
+  const config = provider.getConfig();
 
   const getId = ({ group, type, name, path = "id", suffix = "" }) =>
     pipe([
@@ -100,12 +113,9 @@ exports.ResourceMaker = ({
             `resource ${spec.type} without name must implement 'inferName'`
           );
         }),
-        provider.resources,
-        tap((resources) => {
-          assert(resources);
-        }),
-        (resources) => ({
+        () => ({
           properties: properties({ config, getId }),
+          dependenciesSpec: dependencies(),
           dependencies: getDependencies(),
         }),
         tap((params) => {
@@ -355,7 +365,7 @@ exports.ResourceMaker = ({
       switchCase([
         isEmpty,
         () => {
-          throw Error(`Cannot find the dependency ${depKey}:${value} `);
+          throw Error(`Cannot find the dependency ${depKey}, ${value} `);
         },
         pipe([
           //TODO change getResourceByName, should take an object
@@ -444,6 +454,7 @@ exports.ResourceMaker = ({
                 }),
                 () => dependency,
                 switchCase([
+                  // TODO readOnly : spec.findResource, useDefault: spec.findDefault
                   () => dependency.filterLives,
                   () => dependency.resolveConfig({ deep: true }),
                   pipe([() => dependency.findLive({})]),

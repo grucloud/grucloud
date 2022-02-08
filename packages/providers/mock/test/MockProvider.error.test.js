@@ -36,10 +36,10 @@ describe("MockProvider errors", async function () {
       name: "mock",
       config,
       mockCloud: MockCloud(),
-      createResources: ({ provider }) => {
-        provider.Compute.makeIp({ name: "myip" });
-        provider.Compute.makeIp({ name: "myip" });
-      },
+      createResources: () => [
+        { type: "Ip", group: "Compute", name: "myip" },
+        { type: "Ip", group: "Compute", name: "myip" },
+      ],
     });
     const resources = provider.resources();
     assert(!isEmpty(resources));
@@ -49,17 +49,13 @@ describe("MockProvider errors", async function () {
       name: "mock1",
       config,
       mockCloud,
-      createResources: ({ provider }) => {
-        provider.Compute.makeIp({ name: "myip" });
-      },
+      createResources: () => [{ type: "Ip", group: "Compute", name: "myip" }],
     });
     const provider2 = await createMockProvider({
       name: "mock2",
       config,
       mockCloud,
-      createResources: ({ provider }) => {
-        provider.Compute.makeIp({ name: "myip" });
-      },
+      createResources: () => [{ type: "Ip", group: "Compute", name: "myip" }],
     });
 
     const providersGru = ProviderGru({
@@ -76,27 +72,26 @@ describe("MockProvider errors", async function () {
         name: "mock1",
         config,
         mockCloud,
-        createResources: ({ provider }) => {
-          provider.Compute.makeVolume({
+        createResources: () => [
+          {
+            type: "Volume",
+            group: "Compute",
             name: "volume1",
             properties: () => ({
               size: 20_000_000_000,
             }),
-          });
-
-          provider.Compute.makeServer({
+          },
+          {
+            type: "Server",
+            group: "Compute",
             name: "web-server",
             properties: () => ({
               diskSizeGb: "20",
               machineType: "f1-micro",
             }),
-          });
-
-          provider.Compute.makeIp({
-            name: "ip",
-            properties: () => ({}),
-          });
-        },
+          },
+          { type: "Ip", group: "Compute", name: "myip" },
+        ],
       });
 
       const providersGru = ProviderGru({ stacks: [{ provider }] });
@@ -108,7 +103,7 @@ describe("MockProvider errors", async function () {
         name: "mock2",
         config,
         mockCloud,
-        createResources: ({ provider }) => {},
+        createResources: () => [],
       });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
       const { error } = providersGru.planQuery();

@@ -241,7 +241,6 @@ exports.fnSpecs = ({ config }) =>
           ])(),
         omitProperties: [
           "id",
-          "name",
           "type",
           "location",
           "systemData",

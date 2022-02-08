@@ -3,29 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Authorization.makeRoleAssignment({
-    properties: ({}) => ({
-      name: "0c443613-bc05-4fa2-b6f2-d657c260dc0c",
-      properties: {
-        roleName: "Key Vault Crypto Officer",
-        principalId: "33ccdfbf-d20f-42bf-a59b-e75fc52729bb",
-      },
-    }),
-  });
-
-  provider.Compute.makeDiskEncryptionSet({
-    properties: ({}) => ({
-      name: "de",
-      properties: {
-        encryptionType: "EncryptionAtRestWithCustomerKey",
-        rotationToLatestKeyVersionEnabled: false,
-      },
-    }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-keyvault-rbac"],
-    }),
-  });
-
   provider.KeyVault.makeKey({
     properties: ({}) => ({
       name: "mykey",
@@ -35,14 +12,15 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vault-ap"],
-      vault: resources.KeyVault.Vault["rg-vault-ap::gcvaultaccesspolicy"],
+    dependencies: () => ({
+      resourceGroup: "rg-vault-ap",
+      vault: "rg-vault-ap::gcvaultaccesspolicy",
     }),
   });
 
   provider.KeyVault.makeVault({
     properties: ({ config }) => ({
+      name: "gcvaultaccesspolicy",
       properties: {
         sku: {
           family: "A",
@@ -111,14 +89,8 @@ const createResources = ({ provider }) => {
         tenantId: `${config.tenantId}`,
       },
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-vault-ap"],
-    }),
-  });
-
-  provider.Resources.makeResourceGroup({
-    properties: ({}) => ({
-      name: "rg-keyvault-rbac",
+    dependencies: () => ({
+      resourceGroup: "rg-vault-ap",
     }),
   });
 

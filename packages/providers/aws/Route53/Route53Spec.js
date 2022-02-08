@@ -50,11 +50,12 @@ module.exports = () =>
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties, dependencies, dependenciesSpec }) =>
         pipe([
+          //TODO use dependenciesSpec
           dependencies,
           tap((params) => {
-            assert(true);
+            assert(dependenciesSpec);
           }),
           switchCase([
             get("certificate"),

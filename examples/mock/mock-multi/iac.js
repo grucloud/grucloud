@@ -1,71 +1,50 @@
-const Axios = require("axios");
 const assert = require("assert");
-const urljoin = require("url-join");
 const { MockProvider } = require("@grucloud/provider-mock");
 const hookGlobal = require("./hookGlobal");
 
-const BASE_URL = "http://localhost:8089";
-
-const createAxios = ({ url }) => {
-  assert(url);
-  return Axios.create({
-    baseURL: urljoin(BASE_URL, url),
-    headers: { "Content-Type": "application/json" },
-  });
-};
-
-const createResources1 = async ({ provider }) => {
-  // Ip
-  const volume = provider.Compute.makeVolume({
+const createResources1 = () => [
+  {
+    type: "Volume",
+    group: "Compute",
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
-  });
+  },
+];
 
-  return { volume };
-};
-
-const createResources2 = async ({ provider }) => {
-  // Ip
-  const volume = provider.Compute.makeVolume({
+const createResources2 = () => [
+  {
+    type: "Volume",
+    group: "Compute",
     name: "volume2",
     properties: () => ({
       size: 20_000_000_000,
     }),
-  });
+  },
+];
 
-  return { volume };
-};
-//TODO
-exports.createStack = async ({ config }) => {
-  const provider1 = MockProvider({
-    name: "mock-1",
-    config: require("./config"),
-  });
-
-  const resources1 = await createResources1({ provider: provider1 });
-
-  const provider2 = MockProvider({
-    name: "mock-2",
-    dependencies: { provider1 },
-    config: require("./config"),
-  });
-
-  const resources2 = await createResources2({ provider: provider2 });
-
+exports.createStack = ({ config }) => {
   return {
     hookGlobal,
     stacks: [
       {
-        provider: provider1,
-        resources: resources1,
+        provider: MockProvider({
+          name: "mock-1",
+          createResources: createResources1,
+          config: require("./config"),
+        }),
         hooks: [require("./hookProvider1")],
-        isProviderUp: () => resources1.volume.getLive(),
+        //TODO
+        //isProviderUp: () => resources1.volume.getLive(),
       },
       {
-        provider: provider2,
-        resources: resources2,
+        provider: MockProvider({
+          name: "mock-2",
+          createResources: createResources2,
+          //dependencies: { provider1 },
+          config: require("./config"),
+        }),
         hooks: [require("./hookProvider2")],
       },
     ],

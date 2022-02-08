@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Authorization.makeRoleAssignment({
-    name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
     properties: ({}) => ({
       name: "0e4306a9-b8fd-4637-bfce-e5ce05940ef7",
       properties: {
@@ -17,8 +16,22 @@ const createResources = ({ provider }) => {
     }),
   });
 
+  provider.Authorization.makeRoleAssignment({
+    properties: ({}) => ({
+      name: "7ffe121b-6d37-4b21-8ed3-ea8ff2ceb017",
+      properties: {
+        roleName: "Contributor",
+        principalName: "rg-aks-basic::cluster",
+        principalType: "ServicePrincipal",
+      },
+    }),
+    dependencies: () => ({
+      scopeResourceGroup: "mc_rg-aks-basic_cluster_canadacentral",
+      principalManagedCluster: "rg-aks-basic::cluster",
+    }),
+  });
+
   provider.Compute.makeDisk({
-    name: "rg-vm-disks::vm_datadisk_0",
     properties: ({}) => ({
       name: "vm_datadisk_0",
       sku: {
@@ -45,7 +58,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-load-balancer::vmss_key",
     properties: ({}) => ({
       name: "vmss_key",
       properties: {
@@ -59,7 +71,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-vm-ad-login::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -73,7 +84,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-vm-disks::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -87,8 +97,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "rg-vm-ad-login::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -156,8 +166,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "rg-vm-disks::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -243,7 +253,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineExtension({
-    name: "rg-vm-ad-login::vm::aadsshloginforlinux",
     properties: ({}) => ({
       name: "aadsshloginforlinux",
       properties: {
@@ -260,7 +269,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachineScaleSet({
-    name: "rg-load-balancer::vmss",
     properties: ({ getId }) => ({
       name: "vmss",
       sku: {
@@ -381,8 +389,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.ContainerService.makeManagedCluster({
-    name: "rg-aks-basic::cluster",
     properties: ({}) => ({
+      name: "cluster",
       sku: {
         name: "Basic",
         tier: "Free",
@@ -454,7 +462,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.DBforPostgreSQL.makeConfiguration({
-    name: "rg-postgres::gc-server::shared_preload_libraries",
     properties: ({}) => ({
       name: "shared_preload_libraries",
       properties: {
@@ -469,7 +476,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.DBforPostgreSQL.makeFirewallRule({
-    name: "rg-postgres::gc-server::allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
     properties: ({}) => ({
       name: "allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
       properties: {
@@ -484,7 +490,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.DBforPostgreSQL.makeFlexibleServer({
-    name: "rg-postgres::gc-server",
     properties: ({}) => ({
       name: "gc-server",
       sku: {
@@ -507,8 +512,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeLoadBalancer({
-    name: "rg-load-balancer::load-balancer",
     properties: ({ getId }) => ({
+      name: "load-balancer",
       sku: {
         name: "Standard",
         tier: "Regional",
@@ -542,8 +547,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeLoadBalancerBackendAddressPool({
-    name: "rg-load-balancer::load-balancer::backendpool",
     properties: ({}) => ({
+      name: "backendpool",
       properties: {},
     }),
     dependencies: () => ({
@@ -553,7 +558,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNatGateway({
-    name: "rg-natgateway::nat-gw",
     properties: ({}) => ({
       name: "nat-gw",
       sku: {
@@ -570,7 +574,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-vm-ad-login::vm514",
     properties: ({}) => ({
       name: "vm514",
       properties: {
@@ -594,7 +597,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-vm-disks::vm537",
     properties: ({}) => ({
       name: "vm537",
       properties: {
@@ -618,7 +620,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-load-balancer::basicnsgvnet-nic01",
     properties: ({}) => ({
       name: "basicnsgvnet-nic01",
       properties: {
@@ -631,7 +632,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm-ad-login::vm-nsg",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -658,7 +658,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm-disks::vm-nsg",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -685,7 +684,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-load-balancer::ip",
     properties: ({}) => ({
       name: "ip",
       sku: {
@@ -701,7 +699,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-natgateway::ip-address",
     properties: ({}) => ({
       name: "ip-address",
       sku: {
@@ -717,7 +714,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-vm-ad-login::vm-ip",
     properties: ({}) => ({
       name: "vm-ip",
     }),
@@ -727,7 +723,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-vm-disks::vm-ip",
     properties: ({}) => ({
       name: "vm-ip",
     }),
@@ -737,7 +732,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-load-balancer::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -751,7 +745,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-natgateway::virtual-network::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -765,7 +758,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-vm-ad-login::vnet::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -779,7 +771,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-vm-disks::virtual-network::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -793,7 +784,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-load-balancer::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -808,7 +798,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-natgateway::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -823,7 +812,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-ad-login::vnet",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -838,7 +826,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-disks::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -853,7 +840,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.OperationalInsights.makeWorkspace({
-    name: "rg-plantuml::logs",
     properties: ({}) => ({
       name: "logs",
       properties: {
@@ -869,57 +855,50 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-aks-basic",
     properties: ({}) => ({
       name: "rg-aks-basic",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-load-balancer",
     properties: ({}) => ({
       name: "rg-load-balancer",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-natgateway",
     properties: ({}) => ({
       name: "rg-natgateway",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-plantuml",
     properties: ({}) => ({
       name: "rg-plantuml",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-postgres",
     properties: ({}) => ({
       name: "rg-postgres",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-ad-login",
     properties: ({}) => ({
       name: "rg-vm-ad-login",
     }),
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-disks",
     properties: ({}) => ({
       name: "rg-vm-disks",
     }),
   });
 
   provider.Web.makeContainerApp({
-    name: "rg-plantuml::plantuml",
     properties: ({}) => ({
+      name: "plantuml",
       properties: {
         configuration: {
           ingress: {
@@ -951,7 +930,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Web.makeKubeEnvironment({
-    name: "rg-plantuml::dev",
     properties: ({}) => ({
       name: "dev",
     }),

@@ -4,7 +4,6 @@ const {} = require("rubico/x");
 
 const createResources = ({ provider }) => {
   provider.Compute.makeDisk({
-    name: "rg-vm-disks::vm_datadisk_0",
     properties: ({}) => ({
       name: "vm_datadisk_0",
       sku: {
@@ -31,7 +30,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeSshPublicKey({
-    name: "rg-vm-disks::keypair",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -45,8 +43,8 @@ const createResources = ({ provider }) => {
   });
 
   provider.Compute.makeVirtualMachine({
-    name: "rg-vm-disks::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
@@ -132,7 +130,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkInterface({
-    name: "rg-vm-disks::vm537",
     properties: ({}) => ({
       name: "vm537",
       properties: {
@@ -156,7 +153,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeNetworkSecurityGroup({
-    name: "rg-vm-disks::vm-nsg",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -183,7 +179,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makePublicIPAddress({
-    name: "rg-vm-disks::vm-ip",
     properties: ({}) => ({
       name: "vm-ip",
     }),
@@ -193,7 +188,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeSubnet({
-    name: "rg-vm-disks::virtual-network::default",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -207,7 +201,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Network.makeVirtualNetwork({
-    name: "rg-vm-disks::virtual-network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -222,7 +215,6 @@ const createResources = ({ provider }) => {
   });
 
   provider.Resources.makeResourceGroup({
-    name: "rg-vm-disks",
     properties: ({}) => ({
       name: "rg-vm-disks",
     }),

@@ -1,4 +1,4 @@
 const createResources = ({ provider }) => {
-  return {};
+  return [];
 };
 exports.createResources = createResources;

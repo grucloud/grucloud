@@ -1,8 +1,9 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const { pipe, tap, filter, switchCase, map } = require("rubico");
-const { isFunction, identity } = require("rubico/x");
+const { pipe, tap, filter, switchCase, flatMap, not } = require("rubico");
+const { isFunction, when } = require("rubico/x");
+const { identity } = require("rxjs");
 const logger = require("../logger")({ prefix: "Infra" });
 
 const createProviderMaker =
@@ -31,7 +32,7 @@ const createProviderMaker =
         );
       }),
       () => [configOverride, ...configsOverride, configUser, ...configsUser],
-      // IsEmpty does not work with function
+      // isEmpty does not work with function
       filter((x) => x),
       (configs) =>
         provider({
@@ -40,37 +41,32 @@ const createProviderMaker =
           stage,
           ...otherProps,
         }),
-      tap((params) => {
-        assert(true);
-      }),
       tap((provider) =>
         pipe([
           () => createResources,
           switchCase([
             Array.isArray,
-            map((cr) =>
-              pipe([
-                tap(() => {
-                  assert(
-                    isFunction(cr),
-                    "createResources should be an array of functions"
-                  );
-                }),
-                () => cr({ provider }),
-              ])()
-            ),
+            identity,
             isFunction,
-            (createResources) => createResources({ provider }),
+            (createResources) => [createResources],
             () => {
               throw Error(
                 "createResources should be a function or an array of function"
               );
             },
           ]),
-          tap.if(
-            () => createResourcesUpdate,
-            () => createResourcesUpdate({ provider })
+          (cr) => [...cr, createResourcesUpdate],
+          // isEmpty does not work with function
+          filter((x) => x),
+          flatMap((cr) =>
+            pipe([
+              tap(() => {
+                assert(isFunction(cr), "createResources should be a function");
+              }),
+              () => cr({ provider }),
+            ])()
           ),
+          filter(not(isEmpty)),
           provider.targetResourcesBuildMap,
         ])()
       ),
