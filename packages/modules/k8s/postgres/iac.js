@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { K8sProvider } = require("@grucloud/provider-k8s");
 
 exports.hooks = [require("./hook")];
 
@@ -19,15 +18,14 @@ const createResources = ({ provider, resources: { namespace } }) => {
   assert(postgres.pvName);
 
   const configMapName = "postgres";
-  const configMap = provider.makeConfigMap({
+  provider.makeConfigMap({
     properties: () => ({
       metadata: { name: configMapName, namespace: namespace.name },
       data: postgres.env,
     }),
   });
 
-  const statefulSet = provider.makeStatefulSet({
-    dependencies: { configMap },
+  provider.makeStatefulSet({
     properties: () => ({
       metadata: {
         name: postgres.statefulSetName,
@@ -158,8 +156,7 @@ const createResources = ({ provider, resources: { namespace } }) => {
     }),
   });
 
-  const service = provider.makeService({
-    dependencies: { statefulSet },
+  provider.makeService({
     properties: () => ({
       metadata: { name: postgres.serviceName, namespace: namespace.name },
       spec: {
@@ -177,11 +174,5 @@ const createResources = ({ provider, resources: { namespace } }) => {
       },
     }),
   });
-
-  return {
-    service,
-    configMap,
-    statefulSet,
-  };
 };
 exports.createResources = createResources;

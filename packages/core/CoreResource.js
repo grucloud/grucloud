@@ -365,7 +365,7 @@ exports.ResourceMaker = ({
       switchCase([
         isEmpty,
         () => {
-          throw Error(`Cannot find the dependency ${depKey}:${value} `);
+          throw Error(`Cannot find the dependency ${depKey}, ${value} `);
         },
         pipe([
           //TODO change getResourceByName, should take an object

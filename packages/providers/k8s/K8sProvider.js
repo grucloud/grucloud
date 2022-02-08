@@ -130,6 +130,11 @@ const fnSpecs = pipe([
     {
       type: "ConfigMap",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -157,6 +162,14 @@ const fnSpecs = pipe([
     {
       type: "ClusterRoleBinding",
       dependsOn: ["ClusterRole", "ServiceAccount"],
+      dependencies: {
+        clusterRole: {
+          type: "ClusterRole",
+        },
+        serviceAccount: {
+          type: "ServiceAccount",
+        },
+      },
       inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterrolebindings`,
@@ -207,6 +220,11 @@ const fnSpecs = pipe([
     {
       type: "DaemonSet",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -226,6 +244,23 @@ const fnSpecs = pipe([
         "ServiceAccount",
         "CustomResourceDefinition",
       ],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        customResourceDefinition: {
+          type: "CustomResourceDefinition",
+        },
+        configMap: {
+          type: "ConfigMap",
+        },
+        secret: {
+          type: "Secret",
+        },
+        serviceAccount: {
+          type: "ServiceAccount",
+        },
+      },
       inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
@@ -252,6 +287,14 @@ const fnSpecs = pipe([
     {
       type: "Ingress",
       dependsOn: ["Namespace", "Deployment"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        deployment: {
+          type: "Deployment",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -318,6 +361,11 @@ const fnSpecs = pipe([
     {
       type: "Job",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -362,6 +410,11 @@ const fnSpecs = pipe([
     {
       type: "PersistentVolume",
       dependsOn: ["StorageClass"],
+      dependencies: {
+        storageClass: {
+          type: "StorageClass",
+        },
+      },
       inferName: inferNameNamespaceLess,
       Client: createResourceNamespaceless({
         baseUrl: ({ apiVersion }) => `/api/${apiVersion}/persistentvolumes`,
@@ -375,6 +428,17 @@ const fnSpecs = pipe([
     {
       type: "PersistentVolumeClaim",
       dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        storageClass: {
+          type: "StorageClass",
+        },
+        persistentVolume: {
+          type: "PersistentVolume",
+        },
+      },
       inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
@@ -416,6 +480,29 @@ const fnSpecs = pipe([
         "StatefulSet",
         "Deployment",
       ],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        configMap: {
+          type: "ConfigMap",
+        },
+        deployment: {
+          type: "Deployment",
+        },
+        replicaSet: {
+          type: "ReplicaSet",
+        },
+        secret: {
+          type: "Secret",
+        },
+        serviceAccount: {
+          type: "ServiceAccount",
+        },
+        statefulSet: {
+          type: "StatefulSet",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -488,6 +575,11 @@ const fnSpecs = pipe([
     {
       type: "PodDisruptionBudget",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -504,6 +596,11 @@ const fnSpecs = pipe([
     {
       type: "Role",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -519,6 +616,17 @@ const fnSpecs = pipe([
     {
       type: "RoleBinding",
       dependsOn: ["Namespace", "Role", "ServiceAccount"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        role: {
+          type: "Role",
+        },
+        serviceAccount: {
+          type: "ServiceAccount",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -543,6 +651,11 @@ const fnSpecs = pipe([
     {
       type: "Secret",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -589,6 +702,11 @@ const fnSpecs = pipe([
     {
       type: "Service",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -604,6 +722,11 @@ const fnSpecs = pipe([
     {
       type: "ServiceAccount",
       dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -628,6 +751,20 @@ const fnSpecs = pipe([
     {
       type: "StatefulSet",
       dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        configMap: {
+          type: "ConfigMap",
+        },
+        secret: {
+          type: "Secret",
+        },
+        serviceAccount: {
+          type: "ServiceAccount",
+        },
+      },
       inferName: inferNameNamespace,
       Client: ({ config, spec }) =>
         createResourceNamespace({
@@ -665,6 +802,17 @@ const fnSpecs = pipe([
     {
       type: "ReplicaSet",
       dependsOn: ["Namespace", "ConfigMap", "Secret"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+        configMap: {
+          type: "ConfigMap",
+        },
+        secret: {
+          type: "Secret",
+        },
+      },
       inferName: inferNameNamespace,
       Client: createResourceNamespace({
         baseUrl: ({ apiVersion, namespace }) =>
