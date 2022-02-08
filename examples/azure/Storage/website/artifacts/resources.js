@@ -43,7 +43,6 @@ const createResources = ({ provider }) => {
 
   provider.Storage.makeBlobServiceProperties({
     properties: ({}) => ({
-      name: "gcstorageweb",
       properties: {
         staticWebsite: {
           enabled: true,

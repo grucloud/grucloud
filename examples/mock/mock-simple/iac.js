@@ -13,16 +13,18 @@ const createAxios = ({ url }) => {
   });
 };
 
-const createResources = ({ provider }) => {
-  //Server
-  provider.Compute.makeServer({
+const createResources = () => [
+  {
+    type: "Server",
+    group: "Compute",
     name: "db-server",
     properties: () => ({
       diskSizeGb: "50",
       machineType: "f1-micro",
     }),
-  });
-};
+  },
+];
+
 exports.createResources = createResources;
 
 exports.createStack = ({ createProvider }) => {

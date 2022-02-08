@@ -15,7 +15,6 @@
     "@azure/storage-blob": "^12.8.0",
     "@grucloud/core": "^4.0.0",
     "axios": "^0.24.0",
-    "azure-rest-api-specs": "https://github.com/Azure/azure-rest-api-specs.git#6af1afc7c3fbdea232a80f1334894d459e1dc922",
     "change-case": "^4.1.2",
     "deep-object-diff": "^1.1.0",
     "mime-types": "^2.1.34",
@@ -24,6 +23,7 @@
     "rubico": "^1.8.3"
   },
   "devDependencies": {
+    "azure-rest-api-specs": "https://github.com/grucloud/azure-rest-api-specs.git#1f710eec60d29db05952d493861d9dfe926fa885",
     "dotenv": "^10.0.0",
     "dotenv-cli": "^4.1.0",
     "mocha": "^9.1.3",

@@ -11,10 +11,9 @@ const createResources = ({ provider }) => {
       source: "assets/index1.html",
       name: "index.html",
     }),
-    dependencies: ({ resources }) => ({
-      resourceGroup: resources.Resources.ResourceGroup["rg-storage-web"],
-      container:
-        resources.Storage.BlobContainer["rg-storage-web::gcstorageweb::$web"],
+    dependencies: () => ({
+      resourceGroup: "rg-storage-web",
+      container: "rg-storage-web::gcstorageweb::$web",
     }),
   });
 };

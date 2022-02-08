@@ -5,17 +5,17 @@ module.exports = ({ stacks }) => {
   assert(stacks);
   const stack1 = find(eq(get("provider.name"), "mock-1"))(stacks);
   assert(stack1);
-  const { volume } = stack1.resources;
-  assert(volume);
+  //const { volume } = stack1.resources;
+  //assert(volume);
   return {
     name: "mock",
     onDeployed: {
       init: async () => {
-        const volumeLive = await volume.getLive();
-        assert(volumeLive);
+        // const volumeLive = await volume.getLive();
+        // assert(volumeLive);
 
         return {
-          volumeLive,
+          //volumeLive,
         };
       },
       actions: [

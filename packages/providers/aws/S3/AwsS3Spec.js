@@ -95,6 +95,9 @@ module.exports = () =>
       type: "Object",
       dependsOn: ["S3::Bucket"],
       dependsOnList: ["S3::Bucket"],
+      dependencies: {
+        bucket: { type: "Bucket", group: "S3", parent: true },
+      },
       Client: AwsS3Object,
       compare: compareS3Object,
       isOurMinion,
@@ -110,8 +113,5 @@ module.exports = () =>
               }),
           }),
         ]),
-      dependencies: {
-        bucket: { type: "Bucket", group: "S3", parent: true },
-      },
     },
   ]);

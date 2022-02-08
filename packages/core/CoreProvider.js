@@ -78,6 +78,7 @@ const {
   contextFromHookAction,
   providerRunning,
 } = require("./ProviderCommon");
+const { ResourceMaker } = require("./CoreResource");
 
 const { createClient, decorateLive, buildGroupType } = require("./Client");
 const { createLives } = require("./Lives");
@@ -318,19 +319,55 @@ function CoreProvider({
       () => targetResourceAddToMap(resource),
     ])();
 
-  const targetResourcesBuildMap = pipe([
-    () => resourcesSet,
-    tap((params) => {
-      assert(true);
-    }),
-    forEach(tryCatch(targetResourceAdd, () => undefined)),
-    tap((params) => {
-      assert(true);
-    }),
-    //TODO use dependencies
-    () => resourcesSet,
-    forEach(targetResourceAdd),
-  ]);
+  const findSpecByGroupType = ({ type, group }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      find(and([eq(get("type"), type), eq(get("group"), group)])),
+      tap((spec) => {
+        assert(spec, `cannot find type:${type}, group ${group}`);
+      }),
+    ]);
+
+  const targetResourcesBuildMap = (resourcesSpec = []) =>
+    pipe([
+      tap(() => {
+        assert(resourcesSpec);
+      }),
+      () => resourcesSpec,
+      map(({ type, group, ...other }) =>
+        pipe([
+          tap(() => {
+            assert(type);
+            assert(other);
+          }),
+          getSpecs,
+          findSpecByGroupType({ type, group }),
+          tap((params) => {
+            assert(true);
+          }),
+          (spec) => ({ ...other, provider, programOptions, spec }),
+          ResourceMaker,
+          tap((params) => {
+            assert(true);
+          }),
+          targetResourcesAdd,
+        ])()
+      ),
+      //TODO remove below
+      () => resourcesSet,
+      tap((params) => {
+        assert(true);
+      }),
+      forEach(tryCatch(targetResourceAdd, () => undefined)),
+      tap((params) => {
+        assert(true);
+      }),
+      //TODO use dependencies
+      () => resourcesSet,
+      forEach(targetResourceAdd),
+    ])();
 
   const getTargetResources = () => [...mapNameToResource.values()];
 
