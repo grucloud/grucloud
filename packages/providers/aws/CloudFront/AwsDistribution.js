@@ -310,6 +310,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO Tags
   const configDefault = ({
     name,
     properties,

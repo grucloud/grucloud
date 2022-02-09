@@ -121,6 +121,7 @@ module.exports = () =>
                               id: IPAddress.id,
                               path: "live.PublicIp",
                             }),
+                            (result) => () => result,
                           ]),
                         }),
                       ])(),
@@ -135,7 +136,6 @@ module.exports = () =>
         pipe([
           () => resource,
           or([
-            //hasDependency({ type: "ElasticIpAddress", group: "EC2" }),
             hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),

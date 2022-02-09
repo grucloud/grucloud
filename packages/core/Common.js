@@ -488,7 +488,10 @@ const buildGetId =
         pipe([append(", path:'"), append(path), append("'")])
       ),
       unless(
-        pipe([() => replaceId(id)(idResource), isEmpty]),
+        or([
+          () => isEmpty(id),
+          pipe([() => idResource, replaceId(id), isEmpty]),
+        ]),
         pipe([
           append(", suffix:'"),
           append(replaceId(id)(idResource)),
@@ -496,6 +499,5 @@ const buildGetId =
         ])
       ),
       append("})"),
-      (fun) => () => fun,
     ])();
 exports.buildGetId = buildGetId;

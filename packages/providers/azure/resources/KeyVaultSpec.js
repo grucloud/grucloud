@@ -136,11 +136,12 @@ const assignObjectId =
             () => !isEmpty(resource),
             assign({
               objectId: pipe([
-                () =>
-                  buildGetId({
-                    id: resource.id,
-                    path: "live.identity.principalId",
-                  })(resource),
+                () => resource,
+                buildGetId({
+                  id: resource.id,
+                  path: "live.identity.principalId",
+                }),
+                (result) => () => result,
               ]),
             })
           ),

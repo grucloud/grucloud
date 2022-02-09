@@ -106,6 +106,7 @@ exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
               assert(resource);
             }),
             buildGetId({ id }),
+            (result) => () => result,
           ])(),
       ]),
     }),

@@ -1,7 +1,6 @@
 ## Bugs
 
 - az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
-  -mock multi cloud example
 
 NetworkSecurityGroup defaultSecurityRules in gencode
 
@@ -71,10 +70,6 @@ remove aks-managed-createOperationID from tags
 ## Cli
 
 ## Kubernetes
-
-- APIService problem deleting some
-- gc graph: wrong namespace, it is default, should be myapp
-- minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 
 ## Azure
 
@@ -153,9 +148,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-- vm-network: fix name provider.compute.makeSubNetwork({
-  name: "subnet-subnetwork",
-
 - discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
 
 - fix cannotBeDeleted for Disk:
@@ -181,8 +173,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
 ## TODO Mock
-
-- examples mock with createProvider
 
 ## Nice to have
 
@@ -213,32 +203,3 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 ## Nice to have
 
 ## Bugs
-
-azure plantuml
-
-axios error {
-"Message": "Request failed with status code 409 ",
-"Status": 409,
-"Output": {
-"Code": "95802",
-"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps",
-"Target": null,
-"Details": [
-{
-"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps"
-},
-{
-"Code": "95802"
-},
-{
-"ErrorEntity": {
-"Code": "95802",
-"Message": "The specified environment dev cannot be deleted because it still contains 1 ContainerApps"
-}
-}
-],
-"Innererror": null
-},
-"Input": {
-"url": "delete https://management.azure.com/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-plantuml/providers/Microsoft.Web/kubeenvironments/dev?api-version=2021-03-01"
-}

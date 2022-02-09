@@ -17,6 +17,7 @@ const {
 } = require("rubico");
 const Axios = require("axios");
 const { pluck, when, callProp, isEmpty, values, groupBy } = require("rubico/x");
+const mime = require("mime-types");
 
 const path = require("path");
 const Fs = require("fs");

@@ -57,15 +57,15 @@ module.exports = ({ provider }) => {
       init: async () => {
         const resources = provider.resources();
         const websiteBucket =
-          resources.S3.Bucket["cloudfront.aws.test.grucloud.org-dev"];
+          resources.S3.Bucket["cloudfront.aws.test.grucloud.org"];
         const hostedZone =
-          resources.Route53.HostedZone["dev.cloudfront.aws.test.grucloud.org."];
+          resources.Route53.HostedZone["cloudfront.aws.test.grucloud.org."];
         const distribution =
           resources.CloudFront.Distribution[
-            "distribution-cloudfront.aws.test.grucloud.org-dev"
+            "distribution-cloudfront.aws.test.grucloud.org"
           ];
         const certificate =
-          resources.ACM.Certificate["dev.cloudfront.aws.test.grucloud.org"];
+          resources.ACM.Certificate["cloudfront.aws.test.grucloud.org"];
         assert(websiteBucket);
         assert(hostedZone);
         assert(distribution);
