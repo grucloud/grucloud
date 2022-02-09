@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-k8s-prometheus",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "Example of the GruCloud module for Prometheus",
   "main": "iac.js",
   "private": true,
@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/grucloud/grucloud#readme",
   "dependencies": {
-    "@grucloud/core": "^5.1.1",
-    "@grucloud/module-k8s-prometheus": "^5.1.1",
-    "@grucloud/provider-k8s": "^5.1.1",
+    "@grucloud/core": "^5.1.2",
+    "@grucloud/module-k8s-prometheus": "^5.1.2",
+    "@grucloud/provider-k8s": "^5.1.2",
     "js-yaml": "^4.1.0",
     "rubico": "*"
   },
