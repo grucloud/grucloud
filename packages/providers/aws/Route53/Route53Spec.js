@@ -6,12 +6,13 @@ const {
   map,
   pick,
   get,
-  omit,
+  eq,
   or,
   switchCase,
+  filter,
 } = require("rubico");
-const { prepend } = require("rubico/x");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { prepend, isEmpty, find } = require("rubico/x");
+const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
 const { Route53HostedZone, compareHostedZone } = require("./Route53HostedZone");
@@ -32,15 +33,22 @@ module.exports = () =>
       Client: Route53HostedZone,
       isOurMinion,
       compare: compareHostedZone,
-      filterLive: () => pick([]),
+      filterLive: () =>
+        pick([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
       includeDefaultDependencies: true,
     },
     {
       type: "Record",
+      //TODO
       dependsOn: ["Route53::HostedZone", "ACM::Certificate"],
       dependsOnList: ["Route53::HostedZone"],
       dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53", parent: true },
+        elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
         loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
@@ -58,6 +66,11 @@ module.exports = () =>
             assert(dependenciesSpec);
           }),
           switchCase([
+            get("elasticIpAddress"),
+            pipe([
+              get("elasticIpAddress.name", "noName"),
+              prepend("EC2::ElasticIpAddress::"),
+            ]),
             get("certificate"),
             pipe([get("certificate.name"), prepend("ACM::Certificate::")]),
             get("loadBalancer"),
@@ -84,15 +97,45 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      filterLive: () =>
+      filterLive: ({ lives }) =>
         pipe([
           pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          assign({
+            ResourceRecords: pipe([
+              get("ResourceRecords"),
+              map((resourceRecord) =>
+                pipe([
+                  () => lives,
+                  filter(eq(get("groupType"), "EC2::ElasticIpAddress")),
+                  find(eq(get("live.PublicIp"), resourceRecord.Value)),
+                  switchCase([
+                    isEmpty,
+                    () => resourceRecord,
+                    (IPAddress) =>
+                      pipe([
+                        () => resourceRecord,
+                        assign({
+                          Value: pipe([
+                            () => IPAddress,
+                            buildGetId({
+                              id: IPAddress.id,
+                              path: "live.PublicIp",
+                            }),
+                          ]),
+                        }),
+                      ])(),
+                  ]),
+                ])()
+              ),
+            ]),
+          }),
           omitIfEmpty(["ResourceRecords"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
           or([
+            //hasDependency({ type: "ElasticIpAddress", group: "EC2" }),
             hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),

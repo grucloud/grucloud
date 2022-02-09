@@ -35,13 +35,18 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Name: "grucloud.org.",
       Type: "A",
       TTL: 300,
       ResourceRecords: [
         {
-          Value: "54.162.102.153",
+          Value: getId({
+            type: "ElasticIpAddress",
+            group: "EC2",
+            name: "myip",
+            path: "live.PublicIp",
+          }),
         },
       ],
       Tags: [
@@ -53,6 +58,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       hostedZone: "grucloud.org.",
+      elasticIpAddress: "myip",
     }),
   },
   {
