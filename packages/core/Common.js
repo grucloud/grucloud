@@ -33,6 +33,7 @@ const {
   isEmpty,
   keys,
   defaultsDeep,
+  append,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const logger = require("./logger")({ prefix: "Common" });
@@ -462,3 +463,39 @@ exports.compare = ({
       logger.debug(`compare ${tos(diff)}`);
     }),
   ]);
+
+const replaceId = (idResource) => callProp("replace", idResource, "");
+
+const buildGetId =
+  ({ id = "", path = "id" } = {}) =>
+  ({ type, group, name, id: idResource }) =>
+    pipe([
+      tap(() => {
+        assert(type);
+        assert(name);
+        assert(idResource);
+      }),
+      () => "",
+      append("getId({ type:'"),
+      append(type),
+      append("', group:'"),
+      append(group),
+      append("', name:'"),
+      append(name),
+      append("'"),
+      unless(
+        eq(path, "id"),
+        pipe([append(", path:'"), append(path), append("'")])
+      ),
+      unless(
+        pipe([() => replaceId(id)(idResource), isEmpty]),
+        pipe([
+          append(", suffix:'"),
+          append(replaceId(id)(idResource)),
+          append("'"),
+        ])
+      ),
+      append("})"),
+      (fun) => () => fun,
+    ])();
+exports.buildGetId = buildGetId;

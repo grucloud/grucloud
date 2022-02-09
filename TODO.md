@@ -103,7 +103,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 ## Aws
 
 - RDS DBCluster AvailabilityZones
-- route53 record, add elastic ipaddress as a dependencies
+- document route53 record, add elastic ipaddress as a dependencies
 - ECR.makeRegistry delete
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table

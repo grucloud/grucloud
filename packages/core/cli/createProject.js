@@ -8,6 +8,8 @@ const fse = require("fs-extra");
 const shell = require("shelljs");
 const live = require("shelljs-live/promise");
 
+const logger = require("../logger")({ prefix: "Infra" });
+
 const { createProjectAws } = require("./providers/createProjectAws");
 const { createProjectGoogle } = require("./providers/createProjectGoogle");
 const { createProjectAzure } = require("./providers/createProjectAzure");
@@ -68,15 +70,18 @@ const writeDirectory =
         destination: (workingDirectory) =>
           path.resolve(workingDirectory, projectName),
       }),
-      tap((params) => {
-        assert(true);
+      tap(({ source, destination }) => {
+        logger.debug(`from ${source} to ${destination}`);
       }),
       tap(({ source, destination }) =>
         fse.copy(source, destination, {
-          filter: (source, destination) =>
-            pipe([() => source, not(includes("node_modules"))])(),
+          filter: (sourceFile, destination) =>
+            pipe([() => sourceFile, not(includes("node_modules"))])(),
         })
       ),
+      tap((params) => {
+        logger.debug(`copied`);
+      }),
     ])();
 
 const displayGuide = ({ provider, dirs: { destination } }) =>

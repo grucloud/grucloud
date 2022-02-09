@@ -26,6 +26,7 @@ const {
   values,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { buildGetId } = require("@grucloud/core/Common");
 
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
@@ -78,40 +79,6 @@ const findResourceById =
         ])
       ),
     ])();
-
-const replaceId = (idResource) => callProp("replace", idResource, "");
-
-const buildGetId =
-  ({ id = "", path = "id" } = {}) =>
-  ({ type, group, name, id: idResource }) =>
-    pipe([
-      tap(() => {
-        assert(type);
-      }),
-      () => "",
-      append("getId({ type:'"),
-      append(type),
-      append("', group:'"),
-      append(group),
-      append("', name:'"),
-      append(name),
-      append("'"),
-      unless(
-        eq(path, "id"),
-        pipe([append(", path:'"), append(path), append("'")])
-      ),
-      unless(
-        pipe([() => replaceId(id)(idResource), isEmpty]),
-        pipe([
-          append(", suffix:'"),
-          append(replaceId(id)(idResource)),
-          append("'"),
-        ])
-      ),
-      append("})"),
-      (fun) => () => fun,
-    ])();
-exports.buildGetId = buildGetId;
 
 exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
   pipe([

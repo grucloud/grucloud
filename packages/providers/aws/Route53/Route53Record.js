@@ -35,7 +35,6 @@ const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { AwsClient } = require("../AwsClient");
 
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
@@ -97,12 +96,32 @@ const removeLastCharacter = callProp("slice", 0, -1);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
   const { providerName } = config;
   const route53 = Route53New(config);
 
   const findDependencies = ({ live, lives }) => [
     { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
+    {
+      type: "ElasticIpAddress",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("ResourceRecords"),
+        map(({ Value }) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "ElasticIpAddress",
+                group: "EC2",
+                providerName,
+              }),
+            find(eq(get("live.PublicIp"), Value)),
+            pick(["id", "name"]),
+          ])()
+        ),
+        filter(not(isEmpty)),
+      ])(),
+    },
     {
       type: "LoadBalancer",
       group: "ELBv2",
@@ -220,7 +239,14 @@ exports.Route53Record = ({ spec, config }) => {
     find(pipe([get("ids"), not(isEmpty)])),
     unless(
       isEmpty,
-      ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`
+      pipe([
+        tap(({ ids }) => {
+          if (!ids[0].name) {
+            assert(ids[0].name);
+          }
+        }),
+        ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`,
+      ])
     ),
   ]);
 
@@ -263,7 +289,6 @@ exports.Route53Record = ({ spec, config }) => {
           logger.debug(`findRecordInZone ${name}, cannot find record in tags`);
         }
       ),
-
       switchCase([
         isEmpty,
         () => undefined,
@@ -410,6 +435,7 @@ exports.Route53Record = ({ spec, config }) => {
         );
       }),
       () => payload,
+      omit(["Tags"]),
       (ResourceRecordSet) => ({
         Action: "CREATE",
         ResourceRecordSet,

@@ -100,16 +100,27 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, namespace, properties }) =>
-    defaultsDeep({
-      Domain: "vpc",
-      TagSpecifications: [
-        {
-          ResourceType: "elastic-ip",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-    })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
+    pipe([
+      () => ({}),
+      defaultsDeep(otherProps),
+      defaultsDeep({
+        Domain: "vpc",
+        TagSpecifications: [
+          {
+            ResourceType: "elastic-ip",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   return {
     spec,

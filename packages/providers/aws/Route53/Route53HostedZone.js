@@ -13,6 +13,7 @@ const {
   not,
   eq,
   and,
+  omit,
 } = require("rubico");
 const {
   first,
@@ -209,7 +210,12 @@ exports.Route53HostedZone = ({ spec, config }) => {
       tap(({ HostedZone }) =>
         route53().changeTagsForResource({
           ResourceId: HostedZone.Id,
-          AddTags: buildTags({ name, namespace, config }),
+          AddTags: buildTags({
+            name,
+            namespace,
+            config,
+            UserTags: payload.Tags,
+          }),
           ResourceType: "hostedzone",
         })
       ),
@@ -392,11 +398,13 @@ exports.Route53HostedZone = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = ({ name, properties, dependencies }) => {
-    return defaultsDeep({
-      Name: name,
-    })(properties);
-  };
+  const configDefault = ({ name, properties }) =>
+    pipe([
+      () => properties,
+      defaultsDeep({
+        Name: name,
+      }),
+    ])();
 
   return {
     spec,
