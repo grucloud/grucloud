@@ -33,7 +33,7 @@ end note
 
 : ""gc apply"";
 note right
-Deploy the infrastructure defined in ""resource.js""
+Deploy the infrastructure defined in ""resources.js""
 end note 
 : ""gc list"";
 note right

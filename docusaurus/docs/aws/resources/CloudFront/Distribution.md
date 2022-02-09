@@ -10,23 +10,30 @@ Provides a Cloud Front distribution.
 ```js
 exports.createResources = () => [
   {
-    type: "Certificate",
-    group: "ACM",
-    name: "dev.cloudfront.aws.test.grucloud.org",
-  },
-  {
     type: "Distribution",
     group: "CloudFront",
-    name: "distribution-cloudfront.aws.test.grucloud.org-dev",
-    properties: ({}) => ({
+    name: "distribution-cloudfront.aws.test.grucloud.org",
+    properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
         Quantity: 1,
-        Items: ["dev.cloudfront.aws.test.grucloud.org"],
+        Items: [
+          getId({
+            type: "Certificate",
+            group: "ACM",
+            name: "cloudfront.aws.test.grucloud.org",
+            path: "name",
+          }),
+        ],
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org-dev",
+        TargetOriginId: `S3-${getId({
+          type: "Bucket",
+          group: "S3",
+          name: "cloudfront.aws.test.grucloud.org",
+          path: "name",
+        })}`,
         TrustedSigners: {
           Enabled: false,
           Quantity: 0,
@@ -79,8 +86,18 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: "S3-cloudfront.aws.test.grucloud.org-dev",
-            DomainName: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+            Id: `S3-${getId({
+              type: "Bucket",
+              group: "S3",
+              name: "cloudfront.aws.test.grucloud.org",
+              path: "name",
+            })}`,
+            DomainName: `${getId({
+              type: "Bucket",
+              group: "S3",
+              name: "cloudfront.aws.test.grucloud.org",
+              path: "name",
+            })}.s3.amazonaws.com`,
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
@@ -104,7 +121,12 @@ exports.createResources = () => [
           Items: [],
         },
       },
-      Comment: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+      Comment: `${getId({
+        type: "Bucket",
+        group: "S3",
+        name: "cloudfront.aws.test.grucloud.org",
+        path: "name",
+      })}.s3.amazonaws.com`,
       Logging: {
         Enabled: false,
         IncludeCookies: false,
@@ -113,8 +135,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
-      certificate: "dev.cloudfront.aws.test.grucloud.org",
+      buckets: ["cloudfront.aws.test.grucloud.org"],
+      certificate: "cloudfront.aws.test.grucloud.org",
     }),
   },
 ];
@@ -134,5 +156,5 @@ When some S3 objects are updated during the _gc apply_ command, a [_createInvali
 
 ### Dependencies
 
-- [S3Bucket](../S3/Bucket.md)
+- [S3 Bucket](../S3/Bucket.md)
 - [Certificate](../ACM/Certificate.md)

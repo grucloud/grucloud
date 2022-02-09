@@ -3,7 +3,6 @@ const path = require("path");
 const { map } = require("rubico");
 const mime = require("mime-types");
 
-const { GoogleProvider } = require("@grucloud/provider-google");
 const hook = require("./hook");
 const { getFiles } = require("./utils");
 

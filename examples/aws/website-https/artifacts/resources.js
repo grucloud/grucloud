@@ -6,21 +6,33 @@ exports.createResources = () => [
   {
     type: "Certificate",
     group: "ACM",
-    name: "dev.cloudfront.aws.test.grucloud.org",
+    name: "cloudfront.aws.test.grucloud.org",
   },
   {
     type: "Distribution",
     group: "CloudFront",
-    name: "distribution-cloudfront.aws.test.grucloud.org-dev",
-    properties: ({}) => ({
+    name: "distribution-cloudfront.aws.test.grucloud.org",
+    properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
         Quantity: 1,
-        Items: ["dev.cloudfront.aws.test.grucloud.org"],
+        Items: [
+          getId({
+            type: "Certificate",
+            group: "ACM",
+            name: "cloudfront.aws.test.grucloud.org",
+            path: "name",
+          }),
+        ],
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org-dev",
+        TargetOriginId: `S3-${getId({
+          type: "Bucket",
+          group: "S3",
+          name: "cloudfront.aws.test.grucloud.org",
+          path: "name",
+        })}`,
         TrustedSigners: {
           Enabled: false,
           Quantity: 0,
@@ -73,8 +85,18 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: "S3-cloudfront.aws.test.grucloud.org-dev",
-            DomainName: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+            Id: `S3-${getId({
+              type: "Bucket",
+              group: "S3",
+              name: "cloudfront.aws.test.grucloud.org",
+              path: "name",
+            })}`,
+            DomainName: `${getId({
+              type: "Bucket",
+              group: "S3",
+              name: "cloudfront.aws.test.grucloud.org",
+              path: "name",
+            })}.s3.amazonaws.com`,
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
@@ -98,7 +120,12 @@ exports.createResources = () => [
           Items: [],
         },
       },
-      Comment: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+      Comment: `${getId({
+        type: "Bucket",
+        group: "S3",
+        name: "cloudfront.aws.test.grucloud.org",
+        path: "name",
+      })}.s3.amazonaws.com`,
       Logging: {
         Enabled: false,
         IncludeCookies: false,
@@ -107,14 +134,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
-      certificate: "dev.cloudfront.aws.test.grucloud.org",
+      buckets: ["cloudfront.aws.test.grucloud.org"],
+      certificate: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
     type: "HostedZone",
     group: "Route53",
-    name: "dev.cloudfront.aws.test.grucloud.org.",
+    name: "cloudfront.aws.test.grucloud.org.",
     dependencies: () => ({
       domain: "grucloud.org",
     }),
@@ -123,16 +150,16 @@ exports.createResources = () => [
     type: "Record",
     group: "Route53",
     dependencies: () => ({
-      hostedZone: "dev.cloudfront.aws.test.grucloud.org.",
-      certificate: "dev.cloudfront.aws.test.grucloud.org",
+      hostedZone: "cloudfront.aws.test.grucloud.org.",
+      certificate: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
     dependencies: () => ({
-      hostedZone: "dev.cloudfront.aws.test.grucloud.org.",
-      distribution: "distribution-cloudfront.aws.test.grucloud.org-dev",
+      hostedZone: "cloudfront.aws.test.grucloud.org.",
+      distribution: "distribution-cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -144,7 +171,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "cloudfront.aws.test.grucloud.org-dev",
+    name: "cloudfront.aws.test.grucloud.org",
     properties: ({}) => ({
       ACL: "public-read",
       WebsiteConfiguration: {
@@ -163,10 +190,10 @@ exports.createResources = () => [
     name: "build/bundle.css",
     properties: ({}) => ({
       ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.css.css",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.css.css",
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -175,10 +202,10 @@ exports.createResources = () => [
     name: "build/bundle.js",
     properties: ({}) => ({
       ContentType: "application/javascript",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/build/bundle.js.js",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.js.js",
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -187,10 +214,10 @@ exports.createResources = () => [
     name: "favicon.png",
     properties: ({}) => ({
       ContentType: "image/png",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/favicon.png.png",
+      source: "s3/cloudfront.aws.test.grucloud.org/favicon.png.png",
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -199,10 +226,10 @@ exports.createResources = () => [
     name: "global.css",
     properties: ({}) => ({
       ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/global.css.css",
+      source: "s3/cloudfront.aws.test.grucloud.org/global.css.css",
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -211,10 +238,10 @@ exports.createResources = () => [
     name: "index.html",
     properties: ({}) => ({
       ContentType: "text/html",
-      source: "s3/cloudfront.aws.test.grucloud.org-dev/index.html.html",
+      source: "s3/cloudfront.aws.test.grucloud.org/index.html.html",
     }),
     dependencies: () => ({
-      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
 ];
