@@ -6,17 +6,24 @@ Provides a **AvailabilitySet** from the **Compute** group
 ## Examples
 ### Create an availability set.
 ```js
-provider.Compute.makeAvailabilitySet({
-  name: "myAvailabilitySet",
-  properties: () => ({
-    location: "westus",
-    properties: { platformFaultDomainCount: 2, platformUpdateDomainCount: 20 },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    proximityPlacementGroup: "myProximityPlacementGroup",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "AvailabilitySet",
+    group: "Compute",
+    name: "myAvailabilitySet",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        platformFaultDomainCount: 2,
+        platformUpdateDomainCount: 20,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      proximityPlacementGroup: "myProximityPlacementGroup",
+    }),
+  },
+];
 
 ```
 ## Dependencies

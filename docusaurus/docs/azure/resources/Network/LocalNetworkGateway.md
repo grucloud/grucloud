@@ -6,21 +6,25 @@ Provides a **LocalNetworkGateway** from the **Network** group
 ## Examples
 ### CreateLocalNetworkGateway
 ```js
-provider.Network.makeLocalNetworkGateway({
-  name: "myLocalNetworkGateway",
-  properties: () => ({
-    properties: {
-      localNetworkAddressSpace: { addressPrefixes: ["10.1.0.0/16"] },
-      gatewayIpAddress: "11.12.13.14",
-      fqdn: "site1.contoso.com",
-    },
-    location: "Central US",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LocalNetworkGateway",
+    group: "Network",
+    name: "myLocalNetworkGateway",
+    properties: () => ({
+      properties: {
+        localNetworkAddressSpace: { addressPrefixes: ["10.1.0.0/16"] },
+        gatewayIpAddress: "11.12.13.14",
+        fqdn: "site1.contoso.com",
+      },
+      location: "Central US",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+    }),
+  },
+];
 
 ```
 ## Dependencies

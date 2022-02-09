@@ -6,48 +6,60 @@ Provides a **Subnet** from the **Network** group
 ## Examples
 ### Create subnet
 ```js
-provider.Network.makeSubnet({
-  name: "mySubnet",
-  properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    natGateway: "myNatGateway",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "Network",
+    name: "mySubnet",
+    properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      natGateway: "myNatGateway",
+    }),
+  },
+];
 
 ```
 
 ### Create subnet with service endpoints
 ```js
-provider.Network.makeSubnet({
-  name: "mySubnet",
-  properties: () => ({
-    properties: {
-      addressPrefix: "10.0.0.0/16",
-      serviceEndpoints: [{ service: "Microsoft.Storage" }],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    natGateway: "myNatGateway",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "Network",
+    name: "mySubnet",
+    properties: () => ({
+      properties: {
+        addressPrefix: "10.0.0.0/16",
+        serviceEndpoints: [{ service: "Microsoft.Storage" }],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      natGateway: "myNatGateway",
+    }),
+  },
+];
 
 ```
 
 ### Create subnet with a delegation
 ```js
-provider.Network.makeSubnet({
-  name: "mySubnet",
-  properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    natGateway: "myNatGateway",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "Network",
+    name: "mySubnet",
+    properties: () => ({ properties: { addressPrefix: "10.0.0.0/16" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      natGateway: "myNatGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

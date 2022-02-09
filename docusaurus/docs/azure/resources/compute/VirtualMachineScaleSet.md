@@ -6,1249 +6,1305 @@ Provides a **VirtualMachineScaleSet** from the **Compute** group
 ## Examples
 ### Create a scale set with password authentication.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with ssh authentication.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          linuxConfiguration: {
-            ssh: {
-              publicKeys: [
-                {
-                  path: "/home/{your-username}/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCeClRAk2ipUs/l5voIsDC5q9RI+YSRd1Bvd/O+axgY4WiBzG+4FwJWZm/mLLe5DoOdHQwmU2FrKXZSW4w2sYE70KeWnrFViCOX5MTVvJgPE8ClugNl8RWth/tU849DvM9sT7vFgfVSHcAS2yDRyDlueii+8nF2ym8XWAPltFVCyLHRsyBp5YPqK8JFYIa1eybKsY3hEAxRCA+/7bq8et+Gj3coOsuRmrehav7rE6N12Pb80I6ofa6SM5XNYq4Xk0iYNx7R3kdz0Jj9XgZYWjAHjJmT0gTRoOnt6upOuxK7xI/ykWrllgpXrCPu3Ymz+c+ujaqcxDopnAl2lmf69/J1",
-                },
-              ],
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
             },
-            disablePasswordAuthentication: true,
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            linuxConfiguration: {
+              ssh: {
+                publicKeys: [
                   {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
-                      },
-                    },
+                    path: "/home/{your-username}/.ssh/authorized_keys",
+                    keyData:
+                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCeClRAk2ipUs/l5voIsDC5q9RI+YSRd1Bvd/O+axgY4WiBzG+4FwJWZm/mLLe5DoOdHQwmU2FrKXZSW4w2sYE70KeWnrFViCOX5MTVvJgPE8ClugNl8RWth/tU849DvM9sT7vFgfVSHcAS2yDRyDlueii+8nF2ym8XWAPltFVCyLHRsyBp5YPqK8JFYIa1eybKsY3hEAxRCA+/7bq8et+Gj3coOsuRmrehav7rE6N12Pb80I6ofa6SM5XNYq4Xk0iYNx7R3kdz0Jj9XgZYWjAHjJmT0gTRoOnt6upOuxK7xI/ykWrllgpXrCPu3Ymz+c+ujaqcxDopnAl2lmf69/J1",
                   },
                 ],
               },
+              disablePasswordAuthentication: true,
             },
-          ],
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with premium storage.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Premium_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Premium_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with empty data disks on each vm.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D2_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D2_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+              diskSizeGB: 512,
+            },
+            dataDisks: [
+              { diskSizeGB: 1023, createOption: "Empty", lun: 0 },
+              { diskSizeGB: 1023, createOption: "Empty", lun: 1 },
+            ],
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-            diskSizeGB: 512,
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-          dataDisks: [
-            { diskSizeGB: 1023, createOption: "Empty", lun: 0 },
-            { diskSizeGB: 1023, createOption: "Empty", lun: 1 },
-          ],
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with an azure load balancer.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
-                      },
-                      publicIPAddressConfiguration: {
-                        name: "{vmss-name}",
-                        properties: { publicIPAddressVersion: "IPv4" },
-                      },
-                      loadBalancerInboundNatPools: [
-                        {
-                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/{existing-load-balancer-name}/inboundNatPools/{existing-nat-pool-name}",
-                        },
-                      ],
-                      loadBalancerBackendAddressPools: [
-                        {
-                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/{existing-load-balancer-name}/backendAddressPools/{existing-backend-address-pool-name}",
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
             },
-          ],
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
+                        publicIPAddressConfiguration: {
+                          name: "{vmss-name}",
+                          properties: { publicIPAddressVersion: "IPv4" },
+                        },
+                        loadBalancerInboundNatPools: [
+                          {
+                            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/{existing-load-balancer-name}/inboundNatPools/{existing-nat-pool-name}",
+                          },
+                        ],
+                        loadBalancerBackendAddressPools: [
+                          {
+                            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/loadBalancers/{existing-load-balancer-name}/backendAddressPools/{existing-backend-address-pool-name}",
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with an azure application gateway.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      applicationGatewayBackendAddressPools: [
-                        {
-                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/applicationGateways/{existing-application-gateway-name}/backendAddressPools/{existing-backend-address-pool-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        applicationGatewayBackendAddressPools: [
+                          {
+                            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/applicationGateways/{existing-application-gateway-name}/backendAddressPools/{existing-backend-address-pool-name}",
+                          },
+                        ],
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
                         },
-                      ],
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with boot diagnostics.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          diagnosticsProfile: {
+            bootDiagnostics: {
+              storageUri:
+                "http://{existing-storage-account-name}.blob.core.windows.net",
+              enabled: true,
+            },
           },
-        },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            storageUri:
-              "http://{existing-storage-account-name}.blob.core.windows.net",
-            enabled: true,
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with managed boot diagnostics.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          diagnosticsProfile: { bootDiagnostics: { enabled: true } },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        diagnosticsProfile: { bootDiagnostics: { enabled: true } },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with a marketplace image plan.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows2016",
-            publisher: "microsoft-ads",
-            version: "latest",
-            offer: "windows-data-science-vm",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows2016",
+              publisher: "microsoft-ads",
+              version: "latest",
+              offer: "windows-data-science-vm",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    plan: {
-      publisher: "microsoft-ads",
-      product: "windows-data-science-vm",
-      name: "windows2016",
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      plan: {
+        publisher: "microsoft-ads",
+        product: "windows-data-science-vm",
+        name: "windows2016",
+      },
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set from a custom image.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a platform-image scale set with unmanaged os disks.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              createOption: "FromImage",
+              name: "osDisk",
+              vhdContainers: [
+                "http://{existing-storage-account-name-0}.blob.core.windows.net/vhdContainer",
+                "http://{existing-storage-account-name-1}.blob.core.windows.net/vhdContainer",
+                "http://{existing-storage-account-name-2}.blob.core.windows.net/vhdContainer",
+                "http://{existing-storage-account-name-3}.blob.core.windows.net/vhdContainer",
+                "http://{existing-storage-account-name-4}.blob.core.windows.net/vhdContainer",
+              ],
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            createOption: "FromImage",
-            name: "osDisk",
-            vhdContainers: [
-              "http://{existing-storage-account-name-0}.blob.core.windows.net/vhdContainer",
-              "http://{existing-storage-account-name-1}.blob.core.windows.net/vhdContainer",
-              "http://{existing-storage-account-name-2}.blob.core.windows.net/vhdContainer",
-              "http://{existing-storage-account-name-3}.blob.core.windows.net/vhdContainer",
-              "http://{existing-storage-account-name-4}.blob.core.windows.net/vhdContainer",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
             ],
           },
         },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a custom-image scale set from an unmanaged generalized os image.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          osDisk: {
-            caching: "ReadWrite",
-            image: {
-              uri: "http://{existing-storage-account-name}.blob.core.windows.net/{existing-container-name}/{existing-generalized-os-image-blob-name}.vhd",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            osDisk: {
+              caching: "ReadWrite",
+              image: {
+                uri: "http://{existing-storage-account-name}.blob.core.windows.net/{existing-container-name}/{existing-generalized-os-image-blob-name}.vhd",
+              },
+              createOption: "FromImage",
+              name: "osDisk",
             },
-            createOption: "FromImage",
-            name: "osDisk",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with virtual machines in different zones.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 2, name: "Standard_A1_v2" },
-    location: "centralus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 2, name: "Standard_A1_v2" },
+      location: "centralus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+              diskSizeGB: 512,
+            },
+            dataDisks: [
+              { diskSizeGB: 1023, createOption: "Empty", lun: 0 },
+              { diskSizeGB: 1023, createOption: "Empty", lun: 1 },
+            ],
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-            diskSizeGB: 512,
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-          dataDisks: [
-            { diskSizeGB: 1023, createOption: "Empty", lun: 0 },
-            { diskSizeGB: 1023, createOption: "Empty", lun: 1 },
-          ],
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Automatic" },
       },
-      upgradePolicy: { mode: "Automatic" },
-    },
-    zones: ["1", "3"],
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      zones: ["1", "3"],
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with ephemeral os disks.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows2016",
-            publisher: "microsoft-ads",
-            version: "latest",
-            offer: "windows-data-science-vm",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows2016",
+              publisher: "microsoft-ads",
+              version: "latest",
+              offer: "windows-data-science-vm",
+            },
+            osDisk: {
+              caching: "ReadOnly",
+              diffDiskSettings: { option: "Local" },
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadOnly",
-            diffDiskSettings: { option: "Local" },
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    plan: {
-      publisher: "microsoft-ads",
-      product: "windows-data-science-vm",
-      name: "windows2016",
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      plan: {
+        publisher: "microsoft-ads",
+        product: "windows-data-science-vm",
+        name: "windows2016",
+      },
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with terminate scheduled events enabled.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
+            ],
+          },
+          scheduledEventsProfile: {
+            terminateNotificationProfile: {
+              enable: true,
+              notBeforeTimeout: "PT5M",
             },
-          ],
-        },
-        scheduledEventsProfile: {
-          terminateNotificationProfile: {
-            enable: true,
-            notBeforeTimeout: "PT5M",
           },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with automatic repairs enabled
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
+        automaticRepairsPolicy: { enabled: true, gracePeriod: "PT10M" },
       },
-      upgradePolicy: { mode: "Manual" },
-      automaticRepairsPolicy: { enabled: true, gracePeriod: "PT10M" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with DiskEncryptionSet resource in os disk and data disk.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: {
-              storageAccountType: "Standard_LRS",
-              diskEncryptionSet: {
-                id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
-              },
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
             },
-            createOption: "FromImage",
-          },
-          dataDisks: [
-            {
+            osDisk: {
               caching: "ReadWrite",
               managedDisk: {
                 storageAccountType: "Standard_LRS",
@@ -1256,1344 +1312,1420 @@ provider.Compute.makeVirtualMachineScaleSet({
                   id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
                 },
               },
-              diskSizeGB: 1023,
-              createOption: "Empty",
-              lun: 0,
+              createOption: "FromImage",
             },
-          ],
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+            dataDisks: [
+              {
+                caching: "ReadWrite",
+                managedDisk: {
+                  storageAccountType: "Standard_LRS",
+                  diskEncryptionSet: {
+                    id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+                  },
+                },
+                diskSizeGB: 1023,
+                createOption: "Empty",
+                lun: 0,
+              },
+            ],
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with ephemeral os disks using placement property.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows2016",
-            publisher: "microsoft-ads",
-            version: "latest",
-            offer: "windows-data-science-vm",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows2016",
+              publisher: "microsoft-ads",
+              version: "latest",
+              offer: "windows-data-science-vm",
+            },
+            osDisk: {
+              caching: "ReadOnly",
+              diffDiskSettings: { option: "Local", placement: "ResourceDisk" },
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadOnly",
-            diffDiskSettings: { option: "Local", placement: "ResourceDisk" },
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    plan: {
-      publisher: "microsoft-ads",
-      product: "windows-data-science-vm",
-      name: "windows2016",
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      plan: {
+        publisher: "microsoft-ads",
+        product: "windows-data-science-vm",
+        name: "windows2016",
+      },
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with extension time budget.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            storageUri:
-              "http://{existing-storage-account-name}.blob.core.windows.net",
-            enabled: true,
-          },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        extensionProfile: {
-          extensions: [
-            {
-              name: "{extension-name}",
-              properties: {
-                autoUpgradeMinorVersion: false,
-                publisher: "{extension-Publisher}",
-                type: "{extension-Type}",
-                typeHandlerVersion: "{handler-version}",
-                settings: {},
-              },
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
             },
-          ],
-          extensionsTimeBudget: "PT1H20M",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
+          },
+          diagnosticsProfile: {
+            bootDiagnostics: {
+              storageUri:
+                "http://{existing-storage-account-name}.blob.core.windows.net",
+              enabled: true,
+            },
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          extensionProfile: {
+            extensions: [
+              {
+                name: "{extension-name}",
+                properties: {
+                  autoUpgradeMinorVersion: false,
+                  publisher: "{extension-Publisher}",
+                  type: "{extension-Type}",
+                  typeHandlerVersion: "{handler-version}",
+                  settings: {},
+                },
+              },
+            ],
+            extensionsTimeBudget: "PT1H20M",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with Host Encryption using encryptionAtHost property.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows2016",
-            publisher: "microsoft-ads",
-            version: "latest",
-            offer: "windows-data-science-vm",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows2016",
+              publisher: "microsoft-ads",
+              version: "latest",
+              offer: "windows-data-science-vm",
+            },
+            osDisk: {
+              caching: "ReadOnly",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadOnly",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          securityProfile: { encryptionAtHost: true },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        securityProfile: { encryptionAtHost: true },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    plan: {
-      publisher: "microsoft-ads",
-      product: "windows-data-science-vm",
-      name: "windows2016",
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      plan: {
+        publisher: "microsoft-ads",
+        product: "windows-data-science-vm",
+        name: "windows2016",
+      },
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with Fpga Network Interfaces.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/{existing-custom-image-name}",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-            {
-              name: "{fpgaNic-Name}",
-              properties: {
-                primary: false,
-                enableAcceleratedNetworking: false,
-                enableIPForwarding: false,
-                enableFpga: true,
-                ipConfigurations: [
-                  {
-                    name: "{fpgaNic-Name}",
-                    properties: {
-                      primary: true,
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-fpga-subnet-name}",
+              {
+                name: "{fpgaNic-Name}",
+                properties: {
+                  primary: false,
+                  enableAcceleratedNetworking: false,
+                  enableIPForwarding: false,
+                  enableFpga: true,
+                  ipConfigurations: [
+                    {
+                      name: "{fpgaNic-Name}",
+                      properties: {
+                        primary: true,
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-fpga-subnet-name}",
+                        },
+                        privateIPAddressVersion: "IPv4",
                       },
-                      privateIPAddressVersion: "IPv4",
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with Uefi Settings of secureBoot and vTPM.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D2s_v3" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows10-tvm",
-            publisher: "MicrosoftWindowsServer",
-            version: "18363.592.2001092016",
-            offer: "windowsserver-gen2preview-preview",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D2s_v3" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows10-tvm",
+              publisher: "MicrosoftWindowsServer",
+              version: "18363.592.2001092016",
+              offer: "windowsserver-gen2preview-preview",
+            },
+            osDisk: {
+              caching: "ReadOnly",
+              managedDisk: { storageAccountType: "StandardSSD_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadOnly",
-            managedDisk: { storageAccountType: "StandardSSD_LRS" },
-            createOption: "FromImage",
+          securityProfile: {
+            uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
+            securityType: "TrustedLaunch",
           },
-        },
-        securityProfile: {
-          uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
-          securityType: "TrustedLaunch",
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set from a generalized shared image.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/mySharedGallery/images/mySharedImage",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/mySharedGallery/images/mySharedImage",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set from a specialized shared image.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/mySharedGallery/images/mySharedImage",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/mySharedGallery/images/mySharedImage",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with userData.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      upgradePolicy: { mode: "Manual" },
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        upgradePolicy: { mode: "Manual" },
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          userData: "RXhhbXBsZSBVc2VyRGF0YQ==",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        userData: "RXhhbXBsZSBVc2VyRGF0YQ==",
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with Application Profile
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        applicationProfile: {
-          galleryApplications: [
-            {
-              tags: "myTag1",
-              order: 1,
-              packageReferenceId:
-                "/subscriptions/32c17a9e-aa7b-4ba5-a45b-e324116b6fdb/resourceGroups/myresourceGroupName2/providers/Microsoft.Compute/galleries/myGallery1/applications/MyApplication1/versions/1.0",
-              configurationReference:
-                "https://mystorageaccount.blob.core.windows.net/configurations/settings.config",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
             },
-            {
-              packageReferenceId:
-                "/subscriptions/32c17a9e-aa7b-4ba5-a45b-e324116b6fdg/resourceGroups/myresourceGroupName3/providers/Microsoft.Compute/galleries/myGallery2/applications/MyApplication2/versions/1.1",
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
             },
-          ],
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          },
+          applicationProfile: {
+            galleryApplications: [
+              {
+                tags: "myTag1",
+                order: 1,
+                packageReferenceId:
+                  "/subscriptions/32c17a9e-aa7b-4ba5-a45b-e324116b6fdb/resourceGroups/myresourceGroupName2/providers/Microsoft.Compute/galleries/myGallery1/applications/MyApplication1/versions/1.0",
+                configurationReference:
+                  "https://mystorageaccount.blob.core.windows.net/configurations/settings.config",
+              },
+              {
+                packageReferenceId:
+                  "/subscriptions/32c17a9e-aa7b-4ba5-a45b-e324116b6fdg/resourceGroups/myresourceGroupName3/providers/Microsoft.Compute/galleries/myGallery2/applications/MyApplication2/versions/1.1",
+              },
+            ],
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with scaleInPolicy.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
+        scaleInPolicy: { rules: ["OldestVM"], forceDeletion: true },
       },
-      upgradePolicy: { mode: "Manual" },
-      scaleInPolicy: { rules: ["OldestVM"], forceDeletion: true },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a VMSS with an extension that has suppressFailures enabled
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
-          },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
-          },
-        },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            storageUri:
-              "http://{existing-storage-account-name}.blob.core.windows.net",
-            enabled: true,
-          },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        extensionProfile: {
-          extensions: [
-            {
-              name: "{extension-name}",
-              properties: {
-                autoUpgradeMinorVersion: false,
-                publisher: "{extension-Publisher}",
-                type: "{extension-Type}",
-                typeHandlerVersion: "{handler-version}",
-                settings: {},
-                suppressFailures: true,
-              },
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
             },
-          ],
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
+          },
+          diagnosticsProfile: {
+            bootDiagnostics: {
+              storageUri:
+                "http://{existing-storage-account-name}.blob.core.windows.net",
+              enabled: true,
+            },
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          extensionProfile: {
+            extensions: [
+              {
+                name: "{extension-name}",
+                properties: {
+                  autoUpgradeMinorVersion: false,
+                  publisher: "{extension-Publisher}",
+                  type: "{extension-Type}",
+                  typeHandlerVersion: "{handler-version}",
+                  settings: {},
+                  suppressFailures: true,
+                },
+              },
+            ],
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create or update a scale set with capacity reservation.
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DS1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
+            ],
+          },
+          capacityReservation: {
+            capacityReservationGroup: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/CapacityReservationGroups/{crgName}",
             },
-          ],
-        },
-        capacityReservation: {
-          capacityReservationGroup: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/CapacityReservationGroups/{crgName}",
           },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with spot restore policy
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 2, name: "Standard_A8m_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 2, name: "Standard_A8m_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
+          priority: "Spot",
+          evictionPolicy: "Deallocate",
+          billingProfile: { maxPrice: -1 },
         },
-        priority: "Spot",
-        evictionPolicy: "Deallocate",
-        billingProfile: { maxPrice: -1 },
+        upgradePolicy: { mode: "Manual" },
+        spotRestorePolicy: { enabled: true, restoreTimeout: "PT1H" },
       },
-      upgradePolicy: { mode: "Manual" },
-      spotRestorePolicy: { enabled: true, restoreTimeout: "PT1H" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a VMSS with an extension with protectedSettingsFromKeyVault
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          diagnosticsProfile: {
+            bootDiagnostics: {
+              storageUri:
+                "http://{existing-storage-account-name}.blob.core.windows.net",
+              enabled: true,
+            },
           },
-        },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            storageUri:
-              "http://{existing-storage-account-name}.blob.core.windows.net",
-            enabled: true,
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
           },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        extensionProfile: {
-          extensions: [
-            {
-              name: "{extension-name}",
-              properties: {
-                autoUpgradeMinorVersion: false,
-                publisher: "{extension-Publisher}",
-                type: "{extension-Type}",
-                typeHandlerVersion: "{handler-version}",
-                settings: {},
-                protectedSettingsFromKeyVault: {
-                  sourceVault: {
-                    id: "/subscriptions/a53f7094-a16c-47af-abe4-b05c05d0d79a/resourceGroups/myResourceGroup/providers/Microsoft.KeyVault/vaults/kvName",
+          extensionProfile: {
+            extensions: [
+              {
+                name: "{extension-name}",
+                properties: {
+                  autoUpgradeMinorVersion: false,
+                  publisher: "{extension-Publisher}",
+                  type: "{extension-Type}",
+                  typeHandlerVersion: "{handler-version}",
+                  settings: {},
+                  protectedSettingsFromKeyVault: {
+                    sourceVault: {
+                      id: "/subscriptions/a53f7094-a16c-47af-abe4-b05c05d0d79a/resourceGroups/myResourceGroup/providers/Microsoft.KeyVault/vaults/kvName",
+                    },
+                    secretUrl:
+                      "https://kvName.vault.azure.net/secrets/secretName/79b88b3a6f5440ffb2e73e44a0db712e",
                   },
-                  secretUrl:
-                    "https://kvName.vault.azure.net/secrets/secretName/79b88b3a6f5440ffb2e73e44a0db712e",
                 },
               },
-            },
-          ],
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+            ],
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with vm size properties
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
-    location: "westus",
-    properties: {
-      overprovision: true,
-      upgradePolicy: { mode: "Manual" },
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "2016-Datacenter",
-            publisher: "MicrosoftWindowsServer",
-            version: "latest",
-            offer: "WindowsServer",
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_D1_v2" },
+      location: "westus",
+      properties: {
+        overprovision: true,
+        upgradePolicy: { mode: "Manual" },
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "2016-Datacenter",
+              publisher: "MicrosoftWindowsServer",
+              version: "latest",
+              offer: "WindowsServer",
+            },
+            osDisk: {
+              caching: "ReadWrite",
+              managedDisk: { storageAccountType: "Standard_LRS" },
+              createOption: "FromImage",
+            },
           },
-          osDisk: {
-            caching: "ReadWrite",
-            managedDisk: { storageAccountType: "Standard_LRS" },
-            createOption: "FromImage",
+          userData: "RXhhbXBsZSBVc2VyRGF0YQ==",
+          hardwareProfile: {
+            vmSizeProperties: { vCPUsAvailable: 1, vCPUsPerCore: 1 },
           },
-        },
-        userData: "RXhhbXBsZSBVc2VyRGF0YQ==",
-        hardwareProfile: {
-          vmSizeProperties: { vCPUsAvailable: 1, vCPUsPerCore: 1 },
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 
 ### Create a scale set with SecurityType as ConfidentialVM
 ```js
-provider.Compute.makeVirtualMachineScaleSet({
-  name: "myVirtualMachineScaleSet",
-  properties: () => ({
-    sku: { tier: "Standard", capacity: 3, name: "Standard_DC2as_v5" },
-    properties: {
-      overprovision: true,
-      virtualMachineProfile: {
-        storageProfile: {
-          imageReference: {
-            sku: "windows-cvm",
-            publisher: "MicrosoftWindowsServer",
-            version: "17763.2183.2109130127",
-            offer: "2019-datacenter-cvm",
-          },
-          osDisk: {
-            caching: "ReadOnly",
-            managedDisk: {
-              storageAccountType: "StandardSSD_LRS",
-              securityProfile: { securityEncryptionType: "VMGuestStateOnly" },
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
+    name: "myVirtualMachineScaleSet",
+    properties: () => ({
+      sku: { tier: "Standard", capacity: 3, name: "Standard_DC2as_v5" },
+      properties: {
+        overprovision: true,
+        virtualMachineProfile: {
+          storageProfile: {
+            imageReference: {
+              sku: "windows-cvm",
+              publisher: "MicrosoftWindowsServer",
+              version: "17763.2183.2109130127",
+              offer: "2019-datacenter-cvm",
             },
-            createOption: "FromImage",
+            osDisk: {
+              caching: "ReadOnly",
+              managedDisk: {
+                storageAccountType: "StandardSSD_LRS",
+                securityProfile: { securityEncryptionType: "VMGuestStateOnly" },
+              },
+              createOption: "FromImage",
+            },
           },
-        },
-        securityProfile: {
-          uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
-          securityType: "ConfidentialVM",
-        },
-        osProfile: {
-          computerNamePrefix: "{vmss-name}",
-          adminUsername: "{your-username}",
-          adminPassword: "{your-password}",
-        },
-        networkProfile: {
-          networkInterfaceConfigurations: [
-            {
-              name: "{vmss-name}",
-              properties: {
-                primary: true,
-                enableIPForwarding: true,
-                ipConfigurations: [
-                  {
-                    name: "{vmss-name}",
-                    properties: {
-                      subnet: {
-                        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+          securityProfile: {
+            uefiSettings: { secureBootEnabled: true, vTpmEnabled: true },
+            securityType: "ConfidentialVM",
+          },
+          osProfile: {
+            computerNamePrefix: "{vmss-name}",
+            adminUsername: "{your-username}",
+            adminPassword: "{your-password}",
+          },
+          networkProfile: {
+            networkInterfaceConfigurations: [
+              {
+                name: "{vmss-name}",
+                properties: {
+                  primary: true,
+                  enableIPForwarding: true,
+                  ipConfigurations: [
+                    {
+                      name: "{vmss-name}",
+                      properties: {
+                        subnet: {
+                          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/{existing-virtual-network-name}/subnets/{existing-subnet-name}",
+                        },
                       },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         },
+        upgradePolicy: { mode: "Manual" },
       },
-      upgradePolicy: { mode: "Manual" },
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-    networkInterfaces: ["myNetworkInterface"],
-    disks: ["myDisk"],
-    managedIdentities: ["myUserAssignedIdentity"],
-    sshPublicKeys: ["mySshPublicKey"],
-    galleryImage: "myGalleryImage",
-    networkSecurityGroups: ["myNetworkSecurityGroup"],
-    proximityPlacementGroup: "myProximityPlacementGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    capacityReservationGroup: "myCapacityReservationGroup",
-    loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
-    applicationGateways: ["myApplicationGateway"],
-  }),
-});
+      location: "westus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+      networkInterfaces: ["myNetworkInterface"],
+      disks: ["myDisk"],
+      managedIdentities: ["myUserAssignedIdentity"],
+      sshPublicKeys: ["mySshPublicKey"],
+      galleryImage: "myGalleryImage",
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      applicationGateways: ["myApplicationGateway"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

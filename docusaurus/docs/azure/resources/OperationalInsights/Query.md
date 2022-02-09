@@ -6,22 +6,26 @@ Provides a **Query** from the **OperationalInsights** group
 ## Examples
 ### QueryPut
 ```js
-provider.OperationalInsights.makeQuery({
-  name: "myQuery",
-  properties: () => ({
-    properties: {
-      displayName: "Exceptions - New in the last 24 hours",
-      description: "my description",
-      body: "let newExceptionsTimeRange = 1d;\nlet timeRangeToCheckBefore = 7d;\nexceptions\n| where timestamp < ago(timeRangeToCheckBefore)\n| summarize count() by problemId\n| join kind= rightanti (\nexceptions\n| where timestamp >= ago(newExceptionsTimeRange)\n| extend stack = tostring(details[0].rawStack)\n| summarize count(), dcount(user_AuthenticatedId), min(timestamp), max(timestamp), any(stack) by problemId  \n) on problemId \n| order by  count_ desc\n",
-      related: { categories: ["analytics"] },
-      tags: { "my-label": ["label1"], "my-other-label": ["label2"] },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    queryPack: "myQueryPack",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Query",
+    group: "OperationalInsights",
+    name: "myQuery",
+    properties: () => ({
+      properties: {
+        displayName: "Exceptions - New in the last 24 hours",
+        description: "my description",
+        body: "let newExceptionsTimeRange = 1d;\nlet timeRangeToCheckBefore = 7d;\nexceptions\n| where timestamp < ago(timeRangeToCheckBefore)\n| summarize count() by problemId\n| join kind= rightanti (\nexceptions\n| where timestamp >= ago(newExceptionsTimeRange)\n| extend stack = tostring(details[0].rawStack)\n| summarize count(), dcount(user_AuthenticatedId), min(timestamp), max(timestamp), any(stack) by problemId  \n) on problemId \n| order by  count_ desc\n",
+        related: { categories: ["analytics"] },
+        tags: { "my-label": ["label1"], "my-other-label": ["label2"] },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      queryPack: "myQueryPack",
+    }),
+  },
+];
 
 ```
 ## Dependencies

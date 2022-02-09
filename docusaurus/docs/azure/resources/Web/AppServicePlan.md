@@ -6,20 +6,30 @@ Provides a **AppServicePlan** from the **Web** group
 ## Examples
 ### Create Or Update App Service plan
 ```js
-provider.Web.makeAppServicePlan({
-  name: "myAppServicePlan",
-  properties: () => ({
-    kind: "app",
-    location: "East US",
-    properties: {},
-    sku: { name: "P1", tier: "Premium", size: "P1", family: "P", capacity: 1 },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    hostingEnvironment: "myHostingEnvironment",
-    kubeEnvironment: "myKubeEnvironment",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "AppServicePlan",
+    group: "Web",
+    name: "myAppServicePlan",
+    properties: () => ({
+      kind: "app",
+      location: "East US",
+      properties: {},
+      sku: {
+        name: "P1",
+        tier: "Premium",
+        size: "P1",
+        family: "P",
+        capacity: 1,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      hostingEnvironment: "myHostingEnvironment",
+      kubeEnvironment: "myKubeEnvironment",
+    }),
+  },
+];
 
 ```
 ## Dependencies

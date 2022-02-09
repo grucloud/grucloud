@@ -6,22 +6,26 @@ Provides a **ExpressRouteGateway** from the **Network** group
 ## Examples
 ### ExpressRouteGatewayCreate
 ```js
-provider.Network.makeExpressRouteGateway({
-  name: "myExpressRouteGateway",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      virtualHub: {
-        id: "/subscriptions/subid/resourceGroups/resourceGroupId/providers/Microsoft.Network/virtualHubs/virtualHubName",
+exports.createResources = () => [
+  {
+    type: "ExpressRouteGateway",
+    group: "Network",
+    name: "myExpressRouteGateway",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        virtualHub: {
+          id: "/subscriptions/subid/resourceGroups/resourceGroupId/providers/Microsoft.Network/virtualHubs/virtualHubName",
+        },
+        autoScaleConfiguration: { bounds: { min: 3 } },
       },
-      autoScaleConfiguration: { bounds: { min: 3 } },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

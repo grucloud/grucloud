@@ -6,11 +6,15 @@ Provides a **NetworkWatcher** from the **Network** group
 ## Examples
 ### Create network watcher
 ```js
-provider.Network.makeNetworkWatcher({
-  name: "myNetworkWatcher",
-  properties: () => ({ location: "eastus", properties: {} }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "NetworkWatcher",
+    group: "Network",
+    name: "myNetworkWatcher",
+    properties: () => ({ location: "eastus", properties: {} }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

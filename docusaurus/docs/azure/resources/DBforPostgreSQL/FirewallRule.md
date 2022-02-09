@@ -6,16 +6,23 @@ Provides a **FirewallRule** from the **DBforPostgreSQL** group
 ## Examples
 ### FirewallRuleCreate
 ```js
-provider.DBforPostgreSQL.makeFirewallRule({
-  name: "myFirewallRule",
-  properties: () => ({
-    properties: { startIpAddress: "0.0.0.0", endIpAddress: "255.255.255.255" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    server: "myFlexibleServer",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FirewallRule",
+    group: "DBforPostgreSQL",
+    name: "myFirewallRule",
+    properties: () => ({
+      properties: {
+        startIpAddress: "0.0.0.0",
+        endIpAddress: "255.255.255.255",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      server: "myFlexibleServer",
+    }),
+  },
+];
 
 ```
 ## Dependencies

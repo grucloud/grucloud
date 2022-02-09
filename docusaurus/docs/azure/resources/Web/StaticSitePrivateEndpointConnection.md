@@ -6,22 +6,26 @@ Provides a **StaticSitePrivateEndpointConnection** from the **Web** group
 ## Examples
 ### Approves or rejects a private endpoint connection for a site.
 ```js
-provider.Web.makeStaticSitePrivateEndpointConnection({
-  name: "myStaticSitePrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "Approved by admin.",
-        actionsRequired: "",
+exports.createResources = () => [
+  {
+    type: "StaticSitePrivateEndpointConnection",
+    group: "Web",
+    name: "myStaticSitePrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Approved by admin.",
+          actionsRequired: "",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    name: "myStaticSite",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myStaticSite",
+    }),
+  },
+];
 
 ```
 ## Dependencies

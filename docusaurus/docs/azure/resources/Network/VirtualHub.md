@@ -6,29 +6,33 @@ Provides a **VirtualHub** from the **Network** group
 ## Examples
 ### VirtualHubPut
 ```js
-provider.Network.makeVirtualHub({
-  name: "myVirtualHub",
-  properties: () => ({
-    location: "West US",
-    tags: { key1: "value1" },
-    properties: {
-      virtualWan: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualWans/virtualWan1",
+exports.createResources = () => [
+  {
+    type: "VirtualHub",
+    group: "Network",
+    name: "myVirtualHub",
+    properties: () => ({
+      location: "West US",
+      tags: { key1: "value1" },
+      properties: {
+        virtualWan: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualWans/virtualWan1",
+        },
+        addressPrefix: "10.168.0.0/24",
+        sku: "Basic",
       },
-      addressPrefix: "10.168.0.0/24",
-      sku: "Basic",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualWan: "myVirtualWan",
-    vpnGateway: "myVpnGateway",
-    p2sVpnGateway: "myP2sVpnGateway",
-    expressRouteGateway: "myExpressRouteGateway",
-    azureFirewall: "myAzureFirewall",
-    securityPartnerProvider: "mySecurityPartnerProvider",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualWan: "myVirtualWan",
+      vpnGateway: "myVpnGateway",
+      p2sVpnGateway: "myP2sVpnGateway",
+      expressRouteGateway: "myExpressRouteGateway",
+      azureFirewall: "myAzureFirewall",
+      securityPartnerProvider: "mySecurityPartnerProvider",
+    }),
+  },
+];
 
 ```
 ## Dependencies

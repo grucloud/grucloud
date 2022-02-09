@@ -6,15 +6,19 @@ Provides a **WebAppScmAllowedSlot** from the **Web** group
 ## Examples
 ### Update SCM Allowed
 ```js
-provider.Web.makeWebAppScmAllowedSlot({
-  name: "myWebAppScmAllowedSlot",
-  properties: () => ({ properties: { allow: true } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    name: "mySite",
-    slot: "mySiteSlot",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "WebAppScmAllowedSlot",
+    group: "Web",
+    name: "myWebAppScmAllowedSlot",
+    properties: () => ({ properties: { allow: true } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "mySite",
+      slot: "mySiteSlot",
+    }),
+  },
+];
 
 ```
 ## Dependencies

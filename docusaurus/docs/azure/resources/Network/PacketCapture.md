@@ -6,32 +6,36 @@ Provides a **PacketCapture** from the **Network** group
 ## Examples
 ### Create packet capture
 ```js
-provider.Network.makePacketCapture({
-  name: "myPacketCapture",
-  properties: () => ({
-    properties: {
-      target:
-        "/subscriptions/subid/resourceGroups/rg2/providers/Microsoft.Compute/virtualMachines/vm1",
-      bytesToCapturePerPacket: 10000,
-      totalBytesPerSession: 100000,
-      timeLimitInSeconds: 100,
-      storageLocation: {
-        storageId:
-          "/subscriptions/subid/resourceGroups/rg2/providers/Microsoft.Storage/storageAccounts/pcstore",
-        storagePath:
-          "https://mytestaccountname.blob.core.windows.net/capture/pc1.cap",
-        filePath: "D:\\capture\\pc1.cap",
+exports.createResources = () => [
+  {
+    type: "PacketCapture",
+    group: "Network",
+    name: "myPacketCapture",
+    properties: () => ({
+      properties: {
+        target:
+          "/subscriptions/subid/resourceGroups/rg2/providers/Microsoft.Compute/virtualMachines/vm1",
+        bytesToCapturePerPacket: 10000,
+        totalBytesPerSession: 100000,
+        timeLimitInSeconds: 100,
+        storageLocation: {
+          storageId:
+            "/subscriptions/subid/resourceGroups/rg2/providers/Microsoft.Storage/storageAccounts/pcstore",
+          storagePath:
+            "https://mytestaccountname.blob.core.windows.net/capture/pc1.cap",
+          filePath: "D:\\capture\\pc1.cap",
+        },
+        filters: [
+          { protocol: "TCP", localIPAddress: "10.0.0.4", localPort: "80" },
+        ],
       },
-      filters: [
-        { protocol: "TCP", localIPAddress: "10.0.0.4", localPort: "80" },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    networkWatcher: "myNetworkWatcher",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      networkWatcher: "myNetworkWatcher",
+    }),
+  },
+];
 
 ```
 ## Dependencies

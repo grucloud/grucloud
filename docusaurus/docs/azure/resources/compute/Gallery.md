@@ -6,46 +6,58 @@ Provides a **Gallery** from the **Compute** group
 ## Examples
 ### Create or update a simple gallery.
 ```js
-provider.Compute.makeGallery({
-  name: "myGallery",
-  properties: () => ({
-    location: "West US",
-    properties: { description: "This is the gallery description." },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "Gallery",
+    group: "Compute",
+    name: "myGallery",
+    properties: () => ({
+      location: "West US",
+      properties: { description: "This is the gallery description." },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create or update a simple gallery with sharing profile.
 ```js
-provider.Compute.makeGallery({
-  name: "myGallery",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      description: "This is the gallery description.",
-      sharingProfile: { permissions: "Groups" },
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "Gallery",
+    group: "Compute",
+    name: "myGallery",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        description: "This is the gallery description.",
+        sharingProfile: { permissions: "Groups" },
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create or update a simple gallery with soft deletion enabled.
 ```js
-provider.Compute.makeGallery({
-  name: "myGallery",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      description: "This is the gallery description.",
-      softDeletePolicy: { isSoftDeleteEnabled: true },
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "Gallery",
+    group: "Compute",
+    name: "myGallery",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        description: "This is the gallery description.",
+        softDeletePolicy: { isSoftDeleteEnabled: true },
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

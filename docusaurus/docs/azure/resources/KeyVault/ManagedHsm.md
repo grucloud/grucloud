@@ -6,22 +6,26 @@ Provides a **ManagedHsm** from the **KeyVault** group
 ## Examples
 ### Create a new managed HSM Pool or update an existing managed HSM Pool
 ```js
-provider.KeyVault.makeManagedHsm({
-  name: "myManagedHsm",
-  properties: () => ({
-    properties: {
-      tenantId: "00000000-0000-0000-0000-000000000000",
-      initialAdminObjectIds: ["00000000-0000-0000-0000-000000000000"],
-      enableSoftDelete: true,
-      softDeleteRetentionInDays: 90,
-      enablePurgeProtection: true,
-    },
-    location: "westus",
-    sku: { family: "B", name: "Standard_B1" },
-    tags: { Dept: "hsm", Environment: "dogfood" },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "ManagedHsm",
+    group: "KeyVault",
+    name: "myManagedHsm",
+    properties: () => ({
+      properties: {
+        tenantId: "00000000-0000-0000-0000-000000000000",
+        initialAdminObjectIds: ["00000000-0000-0000-0000-000000000000"],
+        enableSoftDelete: true,
+        softDeleteRetentionInDays: 90,
+        enablePurgeProtection: true,
+      },
+      location: "westus",
+      sku: { family: "B", name: "Standard_B1" },
+      tags: { Dept: "hsm", Environment: "dogfood" },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

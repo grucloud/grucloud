@@ -6,36 +6,40 @@ Provides a **ImportPipeline** from the **ContainerRegistry** group
 ## Examples
 ### ImportPipelineCreate
 ```js
-provider.ContainerRegistry.makeImportPipeline({
-  name: "myImportPipeline",
-  properties: () => ({
-    location: "westus",
-    identity: {
-      type: "UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
-          {},
+exports.createResources = () => [
+  {
+    type: "ImportPipeline",
+    group: "ContainerRegistry",
+    name: "myImportPipeline",
+    properties: () => ({
+      location: "westus",
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
+            {},
+        },
       },
-    },
-    properties: {
-      source: {
-        type: "AzureStorageBlobContainer",
-        uri: "https://accountname.blob.core.windows.net/containername",
-        keyVaultUri: "https://myvault.vault.azure.net/secrets/acrimportsas",
+      properties: {
+        source: {
+          type: "AzureStorageBlobContainer",
+          uri: "https://accountname.blob.core.windows.net/containername",
+          keyVaultUri: "https://myvault.vault.azure.net/secrets/acrimportsas",
+        },
+        options: [
+          "OverwriteTags",
+          "DeleteSourceBlobOnSuccess",
+          "ContinueOnErrors",
+        ],
       },
-      options: [
-        "OverwriteTags",
-        "DeleteSourceBlobOnSuccess",
-        "ContinueOnErrors",
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

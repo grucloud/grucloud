@@ -6,32 +6,36 @@ Provides a **VirtualHubRouteTableV2** from the **Network** group
 ## Examples
 ### VirtualHubRouteTableV2Put
 ```js
-provider.Network.makeVirtualHubRouteTableV2({
-  name: "myVirtualHubRouteTableV2",
-  properties: () => ({
-    properties: {
-      routes: [
-        {
-          destinationType: "CIDR",
-          destinations: ["20.10.0.0/16", "20.20.0.0/16"],
-          nextHopType: "IPAddress",
-          nextHops: ["10.0.0.68"],
-        },
-        {
-          destinationType: "CIDR",
-          destinations: ["0.0.0.0/0"],
-          nextHopType: "IPAddress",
-          nextHops: ["10.0.0.68"],
-        },
-      ],
-      attachedConnections: ["All_Vnets"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualHubRouteTableV2",
+    group: "Network",
+    name: "myVirtualHubRouteTableV2",
+    properties: () => ({
+      properties: {
+        routes: [
+          {
+            destinationType: "CIDR",
+            destinations: ["20.10.0.0/16", "20.20.0.0/16"],
+            nextHopType: "IPAddress",
+            nextHops: ["10.0.0.68"],
+          },
+          {
+            destinationType: "CIDR",
+            destinations: ["0.0.0.0/0"],
+            nextHopType: "IPAddress",
+            nextHops: ["10.0.0.68"],
+          },
+        ],
+        attachedConnections: ["All_Vnets"],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

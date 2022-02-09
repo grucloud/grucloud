@@ -6,21 +6,25 @@ Provides a **VirtualApplianceSite** from the **Network** group
 ## Examples
 ### Create Network Virtual Appliance Site
 ```js
-provider.Network.makeVirtualApplianceSite({
-  name: "myVirtualApplianceSite",
-  properties: () => ({
-    properties: {
-      addressPrefix: "192.168.1.0/24",
-      o365Policy: {
-        breakOutCategories: { allow: true, optimize: true, default: true },
+exports.createResources = () => [
+  {
+    type: "VirtualApplianceSite",
+    group: "Network",
+    name: "myVirtualApplianceSite",
+    properties: () => ({
+      properties: {
+        addressPrefix: "192.168.1.0/24",
+        o365Policy: {
+          breakOutCategories: { allow: true, optimize: true, default: true },
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    networkVirtualAppliance: "myNetworkVirtualAppliance",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      networkVirtualAppliance: "myNetworkVirtualAppliance",
+    }),
+  },
+];
 
 ```
 ## Dependencies

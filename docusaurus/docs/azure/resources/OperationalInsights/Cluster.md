@@ -6,19 +6,23 @@ Provides a **Cluster** from the **OperationalInsights** group
 ## Examples
 ### ClustersCreate
 ```js
-provider.OperationalInsights.makeCluster({
-  name: "myCluster",
-  properties: () => ({
-    sku: { name: "CapacityReservation", capacity: 1000 },
-    location: "australiasoutheast",
-    tags: { tag1: "val1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    workspace: "myWorkspace",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Cluster",
+    group: "OperationalInsights",
+    name: "myCluster",
+    properties: () => ({
+      sku: { name: "CapacityReservation", capacity: 1000 },
+      location: "australiasoutheast",
+      tags: { tag1: "val1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      workspace: "myWorkspace",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,14 +6,18 @@ Provides a **VirtualNetworkGatewayConnectionSharedKey** from the **Network** gro
 ## Examples
 ### SetVirtualNetworkGatewayConnectionSharedKey
 ```js
-provider.Network.makeVirtualNetworkGatewayConnectionSharedKey({
-  name: "myVirtualNetworkGatewayConnectionSharedKey",
-  properties: () => ({ value: "AzureAbc123" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetworkGatewayConnection: "myVirtualNetworkGatewayConnection",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualNetworkGatewayConnectionSharedKey",
+    group: "Network",
+    name: "myVirtualNetworkGatewayConnectionSharedKey",
+    properties: () => ({ value: "AzureAbc123" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetworkGatewayConnection: "myVirtualNetworkGatewayConnection",
+    }),
+  },
+];
 
 ```
 ## Dependencies

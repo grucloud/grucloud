@@ -6,15 +6,19 @@ Provides a **WebAppFtpAllowedSlot** from the **Web** group
 ## Examples
 ### Update FTP Allowed
 ```js
-provider.Web.makeWebAppFtpAllowedSlot({
-  name: "myWebAppFtpAllowedSlot",
-  properties: () => ({ properties: { allow: true } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    name: "mySite",
-    slot: "mySiteSlot",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "WebAppFtpAllowedSlot",
+    group: "Web",
+    name: "myWebAppFtpAllowedSlot",
+    properties: () => ({ properties: { allow: true } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "mySite",
+      slot: "mySiteSlot",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,29 +6,33 @@ Provides a **TaskRun** from the **ContainerRegistry** group
 ## Examples
 ### TaskRuns_Create
 ```js
-provider.ContainerRegistry.makeTaskRun({
-  name: "myTaskRun",
-  properties: () => ({
-    properties: {
-      forceUpdateTag: "test",
-      runRequest: {
-        type: "EncodedTaskRunRequest",
-        encodedTaskContent:
-          "c3RlcHM6IAogIC0gY21kOiB7eyAuVmFsdWVzLmNvbW1hbmQgfX0K",
-        encodedValuesContent:
-          "Y29tbWFuZDogYmFzaCBlY2hvIHt7LlJ1bi5SZWdpc3RyeX19Cg==",
-        values: [],
-        platform: { os: "Linux", architecture: "amd64" },
-        credentials: {},
+exports.createResources = () => [
+  {
+    type: "TaskRun",
+    group: "ContainerRegistry",
+    name: "myTaskRun",
+    properties: () => ({
+      properties: {
+        forceUpdateTag: "test",
+        runRequest: {
+          type: "EncodedTaskRunRequest",
+          encodedTaskContent:
+            "c3RlcHM6IAogIC0gY21kOiB7eyAuVmFsdWVzLmNvbW1hbmQgfX0K",
+          encodedValuesContent:
+            "Y29tbWFuZDogYmFzaCBlY2hvIHt7LlJ1bi5SZWdpc3RyeX19Cg==",
+          values: [],
+          platform: { os: "Linux", architecture: "amd64" },
+          credentials: {},
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

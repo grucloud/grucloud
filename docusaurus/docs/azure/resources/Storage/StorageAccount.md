@@ -6,350 +6,401 @@ Provides a **StorageAccount** from the **Storage** group
 ## Examples
 ### StorageAccountCreate
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    extendedLocation: { type: "EdgeZone", name: "losangeles001" },
-    properties: {
-      keyPolicy: { keyExpirationPeriodInDays: 20 },
-      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
-      isHnsEnabled: true,
-      isSftpEnabled: true,
-      allowBlobPublicAccess: false,
-      defaultToOAuthAuthentication: false,
-      minimumTlsVersion: "TLS1_2",
-      allowSharedKeyAccess: true,
-      routingPreference: {
-        routingChoice: "MicrosoftRouting",
-        publishMicrosoftEndpoints: true,
-        publishInternetEndpoints: true,
-      },
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
         },
-        requireInfrastructureEncryption: false,
-        keySource: "Microsoft.Storage",
+        isHnsEnabled: true,
+        isSftpEnabled: true,
+        allowBlobPublicAccess: false,
+        defaultToOAuthAuthentication: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
       },
-    },
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### NfsV3AccountCreate
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Premium_LRS" },
-    kind: "BlockBlobStorage",
-    location: "eastus",
-    properties: {
-      isHnsEnabled: true,
-      isNfsV3Enabled: true,
-      supportsHttpsTrafficOnly: false,
-      networkAcls: {
-        bypass: "AzureServices",
-        defaultAction: "Allow",
-        ipRules: [],
-        virtualNetworkRules: [
-          {
-            id: "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.Network/virtualNetworks/net123/subnets/subnet12",
-          },
-        ],
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Premium_LRS" },
+      kind: "BlockBlobStorage",
+      location: "eastus",
+      properties: {
+        isHnsEnabled: true,
+        isNfsV3Enabled: true,
+        supportsHttpsTrafficOnly: false,
+        networkAcls: {
+          bypass: "AzureServices",
+          defaultAction: "Allow",
+          ipRules: [],
+          virtualNetworkRules: [
+            {
+              id: "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.Network/virtualNetworks/net123/subnets/subnet12",
+            },
+          ],
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateUserAssignedEncryptionIdentityWithCMK
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    identity: {
-      type: "UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}":
-          {},
-      },
-    },
-    sku: { name: "Standard_LRS" },
-    kind: "Storage",
-    location: "eastus",
-    properties: {
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
-        },
-        keyvaultproperties: {
-          keyvaulturi: "https://myvault8569.vault.azure.net",
-          keyname: "wrappingKey",
-          keyversion: "",
-        },
-        keySource: "Microsoft.Keyvault",
-        identity: {
-          userAssignedIdentity:
-            "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}",
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}":
+            {},
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      sku: { name: "Standard_LRS" },
+      kind: "Storage",
+      location: "eastus",
+      properties: {
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          keyvaultproperties: {
+            keyvaulturi: "https://myvault8569.vault.azure.net",
+            keyname: "wrappingKey",
+            keyversion: "",
+          },
+          keySource: "Microsoft.Keyvault",
+          identity: {
+            userAssignedIdentity:
+              "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateWithImmutabilityPolicy
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    extendedLocation: { type: "EdgeZone", name: "losangeles001" },
-    properties: {
-      immutableStorageWithVersioning: {
-        immutabilityPolicy: {
-          immutabilityPeriodSinceCreationInDays: 15,
-          allowProtectedAppendWrites: true,
-          state: "Unlocked",
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        immutableStorageWithVersioning: {
+          immutabilityPolicy: {
+            immutabilityPeriodSinceCreationInDays: 15,
+            allowProtectedAppendWrites: true,
+            state: "Unlocked",
+          },
+          enabled: true,
         },
-        enabled: true,
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateDisallowPublicNetworkAccess
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    extendedLocation: { type: "EdgeZone", name: "losangeles001" },
-    properties: {
-      keyPolicy: { keyExpirationPeriodInDays: 20 },
-      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
-      isHnsEnabled: true,
-      allowBlobPublicAccess: false,
-      minimumTlsVersion: "TLS1_2",
-      allowSharedKeyAccess: true,
-      publicNetworkAccess: "Disabled",
-      routingPreference: {
-        routingChoice: "MicrosoftRouting",
-        publishMicrosoftEndpoints: true,
-        publishInternetEndpoints: true,
-      },
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
         },
-        requireInfrastructureEncryption: false,
-        keySource: "Microsoft.Storage",
+        isHnsEnabled: true,
+        allowBlobPublicAccess: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        publicNetworkAccess: "Disabled",
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
       },
-    },
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateEnablePublicNetworkAccess
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    extendedLocation: { type: "EdgeZone", name: "losangeles001" },
-    properties: {
-      keyPolicy: { keyExpirationPeriodInDays: 20 },
-      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
-      isHnsEnabled: true,
-      allowBlobPublicAccess: false,
-      minimumTlsVersion: "TLS1_2",
-      allowSharedKeyAccess: true,
-      publicNetworkAccess: "Enabled",
-      routingPreference: {
-        routingChoice: "MicrosoftRouting",
-        publishMicrosoftEndpoints: true,
-        publishInternetEndpoints: true,
-      },
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
         },
-        requireInfrastructureEncryption: false,
-        keySource: "Microsoft.Storage",
+        isHnsEnabled: true,
+        allowBlobPublicAccess: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        publicNetworkAccess: "Enabled",
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
       },
-    },
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateUserAssignedIdentityWithFederatedIdentityClientId.
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    identity: {
-      type: "UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}":
-          {},
-      },
-    },
-    sku: { name: "Standard_LRS" },
-    kind: "Storage",
-    location: "eastus",
-    properties: {
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
-        },
-        keyvaultproperties: {
-          keyvaulturi: "https://myvault8569.vault.azure.net",
-          keyname: "wrappingKey",
-          keyversion: "",
-        },
-        keySource: "Microsoft.Keyvault",
-        identity: {
-          userAssignedIdentity:
-            "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}",
-          federatedIdentityClientId: "f83c6b1b-4d34-47e4-bb34-9d83df58b540",
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}":
+            {},
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      sku: { name: "Standard_LRS" },
+      kind: "Storage",
+      location: "eastus",
+      properties: {
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          keyvaultproperties: {
+            keyvaulturi: "https://myvault8569.vault.azure.net",
+            keyname: "wrappingKey",
+            keyversion: "",
+          },
+          keySource: "Microsoft.Keyvault",
+          identity: {
+            userAssignedIdentity:
+              "/subscriptions/{subscription-id}/resourceGroups/res9101/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{managed-identity-name}",
+            federatedIdentityClientId: "f83c6b1b-4d34-47e4-bb34-9d83df58b540",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateAllowedCopyScopeToPrivateLink
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    properties: {
-      keyPolicy: { keyExpirationPeriodInDays: 20 },
-      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
-      isHnsEnabled: true,
-      allowBlobPublicAccess: false,
-      minimumTlsVersion: "TLS1_2",
-      allowSharedKeyAccess: true,
-      allowedCopyScope: "PrivateLink",
-      routingPreference: {
-        routingChoice: "MicrosoftRouting",
-        publishMicrosoftEndpoints: true,
-        publishInternetEndpoints: true,
-      },
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
         },
-        requireInfrastructureEncryption: false,
-        keySource: "Microsoft.Storage",
+        isHnsEnabled: true,
+        allowBlobPublicAccess: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        allowedCopyScope: "PrivateLink",
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
       },
-    },
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountCreateAllowedCopyScopeToAAD
 ```js
-provider.Storage.makeStorageAccount({
-  name: "myStorageAccount",
-  properties: () => ({
-    sku: { name: "Standard_GRS" },
-    kind: "Storage",
-    location: "eastus",
-    properties: {
-      keyPolicy: { keyExpirationPeriodInDays: 20 },
-      sasPolicy: { sasExpirationPeriod: "1.15:59:59", expirationAction: "Log" },
-      isHnsEnabled: true,
-      allowBlobPublicAccess: false,
-      minimumTlsVersion: "TLS1_2",
-      allowSharedKeyAccess: true,
-      allowedCopyScope: "AAD",
-      routingPreference: {
-        routingChoice: "MicrosoftRouting",
-        publishMicrosoftEndpoints: true,
-        publishInternetEndpoints: true,
-      },
-      encryption: {
-        services: {
-          file: { keyType: "Account", enabled: true },
-          blob: { keyType: "Account", enabled: true },
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
         },
-        requireInfrastructureEncryption: false,
-        keySource: "Microsoft.Storage",
+        isHnsEnabled: true,
+        allowBlobPublicAccess: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        allowedCopyScope: "AAD",
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
       },
-    },
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

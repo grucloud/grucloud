@@ -6,37 +6,45 @@ Provides a **Registry** from the **ContainerRegistry** group
 ## Examples
 ### RegistryCreate
 ```js
-provider.ContainerRegistry.makeRegistry({
-  name: "myRegistry",
-  properties: () => ({
-    location: "westus",
-    tags: { key: "value" },
-    sku: { name: "Standard" },
-    properties: { adminUserEnabled: true },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Registry",
+    group: "ContainerRegistry",
+    name: "myRegistry",
+    properties: () => ({
+      location: "westus",
+      tags: { key: "value" },
+      sku: { name: "Standard" },
+      properties: { adminUserEnabled: true },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 
 ### RegistryCreateZoneRedundant
 ```js
-provider.ContainerRegistry.makeRegistry({
-  name: "myRegistry",
-  properties: () => ({
-    location: "westus",
-    tags: { key: "value" },
-    sku: { name: "Standard" },
-    properties: { zoneRedundancy: "Enabled" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Registry",
+    group: "ContainerRegistry",
+    name: "myRegistry",
+    properties: () => ({
+      location: "westus",
+      tags: { key: "value" },
+      sku: { name: "Standard" },
+      properties: { zoneRedundancy: "Enabled" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,290 +6,330 @@ Provides a **Image** from the **Compute** group
 ## Examples
 ### Create a virtual machine image from a blob.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          blobUri:
-            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-          osState: "Generalized",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            blobUri:
+              "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+            osState: "Generalized",
+          },
+          zoneResilient: true,
         },
-        zoneResilient: true,
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from a snapshot.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          snapshot: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            snapshot: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+            },
+            osState: "Generalized",
           },
-          osState: "Generalized",
+          zoneResilient: false,
         },
-        zoneResilient: false,
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from a managed disk.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          managedDisk: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            managedDisk: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
+            },
+            osState: "Generalized",
           },
-          osState: "Generalized",
+          zoneResilient: true,
         },
-        zoneResilient: true,
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from an existing virtual machine.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      sourceVirtualMachine: {
-        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        sourceVirtualMachine: {
+          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image that includes a data disk from a blob.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          blobUri:
-            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-          osState: "Generalized",
-        },
-        dataDisks: [
-          {
-            lun: 1,
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
             blobUri:
-              "https://mystorageaccount.blob.core.windows.net/dataimages/dataimage.vhd",
+              "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+            osState: "Generalized",
           },
-        ],
-        zoneResilient: false,
+          dataDisks: [
+            {
+              lun: 1,
+              blobUri:
+                "https://mystorageaccount.blob.core.windows.net/dataimages/dataimage.vhd",
+            },
+          ],
+          zoneResilient: false,
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image that includes a data disk from a snapshot.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          snapshot: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
-          },
-          osState: "Generalized",
-        },
-        dataDisks: [
-          {
-            lun: 1,
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
             snapshot: {
-              id: "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot2",
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
             },
+            osState: "Generalized",
           },
-        ],
-        zoneResilient: true,
+          dataDisks: [
+            {
+              lun: 1,
+              snapshot: {
+                id: "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot2",
+              },
+            },
+          ],
+          zoneResilient: true,
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image that includes a data disk from a managed disk.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          managedDisk: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
-          },
-          osState: "Generalized",
-        },
-        dataDisks: [
-          {
-            lun: 1,
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
             managedDisk: {
-              id: "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk2",
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
             },
+            osState: "Generalized",
           },
-        ],
-        zoneResilient: false,
+          dataDisks: [
+            {
+              lun: 1,
+              managedDisk: {
+                id: "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk2",
+              },
+            },
+          ],
+          zoneResilient: false,
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from a blob with DiskEncryptionSet resource.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          blobUri:
-            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-          diskEncryptionSet: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            blobUri:
+              "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+            diskEncryptionSet: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+            },
+            osState: "Generalized",
           },
-          osState: "Generalized",
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from a snapshot with DiskEncryptionSet resource.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          snapshot: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            snapshot: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+            },
+            diskEncryptionSet: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+            },
+            osState: "Generalized",
           },
-          diskEncryptionSet: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
-          },
-          osState: "Generalized",
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create a virtual machine image from a managed disk with DiskEncryptionSet resource.
 ```js
-provider.Compute.makeImage({
-  name: "myImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      storageProfile: {
-        osDisk: {
-          osType: "Linux",
-          managedDisk: {
-            id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "Compute",
+    name: "myImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        storageProfile: {
+          osDisk: {
+            osType: "Linux",
+            managedDisk: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
+            },
+            diskEncryptionSet: {
+              id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+            },
+            osState: "Generalized",
           },
-          diskEncryptionSet: {
-            id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
-          },
-          osState: "Generalized",
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualMachine: "myVirtualMachine",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 ## Dependencies

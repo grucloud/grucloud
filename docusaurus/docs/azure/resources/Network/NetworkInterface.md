@@ -6,72 +6,80 @@ Provides a **NetworkInterface** from the **Network** group
 ## Examples
 ### Create network interface
 ```js
-provider.Network.makeNetworkInterface({
-  name: "myNetworkInterface",
-  properties: () => ({
-    properties: {
-      enableAcceleratedNetworking: true,
-      ipConfigurations: [
-        {
-          name: "ipconfig1",
-          properties: {
-            publicIPAddress: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip",
-            },
-            subnet: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default",
+exports.createResources = () => [
+  {
+    type: "NetworkInterface",
+    group: "Network",
+    name: "myNetworkInterface",
+    properties: () => ({
+      properties: {
+        enableAcceleratedNetworking: true,
+        ipConfigurations: [
+          {
+            name: "ipconfig1",
+            properties: {
+              publicIPAddress: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip",
+              },
+              subnet: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default",
+              },
             },
           },
-        },
-      ],
-    },
-    location: "eastus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    publicIpAddress: "myPublicIPAddress",
-    securityGroup: "myNetworkSecurityGroup",
-    subnet: "mySubnet",
-  }),
-});
+        ],
+      },
+      location: "eastus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      publicIpAddress: "myPublicIPAddress",
+      securityGroup: "myNetworkSecurityGroup",
+      subnet: "mySubnet",
+    }),
+  },
+];
 
 ```
 
 ### Create network interface with Gateway Load Balancer Consumer configured
 ```js
-provider.Network.makeNetworkInterface({
-  name: "myNetworkInterface",
-  properties: () => ({
-    properties: {
-      enableAcceleratedNetworking: true,
-      ipConfigurations: [
-        {
-          name: "ipconfig1",
-          properties: {
-            publicIPAddress: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip",
-            },
-            subnet: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default",
-            },
-            gatewayLoadBalancer: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/loadBalancers/lb/frontendIPConfigurations/fe-lb-provider",
+exports.createResources = () => [
+  {
+    type: "NetworkInterface",
+    group: "Network",
+    name: "myNetworkInterface",
+    properties: () => ({
+      properties: {
+        enableAcceleratedNetworking: true,
+        ipConfigurations: [
+          {
+            name: "ipconfig1",
+            properties: {
+              publicIPAddress: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip",
+              },
+              subnet: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/rg1-vnet/subnets/default",
+              },
+              gatewayLoadBalancer: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/loadBalancers/lb/frontendIPConfigurations/fe-lb-provider",
+              },
             },
           },
-        },
-      ],
-    },
-    location: "eastus",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    publicIpAddress: "myPublicIPAddress",
-    securityGroup: "myNetworkSecurityGroup",
-    subnet: "mySubnet",
-  }),
-});
+        ],
+      },
+      location: "eastus",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      publicIpAddress: "myPublicIPAddress",
+      securityGroup: "myNetworkSecurityGroup",
+      subnet: "mySubnet",
+    }),
+  },
+];
 
 ```
 ## Dependencies

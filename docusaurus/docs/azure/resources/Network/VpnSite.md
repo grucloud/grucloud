@@ -6,39 +6,46 @@ Provides a **VpnSite** from the **Network** group
 ## Examples
 ### VpnSiteCreate
 ```js
-provider.Network.makeVpnSite({
-  name: "myVpnSite",
-  properties: () => ({
-    tags: { key1: "value1" },
-    location: "West US",
-    properties: {
-      virtualWan: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualWANs/wan1",
-      },
-      addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
-      isSecuritySite: false,
-      vpnSiteLinks: [
-        {
-          name: "vpnSiteLink1",
-          properties: {
-            ipAddress: "50.50.50.56",
-            fqdn: "link1.vpnsite1.contoso.com",
-            linkProperties: { linkProviderName: "vendor1", linkSpeedInMbps: 0 },
-            bgpProperties: { bgpPeeringAddress: "192.168.0.0", asn: 1234 },
-          },
+exports.createResources = () => [
+  {
+    type: "VpnSite",
+    group: "Network",
+    name: "myVpnSite",
+    properties: () => ({
+      tags: { key1: "value1" },
+      location: "West US",
+      properties: {
+        virtualWan: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualWANs/wan1",
         },
-      ],
-      o365Policy: {
-        breakOutCategories: { allow: true, optimize: true, default: false },
+        addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+        isSecuritySite: false,
+        vpnSiteLinks: [
+          {
+            name: "vpnSiteLink1",
+            properties: {
+              ipAddress: "50.50.50.56",
+              fqdn: "link1.vpnsite1.contoso.com",
+              linkProperties: {
+                linkProviderName: "vendor1",
+                linkSpeedInMbps: 0,
+              },
+              bgpProperties: { bgpPeeringAddress: "192.168.0.0", asn: 1234 },
+            },
+          },
+        ],
+        o365Policy: {
+          breakOutCategories: { allow: true, optimize: true, default: false },
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualWan: "myVirtualWan",
-    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualWan: "myVirtualWan",
+      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+    }),
+  },
+];
 
 ```
 ## Dependencies

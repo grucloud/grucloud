@@ -6,38 +6,42 @@ Provides a **LoadBalancerBackendAddressPool** from the **Network** group
 ## Examples
 ### Update load balancer backend pool with backend addresses containing virtual network and  IP address.
 ```js
-provider.Network.makeLoadBalancerBackendAddressPool({
-  name: "myLoadBalancerBackendAddressPool",
-  properties: () => ({
-    properties: {
-      loadBalancerBackendAddresses: [
-        {
-          name: "address1",
-          properties: {
-            virtualNetwork: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnetlb",
+exports.createResources = () => [
+  {
+    type: "LoadBalancerBackendAddressPool",
+    group: "Network",
+    name: "myLoadBalancerBackendAddressPool",
+    properties: () => ({
+      properties: {
+        loadBalancerBackendAddresses: [
+          {
+            name: "address1",
+            properties: {
+              virtualNetwork: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnetlb",
+              },
+              ipAddress: "10.0.0.4",
             },
-            ipAddress: "10.0.0.4",
           },
-        },
-        {
-          name: "address2",
-          properties: {
-            virtualNetwork: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnetlb",
+          {
+            name: "address2",
+            properties: {
+              virtualNetwork: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnetlb",
+              },
+              ipAddress: "10.0.0.5",
             },
-            ipAddress: "10.0.0.5",
           },
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    loadBalancer: "myLoadBalancer",
-    virtualNetworks: ["myVirtualNetwork"],
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      loadBalancer: "myLoadBalancer",
+      virtualNetworks: ["myVirtualNetwork"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

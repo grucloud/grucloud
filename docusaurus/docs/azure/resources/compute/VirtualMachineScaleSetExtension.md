@@ -6,40 +6,48 @@ Provides a **VirtualMachineScaleSetExtension** from the **Compute** group
 ## Examples
 ### VirtualMachineScaleSetExtensions_CreateOrUpdate_MaximumSet_Gen
 ```js
-provider.Compute.makeVirtualMachineScaleSetExtension({
-  name: "myVirtualMachineScaleSetExtension",
-  properties: () => ({
-    name: "{extension-name}",
-    properties: {
-      autoUpgradeMinorVersion: true,
-      publisher: "{extension-Publisher}",
-      type: "{extension-Type}",
-      typeHandlerVersion: "{handler-version}",
-      settings: {},
-      forceUpdateTag: "aaaaaaaaa",
-      enableAutomaticUpgrade: true,
-      protectedSettings: {},
-      provisionAfterExtensions: ["aa"],
-      suppressFailures: true,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vmScaleSet: "myVirtualMachineScaleSet",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSetExtension",
+    group: "Compute",
+    name: "myVirtualMachineScaleSetExtension",
+    properties: () => ({
+      name: "{extension-name}",
+      properties: {
+        autoUpgradeMinorVersion: true,
+        publisher: "{extension-Publisher}",
+        type: "{extension-Type}",
+        typeHandlerVersion: "{handler-version}",
+        settings: {},
+        forceUpdateTag: "aaaaaaaaa",
+        enableAutomaticUpgrade: true,
+        protectedSettings: {},
+        provisionAfterExtensions: ["aa"],
+        suppressFailures: true,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vmScaleSet: "myVirtualMachineScaleSet",
+    }),
+  },
+];
 
 ```
 
 ### VirtualMachineScaleSetExtensions_CreateOrUpdate_MinimumSet_Gen
 ```js
-provider.Compute.makeVirtualMachineScaleSetExtension({
-  name: "myVirtualMachineScaleSetExtension",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vmScaleSet: "myVirtualMachineScaleSet",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualMachineScaleSetExtension",
+    group: "Compute",
+    name: "myVirtualMachineScaleSetExtension",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vmScaleSet: "myVirtualMachineScaleSet",
+    }),
+  },
+];
 
 ```
 ## Dependencies

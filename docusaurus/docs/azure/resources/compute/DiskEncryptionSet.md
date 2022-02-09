@@ -6,51 +6,59 @@ Provides a **DiskEncryptionSet** from the **Compute** group
 ## Examples
 ### Create a disk encryption set.
 ```js
-provider.Compute.makeDiskEncryptionSet({
-  name: "myDiskEncryptionSet",
-  properties: () => ({
-    location: "West US",
-    identity: { type: "SystemAssigned" },
-    properties: {
-      activeKey: {
-        sourceVault: {
-          id: "/subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.KeyVault/vaults/myVMVault",
+exports.createResources = () => [
+  {
+    type: "DiskEncryptionSet",
+    group: "Compute",
+    name: "myDiskEncryptionSet",
+    properties: () => ({
+      location: "West US",
+      identity: { type: "SystemAssigned" },
+      properties: {
+        activeKey: {
+          sourceVault: {
+            id: "/subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.KeyVault/vaults/myVMVault",
+          },
+          keyUrl: "https://myvmvault.vault-int.azure-int.net/keys/{key}",
         },
-        keyUrl: "https://myvmvault.vault-int.azure-int.net/keys/{key}",
+        encryptionType: "EncryptionAtRestWithCustomerKey",
       },
-      encryptionType: "EncryptionAtRestWithCustomerKey",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vault: "myVault",
-    key: "myKey",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+      key: "myKey",
+    }),
+  },
+];
 
 ```
 
 ### Create a disk encryption set with key vault from a different subscription.
 ```js
-provider.Compute.makeDiskEncryptionSet({
-  name: "myDiskEncryptionSet",
-  properties: () => ({
-    location: "West US",
-    identity: { type: "SystemAssigned" },
-    properties: {
-      activeKey: {
-        keyUrl:
-          "https://myvaultdifferentsub.vault-int.azure-int.net/keys/{key}",
+exports.createResources = () => [
+  {
+    type: "DiskEncryptionSet",
+    group: "Compute",
+    name: "myDiskEncryptionSet",
+    properties: () => ({
+      location: "West US",
+      identity: { type: "SystemAssigned" },
+      properties: {
+        activeKey: {
+          keyUrl:
+            "https://myvaultdifferentsub.vault-int.azure-int.net/keys/{key}",
+        },
+        encryptionType: "EncryptionAtRestWithCustomerKey",
       },
-      encryptionType: "EncryptionAtRestWithCustomerKey",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vault: "myVault",
-    key: "myKey",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+      key: "myKey",
+    }),
+  },
+];
 
 ```
 ## Dependencies

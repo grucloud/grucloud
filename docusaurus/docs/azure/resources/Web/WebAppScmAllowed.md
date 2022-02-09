@@ -6,11 +6,18 @@ Provides a **WebAppScmAllowed** from the **Web** group
 ## Examples
 ### Update SCM Allowed
 ```js
-provider.Web.makeWebAppScmAllowed({
-  name: "myWebAppScmAllowed",
-  properties: () => ({ properties: { allow: true } }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
-});
+exports.createResources = () => [
+  {
+    type: "WebAppScmAllowed",
+    group: "Web",
+    name: "myWebAppScmAllowed",
+    properties: () => ({ properties: { allow: true } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "mySite",
+    }),
+  },
+];
 
 ```
 ## Dependencies

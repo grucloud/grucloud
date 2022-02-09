@@ -6,27 +6,31 @@ Provides a **StaticSite** from the **Web** group
 ## Examples
 ### Create or update a static site
 ```js
-provider.Web.makeStaticSite({
-  name: "myStaticSite",
-  properties: () => ({
-    location: "West US 2",
-    properties: {
-      repositoryUrl: "https://github.com/username/RepoName",
-      branch: "master",
-      repositoryToken: "repoToken123",
-      buildProperties: {
-        appLocation: "app",
-        apiLocation: "api",
-        appArtifactLocation: "build",
+exports.createResources = () => [
+  {
+    type: "StaticSite",
+    group: "Web",
+    name: "myStaticSite",
+    properties: () => ({
+      location: "West US 2",
+      properties: {
+        repositoryUrl: "https://github.com/username/RepoName",
+        branch: "master",
+        repositoryToken: "repoToken123",
+        buildProperties: {
+          appLocation: "app",
+          apiLocation: "api",
+          appArtifactLocation: "build",
+        },
       },
-    },
-    sku: { name: "Basic", tier: "Basic" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-  }),
-});
+      sku: { name: "Basic", tier: "Basic" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

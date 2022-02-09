@@ -6,19 +6,23 @@ Provides a **Route** from the **Network** group
 ## Examples
 ### Create route
 ```js
-provider.Network.makeRoute({
-  name: "myRoute",
-  properties: () => ({
-    properties: {
-      addressPrefix: "10.0.3.0/24",
-      nextHopType: "VirtualNetworkGateway",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    routeTable: "myRouteTable",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Route",
+    group: "Network",
+    name: "myRoute",
+    properties: () => ({
+      properties: {
+        addressPrefix: "10.0.3.0/24",
+        nextHopType: "VirtualNetworkGateway",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routeTable: "myRouteTable",
+    }),
+  },
+];
 
 ```
 ## Dependencies

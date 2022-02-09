@@ -6,15 +6,19 @@ Provides a **BastionHost** from the **Network** group
 ## Examples
 ### Create Bastion Host
 ```js
-provider.Network.makeBastionHost({
-  name: "myBastionHost",
-  properties: () => ({ name: "Standard" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-    publicIpAddress: "myPublicIPAddress",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "BastionHost",
+    group: "Network",
+    name: "myBastionHost",
+    properties: () => ({ name: "Standard" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpAddress: "myPublicIPAddress",
+    }),
+  },
+];
 
 ```
 ## Dependencies

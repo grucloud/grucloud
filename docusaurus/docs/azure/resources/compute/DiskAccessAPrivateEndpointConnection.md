@@ -6,22 +6,26 @@ Provides a **DiskAccessAPrivateEndpointConnection** from the **Compute** group
 ## Examples
 ### Approve a Private Endpoint Connection under a disk access resource.
 ```js
-provider.Compute.makeDiskAccessAPrivateEndpointConnection({
-  name: "myDiskAccessAPrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "Approving myPrivateEndpointConnection",
+exports.createResources = () => [
+  {
+    type: "DiskAccessAPrivateEndpointConnection",
+    group: "Compute",
+    name: "myDiskAccessAPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Approving myPrivateEndpointConnection",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    privateEndpoint: "myPrivateEndpoint",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      privateEndpoint: "myPrivateEndpoint",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 ## Dependencies

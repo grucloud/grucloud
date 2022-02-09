@@ -6,22 +6,26 @@ Provides a **ScopeMap** from the **ContainerRegistry** group
 ## Examples
 ### ScopeMapCreate
 ```js
-provider.ContainerRegistry.makeScopeMap({
-  name: "myScopeMap",
-  properties: () => ({
-    properties: {
-      description: "Developer Scopes",
-      actions: [
-        "repositories/myrepository/contentWrite",
-        "repositories/myrepository/delete",
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "ScopeMap",
+    group: "ContainerRegistry",
+    name: "myScopeMap",
+    properties: () => ({
+      properties: {
+        description: "Developer Scopes",
+        actions: [
+          "repositories/myrepository/contentWrite",
+          "repositories/myrepository/delete",
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,31 +6,39 @@ Provides a **QueryPack** from the **OperationalInsights** group
 ## Examples
 ### QueryPackCreate
 ```js
-provider.OperationalInsights.makeQueryPack({
-  name: "myQueryPack",
-  properties: () => ({ location: "South Central US", properties: {} }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    query: "myQuery",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "QueryPack",
+    group: "OperationalInsights",
+    name: "myQueryPack",
+    properties: () => ({ location: "South Central US", properties: {} }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      query: "myQuery",
+    }),
+  },
+];
 
 ```
 
 ### QueryPackUpdate
 ```js
-provider.OperationalInsights.makeQueryPack({
-  name: "myQueryPack",
-  properties: () => ({
-    location: "South Central US",
-    tags: { Tag1: "Value1" },
-    properties: {},
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    query: "myQuery",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "QueryPack",
+    group: "OperationalInsights",
+    name: "myQueryPack",
+    properties: () => ({
+      location: "South Central US",
+      tags: { Tag1: "Value1" },
+      properties: {},
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      query: "myQuery",
+    }),
+  },
+];
 
 ```
 ## Dependencies

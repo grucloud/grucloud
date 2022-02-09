@@ -6,36 +6,42 @@ Provides a **DscpConfiguration** from the **Network** group
 ## Examples
 ### Create DSCP Configuration
 ```js
-provider.Network.makeDscpConfiguration({
-  name: "myDscpConfiguration",
-  properties: () => ({
-    properties: {
-      qosDefinitionCollection: [
-        {
-          markings: [1],
-          sourceIpRanges: [{ startIP: "127.0.0.1", endIP: "127.0.0.2" }],
-          destinationIpRanges: [{ startIP: "127.0.10.1", endIP: "127.0.10.2" }],
-          sourcePortRanges: [
-            { start: 10, end: 11 },
-            { start: 20, end: 21 },
-          ],
-          destinationPortRanges: [{ start: 15, end: 15 }],
-          protocol: "Tcp",
-        },
-        {
-          markings: [2],
-          sourceIpRanges: [{ startIP: "12.0.0.1", endIP: "12.0.0.2" }],
-          destinationIpRanges: [{ startIP: "12.0.10.1", endIP: "12.0.10.2" }],
-          sourcePortRanges: [{ start: 11, end: 12 }],
-          destinationPortRanges: [{ start: 51, end: 52 }],
-          protocol: "Udp",
-        },
-      ],
-    },
-    location: "eastus",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "DscpConfiguration",
+    group: "Network",
+    name: "myDscpConfiguration",
+    properties: () => ({
+      properties: {
+        qosDefinitionCollection: [
+          {
+            markings: [1],
+            sourceIpRanges: [{ startIP: "127.0.0.1", endIP: "127.0.0.2" }],
+            destinationIpRanges: [
+              { startIP: "127.0.10.1", endIP: "127.0.10.2" },
+            ],
+            sourcePortRanges: [
+              { start: 10, end: 11 },
+              { start: 20, end: 21 },
+            ],
+            destinationPortRanges: [{ start: 15, end: 15 }],
+            protocol: "Tcp",
+          },
+          {
+            markings: [2],
+            sourceIpRanges: [{ startIP: "12.0.0.1", endIP: "12.0.0.2" }],
+            destinationIpRanges: [{ startIP: "12.0.10.1", endIP: "12.0.10.2" }],
+            sourcePortRanges: [{ start: 11, end: 12 }],
+            destinationPortRanges: [{ start: 51, end: 52 }],
+            protocol: "Udp",
+          },
+        ],
+      },
+      location: "eastus",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,55 +6,63 @@ Provides a **FlexibleServer** from the **DBforPostgreSQL** group
 ## Examples
 ### Create a new server
 ```js
-provider.DBforPostgreSQL.makeFlexibleServer({
-  name: "myFlexibleServer",
-  properties: () => ({
-    location: "westus",
-    sku: { tier: "GeneralPurpose", name: "Standard_D4s_v3" },
-    properties: {
-      administratorLogin: "cloudsa",
-      administratorLoginPassword: "password",
-      version: "12",
-      availabilityZone: "1",
-      createMode: "Create",
-      storage: { storageSizeGB: 512 },
-      backup: { backupRetentionDays: 7, geoRedundantBackup: "Disabled" },
-      network: {
-        delegatedSubnetResourceId:
-          "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/test-vnet-subnet",
-        privateDnsZoneArmResourceId:
-          "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourcegroups/testrg/providers/Microsoft.Network/privateDnsZones/test-private-dns-zone.postgres.database.azure.com",
+exports.createResources = () => [
+  {
+    type: "FlexibleServer",
+    group: "DBforPostgreSQL",
+    name: "myFlexibleServer",
+    properties: () => ({
+      location: "westus",
+      sku: { tier: "GeneralPurpose", name: "Standard_D4s_v3" },
+      properties: {
+        administratorLogin: "cloudsa",
+        administratorLoginPassword: "password",
+        version: "12",
+        availabilityZone: "1",
+        createMode: "Create",
+        storage: { storageSizeGB: 512 },
+        backup: { backupRetentionDays: 7, geoRedundantBackup: "Disabled" },
+        network: {
+          delegatedSubnetResourceId:
+            "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/test-vnet-subnet",
+          privateDnsZoneArmResourceId:
+            "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourcegroups/testrg/providers/Microsoft.Network/privateDnsZones/test-private-dns-zone.postgres.database.azure.com",
+        },
+        highAvailability: { mode: "ZoneRedundant" },
       },
-      highAvailability: { mode: "ZoneRedundant" },
-    },
-    tags: { ElasticServer: "1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-  }),
-});
+      tags: { ElasticServer: "1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+    }),
+  },
+];
 
 ```
 
 ### Create a database as a point in time restore
 ```js
-provider.DBforPostgreSQL.makeFlexibleServer({
-  name: "myFlexibleServer",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      createMode: "PointInTimeRestore",
-      sourceServerResourceId:
-        "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/testrg/providers/Microsoft.DBforPostgreSQL/flexibleServers/sourcepgservername",
-      pointInTimeUTC: "2021-06-27T00:04:59.4078005+00:00",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FlexibleServer",
+    group: "DBforPostgreSQL",
+    name: "myFlexibleServer",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        createMode: "PointInTimeRestore",
+        sourceServerResourceId:
+          "/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/testrg/providers/Microsoft.DBforPostgreSQL/flexibleServers/sourcepgservername",
+        pointInTimeUTC: "2021-06-27T00:04:59.4078005+00:00",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+    }),
+  },
+];
 
 ```
 ## Dependencies

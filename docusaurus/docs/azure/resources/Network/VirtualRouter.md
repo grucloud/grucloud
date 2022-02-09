@@ -6,22 +6,26 @@ Provides a **VirtualRouter** from the **Network** group
 ## Examples
 ### Create VirtualRouter
 ```js
-provider.Network.makeVirtualRouter({
-  name: "myVirtualRouter",
-  properties: () => ({
-    tags: { key1: "value1" },
-    location: "West US",
-    properties: {
-      hostedGateway: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/vnetGateway",
+exports.createResources = () => [
+  {
+    type: "VirtualRouter",
+    group: "Network",
+    name: "myVirtualRouter",
+    properties: () => ({
+      tags: { key1: "value1" },
+      location: "West US",
+      properties: {
+        hostedGateway: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/vnetGateway",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+    }),
+  },
+];
 
 ```
 ## Dependencies

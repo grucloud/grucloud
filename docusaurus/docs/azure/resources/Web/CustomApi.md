@@ -6,24 +6,28 @@ Provides a **CustomApi** from the **Web** group
 ## Examples
 ### Replace a custom API
 ```js
-provider.Web.makeCustomApi({
-  name: "myCustomApi",
-  properties: () => ({
-    properties: {
-      capabilities: [],
-      description: "",
-      displayName: "testCustomApi",
-      iconUri: "/testIcon.svg",
-      apiDefinitions: {
-        originalSwaggerUrl: "https://tempuri.org/swagger.json",
-        swagger: {},
+exports.createResources = () => [
+  {
+    type: "CustomApi",
+    group: "Web",
+    name: "myCustomApi",
+    properties: () => ({
+      properties: {
+        capabilities: [],
+        description: "",
+        displayName: "testCustomApi",
+        iconUri: "/testIcon.svg",
+        apiDefinitions: {
+          originalSwaggerUrl: "https://tempuri.org/swagger.json",
+          swagger: {},
+        },
+        apiType: "Rest",
       },
-      apiType: "Rest",
-    },
-    id: "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourceGroups/testResourceGroup/providers/Microsoft.Web/customApis/testCustomApi",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+      id: "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourceGroups/testResourceGroup/providers/Microsoft.Web/customApis/testCustomApi",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

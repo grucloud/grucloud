@@ -6,287 +6,319 @@ Provides a **Task** from the **ContainerRegistry** group
 ## Examples
 ### Tasks_Create
 ```js
-provider.ContainerRegistry.makeTask({
-  name: "myTask",
-  properties: () => ({
-    properties: {
-      status: "Enabled",
-      platform: { os: "Linux", architecture: "amd64" },
-      agentConfiguration: { cpu: 2 },
-      step: {
-        type: "Docker",
-        imageNames: ["azurerest:testtag"],
-        dockerFilePath: "src/DockerFile",
-        contextPath: "src",
-        isPushEnabled: true,
-        noCache: false,
-        arguments: [
-          { name: "mytestargument", value: "mytestvalue", isSecret: false },
-          {
-            name: "mysecrettestargument",
-            value: "mysecrettestvalue",
-            isSecret: true,
-          },
-        ],
-      },
-      trigger: {
-        timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
-        sourceTriggers: [
-          {
-            name: "mySourceTrigger",
-            sourceRepository: {
-              sourceControlType: "Github",
-              repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
-              branch: "master",
-              sourceControlAuthProperties: { tokenType: "PAT", token: "xxxxx" },
+exports.createResources = () => [
+  {
+    type: "Task",
+    group: "ContainerRegistry",
+    name: "myTask",
+    properties: () => ({
+      properties: {
+        status: "Enabled",
+        platform: { os: "Linux", architecture: "amd64" },
+        agentConfiguration: { cpu: 2 },
+        step: {
+          type: "Docker",
+          imageNames: ["azurerest:testtag"],
+          dockerFilePath: "src/DockerFile",
+          contextPath: "src",
+          isPushEnabled: true,
+          noCache: false,
+          arguments: [
+            { name: "mytestargument", value: "mytestvalue", isSecret: false },
+            {
+              name: "mysecrettestargument",
+              value: "mysecrettestvalue",
+              isSecret: true,
             },
-            sourceTriggerEvents: ["commit"],
-          },
-        ],
-        baseImageTrigger: {
-          name: "myBaseImageTrigger",
-          baseImageTriggerType: "Runtime",
-          updateTriggerEndpoint:
-            "https://user:pass@mycicd.webhook.com?token=foo",
-          updateTriggerPayloadType: "Token",
+          ],
         },
+        trigger: {
+          timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
+          sourceTriggers: [
+            {
+              name: "mySourceTrigger",
+              sourceRepository: {
+                sourceControlType: "Github",
+                repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
+                branch: "master",
+                sourceControlAuthProperties: {
+                  tokenType: "PAT",
+                  token: "xxxxx",
+                },
+              },
+              sourceTriggerEvents: ["commit"],
+            },
+          ],
+          baseImageTrigger: {
+            name: "myBaseImageTrigger",
+            baseImageTriggerType: "Runtime",
+            updateTriggerEndpoint:
+              "https://user:pass@mycicd.webhook.com?token=foo",
+            updateTriggerPayloadType: "Token",
+          },
+        },
+        isSystemTask: false,
+        logTemplate: "acr/tasks:{{.Run.OS}}",
       },
-      isSystemTask: false,
-      logTemplate: "acr/tasks:{{.Run.OS}}",
-    },
-    location: "eastus",
-    identity: { type: "SystemAssigned" },
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+      location: "eastus",
+      identity: { type: "SystemAssigned" },
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### Tasks_Create_WithSystemAndUserIdentities
 ```js
-provider.ContainerRegistry.makeTask({
-  name: "myTask",
-  properties: () => ({
-    properties: {
-      status: "Enabled",
-      platform: { os: "Linux", architecture: "amd64" },
-      agentConfiguration: { cpu: 2 },
-      step: {
-        type: "Docker",
-        imageNames: ["azurerest:testtag"],
-        dockerFilePath: "src/DockerFile",
-        contextPath: "src",
-        isPushEnabled: true,
-        noCache: false,
-        arguments: [
-          { name: "mytestargument", value: "mytestvalue", isSecret: false },
-          {
-            name: "mysecrettestargument",
-            value: "mysecrettestvalue",
-            isSecret: true,
-          },
-        ],
-      },
-      trigger: {
-        timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
-        sourceTriggers: [
-          {
-            name: "mySourceTrigger",
-            sourceRepository: {
-              sourceControlType: "Github",
-              repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
-              branch: "master",
-              sourceControlAuthProperties: { tokenType: "PAT", token: "xxxxx" },
+exports.createResources = () => [
+  {
+    type: "Task",
+    group: "ContainerRegistry",
+    name: "myTask",
+    properties: () => ({
+      properties: {
+        status: "Enabled",
+        platform: { os: "Linux", architecture: "amd64" },
+        agentConfiguration: { cpu: 2 },
+        step: {
+          type: "Docker",
+          imageNames: ["azurerest:testtag"],
+          dockerFilePath: "src/DockerFile",
+          contextPath: "src",
+          isPushEnabled: true,
+          noCache: false,
+          arguments: [
+            { name: "mytestargument", value: "mytestvalue", isSecret: false },
+            {
+              name: "mysecrettestargument",
+              value: "mysecrettestvalue",
+              isSecret: true,
             },
-            sourceTriggerEvents: ["commit"],
+          ],
+        },
+        trigger: {
+          timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
+          sourceTriggers: [
+            {
+              name: "mySourceTrigger",
+              sourceRepository: {
+                sourceControlType: "Github",
+                repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
+                branch: "master",
+                sourceControlAuthProperties: {
+                  tokenType: "PAT",
+                  token: "xxxxx",
+                },
+              },
+              sourceTriggerEvents: ["commit"],
+            },
+          ],
+          baseImageTrigger: {
+            name: "myBaseImageTrigger",
+            baseImageTriggerType: "Runtime",
+            updateTriggerEndpoint:
+              "https://user:pass@mycicd.webhook.com?token=foo",
+            updateTriggerPayloadType: "Default",
           },
-        ],
-        baseImageTrigger: {
-          name: "myBaseImageTrigger",
-          baseImageTriggerType: "Runtime",
-          updateTriggerEndpoint:
-            "https://user:pass@mycicd.webhook.com?token=foo",
-          updateTriggerPayloadType: "Default",
+        },
+        isSystemTask: false,
+        logTemplate: null,
+      },
+      location: "eastus",
+      identity: {
+        type: "SystemAssigned, UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
+            {},
         },
       },
-      isSystemTask: false,
-      logTemplate: null,
-    },
-    location: "eastus",
-    identity: {
-      type: "SystemAssigned, UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
-          {},
-      },
-    },
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### Tasks_Create_WithUserIdentities_WithSystemIdentity
 ```js
-provider.ContainerRegistry.makeTask({
-  name: "myTask",
-  properties: () => ({
-    properties: {
-      status: "Enabled",
-      platform: { os: "Linux", architecture: "amd64" },
-      agentConfiguration: { cpu: 2 },
-      step: {
-        type: "Docker",
-        imageNames: ["azurerest:testtag"],
-        dockerFilePath: "src/DockerFile",
-        contextPath: "src",
-        isPushEnabled: true,
-        noCache: false,
-        arguments: [
-          { name: "mytestargument", value: "mytestvalue", isSecret: false },
-          {
-            name: "mysecrettestargument",
-            value: "mysecrettestvalue",
-            isSecret: true,
-          },
-        ],
-      },
-      trigger: {
-        timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
-        sourceTriggers: [
-          {
-            name: "mySourceTrigger",
-            sourceRepository: {
-              sourceControlType: "Github",
-              repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
-              branch: "master",
-              sourceControlAuthProperties: { tokenType: "PAT", token: "xxxxx" },
+exports.createResources = () => [
+  {
+    type: "Task",
+    group: "ContainerRegistry",
+    name: "myTask",
+    properties: () => ({
+      properties: {
+        status: "Enabled",
+        platform: { os: "Linux", architecture: "amd64" },
+        agentConfiguration: { cpu: 2 },
+        step: {
+          type: "Docker",
+          imageNames: ["azurerest:testtag"],
+          dockerFilePath: "src/DockerFile",
+          contextPath: "src",
+          isPushEnabled: true,
+          noCache: false,
+          arguments: [
+            { name: "mytestargument", value: "mytestvalue", isSecret: false },
+            {
+              name: "mysecrettestargument",
+              value: "mysecrettestvalue",
+              isSecret: true,
             },
-            sourceTriggerEvents: ["commit"],
-          },
-        ],
-        baseImageTrigger: {
-          name: "myBaseImageTrigger",
-          baseImageTriggerType: "Runtime",
+          ],
         },
+        trigger: {
+          timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
+          sourceTriggers: [
+            {
+              name: "mySourceTrigger",
+              sourceRepository: {
+                sourceControlType: "Github",
+                repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
+                branch: "master",
+                sourceControlAuthProperties: {
+                  tokenType: "PAT",
+                  token: "xxxxx",
+                },
+              },
+              sourceTriggerEvents: ["commit"],
+            },
+          ],
+          baseImageTrigger: {
+            name: "myBaseImageTrigger",
+            baseImageTriggerType: "Runtime",
+          },
+        },
+        isSystemTask: false,
+        logTemplate: null,
       },
-      isSystemTask: false,
-      logTemplate: null,
-    },
-    location: "eastus",
-    identity: { type: "SystemAssigned" },
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+      location: "eastus",
+      identity: { type: "SystemAssigned" },
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### Tasks_Create_WithUserIdentities
 ```js
-provider.ContainerRegistry.makeTask({
-  name: "myTask",
-  properties: () => ({
-    properties: {
-      status: "Enabled",
-      platform: { os: "Linux", architecture: "amd64" },
-      agentConfiguration: { cpu: 2 },
-      step: {
-        type: "Docker",
-        imageNames: ["azurerest:testtag"],
-        dockerFilePath: "src/DockerFile",
-        contextPath: "src",
-        isPushEnabled: true,
-        noCache: false,
-        arguments: [
-          { name: "mytestargument", value: "mytestvalue", isSecret: false },
-          {
-            name: "mysecrettestargument",
-            value: "mysecrettestvalue",
-            isSecret: true,
-          },
-        ],
-      },
-      trigger: {
-        timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
-        sourceTriggers: [
-          {
-            name: "mySourceTrigger",
-            sourceRepository: {
-              sourceControlType: "Github",
-              repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
-              branch: "master",
-              sourceControlAuthProperties: { tokenType: "PAT", token: "xxxxx" },
+exports.createResources = () => [
+  {
+    type: "Task",
+    group: "ContainerRegistry",
+    name: "myTask",
+    properties: () => ({
+      properties: {
+        status: "Enabled",
+        platform: { os: "Linux", architecture: "amd64" },
+        agentConfiguration: { cpu: 2 },
+        step: {
+          type: "Docker",
+          imageNames: ["azurerest:testtag"],
+          dockerFilePath: "src/DockerFile",
+          contextPath: "src",
+          isPushEnabled: true,
+          noCache: false,
+          arguments: [
+            { name: "mytestargument", value: "mytestvalue", isSecret: false },
+            {
+              name: "mysecrettestargument",
+              value: "mysecrettestvalue",
+              isSecret: true,
             },
-            sourceTriggerEvents: ["commit"],
+          ],
+        },
+        trigger: {
+          timerTriggers: [{ name: "myTimerTrigger", schedule: "30 9 * * 1-5" }],
+          sourceTriggers: [
+            {
+              name: "mySourceTrigger",
+              sourceRepository: {
+                sourceControlType: "Github",
+                repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
+                branch: "master",
+                sourceControlAuthProperties: {
+                  tokenType: "PAT",
+                  token: "xxxxx",
+                },
+              },
+              sourceTriggerEvents: ["commit"],
+            },
+          ],
+          baseImageTrigger: {
+            name: "myBaseImageTrigger",
+            baseImageTriggerType: "Runtime",
+            updateTriggerEndpoint:
+              "https://user:pass@mycicd.webhook.com?token=foo",
+            updateTriggerPayloadType: "Default",
           },
-        ],
-        baseImageTrigger: {
-          name: "myBaseImageTrigger",
-          baseImageTriggerType: "Runtime",
-          updateTriggerEndpoint:
-            "https://user:pass@mycicd.webhook.com?token=foo",
-          updateTriggerPayloadType: "Default",
+        },
+        isSystemTask: false,
+        logTemplate: null,
+      },
+      location: "eastus",
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity1":
+            {},
+          "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
+            {},
         },
       },
-      isSystemTask: false,
-      logTemplate: null,
-    },
-    location: "eastus",
-    identity: {
-      type: "UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity1":
-          {},
-        "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/myResourceGroup1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity2":
-          {},
-      },
-    },
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### Tasks_Create_QuickTask
 ```js
-provider.ContainerRegistry.makeTask({
-  name: "myTask",
-  properties: () => ({
-    properties: {
-      status: "Enabled",
-      isSystemTask: true,
-      logTemplate: "acr/tasks:{{.Run.OS}}",
-    },
-    location: "eastus",
-    identity: null,
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Task",
+    group: "ContainerRegistry",
+    name: "myTask",
+    properties: () => ({
+      properties: {
+        status: "Enabled",
+        isSystemTask: true,
+        logTemplate: "acr/tasks:{{.Run.OS}}",
+      },
+      location: "eastus",
+      identity: null,
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

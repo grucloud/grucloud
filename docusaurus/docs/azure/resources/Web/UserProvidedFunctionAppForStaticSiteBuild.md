@@ -6,23 +6,27 @@ Provides a **UserProvidedFunctionAppForStaticSiteBuild** from the **Web** group
 ## Examples
 ### Register a user provided function app with a static site build
 ```js
-provider.Web.makeUserProvidedFunctionAppForStaticSiteBuild({
-  name: "myUserProvidedFunctionAppForStaticSiteBuild",
-  properties: () => ({
-    properties: {
-      functionAppResourceId:
-        "/subscription/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourceGroups/functionRG/providers/Microsoft.Web/sites/testFunctionApp",
-      functionAppRegion: "West US 2",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    userProvidedFunctionAppForStaticSite:
-      "myUserProvidedFunctionAppForStaticSite",
-    name: "myStaticSite",
-    environment: "myStaticSiteBuild",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "UserProvidedFunctionAppForStaticSiteBuild",
+    group: "Web",
+    name: "myUserProvidedFunctionAppForStaticSiteBuild",
+    properties: () => ({
+      properties: {
+        functionAppResourceId:
+          "/subscription/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourceGroups/functionRG/providers/Microsoft.Web/sites/testFunctionApp",
+        functionAppRegion: "West US 2",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      userProvidedFunctionAppForStaticSite:
+        "myUserProvidedFunctionAppForStaticSite",
+      name: "myStaticSite",
+      environment: "myStaticSiteBuild",
+    }),
+  },
+];
 
 ```
 ## Dependencies

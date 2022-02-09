@@ -6,50 +6,54 @@ Provides a **HubVirtualNetworkConnection** from the **Network** group
 ## Examples
 ### HubVirtualNetworkConnectionPut
 ```js
-provider.Network.makeHubVirtualNetworkConnection({
-  name: "myHubVirtualNetworkConnection",
-  properties: () => ({
-    properties: {
-      remoteVirtualNetwork: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/SpokeVnet1",
+exports.createResources = () => [
+  {
+    type: "HubVirtualNetworkConnection",
+    group: "Network",
+    name: "myHubVirtualNetworkConnection",
+    properties: () => ({
+      properties: {
+        remoteVirtualNetwork: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/SpokeVnet1",
+        },
+        enableInternetSecurity: false,
+        routingConfiguration: {
+          associatedRouteTable: {
+            id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1/hubRouteTables/hubRouteTable1",
+          },
+          propagatedRouteTables: {
+            labels: ["label1", "label2"],
+            ids: [
+              {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1/hubRouteTables/hubRouteTable1",
+              },
+            ],
+          },
+          vnetRoutes: {
+            staticRoutes: [
+              {
+                name: "route1",
+                addressPrefixes: ["10.1.0.0/16", "10.2.0.0/16"],
+                nextHopIpAddress: "10.0.0.68",
+              },
+              {
+                name: "route2",
+                addressPrefixes: ["10.3.0.0/16", "10.4.0.0/16"],
+                nextHopIpAddress: "10.0.0.65",
+              },
+            ],
+          },
+        },
       },
-      enableInternetSecurity: false,
-      routingConfiguration: {
-        associatedRouteTable: {
-          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1/hubRouteTables/hubRouteTable1",
-        },
-        propagatedRouteTables: {
-          labels: ["label1", "label2"],
-          ids: [
-            {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1/hubRouteTables/hubRouteTable1",
-            },
-          ],
-        },
-        vnetRoutes: {
-          staticRoutes: [
-            {
-              name: "route1",
-              addressPrefixes: ["10.1.0.0/16", "10.2.0.0/16"],
-              nextHopIpAddress: "10.0.0.68",
-            },
-            {
-              name: "route2",
-              addressPrefixes: ["10.3.0.0/16", "10.4.0.0/16"],
-              nextHopIpAddress: "10.0.0.65",
-            },
-          ],
-        },
-      },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualNetwork: "myVirtualNetwork",
-    routeTable: "myRouteTable",
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualNetwork: "myVirtualNetwork",
+      routeTable: "myRouteTable",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

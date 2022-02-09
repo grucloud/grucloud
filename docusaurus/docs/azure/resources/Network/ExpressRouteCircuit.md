@@ -6,61 +6,69 @@ Provides a **ExpressRouteCircuit** from the **Network** group
 ## Examples
 ### Create ExpressRouteCircuit
 ```js
-provider.Network.makeExpressRouteCircuit({
-  name: "myExpressRouteCircuit",
-  properties: () => ({
-    sku: {
-      name: "Standard_MeteredData",
-      tier: "Standard",
-      family: "MeteredData",
-    },
-    properties: {
-      authorizations: [],
-      peerings: [],
-      allowClassicOperations: false,
-      serviceProviderProperties: {
-        serviceProviderName: "Equinix",
-        peeringLocation: "Silicon Valley",
-        bandwidthInMbps: 200,
+exports.createResources = () => [
+  {
+    type: "ExpressRouteCircuit",
+    group: "Network",
+    name: "myExpressRouteCircuit",
+    properties: () => ({
+      sku: {
+        name: "Standard_MeteredData",
+        tier: "Standard",
+        family: "MeteredData",
       },
-    },
-    location: "Brazil South",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    routeFilter: "myRouteFilter",
-    expressRouteConnection: "myExpressRouteConnection",
-    route: "myRoute",
-  }),
-});
+      properties: {
+        authorizations: [],
+        peerings: [],
+        allowClassicOperations: false,
+        serviceProviderProperties: {
+          serviceProviderName: "Equinix",
+          peeringLocation: "Silicon Valley",
+          bandwidthInMbps: 200,
+        },
+      },
+      location: "Brazil South",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routeFilter: "myRouteFilter",
+      expressRouteConnection: "myExpressRouteConnection",
+      route: "myRoute",
+    }),
+  },
+];
 
 ```
 
 ### Create ExpressRouteCircuit on ExpressRoutePort
 ```js
-provider.Network.makeExpressRouteCircuit({
-  name: "myExpressRouteCircuit",
-  properties: () => ({
-    location: "westus",
-    sku: {
-      name: "Premium_MeteredData",
-      tier: "Premium",
-      family: "MeteredData",
-    },
-    properties: {
-      expressRoutePort: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/expressRoutePorts/portName",
+exports.createResources = () => [
+  {
+    type: "ExpressRouteCircuit",
+    group: "Network",
+    name: "myExpressRouteCircuit",
+    properties: () => ({
+      location: "westus",
+      sku: {
+        name: "Premium_MeteredData",
+        tier: "Premium",
+        family: "MeteredData",
       },
-      bandwidthInGbps: 10,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    routeFilter: "myRouteFilter",
-    expressRouteConnection: "myExpressRouteConnection",
-    route: "myRoute",
-  }),
-});
+      properties: {
+        expressRoutePort: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/expressRoutePorts/portName",
+        },
+        bandwidthInGbps: 10,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routeFilter: "myRouteFilter",
+      expressRouteConnection: "myExpressRouteConnection",
+      route: "myRoute",
+    }),
+  },
+];
 
 ```
 ## Dependencies

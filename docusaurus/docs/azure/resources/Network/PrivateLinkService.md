@@ -6,17 +6,21 @@ Provides a **PrivateLinkService** from the **Network** group
 ## Examples
 ### Create private link service
 ```js
-provider.Network.makePrivateLinkService({
-  name: "myPrivateLinkService",
-  properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    natGateway: "myNatGateway",
-    ddosCustomPolicy: "myDdosCustomPolicy",
-    publicIpPrefix: "myPublicIPPrefix",
-    loadBalancer: "myLoadBalancer",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "PrivateLinkService",
+    group: "Network",
+    name: "myPrivateLinkService",
+    properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: "myNatGateway",
+      ddosCustomPolicy: "myDdosCustomPolicy",
+      publicIpPrefix: "myPublicIPPrefix",
+      loadBalancer: "myLoadBalancer",
+    }),
+  },
+];
 
 ```
 ## Dependencies

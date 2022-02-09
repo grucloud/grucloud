@@ -6,42 +6,46 @@ Provides a **NetworkVirtualAppliance** from the **Network** group
 ## Examples
 ### Create NetworkVirtualAppliance
 ```js
-provider.Network.makeNetworkVirtualAppliance({
-  name: "myNetworkVirtualAppliance",
-  properties: () => ({
-    tags: { key1: "value1" },
-    identity: {
-      type: "UserAssigned",
-      userAssignedIdentities: {
-        "/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity1":
-          {},
+exports.createResources = () => [
+  {
+    type: "NetworkVirtualAppliance",
+    group: "Network",
+    name: "myNetworkVirtualAppliance",
+    properties: () => ({
+      tags: { key1: "value1" },
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ManagedIdentity/userAssignedIdentities/identity1":
+            {},
+        },
       },
-    },
-    location: "West US",
-    properties: {
-      nvaSku: {
-        vendor: "Cisco SDWAN",
-        bundledScaleUnit: "1",
-        marketPlaceVersion: "12.1",
+      location: "West US",
+      properties: {
+        nvaSku: {
+          vendor: "Cisco SDWAN",
+          bundledScaleUnit: "1",
+          marketPlaceVersion: "12.1",
+        },
+        virtualHub: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1",
+        },
+        bootStrapConfigurationBlobs: [
+          "https://csrncvhdstorage1.blob.core.windows.net/csrncvhdstoragecont/csrbootstrapconfig",
+        ],
+        cloudInitConfigurationBlobs: [
+          "https://csrncvhdstorage1.blob.core.windows.net/csrncvhdstoragecont/csrcloudinitconfig",
+        ],
+        virtualApplianceAsn: 10000,
       },
-      virtualHub: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1",
-      },
-      bootStrapConfigurationBlobs: [
-        "https://csrncvhdstorage1.blob.core.windows.net/csrncvhdstoragecont/csrbootstrapconfig",
-      ],
-      cloudInitConfigurationBlobs: [
-        "https://csrncvhdstorage1.blob.core.windows.net/csrncvhdstoragecont/csrcloudinitconfig",
-      ],
-      virtualApplianceAsn: 10000,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

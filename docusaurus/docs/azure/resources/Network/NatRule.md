@@ -6,24 +6,28 @@ Provides a **NatRule** from the **Network** group
 ## Examples
 ### NatRulePut
 ```js
-provider.Network.makeNatRule({
-  name: "myNatRule",
-  properties: () => ({
-    properties: {
-      type: "Static",
-      mode: "EgressSnat",
-      ipConfigurationId:
-        "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/cloudnet1-VNG/ipConfigurations/default",
-      internalMappings: [{ addressSpace: "10.4.0.0/24" }],
-      externalMappings: [{ addressSpace: "192.168.21.0/24" }],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
-    gateway: "myVpnGateway",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "NatRule",
+    group: "Network",
+    name: "myNatRule",
+    properties: () => ({
+      properties: {
+        type: "Static",
+        mode: "EgressSnat",
+        ipConfigurationId:
+          "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/cloudnet1-VNG/ipConfigurations/default",
+        internalMappings: [{ addressSpace: "10.4.0.0/24" }],
+        externalMappings: [{ addressSpace: "192.168.21.0/24" }],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+      gateway: "myVpnGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

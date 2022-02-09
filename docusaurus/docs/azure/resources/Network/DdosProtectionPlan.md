@@ -6,11 +6,15 @@ Provides a **DdosProtectionPlan** from the **Network** group
 ## Examples
 ### Create DDoS protection plan
 ```js
-provider.Network.makeDdosProtectionPlan({
-  name: "myDdosProtectionPlan",
-  properties: () => ({ location: "westus", properties: {} }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "DdosProtectionPlan",
+    group: "Network",
+    name: "myDdosProtectionPlan",
+    properties: () => ({ location: "westus", properties: {} }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

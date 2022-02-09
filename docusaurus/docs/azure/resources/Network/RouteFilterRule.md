@@ -6,20 +6,24 @@ Provides a **RouteFilterRule** from the **Network** group
 ## Examples
 ### RouteFilterRuleCreate
 ```js
-provider.Network.makeRouteFilterRule({
-  name: "myRouteFilterRule",
-  properties: () => ({
-    properties: {
-      access: "Allow",
-      routeFilterRuleType: "Community",
-      communities: ["12076:5030", "12076:5040"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    routeFilter: "myRouteFilter",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RouteFilterRule",
+    group: "Network",
+    name: "myRouteFilterRule",
+    properties: () => ({
+      properties: {
+        access: "Allow",
+        routeFilterRuleType: "Community",
+        communities: ["12076:5030", "12076:5040"],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routeFilter: "myRouteFilter",
+    }),
+  },
+];
 
 ```
 ## Dependencies

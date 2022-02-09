@@ -6,27 +6,31 @@ Provides a **Webhook** from the **ContainerRegistry** group
 ## Examples
 ### WebhookCreate
 ```js
-provider.ContainerRegistry.makeWebhook({
-  name: "myWebhook",
-  properties: () => ({
-    location: "westus",
-    tags: { key: "value" },
-    properties: {
-      serviceUri: "http://myservice.com",
-      customHeaders: {
-        Authorization:
-          "Basic 000000000000000000000000000000000000000000000000000",
+exports.createResources = () => [
+  {
+    type: "Webhook",
+    group: "ContainerRegistry",
+    name: "myWebhook",
+    properties: () => ({
+      location: "westus",
+      tags: { key: "value" },
+      properties: {
+        serviceUri: "http://myservice.com",
+        customHeaders: {
+          Authorization:
+            "Basic 000000000000000000000000000000000000000000000000000",
+        },
+        status: "enabled",
+        scope: "myRepository",
+        actions: ["push"],
       },
-      status: "enabled",
-      scope: "myRepository",
-      actions: ["push"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

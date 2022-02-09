@@ -6,22 +6,26 @@ Provides a **PrivateEndpointConnection** from the **Storage** group
 ## Examples
 ### StorageAccountPutPrivateEndpointConnection
 ```js
-provider.Storage.makePrivateEndpointConnection({
-  name: "myPrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "Auto-Approved",
+exports.createResources = () => [
+  {
+    type: "PrivateEndpointConnection",
+    group: "Storage",
+    name: "myPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Auto-Approved",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    privateEndpoint: "myPrivateEndpoint",
-    account: "myStorageAccount",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      privateEndpoint: "myPrivateEndpoint",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

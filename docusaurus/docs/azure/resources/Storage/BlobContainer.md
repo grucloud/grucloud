@@ -6,46 +6,58 @@ Provides a **BlobContainer** from the **Storage** group
 ## Examples
 ### PutContainers
 ```js
-provider.Storage.makeBlobContainer({
-  name: "myBlobContainer",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "BlobContainer",
+    group: "Storage",
+    name: "myBlobContainer",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### PutContainerWithDefaultEncryptionScope
 ```js
-provider.Storage.makeBlobContainer({
-  name: "myBlobContainer",
-  properties: () => ({
-    properties: {
-      defaultEncryptionScope: "encryptionscope185",
-      denyEncryptionScopeOverride: true,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "BlobContainer",
+    group: "Storage",
+    name: "myBlobContainer",
+    properties: () => ({
+      properties: {
+        defaultEncryptionScope: "encryptionscope185",
+        denyEncryptionScopeOverride: true,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### PutContainerWithObjectLevelWorm
 ```js
-provider.Storage.makeBlobContainer({
-  name: "myBlobContainer",
-  properties: () => ({
-    properties: { immutableStorageWithVersioning: { enabled: true } },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "BlobContainer",
+    group: "Storage",
+    name: "myBlobContainer",
+    properties: () => ({
+      properties: { immutableStorageWithVersioning: { enabled: true } },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

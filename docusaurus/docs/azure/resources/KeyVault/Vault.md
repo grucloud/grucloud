@@ -6,108 +6,116 @@ Provides a **Vault** from the **KeyVault** group
 ## Examples
 ### Create a new vault or update an existing vault
 ```js
-provider.KeyVault.makeVault({
-  name: "myVault",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      tenantId: "00000000-0000-0000-0000-000000000000",
-      sku: { family: "A", name: "standard" },
-      accessPolicies: [
-        {
-          tenantId: "00000000-0000-0000-0000-000000000000",
-          objectId: "00000000-0000-0000-0000-000000000000",
-          permissions: {
-            keys: [
-              "encrypt",
-              "decrypt",
-              "wrapKey",
-              "unwrapKey",
-              "sign",
-              "verify",
-              "get",
-              "list",
-              "create",
-              "update",
-              "import",
-              "delete",
-              "backup",
-              "restore",
-              "recover",
-              "purge",
-            ],
-            secrets: [
-              "get",
-              "list",
-              "set",
-              "delete",
-              "backup",
-              "restore",
-              "recover",
-              "purge",
-            ],
-            certificates: [
-              "get",
-              "list",
-              "delete",
-              "create",
-              "import",
-              "update",
-              "managecontacts",
-              "getissuers",
-              "listissuers",
-              "setissuers",
-              "deleteissuers",
-              "manageissuers",
-              "recover",
-              "purge",
-            ],
+exports.createResources = () => [
+  {
+    type: "Vault",
+    group: "KeyVault",
+    name: "myVault",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        tenantId: "00000000-0000-0000-0000-000000000000",
+        sku: { family: "A", name: "standard" },
+        accessPolicies: [
+          {
+            tenantId: "00000000-0000-0000-0000-000000000000",
+            objectId: "00000000-0000-0000-0000-000000000000",
+            permissions: {
+              keys: [
+                "encrypt",
+                "decrypt",
+                "wrapKey",
+                "unwrapKey",
+                "sign",
+                "verify",
+                "get",
+                "list",
+                "create",
+                "update",
+                "import",
+                "delete",
+                "backup",
+                "restore",
+                "recover",
+                "purge",
+              ],
+              secrets: [
+                "get",
+                "list",
+                "set",
+                "delete",
+                "backup",
+                "restore",
+                "recover",
+                "purge",
+              ],
+              certificates: [
+                "get",
+                "list",
+                "delete",
+                "create",
+                "import",
+                "update",
+                "managecontacts",
+                "getissuers",
+                "listissuers",
+                "setissuers",
+                "deleteissuers",
+                "manageissuers",
+                "recover",
+                "purge",
+              ],
+            },
           },
-        },
-      ],
-      enabledForDeployment: true,
-      enabledForDiskEncryption: true,
-      enabledForTemplateDeployment: true,
-      publicNetworkAccess: "Enabled",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-  }),
-});
+        ],
+        enabledForDeployment: true,
+        enabledForDiskEncryption: true,
+        enabledForTemplateDeployment: true,
+        publicNetworkAccess: "Enabled",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+    }),
+  },
+];
 
 ```
 
 ### Create or update a vault with network acls
 ```js
-provider.KeyVault.makeVault({
-  name: "myVault",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      tenantId: "00000000-0000-0000-0000-000000000000",
-      sku: { family: "A", name: "standard" },
-      networkAcls: {
-        defaultAction: "Deny",
-        bypass: "AzureServices",
-        ipRules: [{ value: "124.56.78.91" }, { value: "'10.91.4.0/24'" }],
-        virtualNetworkRules: [
-          {
-            id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1",
-          },
-        ],
+exports.createResources = () => [
+  {
+    type: "Vault",
+    group: "KeyVault",
+    name: "myVault",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        tenantId: "00000000-0000-0000-0000-000000000000",
+        sku: { family: "A", name: "standard" },
+        networkAcls: {
+          defaultAction: "Deny",
+          bypass: "AzureServices",
+          ipRules: [{ value: "124.56.78.91" }, { value: "'10.91.4.0/24'" }],
+          virtualNetworkRules: [
+            {
+              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1",
+            },
+          ],
+        },
+        enabledForDeployment: true,
+        enabledForDiskEncryption: true,
+        enabledForTemplateDeployment: true,
       },
-      enabledForDeployment: true,
-      enabledForDiskEncryption: true,
-      enabledForTemplateDeployment: true,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnets: ["mySubnet"],
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnets: ["mySubnet"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

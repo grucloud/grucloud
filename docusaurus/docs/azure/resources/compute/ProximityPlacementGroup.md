@@ -6,14 +6,18 @@ Provides a **ProximityPlacementGroup** from the **Compute** group
 ## Examples
 ### Create or Update a proximity placement group.
 ```js
-provider.Compute.makeProximityPlacementGroup({
-  name: "myProximityPlacementGroup",
-  properties: () => ({
-    location: "westus",
-    properties: { proximityPlacementGroupType: "Standard" },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "ProximityPlacementGroup",
+    group: "Compute",
+    name: "myProximityPlacementGroup",
+    properties: () => ({
+      location: "westus",
+      properties: { proximityPlacementGroupType: "Standard" },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

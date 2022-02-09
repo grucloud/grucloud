@@ -6,23 +6,27 @@ Provides a **ExpressRouteCircuitPeering** from the **Network** group
 ## Examples
 ### Create ExpressRouteCircuit Peerings
 ```js
-provider.Network.makeExpressRouteCircuitPeering({
-  name: "myExpressRouteCircuitPeering",
-  properties: () => ({
-    properties: {
-      peerASN: 200,
-      primaryPeerAddressPrefix: "192.168.16.252/30",
-      secondaryPeerAddressPrefix: "192.168.18.252/30",
-      vlanId: 200,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    routeFilter: "myRouteFilter",
-    expressRouteConnection: "myExpressRouteConnection",
-    circuit: "myExpressRouteCircuit",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "ExpressRouteCircuitPeering",
+    group: "Network",
+    name: "myExpressRouteCircuitPeering",
+    properties: () => ({
+      properties: {
+        peerASN: 200,
+        primaryPeerAddressPrefix: "192.168.16.252/30",
+        secondaryPeerAddressPrefix: "192.168.18.252/30",
+        vlanId: 200,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routeFilter: "myRouteFilter",
+      expressRouteConnection: "myExpressRouteConnection",
+      circuit: "myExpressRouteCircuit",
+    }),
+  },
+];
 
 ```
 ## Dependencies

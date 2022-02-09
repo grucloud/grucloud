@@ -6,26 +6,30 @@ Provides a **ExpressRouteConnection** from the **Network** group
 ## Examples
 ### ExpressRouteConnectionCreate
 ```js
-provider.Network.makeExpressRouteConnection({
-  name: "myExpressRouteConnection",
-  properties: () => ({
-    id: "/subscriptions/subid/resourceGroups/resourceGroupName/providers/Microsoft.Network/expressRouteGateways/gateway-2/expressRouteConnections/connectionName",
-    name: "connectionName",
-    properties: {
-      routingWeight: 2,
-      authorizationKey: "authorizationKey",
-      expressRouteCircuitPeering: {
-        id: "/subscriptions/subid/resourceGroups/resourceGroupName/providers/Microsoft.Network/expressRouteCircuits/circuitName/peerings/AzurePrivatePeering",
+exports.createResources = () => [
+  {
+    type: "ExpressRouteConnection",
+    group: "Network",
+    name: "myExpressRouteConnection",
+    properties: () => ({
+      id: "/subscriptions/subid/resourceGroups/resourceGroupName/providers/Microsoft.Network/expressRouteGateways/gateway-2/expressRouteConnections/connectionName",
+      name: "connectionName",
+      properties: {
+        routingWeight: 2,
+        authorizationKey: "authorizationKey",
+        expressRouteCircuitPeering: {
+          id: "/subscriptions/subid/resourceGroups/resourceGroupName/providers/Microsoft.Network/expressRouteCircuits/circuitName/peerings/AzurePrivatePeering",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    expressRouteCircuitPeering: "myExpressRouteCircuitPeering",
-    routeTable: "myRouteTable",
-    expressRouteGateway: "myExpressRouteGateway",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      expressRouteCircuitPeering: "myExpressRouteCircuitPeering",
+      routeTable: "myRouteTable",
+      expressRouteGateway: "myExpressRouteGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

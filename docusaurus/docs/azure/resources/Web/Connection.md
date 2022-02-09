@@ -6,21 +6,25 @@ Provides a **Connection** from the **Web** group
 ## Examples
 ### Replace a connection
 ```js
-provider.Web.makeConnection({
-  name: "myConnection",
-  properties: () => ({
-    properties: {
-      displayName: "testManagedApi",
-      parameterValues: {},
-      customParameterValues: {},
-      api: {
-        id: "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/providers/Microsoft.Web/locations/centralus/managedApis/testManagedApi",
+exports.createResources = () => [
+  {
+    type: "Connection",
+    group: "Web",
+    name: "myConnection",
+    properties: () => ({
+      properties: {
+        displayName: "testManagedApi",
+        parameterValues: {},
+        customParameterValues: {},
+        api: {
+          id: "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/providers/Microsoft.Web/locations/centralus/managedApis/testManagedApi",
+        },
       },
-    },
-    id: "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/resourceGroups/testResourceGroup/providers/Microsoft.Web/connections/testManagedApi-1",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+      id: "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/resourceGroups/testResourceGroup/providers/Microsoft.Web/connections/testManagedApi-1",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

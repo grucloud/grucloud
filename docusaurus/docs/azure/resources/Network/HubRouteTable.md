@@ -6,28 +6,32 @@ Provides a **HubRouteTable** from the **Network** group
 ## Examples
 ### RouteTablePut
 ```js
-provider.Network.makeHubRouteTable({
-  name: "myHubRouteTable",
-  properties: () => ({
-    properties: {
-      routes: [
-        {
-          name: "route1",
-          destinationType: "CIDR",
-          destinations: ["10.0.0.0/8", "20.0.0.0/8", "30.0.0.0/8"],
-          nextHopType: "ResourceId",
-          nextHop:
-            "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azureFirewall1",
-        },
-      ],
-      labels: ["label1", "label2"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "HubRouteTable",
+    group: "Network",
+    name: "myHubRouteTable",
+    properties: () => ({
+      properties: {
+        routes: [
+          {
+            name: "route1",
+            destinationType: "CIDR",
+            destinations: ["10.0.0.0/8", "20.0.0.0/8", "30.0.0.0/8"],
+            nextHopType: "ResourceId",
+            nextHop:
+              "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azureFirewall1",
+          },
+        ],
+        labels: ["label1", "label2"],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

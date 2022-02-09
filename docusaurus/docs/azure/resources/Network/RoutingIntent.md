@@ -6,31 +6,35 @@ Provides a **RoutingIntent** from the **Network** group
 ## Examples
 ### RouteTablePut
 ```js
-provider.Network.makeRoutingIntent({
-  name: "myRoutingIntent",
-  properties: () => ({
-    properties: {
-      routingPolicies: [
-        {
-          name: "InternetTraffic",
-          destinations: ["Internet"],
-          nextHop:
-            "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azfw1",
-        },
-        {
-          name: "PrivateTrafficPolicy",
-          destinations: ["PrivateTraffic"],
-          nextHop:
-            "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azfw1",
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RoutingIntent",
+    group: "Network",
+    name: "myRoutingIntent",
+    properties: () => ({
+      properties: {
+        routingPolicies: [
+          {
+            name: "InternetTraffic",
+            destinations: ["Internet"],
+            nextHop:
+              "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azfw1",
+          },
+          {
+            name: "PrivateTrafficPolicy",
+            destinations: ["PrivateTraffic"],
+            nextHop:
+              "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/azfw1",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

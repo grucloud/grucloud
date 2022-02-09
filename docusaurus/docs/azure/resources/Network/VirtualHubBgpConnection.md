@@ -6,23 +6,27 @@ Provides a **VirtualHubBgpConnection** from the **Network** group
 ## Examples
 ### VirtualHubRouteTableV2Put
 ```js
-provider.Network.makeVirtualHubBgpConnection({
-  name: "myVirtualHubBgpConnection",
-  properties: () => ({
-    properties: {
-      peerIp: "192.168.1.5",
-      peerAsn: 20000,
-      hubVirtualNetworkConnection: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1/hubVirtualNetworkConnections/hubVnetConn1",
+exports.createResources = () => [
+  {
+    type: "VirtualHubBgpConnection",
+    group: "Network",
+    name: "myVirtualHubBgpConnection",
+    properties: () => ({
+      properties: {
+        peerIp: "192.168.1.5",
+        peerAsn: 20000,
+        hubVirtualNetworkConnection: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1/hubVirtualNetworkConnections/hubVnetConn1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    hubVirtualNetworkConnection: "myHubVirtualNetworkConnection",
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      hubVirtualNetworkConnection: "myHubVirtualNetworkConnection",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

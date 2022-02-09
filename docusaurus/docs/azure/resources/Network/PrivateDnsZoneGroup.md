@@ -6,25 +6,29 @@ Provides a **PrivateDnsZoneGroup** from the **Network** group
 ## Examples
 ### Create private dns zone group
 ```js
-provider.Network.makePrivateDnsZoneGroup({
-  name: "myPrivateDnsZoneGroup",
-  properties: () => ({
-    properties: {
-      privateDnsZoneConfigs: [
-        {
-          properties: {
-            privateDnsZoneId:
-              "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateDnsZones/zone1.com",
+exports.createResources = () => [
+  {
+    type: "PrivateDnsZoneGroup",
+    group: "Network",
+    name: "myPrivateDnsZoneGroup",
+    properties: () => ({
+      properties: {
+        privateDnsZoneConfigs: [
+          {
+            properties: {
+              privateDnsZoneId:
+                "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateDnsZones/zone1.com",
+            },
           },
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    privateEndpoint: "myPrivateEndpoint",
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      privateEndpoint: "myPrivateEndpoint",
+    }),
+  },
+];
 
 ```
 ## Dependencies

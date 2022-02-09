@@ -6,18 +6,22 @@ Provides a **Workspace** from the **OperationalInsights** group
 ## Examples
 ### WorkspacesCreate
 ```js
-provider.OperationalInsights.makeWorkspace({
-  name: "myWorkspace",
-  properties: () => ({
-    properties: { sku: { name: "PerGB2018" }, retentionInDays: 30 },
-    location: "australiasoutheast",
-    tags: { tag1: "val1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    cluster: "myCluster",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Workspace",
+    group: "OperationalInsights",
+    name: "myWorkspace",
+    properties: () => ({
+      properties: { sku: { name: "PerGB2018" }, retentionInDays: 30 },
+      location: "australiasoutheast",
+      tags: { tag1: "val1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      cluster: "myCluster",
+    }),
+  },
+];
 
 ```
 ## Dependencies

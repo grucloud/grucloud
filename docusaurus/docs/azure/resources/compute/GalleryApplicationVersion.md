@@ -6,40 +6,44 @@ Provides a **GalleryApplicationVersion** from the **Compute** group
 ## Examples
 ### Create or update a simple gallery Application Version.
 ```js
-provider.Compute.makeGalleryApplicationVersion({
-  name: "myGalleryApplicationVersion",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      publishingProfile: {
-        source: {
-          mediaLink:
-            "https://mystorageaccount.blob.core.windows.net/mycontainer/package.zip?{sasKey}",
-        },
-        manageActions: {
-          install:
-            'powershell -command "Expand-Archive -Path package.zip -DestinationPath C:\\package"',
-          remove: "del C:\\package ",
-        },
-        targetRegions: [
-          {
-            name: "West US",
-            regionalReplicaCount: 1,
-            storageAccountType: "Standard_LRS",
+exports.createResources = () => [
+  {
+    type: "GalleryApplicationVersion",
+    group: "Compute",
+    name: "myGalleryApplicationVersion",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        publishingProfile: {
+          source: {
+            mediaLink:
+              "https://mystorageaccount.blob.core.windows.net/mycontainer/package.zip?{sasKey}",
           },
-        ],
-        replicaCount: 1,
-        endOfLifeDate: "2019-07-01T07:00:00Z",
-        storageAccountType: "Standard_LRS",
+          manageActions: {
+            install:
+              'powershell -command "Expand-Archive -Path package.zip -DestinationPath C:\\package"',
+            remove: "del C:\\package ",
+          },
+          targetRegions: [
+            {
+              name: "West US",
+              regionalReplicaCount: 1,
+              storageAccountType: "Standard_LRS",
+            },
+          ],
+          replicaCount: 1,
+          endOfLifeDate: "2019-07-01T07:00:00Z",
+          storageAccountType: "Standard_LRS",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    gallery: "myGallery",
-    galleryApplication: "myGalleryApplication",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      gallery: "myGallery",
+      galleryApplication: "myGalleryApplication",
+    }),
+  },
+];
 
 ```
 ## Dependencies
