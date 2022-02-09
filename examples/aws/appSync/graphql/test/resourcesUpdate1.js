@@ -1,13 +1,17 @@
-const createResources = ({ provider }) => {
-  provider.AppSync.makeGraphqlApi({
+const createResources = () => [
+  {
+    type: "GraphqlApi",
+    group: "AppSync",
     name: "cdk-notes-appsync-api",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       authenticationType: "API_KEY",
       xrayEnabled: true,
+      apiKeys: [
+        {
+          description: "Graphql Api Keys",
+        },
+      ],
       schemaFile: "test/cdk-notes-appsync-api.update1.graphql",
-      apiKeys: [{ description: "Graphql Api Keys" }],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

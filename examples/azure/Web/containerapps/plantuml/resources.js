@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.OperationalInsights.makeWorkspace({
+exports.createResources = () => [
+  {
+    type: "Workspace",
+    group: "OperationalInsights",
     properties: ({}) => ({
       name: "logs",
       properties: {
@@ -16,15 +18,17 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-plantuml",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-plantuml",
     }),
-  });
-
-  provider.Web.makeContainerApp({
+  },
+  {
+    type: "ContainerApp",
+    group: "Web",
     properties: ({}) => ({
       name: "plantuml",
       properties: {
@@ -55,9 +59,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-plantuml",
       kubeEnvironment: "rg-plantuml::dev",
     }),
-  });
-
-  provider.Web.makeKubeEnvironment({
+  },
+  {
+    type: "KubeEnvironment",
+    group: "Web",
     properties: ({}) => ({
       name: "dev",
     }),
@@ -65,7 +70,5 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-plantuml",
       workspace: "rg-plantuml::logs",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

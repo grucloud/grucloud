@@ -10,18 +10,24 @@ Manages an [AWS Auto Scaling group](https://console.aws.amazon.com/ec2autoscalin
 Create an AutoScaling Group given 2 subnets and a launch template:
 
 ```js
-provider.AutoScaling.makeAutoScalingGroup({
-  name: "asg",
-  properties: ({}) => ({
-    MinSize: 1,
-    MaxSize: 1,
-    DesiredCapacity: 1,
-  }),
-  dependencies: () => ({
-    subnets: ["PubSubnetAz1", "PubSubnetAz2"],
-    launchTemplate: "lt-ec2-micro",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
+    name: "asg-ng-1",
+    readOnly: true,
+    properties: ({}) => ({
+      MinSize: 1,
+      MaxSize: 1,
+      DesiredCapacity: 1,
+      HealthCheckGracePeriod: 15,
+    }),
+    dependencies: () => ({
+      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      launchTemplate: "lt-ec2-micro",
+    }),
+  },
+];
 ```
 
 ## Properties

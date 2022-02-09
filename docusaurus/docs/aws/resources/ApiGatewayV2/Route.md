@@ -8,17 +8,123 @@ Manages an [Api Gateway V2 Route](https://console.aws.amazon.com/apigateway/main
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeRoute({
-  properties: ({ config }) => ({
-    ApiKeyRequired: false,
-    AuthorizationType: "NONE",
-    RouteKey: "ANY /my-function",
-  }),
-  dependencies: ({  }) => ({
-    api: "my-api"
-    integration: "integrationMyApiMyFunction"
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+  {
+    type: "Authorizer",
+    group: "ApiGatewayV2",
+    name: "authorizer-auth0",
+    properties: ({}) => ({
+      AuthorizerType: "JWT",
+      IdentitySource: ["$request.header.Authorization"],
+      JwtConfiguration: {
+        Audience: ["https://api.grucloud.org"],
+        Issuer: "https://dev-zojrhsju.us.auth0.com/",
+      },
+    }),
+    dependencies: () => ({
+      api: "my-api",
+    }),
+  },
+  {
+    type: "Integration",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      ConnectionType: "INTERNET",
+      IntegrationMethod: "POST",
+      IntegrationType: "AWS_PROXY",
+      PayloadFormatVersion: "2.0",
+    }),
+    dependencies: () => ({
+      api: "my-api",
+      lambdaFunction: "my-function",
+    }),
+  },
+  {
+    type: "Route",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      ApiKeyRequired: false,
+      AuthorizationType: "JWT",
+      RouteKey: "ANY /my-function",
+    }),
+    dependencies: () => ({
+      api: "my-api",
+      integration: "integration::my-api::my-function",
+      authorizer: "authorizer-auth0",
+    }),
+  },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "lambda-policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    name: "my-function",
+    properties: ({}) => ({
+      Handler: "my-function.handler",
+      PackageType: "Zip",
+      Runtime: "nodejs14.x",
+      Description: "",
+      Timeout: 3,
+      MemorySize: 128,
+    }),
+    dependencies: () => ({
+      role: "lambda-role",
+    }),
+  },
+];
 ```
 
 ## Properties

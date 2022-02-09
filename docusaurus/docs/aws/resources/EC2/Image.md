@@ -13,31 +13,26 @@ Provides an [Amazon Managed Image](https://docs.aws.amazon.com/AWSEC2/latest/Use
 - Provides the image as an EC2 dependency.
 
 ```js
-const image = provider.EC2.useImage({
-  name: "ubuntu 20.04",
-  properties: () => ({
-    Filters: [
-      {
-        Name: "architecture",
-        Values: ["x86_64"],
-      },
-      {
-        Name: "description",
-        Values: ["Canonical, Ubuntu, 20.04 LTS, amd64 focal*"],
-      },
-    ],
-  }),
-});
-
-const server = provider.EC2.makeInstance({
-  name: "myserver",
-  dependencies: {
-    image,
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "EC2",
+    name: "eip",
+    readOnly: true,
+    properties: () => ({
+      Filters: [
+        {
+          Name: "architecture",
+          Values: ["x86_64"],
+        },
+        {
+          Name: "description",
+          Values: ["Canonical, Ubuntu, 20.04 LTS, amd64 focal*"],
+        },
+      ],
+    }),
   },
-  properties: () => ({
-    InstanceType: "t2.micro",
-  }),
-});
+];
 ```
 
 ### Amazon Linux 2
@@ -45,21 +40,26 @@ const server = provider.EC2.makeInstance({
 Here is the Amazone Linux 2 image:
 
 ```js
-const image = provider.EC2.useImage({
-  name: "Amazon Linux 2",
-  properties: () => ({
-    Filters: [
-      {
-        Name: "architecture",
-        Values: ["x86_64"],
-      },
-      {
-        Name: "description",
-        Values: ["Amazon Linux 2 AMI *"],
-      },
-    ],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Image",
+    group: "EC2",
+    name: "eip",
+    readOnly: true,
+    properties: () => ({
+      Filters: [
+        {
+          Name: "architecture",
+          Values: ["x86_64"],
+        },
+        {
+          Name: "description",
+          Values: ["Amazon Linux 2 AMI *"],
+        },
+      ],
+    }),
+  },
+];
 ```
 
 ## Properties

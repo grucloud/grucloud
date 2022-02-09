@@ -6,22 +6,29 @@ title: Instance
 Manages an EC2 instance resource, a.k.a virtual machine.
 
 ```js
-provider.EC2.makeInstance({
-  name: "web-server-ec2-vpc",
-  properties: ({}) => ({
-    InstanceType: "t2.micro",
-    ImageId: "ami-02e136e904f3da870",
-    UserData:
-      "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
-  }),
-  dependencies: () => ({
-    subnet: "subnet",
-    keyPair: "kp-ec2-vpc",
-    eip: "myip",
-    securityGroups: ["security-group"],
-    volumes: ["volume"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "web-server-ec2-vpc",
+    properties: ({ config }) => ({
+      InstanceType: "t2.micro",
+      ImageId: "ami-02e136e904f3da870",
+      UserData:
+        "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+    }),
+    dependencies: () => ({
+      subnet: "subnet",
+      keyPair: "kp-ec2-vpc",
+      eip: "myip",
+      securityGroups: ["security-group"],
+      volumes: ["volume"],
+    }),
+  },
+];
 ```
 
 ### Examples

@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeDisk({
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
     properties: ({}) => ({
       name: "vm_datadisk_0",
       sku: {
@@ -27,9 +29,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
     }),
-  });
-
-  provider.Compute.makeSshPublicKey({
+  },
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -40,9 +43,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
     }),
-  });
-
-  provider.Compute.makeVirtualMachine({
+  },
+  {
+    type: "VirtualMachine",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vm",
       properties: {
@@ -127,9 +131,10 @@ const createResources = ({ provider }) => {
       disks: ["rg-vm-disks::vm_datadisk_0"],
       sshPublicKeys: ["rg-vm-disks::keypair"],
     }),
-  });
-
-  provider.Network.makeNetworkInterface({
+  },
+  {
+    type: "NetworkInterface",
+    group: "Network",
     properties: ({}) => ({
       name: "vm537",
       properties: {
@@ -150,9 +155,10 @@ const createResources = ({ provider }) => {
       securityGroup: "rg-vm-disks::vm-nsg",
       subnet: "rg-vm-disks::virtual-network::default",
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -176,18 +182,20 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "vm-ip",
     }),
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -198,9 +206,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-vm-disks",
       virtualNetwork: "rg-vm-disks::virtual-network",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -212,13 +221,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-vm-disks",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

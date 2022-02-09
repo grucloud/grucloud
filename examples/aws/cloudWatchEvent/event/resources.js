@@ -2,12 +2,11 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.CloudWatchEvents.makeEventBus({
-    name: "bus-test",
-  });
-
-  provider.CloudWatchEvents.makeRule({
+exports.createResources = () => [
+  { type: "EventBus", group: "CloudWatchEvents", name: "bus-test" },
+  {
+    type: "Rule",
+    group: "CloudWatchEvents",
     name: "rule-test",
     properties: ({}) => ({
       EventPattern:
@@ -15,9 +14,10 @@ const createResources = ({ provider }) => {
       State: "ENABLED",
       Description: "testing rule",
     }),
-  });
-
-  provider.CloudWatchEvents.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "CloudWatchEvents",
     name: "rule-test-ec2",
     properties: ({}) => ({
       EventPattern:
@@ -27,7 +27,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       eventBus: "bus-test",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -8,68 +8,116 @@ Provides a Cloud Front distribution.
 ## CloudFront with a S3 bucket as origin
 
 ```js
-const domainName = "your.domain.name.com";
-
-const certificate = providerUsEast.makeCertificate({
-  name: domainName,
-});
-
-const websiteBucket = provider.S3.makeBucket({
-  name: `${domainName}-bucket`,
-  properties: () => ({
-    ACL: "public-read",
-    WebsiteConfiguration: {
-      ErrorDocument: {
-        Key: "error.html",
-      },
-      IndexDocument: {
-        Suffix: "index.html",
-      },
-    },
-  }),
-});
-
-const distribution = provider.CloudFront.makeDistribution({
-  name: `distribution-${domainName}`,
-  dependencies: () => ({
-    websiteBucket: `${domainName}-bucket`,
-    certificate: domainName,
-  }),
-  properties: ({ dependencies }) => {
-    return {
+exports.createResources = () => [
+  {
+    type: "Certificate",
+    group: "ACM",
+    name: "dev.cloudfront.aws.test.grucloud.org",
+  },
+  {
+    type: "Distribution",
+    group: "CloudFront",
+    name: "distribution-cloudfront.aws.test.grucloud.org-dev",
+    properties: ({}) => ({
       PriceClass: "PriceClass_100",
-      Comment: `${domainName}.s3.amazonaws.com`,
-      Aliases: { Quantity: 1, Items: [domainName] },
+      Aliases: {
+        Quantity: 1,
+        Items: ["dev.cloudfront.aws.test.grucloud.org"],
+      },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: `S3-${domainName}`,
-        ViewerProtocolPolicy: "redirect-to-https",
-        ForwardedValues: {
-          Cookies: {
-            Forward: "none",
-          },
-          QueryString: false,
-        },
-        MinTTL: 600,
+        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org-dev",
         TrustedSigners: {
           Enabled: false,
           Quantity: 0,
           Items: [],
         },
+        TrustedKeyGroups: {
+          Enabled: false,
+          Quantity: 0,
+          Items: [],
+        },
+        ViewerProtocolPolicy: "redirect-to-https",
+        AllowedMethods: {
+          Quantity: 2,
+          Items: ["HEAD", "GET"],
+          CachedMethods: {
+            Quantity: 2,
+            Items: ["HEAD", "GET"],
+          },
+        },
+        SmoothStreaming: false,
+        Compress: false,
+        LambdaFunctionAssociations: {
+          Quantity: 0,
+          Items: [],
+        },
+        FunctionAssociations: {
+          Quantity: 0,
+          Items: [],
+        },
+        FieldLevelEncryptionId: "",
+        ForwardedValues: {
+          QueryString: false,
+          Cookies: {
+            Forward: "none",
+          },
+          Headers: {
+            Quantity: 0,
+            Items: [],
+          },
+          QueryStringCacheKeys: {
+            Quantity: 0,
+            Items: [],
+          },
+        },
+        MinTTL: 600,
+        DefaultTTL: 86400,
+        MaxTTL: 31536000,
       },
       Origins: {
+        Quantity: 1,
         Items: [
           {
-            DomainName: `${domainName}.s3.amazonaws.com`,
-            Id: `S3-${domainName}`,
-            S3OriginConfig: { OriginAccessIdentity: "" },
+            Id: "S3-cloudfront.aws.test.grucloud.org-dev",
+            DomainName: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+            OriginPath: "",
+            CustomHeaders: {
+              Quantity: 0,
+              Items: [],
+            },
+            S3OriginConfig: {
+              OriginAccessIdentity: "",
+            },
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
+            OriginShield: {
+              Enabled: false,
+            },
           },
         ],
-        Quantity: 1,
       },
-    };
+      Restrictions: {
+        GeoRestriction: {
+          RestrictionType: "none",
+          Quantity: 0,
+          Items: [],
+        },
+      },
+      Comment: "cloudfront.aws.test.grucloud.org-dev.s3.amazonaws.com",
+      Logging: {
+        Enabled: false,
+        IncludeCookies: false,
+        Bucket: "",
+        Prefix: "",
+      },
+    }),
+    dependencies: () => ({
+      bucket: "cloudfront.aws.test.grucloud.org-dev",
+      certificate: "dev.cloudfront.aws.test.grucloud.org",
+    }),
   },
-});
+];
 ```
 
 ### Examples

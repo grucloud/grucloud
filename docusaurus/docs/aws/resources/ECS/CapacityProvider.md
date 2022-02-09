@@ -8,24 +8,28 @@ Manages an [ECS Capacity Provider](https://console.aws.amazon.com/ecs/home?#/clu
 ## Sample code
 
 ```js
-provider.ECS.makeCapacityProvider({
-  name: "cp",
-  properties: ({}) => ({
-    autoScalingGroupProvider: {
-      managedScaling: {
-        status: "ENABLED",
-        targetCapacity: 100,
-        minimumScalingStepSize: 1,
-        maximumScalingStepSize: 10000,
-        instanceWarmupPeriod: 300,
+exports.createResources = () => [
+  {
+    type: "CapacityProvider",
+    group: "ECS",
+    name: "cp",
+    properties: () => ({
+      autoScalingGroupProvider: {
+        managedScaling: {
+          status: "ENABLED",
+          targetCapacity: 90,
+          minimumScalingStepSize: 1,
+          maximumScalingStepSize: 10000,
+          instanceWarmupPeriod: 300,
+        },
+        managedTerminationProtection: "DISABLED",
       },
-      managedTerminationProtection: "DISABLED",
-    },
-  }),
-  dependencies: () => ({
-    autoScalingGroup: "EcsInstanceAsg",
-  }),
-});
+    }),
+    dependencies: () => ({
+      autoScalingGroup: "EcsInstanceAsg",
+    }),
+  },
+];
 ```
 
 ## Properties

@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.iam.makeServiceAccount({
+exports.createResources = () => [
+  {
+    type: "ServiceAccount",
+    group: "iam",
     name: "sa-test-vm",
     properties: ({}) => ({
       serviceAccount: {
@@ -11,9 +13,10 @@ const createResources = ({ provider }) => {
         description: "Managed By GruCloud",
       },
     }),
-  });
-
-  provider.compute.makeFirewall({
+  },
+  {
+    type: "Firewall",
+    group: "compute",
     name: "firewall-22-80-433",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -30,9 +33,10 @@ const createResources = ({ provider }) => {
         enable: false,
       },
     }),
-  });
-
-  provider.compute.makeFirewall({
+  },
+  {
+    type: "Firewall",
+    group: "compute",
     name: "firewall-icmp",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -48,24 +52,27 @@ const createResources = ({ provider }) => {
         enable: false,
       },
     }),
-  });
-
-  provider.compute.makeAddress({
+  },
+  {
+    type: "Address",
+    group: "compute",
     name: "ip-webserver",
     properties: ({}) => ({
       description: "Managed By GruCloud",
     }),
-  });
-
-  provider.compute.makeDisk({
+  },
+  {
+    type: "Disk",
+    group: "compute",
     name: "disk",
     properties: ({}) => ({
       sizeGb: "20",
       type: "pd-standard",
     }),
-  });
-
-  provider.compute.makeVmInstance({
+  },
+  {
+    type: "VmInstance",
+    group: "compute",
     name: "webserver",
     properties: ({}) => ({
       machineType: "f1-micro",
@@ -84,7 +91,5 @@ const createResources = ({ provider }) => {
       ip: "ip-webserver",
       disks: ["disk"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

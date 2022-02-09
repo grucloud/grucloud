@@ -1,5 +1,7 @@
-const createResources = ({ provider }) => {
-  provider.APIGateway.makeRestApi({
+exports.createResources = () => [
+  {
+    type: "RestApi",
+    group: "APIGateway",
     name: "PetStore",
     properties: () => ({
       apiKeySource: "AUTHORIZER",
@@ -8,6 +10,5 @@ const createResources = ({ provider }) => {
       },
       schemaFile: "PetStore.oas30.json",
     }),
-  });
-};
-exports.createResources = createResources;
+  },
+];

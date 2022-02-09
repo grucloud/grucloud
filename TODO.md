@@ -1,17 +1,5 @@
 ## Bugs
 
-- 1 ContainerService::ManagedCluster from azure │
-  ├─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │
-  │ │ UPDATE: name: rg-aks-basic::cluster, id: /subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourcegroups/rg-aks-basic/providers/M… │ │
-  │ ├───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤ │
-  │ │ Key: properties │ │
-  │ ├───────────────────────────────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┤ │
-  │ │ - addonProfiles: │ │ │
-  │ │ httpApplicationRouting: │ │ │
-  │ │ config: null │ │ │
-  │ │
-
 - az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
   -mock multi cloud example
 
@@ -114,6 +102,8 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- RDS DBCluster AvailabilityZones
+- route53 record, add elastic ipaddress as a dependencies
 - ECR.makeRegistry delete
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table

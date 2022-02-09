@@ -2,19 +2,20 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.useDefaultVpc({
-    name: "vpc-default",
-  });
-
-  provider.EC2.useDefaultSecurityGroup({
+exports.createResources = () => [
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "sg-default-vpc-default",
+    isDefault: true,
     dependencies: () => ({
       vpc: "vpc-default",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-test",
     properties: ({}) => ({
       IpPermission: {
@@ -36,9 +37,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "sg-default-vpc-default",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleEgress({
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
     name: "sg-rule-egress-test",
     properties: ({}) => ({
       IpPermission: {
@@ -60,7 +62,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "sg-default-vpc-default",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

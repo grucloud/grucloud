@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeSshPublicKey({
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "my-key-pair",
       properties: {
@@ -14,13 +16,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-ssh-public-key",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-ssh-public-key",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

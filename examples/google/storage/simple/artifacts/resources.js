@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.storage.makeBucket({
+exports.createResources = () => [
+  {
+    type: "Bucket",
+    group: "storage",
     name: "grucloud-test",
     properties: ({}) => ({
       storageClass: "STANDARD",
@@ -32,9 +34,10 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.storage.makeObject({
+  },
+  {
+    type: "Object",
+    group: "storage",
     name: "myfile",
     properties: ({}) => ({
       contentType: "text/json",
@@ -43,7 +46,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       bucket: "grucloud-test",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

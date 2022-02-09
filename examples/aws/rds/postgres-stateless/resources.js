@@ -2,34 +2,36 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeKeyPair({
-    name: "kp-postgres-stateless",
-  });
-
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "internet-gateway",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeNatGateway({
+  },
+  {
+    type: "NatGateway",
+    group: "EC2",
     name: "nat-gateway",
     dependencies: () => ({
       subnet: "subnet-public-a",
       eip: "iep",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-private-a",
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
@@ -38,9 +40,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-private-b",
     properties: ({ config }) => ({
       CidrBlock: "192.168.128.0/19",
@@ -49,9 +52,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-public-a",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
@@ -60,9 +64,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-public-b",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
@@ -71,58 +76,66 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "route-table-private-a",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "route-table-private-b",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "route-table-public",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-private-a",
       subnet: "subnet-private-a",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-private-b",
       subnet: "subnet-private-b",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-public",
       subnet: "subnet-public-a",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-public",
       subnet: "subnet-public-b",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -130,9 +143,10 @@ const createResources = ({ provider }) => {
       routeTable: "route-table-private-a",
       natGateway: "nat-gateway",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -140,9 +154,10 @@ const createResources = ({ provider }) => {
       routeTable: "route-table-private-b",
       natGateway: "nat-gateway",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -150,9 +165,10 @@ const createResources = ({ provider }) => {
       routeTable: "route-table-public",
       ig: "internet-gateway",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group-postgres",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -160,9 +176,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group-public",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -170,9 +187,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-postgres",
     properties: ({}) => ({
       IpPermission: {
@@ -195,9 +213,10 @@ const createResources = ({ provider }) => {
       securityGroup: "security-group-postgres",
       securityGroupFrom: "security-group-public",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-ssh-bastion",
     properties: ({}) => ({
       IpPermission: {
@@ -219,17 +238,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group-public",
     }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "eip-bastion",
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "iep",
-  });
-
-  provider.EC2.makeInstance({
+  },
+  { type: "ElasticIpAddress", group: "EC2", name: "eip-bastion" },
+  { type: "ElasticIpAddress", group: "EC2", name: "iep" },
+  {
+    type: "Instance",
+    group: "EC2",
     name: "bastion",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
@@ -244,9 +258,10 @@ const createResources = ({ provider }) => {
       eip: "eip-bastion",
       securityGroups: ["security-group-public"],
     }),
-  });
-
-  provider.RDS.makeDBSubnetGroup({
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
     name: "subnet-group-postgres-stateless",
     properties: ({}) => ({
       DBSubnetGroupDescription: "db subnet group",
@@ -254,9 +269,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       subnets: ["subnet-private-a", "subnet-private-b"],
     }),
-  });
-
-  provider.RDS.makeDBCluster({
+  },
+  {
+    type: "DBCluster",
+    group: "RDS",
     name: "cluster-postgres-stateless",
     properties: ({}) => ({
       DatabaseName: "dev",
@@ -282,7 +298,5 @@ const createResources = ({ provider }) => {
       dbSubnetGroup: "subnet-group-postgres-stateless",
       securityGroups: ["security-group-postgres"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

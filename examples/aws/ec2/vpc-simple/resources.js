@@ -2,13 +2,13 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "my-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

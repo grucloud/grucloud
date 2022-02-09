@@ -8,13 +8,9 @@ Manages an [API Gateway Api Key](https://console.aws.amazon.com/apigateway/main/
 ## Sample code
 
 ```js
-provider.APIGateway.makeApiKey({
-  name: "my-key",
-  properties: ({ config }) => ({
-    name: "my-key",
-    enabled: true,
-  }),
-});
+exports.createResources = () => [
+  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+];
 ```
 
 ## Properties

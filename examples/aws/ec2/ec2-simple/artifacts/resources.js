@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeInstance({
+exports.createResources = () => [
+  {
+    type: "Instance",
+    group: "EC2",
     name: "web-server-ec2-simple",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
@@ -12,7 +14,5 @@ const createResources = ({ provider }) => {
         AvailabilityZone: `${config.region}d`,
       },
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -8,20 +8,24 @@ Manages an [ECS Cluster](https://console.aws.amazon.com/ecs/home?#/clusters).
 ## Sample code
 
 ```js
-provider.ECS.makeCluster({
-  name: "cluster",
-  properties: ({}) => ({
-    settings: [
-      {
-        name: "containerInsights",
-        value: "enabled",
-      },
-    ],
-  }),
-  dependencies: () => ({
-    capacityProviders: ["cp"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Cluster",
+    group: "ECS",
+    name: "cluster",
+    properties: () => ({
+      settings: [
+        {
+          name: "containerInsights",
+          value: "disabled",
+        },
+      ],
+    }),
+    dependencies: () => ({
+      capacityProviders: ["cp"],
+    }),
+  },
+];
 ```
 
 ## Properties

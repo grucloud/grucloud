@@ -49,12 +49,18 @@ exports.ResourceMaker = ({
   namespace = "",
   meta,
   dependencies = () => ({}),
-  filterLives,
   readOnly,
-  //isDefault,
+  isDefault,
+  spec,
+  filterLives = switchCase([
+    () => readOnly,
+    () => spec.findResource,
+    () => isDefault,
+    () => spec.findDefault,
+    () => undefined,
+  ])(),
   properties = () => ({}),
   attributes = () => ({}),
-  spec,
   provider,
   programOptions,
 }) => {
@@ -62,14 +68,6 @@ exports.ResourceMaker = ({
   assert(spec);
   const { type, group, groupType } = spec;
   assert(groupType);
-  //TODO
-  // const filterLives = switchCase([
-  //   () => readOnly,
-  //   () => spec.findResource,
-  //   () => isDefault,
-  //   () => spec.findDefault,
-  //   () => undefined,
-  // ])();
 
   assert(provider);
   const config = provider.getConfig();
@@ -711,9 +709,29 @@ exports.ResourceMaker = ({
         assert(lives);
       }),
       () => resource,
-      get("readOnly"),
       switchCase([
-        isEmpty,
+        or([get("readOnly"), get("isDefault")]),
+        pipe([
+          () => resource.resolveConfig({ deep: true }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            isEmpty,
+            () => [
+              {
+                action: "WAIT_CREATION",
+                resource: resource.toJSON(),
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            () => [],
+          ]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        // readOnly false
         pipe([
           () => ({}),
           assign({
@@ -740,27 +758,6 @@ exports.ResourceMaker = ({
             ],
             ({ live, target }) => planUpdate({ live, target, resource }),
           ]),
-        ]),
-        // readOnly : true
-        pipe([
-          () => resource.resolveConfig({ deep: true }),
-          tap((params) => {
-            assert(true);
-          }),
-          switchCase([
-            isEmpty,
-            () => [
-              {
-                action: "WAIT_CREATION",
-                resource: resource.toJSON(),
-                providerName: resource.toJSON().providerName,
-              },
-            ],
-            () => [],
-          ]),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       ]),
     ])();
@@ -869,6 +866,7 @@ exports.ResourceMaker = ({
     namespace,
     meta,
     readOnly,
+    isDefault,
     dependencies: getDependencies(),
     spec,
     getClient,

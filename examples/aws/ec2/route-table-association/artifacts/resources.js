@@ -2,22 +2,26 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "internet-gateway",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-a",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
@@ -26,9 +30,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-b",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
@@ -37,30 +42,35 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.useDefaultRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "rt-default-vpc",
+    isDefault: true,
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-a",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-b",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -68,7 +78,5 @@ const createResources = ({ provider }) => {
       routeTable: "rt-default-vpc",
       ig: "internet-gateway",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

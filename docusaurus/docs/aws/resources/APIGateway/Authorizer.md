@@ -8,16 +8,32 @@ Manages an [API Gateway Authorizer](https://console.aws.amazon.com/apigateway/ma
 ## Sample code
 
 ```js
-const restApi = provider.APIGateway.makeRestApi({
-  name: "myRestApi",
-  properties: () => ({ endpointConfiguration: { types: ["REGIONAL"] } }),
-});
-
-const authorizer = provider.APIGateway.makeAuthorizer({
-  name: "my-authorizer-stage-dev",
-  dependencies: { restApi },
-  properties: () => ({}),
-});
+exports.createResources = () => [
+  {
+    type: "RestApi",
+    group: "APIGateway",
+    name: "PetStore",
+    properties: ({}) => ({
+      apiKeySource: "HEADER",
+      endpointConfiguration: {
+        types: ["REGIONAL"],
+      },
+      schemaFile: "PetStore.oas30.json",
+      deployment: {
+        stageName: "dev",
+      },
+    }),
+  },
+  {
+    type: "Authorizer",
+    group: "APIGateway",
+    name: "my-authorizer-stage-dev",
+    dependencies: () => ({
+      restApi: "PetStore",
+    }),
+    properties: ({}) => ({}),
+  },
+];
 ```
 
 ## Properties

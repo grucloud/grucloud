@@ -8,9 +8,9 @@ Manages an Event Bridge [Event Bus](https://console.aws.amazon.com/events/home?#
 ## Sample code
 
 ```js
-provider.CloudWatchEvents.makeEventBus({
-  name: "my-event-bus",
-});
+exports.createResources = () => [
+  { type: "EventBus", group: "CloudWatchEvents", name: "bus-test" },
+];
 ```
 
 ## Properties

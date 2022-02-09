@@ -3,9 +3,7 @@ exports.resourcesTpl = ({ resourcesCode }) => `
 const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
-const createResources = ({ provider }) => {
+exports.createResources = () => [
   ${resourcesCode}
-};
-
-exports.createResources = createResources;
+];
 `;

@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
     name: "role-4-policies",
     properties: ({}) => ({
       Path: "/",
@@ -24,16 +26,19 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AmazonEKSWorkerNodePolicy", "policy-allow-ec2"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKSWorkerNodePolicy",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "policy-allow-ec2",
     properties: ({}) => ({
       PolicyDocument: {
@@ -54,7 +59,5 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow ec2:Describe",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -8,21 +8,33 @@ Manages an Event Bridge [Rule](https://console.aws.amazon.com/events/home?#/rule
 ## Sample code
 
 ```js
-provider.CloudWatchEvents.makeEventBus({
-  name: "myEventBus",
-});
-
-provider.CloudWatchEvents.makeRule({
-  name: "rule-Certificate-Approaching-Expiration",
-  properties: () => ({
-    EventPattern:
-      '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
-    State: "ENABLED",
-  }),
-  dependencies: ({}) => ({
-    eventBus: "myEventBus",
-  }),
-});
+exports.createResources = () => [
+  { type: "EventBus", group: "CloudWatchEvents", name: "bus-test" },
+  {
+    type: "Rule",
+    group: "CloudWatchEvents",
+    name: "rule-test",
+    properties: ({}) => ({
+      EventPattern:
+        '{"source":["aws.ec2"],"detail-type":["EC2 Instance State-change Notification"]}',
+      State: "ENABLED",
+      Description: "testing rule",
+    }),
+  },
+  {
+    type: "Rule",
+    group: "CloudWatchEvents",
+    name: "rule-test-ec2",
+    properties: ({}) => ({
+      EventPattern:
+        '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
+      State: "ENABLED",
+    }),
+    dependencies: () => ({
+      eventBus: "bus-test",
+    }),
+  },
+];
 ```
 
 ## Properties

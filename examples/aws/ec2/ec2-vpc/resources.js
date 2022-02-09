@@ -2,35 +2,37 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeKeyPair({
-    name: "kp-ec2-vpc",
-  });
-
-  provider.EC2.makeVolume({
+exports.createResources = () => [
+  { type: "KeyPair", group: "EC2", name: "kp-ec2-vpc" },
+  {
+    type: "Volume",
+    group: "EC2",
     name: "volume",
     properties: ({ config }) => ({
       Size: 5,
       VolumeType: "standard",
       AvailabilityZone: `${config.region}a`,
     }),
-  });
-
-  provider.EC2.makeVpc({
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc-ec2-example",
     properties: ({}) => ({
       CidrBlock: "10.1.0.0/16",
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "ig",
     dependencies: () => ({
       vpc: "vpc-ec2-example",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet",
     properties: ({ config }) => ({
       CidrBlock: "10.1.0.0/24",
@@ -39,23 +41,26 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-ec2-example",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "route-table",
     dependencies: () => ({
       vpc: "vpc-ec2-example",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table",
       subnet: "subnet",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -63,9 +68,10 @@ const createResources = ({ provider }) => {
       routeTable: "route-table",
       ig: "ig",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -73,9 +79,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-ec2-example",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-icmp",
     properties: ({}) => ({
       IpPermission: {
@@ -97,9 +104,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-ssh",
     properties: ({}) => ({
       IpPermission: {
@@ -121,19 +129,20 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group",
     }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "myip",
-  });
-
-  provider.EC2.makeInstance({
+  },
+  { type: "ElasticIpAddress", group: "EC2", name: "myip" },
+  {
+    type: "Instance",
+    group: "EC2",
     name: "web-server-ec2-vpc",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
       UserData:
         "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
     }),
     dependencies: () => ({
       subnet: "subnet",
@@ -142,7 +151,5 @@ const createResources = ({ provider }) => {
       securityGroups: ["security-group"],
       volumes: ["volume"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

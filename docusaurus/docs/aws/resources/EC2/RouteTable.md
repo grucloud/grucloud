@@ -10,17 +10,16 @@ Provides a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Ro
 ### Route Table associated with a subnet
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const routeTable = provider.EC2.makeRouteTable({
-  name: "rt",
-  dependencies: () => ({ vpc }),
-});
+exports.createResources = () => [
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "route-table",
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
+    }),
+  },
+];
 ```
 
 ## Examples

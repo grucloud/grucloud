@@ -2,16 +2,12 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeKeyPair({
-    name: "kp-ec2",
-  });
-
-  provider.EC2.useDefaultVpc({
-    name: "vpc-default",
-  });
-
-  provider.EC2.makeSecurityGroup({
+exports.createResources = () => [
+  { type: "KeyPair", group: "EC2", name: "kp-ec2" },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "my-security-group",
     properties: ({}) => ({
       Description: "my security group",
@@ -19,9 +15,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-default",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "my-security-group-rule-ingress-tcp-22-v4",
     properties: ({}) => ({
       IpPermission: {
@@ -38,19 +35,21 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "my-security-group",
     }),
-  });
-
-  provider.EC2.makeInstance({
+  },
+  {
+    type: "Instance",
+    group: "EC2",
     name: "my-ec2",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
     }),
     dependencies: () => ({
       keyPair: "kp-ec2",
       securityGroups: ["my-security-group"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

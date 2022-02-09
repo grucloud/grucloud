@@ -8,33 +8,37 @@ Manages an [DynamoDB Table](https://console.aws.amazon.com/dynamodbv2/home?#tabl
 ## Sample code
 
 ```js
-provider.DynamoDB.makeTable({
-  name: "myTable"
-  properties: () => ({
-    AttributeDefinitions: [
-      {
-        AttributeName: "Id",
-        AttributeType: "S",
+exports.createResources = () => [
+  {
+    type: "Table",
+    group: "DynamoDB",
+    name: "myTable",
+    properties: ({}) => ({
+      AttributeDefinitions: [
+        {
+          AttributeName: "Id",
+          AttributeType: "S",
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: "Id",
+          KeyType: "HASH",
+        },
+      ],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 5,
+        WriteCapacityUnits: 5,
       },
-    ],
-    KeySchema: [
-      {
-        AttributeName: "Id",
-        KeyType: "HASH",
-      },
-    ],
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 5,
-      WriteCapacityUnits: 5,
-    },
-    Tags: [
-      {
-        Key: "TOTOKEY",
-        Value: "TOTO",
-      },
-    ],
-  }),
-});
+      Tags: [
+        {
+          Key: "TOTOKEY",
+          Value: "TOTO",
+        },
+      ],
+    }),
+  },
+];
 ```
 
 ## Properties

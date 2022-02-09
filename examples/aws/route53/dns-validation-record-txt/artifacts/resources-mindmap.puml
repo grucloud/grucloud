@@ -1,9 +1,0 @@
-@startmindmap
-title Resources for project Route53 validation record
-skinparam monochrome true
-+ Infra
-++ aws
-+++ Route53
-++++ HostedZone (1)
-++++ Record (1)
-@endmindmap

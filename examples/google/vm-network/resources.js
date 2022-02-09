@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.compute.makeNetwork({
+exports.createResources = () => [
+  {
+    type: "Network",
+    group: "compute",
     name: "vpc",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -12,9 +14,10 @@ const createResources = ({ provider }) => {
         routingMode: "REGIONAL",
       },
     }),
-  });
-
-  provider.compute.makeSubNetwork({
+  },
+  {
+    type: "SubNetwork",
+    group: "compute",
     name: "subnetwork",
     properties: ({}) => ({
       ipCidrRange: "10.164.0.0/20",
@@ -22,9 +25,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       network: "vpc",
     }),
-  });
-
-  provider.compute.makeFirewall({
+  },
+  {
+    type: "Firewall",
+    group: "compute",
     name: "firewall",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -44,9 +48,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       network: "vpc",
     }),
-  });
-
-  provider.compute.makeVmInstance({
+  },
+  {
+    type: "VmInstance",
+    group: "compute",
     name: "db",
     properties: ({}) => ({
       machineType: "f1-micro",
@@ -64,7 +69,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       subNetwork: "subnetwork",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

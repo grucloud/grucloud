@@ -8,44 +8,55 @@ Provides an Iam Instance Profile.
 The following example create an instance profile, a role attached to this instance profile, and create an ec2 instance under this profile:
 
 ```js
-provider.IAM.makeRole({
-  name: "my-role",
-  properties: () => ({
-    Path: "/",
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: "sts:AssumeRole",
-          Principal: {
-            Service: "ec2.amazonaws.com",
+exports.createResources = () => [
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "web-iam",
+    properties: ({ config }) => ({
+      InstanceType: "t2.micro",
+      ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
+    }),
+    dependencies: () => ({
+      iamInstanceProfile: "my-profile",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "role-allow-assume-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Effect: "Allow",
-          Sid: "",
-        },
-      ],
-    },
-  }),
-});
-
-provider.IAM.makeInstanceProfile({
-  name: "my-instance-profile",
-  dependencies: () => ({ roles: ["my-role"] }),
-  properties: () => ({
-    Path: "/",
-  }),
-});
-
-provider.EC2.makeInstance({
-  name: "web-iam",
-  properties: ({ config }) => ({
-    InstanceType: "t2.micro",
-    ImageId: "ami-02e136e904f3da870",
-  }),
-  dependencies: ({ resources }) => ({
-    iamInstanceProfile: "my-profile",
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["AmazonEKSWorkerNodePolicy", "myPolicy-to-role"],
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "my-profile",
+    dependencies: () => ({
+      roles: ["role-allow-assume-role"],
+    }),
+  },
+];
 ```
 
 ### Examples
@@ -62,7 +73,8 @@ provider.EC2.makeInstance({
 
 ### Used By
 
-- [EC2](../EC2/Instance.md)
+- [EC2 Instance](../EC2/Instance.md)
+- [LaunchTemplate](../EC2/LaunchTemplate.md)
 
 ### List
 

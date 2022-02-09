@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.AutoScaling.makeAutoScalingGroup({
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
     name: "ag",
     properties: ({}) => ({
       MinSize: 1,
@@ -14,41 +16,43 @@ const createResources = ({ provider }) => {
       subnets: ["subnet-a", "subnet-b"],
       launchTemplate: "my-template",
     }),
-  });
-
-  provider.AutoScaling.makeAutoScalingAttachment({
+  },
+  {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
     dependencies: () => ({
       autoScalingGroup: "ag",
       targetGroup: "target-group-rest",
     }),
-  });
-
-  provider.AutoScaling.makeAutoScalingAttachment({
+  },
+  {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
     dependencies: () => ({
       autoScalingGroup: "ag",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.ACM.makeCertificate({
-    name: "grucloud.org",
-  });
-
-  provider.EC2.makeVpc({
+  },
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "internet-gateway",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-a",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
@@ -57,9 +61,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-b",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
@@ -68,30 +73,35 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.useDefaultRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "rt-default-vpc",
+    isDefault: true,
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-a",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-b",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -99,16 +109,19 @@ const createResources = ({ provider }) => {
       routeTable: "rt-default-vpc",
       ig: "internet-gateway",
     }),
-  });
-
-  provider.EC2.useDefaultSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "sg-default-vpc",
+    isDefault: true,
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.EC2.makeLaunchTemplate({
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
     name: "my-template",
     properties: ({}) => ({
       LaunchTemplateData: {
@@ -116,9 +129,10 @@ const createResources = ({ provider }) => {
         InstanceType: "t2.micro",
       },
     }),
-  });
-
-  provider.ELBv2.makeLoadBalancer({
+  },
+  {
+    type: "LoadBalancer",
+    group: "ELBv2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -129,9 +143,10 @@ const createResources = ({ provider }) => {
       subnets: ["subnet-a", "subnet-b"],
       securityGroups: ["sg-default-vpc"],
     }),
-  });
-
-  provider.ELBv2.makeTargetGroup({
+  },
+  {
+    type: "TargetGroup",
+    group: "ELBv2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -152,9 +167,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.ELBv2.makeTargetGroup({
+  },
+  {
+    type: "TargetGroup",
+    group: "ELBv2",
     name: "target-group-web",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -175,9 +191,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-
-  provider.ELBv2.makeListener({
+  },
+  {
+    type: "Listener",
+    group: "ELBv2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -186,9 +203,10 @@ const createResources = ({ provider }) => {
       loadBalancer: "load-balancer",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.ELBv2.makeListener({
+  },
+  {
+    type: "Listener",
+    group: "ELBv2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",
@@ -198,9 +216,10 @@ const createResources = ({ provider }) => {
       targetGroup: "target-group-rest",
       certificate: "grucloud.org",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -227,9 +246,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       listener: "listener::load-balancer::HTTP::80",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -243,9 +263,10 @@ const createResources = ({ provider }) => {
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-rest",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "2",
       Conditions: [
@@ -259,25 +280,27 @@ const createResources = ({ provider }) => {
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.Route53.makeHostedZone({
+  },
+  {
+    type: "HostedZone",
+    group: "Route53",
     name: "grucloud.org.",
     dependencies: () => ({
       domain: "grucloud.org",
     }),
-  });
-
-  provider.Route53.makeRecord({
+  },
+  {
+    type: "Record",
+    group: "Route53",
     dependencies: () => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",
     }),
-  });
-
-  provider.Route53Domains.useDomain({
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
     name: "grucloud.org",
-  });
-};
-
-exports.createResources = createResources;
+    readOnly: true,
+  },
+];

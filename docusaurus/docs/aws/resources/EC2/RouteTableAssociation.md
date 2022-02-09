@@ -10,37 +10,16 @@ Associate a subnet to a [Route Table](https://docs.aws.amazon.com/vpc/latest/use
 ### Route Table associated with a subnet
 
 ```js
-provider.EC2.makeVpc({
-  name: "Vpc",
-  properties: ({ config }) => ({
-    CidrBlock: "10.0.0.0/16",
-  }),
-});
-
-provider.EC2.makeSubnet({
-  name: "PubSubnetAz1",
-  properties: ({ config }) => ({
-    CidrBlock: "10.0.0.0/24",
-    AvailabilityZone: `${config.region}a`,
-  }),
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["Vpc"],
-  }),
-});
-
-provider.EC2.makeRouteTable({
-  name: "RouteViaIgw",
-  dependencies: ({ resources }) => ({
-    vpc: resources.EC2.Vpc["Vpc"],
-  }),
-});
-
-provider.EC2.makeRouteTableAssociation({
-  dependencies: ({ resources }) => ({
-    routeTable: resources.EC2.RouteTable["RouteViaIgw"],
-    subnet: resources.EC2.Subnet["PubSubnetAz1"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: () => ({
+      routeTable: "route-table",
+      subnet: "subnet",
+    }),
+  },
+];
 ```
 
 ## Examples

@@ -2,17 +2,20 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVolume({
+exports.createResources = () => [
+  {
+    type: "Volume",
+    group: "EC2",
     name: "volume-test-volume",
     properties: ({ config }) => ({
       Size: 2,
       VolumeType: "standard",
       AvailabilityZone: `${config.region}a`,
     }),
-  });
-
-  provider.EC2.makeInstance({
+  },
+  {
+    type: "Instance",
+    group: "EC2",
     name: "server-4-test-volume",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
@@ -24,7 +27,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       volumes: ["volume-test-volume"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

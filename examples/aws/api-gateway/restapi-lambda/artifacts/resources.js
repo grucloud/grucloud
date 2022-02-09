@@ -2,19 +2,19 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.APIGateway.makeAccount({
+exports.createResources = () => [
+  {
+    type: "Account",
+    group: "APIGateway",
     name: "default",
     dependencies: () => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
-  });
-
-  provider.APIGateway.makeApiKey({
-    name: "my-key",
-  });
-
-  provider.APIGateway.makeRestApi({
+  },
+  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "RestApi",
+    group: "APIGateway",
     name: "PetStore",
     properties: ({}) => ({
       apiKeySource: "HEADER",
@@ -26,9 +26,10 @@ const createResources = ({ provider }) => {
         stageName: "dev",
       },
     }),
-  });
-
-  provider.APIGateway.makeStage({
+  },
+  {
+    type: "Stage",
+    group: "APIGateway",
     name: "dev",
     properties: ({}) => ({
       description: "dev",
@@ -53,9 +54,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       restApi: "PetStore",
     }),
-  });
-
-  provider.APIGateway.makeStage({
+  },
+  {
+    type: "Stage",
+    group: "APIGateway",
     name: "prod",
     properties: ({}) => ({
       description: "prod",
@@ -65,13 +67,11 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       restApi: "PetStore",
     }),
-  });
-
-  provider.CloudWatchLogs.makeLogGroup({
-    name: "restapi",
-  });
-
-  provider.IAM.makeRole({
+  },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+  {
+    type: "Role",
+    group: "IAM",
     name: "roleApiGatewayCloudWatch",
     properties: ({}) => ({
       Path: "/",
@@ -92,14 +92,14 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonAPIGatewayPushToCloudWatchLogs",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

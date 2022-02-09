@@ -12,9 +12,9 @@ Manages a [Customer Master Key](https://docs.aws.amazon.com/kms/latest/developer
 Create a symmetric key, for instance used by an [EKS Cluster](../EKS/Cluster.md)
 
 ```js
-const cmk = provider.KMS.makeKey({
-  name: "my-secret-key",
-});
+exports.createResources = () => [
+  { type: "Key", group: "KMS", name: "key-test" },
+];
 ```
 
 ## Code Examples

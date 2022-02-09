@@ -2,17 +2,20 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.S3.makeBucket({
+exports.createResources = () => [
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-acceleration",
     properties: ({}) => ({
       AccelerateConfiguration: {
         Status: "Enabled",
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-cors",
     properties: ({}) => ({
       CORSConfiguration: {
@@ -27,9 +30,10 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-encryption",
     properties: ({}) => ({
       ServerSideEncryptionConfiguration: {
@@ -43,9 +47,10 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-lifecycleconfiguration",
     properties: ({}) => ({
       LifecycleConfiguration: {
@@ -70,13 +75,11 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.S3.makeBucket({
-    name: "grucloud-log-destination",
-  });
-
-  provider.S3.makeBucket({
+  },
+  { type: "Bucket", group: "S3", name: "grucloud-log-destination" },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-policy",
     properties: ({}) => ({
       Policy: {
@@ -97,18 +100,20 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-request-payment",
     properties: ({}) => ({
       RequestPaymentConfiguration: {
         Payer: "Requester",
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-tag",
     properties: ({}) => ({
       Tags: [
@@ -122,13 +127,11 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-
-  provider.S3.makeBucket({
-    name: "grucloud-test-basic",
-  });
-
-  provider.S3.makeBucket({
+  },
+  { type: "Bucket", group: "S3", name: "grucloud-test-basic" },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-versioning",
     properties: ({}) => ({
       VersioningConfiguration: {
@@ -136,9 +139,10 @@ const createResources = ({ provider }) => {
         MFADelete: "Disabled",
       },
     }),
-  });
-
-  provider.S3.makeBucket({
+  },
+  {
+    type: "Bucket",
+    group: "S3",
     name: "grucloud-website",
     properties: ({}) => ({
       ACL: "public-read",
@@ -151,9 +155,10 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-  });
-
-  provider.S3.makeObject({
+  },
+  {
+    type: "Object",
+    group: "S3",
     name: "file-test",
     properties: ({}) => ({
       ContentType: "text/plain",
@@ -172,7 +177,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       bucket: "grucloud-test-basic",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

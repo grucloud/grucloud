@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeSshPublicKey({
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -14,9 +16,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
     }),
-  });
-
-  provider.Compute.makeVirtualMachine({
+  },
+  {
+    type: "VirtualMachine",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vm",
       properties: {
@@ -84,18 +87,20 @@ const createResources = ({ provider }) => {
       managedIdentities: ["rg-user-managed-identity::identity-vault"],
       sshPublicKeys: ["rg-user-managed-identity::keypair"],
     }),
-  });
-
-  provider.ManagedIdentity.makeUserAssignedIdentity({
+  },
+  {
+    type: "UserAssignedIdentity",
+    group: "ManagedIdentity",
     properties: ({}) => ({
       name: "identity-vault",
     }),
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
     }),
-  });
-
-  provider.Network.makeNetworkInterface({
+  },
+  {
+    type: "NetworkInterface",
+    group: "Network",
     properties: ({}) => ({
       name: "vm180",
       properties: {
@@ -116,9 +121,10 @@ const createResources = ({ provider }) => {
       securityGroup: "rg-user-managed-identity::vm-nsg",
       subnet: "rg-user-managed-identity::vnet::default",
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "vm-nsg",
       properties: {
@@ -142,18 +148,20 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "vm-ip",
     }),
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -164,9 +172,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-user-managed-identity",
       virtualNetwork: "rg-user-managed-identity::vnet",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -178,13 +187,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-user-managed-identity",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

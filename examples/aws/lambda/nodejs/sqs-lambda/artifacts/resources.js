@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
       Path: "/",
@@ -24,9 +26,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["lambda-policy"],
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "lambda-policy",
     properties: ({}) => ({
       PolicyDocument: {
@@ -47,9 +50,10 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow logs",
     }),
-  });
-
-  provider.Lambda.makeFunction({
+  },
+  {
+    type: "Function",
+    group: "Lambda",
     name: "lambda-hello-world",
     properties: ({}) => ({
       Handler: "helloworld.handler",
@@ -62,9 +66,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       role: "lambda-role",
     }),
-  });
-
-  provider.Lambda.makeEventSourceMapping({
+  },
+  {
+    type: "EventSourceMapping",
+    group: "Lambda",
     name: "mapping-lambda-hello-world-my-queue-lambda",
     properties: ({}) => ({
       BatchSize: 10,
@@ -74,16 +79,15 @@ const createResources = ({ provider }) => {
       lambdaFunction: "lambda-hello-world",
       sqsQueue: "my-queue-lambda",
     }),
-  });
-
-  provider.SQS.makeQueue({
+  },
+  {
+    type: "Queue",
+    group: "SQS",
     name: "my-queue-lambda",
     properties: ({}) => ({
       tags: {
         "my-tag": "my-value",
       },
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

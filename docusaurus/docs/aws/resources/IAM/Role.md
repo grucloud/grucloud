@@ -6,164 +6,165 @@ title: Role
 Provides an Iam Role.
 
 ```js
-provider.IAM.makeRole({
-  name: "my-role",
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: "sts:AssumeRole",
-          Principal: {
-            Service: "ec2.amazonaws.com",
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "roleApiGatewayCloudWatch",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Effect: "Allow",
-          Sid: "",
-        },
-      ],
-    },
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
+    }),
+  },
+];
 ```
 
 ### Attach a policy to a role
 
 ```js
-provider.IAM.makePolicy({
-  name: "my-policy",
-  properties: () => ({
-    PolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: ["ec2:Describe*"],
-          Effect: "Allow",
-          Resource: "*",
-        },
-      ],
-    },
-    Description: "Allow ec2:Describe",
-    Path: "/",
-  }),
-});
-
-provider.IAM.makeRole({
-  name: "my-role",
-  dependencies: () => ({ policies: [iamPolicy] }),
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: "sts:AssumeRole",
-          Principal: {
-            Service: "ec2.amazonaws.com",
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Effect: "Allow",
-          Sid: "",
-        },
-      ],
-    },
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "lambda-policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  },
+];
 ```
 
 ### Add an inline policy to a role
 
 ```js
-const iamRole = provider.IAM.makeRole({
-  name: "my-role",
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: "sts:AssumeRole",
-          Principal: {
-            Service: "ec2.amazonaws.com",
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Effect: "Allow",
-          Sid: "",
+        ],
+      },
+      Policies: [
+        {
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Action: "dynamodb:*",
+                Resource: [
+                  "arn:aws:dynamodb:eu-west-2:1234567890:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-3MPG6DUNDCO9",
+                ],
+                Effect: "Allow",
+              },
+            ],
+          },
+          PolicyName: "AppSyncNotesHandlerServiceRoleDefaultPolicy12C70C4F",
         },
       ],
-    },
-    Policies: [
-      {
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: "dynamodb:*",
-              Resource: [
-                "arn:aws:dynamodb:eu-west-2:1234567890:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-3MPG6DUNDCO9",
-              ],
-              Effect: "Allow",
-            },
-          ],
-        },
-        PolicyName: "AppSyncNotesHandlerServiceRoleDefaultPolicy12C70C4F",
-      },
-    ],
-  }),
-});
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+];
 ```
 
 ### Add a role to an instance profile
 
 ```js
-provider.IAM.makeRole({
-  name: "my-role",
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: "sts:AssumeRole",
-          Principal: {
-            Service: "ec2.amazonaws.com",
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "role-ecs",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Effect: "Allow",
-          Sid: "",
-        },
-      ],
-    },
-  }),
-});
-
-provider.IAM.makeInstanceProfile({
-  name: "my-instance-profile",
-  dependencies: () => ({ iamRoles: ["my-role"] }),
-});
-```
-
-### Link to an OpenIdConnectProvider
-
-The **AssumeRolePolicyDocument** will be filled with the **openIdConnectProvider** dependency.
-
-```js
-
-const loadBalancerPolicy = require("./load-balancer-policy.json");
-
-const iamOpenIdConnectProvider = provider.IAM.makeOpenIDConnectProvider({
-  name: "oidc",
-  dependencies: () => ({ cluster }),
-});
-
-const iamLoadBalancerPolicy = provider.IAM.makePolicy({
-  name: "AWSLoadBalancerControllerIAMPolicy",
-  properties: () => ({
-    PolicyDocument: loadBalancerPolicy,
-    Description: "Load Balancer Policy",
-  }),
-});
-
-const roleLoadBalancer = provider.IAM.makeRole({
-  name: "roleLoadBalancer"
-  dependencies: () => ({
-    openIdConnectProvider: iamOpenIdConnectProvider,
-    policies: [iamLoadBalancerPolicy],
-  }),
-});
+        ],
+      },
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ecs",
+    dependencies: () => ({
+      roles: ["role-ecs"],
+    }),
+  },
+];
 ```
 
 ### Examples

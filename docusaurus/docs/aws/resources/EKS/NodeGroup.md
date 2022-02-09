@@ -10,27 +10,31 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ### Create a Node Group
 
 ```js
-provider.EKS.makeNodeGroup({
-  name: "ng-1",
-  properties: ({}) => ({
-    capacityType: "ON_DEMAND",
-    scalingConfig: {
-      minSize: 1,
-      maxSize: 1,
-      desiredSize: 1,
-    },
-    labels: {
-      "alpha.eksctl.io/nodegroup-name": "ng-1",
-      "alpha.eksctl.io/cluster-name": "my-cluster",
-    },
-  }),
-  dependencies: () => ({
-    cluster: "my-cluster",
-    subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
-    role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
-    launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "NodeGroup",
+    group: "EKS",
+    name: "ng-1",
+    properties: ({}) => ({
+      capacityType: "ON_DEMAND",
+      scalingConfig: {
+        minSize: 1,
+        maxSize: 1,
+        desiredSize: 1,
+      },
+      labels: {
+        "alpha.eksctl.io/cluster-name": "my-cluster",
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
+      },
+    }),
+    dependencies: () => ({
+      cluster: "my-cluster",
+      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
+      launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
+    }),
+  },
+];
 ```
 
 ## Source Code Examples

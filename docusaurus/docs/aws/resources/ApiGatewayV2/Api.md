@@ -8,15 +8,19 @@ Manages an [Api Gateway V2 API](https://console.aws.amazon.com/apigateway/main/a
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeApi({
-  name: "my-api",
-  properties: ({ config }) => ({
-    ProtocolType: "HTTP",
-    ApiKeySelectionExpression: "$request.header.x-api-key",
-    DisableExecuteApiEndpoint: false,
-    RouteSelectionExpression: "$request.method $request.path",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+];
 ```
 
 ## Properties

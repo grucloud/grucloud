@@ -94,7 +94,7 @@ module.exports = pipe([
       dependencies: {
         network: { type: "Network", group: "compute" },
       },
-      resourceVarName: ResourceVarNameSubnet,
+      //resourceVarName: ResourceVarNameSubnet,
       resourceName: ResourceNameSubnet,
     },
     {

@@ -8,13 +8,19 @@ Create a security group, used to restrict network access to the EC2 instances.
 Add new ingress and egress rules with [SecurityGroupRuleIngress](./SecurityGroupRuleIngress) and [SecurityGroupRuleEgress](./SecurityGroupRuleEgress)
 
 ```js
-const sg = provider.EC2.makeSecurityGroup({
-  name: "securityGroup",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    Description: "Security Group SSH",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "EcsSecurityGroup",
+    properties: ({}) => ({
+      Description: "Managed By GruCloud",
+    }),
+    dependencies: () => ({
+      vpc: "Vpc",
+    }),
+  },
+];
 ```
 
 ### Examples

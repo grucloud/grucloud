@@ -370,10 +370,10 @@ const buildDependencies = ({
 
 const buildPrefix = switchCase([
   get("isDefault"),
-  () => "useDefault",
+  () => "isDefault: true,",
   get("managedByOther"),
-  () => "use",
-  () => "make",
+  () => "readOnly:true,",
+  () => "",
 ]);
 
 const buildName = ({ inferName, resourceName }) =>
@@ -394,13 +394,18 @@ const codeTpl = ({
   additionalCode = "",
 }) =>
   pipe([
-    () => "provider.",
-    append(group),
-    append("."),
-    append(buildPrefix(resource)),
+    tap((params) => {
+      assert(true);
+    }),
+    () => "{",
+    append("type:'"),
     append(type),
-    append("({\n"),
+    append("',"),
+    append("group:'"),
+    append(group),
+    append("',"),
     append(buildName({ inferName, resourceName })),
+    append(buildPrefix(resource)),
     switchCase([
       () => additionalCode,
       append(additionalCode),
@@ -422,7 +427,10 @@ const codeTpl = ({
         ),
       ]),
     ]),
-    append("});\n"),
+    append("},"),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const displayDiff = pipe([

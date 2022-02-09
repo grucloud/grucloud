@@ -2,10 +2,4 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeKeyPair({
-    name: "kp",
-  });
-};
-
-exports.createResources = createResources;
+exports.createResources = () => [{ type: "KeyPair", group: "EC2", name: "kp" }];

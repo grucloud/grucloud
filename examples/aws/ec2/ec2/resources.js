@@ -2,26 +2,23 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeKeyPair({
-    name: "kp-ec2-example",
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "eip",
-  });
-
-  provider.EC2.makeInstance({
+exports.createResources = () => [
+  { type: "KeyPair", group: "EC2", name: "kp-ec2-example" },
+  { type: "ElasticIpAddress", group: "EC2", name: "eip" },
+  {
+    type: "Instance",
+    group: "EC2",
     name: "web-server-ec2-example",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}d`,
+      },
     }),
     dependencies: () => ({
       keyPair: "kp-ec2-example",
       eip: "eip",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

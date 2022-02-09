@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.iam.makeServiceAccount({
+exports.createResources = () => [
+  {
+    type: "ServiceAccount",
+    group: "iam",
     name: "sa-test-example",
     properties: ({}) => ({
       serviceAccount: {
@@ -11,14 +13,13 @@ const createResources = ({ provider }) => {
         description: "Managed By GruCloud",
       },
     }),
-  });
-
-  provider.iam.makeBinding({
+  },
+  {
+    type: "Binding",
+    group: "iam",
     name: "roles/firebasenotifications.viewer",
     dependencies: () => ({
       serviceAccounts: ["sa-test-example"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

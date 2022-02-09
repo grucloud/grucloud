@@ -12,34 +12,43 @@ Provides a single [Route53 Record](https://console.aws.amazon.com/route53/v2/hom
 Add an A record to the hosted zone:
 
 ```js
-const domainName = "your.domain.name.com";
-
-provider.Route53Domain.useDomain({
-  name: domainName,
-});
-
-const hostedZoneName = `${domainName}.`;
-provider.Route53.makeHostedZone({
-  name: hostedZoneName,
-  dependencies: () => ({ domain: domainName }),
-});
-
-provider.Route53.makeRecord({
-  name: `${hostedZoneName}-ipv4`,
-  dependencies: () => ({ hostedZone: hostedZoneName, eip: "ip" }),
-  properties: ({ dependencies: { eip } }) => {
-    return {
-      Name: hostedZoneName,
-      Type: "A",
-      ResourceRecords: [
-        {
-          Value: eip.live?.PublicIp,
-        },
-      ],
-      TTL: 60,
-    };
+exports.createResources = () => [
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: "grucloud.org.",
+    dependencies: () => ({
+      domain: "grucloud.org",
+    }),
   },
-});
+  {
+    type: "Record",
+    group: "Route53",
+    dependencies: () => ({
+      hostedZone: "grucloud.org.",
+      eip: "eip",
+    }),
+    properties: ({ dependencies: { eip } }) => {
+      return {
+        Name: hostedZoneName,
+        Type: "A",
+        ResourceRecords: [
+          {
+            Value: eip.live?.PublicIp,
+          },
+        ],
+        TTL: 60,
+      };
+    },
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
+    name: "grucloud.org",
+    readOnly: true,
+  },
+];
 ```
 
 ### CNAME from a certificate
@@ -47,24 +56,31 @@ provider.Route53.makeRecord({
 Verify a certificate with DNS validation by adding a CNAME record.
 
 ```js
-const domainName = "your.domain.name.com";
-
-provider.Route53Domain.useDomain({
-  name: domainName,
-});
-
-const hostedZoneName = `${domainName}.`;
-provider.Route53.makeHostedZone({
-  name: hostedZoneName,
-  dependencies: () => ({ domain: domainName }),
-});
-
-provider.Route53.makeRecord({
-  dependencies: () => ({
-    hostedZone: hostedZoneName,
-    certificate: "domainName",
-  }),
-});
+exports.createResources = () => [
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: "grucloud.org.",
+    dependencies: () => ({
+      domain: "grucloud.org",
+    }),
+  },
+  {
+    type: "Record",
+    group: "Route53",
+    dependencies: () => ({
+      hostedZone: "grucloud.org.",
+      certificate: "grucloud.org",
+    }),
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
+    name: "grucloud.org",
+    readOnly: true,
+  },
+];
 ```
 
 ### Alias for CloudFront Distribution
@@ -72,24 +88,24 @@ provider.Route53.makeRecord({
 Add an alias entry to the the CloudFront distribution domain name
 
 ```js
-const domainName = "your.domain.name.com";
-
-const distribution = provider.CloudFront.makeDistribution({
-  name: `distribution-${bucketName}`,
-  dependencies: () => ({ websiteBucket, certificate }),
-  properties: ({}) => {
-    // More stuff here
+exports.createResources = () => [
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: "dev.cloudfront.aws.test.grucloud.org.",
+    dependencies: () => ({
+      domain: "grucloud.org",
+    }),
   },
-});
-
-const hostedZone = provider.Route53.makeHostedZone({
-  name: `${domainName}.`,
-  dependencies: () => ({ domain }),
-});
-
-const recordCloudFront = provider.Route53.makeRecord({
-  dependencies: () => ({ hostedZone, distribution }),
-});
+  {
+    type: "Record",
+    group: "Route53",
+    dependencies: () => ({
+      hostedZone: "dev.cloudfront.aws.test.grucloud.org.",
+      distribution: "distribution-cloudfront.aws.test.grucloud.org-dev",
+    }),
+  },
+];
 ```
 
 ## Source Code Examples

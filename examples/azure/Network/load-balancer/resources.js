@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeSshPublicKey({
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "vmss_key",
       properties: {
@@ -14,9 +16,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-load-balancer",
     }),
-  });
-
-  provider.Compute.makeVirtualMachineScaleSet({
+  },
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vmss",
       sku: {
@@ -134,9 +137,10 @@ const createResources = ({ provider }) => {
         "rg-load-balancer::load-balancer::backendpool",
       ],
     }),
-  });
-
-  provider.Network.makeLoadBalancer({
+  },
+  {
+    type: "LoadBalancer",
+    group: "Network",
     properties: ({ getId }) => ({
       name: "load-balancer",
       sku: {
@@ -169,9 +173,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-load-balancer",
       publicIPAddresses: ["rg-load-balancer::ip"],
     }),
-  });
-
-  provider.Network.makeLoadBalancerBackendAddressPool({
+  },
+  {
+    type: "LoadBalancerBackendAddressPool",
+    group: "Network",
     properties: ({}) => ({
       name: "backendpool",
       properties: {},
@@ -180,9 +185,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-load-balancer",
       loadBalancer: "rg-load-balancer::load-balancer",
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "basicnsgvnet-nic01",
       properties: {
@@ -192,9 +198,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-load-balancer",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "ip",
       sku: {
@@ -207,9 +214,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-load-balancer",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -220,9 +228,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-load-balancer",
       virtualNetwork: "rg-load-balancer::vnet",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -234,13 +243,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-load-balancer",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-load-balancer",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

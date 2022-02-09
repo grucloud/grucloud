@@ -2,14 +2,14 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeSubnet({
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-1",
     properties: ({ config }) => ({
       CidrBlock: "172.31.96.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

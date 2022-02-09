@@ -14,17 +14,23 @@ Add one or more records with the [Route53 Record](./Record.md) resource.
 Create a HostedZone with a Route53Domain as a dependency to update automatically the DNS servers.
 
 ```js
-const domainName = "your.domain.name.com";
-
-const domain = provider.Route53Domain.useDomain({
-  name: domainName,
-});
-
-const hostedZoneName = `${domainName}.`;
-const hostedZone = provider.Route53.makeHostedZone({
-  name: hostedZoneName,
-  dependencies: () => ({ domain: domainName }),
-});
+const domainName = "mydomain.com";
+exports.createResources = () => [
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: `${domainName}.`,
+    dependencies: () => ({
+      domain: domainName,
+    }),
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
+    name: domainName,
+    readOnly: true,
+  },
+];
 ```
 
 ## Source Code Examples

@@ -2,9 +2,12 @@
 const { pipe, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.AutoScaling.useAutoScalingGroup({
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
     name: "asg-ng-1",
+    readOnly: true,
     properties: ({}) => ({
       MinSize: 1,
       MaxSize: 1,
@@ -14,50 +17,53 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
     }),
-  });
-
-  provider.AutoScaling.makeAutoScalingAttachment({
+  },
+  {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
     dependencies: () => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-rest",
     }),
-  });
-
-  provider.AutoScaling.makeAutoScalingAttachment({
+  },
+  {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
     dependencies: () => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.ACM.makeCertificate({
-    name: "grucloud.org",
-  });
-
-  provider.EC2.makeVpc({
+  },
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "VPC",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
       DnsHostnames: true,
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "InternetGateway",
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeNatGateway({
+  },
+  {
+    type: "NatGateway",
+    group: "EC2",
     name: "NATGateway",
     dependencies: () => ({
       subnet: "SubnetPublicUSEAST1F",
       eip: "NATIP",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
@@ -72,9 +78,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       CidrBlock: "192.168.64.0/19",
@@ -89,9 +96,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
@@ -107,9 +115,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
@@ -125,58 +134,66 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "PrivateRouteTableUSEAST1D",
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "PrivateRouteTableUSEAST1F",
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "PublicRouteTable",
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "PrivateRouteTableUSEAST1D",
       subnet: "SubnetPrivateUSEAST1D",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "PrivateRouteTableUSEAST1F",
       subnet: "SubnetPrivateUSEAST1F",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1D",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1F",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -184,9 +201,10 @@ const createResources = ({ provider }) => {
       routeTable: "PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -194,9 +212,10 @@ const createResources = ({ provider }) => {
       routeTable: "PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -204,9 +223,10 @@ const createResources = ({ provider }) => {
       routeTable: "PublicRouteTable",
       ig: "InternetGateway",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       Description: "Communication between all nodes in the cluster",
@@ -214,9 +234,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "ControlPlaneSecurityGroup",
     properties: ({}) => ({
       Description:
@@ -225,10 +246,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.useSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "eks-cluster-sg-my-cluster-1909614887",
+    readOnly: true,
     filterLives: ({ resources }) =>
       pipe([
         () => resources,
@@ -244,9 +267,10 @@ const createResources = ({ provider }) => {
           ])
         ),
       ])(),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "load-balancer",
     properties: ({}) => ({
       Description: "Load Balancer",
@@ -254,9 +278,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
@@ -269,9 +294,10 @@ const createResources = ({ provider }) => {
       securityGroup: "ClusterSharedNodeSecurityGroup",
       securityGroupFrom: "ClusterSharedNodeSecurityGroup",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
     properties: ({}) => ({
       IpPermission: {
@@ -284,9 +310,10 @@ const createResources = ({ provider }) => {
       securityGroup: "ClusterSharedNodeSecurityGroup",
       securityGroupFrom: "eks-cluster-sg-my-cluster-1909614887",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
@@ -299,9 +326,10 @@ const createResources = ({ provider }) => {
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
       securityGroupFrom: "ClusterSharedNodeSecurityGroup",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-load-balancer",
     properties: ({}) => ({
       IpPermission: {
@@ -314,9 +342,10 @@ const createResources = ({ provider }) => {
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
       securityGroupFrom: "load-balancer",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "load-balancer-rule-ingress-tcp-443-v4",
     properties: ({}) => ({
       IpPermission: {
@@ -333,9 +362,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "load-balancer",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "load-balancer-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
@@ -352,13 +382,11 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "load-balancer",
     }),
-  });
-
-  provider.EC2.makeElasticIpAddress({
-    name: "NATIP",
-  });
-
-  provider.EC2.makeLaunchTemplate({
+  },
+  { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
     name: "eksctl-my-cluster-nodegroup-ng-1",
     properties: ({}) => ({
       LaunchTemplateData: {
@@ -379,9 +407,10 @@ const createResources = ({ provider }) => {
         },
       },
     }),
-  });
-
-  provider.EKS.makeCluster({
+  },
+  {
+    type: "Cluster",
+    group: "EKS",
     name: "my-cluster",
     properties: ({}) => ({
       version: "1.20",
@@ -396,9 +425,10 @@ const createResources = ({ provider }) => {
       securityGroups: ["ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     }),
-  });
-
-  provider.EKS.makeNodeGroup({
+  },
+  {
+    type: "NodeGroup",
+    group: "EKS",
     name: "ng-1",
     properties: ({}) => ({
       capacityType: "ON_DEMAND",
@@ -418,9 +448,10 @@ const createResources = ({ provider }) => {
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
     }),
-  });
-
-  provider.ELBv2.makeLoadBalancer({
+  },
+  {
+    type: "LoadBalancer",
+    group: "ELBv2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -431,9 +462,10 @@ const createResources = ({ provider }) => {
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
       securityGroups: ["load-balancer"],
     }),
-  });
-
-  provider.ELBv2.makeTargetGroup({
+  },
+  {
+    type: "TargetGroup",
+    group: "ELBv2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -454,9 +486,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.ELBv2.makeTargetGroup({
+  },
+  {
+    type: "TargetGroup",
+    group: "ELBv2",
     name: "target-group-web",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -477,9 +510,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.ELBv2.makeListener({
+  },
+  {
+    type: "Listener",
+    group: "ELBv2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -488,9 +522,10 @@ const createResources = ({ provider }) => {
       loadBalancer: "load-balancer",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.ELBv2.makeListener({
+  },
+  {
+    type: "Listener",
+    group: "ELBv2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",
@@ -500,9 +535,10 @@ const createResources = ({ provider }) => {
       targetGroup: "target-group-web",
       certificate: "grucloud.org",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -529,9 +565,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       listener: "listener::load-balancer::HTTP::80",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -545,9 +582,10 @@ const createResources = ({ provider }) => {
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-rest",
     }),
-  });
-
-  provider.ELBv2.makeRule({
+  },
+  {
+    type: "Rule",
+    group: "ELBv2",
     properties: ({}) => ({
       Priority: "2",
       Conditions: [
@@ -561,9 +599,10 @@ const createResources = ({ provider }) => {
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
       Path: "/",
@@ -615,9 +654,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AmazonEKSClusterPolicy", "AmazonEKSVPCResourceController"],
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
       Path: "/",
@@ -642,67 +682,81 @@ const createResources = ({ provider }) => {
         "AmazonSSMManagedInstanceCore",
       ],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEC2ContainerRegistryReadOnly",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKS_CNI_Policy",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKSClusterPolicy",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKSVPCResourceController",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKSWorkerNodePolicy",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonSSMManagedInstanceCore",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     }),
-  });
-
-  provider.Route53.makeHostedZone({
+  },
+  {
+    type: "HostedZone",
+    group: "Route53",
     name: "grucloud.org.",
     dependencies: () => ({
       domain: "grucloud.org",
     }),
-  });
-
-  provider.Route53.makeRecord({
+  },
+  {
+    type: "Record",
+    group: "Route53",
     dependencies: () => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",
     }),
-  });
-
-  provider.Route53Domains.useDomain({
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
     name: "grucloud.org",
-  });
-};
-
-exports.createResources = createResources;
+    readOnly: true,
+  },
+];

@@ -6,29 +6,17 @@ title: Nat Gateway
 Provides an [Nat Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const subnetPublic = provider.EC2.makeSubnet({
-  name: "public",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
-  }),
-});
-
-const eip = provider.EC2.makeElasticIpAddress({
-  name: "myip",
-});
-
-const natGateway = provider.EC2.makeNatGateway({
-  name: "nat-gateway",
-  dependencies: { subnet: subnetPublic, eip },
-});
+exports.createResources = () => [
+  {
+    type: "NatGateway",
+    group: "EC2",
+    name: "nat-gateway",
+    dependencies: () => ({
+      subnet: "subnet-public-a",
+      eip: "eip",
+    }),
+  },
+];
 ```
 
 ### Examples
