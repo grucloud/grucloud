@@ -76,7 +76,10 @@ const writeDirectory =
       tap(({ source, destination }) =>
         fse.copy(source, destination, {
           filter: (sourceFile, destination) =>
-            pipe([() => sourceFile, not(includes("node_modules"))])(),
+            pipe([
+              () => sourceFile,
+              not(includes(`${projectName}/node_modules`)),
+            ])(),
         })
       ),
       tap((params) => {
