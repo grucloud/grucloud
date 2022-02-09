@@ -10,55 +10,100 @@ Provides an [Event Source Mapping](https://console.aws.amazon.com/lambda/home)
 ### SQS Queue Source Mapping
 
 ```js
-const lambdaPolicy = require("./lambdaPolicy.json");
-const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
-
-provider.IAM.makePolicy({
-  name: "lambda-policy",
-  properties: () => lambdaPolicy,
-});
-
-provider.IAM.makeRole({
-  name: "lambda-role",
-  dependencies: { policies: ["lambda-policy"] },
-  properties: () => lambdaAssumePolicy,
-});
-
-provider.Lambda.makeFunction({
-  name: "lambda-hello-world", // Source must be located in the direcory 'lambda-hello-world'
-  dependencies: { role: "lambda-role" },
-  properties: () => ({
-    PackageType: "Zip",
-    Handler: "helloworld.handler", // The handler function must de defined in lambda-hello-world/helloworkd.js
-    Runtime: "nodejs14.x",
-  }),
-});
-
-provider.SQS.makeQueue({
-  name: "my-queue",
-  properties: () => ({
-    Attributes: {
-      VisibilityTimeout: "30",
-      MaximumMessageSize: "262144",
-      MessageRetentionPeriod: "345600",
-      DelaySeconds: "0",
-      ReceiveMessageWaitTimeSeconds: "0",
-    },
-    tags: {
-      "my-tag": "my-value",
-    },
-  }),
-});
-
-provider.Lambda.makeEventSourceMapping({
-  name: "mapping-lambda-hello-world-my-queue",
-  dependencies: { lambdaFunction: "lambda-hello-world", sqsQueue: "my-queue" },
-});
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "lambda-policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+          {
+            Action: ["sqs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    name: "lambda-hello-world",
+    properties: ({}) => ({
+      Handler: "helloworld.handler",
+      PackageType: "Zip",
+      Runtime: "nodejs14.x",
+      Description: "",
+      Timeout: 3,
+      MemorySize: 128,
+    }),
+    dependencies: () => ({
+      role: "lambda-role",
+    }),
+  },
+  {
+    type: "EventSourceMapping",
+    group: "Lambda",
+    name: "mapping-lambda-hello-world-my-queue-lambda",
+    properties: ({}) => ({
+      BatchSize: 10,
+      MaximumBatchingWindowInSeconds: 0,
+    }),
+    dependencies: () => ({
+      lambdaFunction: "lambda-hello-world",
+      sqsQueue: "my-queue-lambda",
+    }),
+  },
+  {
+    type: "Queue",
+    group: "SQS",
+    name: "my-queue-lambda",
+    properties: ({}) => ({
+      tags: {
+        "my-tag": "my-value",
+      },
+    }),
+  },
+];
 ```
 
 ## Source Code Examples
 
-- [sqs lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/lambda/nodejs/sqs-lambda/iac.js)
+- [sqs lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/lambda/nodejs/sqs-lambda/resources.js)
 
 ## Properties
 

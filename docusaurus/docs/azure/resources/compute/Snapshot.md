@@ -6,111 +6,127 @@ Provides a **Snapshot** from the **Compute** group
 ## Examples
 ### Create a snapshot from an existing snapshot in the same or a different subscription.
 ```js
-provider.Compute.makeSnapshot({
-  name: "mySnapshot",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Copy",
-        sourceResourceId:
-          "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot1",
+exports.createResources = () => [
+  {
+    type: "Snapshot",
+    group: "Compute",
+    name: "mySnapshot",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Copy",
+          sourceResourceId:
+            "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a snapshot by importing an unmanaged blob from the same subscription.
 ```js
-provider.Compute.makeSnapshot({
-  name: "mySnapshot",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Import",
-        sourceUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+exports.createResources = () => [
+  {
+    type: "Snapshot",
+    group: "Compute",
+    name: "mySnapshot",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Import",
+          sourceUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a snapshot by importing an unmanaged blob from a different subscription.
 ```js
-provider.Compute.makeSnapshot({
-  name: "mySnapshot",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Import",
-        storageAccountId:
-          "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
-        sourceUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+exports.createResources = () => [
+  {
+    type: "Snapshot",
+    group: "Compute",
+    name: "mySnapshot",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Import",
+          storageAccountId:
+            "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
+          sourceUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a snapshot from an existing snapshot in the same or a different subscription in a different region.
 ```js
-provider.Compute.makeSnapshot({
-  name: "mySnapshot",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "CopyStart",
-        sourceResourceId:
-          "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot1",
+exports.createResources = () => [
+  {
+    type: "Snapshot",
+    group: "Compute",
+    name: "mySnapshot",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "CopyStart",
+          sourceResourceId:
+            "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 ## Dependencies

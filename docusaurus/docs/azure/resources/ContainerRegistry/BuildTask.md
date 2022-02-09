@@ -6,32 +6,36 @@ Provides a **BuildTask** from the **ContainerRegistry** group
 ## Examples
 ### BuildTasks_Create
 ```js
-provider.ContainerRegistry.makeBuildTask({
-  name: "myBuildTask",
-  properties: () => ({
-    properties: {
-      sourceRepository: {
-        sourceControlType: "Github",
-        repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
-        sourceControlAuthProperties: {
-          tokenType: "OAuth",
-          token: "xxxxxx",
-          scope: "repo",
+exports.createResources = () => [
+  {
+    type: "BuildTask",
+    group: "ContainerRegistry",
+    name: "myBuildTask",
+    properties: () => ({
+      properties: {
+        sourceRepository: {
+          sourceControlType: "Github",
+          repositoryUrl: "https://github.com/Azure/azure-rest-api-specs",
+          sourceControlAuthProperties: {
+            tokenType: "OAuth",
+            token: "xxxxxx",
+            scope: "repo",
+          },
+          isCommitTriggerEnabled: true,
         },
-        isCommitTriggerEnabled: true,
+        platform: { osType: "Linux", cpu: 2 },
+        alias: "myalias",
+        status: "Enabled",
       },
-      platform: { osType: "Linux", cpu: 2 },
-      alias: "myalias",
-      status: "Enabled",
-    },
-    location: "eastus",
-    tags: { testkey: "value" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+      location: "eastus",
+      tags: { testkey: "value" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,35 +6,43 @@ Provides a **RouteTable** from the **Network** group
 ## Examples
 ### Create route table
 ```js
-provider.Network.makeRouteTable({
-  name: "myRouteTable",
-  properties: () => ({ location: "westus" }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "RouteTable",
+    group: "Network",
+    name: "myRouteTable",
+    properties: () => ({ location: "westus" }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create route table with route
 ```js
-provider.Network.makeRouteTable({
-  name: "myRouteTable",
-  properties: () => ({
-    properties: {
-      disableBgpRoutePropagation: true,
-      routes: [
-        {
-          name: "route1",
-          properties: {
-            addressPrefix: "10.0.3.0/24",
-            nextHopType: "VirtualNetworkGateway",
+exports.createResources = () => [
+  {
+    type: "RouteTable",
+    group: "Network",
+    name: "myRouteTable",
+    properties: () => ({
+      properties: {
+        disableBgpRoutePropagation: true,
+        routes: [
+          {
+            name: "route1",
+            properties: {
+              addressPrefix: "10.0.3.0/24",
+              nextHopType: "VirtualNetworkGateway",
+            },
           },
-        },
-      ],
-    },
-    location: "westus",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+        ],
+      },
+      location: "westus",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

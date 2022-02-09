@@ -9,20 +9,20 @@ Provides an [AWS subnet](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Su
 ### Simple subnet
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const subnet = provider.EC2.makeSubnet({
-  name: "subnet",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "PubSubnetAz1",
+    properties: ({ config }) => ({
+      CidrBlock: "10.0.0.0/24",
+      AvailabilityZone: `${config.region}a`,
+    }),
+    dependencies: () => ({
+      vpc: "Vpc",
+    }),
+  },
+];
 ```
 
 ### Subnet with attributes:
@@ -30,55 +30,42 @@ const subnet = provider.EC2.makeSubnet({
 The list of attributes can found in [modifySubnetAttribute](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property) function parameter.
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const subnet = provider.EC2.makeSubnet({
-  name: "subnet",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
-    MapPublicIpOnLaunch: true,
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "PubSubnetAz1",
+    properties: ({ config }) => ({
+      CidrBlock: "10.0.0.0/24",
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+    }),
+    dependencies: () => ({
+      vpc: "Vpc",
+    }),
+  },
+];
 ```
 
 ### Subnet with Tags
 
 ```js
-const clusterName = "cluster";
-const vpc = provider.EC2.makeVpc({
-  name: "vpc-eks",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-    Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
-  }),
-});
-
-const subnetPublic = provider.EC2.makeSubnet({
-  name: "subnet-public",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.0.1/24",
-    AvailabilityZone: "eu-west-2a",
-    Tags: [{ Key: "kubernetes.io/role/elb", Value: "1" }],
-    MapPublicIpOnLaunch: true,
-  }),
-});
-
-const subnetPrivate = provider.EC2.makeSubnet({
-  name: "subnet-private",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.1.1/24",
-    AvailabilityZone: "eu-west-2b",
-    Tags: [{ Key: "kubernetes.io/role/internal-elb", Value: "1" }],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "PubSubnetAz1",
+    properties: ({ config }) => ({
+      CidrBlock: "10.0.0.0/24",
+      AvailabilityZone: `${config.region}a`,
+      MapPublicIpOnLaunch: true,
+      Tags: [{ Key: "kubernetes.io/role/elb", Value: "1" }],
+    }),
+    dependencies: () => ({
+      vpc: "Vpc",
+    }),
+  },
+];
 ```
 
 ## Code Examples

@@ -8,12 +8,32 @@ Attach a TargetGroup to an AutoScalingGroup.
 ## Sample code
 
 ```js
-provider.AutoScaling.makeAutoScalingAttachment({
-  dependencies: () => ({
-    autoScalingGroup: "asg-ng-1",
-    targetGroup: "target-group-rest",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
+    name: "asg-ng-1",
+    readOnly: true,
+    properties: ({}) => ({
+      MinSize: 1,
+      MaxSize: 1,
+      DesiredCapacity: 1,
+      HealthCheckGracePeriod: 15,
+    }),
+    dependencies: () => ({
+      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      launchTemplate: "lt-ec2-micro",
+    }),
+  },
+  {
+    type: "AutoScalingAttachment",
+    group: "AutoScaling",
+    dependencies: () => ({
+      autoScalingGroup: "asg-ng-1",
+      targetGroup: "target-group-rest",
+    }),
+  },
+];
 ```
 
 ## Dependencies

@@ -1,6 +1,3 @@
-const path = require("path");
-const hook = require("./hook");
-
 const createResources = ({ provider }) => {
   const bucketPrefix = "grucloud";
   const bucketName = `${bucketPrefix}-test-basic`;

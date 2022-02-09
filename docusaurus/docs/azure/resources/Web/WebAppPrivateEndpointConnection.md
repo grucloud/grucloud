@@ -6,19 +6,26 @@ Provides a **WebAppPrivateEndpointConnection** from the **Web** group
 ## Examples
 ### Approves or rejects a private endpoint connection for a site.
 ```js
-provider.Web.makeWebAppPrivateEndpointConnection({
-  name: "myWebAppPrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "Approved by admin.",
-        actionsRequired: "",
+exports.createResources = () => [
+  {
+    type: "WebAppPrivateEndpointConnection",
+    group: "Web",
+    name: "myWebAppPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Approved by admin.",
+          actionsRequired: "",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "mySite",
+    }),
+  },
+];
 
 ```
 ## Dependencies

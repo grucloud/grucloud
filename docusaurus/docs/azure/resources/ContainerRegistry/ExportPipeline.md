@@ -6,26 +6,30 @@ Provides a **ExportPipeline** from the **ContainerRegistry** group
 ## Examples
 ### ExportPipelineCreate
 ```js
-provider.ContainerRegistry.makeExportPipeline({
-  name: "myExportPipeline",
-  properties: () => ({
-    location: "westus",
-    identity: { type: "SystemAssigned" },
-    properties: {
-      target: {
-        type: "AzureStorageBlobContainer",
-        uri: "https://accountname.blob.core.windows.net/containername",
-        keyVaultUri: "https://myvault.vault.azure.net/secrets/acrexportsas",
+exports.createResources = () => [
+  {
+    type: "ExportPipeline",
+    group: "ContainerRegistry",
+    name: "myExportPipeline",
+    properties: () => ({
+      location: "westus",
+      identity: { type: "SystemAssigned" },
+      properties: {
+        target: {
+          type: "AzureStorageBlobContainer",
+          uri: "https://accountname.blob.core.windows.net/containername",
+          keyVaultUri: "https://myvault.vault.azure.net/secrets/acrexportsas",
+        },
+        options: ["OverwriteBlobs"],
       },
-      options: ["OverwriteBlobs"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    managedIdentities: ["myUserAssignedIdentity"],
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

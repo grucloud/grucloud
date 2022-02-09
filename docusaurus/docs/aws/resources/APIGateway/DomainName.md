@@ -8,11 +8,14 @@ Manages an [API Gateway Domain Name](https://console.aws.amazon.com/apigateway/m
 ## Sample code
 
 ```js
-const apiGatewayDomainName = provider.APIGateway.makeDomainName({
-  name: config.domainName,
-  dependencies: { certificate: "grucloud.org." },
-  properties: () => ({}),
-});
+exports.createResources = () => [
+  {
+    type: "DomainName",
+    group: "APIGateway",
+    name: "mydomain.com",
+    dependencies: () => ({ certificate: "mydomain.com" }),
+  },
+];
 ```
 
 ## Properties

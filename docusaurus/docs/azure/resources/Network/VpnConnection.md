@@ -6,38 +6,42 @@ Provides a **VpnConnection** from the **Network** group
 ## Examples
 ### VpnConnectionPut
 ```js
-provider.Network.makeVpnConnection({
-  name: "myVpnConnection",
-  properties: () => ({
-    properties: {
-      remoteVpnSite: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1",
-      },
-      vpnLinkConnections: [
-        {
-          name: "Connection-Link1",
-          properties: {
-            vpnSiteLink: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1/vpnSiteLinks/siteLink1",
-            },
-            connectionBandwidth: 200,
-            vpnConnectionProtocolType: "IKEv2",
-            sharedKey: "key",
-            vpnLinkConnectionMode: "Default",
-            usePolicyBasedTrafficSelectors: false,
-          },
+exports.createResources = () => [
+  {
+    type: "VpnConnection",
+    group: "Network",
+    name: "myVpnConnection",
+    properties: () => ({
+      properties: {
+        remoteVpnSite: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1",
         },
-      ],
-      trafficSelectorPolicies: [],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vpnSite: "myVpnSite",
-    routeTable: "myRouteTable",
-    gateway: "myVpnGateway",
-  }),
-});
+        vpnLinkConnections: [
+          {
+            name: "Connection-Link1",
+            properties: {
+              vpnSiteLink: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1/vpnSiteLinks/siteLink1",
+              },
+              connectionBandwidth: 200,
+              vpnConnectionProtocolType: "IKEv2",
+              sharedKey: "key",
+              vpnLinkConnectionMode: "Default",
+              usePolicyBasedTrafficSelectors: false,
+            },
+          },
+        ],
+        trafficSelectorPolicies: [],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vpnSite: "myVpnSite",
+      routeTable: "myRouteTable",
+      gateway: "myVpnGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

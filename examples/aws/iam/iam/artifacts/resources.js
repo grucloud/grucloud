@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeInstance({
+exports.createResources = () => [
+  {
+    type: "Instance",
+    group: "EC2",
     name: "web-iam",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
@@ -15,9 +17,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       iamInstanceProfile: "my-profile",
     }),
-  });
-
-  provider.IAM.makeUser({
+  },
+  {
+    type: "User",
+    group: "IAM",
     name: "Alice",
     properties: ({}) => ({
       Path: "/",
@@ -26,9 +29,10 @@ const createResources = ({ provider }) => {
       iamGroups: ["Admin"],
       policies: ["myPolicy-to-user"],
     }),
-  });
-
-  provider.IAM.makeGroup({
+  },
+  {
+    type: "Group",
+    group: "IAM",
     name: "Admin",
     properties: ({}) => ({
       Path: "/",
@@ -36,9 +40,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["myPolicy-to-group"],
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "role-allow-assume-role",
     properties: ({}) => ({
       Path: "/",
@@ -59,16 +64,19 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AmazonEKSWorkerNodePolicy", "myPolicy-to-role"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEKSWorkerNodePolicy",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "myPolicy-to-group",
     properties: ({}) => ({
       PolicyDocument: {
@@ -84,9 +92,10 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow ec2:Describe",
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "myPolicy-to-role",
     properties: ({}) => ({
       PolicyDocument: {
@@ -102,9 +111,10 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow ec2:Describe",
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "myPolicy-to-user",
     properties: ({}) => ({
       PolicyDocument: {
@@ -120,14 +130,13 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow ec2:Describe",
     }),
-  });
-
-  provider.IAM.makeInstanceProfile({
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
     name: "my-profile",
     dependencies: () => ({
       roles: ["role-allow-assume-role"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

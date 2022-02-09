@@ -2,10 +2,6 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.CloudWatchLogs.makeLogGroup({
-    name: "my-loggroup",
-  });
-};
-
-exports.createResources = createResources;
+exports.createResources = () => [
+  { type: "LogGroup", group: "CloudWatchLogs", name: "my-loggroup" },
+];

@@ -6,19 +6,23 @@ Provides a **AgentPool** from the **ContainerRegistry** group
 ## Examples
 ### AgentPools_Create
 ```js
-provider.ContainerRegistry.makeAgentPool({
-  name: "myAgentPool",
-  properties: () => ({
-    location: "WESTUS",
-    tags: { key: "value" },
-    properties: { count: 1, tier: "S1", os: "Linux" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-    registry: "myRegistry",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "AgentPool",
+    group: "ContainerRegistry",
+    name: "myAgentPool",
+    properties: () => ({
+      location: "WESTUS",
+      tags: { key: "value" },
+      properties: { count: 1, tier: "S1", os: "Linux" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

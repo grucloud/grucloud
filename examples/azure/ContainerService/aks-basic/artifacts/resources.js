@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.ContainerService.makeManagedCluster({
+exports.createResources = () => [
+  {
+    type: "ManagedCluster",
+    group: "ContainerService",
     properties: ({}) => ({
       name: "cluster",
       sku: {
@@ -32,7 +34,7 @@ const createResources = ({ provider }) => {
             mode: "System",
             osType: "Linux",
             osSKU: "Ubuntu",
-            nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.19",
+            nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.24",
             enableFIPS: false,
           },
         ],
@@ -74,13 +76,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-aks-basic",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-aks-basic",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

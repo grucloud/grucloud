@@ -8,19 +8,23 @@ Manages an EC2 [Launch Template](https://console.aws.amazon.com/ec2/v2/home?regi
 ## Example Code
 
 ```js
-provider.EC2.makeLaunchTemplate({
-  name: "lt-ec2-micro",
-  properties: ({}) => ({
-    LaunchTemplateData: {
-      ImageId: "ami-02e136e904f3da870",
-      InstanceType: "t2.micro",
-    },
-  }),
-  dependencies: () => ({
-    keyPair: "kp-ecs",
-    iamInstanceProfile: "role-ecs",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "lt-ec2-micro",
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        ImageId: "ami-02e136e904f3da870",
+        InstanceType: "t2.micro",
+      },
+    }),
+    dependencies: () => ({
+      keyPair: "kp-ecs",
+      iamInstanceProfile: "role-ecs",
+    }),
+  },
+];
 ```
 
 ## Full Examples

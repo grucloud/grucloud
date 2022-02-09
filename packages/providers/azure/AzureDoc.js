@@ -99,13 +99,12 @@ const prettierMakeResource = ({ group, type, example, dependencies }) =>
       assert(true);
     }),
     () =>
-      `provider.${group}.make${type}({
+      `exports.createResources = () => [{ type: "${type}", group: "${group}",
         name: "my${type}",
         ${buildProperties({ example })}${buildDependencies({
         example,
         dependencies,
-      })}
-      })`,
+      })}}]`,
     tap((params) => {
       assert(true);
     }),

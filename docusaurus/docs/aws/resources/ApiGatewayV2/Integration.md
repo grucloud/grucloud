@@ -8,18 +8,92 @@ Manages an [Api Gateway V2 Integration](https://console.aws.amazon.com/apigatewa
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeIntegration({
-  properties: ({ config }) => ({
-    ConnectionType: "INTERNET",
-    IntegrationMethod: "POST",
-    IntegrationType: "AWS_PROXY",
-    PayloadFormatVersion: "2.0",
-  }),
-  dependencies: ({}) => ({
-    api: "my-api",
-    lambdaFunction: "my-function",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+  {
+    type: "Integration",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      ConnectionType: "INTERNET",
+      IntegrationMethod: "POST",
+      IntegrationType: "AWS_PROXY",
+      PayloadFormatVersion: "2.0",
+    }),
+    dependencies: () => ({
+      api: "my-api",
+      lambdaFunction: "my-function",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "lambda-policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    name: "my-function",
+    properties: ({}) => ({
+      Handler: "my-function.handler",
+      PackageType: "Zip",
+      Runtime: "nodejs14.x",
+      Description: "",
+      Timeout: 3,
+      MemorySize: 128,
+    }),
+    dependencies: () => ({
+      role: "lambda-role",
+    }),
+  },
+];
 ```
 
 ## Properties

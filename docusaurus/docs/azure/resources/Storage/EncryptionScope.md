@@ -6,26 +6,36 @@ Provides a **EncryptionScope** from the **Storage** group
 ## Examples
 ### StorageAccountPutEncryptionScope
 ```js
-provider.Storage.makeEncryptionScope({
-  name: "myEncryptionScope",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "EncryptionScope",
+    group: "Storage",
+    name: "myEncryptionScope",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### StorageAccountPutEncryptionScopeWithInfrastructureEncryption
 ```js
-provider.Storage.makeEncryptionScope({
-  name: "myEncryptionScope",
-  properties: () => ({ properties: { requireInfrastructureEncryption: true } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "EncryptionScope",
+    group: "Storage",
+    name: "myEncryptionScope",
+    properties: () => ({
+      properties: { requireInfrastructureEncryption: true },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

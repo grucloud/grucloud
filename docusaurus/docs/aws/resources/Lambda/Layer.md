@@ -10,38 +10,78 @@ Provides an [Lambda Layer](https://console.aws.amazon.com/lambda/home?/layers)
 ### Create a Layer for a Function
 
 ```js
-const lambdaPolicy = require("./lambdaPolicy.json");
-const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
-
-provider.IAM.makePolicy({
-  name: "lambda-policy",
-  properties: () => lambdaPolicy,
-});
-
-provider.IAM.makeRole({
-  name: "lambda-role",
-  dependencies: { policies: ["lambda-policy"] },
-  properties: () => lambdaAssumePolicy,
-});
-
-const layer = provider.Lambda.makeLayer({
-  name: "lambda-layer",
-  dependencies: { role: "lambda-role" },
-  properties: () => ({
-    CompatibleRuntimes: ["nodejs"],
-    Description: "My Layer",
-  }),
-});
-
-const lambda = provider.Lambda.makeFunction({
-  name: "lambda-hello-world",
-  dependencies: { role: iamRole, layers: [layer] },
-  properties: () => ({
-    PackageType: "Zip",
-    Handler: "helloworld.handler",
-    Runtime: "nodejs14.x",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
+    name: "lambda-role",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "lambda.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["lambda-policy"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "lambda-policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["logs:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow logs",
+    }),
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
+    name: "lambda-layer",
+    properties: ({}) => ({
+      LayerName: "lambda-layer",
+      Description: "My Layer",
+      CompatibleRuntimes: ["nodejs"],
+    }),
+  },
+  {
+    type: "Function",
+    group: "Lambda",
+    name: "lambda-hello-world",
+    properties: ({}) => ({
+      Handler: "helloworld.handler",
+      PackageType: "Zip",
+      Runtime: "nodejs14.x",
+      Description: "",
+      Timeout: 3,
+      MemorySize: 128,
+    }),
+    dependencies: () => ({
+      layers: ["lambda-layer"],
+      role: "lambda-role",
+    }),
+  },
+];
 ```
 
 ## Source Code Examples

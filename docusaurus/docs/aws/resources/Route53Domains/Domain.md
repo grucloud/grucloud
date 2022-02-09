@@ -11,14 +11,23 @@ By using a _route53 domain_ as a dependency to an _hostedZone_, the nameservers 
 
 ```js
 const domainName = "mydomain.com";
-provider.Route53Domains.useDomain({
-  name: domainName,
-});
 
-provider.Route53.makeHostedZone({
-  name: `${domainName}.`,
-  dependencies: () => ({ domain: domainName }),
-});
+exports.createResources = () => [
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: `${domainName}.`,
+    dependencies: () => ({
+      domain: domainName,
+    }),
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
+    name: domainName,
+    readOnly: true,
+  },
+];
 ```
 
 ## Source Code Examples

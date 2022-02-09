@@ -6,14 +6,18 @@ Provides a **Secret** from the **KeyVault** group
 ## Examples
 ### Create a secret
 ```js
-provider.KeyVault.makeSecret({
-  name: "mySecret",
-  properties: () => ({ properties: { value: "secret-value" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vault: "myVault",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Secret",
+    group: "KeyVault",
+    name: "mySecret",
+    properties: () => ({ properties: { value: "secret-value" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+    }),
+  },
+];
 
 ```
 ## Dependencies

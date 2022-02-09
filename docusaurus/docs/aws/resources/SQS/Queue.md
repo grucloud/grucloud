@@ -8,21 +8,18 @@ Manages an [SQS Queue](https://console.aws.amazon.com/sqs/v2/home?#/).
 ## Sample code
 
 ```js
-provider.SQS.makeQueue({
-  name: "my-queue",
-  properties: () => ({
-    Attributes: {
-      VisibilityTimeout: "30",
-      MaximumMessageSize: "262144",
-      MessageRetentionPeriod: "345600",
-      DelaySeconds: "0",
-      ReceiveMessageWaitTimeSeconds: "0",
-    },
-    tags: {
-      "my-tag": "my-value",
-    },
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Queue",
+    group: "SQS",
+    name: "my-queue",
+    properties: ({}) => ({
+      tags: {
+        "my-tag": "my-value",
+      },
+    }),
+  },
+];
 ```
 
 ## Properties

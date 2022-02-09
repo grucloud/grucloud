@@ -6,11 +6,15 @@ Provides a **DiskAccess** from the **Compute** group
 ## Examples
 ### Create a disk access resource.
 ```js
-provider.Compute.makeDiskAccess({
-  name: "myDiskAccess",
-  properties: () => ({ location: "West US" }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "DiskAccess",
+    group: "Compute",
+    name: "myDiskAccess",
+    properties: () => ({ location: "West US" }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,25 +6,29 @@ Provides a **FlowLog** from the **Network** group
 ## Examples
 ### Create or update flow log
 ```js
-provider.Network.makeFlowLog({
-  name: "myFlowLog",
-  properties: () => ({
-    location: "centraluseuap",
-    properties: {
-      targetResourceId:
-        "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/desmondcentral-nsg",
-      storageId:
-        "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/nwtest1mgvbfmqsigdxe",
-      enabled: true,
-      format: { type: "JSON", version: 1 },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    workspace: "myWorkspace",
-    networkWatcher: "myNetworkWatcher",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FlowLog",
+    group: "Network",
+    name: "myFlowLog",
+    properties: () => ({
+      location: "centraluseuap",
+      properties: {
+        targetResourceId:
+          "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/desmondcentral-nsg",
+        storageId:
+          "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Storage/storageAccounts/nwtest1mgvbfmqsigdxe",
+        enabled: true,
+        format: { type: "JSON", version: 1 },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      workspace: "myWorkspace",
+      networkWatcher: "myNetworkWatcher",
+    }),
+  },
+];
 
 ```
 ## Dependencies

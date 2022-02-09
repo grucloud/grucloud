@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.compute.makeVmInstance({
+exports.createResources = () => [
+  {
+    type: "VmInstance",
+    group: "compute",
     name: "web-server",
     properties: ({}) => ({
       machineType: "f1-micro",
@@ -18,7 +20,5 @@ const createResources = ({ provider }) => {
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

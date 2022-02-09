@@ -1,8 +1,8 @@
-const createResources = ({ provider }) => {
-  provider.KMS.makeKey({
-    name: "secret-key-test",
+exports.createResources = () => [
+  {
+    type: "Key",
+    group: "KMS",
+    name: "key-test",
     properties: () => ({ Enabled: false }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

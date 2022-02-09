@@ -6,22 +6,87 @@ title: User
 Provides an Iam User
 
 ```js
-provider.IAM.makeUser({
-  name: "Alice",
-});
+exports.createResources = () => [
+  {
+    type: "User",
+    group: "IAM",
+    name: "Alice",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      policies: ["myPolicy-to-user"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "myPolicy-to-user",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
 ```
 
 ### Add a user to groups
 
 ```js
-provider.IAM.makeGroup({
-  name: "Admin",
-});
-
-provider.IAM.makeUser({
-  name: "Alice",
-  dependencies: () => ({ iamGroups: ["Admin"] }),
-});
+exports.createResources = () => [
+  {
+    type: "User",
+    group: "IAM",
+    name: "Alice",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      iamGroups: ["Admin"],
+      policies: ["myPolicy-to-user"],
+    }),
+  },
+  {
+    type: "Group",
+    group: "IAM",
+    name: "Admin",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      policies: ["myPolicy-to-group"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "myPolicy-to-user",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
 ```
 
 ### Examples

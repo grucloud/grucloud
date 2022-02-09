@@ -8,11 +8,19 @@ Manages a [DB Subnet Group](https://docs.aws.amazon.com/AmazonRDS/latest/UserGui
 ## Example
 
 ```js
-const dbSubnetGroup = provider.RDS.makeDBSubnetGroup({
-  name: "db-subnet-group",
-  dependencies: { subnets: ["subnetA", "subnetB"] },
-  properties: () => ({ DBSubnetGroupDescription: "db subnet group" }),
-});
+exports.createResources = () => [
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    name: "subnet-group-postgres",
+    properties: ({}) => ({
+      DBSubnetGroupDescription: "db subnet group",
+    }),
+    dependencies: () => ({
+      subnets: ["subnet-1", "subnet-2"],
+    }),
+  },
+];
 ```
 
 ## Code Examples

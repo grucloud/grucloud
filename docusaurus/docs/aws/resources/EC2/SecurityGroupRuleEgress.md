@@ -11,46 +11,34 @@ Manages a security group egress rule.
 The following example creates a security rule to allow egress traffic.
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const sg = provider.EC2.makeSecurityGroup({
-  name: "securityGroup",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    create: {
-      Description: "Security Group",
-    },
-  }),
-});
-
-const sgRuleEgress = provider.EC2.makeSecurityGroupRuleEgress({
-  name: "sg-rule-egress",
-  dependencies: () => ({
-    securityGroup: sg,
-  }),
-  properties: () => ({
-    IpPermission: {
-      FromPort: 1024,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      Ipv6Ranges: [
-        {
-          CidrIpv6: "::/0",
-        },
-      ],
-      ToPort: 65535,
-    },
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
+    name: "sg-rule-cluster-egress",
+    properties: ({}) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 1024,
+        ToPort: 65535,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      securityGroup: "security-group-cluster-test",
+    }),
+  },
+];
+];
 ```
 
 ### Properties

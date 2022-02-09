@@ -132,17 +132,20 @@ module.exports = ({ stage }) => ({
 This file exports the _createResources_ functions
 
 ```js
-const createResources = ({ provider }) => {
-  provider.EC2.makeInstance({
+exports.createResources = () => [
+  {
+    type: "Instance",
+    group: "EC2",
     name: "web-server-ec2-example",
-    properties: () => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-056bfe7d8a7bdb9d0",
+      ImageId: "ami-02e136e904f3da870",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];
 ```
 
 ### iac.js
@@ -153,8 +156,6 @@ We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs
 [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-simple/iac.js) must export the `createStack` function which returns the provider and the resources.
 
 Then, instantiate _AwsProvider_ by providing the _config_ function.
-
-In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/Instance) is defined with `provider.EC2.makeInstance`.
 
 ```js
 // iac.js

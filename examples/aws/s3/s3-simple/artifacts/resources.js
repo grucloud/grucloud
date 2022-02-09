@@ -2,12 +2,11 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.S3.makeBucket({
-    name: "grucloud-simple-bucket",
-  });
-
-  provider.S3.makeObject({
+exports.createResources = () => [
+  { type: "Bucket", group: "S3", name: "grucloud-simple-bucket" },
+  {
+    type: "Object",
+    group: "S3",
     name: "grucloud-simple-file-test",
     properties: ({}) => ({
       ContentType: "text/plain",
@@ -27,7 +26,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       bucket: "grucloud-simple-bucket",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

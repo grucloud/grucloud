@@ -6,15 +6,19 @@ Provides a **CapacityReservationGroup** from the **Compute** group
 ## Examples
 ### Create or update a capacity reservation group.
 ```js
-provider.Compute.makeCapacityReservationGroup({
-  name: "myCapacityReservationGroup",
-  properties: () => ({
-    location: "westus",
-    tags: { department: "finance" },
-    zones: ["1", "2"],
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "CapacityReservationGroup",
+    group: "Compute",
+    name: "myCapacityReservationGroup",
+    properties: () => ({
+      location: "westus",
+      tags: { department: "finance" },
+      zones: ["1", "2"],
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

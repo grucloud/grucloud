@@ -6,43 +6,51 @@ Provides a **RestorePointCollection** from the **Compute** group
 ## Examples
 ### Create or update a restore point collection.
 ```js
-provider.Compute.makeRestorePointCollection({
-  name: "myRestorePointCollection",
-  properties: () => ({
-    location: "norwayeast",
-    properties: {
-      source: {
-        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM",
+exports.createResources = () => [
+  {
+    type: "RestorePointCollection",
+    group: "Compute",
+    name: "myRestorePointCollection",
+    properties: () => ({
+      location: "norwayeast",
+      properties: {
+        source: {
+          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM",
+        },
       },
-    },
-    tags: { myTag1: "tagValue1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    restorePoint: "myRestorePoint",
-  }),
-});
+      tags: { myTag1: "tagValue1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      restorePoint: "myRestorePoint",
+    }),
+  },
+];
 
 ```
 
 ### Create or update a restore point collection for cross region copy.
 ```js
-provider.Compute.makeRestorePointCollection({
-  name: "myRestorePointCollection",
-  properties: () => ({
-    location: "norwayeast",
-    properties: {
-      source: {
-        id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/restorePointCollections/sourceRpcName",
+exports.createResources = () => [
+  {
+    type: "RestorePointCollection",
+    group: "Compute",
+    name: "myRestorePointCollection",
+    properties: () => ({
+      location: "norwayeast",
+      properties: {
+        source: {
+          id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/restorePointCollections/sourceRpcName",
+        },
       },
-    },
-    tags: { myTag1: "tagValue1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    restorePoint: "myRestorePoint",
-  }),
-});
+      tags: { myTag1: "tagValue1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      restorePoint: "myRestorePoint",
+    }),
+  },
+];
 
 ```
 ## Dependencies

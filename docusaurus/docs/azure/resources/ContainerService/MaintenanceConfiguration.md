@@ -6,21 +6,25 @@ Provides a **MaintenanceConfiguration** from the **ContainerService** group
 ## Examples
 ### Create/Update Maintenance Configuration
 ```js
-provider.ContainerService.makeMaintenanceConfiguration({
-  name: "myMaintenanceConfiguration",
-  properties: () => ({
-    properties: {
-      timeInWeek: [{ day: "Monday", hourSlots: [1, 2] }],
-      notAllowedTime: [
-        { start: "2020-11-26T03:00:00Z", end: "2020-11-30T12:00:00Z" },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    resource: "myManagedCluster",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "MaintenanceConfiguration",
+    group: "ContainerService",
+    name: "myMaintenanceConfiguration",
+    properties: () => ({
+      properties: {
+        timeInWeek: [{ day: "Monday", hourSlots: [1, 2] }],
+        notAllowedTime: [
+          { start: "2020-11-26T03:00:00Z", end: "2020-11-30T12:00:00Z" },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      resource: "myManagedCluster",
+    }),
+  },
+];
 
 ```
 ## Dependencies

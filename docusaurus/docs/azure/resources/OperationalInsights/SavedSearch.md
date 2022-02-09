@@ -6,24 +6,28 @@ Provides a **SavedSearch** from the **OperationalInsights** group
 ## Examples
 ### SavedSearchCreateOrUpdate
 ```js
-provider.OperationalInsights.makeSavedSearch({
-  name: "mySavedSearch",
-  properties: () => ({
-    properties: {
-      category: "Saved Search Test Category",
-      displayName: "Create or Update Saved Search Test",
-      version: 2,
-      functionAlias: "heartbeat_func",
-      functionParameters: "a:int=1",
-      query: "Heartbeat | summarize Count() by Computer | take a",
-      tags: [{ name: "Group", value: "Computer" }],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    workspace: "myWorkspace",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "SavedSearch",
+    group: "OperationalInsights",
+    name: "mySavedSearch",
+    properties: () => ({
+      properties: {
+        category: "Saved Search Test Category",
+        displayName: "Create or Update Saved Search Test",
+        version: 2,
+        functionAlias: "heartbeat_func",
+        functionParameters: "a:int=1",
+        query: "Heartbeat | summarize Count() by Computer | take a",
+        tags: [{ name: "Group", value: "Computer" }],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      workspace: "myWorkspace",
+    }),
+  },
+];
 
 ```
 ## Dependencies

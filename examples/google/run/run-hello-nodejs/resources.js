@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.run.makeService({
+exports.createResources = () => [
+  {
+    type: "Service",
+    group: "run",
     properties: ({ config }) => ({
       apiVersion: "serving.knative.dev/v1",
       kind: "Service",
@@ -49,9 +51,10 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.run.makeServiceIamMember({
+  },
+  {
+    type: "ServiceIamMember",
+    group: "run",
     properties: ({ config }) => ({
       location: config.region,
       policy: {
@@ -67,7 +70,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       service: "starhackit-server",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

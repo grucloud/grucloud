@@ -6,17 +6,21 @@ Provides a **IpGroup** from the **Network** group
 ## Examples
 ### CreateOrUpdate_IpGroups
 ```js
-provider.Network.makeIpGroup({
-  name: "myIpGroup",
-  properties: () => ({
-    tags: { key1: "value1" },
-    location: "West US",
-    properties: {
-      ipAddresses: ["13.64.39.16/32", "40.74.146.80/31", "40.74.147.32/28"],
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "IpGroup",
+    group: "Network",
+    name: "myIpGroup",
+    properties: () => ({
+      tags: { key1: "value1" },
+      location: "West US",
+      properties: {
+        ipAddresses: ["13.64.39.16/32", "40.74.146.80/31", "40.74.147.32/28"],
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

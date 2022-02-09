@@ -10,22 +10,24 @@ Manage a [System Manager Parameter](https://console.aws.amazon.com/systems-manag
 Create a text parameter:
 
 ```js
-provider.SSM.makeParameter({
-  name: "my-param"
-  properties: () => ({
-    Type: "String",
-    Value: "my-value",
-    Description: "a textual parameter",
-    Tier: "Standard",
-    DataType: "text",
-    Tags: [
-      {
-        Key: "TOTOKEY",
-        Value: "TOTOVALUE",
-      },
-    ],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Parameter",
+    group: "SSM",
+    name: "text-param",
+    properties: ({}) => ({
+      Type: "String",
+      Value: "my-value",
+      DataType: "text",
+      Tags: [
+        {
+          Key: "TOTOKEY",
+          Value: "TOTOVALUE",
+        },
+      ],
+    }),
+  },
+];
 ```
 
 ## Code Examples

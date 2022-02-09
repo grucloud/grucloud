@@ -10,28 +10,32 @@ A target group can be attached directly to an AutoScaling Group or an AutoScalin
 ## Example
 
 ```js
-provider.ELBv2.makeTargetGroup({
-  name: "target-group-rest",
-  properties: ({ config }) => ({
-    Protocol: "HTTP",
-    Port: 30020,
-    HealthCheckProtocol: "HTTP",
-    HealthCheckPort: "traffic-port",
-    HealthCheckEnabled: true,
-    HealthCheckIntervalSeconds: 30,
-    HealthCheckTimeoutSeconds: 5,
-    HealthyThresholdCount: 5,
-    HealthCheckPath: "/",
-    Matcher: {
-      HttpCode: "200",
-    },
-    TargetType: "instance",
-    ProtocolVersion: "HTTP1",
-  }),
-  dependencies: ({}) => ({
-    vpc: "vpc",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "TargetGroup",
+    group: "ELBv2",
+    name: "target-group-rest",
+    properties: ({}) => ({
+      Protocol: "HTTP",
+      Port: 30020,
+      HealthCheckProtocol: "HTTP",
+      HealthCheckPort: "traffic-port",
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 30,
+      HealthCheckTimeoutSeconds: 5,
+      HealthyThresholdCount: 5,
+      HealthCheckPath: "/api/v1/version",
+      Matcher: {
+        HttpCode: "200",
+      },
+      TargetType: "instance",
+      ProtocolVersion: "HTTP1",
+    }),
+    dependencies: () => ({
+      vpc: "VPC",
+    }),
+  },
+];
 ```
 
 ## Properties

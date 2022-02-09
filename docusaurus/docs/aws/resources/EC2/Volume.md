@@ -5,37 +5,26 @@ title: EBS Volume
 
 Manages a [EBS Volume](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes.html)
 
-This will create a volume and attached it to the EC2 instance.
+This examples will create a volume.
 
 ```js
-const Device = "/dev/sdf";
-const deviceMounted = "/dev/xvdf";
-const mountPoint = "/data";
-const AvailabilityZone = "us-east-1a";
-
-const volume = provider.EC2.makeVolume({
-  name: "volume",
-  properties: () => ({
-    Size: 5,
-    VolumeType: "standard",
-    Device,
-    AvailabilityZone,
-  }),
-});
-
-const server = provider.EC2.makeInstance({
-  name: "server",
-  dependencies: () => ({ volumes: [volume] }),
-  properties: () => ({
-    UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
-    Placement: { AvailabilityZone },
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Volume",
+    group: "EC2",
+    name: "volume",
+    properties: ({ config }) => ({
+      Size: 5,
+      VolumeType: "standard",
+      AvailabilityZone: `${config.region}a`,
+    }),
+  },
+];
 ```
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/volume/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/volume/resources.js)
 
 ### Properties
 

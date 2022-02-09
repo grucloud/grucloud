@@ -6,14 +6,18 @@ Provides a **UserAssignedIdentity** from the **ManagedIdentity** group
 ## Examples
 ### IdentityCreate
 ```js
-provider.ManagedIdentity.makeUserAssignedIdentity({
-  name: "myUserAssignedIdentity",
-  properties: () => ({
-    location: "eastus",
-    tags: { key1: "value1", key2: "value2" },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "UserAssignedIdentity",
+    group: "ManagedIdentity",
+    name: "myUserAssignedIdentity",
+    properties: () => ({
+      location: "eastus",
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

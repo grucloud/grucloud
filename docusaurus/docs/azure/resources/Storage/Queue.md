@@ -6,28 +6,36 @@ Provides a **Queue** from the **Storage** group
 ## Examples
 ### QueueOperationPut
 ```js
-provider.Storage.makeQueue({
-  name: "myQueue",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Queue",
+    group: "Storage",
+    name: "myQueue",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### QueueOperationPutWithMetadata
 ```js
-provider.Storage.makeQueue({
-  name: "myQueue",
-  properties: () => ({
-    properties: { metadata: { sample1: "meta1", sample2: "meta2" } },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Queue",
+    group: "Storage",
+    name: "myQueue",
+    properties: () => ({
+      properties: { metadata: { sample1: "meta1", sample2: "meta2" } },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

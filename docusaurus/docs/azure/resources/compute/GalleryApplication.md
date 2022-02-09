@@ -6,23 +6,27 @@ Provides a **GalleryApplication** from the **Compute** group
 ## Examples
 ### Create or update a simple gallery Application.
 ```js
-provider.Compute.makeGalleryApplication({
-  name: "myGalleryApplication",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      description: "This is the gallery application description.",
-      eula: "This is the gallery application EULA.",
-      privacyStatementUri: "myPrivacyStatementUri}",
-      releaseNoteUri: "myReleaseNoteUri",
-      supportedOSType: "Windows",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    gallery: "myGallery",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "GalleryApplication",
+    group: "Compute",
+    name: "myGalleryApplication",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        description: "This is the gallery application description.",
+        eula: "This is the gallery application EULA.",
+        privacyStatementUri: "myPrivacyStatementUri}",
+        releaseNoteUri: "myReleaseNoteUri",
+        supportedOSType: "Windows",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      gallery: "myGallery",
+    }),
+  },
+];
 
 ```
 ## Dependencies

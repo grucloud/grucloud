@@ -6,26 +6,30 @@ Provides a **GalleryImage** from the **Compute** group
 ## Examples
 ### Create or update a simple gallery image.
 ```js
-provider.Compute.makeGalleryImage({
-  name: "myGalleryImage",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      osType: "Windows",
-      osState: "Generalized",
-      hyperVGeneration: "V1",
-      identifier: {
-        publisher: "myPublisherName",
-        offer: "myOfferName",
-        sku: "mySkuName",
+exports.createResources = () => [
+  {
+    type: "GalleryImage",
+    group: "Compute",
+    name: "myGalleryImage",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        osState: "Generalized",
+        hyperVGeneration: "V1",
+        identifier: {
+          publisher: "myPublisherName",
+          offer: "myOfferName",
+          sku: "mySkuName",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    gallery: "myGallery",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      gallery: "myGallery",
+    }),
+  },
+];
 
 ```
 ## Dependencies

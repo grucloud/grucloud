@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.DBforPostgreSQL.makeConfiguration({
+exports.createResources = () => [
+  {
+    type: "Configuration",
+    group: "DBforPostgreSQL",
     properties: ({}) => ({
       name: "shared_preload_libraries",
       properties: {
@@ -15,9 +17,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-postgres",
       server: "rg-postgres::gc-server",
     }),
-  });
-
-  provider.DBforPostgreSQL.makeFirewallRule({
+  },
+  {
+    type: "FirewallRule",
+    group: "DBforPostgreSQL",
     properties: ({}) => ({
       name: "allowallazureservicesandresourceswithinazureips_2022-1-19_17-30-21",
       properties: {
@@ -29,9 +32,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-postgres",
       server: "rg-postgres::gc-server",
     }),
-  });
-
-  provider.DBforPostgreSQL.makeFlexibleServer({
+  },
+  {
+    type: "FlexibleServer",
+    group: "DBforPostgreSQL",
     properties: ({}) => ({
       name: "gc-server",
       sku: {
@@ -51,13 +55,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-postgres",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-postgres",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -6,13 +6,17 @@ Provides a **Table** from the **Storage** group
 ## Examples
 ### TableOperationPut
 ```js
-provider.Storage.makeTable({
-  name: "myTable",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Table",
+    group: "Storage",
+    name: "myTable",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

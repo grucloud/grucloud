@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeVirtualMachine({
+exports.createResources = () => [
+  {
+    type: "VirtualMachine",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vm",
       properties: {
@@ -51,9 +53,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-vm",
       networkInterfaces: ["rg-vm::network-interface"],
     }),
-  });
-
-  provider.Network.makeNetworkInterface({
+  },
+  {
+    type: "NetworkInterface",
+    group: "Network",
     properties: ({}) => ({
       name: "network-interface",
       properties: {
@@ -74,9 +77,10 @@ const createResources = ({ provider }) => {
       securityGroup: "rg-vm::security-group",
       subnet: "rg-vm::virtual-network::subnet",
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "security-group",
       properties: {
@@ -113,18 +117,20 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "ip",
     }),
     dependencies: () => ({
       resourceGroup: "rg-vm",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "subnet",
       properties: {
@@ -135,9 +141,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-vm",
       virtualNetwork: "rg-vm::virtual-network",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -149,13 +156,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-vm",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-vm",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -6,14 +6,20 @@ Provides a **VirtualRouterPeering** from the **Network** group
 ## Examples
 ### Create Virtual Router Peering
 ```js
-provider.Network.makeVirtualRouterPeering({
-  name: "myVirtualRouterPeering",
-  properties: () => ({ properties: { peerIp: "192.168.1.5", peerAsn: 20000 } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualRouter: "myVirtualRouter",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualRouterPeering",
+    group: "Network",
+    name: "myVirtualRouterPeering",
+    properties: () => ({
+      properties: { peerIp: "192.168.1.5", peerAsn: 20000 },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualRouter: "myVirtualRouter",
+    }),
+  },
+];
 
 ```
 ## Dependencies

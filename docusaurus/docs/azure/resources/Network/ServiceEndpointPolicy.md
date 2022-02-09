@@ -6,39 +6,47 @@ Provides a **ServiceEndpointPolicy** from the **Network** group
 ## Examples
 ### Create service endpoint policy
 ```js
-provider.Network.makeServiceEndpointPolicy({
-  name: "myServiceEndpointPolicy",
-  properties: () => ({ location: "westus" }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "ServiceEndpointPolicy",
+    group: "Network",
+    name: "myServiceEndpointPolicy",
+    properties: () => ({ location: "westus" }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create service endpoint policy with definition
 ```js
-provider.Network.makeServiceEndpointPolicy({
-  name: "myServiceEndpointPolicy",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      serviceEndpointPolicyDefinitions: [
-        {
-          name: "StorageServiceEndpointPolicyDefinition",
-          properties: {
-            description: "Storage Service EndpointPolicy Definition",
-            service: "Microsoft.Storage",
-            serviceResources: [
-              "/subscriptions/subid1",
-              "/subscriptions/subid1/resourceGroups/storageRg",
-              "/subscriptions/subid1/resourceGroups/storageRg/providers/Microsoft.Storage/storageAccounts/stAccount",
-            ],
+exports.createResources = () => [
+  {
+    type: "ServiceEndpointPolicy",
+    group: "Network",
+    name: "myServiceEndpointPolicy",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        serviceEndpointPolicyDefinitions: [
+          {
+            name: "StorageServiceEndpointPolicyDefinition",
+            properties: {
+              description: "Storage Service EndpointPolicy Definition",
+              service: "Microsoft.Storage",
+              serviceResources: [
+                "/subscriptions/subid1",
+                "/subscriptions/subid1/resourceGroups/storageRg",
+                "/subscriptions/subid1/resourceGroups/storageRg/providers/Microsoft.Storage/storageAccounts/stAccount",
+              ],
+            },
           },
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+        ],
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

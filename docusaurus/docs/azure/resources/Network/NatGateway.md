@@ -6,29 +6,33 @@ Provides a **NatGateway** from the **Network** group
 ## Examples
 ### Create nat gateway
 ```js
-provider.Network.makeNatGateway({
-  name: "myNatGateway",
-  properties: () => ({
-    location: "westus",
-    sku: { name: "Standard" },
-    properties: {
-      publicIpAddresses: [
-        {
-          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/PublicIpAddress1",
-        },
-      ],
-      publicIpPrefixes: [
-        {
-          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPPrefixes/PublicIpPrefix1",
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    publicIpAddresses: ["myPublicIPAddress"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "NatGateway",
+    group: "Network",
+    name: "myNatGateway",
+    properties: () => ({
+      location: "westus",
+      sku: { name: "Standard" },
+      properties: {
+        publicIpAddresses: [
+          {
+            id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/PublicIpAddress1",
+          },
+        ],
+        publicIpPrefixes: [
+          {
+            id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPPrefixes/PublicIpPrefix1",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      publicIpAddresses: ["myPublicIPAddress"],
+    }),
+  },
+];
 
 ```
 ## Dependencies

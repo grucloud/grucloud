@@ -2,15 +2,18 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.ApiGatewayV2.makeDomainName({
+exports.createResources = () => [
+  {
+    type: "DomainName",
+    group: "ApiGatewayV2",
     name: "grucloud.org",
     dependencies: () => ({
       certificate: "grucloud.org",
     }),
-  });
-
-  provider.ApiGatewayV2.makeApi({
+  },
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
     name: "my-api",
     properties: ({}) => ({
       ProtocolType: "HTTP",
@@ -18,9 +21,10 @@ const createResources = ({ provider }) => {
       DisableExecuteApiEndpoint: false,
       RouteSelectionExpression: "$request.method $request.path",
     }),
-  });
-
-  provider.ApiGatewayV2.makeStage({
+  },
+  {
+    type: "Stage",
+    group: "ApiGatewayV2",
     name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
@@ -32,9 +36,10 @@ const createResources = ({ provider }) => {
       api: "my-api",
       logGroup: "lg-http-test",
     }),
-  });
-
-  provider.ApiGatewayV2.makeAuthorizer({
+  },
+  {
+    type: "Authorizer",
+    group: "ApiGatewayV2",
     name: "authorizer-auth0",
     properties: ({}) => ({
       AuthorizerType: "JWT",
@@ -47,9 +52,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       api: "my-api",
     }),
-  });
-
-  provider.ApiGatewayV2.makeApiMapping({
+  },
+  {
+    type: "ApiMapping",
+    group: "ApiGatewayV2",
     properties: ({}) => ({
       ApiMappingKey: "",
     }),
@@ -58,9 +64,10 @@ const createResources = ({ provider }) => {
       domainName: "grucloud.org",
       stage: "my-api-stage-dev",
     }),
-  });
-
-  provider.ApiGatewayV2.makeIntegration({
+  },
+  {
+    type: "Integration",
+    group: "ApiGatewayV2",
     properties: ({}) => ({
       ConnectionType: "INTERNET",
       IntegrationMethod: "POST",
@@ -71,9 +78,10 @@ const createResources = ({ provider }) => {
       api: "my-api",
       lambdaFunction: "my-function",
     }),
-  });
-
-  provider.ApiGatewayV2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "ApiGatewayV2",
     properties: ({}) => ({
       ApiKeyRequired: false,
       AuthorizationType: "JWT",
@@ -84,24 +92,20 @@ const createResources = ({ provider }) => {
       integration: "integration::my-api::my-function",
       authorizer: "authorizer-auth0",
     }),
-  });
-
-  provider.ApiGatewayV2.makeDeployment({
+  },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
     dependencies: () => ({
       api: "my-api",
       stage: "my-api-stage-dev",
     }),
-  });
-
-  provider.ACM.makeCertificate({
-    name: "grucloud.org",
-  });
-
-  provider.CloudWatchLogs.makeLogGroup({
-    name: "lg-http-test",
-  });
-
-  provider.IAM.makeRole({
+  },
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+  {
+    type: "Role",
+    group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
       Path: "/",
@@ -122,9 +126,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["lambda-policy"],
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "lambda-policy",
     properties: ({}) => ({
       PolicyDocument: {
@@ -140,9 +145,10 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow logs",
     }),
-  });
-
-  provider.Lambda.makeFunction({
+  },
+  {
+    type: "Function",
+    group: "Lambda",
     name: "my-function",
     properties: ({}) => ({
       Handler: "my-function.handler",
@@ -155,32 +161,35 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       role: "lambda-role",
     }),
-  });
-
-  provider.Route53.makeHostedZone({
+  },
+  {
+    type: "HostedZone",
+    group: "Route53",
     name: "grucloud.org.",
     dependencies: () => ({
       domain: "grucloud.org",
     }),
-  });
-
-  provider.Route53.makeRecord({
+  },
+  {
+    type: "Record",
+    group: "Route53",
     dependencies: () => ({
       hostedZone: "grucloud.org.",
       certificate: "grucloud.org",
     }),
-  });
-
-  provider.Route53.makeRecord({
+  },
+  {
+    type: "Record",
+    group: "Route53",
     dependencies: () => ({
       hostedZone: "grucloud.org.",
       apiGatewayV2DomainName: "grucloud.org",
     }),
-  });
-
-  provider.Route53Domains.useDomain({
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
     name: "grucloud.org",
-  });
-};
-
-exports.createResources = createResources;
+    readOnly: true,
+  },
+];

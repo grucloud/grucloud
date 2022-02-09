@@ -12,34 +12,38 @@ Manage an [ELB Listener Rule](https://docs.aws.amazon.com/elasticloadbalancing/l
 Provide a rule to redirect HTTP traffic to HTTPS.
 
 ```js
-provider.ELBv2.makeRule({
-  properties: ({ config }) => ({
-    Priority: "1",
-    Conditions: [
-      {
-        Field: "path-pattern",
-        Values: ["/*"],
-      },
-    ],
-    Actions: [
-      {
-        Type: "redirect",
-        Order: 1,
-        RedirectConfig: {
-          Protocol: "HTTPS",
-          Port: "443",
-          Host: "#{host}",
-          Path: "/#{path}",
-          Query: "#{query}",
-          StatusCode: "HTTP_301",
+exports.createResources = () => [
+  {
+    type: "Rule",
+    group: "ELBv2",
+    properties: ({}) => ({
+      Priority: "1",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/*"],
         },
-      },
-    ],
-  }),
-  dependencies: ({}) => ({
-    listener: "listener::load-balancer::HTTP::80",
-  }),
-});
+      ],
+      Actions: [
+        {
+          Type: "redirect",
+          Order: 1,
+          RedirectConfig: {
+            Protocol: "HTTPS",
+            Port: "443",
+            Host: "#{host}",
+            Path: "/#{path}",
+            Query: "#{query}",
+            StatusCode: "HTTP_301",
+          },
+        },
+      ],
+    }),
+    dependencies: () => ({
+      listener: "listener::load-balancer::HTTP::80",
+    }),
+  },
+];
 ```
 
 ### Forward to target group based on a path pattern
@@ -47,21 +51,25 @@ provider.ELBv2.makeRule({
 Forward traffic matching _/api/_ to the target group running the REST server.
 
 ```js
-provider.ELBv2.makeRule({
-  properties: ({ config }) => ({
-    Priority: "1",
-    Conditions: [
-      {
-        Field: "path-pattern",
-        Values: ["/api/*"],
-      },
-    ],
-  }),
-  dependencies: ({}) => ({
-    listener: "listener::load-balancer::HTTPS::443",
-    targetGroup: "target-group-rest",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Rule",
+    group: "ELBv2",
+    properties: ({}) => ({
+      Priority: "1",
+      Conditions: [
+        {
+          Field: "path-pattern",
+          Values: ["/api/*"],
+        },
+      ],
+    }),
+    dependencies: () => ({
+      listener: "listener::load-balancer::HTTPS::443",
+      targetGroup: "target-group-rest",
+    }),
+  },
+];
 ```
 
 ## Properties

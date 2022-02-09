@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Network.makeAzureFirewall({
+exports.createResources = () => [
+  {
+    type: "AzureFirewall",
+    group: "Network",
     properties: ({ getId }) => ({
       name: "firewall",
       properties: {
@@ -52,9 +54,10 @@ const createResources = ({ provider }) => {
       publicIpAddresses: ["rg-firewall::ip-address"],
       firewallPolicy: "rg-firewall::firewall-policy",
     }),
-  });
-
-  provider.Network.makeFirewallPolicy({
+  },
+  {
+    type: "FirewallPolicy",
+    group: "Network",
     properties: ({}) => ({
       name: "firewall-policy",
       properties: {
@@ -67,9 +70,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-firewall",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "ip-address",
       sku: {
@@ -82,9 +86,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-firewall",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "azurefirewallsubnet",
       properties: {
@@ -95,9 +100,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-firewall",
       virtualNetwork: "rg-firewall::virtual-network",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -109,13 +115,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-firewall",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-firewall",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

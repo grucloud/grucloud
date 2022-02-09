@@ -6,73 +6,85 @@ Provides a **RoleAssignment** from the **Authorization** group
 ## Examples
 ### Create role assignment for subscription
 ```js
-provider.Authorization.makeRoleAssignment({
-  name: "myRoleAssignment",
-  properties: () => ({
-    properties: {
-      roleDefinitionId:
-        "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
-      principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
-      principalType: "User",
-    },
-  }),
-  dependencies: ({}) => ({
-    scopeResourceGroup: "myResourceGroup",
-    scopeVirtualMachine: "myVirtualMachine",
-    roleDefinition: "myRoleDefinition",
-    principalManagedCluster: "myManagedCluster",
-    principalDiskEncryptionSet: "myDiskEncryptionSet",
-    principalVirtualMachine: "myVirtualMachine",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RoleAssignment",
+    group: "Authorization",
+    name: "myRoleAssignment",
+    properties: () => ({
+      properties: {
+        roleDefinitionId:
+          "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
+        principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
+        principalType: "User",
+      },
+    }),
+    dependencies: ({}) => ({
+      scopeResourceGroup: "myResourceGroup",
+      scopeVirtualMachine: "myVirtualMachine",
+      roleDefinition: "myRoleDefinition",
+      principalManagedCluster: "myManagedCluster",
+      principalDiskEncryptionSet: "myDiskEncryptionSet",
+      principalVirtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create role assignment for resource group
 ```js
-provider.Authorization.makeRoleAssignment({
-  name: "myRoleAssignment",
-  properties: () => ({
-    properties: {
-      roleDefinitionId:
-        "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
-      principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
-      principalType: "User",
-    },
-  }),
-  dependencies: ({}) => ({
-    scopeResourceGroup: "myResourceGroup",
-    scopeVirtualMachine: "myVirtualMachine",
-    roleDefinition: "myRoleDefinition",
-    principalManagedCluster: "myManagedCluster",
-    principalDiskEncryptionSet: "myDiskEncryptionSet",
-    principalVirtualMachine: "myVirtualMachine",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RoleAssignment",
+    group: "Authorization",
+    name: "myRoleAssignment",
+    properties: () => ({
+      properties: {
+        roleDefinitionId:
+          "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
+        principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
+        principalType: "User",
+      },
+    }),
+    dependencies: ({}) => ({
+      scopeResourceGroup: "myResourceGroup",
+      scopeVirtualMachine: "myVirtualMachine",
+      roleDefinition: "myRoleDefinition",
+      principalManagedCluster: "myManagedCluster",
+      principalDiskEncryptionSet: "myDiskEncryptionSet",
+      principalVirtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### Create role assignment for resource
 ```js
-provider.Authorization.makeRoleAssignment({
-  name: "myRoleAssignment",
-  properties: () => ({
-    properties: {
-      roleDefinitionId:
-        "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
-      principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
-      principalType: "User",
-    },
-  }),
-  dependencies: ({}) => ({
-    scopeResourceGroup: "myResourceGroup",
-    scopeVirtualMachine: "myVirtualMachine",
-    roleDefinition: "myRoleDefinition",
-    principalManagedCluster: "myManagedCluster",
-    principalDiskEncryptionSet: "myDiskEncryptionSet",
-    principalVirtualMachine: "myVirtualMachine",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RoleAssignment",
+    group: "Authorization",
+    name: "myRoleAssignment",
+    properties: () => ({
+      properties: {
+        roleDefinitionId:
+          "/subscriptions/a925f2f7-5c63-4b7b-8799-25a5f97bc3b2/providers/Microsoft.Authorization/roleDefinitions/0b5fe924-9a61-425c-96af-cfe6e287ca2d",
+        principalId: "ce2ce14e-85d7-4629-bdbc-454d0519d987",
+        principalType: "User",
+      },
+    }),
+    dependencies: ({}) => ({
+      scopeResourceGroup: "myResourceGroup",
+      scopeVirtualMachine: "myVirtualMachine",
+      roleDefinition: "myRoleDefinition",
+      principalManagedCluster: "myManagedCluster",
+      principalDiskEncryptionSet: "myDiskEncryptionSet",
+      principalVirtualMachine: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 ## Dependencies

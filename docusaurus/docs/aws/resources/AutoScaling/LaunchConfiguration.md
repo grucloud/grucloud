@@ -8,26 +8,93 @@ Manages an [Launch Configuration](https://console.aws.amazon.com/ec2/v2/home?#La
 ## Example
 
 ```js
-provider.AutoScaling.makeLaunchConfiguration({
-  name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
-  properties: ({}) => ({
-    InstanceType: "t2.small",
-    ImageId: "ami-0e43fd2a4ef14f476",
-    UserData:
-      'Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"\nMIME-Version: 1.0\n\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--',
-    InstanceMonitoring: {
-      Enabled: true,
-    },
-    BlockDeviceMappings: [],
-    EbsOptimized: false,
-    AssociatePublicIpAddress: true,
-  }),
-  dependencies: () => ({
-    instanceProfile:
-      "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
-    securityGroups: ["EcsSecurityGroup"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LaunchConfiguration",
+    group: "AutoScaling",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
+    properties: ({}) => ({
+      InstanceType: "t2.small",
+      ImageId: "ami-0e43fd2a4ef14f476",
+      UserData:
+        'Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"\nMIME-Version: 1.0\n\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--',
+      InstanceMonitoring: {
+        Enabled: true,
+      },
+      BlockDeviceMappings: [],
+      EbsOptimized: false,
+      AssociatePublicIpAddress: true,
+    }),
+    dependencies: () => ({
+      instanceProfile:
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
+      securityGroups: ["EcsSecurityGroup"],
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "EcsSecurityGroup",
+    properties: ({}) => ({
+      Description: "ECS Allowed Ports",
+      Tags: [
+        {
+          Key: "my-tag",
+          Value: "my-value",
+        },
+      ],
+    }),
+    dependencies: () => ({
+      vpc: "Vpc",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      Tags: [
+        {
+          Key: "my-tag",
+          Value: "my-value",
+        },
+      ],
+    }),
+    dependencies: () => ({
+      policies: ["AmazonEC2ContainerServiceforEC2Role"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "AmazonEC2ContainerServiceforEC2Role",
+    readOnly: true,
+    properties: ({}) => ({
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
+    dependencies: () => ({
+      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6"],
+    }),
+  },
+];
 ```
 
 ## List

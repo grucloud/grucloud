@@ -8,32 +8,50 @@ Provides an Iam Group.
 This example creates a group called Admin, creates a user and add it to the group, create a policy and attach it to the group.
 
 ```js
-const iamPolicy = provider.IAM.makePolicy({
-  name: "policy-ec2-describe",
-  properties: () => ({
-    PolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: ["ec2:Describe*"],
-          Effect: "Allow",
-          Resource: "*",
-        },
-      ],
-    },
-    Description: "Allow ec2:Describe",
-  }),
-});
-
-const iamGroup = provider.IAM.makeGroup({
-  name: "Admin",
-  dependencies: () => ({ policies: ["policy-ec2-describe"] }),
-});
-
-const iamUser = provider.IAM.makeUser({
-  name: "Alice",
-  dependencies: () => ({ iamGroups: ["Admin"] }),
-});
+exports.createResources = () => [
+  {
+    type: "User",
+    group: "IAM",
+    name: "Alice",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      iamGroups: ["Admin"],
+      policies: ["myPolicy-to-user"],
+    }),
+  },
+  {
+    type: "Group",
+    group: "IAM",
+    name: "Admin",
+    properties: ({}) => ({
+      Path: "/",
+    }),
+    dependencies: () => ({
+      policies: ["myPolicy-to-group"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "myPolicy-to-user",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: ["s3:*"],
+            Effect: "Allow",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+      Description: "Allow ec2:Describe",
+    }),
+  },
+];
 ```
 
 ### Examples

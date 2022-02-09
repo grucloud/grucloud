@@ -8,19 +8,23 @@ Manages an [API Gateway RestAPI](https://console.aws.amazon.com/apigateway/main/
 ## Sample code
 
 ```js
-provider.APIGateway.makeRestApi({
-  name: "PetStore",
-  properties: ({ config }) => ({
-    apiKeySource: "HEADER",
-    endpointConfiguration: {
-      types: ["REGIONAL"],
-    },
-    schemaFile: "PetStore.oas30.json",
-    deployment: {
-      stageName: "dev",
-    },
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "RestApi",
+    group: "APIGateway",
+    name: "PetStore",
+    properties: ({}) => ({
+      apiKeySource: "HEADER",
+      endpointConfiguration: {
+        types: ["REGIONAL"],
+      },
+      schemaFile: "PetStore.oas30.json",
+      deployment: {
+        stageName: "dev",
+      },
+    }),
+  },
+];
 ```
 
 ## Properties

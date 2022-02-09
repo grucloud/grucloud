@@ -6,14 +6,18 @@ Provides a **ExpressRouteCircuitAuthorization** from the **Network** group
 ## Examples
 ### Create ExpressRouteCircuit Authorization
 ```js
-provider.Network.makeExpressRouteCircuitAuthorization({
-  name: "myExpressRouteCircuitAuthorization",
-  properties: () => ({ properties: {} }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    circuit: "myExpressRouteCircuit",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "ExpressRouteCircuitAuthorization",
+    group: "Network",
+    name: "myExpressRouteCircuitAuthorization",
+    properties: () => ({ properties: {} }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      circuit: "myExpressRouteCircuit",
+    }),
+  },
+];
 
 ```
 ## Dependencies

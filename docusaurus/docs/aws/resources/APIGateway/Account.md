@@ -10,36 +10,49 @@ Manages an [API Gateway Account](https://console.aws.amazon.com/apigateway/main/
 Update the api gateway account with a CloudWatch role:
 
 ```js
-provider.IAM.makeRole({
-  name: "roleApiGatewayCloudWatch",
-  dependencies: {
-    policies: [
-      "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-    ],
+exports.createResources = () => [
+  {
+    type: "Account",
+    group: "APIGateway",
+    name: "default",
+    dependencies: () => ({
+      cloudwatchRole: "roleApiGatewayCloudWatch",
+    }),
   },
-  properties: () => ({
-    AssumeRolePolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Sid: "",
-          Effect: "Allow",
-          Principal: {
-            Service: "apigateway.amazonaws.com",
+  {
+    type: "Role",
+    group: "IAM",
+    name: "roleApiGatewayCloudWatch",
+    properties: ({}) => ({
+      Path: "/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: "apigateway.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
           },
-          Action: "sts:AssumeRole",
-        },
-      ],
-    },
-  }),
-});
-
-provider.APIGateway.makeAccount({
-  name: "default",
-  dependencies: ({}) => ({
-    cloudwatchRole: "roleApiGatewayCloudWatch",
-  }),
-});
+        ],
+      },
+    }),
+    dependencies: () => ({
+      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "AmazonAPIGatewayPushToCloudWatchLogs",
+    readOnly: true,
+    properties: ({}) => ({
+      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+    }),
+  },
+];
 ```
 
 ## Full Examples

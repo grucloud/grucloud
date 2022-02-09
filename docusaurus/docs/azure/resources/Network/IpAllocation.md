@@ -6,25 +6,29 @@ Provides a **IpAllocation** from the **Network** group
 ## Examples
 ### Create IpAllocation
 ```js
-provider.Network.makeIpAllocation({
-  name: "myIpAllocation",
-  properties: () => ({
-    properties: {
-      type: "Hypernet",
-      prefix: "3.2.5.0/24",
-      allocationTags: {
-        VNetID:
-          "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/HypernetVnet1",
+exports.createResources = () => [
+  {
+    type: "IpAllocation",
+    group: "Network",
+    name: "myIpAllocation",
+    properties: () => ({
+      properties: {
+        type: "Hypernet",
+        prefix: "3.2.5.0/24",
+        allocationTags: {
+          VNetID:
+            "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/HypernetVnet1",
+        },
       },
-    },
-    location: "centraluseuap",
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    subnet: "mySubnet",
-    virtualNetwork: "myVirtualNetwork",
-  }),
-});
+      location: "centraluseuap",
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      virtualNetwork: "myVirtualNetwork",
+    }),
+  },
+];
 
 ```
 ## Dependencies

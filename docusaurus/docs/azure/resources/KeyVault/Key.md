@@ -6,14 +6,18 @@ Provides a **Key** from the **KeyVault** group
 ## Examples
 ### Create a key
 ```js
-provider.KeyVault.makeKey({
-  name: "myKey",
-  properties: () => ({ properties: { kty: "RSA" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vault: "myVault",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Key",
+    group: "KeyVault",
+    name: "myKey",
+    properties: () => ({ properties: { kty: "RSA" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+    }),
+  },
+];
 
 ```
 ## Dependencies

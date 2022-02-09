@@ -8,19 +8,43 @@ Manages an [Api Gateway V2 Deployment](https://console.aws.amazon.com/apigateway
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeApi({
-  name: "my-api",
-});
-
-provider.ApiGatewayV2.makeStage({
-  name: "my-api-stage-dev",
-  dependencies: { api: "my-api" },
-});
-
-provider.ApiGatewayV2.makeDeployment({
-  name: "my-api-deployment",
-  dependencies: { api: "my-api", stage: "my-api-stage-dev" },
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+  {
+    type: "Stage",
+    group: "ApiGatewayV2",
+    name: "my-api-stage-dev",
+    properties: ({}) => ({
+      AccessLogSettings: {
+        Format:
+          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+    }),
+    dependencies: () => ({
+      api: "my-api",
+      logGroup: "lg-http-test",
+    }),
+  },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
+    dependencies: () => ({
+      api: "my-api",
+      stage: "my-api-stage-dev",
+    }),
+  },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+];
 ```
 
 ## Properties

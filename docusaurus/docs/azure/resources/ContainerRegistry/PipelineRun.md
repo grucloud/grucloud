@@ -6,49 +6,57 @@ Provides a **PipelineRun** from the **ContainerRegistry** group
 ## Examples
 ### PipelineRunCreate_Export
 ```js
-provider.ContainerRegistry.makePipelineRun({
-  name: "myPipelineRun",
-  properties: () => ({
-    properties: {
-      request: {
-        pipelineResourceId:
-          "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/myRegistry/exportPipelines/myExportPipeline",
-        target: { type: "AzureStorageBlob", name: "myblob.tar.gz" },
-        artifacts: [
-          "sourceRepository/hello-world",
-          "sourceRepository2@sha256:00000000000000000000000000000000000",
-        ],
+exports.createResources = () => [
+  {
+    type: "PipelineRun",
+    group: "ContainerRegistry",
+    name: "myPipelineRun",
+    properties: () => ({
+      properties: {
+        request: {
+          pipelineResourceId:
+            "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/myRegistry/exportPipelines/myExportPipeline",
+          target: { type: "AzureStorageBlob", name: "myblob.tar.gz" },
+          artifacts: [
+            "sourceRepository/hello-world",
+            "sourceRepository2@sha256:00000000000000000000000000000000000",
+          ],
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### PipelineRunCreate_Import
 ```js
-provider.ContainerRegistry.makePipelineRun({
-  name: "myPipelineRun",
-  properties: () => ({
-    properties: {
-      request: {
-        pipelineResourceId:
-          "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/myRegistry/importPipelines/myImportPipeline",
-        source: { type: "AzureStorageBlob", name: "myblob.tar.gz" },
-        catalogDigest: "sha256@",
+exports.createResources = () => [
+  {
+    type: "PipelineRun",
+    group: "ContainerRegistry",
+    name: "myPipelineRun",
+    properties: () => ({
+      properties: {
+        request: {
+          pipelineResourceId:
+            "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/myRegistry/importPipelines/myImportPipeline",
+          source: { type: "AzureStorageBlob", name: "myblob.tar.gz" },
+          catalogDigest: "sha256@",
+        },
+        forceUpdateTag: "2020-03-04T17:23:21.9261521+00:00",
       },
-      forceUpdateTag: "2020-03-04T17:23:21.9261521+00:00",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

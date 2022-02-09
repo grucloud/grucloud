@@ -6,23 +6,27 @@ Provides a **VirtualHubIpConfiguration** from the **Network** group
 ## Examples
 ### VirtualHubIpConfigurationPut
 ```js
-provider.Network.makeVirtualHubIpConfiguration({
-  name: "myVirtualHubIpConfiguration",
-  properties: () => ({
-    properties: {
-      subnet: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1",
+exports.createResources = () => [
+  {
+    type: "VirtualHubIpConfiguration",
+    group: "Network",
+    name: "myVirtualHubIpConfiguration",
+    properties: () => ({
+      properties: {
+        subnet: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    natGateway: "myNatGateway",
-    ddosCustomPolicy: "myDdosCustomPolicy",
-    publicIpPrefix: "myPublicIPPrefix",
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: "myNatGateway",
+      ddosCustomPolicy: "myDdosCustomPolicy",
+      publicIpPrefix: "myPublicIPPrefix",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

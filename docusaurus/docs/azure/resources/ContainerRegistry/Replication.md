@@ -6,31 +6,39 @@ Provides a **Replication** from the **ContainerRegistry** group
 ## Examples
 ### ReplicationCreate
 ```js
-provider.ContainerRegistry.makeReplication({
-  name: "myReplication",
-  properties: () => ({ location: "eastus", tags: { key: "value" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Replication",
+    group: "ContainerRegistry",
+    name: "myReplication",
+    properties: () => ({ location: "eastus", tags: { key: "value" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 
 ### ReplicationCreateZoneRedundant
 ```js
-provider.ContainerRegistry.makeReplication({
-  name: "myReplication",
-  properties: () => ({
-    location: "eastus",
-    tags: { key: "value" },
-    properties: { regionEndpointEnabled: true, zoneRedundancy: "Enabled" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Replication",
+    group: "ContainerRegistry",
+    name: "myReplication",
+    properties: () => ({
+      location: "eastus",
+      tags: { key: "value" },
+      properties: { regionEndpointEnabled: true, zoneRedundancy: "Enabled" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

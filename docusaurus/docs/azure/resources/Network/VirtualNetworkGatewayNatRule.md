@@ -6,26 +6,32 @@ Provides a **VirtualNetworkGatewayNatRule** from the **Network** group
 ## Examples
 ### VirtualNetworkGatewayNatRulePut
 ```js
-provider.Network.makeVirtualNetworkGatewayNatRule({
-  name: "myVirtualNetworkGatewayNatRule",
-  properties: () => ({
-    properties: {
-      type: "Static",
-      mode: "EgressSnat",
-      ipConfigurationId:
-        "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/gateway1/ipConfigurations/default",
-      internalMappings: [{ addressSpace: "10.4.0.0/24", portRange: "200-300" }],
-      externalMappings: [
-        { addressSpace: "192.168.21.0/24", portRange: "300-400" },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
-    virtualNetworkGateway: "myVirtualNetworkGateway",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualNetworkGatewayNatRule",
+    group: "Network",
+    name: "myVirtualNetworkGatewayNatRule",
+    properties: () => ({
+      properties: {
+        type: "Static",
+        mode: "EgressSnat",
+        ipConfigurationId:
+          "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/gateway1/ipConfigurations/default",
+        internalMappings: [
+          { addressSpace: "10.4.0.0/24", portRange: "200-300" },
+        ],
+        externalMappings: [
+          { addressSpace: "192.168.21.0/24", portRange: "300-400" },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+      virtualNetworkGateway: "myVirtualNetworkGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

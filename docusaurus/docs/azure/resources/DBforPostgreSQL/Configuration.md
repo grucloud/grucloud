@@ -6,14 +6,20 @@ Provides a **Configuration** from the **DBforPostgreSQL** group
 ## Examples
 ### Update a user configuration
 ```js
-provider.DBforPostgreSQL.makeConfiguration({
-  name: "myConfiguration",
-  properties: () => ({ properties: { value: "on", source: "user-override" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    server: "myFlexibleServer",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Configuration",
+    group: "DBforPostgreSQL",
+    name: "myConfiguration",
+    properties: () => ({
+      properties: { value: "on", source: "user-override" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      server: "myFlexibleServer",
+    }),
+  },
+];
 
 ```
 ## Dependencies

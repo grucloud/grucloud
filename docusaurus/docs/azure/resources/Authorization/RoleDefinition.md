@@ -6,9 +6,9 @@ Provides a **RoleDefinition** from the **Authorization** group
 ## Examples
 ### Create role definition
 ```js
-provider.Authorization.makeRoleDefinition({
-  name: "myRoleDefinition",
-});
+exports.createResources = () => [
+  { type: "RoleDefinition", group: "Authorization", name: "myRoleDefinition" },
+];
 
 ```
 ## Dependencies

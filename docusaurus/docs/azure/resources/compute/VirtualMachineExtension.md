@@ -6,64 +6,72 @@ Provides a **VirtualMachineExtension** from the **Compute** group
 ## Examples
 ### VirtualMachineExtensions_CreateOrUpdate_MaximumSet_Gen
 ```js
-provider.Compute.makeVirtualMachineExtension({
-  name: "myVirtualMachineExtension",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      autoUpgradeMinorVersion: true,
-      publisher: "extPublisher",
-      type: "extType",
-      typeHandlerVersion: "1.2",
-      suppressFailures: true,
-      settings: {},
-      forceUpdateTag: "a",
-      enableAutomaticUpgrade: true,
-      protectedSettings: {},
-      instanceView: {
-        name: "aaaaaaaaaaaaaaaaa",
-        type: "aaaaaaaaa",
-        typeHandlerVersion: "aaaaaaaaaaaaaaaaaaaaaaaaaa",
-        substatuses: [
-          {
-            code: "aaaaaaaaaaaaaaaaaaaaaaa",
-            level: "Info",
-            displayStatus: "aaaaaa",
-            message: "a",
-            time: "2021-11-30T12:58:26.522Z",
-          },
-        ],
-        statuses: [
-          {
-            code: "aaaaaaaaaaaaaaaaaaaaaaa",
-            level: "Info",
-            displayStatus: "aaaaaa",
-            message: "a",
-            time: "2021-11-30T12:58:26.522Z",
-          },
-        ],
+exports.createResources = () => [
+  {
+    type: "VirtualMachineExtension",
+    group: "Compute",
+    name: "myVirtualMachineExtension",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        autoUpgradeMinorVersion: true,
+        publisher: "extPublisher",
+        type: "extType",
+        typeHandlerVersion: "1.2",
+        suppressFailures: true,
+        settings: {},
+        forceUpdateTag: "a",
+        enableAutomaticUpgrade: true,
+        protectedSettings: {},
+        instanceView: {
+          name: "aaaaaaaaaaaaaaaaa",
+          type: "aaaaaaaaa",
+          typeHandlerVersion: "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+          substatuses: [
+            {
+              code: "aaaaaaaaaaaaaaaaaaaaaaa",
+              level: "Info",
+              displayStatus: "aaaaaa",
+              message: "a",
+              time: "2021-11-30T12:58:26.522Z",
+            },
+          ],
+          statuses: [
+            {
+              code: "aaaaaaaaaaaaaaaaaaaaaaa",
+              level: "Info",
+              displayStatus: "aaaaaa",
+              message: "a",
+              time: "2021-11-30T12:58:26.522Z",
+            },
+          ],
+        },
       },
-    },
-    tags: { key9183: "aa" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vm: "myVirtualMachine",
-  }),
-});
+      tags: { key9183: "aa" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vm: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 
 ### VirtualMachineExtensions_CreateOrUpdate_MinimumSet_Gen
 ```js
-provider.Compute.makeVirtualMachineExtension({
-  name: "myVirtualMachineExtension",
-  properties: () => ({ location: "westus" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vm: "myVirtualMachine",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualMachineExtension",
+    group: "Compute",
+    name: "myVirtualMachineExtension",
+    properties: () => ({ location: "westus" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vm: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 ## Dependencies

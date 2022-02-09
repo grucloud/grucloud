@@ -6,25 +6,29 @@ Provides a **ApplicationGatewayPrivateEndpointConnection** from the **Network** 
 ## Examples
 ### Update Application Gateway Private Endpoint Connection
 ```js
-provider.Network.makeApplicationGatewayPrivateEndpointConnection({
-  name: "myApplicationGatewayPrivateEndpointConnection",
-  properties: () => ({
-    name: "connection1",
-    properties: {
-      privateEndpoint: {
-        id: "/subscriptions/subId2/resourceGroups/rg1/providers/Microsoft.Network/privateEndpoints/testPe",
+exports.createResources = () => [
+  {
+    type: "ApplicationGatewayPrivateEndpointConnection",
+    group: "Network",
+    name: "myApplicationGatewayPrivateEndpointConnection",
+    properties: () => ({
+      name: "connection1",
+      properties: {
+        privateEndpoint: {
+          id: "/subscriptions/subId2/resourceGroups/rg1/providers/Microsoft.Network/privateEndpoints/testPe",
+        },
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "approved it for some reason.",
+        },
       },
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "approved it for some reason.",
-      },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    applicationGateway: "myApplicationGateway",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      applicationGateway: "myApplicationGateway",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,46 +6,54 @@ Provides a **LocalUser** from the **Storage** group
 ## Examples
 ### CreateLocalUser
 ```js
-provider.Storage.makeLocalUser({
-  name: "myLocalUser",
-  properties: () => ({
-    properties: {
-      permissionScopes: [
-        { permissions: "rwd", service: "file", resourceName: "share1" },
-        { permissions: "rw", service: "file", resourceName: "share2" },
-      ],
-      homeDirectory: "homedirectory",
-      hasSshPassword: true,
-      sshAuthorizedKeys: [
-        { description: "key name", key: "ssh-rsa keykeykeykeykey=" },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LocalUser",
+    group: "Storage",
+    name: "myLocalUser",
+    properties: () => ({
+      properties: {
+        permissionScopes: [
+          { permissions: "rwd", service: "file", resourceName: "share1" },
+          { permissions: "rw", service: "file", resourceName: "share2" },
+        ],
+        homeDirectory: "homedirectory",
+        hasSshPassword: true,
+        sshAuthorizedKeys: [
+          { description: "key name", key: "ssh-rsa keykeykeykeykey=" },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### UpdateLocalUser
 ```js
-provider.Storage.makeLocalUser({
-  name: "myLocalUser",
-  properties: () => ({
-    properties: {
-      homeDirectory: "homedirectory2",
-      hasSharedKey: false,
-      hasSshPassword: false,
-      hasSshKey: false,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LocalUser",
+    group: "Storage",
+    name: "myLocalUser",
+    properties: () => ({
+      properties: {
+        homeDirectory: "homedirectory2",
+        hasSharedKey: false,
+        hasSshPassword: false,
+        hasSshKey: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

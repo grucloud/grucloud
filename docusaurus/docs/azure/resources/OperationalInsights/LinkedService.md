@@ -6,19 +6,23 @@ Provides a **LinkedService** from the **OperationalInsights** group
 ## Examples
 ### LinkedServicesCreate
 ```js
-provider.OperationalInsights.makeLinkedService({
-  name: "myLinkedService",
-  properties: () => ({
-    properties: {
-      writeAccessResourceId:
-        "/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/mms-eus/providers/Microsoft.OperationalInsights/clusters/testcluster",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    workspace: "myWorkspace",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LinkedService",
+    group: "OperationalInsights",
+    name: "myLinkedService",
+    properties: () => ({
+      properties: {
+        writeAccessResourceId:
+          "/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/mms-eus/providers/Microsoft.OperationalInsights/clusters/testcluster",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      workspace: "myWorkspace",
+    }),
+  },
+];
 
 ```
 ## Dependencies

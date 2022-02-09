@@ -2,23 +2,27 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc-postgres",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
       DnsHostnames: true,
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "ig-postgres",
     dependencies: () => ({
       vpc: "vpc-postgres",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-1",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/19",
@@ -27,9 +31,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-postgres",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "subnet-2",
     properties: ({ config }) => ({
       CidrBlock: "192.168.32.0/19",
@@ -38,30 +43,34 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-postgres",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "route-table-public",
     dependencies: () => ({
       vpc: "vpc-postgres",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-public",
       subnet: "subnet-1",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "route-table-public",
       subnet: "subnet-2",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -69,9 +78,10 @@ const createResources = ({ provider }) => {
       routeTable: "route-table-public",
       ig: "ig-postgres",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -79,9 +89,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-postgres",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-ingress-postgres",
     properties: ({}) => ({
       IpPermission: {
@@ -103,9 +114,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group",
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "lambda-policy",
     properties: ({}) => ({
       PolicyDocument: {
@@ -126,13 +138,11 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow logs",
     }),
-  });
-
-  provider.KMS.makeKey({
-    name: "secret-key-test",
-  });
-
-  provider.RDS.makeDBSubnetGroup({
+  },
+  { type: "Key", group: "KMS", name: "secret-key-test" },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
     name: "subnet-group-postgres",
     properties: ({}) => ({
       DBSubnetGroupDescription: "db subnet group",
@@ -140,9 +150,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       subnets: ["subnet-1", "subnet-2"],
     }),
-  });
-
-  provider.RDS.makeDBInstance({
+  },
+  {
+    type: "DBInstance",
+    group: "RDS",
     name: "db-instance",
     properties: ({}) => ({
       DBInstanceClass: "db.t2.micro",
@@ -161,7 +172,5 @@ const createResources = ({ provider }) => {
       dbSubnetGroup: "subnet-group-postgres",
       securityGroups: ["security-group"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

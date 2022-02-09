@@ -6,22 +6,26 @@ Provides a **PrivateEndpointConnection** from the **ContainerRegistry** group
 ## Examples
 ### PrivateEndpointConnectionCreateOrUpdate
 ```js
-provider.ContainerRegistry.makePrivateEndpointConnection({
-  name: "myPrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "Auto-Approved",
+exports.createResources = () => [
+  {
+    type: "PrivateEndpointConnection",
+    group: "ContainerRegistry",
+    name: "myPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Auto-Approved",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    privateEndpoint: "myPrivateEndpoint",
-    registry: "myRegistry",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      privateEndpoint: "myPrivateEndpoint",
+      registry: "myRegistry",
+    }),
+  },
+];
 
 ```
 ## Dependencies

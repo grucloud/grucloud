@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.AutoScaling.makeAutoScalingGroup({
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
     name: "asg",
     properties: ({}) => ({
       MinSize: 1,
@@ -14,21 +16,20 @@ const createResources = ({ provider }) => {
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchTemplate: "lt-ec2-micro",
     }),
-  });
-
-  provider.EC2.makeKeyPair({
-    name: "kp-ecs",
-  });
-
-  provider.EC2.makeVpc({
+  },
+  { type: "KeyPair", group: "EC2", name: "kp-ecs" },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "Vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
       DnsHostnames: true,
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "PubSubnetAz1",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
@@ -37,9 +38,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "PubSubnetAz2",
     properties: ({ config }) => ({
       CidrBlock: "10.0.1.0/24",
@@ -48,9 +50,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "EcsSecurityGroup",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -58,9 +61,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
@@ -77,9 +81,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "EcsSecurityGroup",
     }),
-  });
-
-  provider.EC2.makeLaunchTemplate({
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
     name: "lt-ec2-micro",
     properties: ({}) => ({
       LaunchTemplateData: {
@@ -91,9 +96,10 @@ const createResources = ({ provider }) => {
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "role-ecs",
     properties: ({}) => ({
       Path: "/",
@@ -110,14 +116,13 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-
-  provider.IAM.makeInstanceProfile({
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
     name: "role-ecs",
     dependencies: () => ({
       roles: ["role-ecs"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

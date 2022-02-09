@@ -6,23 +6,27 @@ Provides a **SecurityPartnerProvider** from the **Network** group
 ## Examples
 ### Create Security Partner Provider
 ```js
-provider.Network.makeSecurityPartnerProvider({
-  name: "mySecurityPartnerProvider",
-  properties: () => ({
-    tags: { key1: "value1" },
-    location: "West US",
-    properties: {
-      securityProviderName: "ZScaler",
-      virtualHub: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1",
+exports.createResources = () => [
+  {
+    type: "SecurityPartnerProvider",
+    group: "Network",
+    name: "mySecurityPartnerProvider",
+    properties: () => ({
+      tags: { key1: "value1" },
+      location: "West US",
+      properties: {
+        securityProviderName: "ZScaler",
+        virtualHub: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/hub1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+    }),
+  },
+];
 
 ```
 ## Dependencies

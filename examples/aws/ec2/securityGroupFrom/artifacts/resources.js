@@ -2,16 +2,19 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "VPC",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
       DnsHostnames: true,
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "ClusterSharedNode",
     properties: ({}) => ({
       Description: "Communication between all nodes in the cluster",
@@ -19,9 +22,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "eks-cluster-sg-my-cluster",
     properties: ({}) => ({
       Description:
@@ -36,9 +40,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "VPC",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "ClusterSharedNode-rule-ingress-all-from-ClusterSharedNode",
     properties: ({}) => ({
       IpPermission: {
@@ -51,7 +56,5 @@ const createResources = ({ provider }) => {
       securityGroup: "ClusterSharedNode",
       securityGroupFrom: "eks-cluster-sg-my-cluster",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

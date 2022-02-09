@@ -2,6 +2,4 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({}) => {};
-
-exports.createResources = createResources;
+exports.createResources = () => [];

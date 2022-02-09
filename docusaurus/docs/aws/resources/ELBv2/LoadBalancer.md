@@ -10,18 +10,22 @@ Manage an AWS Load Balancer.
 ### Load Balancer in a VPC
 
 ```js
-provider.ELBv2.makeLoadBalancer({
-  name: "load-balancer",
-  properties: ({}) => ({
-    Scheme: "internet-facing",
-    Type: "application",
-    IpAddressType: "ipv4",
-  }),
-  dependencies: () => ({
-    subnets: ["subnet-a", "subnet-b"],
-    securityGroups: ["sg-default-vpc"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "LoadBalancer",
+    group: "ELBv2",
+    name: "load-balancer",
+    properties: ({}) => ({
+      Scheme: "internet-facing",
+      Type: "application",
+      IpAddressType: "ipv4",
+    }),
+    dependencies: () => ({
+      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      securityGroups: ["load-balancer"],
+    }),
+  },
+];
 ```
 
 ### Reference an existing Load Balancer
@@ -31,42 +35,29 @@ When using the _AWS Load Balancer Controller_ to create the load balancer & asso
 ```js
 const clusterName = "cluster";
 
-provider.ELBv2.useLoadBalancer({
-  name: "load-balancer",
-  filterLives: ({ resources }) =>
-    pipe([
-      () => resources,
-      find(
-        pipe([
-          get("live.Tags"),
-          find(
-            and([
-              eq(get("Key"), "elbv2.k8s.aws/cluster"),
-              eq(get("Value"), clusterName),
-            ])
-          ),
-        ])
-      ),
-    ])(),
-});
-
-provider.Route53.makeHostedZone({
-  name: "grucloud.org.",
-  dependencies: ({ resources }) => ({
-    domain: "grucloud.org",
-  }),
-});
-
-provider.Route53.makeRecord({
-  dependencies: ({ resources }) => ({
-    hostedZone: "grucloud.org."
-    loadBalancer: "load-balancer"
-  }),
-});
-
-provider.Route53Domains.useDomain({
-  name: "grucloud.org",
-});
+exports.createResources = () => [
+  {
+    type: "LoadBalancer",
+    group: "ELBv2",
+    name: "load-balancer",
+    readOnly: true,
+    filterLives: ({ resources }) =>
+      pipe([
+        () => resources,
+        find(
+          pipe([
+            get("live.Tags"),
+            find(
+              and([
+                eq(get("Key"), "elbv2.k8s.aws/cluster"),
+                eq(get("Value"), clusterName),
+              ])
+            ),
+          ])
+        ),
+      ])(),
+  },
+];
 ```
 
 ## Source Code

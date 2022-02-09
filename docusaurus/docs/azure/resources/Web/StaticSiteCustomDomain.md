@@ -6,14 +6,18 @@ Provides a **StaticSiteCustomDomain** from the **Web** group
 ## Examples
 ### Create or update a custom domain for a static site
 ```js
-provider.Web.makeStaticSiteCustomDomain({
-  name: "myStaticSiteCustomDomain",
-  properties: () => ({ properties: {} }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    name: "myStaticSite",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "StaticSiteCustomDomain",
+    group: "Web",
+    name: "myStaticSiteCustomDomain",
+    properties: () => ({ properties: {} }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myStaticSite",
+    }),
+  },
+];
 
 ```
 ## Dependencies

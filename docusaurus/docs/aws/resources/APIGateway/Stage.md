@@ -8,45 +8,64 @@ Manages an [API Gateway Stage](https://console.aws.amazon.com/apigateway/main/ap
 ## Sample code
 
 ```js
-provider.APIGateway.makeRestApi({
-  name: "PetStore",
-  properties: ({ config }) => ({
-    apiKeySource: "HEADER",
-    endpointConfiguration: {
-      types: ["REGIONAL"],
-    },
-    schemaFile: "PetStore.swagger.json",
-    deployment: {
-      stageName: "dev",
-    },
-  }),
-});
-
-provider.APIGateway.makeStage({
-  name: "dev",
-  properties: ({ config }) => ({
-    description: "dev",
-    methodSettings: {
-      "*/*": {
-        metricsEnabled: false,
-        dataTraceEnabled: false,
-        throttlingBurstLimit: 5000,
-        throttlingRateLimit: 10000,
-        cachingEnabled: false,
-        cacheTtlInSeconds: 300,
-        cacheDataEncrypted: false,
-        requireAuthorizationForCacheControl: true,
-        unauthorizedCacheControlHeaderStrategy: "SUCCEED_WITH_RESPONSE_HEADER",
+exports.createResources = () => [
+  {
+    type: "RestApi",
+    group: "APIGateway",
+    name: "PetStore",
+    properties: ({}) => ({
+      apiKeySource: "HEADER",
+      endpointConfiguration: {
+        types: ["REGIONAL"],
       },
-    },
-    cacheClusterEnabled: false,
-    cacheClusterSize: "0.5",
-    tracingEnabled: false,
-  }),
-  dependencies: ({}) => ({
-    restApi: "petStore",
-  }),
-});
+      schemaFile: "PetStore.oas30.json",
+      deployment: {
+        stageName: "dev",
+      },
+    }),
+  },
+  {
+    type: "Stage",
+    group: "APIGateway",
+    name: "dev",
+    properties: ({}) => ({
+      description: "dev",
+      methodSettings: {
+        "*/*": {
+          metricsEnabled: false,
+          dataTraceEnabled: false,
+          throttlingBurstLimit: 5000,
+          throttlingRateLimit: 10000,
+          cachingEnabled: false,
+          cacheTtlInSeconds: 300,
+          cacheDataEncrypted: false,
+          requireAuthorizationForCacheControl: true,
+          unauthorizedCacheControlHeaderStrategy:
+            "SUCCEED_WITH_RESPONSE_HEADER",
+        },
+      },
+      cacheClusterEnabled: false,
+      cacheClusterSize: "0.5",
+      tracingEnabled: false,
+    }),
+    dependencies: () => ({
+      restApi: "PetStore",
+    }),
+  },
+  {
+    type: "Stage",
+    group: "APIGateway",
+    name: "prod",
+    properties: ({}) => ({
+      description: "prod",
+      cacheClusterEnabled: false,
+      tracingEnabled: false,
+    }),
+    dependencies: () => ({
+      restApi: "PetStore",
+    }),
+  },
+];
 ```
 
 ## Properties

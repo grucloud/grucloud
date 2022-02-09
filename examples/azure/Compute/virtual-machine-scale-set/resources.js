@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeSshPublicKey({
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "keypair",
       properties: {
@@ -14,9 +16,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-virtual-machine-scale-set",
     }),
-  });
-
-  provider.Compute.makeVirtualMachineScaleSet({
+  },
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vm-scale-set",
       sku: {
@@ -126,9 +129,10 @@ const createResources = ({ provider }) => {
         "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
       ],
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "basicnsgrg-virtual-machine-scale-set-vnet-nic01",
       properties: {
@@ -138,9 +142,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-virtual-machine-scale-set",
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "basicnsgvirtual-network-nic01",
       properties: {
@@ -150,9 +155,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-virtual-machine-scale-set",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -163,9 +169,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-virtual-machine-scale-set",
       virtualNetwork: "rg-virtual-machine-scale-set::virtual-network",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "virtual-network",
       properties: {
@@ -177,13 +184,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-virtual-machine-scale-set",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-virtual-machine-scale-set",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

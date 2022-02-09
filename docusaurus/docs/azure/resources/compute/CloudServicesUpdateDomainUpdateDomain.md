@@ -6,13 +6,17 @@ Provides a **CloudServicesUpdateDomainUpdateDomain** from the **Compute** group
 ## Examples
 ### Update Cloud Service to specified Domain
 ```js
-provider.Compute.makeCloudServicesUpdateDomainUpdateDomain({
-  name: "myCloudServicesUpdateDomainUpdateDomain",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    cloudService: "myCloudService",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "CloudServicesUpdateDomainUpdateDomain",
+    group: "Compute",
+    name: "myCloudServicesUpdateDomainUpdateDomain",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      cloudService: "myCloudService",
+    }),
+  },
+];
 
 ```
 ## Dependencies

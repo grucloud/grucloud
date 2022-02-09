@@ -6,16 +6,20 @@ Provides a **Database** from the **DBforPostgreSQL** group
 ## Examples
 ### Create a database
 ```js
-provider.DBforPostgreSQL.makeDatabase({
-  name: "myDatabase",
-  properties: () => ({
-    properties: { charset: "utf8", collation: "en_US.utf8" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    server: "myFlexibleServer",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Database",
+    group: "DBforPostgreSQL",
+    name: "myDatabase",
+    properties: () => ({
+      properties: { charset: "utf8", collation: "en_US.utf8" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      server: "myFlexibleServer",
+    }),
+  },
+];
 
 ```
 ## Dependencies

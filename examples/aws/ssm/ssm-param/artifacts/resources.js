@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.SSM.makeParameter({
+exports.createResources = () => [
+  {
+    type: "Parameter",
+    group: "SSM",
     name: "text-param",
     properties: ({}) => ({
       Type: "String",
@@ -16,7 +18,5 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -2,15 +2,15 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.SQS.makeQueue({
+exports.createResources = () => [
+  {
+    type: "Queue",
+    group: "SQS",
     name: "my-queue",
     properties: ({}) => ({
       tags: {
         "my-tag": "my-value",
       },
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

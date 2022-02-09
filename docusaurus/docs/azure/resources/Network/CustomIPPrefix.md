@@ -6,11 +6,15 @@ Provides a **CustomIPPrefix** from the **Network** group
 ## Examples
 ### Create custom IP prefix allocation method
 ```js
-provider.Network.makeCustomIPPrefix({
-  name: "myCustomIPPrefix",
-  properties: () => ["1"],
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "CustomIPPrefix",
+    group: "Network",
+    name: "myCustomIPPrefix",
+    properties: () => ["1"],
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

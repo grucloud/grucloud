@@ -6,14 +6,18 @@ Provides a **SshPublicKey** from the **Compute** group
 ## Examples
 ### Create a new SSH public key resource.
 ```js
-provider.Compute.makeSshPublicKey({
-  name: "mySshPublicKey",
-  properties: () => ({
-    location: "westus",
-    properties: { publicKey: "{ssh-rsa public key}" },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
+    name: "mySshPublicKey",
+    properties: () => ({
+      location: "westus",
+      properties: { publicKey: "{ssh-rsa public key}" },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

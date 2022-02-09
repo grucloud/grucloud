@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.DynamoDB.makeTable({
+exports.createResources = () => [
+  {
+    type: "Table",
+    group: "DynamoDB",
     name: "myTable",
     properties: ({}) => ({
       AttributeDefinitions: [
@@ -29,7 +31,5 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

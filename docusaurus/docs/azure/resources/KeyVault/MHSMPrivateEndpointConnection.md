@@ -6,22 +6,26 @@ Provides a **MHSMPrivateEndpointConnection** from the **KeyVault** group
 ## Examples
 ### ManagedHsmPutPrivateEndpointConnection
 ```js
-provider.KeyVault.makeMHSMPrivateEndpointConnection({
-  name: "myMHSMPrivateEndpointConnection",
-  properties: () => ({
-    properties: {
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "My name is Joe and I'm approving this.",
+exports.createResources = () => [
+  {
+    type: "MHSMPrivateEndpointConnection",
+    group: "KeyVault",
+    name: "myMHSMPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "My name is Joe and I'm approving this.",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    privateEndpoint: "myPrivateEndpoint",
-    name: "myManagedHsm",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      privateEndpoint: "myPrivateEndpoint",
+      name: "myManagedHsm",
+    }),
+  },
+];
 
 ```
 ## Dependencies

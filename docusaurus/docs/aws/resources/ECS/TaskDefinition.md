@@ -8,32 +8,36 @@ Manages an [ECS Task Definition](https://console.aws.amazon.com/ecs/home?#/taskD
 ## Sample code
 
 ```js
-provider.ECS.makeTaskDefinition({
-  name: "my-task-definition",
-  properties: () => ({
-    containerDefinitions: [
-      {
-        name: "nginx",
-        image: "nginx",
-        cpu: 0,
-        memory: 512,
-        portMappings: [
-          {
-            containerPort: 80,
-            hostPort: 80,
-            protocol: "tcp",
-          },
-        ],
-        essential: true,
-        environment: [],
-        mountPoints: [],
-        volumesFrom: [],
-      },
-    ],
-    placementConstraints: [],
-    requiresCompatibilities: ["EC2"],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "TaskDefinition",
+    group: "ECS",
+    name: "nginx",
+    properties: () => ({
+      containerDefinitions: [
+        {
+          name: "nginx",
+          image: "nginx",
+          cpu: 0,
+          memory: 512,
+          portMappings: [
+            {
+              containerPort: 81,
+              hostPort: 80,
+              protocol: "tcp",
+            },
+          ],
+          essential: true,
+          environment: [],
+          mountPoints: [],
+          volumesFrom: [],
+        },
+      ],
+      placementConstraints: [],
+      requiresCompatibilities: ["EC2"],
+    }),
+  },
+];
 ```
 
 ## Properties

@@ -2,20 +2,21 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "internet-gateway",
     dependencies: () => ({
       vpc: "vpc",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -8,15 +8,23 @@ Manages an [AppSync GraphqlApi](https://console.aws.amazon.com/appsync/home?#/ap
 ## Sample code
 
 ```js
-provider.AppSync.makeGraphqlApi({
-  name: "notes-api",
-  properties: ({ config }) => ({
-    authenticationType: "API_KEY",
-    xrayEnabled: true,
-    schemaFile: "my-api.graphql",
-    apiKeys: [{ description: "Graphql Api Keys" }],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "GraphqlApi",
+    group: "AppSync",
+    name: "cdk-notes-appsync-api",
+    properties: ({}) => ({
+      authenticationType: "API_KEY",
+      xrayEnabled: true,
+      apiKeys: [
+        {
+          description: "Graphql Api Keys",
+        },
+      ],
+      schemaFile: "cdk-notes-appsync-api.graphql",
+    }),
+  },
+];
 ```
 
 ## Properties

@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.AutoScaling.makeAutoScalingGroup({
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceAsg-FJVD23F7MHXY",
     properties: ({}) => ({
       MinSize: 0,
@@ -16,9 +18,10 @@ const createResources = ({ provider }) => {
       launchConfiguration:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
     }),
-  });
-
-  provider.AutoScaling.makeLaunchConfiguration({
+  },
+  {
+    type: "LaunchConfiguration",
+    group: "AutoScaling",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
     properties: ({}) => ({
       InstanceType: "t2.small",
@@ -37,9 +40,10 @@ const createResources = ({ provider }) => {
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
       securityGroups: ["EcsSecurityGroup"],
     }),
-  });
-
-  provider.EC2.makeVpc({
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "Vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
@@ -51,9 +55,10 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-
-  provider.EC2.makeInternetGateway({
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "InternetGateway",
     properties: ({}) => ({
       Tags: [
@@ -66,9 +71,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "PubSubnetAz1",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
@@ -83,9 +89,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
     name: "PubSubnetAz2",
     properties: ({ config }) => ({
       CidrBlock: "10.0.1.0/24",
@@ -100,9 +107,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTable({
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "RouteViaIgw",
     properties: ({}) => ({
       Tags: [
@@ -115,23 +123,26 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "RouteViaIgw",
       subnet: "PubSubnetAz1",
     }),
-  });
-
-  provider.EC2.makeRouteTableAssociation({
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
     dependencies: () => ({
       routeTable: "RouteViaIgw",
       subnet: "PubSubnetAz2",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -139,9 +150,10 @@ const createResources = ({ provider }) => {
       routeTable: "RouteViaIgw",
       ig: "InternetGateway",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "EcsSecurityGroup",
     properties: ({}) => ({
       Description: "ECS Allowed Ports",
@@ -155,9 +167,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "Vpc",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
@@ -174,9 +187,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "EcsSecurityGroup",
     }),
-  });
-
-  provider.ECS.makeCluster({
+  },
+  {
+    type: "Cluster",
+    group: "ECS",
     name: "my-cluster",
     properties: ({}) => ({
       settings: [
@@ -186,9 +200,10 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6",
     properties: ({}) => ({
       Path: "/",
@@ -214,21 +229,22 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AmazonEC2ContainerServiceforEC2Role"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AmazonEC2ContainerServiceforEC2Role",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
     }),
-  });
-
-  provider.IAM.makeInstanceProfile({
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
     dependencies: () => ({
       roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

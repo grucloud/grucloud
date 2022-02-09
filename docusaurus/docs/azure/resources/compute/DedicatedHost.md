@@ -6,20 +6,24 @@ Provides a **DedicatedHost** from the **Compute** group
 ## Examples
 ### Create or update a dedicated host .
 ```js
-provider.Compute.makeDedicatedHost({
-  name: "myDedicatedHost",
-  properties: () => ({
-    location: "westus",
-    tags: { department: "HR" },
-    properties: { platformFaultDomain: 1 },
-    sku: { name: "DSv3-Type1" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    dedicatedHostGroup: "myDedicatedHostGroup",
-    hostGroup: "myDedicatedHostGroup",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "DedicatedHost",
+    group: "Compute",
+    name: "myDedicatedHost",
+    properties: () => ({
+      location: "westus",
+      tags: { department: "HR" },
+      properties: { platformFaultDomain: 1 },
+      sku: { name: "DSv3-Type1" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      dedicatedHostGroup: "myDedicatedHostGroup",
+      hostGroup: "myDedicatedHostGroup",
+    }),
+  },
+];
 
 ```
 ## Dependencies

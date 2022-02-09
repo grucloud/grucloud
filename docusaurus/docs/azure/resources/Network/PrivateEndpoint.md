@@ -6,71 +6,83 @@ Provides a **PrivateEndpoint** from the **Network** group
 ## Examples
 ### Create private endpoint
 ```js
-provider.Network.makePrivateEndpoint({
-  name: "myPrivateEndpoint",
-  properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    natGateway: "myNatGateway",
-    privateLinkService: "myPrivateLinkService",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "PrivateEndpoint",
+    group: "Network",
+    name: "myPrivateEndpoint",
+    properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: "myNatGateway",
+      privateLinkService: "myPrivateLinkService",
+    }),
+  },
+];
 
 ```
 
 ### Create private endpoint with manual approval connection
 ```js
-provider.Network.makePrivateEndpoint({
-  name: "myPrivateEndpoint",
-  properties: () => ({
-    location: "eastus",
-    properties: {
-      manualPrivateLinkServiceConnections: [
-        {
-          properties: {
-            privateLinkServiceId:
-              "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateLinkServices/testPls",
-            groupIds: ["groupIdFromResource"],
-            requestMessage: "Please manually approve my connection.",
+exports.createResources = () => [
+  {
+    type: "PrivateEndpoint",
+    group: "Network",
+    name: "myPrivateEndpoint",
+    properties: () => ({
+      location: "eastus",
+      properties: {
+        manualPrivateLinkServiceConnections: [
+          {
+            properties: {
+              privateLinkServiceId:
+                "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateLinkServices/testPls",
+              groupIds: ["groupIdFromResource"],
+              requestMessage: "Please manually approve my connection.",
+            },
           },
+        ],
+        subnet: {
+          id: "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/myVnet/subnets/mySubnet",
         },
-      ],
-      subnet: {
-        id: "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/myVnet/subnets/mySubnet",
+        ipConfigurations: [
+          {
+            name: "pestaticconfig",
+            properties: {
+              groupId: "file",
+              memberName: "file",
+              privateIPAddress: "192.168.0.5",
+            },
+          },
+        ],
+        customNetworkInterfaceName: "testPeNic",
       },
-      ipConfigurations: [
-        {
-          name: "pestaticconfig",
-          properties: {
-            groupId: "file",
-            memberName: "file",
-            privateIPAddress: "192.168.0.5",
-          },
-        },
-      ],
-      customNetworkInterfaceName: "testPeNic",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    natGateway: "myNatGateway",
-    privateLinkService: "myPrivateLinkService",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: "myNatGateway",
+      privateLinkService: "myPrivateLinkService",
+    }),
+  },
+];
 
 ```
 
 ### Create private endpoint with application security groups
 ```js
-provider.Network.makePrivateEndpoint({
-  name: "myPrivateEndpoint",
-  properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    natGateway: "myNatGateway",
-    privateLinkService: "myPrivateLinkService",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "PrivateEndpoint",
+    group: "Network",
+    name: "myPrivateEndpoint",
+    properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: "myNatGateway",
+      privateLinkService: "myPrivateLinkService",
+    }),
+  },
+];
 
 ```
 ## Dependencies

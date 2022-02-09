@@ -2,28 +2,28 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.ACM.makeCertificate({
-    name: "grucloud.org",
-  });
-
-  provider.Route53.makeHostedZone({
+exports.createResources = () => [
+  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "HostedZone",
+    group: "Route53",
     name: "grucloud.org.",
     dependencies: () => ({
       domain: "grucloud.org",
     }),
-  });
-
-  provider.Route53.makeRecord({
+  },
+  {
+    type: "Record",
+    group: "Route53",
     dependencies: () => ({
       hostedZone: "grucloud.org.",
       certificate: "grucloud.org",
     }),
-  });
-
-  provider.Route53Domains.useDomain({
+  },
+  {
+    type: "Domain",
+    group: "Route53Domains",
     name: "grucloud.org",
-  });
-};
-
-exports.createResources = createResources;
+    readOnly: true,
+  },
+];

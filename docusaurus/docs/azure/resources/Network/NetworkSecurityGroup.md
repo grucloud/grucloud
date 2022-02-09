@@ -6,40 +6,48 @@ Provides a **NetworkSecurityGroup** from the **Network** group
 ## Examples
 ### Create network security group
 ```js
-provider.Network.makeNetworkSecurityGroup({
-  name: "myNetworkSecurityGroup",
-  properties: () => ({ location: "eastus" }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
+    name: "myNetworkSecurityGroup",
+    properties: () => ({ location: "eastus" }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create network security group with rule
 ```js
-provider.Network.makeNetworkSecurityGroup({
-  name: "myNetworkSecurityGroup",
-  properties: () => ({
-    properties: {
-      securityRules: [
-        {
-          name: "rule1",
-          properties: {
-            protocol: "*",
-            sourceAddressPrefix: "*",
-            destinationAddressPrefix: "*",
-            access: "Allow",
-            destinationPortRange: "80",
-            sourcePortRange: "*",
-            priority: 130,
-            direction: "Inbound",
+exports.createResources = () => [
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
+    name: "myNetworkSecurityGroup",
+    properties: () => ({
+      properties: {
+        securityRules: [
+          {
+            name: "rule1",
+            properties: {
+              protocol: "*",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              destinationPortRange: "80",
+              sourcePortRange: "*",
+              priority: 130,
+              direction: "Inbound",
+            },
           },
-        },
-      ],
-    },
-    location: "eastus",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+        ],
+      },
+      location: "eastus",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

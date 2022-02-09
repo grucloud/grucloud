@@ -11,46 +11,28 @@ Manages a security group ingress rule.
 The following example creates a security rule to allow ingress SSH traffic.
 
 ```js
-const vpc = provider.EC2.makeVpc({
-  name: "vpc",
-  properties: () => ({
-    CidrBlock: "10.1.0.0/16",
-  }),
-});
-
-const sg = provider.EC2.makeSecurityGroup({
-  name: "securityGroup",
-  dependencies: () => ({ vpc }),
-  properties: () => ({
-    create: {
-      Description: "Security Group",
-    },
-  }),
-});
-
-const sgRuleIngressSsh = provider.EC2.makeSecurityGroupRuleIngress({
-  name: "sg-rule-ingress-ssh",
-  dependencies: () => ({
-    securityGroup: sg,
-  }),
-  properties: () => ({
-    IpPermission: {
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      Ipv6Ranges: [
-        {
-          CidrIpv6: "::/0",
-        },
-      ],
-      ToPort: 22,
-    },
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
+    properties: ({}) => ({
+      IpPermission: {
+        IpProtocol: "tcp",
+        FromPort: 80,
+        ToPort: 80,
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+      },
+    }),
+    dependencies: () => ({
+      securityGroup: "EcsSecurityGroup",
+    }),
+  },
+];
 ```
 
 ### Examples

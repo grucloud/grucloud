@@ -6,11 +6,15 @@ Provides a **ApplicationSecurityGroup** from the **Network** group
 ## Examples
 ### Create application security group
 ```js
-provider.Network.makeApplicationSecurityGroup({
-  name: "myApplicationSecurityGroup",
-  properties: () => ({ location: "westus", properties: {} }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "ApplicationSecurityGroup",
+    group: "Network",
+    name: "myApplicationSecurityGroup",
+    properties: () => ({ location: "westus", properties: {} }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

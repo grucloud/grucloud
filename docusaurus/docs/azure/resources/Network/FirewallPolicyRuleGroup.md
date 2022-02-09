@@ -6,73 +6,81 @@ Provides a **FirewallPolicyRuleGroup** from the **Network** group
 ## Examples
 ### Create FirewallPolicyRuleGroup
 ```js
-provider.Network.makeFirewallPolicyRuleGroup({
-  name: "myFirewallPolicyRuleGroup",
-  properties: () => ({
-    properties: {
-      priority: 110,
-      rules: [
-        {
-          ruleType: "FirewallPolicyFilterRule",
-          name: "Example-Filter-Rule",
-          action: { type: "Deny" },
-          ruleConditions: [
-            {
-              ruleConditionType: "NetworkRuleCondition",
-              name: "network-condition1",
-              sourceAddresses: ["10.1.25.0/24"],
-              destinationAddresses: ["*"],
-              ipProtocols: ["TCP"],
-              destinationPorts: ["*"],
-            },
-          ],
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    firewallPolicy: "myFirewallPolicy",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FirewallPolicyRuleGroup",
+    group: "Network",
+    name: "myFirewallPolicyRuleGroup",
+    properties: () => ({
+      properties: {
+        priority: 110,
+        rules: [
+          {
+            ruleType: "FirewallPolicyFilterRule",
+            name: "Example-Filter-Rule",
+            action: { type: "Deny" },
+            ruleConditions: [
+              {
+                ruleConditionType: "NetworkRuleCondition",
+                name: "network-condition1",
+                sourceAddresses: ["10.1.25.0/24"],
+                destinationAddresses: ["*"],
+                ipProtocols: ["TCP"],
+                destinationPorts: ["*"],
+              },
+            ],
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      firewallPolicy: "myFirewallPolicy",
+    }),
+  },
+];
 
 ```
 
 ### Create FirewallPolicyRuleGroup With IpGroups
 ```js
-provider.Network.makeFirewallPolicyRuleGroup({
-  name: "myFirewallPolicyRuleGroup",
-  properties: () => ({
-    properties: {
-      priority: 110,
-      rules: [
-        {
-          ruleType: "FirewallPolicyFilterRule",
-          name: "Example-Filter-Rule",
-          action: { type: "Deny" },
-          ruleConditions: [
-            {
-              ruleConditionType: "NetworkRuleCondition",
-              name: "network-condition1",
-              ipProtocols: ["TCP"],
-              destinationPorts: ["*"],
-              sourceIpGroups: [
-                "/subscriptions/subid/providers/Microsoft.Network/resourceGroup/rg1/ipGroups/ipGroups1",
-              ],
-              destinationIpGroups: [
-                "/subscriptions/subid/providers/Microsoft.Network/resourceGroup/rg1/ipGroups/ipGroups2",
-              ],
-            },
-          ],
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    firewallPolicy: "myFirewallPolicy",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FirewallPolicyRuleGroup",
+    group: "Network",
+    name: "myFirewallPolicyRuleGroup",
+    properties: () => ({
+      properties: {
+        priority: 110,
+        rules: [
+          {
+            ruleType: "FirewallPolicyFilterRule",
+            name: "Example-Filter-Rule",
+            action: { type: "Deny" },
+            ruleConditions: [
+              {
+                ruleConditionType: "NetworkRuleCondition",
+                name: "network-condition1",
+                ipProtocols: ["TCP"],
+                destinationPorts: ["*"],
+                sourceIpGroups: [
+                  "/subscriptions/subid/providers/Microsoft.Network/resourceGroup/rg1/ipGroups/ipGroups1",
+                ],
+                destinationIpGroups: [
+                  "/subscriptions/subid/providers/Microsoft.Network/resourceGroup/rg1/ipGroups/ipGroups2",
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      firewallPolicy: "myFirewallPolicy",
+    }),
+  },
+];
 
 ```
 ## Dependencies

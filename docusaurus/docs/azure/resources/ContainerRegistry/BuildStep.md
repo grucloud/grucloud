@@ -6,38 +6,42 @@ Provides a **BuildStep** from the **ContainerRegistry** group
 ## Examples
 ### BuildSteps_Create
 ```js
-provider.ContainerRegistry.makeBuildStep({
-  name: "myBuildStep",
-  properties: () => ({
-    properties: {
-      type: "Docker",
-      imageNames: ["azurerest:testtag"],
-      dockerFilePath: "subfolder/Dockerfile",
-      contextPath: "dockerfiles",
-      isPushEnabled: true,
-      noCache: true,
-      buildArguments: [
-        {
-          type: "DockerBuildArgument",
-          name: "mytestargument",
-          value: "mytestvalue",
-          isSecret: false,
-        },
-        {
-          type: "DockerBuildArgument",
-          name: "mysecrettestargument",
-          value: "mysecrettestvalue",
-          isSecret: true,
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    registry: "myRegistry",
-    buildTask: "myBuildTask",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "BuildStep",
+    group: "ContainerRegistry",
+    name: "myBuildStep",
+    properties: () => ({
+      properties: {
+        type: "Docker",
+        imageNames: ["azurerest:testtag"],
+        dockerFilePath: "subfolder/Dockerfile",
+        contextPath: "dockerfiles",
+        isPushEnabled: true,
+        noCache: true,
+        buildArguments: [
+          {
+            type: "DockerBuildArgument",
+            name: "mytestargument",
+            value: "mytestvalue",
+            isSecret: false,
+          },
+          {
+            type: "DockerBuildArgument",
+            name: "mysecrettestargument",
+            value: "mysecrettestvalue",
+            isSecret: true,
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      registry: "myRegistry",
+      buildTask: "myBuildTask",
+    }),
+  },
+];
 
 ```
 ## Dependencies

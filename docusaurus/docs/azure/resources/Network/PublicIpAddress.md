@@ -6,34 +6,46 @@ Provides a **PublicIPAddress** from the **Network** group
 ## Examples
 ### Create public IP address defaults
 ```js
-provider.Network.makePublicIPAddress({
-  name: "myPublicIPAddress",
-  properties: () => ({ location: "eastus" }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "PublicIPAddress",
+    group: "Network",
+    name: "myPublicIPAddress",
+    properties: () => ({ location: "eastus" }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create public IP address allocation method
 ```js
-provider.Network.makePublicIPAddress({
-  name: "myPublicIPAddress",
-  properties: () => ["1"],
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "PublicIPAddress",
+    group: "Network",
+    name: "myPublicIPAddress",
+    properties: () => ["1"],
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 
 ### Create public IP address DNS
 ```js
-provider.Network.makePublicIPAddress({
-  name: "myPublicIPAddress",
-  properties: () => ({
-    properties: { dnsSettings: { domainNameLabel: "dnslbl" } },
-    location: "eastus",
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "PublicIPAddress",
+    group: "Network",
+    name: "myPublicIPAddress",
+    properties: () => ({
+      properties: { dnsSettings: { domainNameLabel: "dnslbl" } },
+      location: "eastus",
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

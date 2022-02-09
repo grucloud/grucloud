@@ -6,81 +6,85 @@ Provides a **VpnGateway** from the **Network** group
 ## Examples
 ### VpnGatewayPut
 ```js
-provider.Network.makeVpnGateway({
-  name: "myVpnGateway",
-  properties: () => ({
-    location: "westcentralus",
-    tags: { key1: "value1" },
-    properties: {
-      virtualHub: {
-        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1",
-      },
-      connections: [
-        {
-          name: "vpnConnection1",
-          properties: {
-            remoteVpnSite: {
-              id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1",
-            },
-            vpnLinkConnections: [
-              {
-                name: "Connection-Link1",
-                properties: {
-                  vpnSiteLink: {
-                    id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1/vpnSiteLinks/siteLink1",
-                  },
-                  connectionBandwidth: 200,
-                  vpnConnectionProtocolType: "IKEv2",
-                  sharedKey: "key",
-                  egressNatRules: [
-                    {
-                      id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnGateways/gateway1/natRules/nat03",
-                    },
-                  ],
-                },
-              },
-            ],
-          },
+exports.createResources = () => [
+  {
+    type: "VpnGateway",
+    group: "Network",
+    name: "myVpnGateway",
+    properties: () => ({
+      location: "westcentralus",
+      tags: { key1: "value1" },
+      properties: {
+        virtualHub: {
+          id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualHubs/virtualHub1",
         },
-      ],
-      bgpSettings: {
-        asn: 65515,
-        peerWeight: 0,
-        bgpPeeringAddresses: [
+        connections: [
           {
-            ipconfigurationId: "Instance0",
-            customBgpIpAddresses: ["169.254.21.5"],
-          },
-          {
-            ipconfigurationId: "Instance1",
-            customBgpIpAddresses: ["169.254.21.10"],
+            name: "vpnConnection1",
+            properties: {
+              remoteVpnSite: {
+                id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1",
+              },
+              vpnLinkConnections: [
+                {
+                  name: "Connection-Link1",
+                  properties: {
+                    vpnSiteLink: {
+                      id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1/vpnSiteLinks/siteLink1",
+                    },
+                    connectionBandwidth: 200,
+                    vpnConnectionProtocolType: "IKEv2",
+                    sharedKey: "key",
+                    egressNatRules: [
+                      {
+                        id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnGateways/gateway1/natRules/nat03",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
           },
         ],
-      },
-      natRules: [
-        {
-          name: "nat03",
-          properties: {
-            type: "Static",
-            mode: "EgressSnat",
-            internalMappings: [{ addressSpace: "0.0.0.0/26" }],
-            externalMappings: [{ addressSpace: "192.168.0.0/26" }],
-            ipConfigurationId: "",
-          },
+        bgpSettings: {
+          asn: 65515,
+          peerWeight: 0,
+          bgpPeeringAddresses: [
+            {
+              ipconfigurationId: "Instance0",
+              customBgpIpAddresses: ["169.254.21.5"],
+            },
+            {
+              ipconfigurationId: "Instance1",
+              customBgpIpAddresses: ["169.254.21.10"],
+            },
+          ],
         },
-      ],
-      isRoutingPreferenceInternet: false,
-      enableBgpRouteTranslationForNat: false,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    virtualHub: "myVirtualHub",
-    vpnSite: "myVpnSite",
-    routeTable: "myRouteTable",
-    virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
-  }),
-});
+        natRules: [
+          {
+            name: "nat03",
+            properties: {
+              type: "Static",
+              mode: "EgressSnat",
+              internalMappings: [{ addressSpace: "0.0.0.0/26" }],
+              externalMappings: [{ addressSpace: "192.168.0.0/26" }],
+              ipConfigurationId: "",
+            },
+          },
+        ],
+        isRoutingPreferenceInternet: false,
+        enableBgpRouteTranslationForNat: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      virtualHub: "myVirtualHub",
+      vpnSite: "myVpnSite",
+      routeTable: "myRouteTable",
+      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,18 +6,22 @@ Provides a **Certificate** from the **Web** group
 ## Examples
 ### Create Or Update Certificate
 ```js
-provider.Web.makeCertificate({
-  name: "myCertificate",
-  properties: () => ({
-    location: "East US",
-    properties: { hostNames: ["ServerCert"], password: "<password>" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    hostingEnvironment: "myHostingEnvironment",
-    serverFarm: "myServerFarm",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Certificate",
+    group: "Web",
+    name: "myCertificate",
+    properties: () => ({
+      location: "East US",
+      properties: { hostNames: ["ServerCert"], password: "<password>" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      hostingEnvironment: "myHostingEnvironment",
+      serverFarm: "myServerFarm",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -8,14 +8,35 @@ Manages an [Api Gateway V2 Authorizer](https://console.aws.amazon.com/apigateway
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeApi({
-  name: "my-api",
-});
-
-provider.ApiGatewayV2.makeAuthorizer({
-  name: "my-authorizer-stage-dev",
-  dependencies: { api: "my-api" },
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+  {
+    type: "Authorizer",
+    group: "ApiGatewayV2",
+    name: "authorizer-auth0",
+    properties: ({}) => ({
+      AuthorizerType: "JWT",
+      IdentitySource: ["$request.header.Authorization"],
+      JwtConfiguration: {
+        Audience: ["https://api.grucloud.org"],
+        Issuer: "https://dev-zojrhsju.us.auth0.com/",
+      },
+    }),
+    dependencies: () => ({
+      api: "my-api",
+    }),
+  },
+];
 ```
 
 ## Properties

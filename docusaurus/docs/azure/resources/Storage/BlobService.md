@@ -6,82 +6,97 @@ Provides a **BlobService** from the **Storage** group
 ## Examples
 ### PutBlobServices
 ```js
-provider.Storage.makeBlobService({
-  name: "myBlobService",
-  properties: () => ({
-    properties: {
-      cors: {
-        corsRules: [
-          {
-            allowedOrigins: [
-              "http://www.contoso.com",
-              "http://www.fabrikam.com",
-            ],
-            allowedMethods: ["GET", "HEAD", "POST", "OPTIONS", "MERGE", "PUT"],
-            maxAgeInSeconds: 100,
-            exposedHeaders: ["x-ms-meta-*"],
-            allowedHeaders: [
-              "x-ms-meta-abc",
-              "x-ms-meta-data*",
-              "x-ms-meta-target*",
-            ],
-          },
-          {
-            allowedOrigins: ["*"],
-            allowedMethods: ["GET"],
-            maxAgeInSeconds: 2,
-            exposedHeaders: ["*"],
-            allowedHeaders: ["*"],
-          },
-          {
-            allowedOrigins: [
-              "http://www.abc23.com",
-              "https://www.fabrikam.com/*",
-            ],
-            allowedMethods: ["GET", "PUT"],
-            maxAgeInSeconds: 2000,
-            exposedHeaders: [
-              "x-ms-meta-abc",
-              "x-ms-meta-data*",
-              "x -ms-meta-target*",
-            ],
-            allowedHeaders: ["x-ms-meta-12345675754564*"],
-          },
-        ],
+exports.createResources = () => [
+  {
+    type: "BlobService",
+    group: "Storage",
+    name: "myBlobService",
+    properties: () => ({
+      properties: {
+        cors: {
+          corsRules: [
+            {
+              allowedOrigins: [
+                "http://www.contoso.com",
+                "http://www.fabrikam.com",
+              ],
+              allowedMethods: [
+                "GET",
+                "HEAD",
+                "POST",
+                "OPTIONS",
+                "MERGE",
+                "PUT",
+              ],
+              maxAgeInSeconds: 100,
+              exposedHeaders: ["x-ms-meta-*"],
+              allowedHeaders: [
+                "x-ms-meta-abc",
+                "x-ms-meta-data*",
+                "x-ms-meta-target*",
+              ],
+            },
+            {
+              allowedOrigins: ["*"],
+              allowedMethods: ["GET"],
+              maxAgeInSeconds: 2,
+              exposedHeaders: ["*"],
+              allowedHeaders: ["*"],
+            },
+            {
+              allowedOrigins: [
+                "http://www.abc23.com",
+                "https://www.fabrikam.com/*",
+              ],
+              allowedMethods: ["GET", "PUT"],
+              maxAgeInSeconds: 2000,
+              exposedHeaders: [
+                "x-ms-meta-abc",
+                "x-ms-meta-data*",
+                "x -ms-meta-target*",
+              ],
+              allowedHeaders: ["x-ms-meta-12345675754564*"],
+            },
+          ],
+        },
+        defaultServiceVersion: "2017-07-29",
+        deleteRetentionPolicy: { enabled: true, days: 300 },
+        isVersioningEnabled: true,
+        changeFeed: { enabled: true, retentionInDays: 7 },
       },
-      defaultServiceVersion: "2017-07-29",
-      deleteRetentionPolicy: { enabled: true, days: 300 },
-      isVersioningEnabled: true,
-      changeFeed: { enabled: true, retentionInDays: 7 },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### BlobServicesPutLastAccessTimeBasedTracking
 ```js
-provider.Storage.makeBlobService({
-  name: "myBlobService",
-  properties: () => ({
-    properties: {
-      lastAccessTimeTrackingPolicy: {
-        enable: true,
-        name: "AccessTimeTracking",
-        trackingGranularityInDays: 1,
-        blobType: ["blockBlob"],
+exports.createResources = () => [
+  {
+    type: "BlobService",
+    group: "Storage",
+    name: "myBlobService",
+    properties: () => ({
+      properties: {
+        lastAccessTimeTrackingPolicy: {
+          enable: true,
+          name: "AccessTimeTracking",
+          trackingGranularityInDays: 1,
+          blobType: ["blockBlob"],
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

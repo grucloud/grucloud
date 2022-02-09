@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.ECR.makeRepository({
+exports.createResources = () => [
+  {
+    type: "Repository",
+    group: "ECR",
     name: "starhackit/lb",
     properties: ({ config }) => ({
       imageTagMutability: "MUTABLE",
@@ -52,7 +54,5 @@ const createResources = ({ provider }) => {
         ],
       },
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

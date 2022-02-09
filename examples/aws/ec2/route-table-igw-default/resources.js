@@ -2,23 +2,26 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.useDefaultVpc({
-    name: "vpc-default",
-  });
-
-  provider.EC2.useDefaultInternetGateway({
+exports.createResources = () => [
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "InternetGateway",
+    group: "EC2",
     name: "ig-default",
-  });
-
-  provider.EC2.useDefaultRouteTable({
+    isDefault: true,
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
     name: "rt-default-vpc-default",
+    isDefault: true,
     dependencies: () => ({
       vpc: "vpc-default",
     }),
-  });
-
-  provider.EC2.makeRoute({
+  },
+  {
+    type: "Route",
+    group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
@@ -26,7 +29,5 @@ const createResources = ({ provider }) => {
       routeTable: "rt-default-vpc-default",
       ig: "ig-default",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

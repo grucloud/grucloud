@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.AppSync.makeGraphqlApi({
+exports.createResources = () => [
+  {
+    type: "GraphqlApi",
+    group: "AppSync",
     name: "cdk-notes-appsync-api",
     properties: ({}) => ({
       authenticationType: "API_KEY",
@@ -15,22 +17,24 @@ const createResources = ({ provider }) => {
       ],
       schemaFile: "cdk-notes-appsync-api.graphql",
     }),
-  });
-
-  provider.AppSync.makeDataSource({
+  },
+  {
+    type: "DataSource",
+    group: "AppSync",
     name: "lambdaDatasource",
     properties: ({}) => ({
       type: "AWS_LAMBDA",
     }),
     dependencies: () => ({
+      graphqlApi: "cdk-notes-appsync-api",
       serviceRole:
         "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
-      graphqlApi: "cdk-notes-appsync-api",
       lambdaFunction: "lambda-fns",
     }),
-  });
-
-  provider.AppSync.makeResolver({
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
     properties: ({}) => ({
       typeName: "Mutation",
       fieldName: "createNote",
@@ -40,9 +44,10 @@ const createResources = ({ provider }) => {
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
-  });
-
-  provider.AppSync.makeResolver({
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
     properties: ({}) => ({
       typeName: "Mutation",
       fieldName: "deleteNote",
@@ -52,9 +57,10 @@ const createResources = ({ provider }) => {
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
-  });
-
-  provider.AppSync.makeResolver({
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
     properties: ({}) => ({
       typeName: "Mutation",
       fieldName: "updateNote",
@@ -64,9 +70,10 @@ const createResources = ({ provider }) => {
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
-  });
-
-  provider.AppSync.makeResolver({
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
     properties: ({}) => ({
       typeName: "Query",
       fieldName: "getNoteById",
@@ -76,9 +83,10 @@ const createResources = ({ provider }) => {
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
-  });
-
-  provider.AppSync.makeResolver({
+  },
+  {
+    type: "Resolver",
+    group: "AppSync",
     properties: ({}) => ({
       typeName: "Query",
       fieldName: "listNotes",
@@ -88,9 +96,10 @@ const createResources = ({ provider }) => {
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
-  });
-
-  provider.DynamoDB.makeTable({
+  },
+  {
+    type: "Table",
+    group: "DynamoDB",
     name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     properties: ({}) => ({
       AttributeDefinitions: [
@@ -107,9 +116,10 @@ const createResources = ({ provider }) => {
       ],
       BillingMode: "PAY_PER_REQUEST",
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
     properties: ({ config }) => ({
       Path: "/",
@@ -143,9 +153,10 @@ const createResources = ({ provider }) => {
         },
       ],
     }),
-  });
-
-  provider.IAM.makeRole({
+  },
+  {
+    type: "Role",
+    group: "IAM",
     name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     properties: ({ config }) => ({
       Path: "/",
@@ -184,16 +195,19 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["AWSLambdaBasicExecutionRole"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "AWSLambdaBasicExecutionRole",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     }),
-  });
-
-  provider.Lambda.makeFunction({
+  },
+  {
+    type: "Function",
+    group: "Lambda",
     name: "lambda-fns",
     properties: ({}) => ({
       Handler: "main.handler",
@@ -211,7 +225,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

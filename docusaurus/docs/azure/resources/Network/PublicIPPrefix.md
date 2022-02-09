@@ -6,33 +6,41 @@ Provides a **PublicIPPrefix** from the **Network** group
 ## Examples
 ### Create public IP prefix defaults
 ```js
-provider.Network.makePublicIPPrefix({
-  name: "myPublicIPPrefix",
-  properties: () => ({
-    location: "westus",
-    properties: { prefixLength: 30 },
-    sku: { name: "Standard" },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    loadBalancer: "myLoadBalancer",
-    customIpPrefix: "myCustomIPPrefix",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "PublicIPPrefix",
+    group: "Network",
+    name: "myPublicIPPrefix",
+    properties: () => ({
+      location: "westus",
+      properties: { prefixLength: 30 },
+      sku: { name: "Standard" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      loadBalancer: "myLoadBalancer",
+      customIpPrefix: "myCustomIPPrefix",
+    }),
+  },
+];
 
 ```
 
 ### Create public IP prefix allocation method
 ```js
-provider.Network.makePublicIPPrefix({
-  name: "myPublicIPPrefix",
-  properties: () => ["1"],
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    loadBalancer: "myLoadBalancer",
-    customIpPrefix: "myCustomIPPrefix",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "PublicIPPrefix",
+    group: "Network",
+    name: "myPublicIPPrefix",
+    properties: () => ["1"],
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      loadBalancer: "myLoadBalancer",
+      customIpPrefix: "myCustomIPPrefix",
+    }),
+  },
+];
 
 ```
 ## Dependencies

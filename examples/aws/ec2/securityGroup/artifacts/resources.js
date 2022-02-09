@@ -2,15 +2,18 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.makeVpc({
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
     name: "vpc-test-sg",
     properties: ({}) => ({
       CidrBlock: "10.1.0.0/16",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group-cluster-test",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -18,9 +21,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-test-sg",
     }),
-  });
-
-  provider.EC2.makeSecurityGroup({
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
     name: "security-group-node-group-test",
     properties: ({}) => ({
       Description: "Managed By GruCloud",
@@ -28,9 +32,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       vpc: "vpc-test-sg",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-cluster-ingress-port-22",
     properties: ({}) => ({
       IpPermission: {
@@ -52,9 +57,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group-cluster-test",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleIngress({
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
     name: "sg-rule-node-group-ingress-cluster",
     properties: ({}) => ({
       IpPermission: {
@@ -77,9 +83,10 @@ const createResources = ({ provider }) => {
       securityGroup: "security-group-node-group-test",
       securityGroupFrom: "security-group-cluster-test",
     }),
-  });
-
-  provider.EC2.makeSecurityGroupRuleEgress({
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
     name: "sg-rule-cluster-egress",
     properties: ({}) => ({
       IpPermission: {
@@ -101,7 +108,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       securityGroup: "security-group-cluster-test",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

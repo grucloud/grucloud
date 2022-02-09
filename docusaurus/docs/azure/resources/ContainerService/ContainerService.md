@@ -6,14 +6,18 @@ Provides a **ContainerService** from the **ContainerService** group
 ## Examples
 ### Create/Update Container Service
 ```js
-provider.ContainerService.makeContainerService({
-  name: "myContainerService",
-  properties: () => ({ location: "location1" }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vault: "myVault",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "ContainerService",
+    group: "ContainerService",
+    name: "myContainerService",
+    properties: () => ({ location: "location1" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+    }),
+  },
+];
 
 ```
 ## Dependencies

@@ -6,27 +6,31 @@ Provides a **VirtualMachineRunCommandByVirtualMachine** from the **Compute** gro
 ## Examples
 ### Create or update a run command.
 ```js
-provider.Compute.makeVirtualMachineRunCommandByVirtualMachine({
-  name: "myVirtualMachineRunCommandByVirtualMachine",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      source: { script: "Write-Host Hello World!" },
-      parameters: [
-        { name: "param1", value: "value1" },
-        { name: "param2", value: "value2" },
-      ],
-      asyncExecution: false,
-      runAsUser: "user1",
-      runAsPassword: "<runAsPassword>",
-      timeoutInSeconds: 3600,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    vm: "myVirtualMachine",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualMachineRunCommandByVirtualMachine",
+    group: "Compute",
+    name: "myVirtualMachineRunCommandByVirtualMachine",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        source: { script: "Write-Host Hello World!" },
+        parameters: [
+          { name: "param1", value: "value1" },
+          { name: "param2", value: "value2" },
+        ],
+        asyncExecution: false,
+        runAsUser: "user1",
+        runAsPassword: "<runAsPassword>",
+        timeoutInSeconds: 3600,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vm: "myVirtualMachine",
+    }),
+  },
+];
 
 ```
 ## Dependencies

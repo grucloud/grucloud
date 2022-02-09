@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Compute.makeSshPublicKey({
+exports.createResources = () => [
+  {
+    type: "SshPublicKey",
+    group: "Compute",
     properties: ({}) => ({
       name: "admingrucloud",
       properties: {
@@ -14,9 +16,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-ag",
     }),
-  });
-
-  provider.Compute.makeVirtualMachineScaleSet({
+  },
+  {
+    type: "VirtualMachineScaleSet",
+    group: "Compute",
     properties: ({ getId }) => ({
       name: "vmss",
       sku: {
@@ -134,9 +137,10 @@ const createResources = ({ provider }) => {
       networkSecurityGroups: ["rg-ag::basicnsgvnet-nic01"],
       applicationGateways: ["rg-ag::ag"],
     }),
-  });
-
-  provider.Network.makeApplicationGateway({
+  },
+  {
+    type: "ApplicationGateway",
+    group: "Network",
     properties: ({ config, getId }) => ({
       name: "ag",
       properties: {
@@ -243,9 +247,10 @@ const createResources = ({ provider }) => {
       subnets: ["rg-ag::vnet::subnet-ag"],
       publicIpAddresses: ["rg-ag::ip"],
     }),
-  });
-
-  provider.Network.makeNetworkSecurityGroup({
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
     properties: ({}) => ({
       name: "basicnsgvnet-nic01",
       properties: {
@@ -255,9 +260,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-ag",
     }),
-  });
-
-  provider.Network.makePublicIPAddress({
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
     properties: ({}) => ({
       name: "ip",
       sku: {
@@ -270,9 +276,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-ag",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "default",
       properties: {
@@ -283,9 +290,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-ag",
       virtualNetwork: "rg-ag::vnet",
     }),
-  });
-
-  provider.Network.makeSubnet({
+  },
+  {
+    type: "Subnet",
+    group: "Network",
     properties: ({}) => ({
       name: "subnet-ag",
       properties: {
@@ -296,9 +304,10 @@ const createResources = ({ provider }) => {
       resourceGroup: "rg-ag",
       virtualNetwork: "rg-ag::vnet",
     }),
-  });
-
-  provider.Network.makeVirtualNetwork({
+  },
+  {
+    type: "VirtualNetwork",
+    group: "Network",
     properties: ({}) => ({
       name: "vnet",
       properties: {
@@ -310,13 +319,12 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       resourceGroup: "rg-ag",
     }),
-  });
-
-  provider.Resources.makeResourceGroup({
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
     properties: ({}) => ({
       name: "rg-ag",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

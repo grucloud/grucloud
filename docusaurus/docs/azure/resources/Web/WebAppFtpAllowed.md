@@ -6,11 +6,18 @@ Provides a **WebAppFtpAllowed** from the **Web** group
 ## Examples
 ### Update FTP Allowed
 ```js
-provider.Web.makeWebAppFtpAllowed({
-  name: "myWebAppFtpAllowed",
-  properties: () => ({ properties: { allow: true } }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup", name: "mySite" }),
-});
+exports.createResources = () => [
+  {
+    type: "WebAppFtpAllowed",
+    group: "Web",
+    name: "myWebAppFtpAllowed",
+    properties: () => ({ properties: { allow: true } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "mySite",
+    }),
+  },
+];
 
 ```
 ## Dependencies

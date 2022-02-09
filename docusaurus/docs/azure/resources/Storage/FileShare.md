@@ -6,39 +6,51 @@ Provides a **FileShare** from the **Storage** group
 ## Examples
 ### PutShares
 ```js
-provider.Storage.makeFileShare({
-  name: "myFileShare",
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FileShare",
+    group: "Storage",
+    name: "myFileShare",
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### Create NFS Shares
 ```js
-provider.Storage.makeFileShare({
-  name: "myFileShare",
-  properties: () => ({ properties: { enabledProtocols: "NFS" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FileShare",
+    group: "Storage",
+    name: "myFileShare",
+    properties: () => ({ properties: { enabledProtocols: "NFS" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 
 ### PutShares with Access Tier
 ```js
-provider.Storage.makeFileShare({
-  name: "myFileShare",
-  properties: () => ({ properties: { accessTier: "Hot" } }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    account: "myStorageAccount",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "FileShare",
+    group: "Storage",
+    name: "myFileShare",
+    properties: () => ({ properties: { accessTier: "Hot" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      account: "myStorageAccount",
+    }),
+  },
+];
 
 ```
 ## Dependencies

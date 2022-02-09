@@ -6,20 +6,24 @@ Provides a **Snapshot** from the **ContainerService** group
 ## Examples
 ### Create/Update Snapshot
 ```js
-provider.ContainerService.makeSnapshot({
-  name: "mySnapshot",
-  properties: () => ({
-    location: "westus",
-    tags: { key1: "val1", key2: "val2" },
-    properties: {
-      creationData: {
-        sourceResourceId:
-          "/subscriptions/subid1/resourcegroups/rg1/providers/Microsoft.ContainerService/managedClusters/cluster1/agentPools/pool0",
+exports.createResources = () => [
+  {
+    type: "Snapshot",
+    group: "ContainerService",
+    name: "mySnapshot",
+    properties: () => ({
+      location: "westus",
+      tags: { key1: "val1", key2: "val2" },
+      properties: {
+        creationData: {
+          sourceResourceId:
+            "/subscriptions/subid1/resourcegroups/rg1/providers/Microsoft.ContainerService/managedClusters/cluster1/agentPools/pool0",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

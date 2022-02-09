@@ -6,15 +6,19 @@ Provides a **VirtualWan** from the **Network** group
 ## Examples
 ### VirtualWANCreate
 ```js
-provider.Network.makeVirtualWan({
-  name: "myVirtualWan",
-  properties: () => ({
-    location: "West US",
-    tags: { key1: "value1" },
-    properties: { disableVpnEncryption: false, type: "Basic" },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+exports.createResources = () => [
+  {
+    type: "VirtualWan",
+    group: "Network",
+    name: "myVirtualWan",
+    properties: () => ({
+      location: "West US",
+      tags: { key1: "value1" },
+      properties: { disableVpnEncryption: false, type: "Basic" },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

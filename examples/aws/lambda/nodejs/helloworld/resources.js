@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
       Path: "/",
@@ -24,9 +26,10 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["lambda-policy"],
     }),
-  });
-
-  provider.IAM.makePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "lambda-policy",
     properties: ({}) => ({
       PolicyDocument: {
@@ -42,18 +45,20 @@ const createResources = ({ provider }) => {
       Path: "/",
       Description: "Allow logs",
     }),
-  });
-
-  provider.Lambda.makeLayer({
+  },
+  {
+    type: "Layer",
+    group: "Lambda",
     name: "lambda-layer",
     properties: ({}) => ({
       LayerName: "lambda-layer",
       Description: "My Layer",
       CompatibleRuntimes: ["nodejs"],
     }),
-  });
-
-  provider.Lambda.makeFunction({
+  },
+  {
+    type: "Function",
+    group: "Lambda",
     name: "lambda-hello-world",
     properties: ({}) => ({
       Handler: "helloworld.handler",
@@ -67,7 +72,5 @@ const createResources = ({ provider }) => {
       layers: ["lambda-layer"],
       role: "lambda-role",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

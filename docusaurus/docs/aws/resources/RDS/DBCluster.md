@@ -8,30 +8,43 @@ Manages a [DB Cluster](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/We
 ## Example
 
 ```js
-const region = "eu-west-2";
-
-const dbCluster = provider.RDS.makeDBCluster({
-  name: "cluster",
-  dependencies: { dbSubnetGroup },
-  properties: () => ({
-    DatabaseName: "dev",
-    Engine: "aurora-postgresql",
-    EngineVersion: "10.14",
-    EngineMode: "serverless",
-    ScalingConfiguration: {
-      MinCapacity: 2,
-      MaxCapacity: 4,
-    },
-    MasterUsername: "postgres",
-    MasterUserPassword: "peggywenttothemarket",
-    AvailabilityZones: [`${region}a`, `${region}b`],
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "DBCluster",
+    group: "RDS",
+    name: "cluster-postgres-stateless",
+    properties: ({ config }) => ({
+      DatabaseName: "dev",
+      Engine: "aurora-postgresql",
+      EngineVersion: "10.14",
+      EngineMode: "serverless",
+      Port: 5432,
+      PreferredBackupWindow: "01:39-02:09",
+      PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
+      ScalingConfiguration: {
+        MinCapacity: 2,
+        MaxCapacity: 4,
+        AutoPause: true,
+        SecondsUntilAutoPause: 300,
+        TimeoutAction: "RollbackCapacityChange",
+        SecondsBeforeTimeout: 300,
+      },
+      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
+      MasterUserPassword:
+        process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
+      AvailabilityZones: [`${config.region}a`, `${config.region}b`],
+    }),
+    dependencies: () => ({
+      dbSubnetGroup: "subnet-group-postgres-stateless",
+      securityGroups: ["security-group-postgres"],
+    }),
+  },
+];
 ```
 
 ## Code Examples
 
-- [stateless postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/rds/postgres-stateless/iac.js)
+- [stateless postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/rds/postgres-stateless/resources.js)
 
 ## Properties
 

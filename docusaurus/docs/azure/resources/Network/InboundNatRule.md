@@ -6,27 +6,31 @@ Provides a **InboundNatRule** from the **Network** group
 ## Examples
 ### InboundNatRuleCreate
 ```js
-provider.Network.makeInboundNatRule({
-  name: "myInboundNatRule",
-  properties: () => ({
-    properties: {
-      protocol: "Tcp",
-      frontendIPConfiguration: {
-        id: "/subscriptions/subid/resourceGroups/testrg/providers/Microsoft.Network/loadBalancers/lb1/frontendIPConfigurations/ip1",
+exports.createResources = () => [
+  {
+    type: "InboundNatRule",
+    group: "Network",
+    name: "myInboundNatRule",
+    properties: () => ({
+      properties: {
+        protocol: "Tcp",
+        frontendIPConfiguration: {
+          id: "/subscriptions/subid/resourceGroups/testrg/providers/Microsoft.Network/loadBalancers/lb1/frontendIPConfigurations/ip1",
+        },
+        frontendPort: 3390,
+        backendPort: 3389,
+        idleTimeoutInMinutes: 4,
+        enableTcpReset: false,
+        enableFloatingIP: false,
       },
-      frontendPort: 3390,
-      backendPort: 3389,
-      idleTimeoutInMinutes: 4,
-      enableTcpReset: false,
-      enableFloatingIP: false,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
-    loadBalancer: "myLoadBalancer",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
+      loadBalancer: "myLoadBalancer",
+    }),
+  },
+];
 
 ```
 ## Dependencies

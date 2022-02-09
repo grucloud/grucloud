@@ -8,19 +8,35 @@ Manages an [Api Gateway V2 Stage](https://console.aws.amazon.com/apigateway/main
 ## Sample code
 
 ```js
-provider.ApiGatewayV2.makeStage({
-  name: "my-api-stage-dev",
-  properties: ({ config }) => ({
-    AccessLogSettings: {
-      Format:
-        '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
-    },
-  }),
-  dependencies: ({}) => ({
-    api: "my-api",
-    logGroup: "lgHttpTest",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      ProtocolType: "HTTP",
+      ApiKeySelectionExpression: "$request.header.x-api-key",
+      DisableExecuteApiEndpoint: false,
+      RouteSelectionExpression: "$request.method $request.path",
+    }),
+  },
+  {
+    type: "Stage",
+    group: "ApiGatewayV2",
+    name: "my-api-stage-dev",
+    properties: ({}) => ({
+      AccessLogSettings: {
+        Format:
+          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
+      },
+    }),
+    dependencies: () => ({
+      api: "my-api",
+      logGroup: "lg-http-test",
+    }),
+  },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+];
 ```
 
 ## Properties

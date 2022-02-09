@@ -14,9 +14,9 @@ Provides an SSL certificate.
 ```js
 const domainName = "your.domain.name.com";
 
-provider.ACM.makeCertificate({
-  name: "grucloud.org",
-});
+exports.createResources = () => [
+  { type: "Certificate", group: "ACM", name: domainName },
+];
 ```
 
 ## Source Code Examples

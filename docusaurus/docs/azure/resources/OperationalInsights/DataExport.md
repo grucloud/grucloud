@@ -6,22 +6,26 @@ Provides a **DataExport** from the **OperationalInsights** group
 ## Examples
 ### DataExportCreate
 ```js
-provider.OperationalInsights.makeDataExport({
-  name: "myDataExport",
-  properties: () => ({
-    properties: {
-      destination: {
-        resourceId:
-          "/subscriptions/192b9f85-a39a-4276-b96d-d5cd351703f9/resourceGroups/OIAutoRest1234/providers/Microsoft.EventHub/namespaces/test",
+exports.createResources = () => [
+  {
+    type: "DataExport",
+    group: "OperationalInsights",
+    name: "myDataExport",
+    properties: () => ({
+      properties: {
+        destination: {
+          resourceId:
+            "/subscriptions/192b9f85-a39a-4276-b96d-d5cd351703f9/resourceGroups/OIAutoRest1234/providers/Microsoft.EventHub/namespaces/test",
+        },
+        tableNames: ["Heartbeat"],
       },
-      tableNames: ["Heartbeat"],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    workspace: "myWorkspace",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      workspace: "myWorkspace",
+    }),
+  },
+];
 
 ```
 ## Dependencies

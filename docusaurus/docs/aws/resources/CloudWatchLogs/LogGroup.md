@@ -8,10 +8,9 @@ Manages an Cloud Watch Log Group [Cloud Watch Log Group](https://console.aws.ama
 ## Sample code
 
 ```js
-provider.CloudWatchLogs.makeLogGroup({
-  name: "my-log-group",
-  properties: () => ({ retentionInDays: 1 }),
-});
+exports.createResources = () => [
+  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+];
 ```
 
 ## Properties

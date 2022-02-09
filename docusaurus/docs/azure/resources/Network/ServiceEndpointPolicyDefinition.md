@@ -6,24 +6,28 @@ Provides a **ServiceEndpointPolicyDefinition** from the **Network** group
 ## Examples
 ### Create service endpoint policy definition
 ```js
-provider.Network.makeServiceEndpointPolicyDefinition({
-  name: "myServiceEndpointPolicyDefinition",
-  properties: () => ({
-    properties: {
-      description: "Storage Service EndpointPolicy Definition",
-      service: "Microsoft.Storage",
-      serviceResources: [
-        "/subscriptions/subid1",
-        "/subscriptions/subid1/resourceGroups/storageRg",
-        "/subscriptions/subid1/resourceGroups/storageRg/providers/Microsoft.Storage/storageAccounts/stAccount",
-      ],
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    serviceEndpointPolicy: "myServiceEndpointPolicy",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "ServiceEndpointPolicyDefinition",
+    group: "Network",
+    name: "myServiceEndpointPolicyDefinition",
+    properties: () => ({
+      properties: {
+        description: "Storage Service EndpointPolicy Definition",
+        service: "Microsoft.Storage",
+        serviceResources: [
+          "/subscriptions/subid1",
+          "/subscriptions/subid1/resourceGroups/storageRg",
+          "/subscriptions/subid1/resourceGroups/storageRg/providers/Microsoft.Storage/storageAccounts/stAccount",
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      serviceEndpointPolicy: "myServiceEndpointPolicy",
+    }),
+  },
+];
 
 ```
 ## Dependencies

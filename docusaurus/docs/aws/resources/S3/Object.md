@@ -10,30 +10,33 @@ Manages a [S3 Object](https://docs.aws.amazon.com/s3/index.html)
 ### Basic
 
 ```js
-provider.S3.makeBucket({
-  name: `myBucket`,
-});
-
-provider.S3.makeObject({
-  name: `file-test`,
-  dependencies: () => ({ bucket: `myBucket` }),
-  properties: () => ({
-    ACL: "public-read",
-    ContentType: "text/plain",
-    ServerSideEncryption: "AES256",
-    Tags: [
-      {
-        Key: "Key1",
-        Value: "Value1",
-      },
-      {
-        Key: "Key2",
-        Value: "Value2",
-      },
-    ],
-    source: "examples/aws/s3/fixtures/testFile.txt",
-  }),
-});
+exports.createResources = () => [
+  { type: "Bucket", group: "S3", name: "grucloud-simple-bucket" },
+  {
+    type: "Object",
+    group: "S3",
+    name: "grucloud-simple-file-test",
+    properties: ({}) => ({
+      ACL: "public-read",
+      ContentType: "text/plain",
+      ServerSideEncryption: "AES256",
+      Tags: [
+        {
+          Key: "Key1",
+          Value: "Value1",
+        },
+        {
+          Key: "Key2",
+          Value: "Value2",
+        },
+      ],
+      source: "examples/aws/s3/fixtures/testFile.txt",
+    }),
+    dependencies: () => ({
+      bucket: "grucloud-simple-bucket",
+    }),
+  },
+];
 ```
 
 ## Example Code

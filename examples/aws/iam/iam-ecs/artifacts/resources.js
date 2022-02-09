@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.IAM.makeRole({
+exports.createResources = () => [
+  {
+    type: "Role",
+    group: "IAM",
     name: "ecsInstanceRole",
     properties: ({}) => ({
       Path: "/",
@@ -24,21 +26,22 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       policies: ["service-role/AmazonEC2ContainerServiceforEC2Role"],
     }),
-  });
-
-  provider.IAM.usePolicy({
+  },
+  {
+    type: "Policy",
+    group: "IAM",
     name: "service-role/AmazonEC2ContainerServiceforEC2Role",
+    readOnly: true,
     properties: ({}) => ({
       Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
     }),
-  });
-
-  provider.IAM.makeInstanceProfile({
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
     name: "ecsInstanceRole",
     dependencies: () => ({
       roles: ["ecsInstanceRole"],
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

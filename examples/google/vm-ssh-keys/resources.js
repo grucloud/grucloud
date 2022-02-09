@@ -2,8 +2,10 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.compute.makeFirewall({
+exports.createResources = () => [
+  {
+    type: "Firewall",
+    group: "compute",
     name: "firewall-22",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -20,9 +22,10 @@ const createResources = ({ provider }) => {
         enable: false,
       },
     }),
-  });
-
-  provider.compute.makeFirewall({
+  },
+  {
+    type: "Firewall",
+    group: "compute",
     name: "firewall-icmp",
     properties: ({}) => ({
       description: "Managed By GruCloud",
@@ -38,16 +41,18 @@ const createResources = ({ provider }) => {
         enable: false,
       },
     }),
-  });
-
-  provider.compute.makeAddress({
+  },
+  {
+    type: "Address",
+    group: "compute",
     name: "ip-webserver-ssh-keys",
     properties: ({}) => ({
       description: "Managed By GruCloud",
     }),
-  });
-
-  provider.compute.makeVmInstance({
+  },
+  {
+    type: "VmInstance",
+    group: "compute",
     name: "webserver-ssh-keys",
     properties: ({}) => ({
       machineType: "f1-micro",
@@ -66,7 +71,5 @@ const createResources = ({ provider }) => {
     dependencies: () => ({
       ip: "ip-webserver-ssh-keys",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

@@ -6,32 +6,36 @@ Provides a **NetworkProfile** from the **Network** group
 ## Examples
 ### Create network profile defaults
 ```js
-provider.Network.makeNetworkProfile({
-  name: "myNetworkProfile",
-  properties: () => ({
-    location: "westus",
-    properties: {
-      containerNetworkInterfaceConfigurations: [
-        {
-          name: "eth1",
-          properties: {
-            ipConfigurations: [
-              {
-                name: "ipconfig1",
-                properties: {
-                  subnet: {
-                    id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/networkProfileVnet/subnets/networkProfileSubnet1",
+exports.createResources = () => [
+  {
+    type: "NetworkProfile",
+    group: "Network",
+    name: "myNetworkProfile",
+    properties: () => ({
+      location: "westus",
+      properties: {
+        containerNetworkInterfaceConfigurations: [
+          {
+            name: "eth1",
+            properties: {
+              ipConfigurations: [
+                {
+                  name: "ipconfig1",
+                  properties: {
+                    subnet: {
+                      id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/networkProfileVnet/subnets/networkProfileSubnet1",
+                    },
                   },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
-      ],
-    },
-  }),
-  dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
-});
+        ],
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
 
 ```
 ## Dependencies

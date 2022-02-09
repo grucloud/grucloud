@@ -2,10 +2,6 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.KMS.makeKey({
-    name: "key-test",
-  });
-};
-
-exports.createResources = createResources;
+exports.createResources = () => [
+  { type: "Key", group: "KMS", name: "key-test" },
+];

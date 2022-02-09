@@ -6,25 +6,29 @@ Provides a **PrivateLinkServicePrivateEndpointConnection** from the **Network** 
 ## Examples
 ### approve or reject private end point connection for a private link service
 ```js
-provider.Network.makePrivateLinkServicePrivateEndpointConnection({
-  name: "myPrivateLinkServicePrivateEndpointConnection",
-  properties: () => ({
-    name: "testPlePeConnection",
-    properties: {
-      privateEndpoint: {
-        id: "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateEndpoints/testPe",
+exports.createResources = () => [
+  {
+    type: "PrivateLinkServicePrivateEndpointConnection",
+    group: "Network",
+    name: "myPrivateLinkServicePrivateEndpointConnection",
+    properties: () => ({
+      name: "testPlePeConnection",
+      properties: {
+        privateEndpoint: {
+          id: "/subscriptions/subId/resourceGroups/rg1/providers/Microsoft.Network/privateEndpoints/testPe",
+        },
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "approved it for some reason.",
+        },
       },
-      privateLinkServiceConnectionState: {
-        status: "Approved",
-        description: "approved it for some reason.",
-      },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    service: "myPrivateLinkService",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      service: "myPrivateLinkService",
+    }),
+  },
+];
 
 ```
 ## Dependencies

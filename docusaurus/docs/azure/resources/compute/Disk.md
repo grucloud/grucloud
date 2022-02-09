@@ -6,435 +6,500 @@ Provides a **Disk** from the **Compute** group
 ## Examples
 ### Create an empty managed disk.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk from a platform image.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      osType: "Windows",
-      creationData: {
-        createOption: "FromImage",
-        imageReference: {
-          id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/westus/Publishers/{publisher}/ArtifactTypes/VMImage/Offers/{offer}/Skus/{sku}/Versions/1.0.0",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        creationData: {
+          createOption: "FromImage",
+          imageReference: {
+            id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/westus/Publishers/{publisher}/ArtifactTypes/VMImage/Offers/{offer}/Skus/{sku}/Versions/1.0.0",
+          },
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk from an existing managed disk in the same or different subscription.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Copy",
-        sourceResourceId:
-          "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myDisk1",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Copy",
+          sourceResourceId:
+            "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myDisk1",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk by importing an unmanaged blob from the same subscription.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Import",
-        sourceUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Import",
+          sourceUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk by importing an unmanaged blob from a different subscription.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Import",
-        storageAccountId:
-          "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
-        sourceUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Import",
+          storageAccountId:
+            "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
+          sourceUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk by copying a snapshot.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: {
-        createOption: "Copy",
-        sourceResourceId:
-          "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: {
+          createOption: "Copy",
+          sourceResourceId:
+            "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed upload disk.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: { createOption: "Upload", uploadSizeBytes: 10737418752 },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: { createOption: "Upload", uploadSizeBytes: 10737418752 },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk and associate with disk access resource.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: { createOption: "Empty" },
-      diskSizeGB: 200,
-      networkAccessPolicy: "AllowPrivate",
-      diskAccessId:
-        "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskAccesses/{existing-diskAccess-name}",
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: { createOption: "Empty" },
+        diskSizeGB: 200,
+        networkAccessPolicy: "AllowPrivate",
+        diskAccessId:
+          "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskAccesses/{existing-diskAccess-name}",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk and associate with disk encryption set.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      creationData: { createOption: "Empty" },
-      diskSizeGB: 200,
-      encryption: {
-        diskEncryptionSetId:
-          "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: { createOption: "Empty" },
+        diskSizeGB: 200,
+        encryption: {
+          diskEncryptionSetId:
+            "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create an ultra managed disk with logicalSectorSize 512E
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    sku: { name: "UltraSSD_LRS" },
-    properties: {
-      creationData: { createOption: "Empty", logicalSectorSize: 512 },
-      diskSizeGB: 200,
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      sku: { name: "UltraSSD_LRS" },
+      properties: {
+        creationData: { createOption: "Empty", logicalSectorSize: 512 },
+        diskSizeGB: 200,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create an empty managed disk in extended location.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    extendedLocation: { type: "EdgeZone", name: "{edge-zone-id}" },
-    properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      extendedLocation: { type: "EdgeZone", name: "{edge-zone-id}" },
+      properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk with ssd zrs account type.
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    sku: { name: "Premium_ZRS" },
-    properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      sku: { name: "Premium_ZRS" },
+      properties: { creationData: { createOption: "Empty" }, diskSizeGB: 200 },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk with security profile
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "North Central US",
-    properties: {
-      osType: "Windows",
-      securityProfile: { securityType: "TrustedLaunch" },
-      creationData: {
-        createOption: "FromImage",
-        imageReference: {
-          id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/uswest/Publishers/Microsoft/ArtifactTypes/VMImage/Offers/{offer}",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "North Central US",
+      properties: {
+        osType: "Windows",
+        securityProfile: { securityType: "TrustedLaunch" },
+        creationData: {
+          createOption: "FromImage",
+          imageReference: {
+            id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/uswest/Publishers/Microsoft/ArtifactTypes/VMImage/Offers/{offer}",
+          },
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk from ImportSecure create option
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      osType: "Windows",
-      securityProfile: {
-        securityType: "ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        securityProfile: {
+          securityType:
+            "ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey",
+        },
+        creationData: {
+          createOption: "ImportSecure",
+          storageAccountId:
+            "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
+          sourceUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
+          securityDataUri:
+            "https://mystorageaccount.blob.core.windows.net/osimages/vmgs.vhd",
+        },
       },
-      creationData: {
-        createOption: "ImportSecure",
-        storageAccountId:
-          "subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
-        sourceUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-        securityDataUri:
-          "https://mystorageaccount.blob.core.windows.net/osimages/vmgs.vhd",
-      },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a managed disk from UploadPreparedSecure create option
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      osType: "Windows",
-      securityProfile: { securityType: "TrustedLaunch" },
-      creationData: {
-        createOption: "UploadPreparedSecure",
-        uploadSizeBytes: 10737418752,
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        securityProfile: { securityType: "TrustedLaunch" },
+        creationData: {
+          createOption: "UploadPreparedSecure",
+          uploadSizeBytes: 10737418752,
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 
 ### Create a confidential VM supported disk encrypted with customer managed key
 ```js
-provider.Compute.makeDisk({
-  name: "myDisk",
-  properties: () => ({
-    location: "West US",
-    properties: {
-      osType: "Windows",
-      securityProfile: {
-        securityType: "ConfidentialVM_DiskEncryptedWithCustomerKey",
-        secureVMDiskEncryptionSetId:
-          "/subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
-      },
-      creationData: {
-        createOption: "FromImage",
-        imageReference: {
-          id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/westus/Publishers/{publisher}/ArtifactTypes/VMImage/Offers/{offer}/Skus/{sku}/Versions/1.0.0",
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        securityProfile: {
+          securityType: "ConfidentialVM_DiskEncryptedWithCustomerKey",
+          secureVMDiskEncryptionSetId:
+            "/subscriptions/{subscriptionId}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+        },
+        creationData: {
+          createOption: "FromImage",
+          imageReference: {
+            id: "/Subscriptions/{subscriptionId}/Providers/Microsoft.Compute/Locations/westus/Publishers/{publisher}/ArtifactTypes/VMImage/Offers/{offer}/Skus/{sku}/Versions/1.0.0",
+          },
         },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    storageAccount: "myStorageAccount",
-    image: "myImage",
-    vault: "myVault",
-    key: "myKey",
-    diskEncryptionSet: "myDiskEncryptionSet",
-    diskAccess: "myDiskAccess",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
 
 ```
 ## Dependencies

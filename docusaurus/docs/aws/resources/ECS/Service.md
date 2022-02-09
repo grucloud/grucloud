@@ -8,39 +8,43 @@ Manages an [ECS Service](https://console.aws.amazon.com/ecs/home?#/clusters).
 ## Sample code
 
 ```js
-provider.ECS.makeService({
-  name: "service-nginx",
-  properties: ({}) => ({
-    launchType: "EC2",
-    desiredCount: 1,
-    deploymentConfiguration: {
-      deploymentCircuitBreaker: {
-        enable: false,
-        rollback: false,
+exports.createResources = () => [
+  {
+    type: "Service",
+    group: "ECS",
+    name: "service-nginx",
+    properties: () => ({
+      launchType: "EC2",
+      desiredCount: 2,
+      deploymentConfiguration: {
+        deploymentCircuitBreaker: {
+          enable: false,
+          rollback: false,
+        },
+        maximumPercent: 200,
+        minimumHealthyPercent: 100,
       },
-      maximumPercent: 200,
-      minimumHealthyPercent: 100,
-    },
-    placementConstraints: [],
-    placementStrategy: [
-      {
-        type: "spread",
-        field: "attribute:ecs.availability-zone",
-      },
-      {
-        type: "spread",
-        field: "instanceId",
-      },
-    ],
-    schedulingStrategy: "REPLICA",
-    enableECSManagedTags: true,
-    enableExecuteCommand: false,
-  }),
-  dependencies: () => ({
-    cluster: "cluster",
-    taskDefinition: "nginx",
-  }),
-});
+      placementConstraints: [],
+      placementStrategy: [
+        {
+          type: "spread",
+          field: "attribute:ecs.availability-zone",
+        },
+        {
+          type: "spread",
+          field: "instanceId",
+        },
+      ],
+      schedulingStrategy: "REPLICA",
+      enableECSManagedTags: true,
+      enableExecuteCommand: false,
+    }),
+    dependencies: () => ({
+      cluster: "cluster",
+      taskDefinition: "nginx",
+    }),
+  },
+];
 ```
 
 ## Properties

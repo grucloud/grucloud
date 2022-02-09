@@ -6,25 +6,29 @@ Provides a **NetworkInterfaceTapConfiguration** from the **Network** group
 ## Examples
 ### Create Network Interface Tap Configurations
 ```js
-provider.Network.makeNetworkInterfaceTapConfiguration({
-  name: "myNetworkInterfaceTapConfiguration",
-  properties: () => ({
-    properties: {
-      virtualNetworkTap: {
-        id: "/subscriptions/subid/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworkTaps/testvtap",
+exports.createResources = () => [
+  {
+    type: "NetworkInterfaceTapConfiguration",
+    group: "Network",
+    name: "myNetworkInterfaceTapConfiguration",
+    properties: () => ({
+      properties: {
+        virtualNetworkTap: {
+          id: "/subscriptions/subid/resourceGroups/testrg/providers/Microsoft.Network/virtualNetworkTaps/testvtap",
+        },
       },
-    },
-  }),
-  dependencies: ({}) => ({
-    resourceGroup: "myResourceGroup",
-    loadBalancer: "myLoadBalancer",
-    natGateway: "myNatGateway",
-    ddosCustomPolicy: "myDdosCustomPolicy",
-    publicIpPrefix: "myPublicIPPrefix",
-    loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
-    networkInterface: "myNetworkInterface",
-  }),
-});
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      loadBalancer: "myLoadBalancer",
+      natGateway: "myNatGateway",
+      ddosCustomPolicy: "myDdosCustomPolicy",
+      publicIpPrefix: "myPublicIPPrefix",
+      loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
+      networkInterface: "myNetworkInterface",
+    }),
+  },
+];
 
 ```
 ## Dependencies
