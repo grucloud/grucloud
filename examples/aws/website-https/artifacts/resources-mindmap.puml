@@ -4,15 +4,15 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ S3
-++++ Bucket (1)
 ++++ Object (5)
+++++ Bucket (1)
 +++ ACM
 ++++ Certificate (1)
-+++ Route53Domains
-++++ Domain (1)
++++ CloudFront
+++++ Distribution (1)
 +++ Route53
 ++++ HostedZone (1)
 ++++ Record (2)
-+++ CloudFront
-++++ Distribution (1)
++++ Route53Domains
+++++ Domain (1)
 @endmindmap
