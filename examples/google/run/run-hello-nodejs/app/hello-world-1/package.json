@@ -1,6 +1,6 @@
 {
   "name": "nodejs-cloud-run-hello-world",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Hello World application for Cloud Run",
   "main": "index.js",
   "scripts": {
