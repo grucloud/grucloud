@@ -7,14 +7,30 @@ Provides an [Elastic Ip Address](https://docs.aws.amazon.com/AWSEC2/latest/UserG
 
 ```js
 exports.createResources = () => [
-  { type: "ElasticIpAddress", group: "EC2", name: "eip" },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "eip",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
+    }),
+  },
 ];
 ```
 
+### Properties
+
+- [allocateAddress](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property)
+
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2/iac.js)
-- [example with internet gateway and routing table](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2/resources.js)
+- [example with internet gateway and routing table](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/resources.js)
 
 ### Used By
 

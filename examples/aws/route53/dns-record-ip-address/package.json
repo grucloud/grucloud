@@ -1,0 +1,24 @@
+{
+  "name": "dns-record-ip-address",
+  "version": "5.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "tree": "gc tree",
+    "list": "gc list -g",
+    "gencode": "gc gencode"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^5.0.0",
+    "@grucloud/provider-aws": "^5.0.0",
+    "rubico": "^1.8.3"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.3",
+    "mocha-junit-reporter": "^2.0.2"
+  }
+}
