@@ -494,7 +494,7 @@ const buildGetId =
         ]),
         pipe([
           append(", suffix:'"),
-          append(replaceId(id)(idResource)),
+          append(replaceId(idResource)(id)),
           append("'"),
         ])
       ),
