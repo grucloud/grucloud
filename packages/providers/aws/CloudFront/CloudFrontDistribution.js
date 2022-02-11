@@ -348,12 +348,12 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   //TODO Tags
   const configDefault = ({
     name,
-    properties,
+    properties: { Tags, ...otherProps },
     namespace,
     dependencies: { certificate },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         CallerReference: getNewCallerReference(),
         Enabled: true,
@@ -370,7 +370,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       }),
       (payload) => ({
         DistributionConfig: payload,
-        Tags: { Items: buildTags({ name, namespace, config }) },
+        Tags: { Items: buildTags({ name, namespace, config, UserTags: Tags }) },
       }),
     ])();
 

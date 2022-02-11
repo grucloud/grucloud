@@ -58,6 +58,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         get("Policy.Statement", []),
         pluck("Principal"),
         pluck("AWS"),
+        filter(not(isEmpty)),
         map(
           pipe([
             callProp("split", " "),

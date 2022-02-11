@@ -106,7 +106,11 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
+      buckets: ["cloudfront-demo.grucloud.org"],
       certificate: "cloudfront-demo.grucloud.org",
+      originAccessIdentities: [
+        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+      ],
     }),
   },
   {
@@ -162,6 +166,11 @@ exports.createResources = () => [
           },
         ],
       },
+    }),
+    dependencies: () => ({
+      originAccessIdentities: [
+        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+      ],
     }),
   },
 ];
