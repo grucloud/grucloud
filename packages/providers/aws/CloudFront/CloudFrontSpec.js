@@ -10,38 +10,46 @@ const {
   eq,
   switchCase,
 } = require("rubico");
-const { isEmpty, find } = require("rubico/x");
-const { buildGetId } = require("@grucloud/core/Common");
+const { isEmpty, find, when, callProp } = require("rubico/x");
+const {
+  buildGetId,
+  compare,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
-const { AwsDistribution, compareDistribution } = require("./AwsDistribution");
+const {
+  CloudFrontDistribution,
+  compareDistribution,
+} = require("./CloudFrontDistribution");
+const {
+  CloudFrontOriginAccessIdentity,
+} = require("./CloudFrontOriginAccessIdentity");
 
 const GROUP = "CloudFront";
 
-const replaceWithBucketName = ({ lives, Id }) =>
-  pipe([
-    () => lives,
-    filter(eq(get("groupType"), "S3::Bucket")),
-    find(({ id }) => Id.match(new RegExp(id))),
-    switchCase([
-      isEmpty,
-      () => Id,
-      (resource) =>
-        pipe([
-          () => resource,
-          buildGetId({ path: "name" }),
-          (getId) => () =>
-            "`" + Id.replace(new RegExp(resource.id), "${" + getId + "}") + "`",
-        ])(),
-    ]),
-  ])();
+const replaceWithBucketName = replaceWithName({ groupType: "S3::Bucket" });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Distribution",
-      dependsOn: ["ACM::Certificate", "S3::Bucket"],
-      Client: AwsDistribution,
+      //TODO remove dependsOn
+      dependsOn: [
+        "ACM::Certificate",
+        "S3::Bucket",
+        "CloudFront::OriginAccessIdentity",
+      ],
+      dependencies: {
+        buckets: { type: "Bucket", group: "S3", list: true },
+        certificate: { type: "Certificate", group: "ACM" },
+        originAccessIdentities: {
+          type: "OriginAccessIdentity",
+          group: "CloudFront",
+          list: true,
+        },
+      },
+      Client: CloudFrontDistribution,
       isOurMinion,
       compare: compareDistribution,
       filterLive: ({ lives }) =>
@@ -83,12 +91,18 @@ module.exports = () =>
               }),
             ]),
             Comment: ({ Comment }) =>
-              replaceWithBucketName({ lives, Id: Comment }),
+              replaceWithBucketName({
+                lives,
+                Id: Comment,
+              }),
             DefaultCacheBehavior: pipe([
               get("DefaultCacheBehavior"),
               assign({
                 TargetOriginId: ({ TargetOriginId }) =>
-                  replaceWithBucketName({ lives, Id: TargetOriginId }),
+                  replaceWithBucketName({
+                    lives,
+                    Id: TargetOriginId,
+                  }),
               }),
             ]),
             Origins: pipe([
@@ -100,8 +114,37 @@ module.exports = () =>
                     pipe([
                       assign({
                         DomainName: ({ DomainName }) =>
-                          replaceWithBucketName({ lives, Id: DomainName }),
-                        Id: ({ Id }) => replaceWithBucketName({ lives, Id }),
+                          replaceWithBucketName({
+                            lives,
+                            Id: DomainName,
+                          }),
+                        Id: ({ Id }) =>
+                          replaceWithBucketName({
+                            lives,
+                            Id,
+                          }),
+                        S3OriginConfig: pipe([
+                          get("S3OriginConfig"),
+                          when(
+                            get("OriginAccessIdentity"),
+                            assign({
+                              OriginAccessIdentity: ({
+                                OriginAccessIdentity,
+                              }) =>
+                                pipe([
+                                  () => ({ Id: OriginAccessIdentity, lives }),
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  replaceWithName({
+                                    groupType:
+                                      "CloudFront::OriginAccessIdentity",
+                                    path: "id",
+                                  }),
+                                ])(),
+                            })
+                          ),
+                        ]),
                       }),
                     ])
                   ),
@@ -110,9 +153,11 @@ module.exports = () =>
             ]),
           }),
         ]),
-      dependencies: {
-        buckets: { type: "Bucket", group: "S3", list: true },
-        certificate: { type: "Certificate", group: "ACM" },
-      },
+    },
+    {
+      type: "OriginAccessIdentity",
+      Client: CloudFrontOriginAccessIdentity,
+      filterLive: ({ lives }) => pipe([pick([])]),
+      compare,
     },
   ]);

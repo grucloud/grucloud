@@ -16,6 +16,9 @@ const {
   any,
 } = require("rubico");
 const {
+  pluck,
+  last,
+  callProp,
   size,
   isEmpty,
   isDeepEqual,
@@ -23,8 +26,6 @@ const {
   unionWith,
   when,
 } = require("rubico/x");
-
-const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -40,7 +41,6 @@ const {
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
   const s3 = S3New(config);
@@ -48,6 +48,34 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const findName = get("live.Name");
   const findId = findName;
   const findNamespace = findNamespaceInTags(config);
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "OriginAccessIdentity",
+      group: "CloudFront",
+      ids: pipe([
+        () => live,
+        get("Policy.Statement", []),
+        pluck("Principal"),
+        pluck("AWS"),
+        map(
+          pipe([
+            callProp("split", " "),
+            last,
+            (id) =>
+              lives.getById({
+                id,
+                type: "OriginAccessIdentity",
+                group: "CloudFront",
+                providerName: config.providerName,
+              }),
+            get("id"),
+          ])
+        ),
+        filter(not(isEmpty)),
+      ])(),
+    },
+  ];
 
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(
@@ -417,8 +445,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ])
     )();
 
-  const isDownById = not(isUpById);
-
   const putTags = ({ Bucket, paramsTag }) =>
     retryCall({
       name: `tag ${Bucket}`,
@@ -759,6 +785,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   return {
     spec,
     config: clientConfig,
+    findDependencies,
     findNamespace,
     findId,
     getByName,

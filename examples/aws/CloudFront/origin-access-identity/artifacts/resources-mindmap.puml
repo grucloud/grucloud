@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project origin-access-identity
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudFront
+++++ OriginAccessIdentity (1)
+@endmindmap

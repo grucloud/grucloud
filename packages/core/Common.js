@@ -501,3 +501,29 @@ const buildGetId =
       append("})"),
     ])();
 exports.buildGetId = buildGetId;
+
+exports.replaceWithName =
+  ({ groupType, path = "name" }) =>
+  ({ lives, Id }) =>
+    pipe([
+      tap(() => {
+        assert(groupType);
+        //assert(Id);
+      }),
+      () => lives,
+      filter(eq(get("groupType"), groupType)),
+      find(({ id }) => Id.match(new RegExp(id))),
+      switchCase([
+        isEmpty,
+        () => Id,
+        (resource) =>
+          pipe([
+            () => resource,
+            buildGetId({ path }),
+            (getId) => () =>
+              "`" +
+              Id.replace(new RegExp(resource.id), "${" + getId + "}") +
+              "`",
+          ])(),
+      ]),
+    ])();

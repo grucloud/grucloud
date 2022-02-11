@@ -263,6 +263,7 @@ const associationIdObject = ({
   options: { edge },
   type,
   idFrom,
+  nameFrom,
   namespaceFrom,
   dependencyId,
   dependency,
@@ -270,7 +271,7 @@ const associationIdObject = ({
 }) =>
   pipe([
     tap((id) => {
-      //assert(resources);
+      //assert(nameFrom);
     }),
     () => resources,
     switchCase([
@@ -278,15 +279,22 @@ const associationIdObject = ({
         find(
           and([
             eq(get("name"), dependencyId.name),
-            eq(get("namespace"), dependencyId.namespace),
+            eq(get("namespace"), formatNamespace(dependencyId.namespace)),
           ])
         ),
         get("show"),
       ]),
       pipe([
         () => ({
-          nodeFrom: `"${buildNodeFrom({ type, namespaceFrom, idFrom })}"`,
-          nodeTo: `"${dependency.type}::${dependencyId.namespace}::${dependencyId.name}"`,
+          nodeFrom: `"${buildNodeFrom({
+            type,
+            namespaceFrom,
+            idFrom,
+            nameFrom,
+          })}"`,
+          nodeTo: `"${dependency.type}::${formatNamespace(
+            dependencyId.namespace
+          )}::${dependencyId.name}"`,
         }),
         ({ nodeFrom, nodeTo }) =>
           `${nodeFrom} -> ${nodeTo} [color="${edge.color}"];`,
@@ -386,6 +394,7 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                       options,
                       type,
                       idFrom: id,
+                      nameFrom: name,
                       namespaceFrom: namespace,
                       dependency,
                       dependencyId,
