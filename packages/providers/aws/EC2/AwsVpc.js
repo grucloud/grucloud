@@ -11,11 +11,11 @@ const {
   tryCatch,
   assign,
   pick,
+  omit,
 } = require("rubico");
 const { isEmpty, defaultsDeep, when, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
@@ -42,6 +42,8 @@ exports.AwsVpc = ({ spec, config }) => {
     () => "vpc-default",
     findNameInTagsOrId({ findId }),
   ]);
+
+  const pickId = pick(["VpcId"]);
 
   const decorate = () =>
     pipe([
@@ -74,67 +76,74 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = getByIdCore({ fieldIds: "VpcIds", getList });
+  const getById = pipe([
+    tap(({ VpcId }) => {
+      assert(VpcId);
+    }),
+    ({ VpcId }) => ({ id: VpcId }),
+    getByIdCore({ fieldIds: "VpcIds", getList }),
+  ]);
 
   const isInstanceUp = eq(get("State"), "available");
 
-  const isUpById = pipe([getById, isInstanceUp]);
-  const isDownById = pipe([getById, isEmpty]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
-
-  const create = ({
-    payload: { DnsHostnames, DnsSupport, ...vpcPayload },
-    name,
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create vpc ${JSON.stringify({ name })}`);
-      }),
-      () => ec2().createVpc(vpcPayload),
-      get("Vpc.VpcId"),
-      tap((VpcId) =>
-        retryCall({
-          name: `vpc isUpById: ${name} id: ${VpcId}`,
-          fn: () => isUpById({ id: VpcId, name }),
-          config,
-        })
-      ),
-      tap.if(
-        () => DnsSupport,
+  const create = client.create({
+    method: "createVpc",
+    isInstanceUp,
+    filterPayload: omit(["DnsHostnames", "DnsSupport"]),
+    pickCreated: (payload) => (result) =>
+      pipe([
+        tap((params) => {
+          assert(payload);
+        }),
+        () => result,
+        get("Vpc"),
+        pickId,
+      ])(),
+    pickId,
+    getById,
+    postCreate:
+      ({ payload }) =>
+      ({ VpcId }) =>
         pipe([
           tap(() => {
-            logger.info(`create vpc modifyVpcAttribute DnsSupport`);
+            assert(payload);
+            assert(VpcId);
           }),
-          (VpcId) =>
-            ec2().modifyVpcAttribute({
-              EnableDnsSupport: {
-                Value: true,
-              },
-              VpcId,
-            }),
-        ])
-      ),
-      tap.if(
-        () => DnsHostnames,
-        pipe([
-          tap(() => {
-            logger.info(`create vpc modifyVpcAttribute EnableDnsHostnames`);
-          }),
-          (VpcId) =>
-            ec2().modifyVpcAttribute({
-              EnableDnsHostnames: {
-                Value: true,
-              },
-              VpcId,
-            }),
-        ])
-      ),
-      tap((VpcId) => {
-        logger.info(`created vpc ${JSON.stringify({ name, VpcId })}`);
-      }),
-      (id) => ({ id }),
-    ])();
+          () => payload,
+          tap.if(
+            get("DnsSupport"),
+            pipe([
+              tap(() => {
+                logger.info(`create vpc modifyVpcAttribute DnsSupport`);
+              }),
+              () => ({
+                EnableDnsSupport: {
+                  Value: true,
+                },
+                VpcId,
+              }),
+              ec2().modifyVpcAttribute,
+            ])
+          ),
+          tap.if(
+            get("DnsHostnames"),
+            pipe([
+              tap(() => {
+                logger.info(`create vpc modifyVpcAttribute EnableDnsHostnames`);
+              }),
+              () => ({
+                EnableDnsHostnames: {
+                  Value: true,
+                },
+                VpcId,
+              }),
+              ec2().modifyVpcAttribute,
+            ])
+          ),
+        ])(),
+    config,
+  });
 
   const destroySubnets = ({ VpcId }) =>
     pipe([
@@ -269,28 +278,18 @@ exports.AwsVpc = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy vpc ${JSON.stringify({ name })}`);
-      }),
-      () => live,
-      pick(["VpcId"]),
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: pipe([
       tap(destroySubnets),
       tap(destroySecurityGroup),
       tap(destroyRouteTables),
-      tap(ec2().deleteVpc), // TODO InvalidVpcID.NotFound
-      tap(({ VpcId }) =>
-        retryCall({
-          name: `destroy vpc isDownById: ${name} id: ${VpcId}`,
-          fn: () => isDownById({ id: VpcId }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroyed vpc ${JSON.stringify({ name })}`);
-      }),
-    ])();
+    ]),
+    method: "deleteVpc",
+    getById,
+    ignoreErrorCodes: ["InvalidVpcID.NotFound"],
+    config,
+  });
 
   const configDefault = async ({
     name,

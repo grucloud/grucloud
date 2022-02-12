@@ -23,7 +23,7 @@ describe("CloudFrontOriginAccessIdentity", async function () {
       }),
     ])
   );
-  it.only(
+  it(
     "delete with invalid id",
     pipe([
       () =>
