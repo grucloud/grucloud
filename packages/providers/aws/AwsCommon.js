@@ -554,6 +554,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
     pipe([
       tap(({ id }) => {
         logger.debug(`getById ${fieldIds} ${id}`);
+        assert(id);
       }),
       ({ id }) => getList({ params: { [fieldIds]: [id] } }),
       //get("items"),
