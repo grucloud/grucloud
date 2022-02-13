@@ -11,15 +11,24 @@ const {
   eq,
   or,
   not,
-  pick,
   filter,
   omit,
   and,
 } = require("rubico");
-const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  isEmpty,
+  pluck,
+  callProp,
+  last,
+  includes,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AwsDistribution" });
+const logger = require("@grucloud/core/logger")({
+  prefix: "CloudFrontDistribution",
+});
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -34,7 +43,6 @@ const {
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 //TODO look in spec.type instead
@@ -43,11 +51,10 @@ const findId = get("live.Id");
 const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
-exports.AwsDistribution = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+exports.CloudFrontDistribution = ({ spec, config }) => {
   const cloudfront = CloudFrontNew(config);
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",
       group: "ACM",
@@ -56,9 +63,6 @@ exports.AwsDistribution = ({ spec, config }) => {
         get("ViewerCertificate.ACMCertificateArn"),
         (arn) => [arn],
         filter(not(isEmpty)),
-        tap((xxx) => {
-          assert(true);
-        }),
       ])(),
     },
     {
@@ -69,12 +73,43 @@ exports.AwsDistribution = ({ spec, config }) => {
         get("Origins.Items", []),
         pluck("DomainName"),
         map((domainName) =>
-          domainName.replace(new RegExp(".s3.amazonaws.com$"), "")
+          pipe([
+            () =>
+              lives.getByType({
+                type: "Bucket",
+                group: "S3",
+                providerName: config.providerName,
+              }),
+            find(({ id }) => pipe([() => domainName, includes(id)])()),
+            get("id"),
+          ])()
         ),
         filter(not(isEmpty)),
-        tap((xxx) => {
-          assert(true);
-        }),
+      ])(),
+    },
+    {
+      type: "OriginAccessIdentity",
+      group: "CloudFront",
+      ids: pipe([
+        () => live,
+        get("Origins.Items", []),
+        pluck("S3OriginConfig"),
+        pluck("OriginAccessIdentity"),
+        map(
+          pipe([
+            callProp("split", "/"),
+            last,
+            (id) =>
+              lives.getById({
+                id,
+                type: "OriginAccessIdentity",
+                group: "CloudFront",
+                providerName: config.providerName,
+              }),
+            get("id"),
+          ])
+        ),
+        filter(not(isEmpty)),
       ])(),
     },
   ];
@@ -313,12 +348,12 @@ exports.AwsDistribution = ({ spec, config }) => {
   //TODO Tags
   const configDefault = ({
     name,
-    properties,
+    properties: { Tags, ...otherProps },
     namespace,
     dependencies: { certificate },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         CallerReference: getNewCallerReference(),
         Enabled: true,
@@ -335,7 +370,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
       (payload) => ({
         DistributionConfig: payload,
-        Tags: { Items: buildTags({ name, namespace, config }) },
+        Tags: { Items: buildTags({ name, namespace, config, UserTags: Tags }) },
       }),
     ])();
 

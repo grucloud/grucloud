@@ -407,6 +407,10 @@ exports.createResources = () => [
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property)
 
+## Dependencies
+
+- [CloudFront Origin Access Identity](../CloudFront/OriginAccessIdentity.md)
+
 ## AWS CLI
 
 List the S3 buckets for the current account:

@@ -31,8 +31,8 @@ const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
 const AppSync = require("./AppSync");
 const AutoScaling = require("./Autoscaling");
-const AwsCertificateManager = require("./ACM");
-const AwsCloudFront = require("./CloudFront");
+const CertificateManager = require("./ACM");
+const CloudFront = require("./CloudFront");
 const CloudWatchEvent = require("./CloudWatchEvent");
 const CloudWatchLogs = require("./CloudWatchLogs");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
@@ -62,8 +62,8 @@ const fnSpecs = (config) =>
       ...ApiGatewayV2(),
       ...AppSync(),
       ...AutoScaling(),
-      ...AwsCertificateManager(),
-      ...AwsCloudFront(),
+      ...CertificateManager(),
+      ...CloudFront(),
       ...CloudWatchEvent(),
       ...CloudWatchLogs(),
       ...CognitoIdentityServiceProvider(),

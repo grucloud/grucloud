@@ -1,10 +1,14 @@
 const assert = require("assert");
 const { tap, pipe, assign, map, omit, pick, get } = require("rubico");
-const { when, isEmpty } = require("rubico/x");
+const { when, includes, find } = require("rubico/x");
 
 const mime = require("mime-types");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  compare,
+  omitIfEmpty,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
@@ -22,6 +26,14 @@ module.exports = () =>
     {
       type: "Bucket",
       Client: AwsS3Bucket,
+      dependsOn: ["CloudFront::OriginAccessIdentity"],
+      dependencies: {
+        originAccessIdentities: {
+          type: "OriginAccessIdentity",
+          group: "CloudFront",
+          list: true,
+        },
+      },
       isOurMinion,
       compare: compare({
         filterTarget: pipe([
@@ -66,7 +78,7 @@ module.exports = () =>
           ]),
         ]),
       }),
-      filterLive: () =>
+      filterLive: ({ lives }) =>
         pipe([
           pick([
             "AccelerateConfiguration",
@@ -83,12 +95,55 @@ module.exports = () =>
             "LifecycleConfiguration",
             "WebsiteConfiguration",
           ]),
-          //TODO REMOVE omitIfEmpty(["LocationConstraint"])
-          when(
-            pipe([get("LocationConstraint"), isEmpty]),
-            omit(["LocationConstraint"])
-          ),
+          omitIfEmpty(["LocationConstraint"]),
           omit(["WebsiteConfiguration.RoutingRules"]),
+          when(
+            get("Policy"),
+            assign({
+              Policy: pipe([
+                get("Policy"),
+                assign({
+                  Statement: pipe([
+                    get("Statement"),
+                    map(
+                      pipe([
+                        assign({
+                          Principal: pipe([
+                            get("Principal"),
+                            assign({
+                              AWS: pipe([
+                                get("AWS"),
+                                when(
+                                  includes("CloudFront Origin Access Identity"),
+                                  pipe([
+                                    (Principal) =>
+                                      pipe([
+                                        () => ({ Id: Principal, lives }),
+                                        replaceWithName({
+                                          groupType:
+                                            "CloudFront::OriginAccessIdentity",
+                                          path: "id",
+                                        }),
+                                      ])(),
+                                  ])
+                                ),
+                              ]),
+                            }),
+                          ]),
+                          Resource: pipe([
+                            get("Resource"),
+                            tap((params) => {
+                              assert(true);
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+            })
+          ),
         ]),
     },
     {
