@@ -23,7 +23,7 @@ const MySEO = () => (
     <Head>
       <meta
         property="og:description"
-        content="Insfrastructure as Javascript Code"
+        content="Infrastructure as Javascript Code"
       />
       <meta
         property="og:image"

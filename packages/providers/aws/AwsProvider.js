@@ -29,6 +29,8 @@ const { generateCode } = require("./Aws2gc");
 
 const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
+const AppRunner = require("./AppRunner");
+
 const AppSync = require("./AppSync");
 const AutoScaling = require("./Autoscaling");
 const CertificateManager = require("./ACM");
@@ -60,6 +62,7 @@ const fnSpecs = (config) =>
     () => [
       ...ApiGateway(),
       ...ApiGatewayV2(),
+      ...AppRunner(),
       ...AppSync(),
       ...AutoScaling(),
       ...CertificateManager(),
@@ -128,6 +131,7 @@ exports.AwsProvider = ({
     acm: "2015-12-08",
     apigateway: "2015-07-09",
     apigatewayv2: "2018-11-29",
+    apprunner: "2020-05-15",
     appsync: "2017-07-25",
     autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",

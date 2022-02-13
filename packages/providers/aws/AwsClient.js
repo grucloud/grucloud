@@ -219,6 +219,9 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             isExpectedException,
             shouldRetryOnException,
           }),
+        tap((params) => {
+          assert(true);
+        }),
         pickCreated({ pickId, payload, name, resolvedDependencies }),
         tap((params) => {
           assert(isObject(params));
@@ -405,7 +408,14 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               () =>
                 retryCall({
                   name: `isDestroyed ${type}`,
-                  fn: pipe([() => live, getById, isInstanceDown]),
+                  fn: pipe([
+                    () => live,
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    getById,
+                    isInstanceDown,
+                  ]),
                   config,
                 })
             ),

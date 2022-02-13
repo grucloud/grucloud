@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, pipe, assign, map, omit, pick, get } = require("rubico");
-const { when, includes, find } = require("rubico/x");
+const { when, includes, isObject } = require("rubico/x");
 
 const mime = require("mime-types");
 
@@ -110,25 +110,36 @@ module.exports = () =>
                         assign({
                           Principal: pipe([
                             get("Principal"),
-                            assign({
-                              AWS: pipe([
-                                get("AWS"),
-                                when(
-                                  includes("CloudFront Origin Access Identity"),
-                                  pipe([
-                                    (Principal) =>
-                                      pipe([
-                                        () => ({ Id: Principal, lives }),
-                                        replaceWithName({
-                                          groupType:
-                                            "CloudFront::OriginAccessIdentity",
-                                          path: "id",
-                                        }),
-                                      ])(),
-                                  ])
-                                ),
-                              ]),
+                            tap((params) => {
+                              assert(true);
                             }),
+                            when(
+                              isObject,
+                              assign({
+                                AWS: pipe([
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  get("AWS"),
+                                  when(
+                                    includes(
+                                      "CloudFront Origin Access Identity"
+                                    ),
+                                    pipe([
+                                      (Principal) =>
+                                        pipe([
+                                          () => ({ Id: Principal, lives }),
+                                          replaceWithName({
+                                            groupType:
+                                              "CloudFront::OriginAccessIdentity",
+                                            path: "id",
+                                          }),
+                                        ])(),
+                                    ])
+                                  ),
+                                ]),
+                              })
+                            ),
                           ]),
                           Resource: pipe([
                             get("Resource"),
@@ -140,6 +151,9 @@ module.exports = () =>
                       ])
                     ),
                   ]),
+                }),
+                tap((params) => {
+                  assert(true);
                 }),
               ]),
             })

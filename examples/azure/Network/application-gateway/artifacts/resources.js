@@ -112,8 +112,7 @@ exports.createResources = () => [
                               type: "ApplicationGateway",
                               group: "Network",
                               name: "rg-ag::ag",
-                              suffix:
-                                "/subscriptions/e012cd34-c794-4e35-916f-f38dcd8ac45c/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag",
+                              suffix: "/backendAddressPools/backendpool",
                             }),
                           },
                         ],

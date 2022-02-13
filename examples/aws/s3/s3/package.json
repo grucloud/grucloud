@@ -8,7 +8,7 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "gencode": "gc gencode --no-download"
+    "gencode": "gc gencode --no-inventory-fetch"
   },
   "author": "",
   "license": "ISC",
