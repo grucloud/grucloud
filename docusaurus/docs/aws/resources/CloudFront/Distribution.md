@@ -14,10 +14,17 @@ exports.createResources = () => [
     group: "CloudFront",
     name: "E2P10W0URYHQV",
     properties: ({ getId }) => ({
-      PriceClass: "PriceClass_All",
+      PriceClass: "PriceClass_100",
       Aliases: {
-        Quantity: 0,
-        Items: [],
+        Quantity: 1,
+        Items: [
+          getId({
+            type: "Certificate",
+            group: "ACM",
+            name: "cloudfront-demo.grucloud.org",
+            path: "name",
+          }),
+        ],
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
@@ -109,6 +116,12 @@ exports.createResources = () => [
         Bucket: "",
         Prefix: "",
       },
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       buckets: ["cloudfront-demo.grucloud.org"],
