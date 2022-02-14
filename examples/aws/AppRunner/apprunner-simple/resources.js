@@ -2,4 +2,54 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "Connection",
+    group: "AppRunner",
+    name: "grucloud",
+    properties: ({}) => ({
+      ProviderType: "GITHUB",
+    }),
+  },
+  {
+    type: "Service",
+    group: "AppRunner",
+    name: "starhackit-api",
+    properties: ({}) => ({
+      SourceConfiguration: {
+        CodeRepository: {
+          RepositoryUrl: "https://github.com/FredericHeem/starhackit",
+          SourceCodeVersion: {
+            Type: "BRANCH",
+            Value: "master",
+          },
+          CodeConfiguration: {
+            ConfigurationSource: "API",
+            CodeConfigurationValues: {
+              Runtime: "NODEJS_12",
+              BuildCommand: "npm install",
+              StartCommand: "npm run api",
+              Port: "9000",
+              RuntimeEnvironmentVariables: {
+                NODE_CONFIG: "'{}'",
+              },
+            },
+          },
+        },
+        AutoDeploymentsEnabled: false,
+      },
+      InstanceConfiguration: {
+        Cpu: "1024",
+        Memory: "2048",
+      },
+      HealthCheckConfiguration: {
+        Protocol: "TCP",
+        Path: "/",
+        Interval: 10,
+        Timeout: 5,
+        HealthyThreshold: 1,
+        UnhealthyThreshold: 5,
+      },
+    }),
+  },
+];
