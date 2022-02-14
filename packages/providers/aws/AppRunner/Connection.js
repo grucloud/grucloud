@@ -2,10 +2,6 @@ const assert = require("assert");
 const { map, pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "AppRunner",
-});
-const { getByNameCore } = require("@grucloud/core/Common");
 const {
   buildTags,
   findNamespaceInTags,
@@ -13,12 +9,12 @@ const {
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const findName = get("live.ServiceName");
-const findId = get("live.ServiceArn");
-const pickId = pick(["ServiceArn"]);
+const findName = get("live.ConnectionName");
+const findId = get("live.ConnectionArn");
+const pickId = pick(["ConnectionName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
-exports.AppRunnerService = ({ spec, config }) => {
+exports.AppRunnerConnection = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [];
@@ -26,25 +22,23 @@ exports.AppRunnerService = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeService-property
   const getById = client.getById({
     pickId,
-    method: "describeService",
-    getField: "Service",
+    method: "listConnections",
+    // TODO
     ignoreErrorCodes: ["NotFoundException"],
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listServices-property
+  const getByName = pipe([({ name }) => ({ ConnectionName: name }), getById]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listConnections-property
   const getList = client.getList({
-    method: "listServices",
-    getParam: "ServiceSummaryList",
-    decorate: () => getById,
+    method: "listConnections",
+    getParam: "ConnectionSummaryList",
   });
 
-  const getByName = getByNameCore({ getList, findName });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createService-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createConnection-property
   const create = client.create({
-    method: "createService",
+    method: "createConnection",
     //isInstanceUp,
-    //filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: (payload) => (result) =>
       pipe([
         tap((params) => {
@@ -58,13 +52,13 @@ exports.AppRunnerService = ({ spec, config }) => {
     config,
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteService-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteConnection-property
   const destroy = client.destroy({
     pickId,
-    method: "deleteService",
+    method: "deleteConnection",
     getById,
     //TODO
-    ignoreErrorCodes: ["InvalidVpcID.NotFound"],
+    ignoreErrorCodes: ["NotFound"],
     config,
   });
 
@@ -80,7 +74,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     })(otherProps);
 
   return {
-    type: "Service",
+    type: "Connection",
     spec,
     getById,
     findId,
