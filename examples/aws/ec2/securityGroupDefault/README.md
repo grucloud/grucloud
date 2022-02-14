@@ -1,4 +1,4 @@
-# EC2
+# EC2 Security Group
 
 The purpose of this example is to deploy security group rules in the default security group
 
@@ -15,3 +15,9 @@ gc graph
 ```
 
 ![diagram-target.svg](./artifacts/diagram-target.svg)
+
+# Workflow
+
+Here are the steps to deploy, destroy and document this infrastructure:
+
+![gc-example-workflow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gc-example-workflow.svg)
