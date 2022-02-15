@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { tap, assign, map, pipe, omit, pick, get, not, and } = require("rubico");
-const { callProp } = require("rubico/x");
+const { callProp, when } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
@@ -19,8 +19,10 @@ module.exports = () =>
       Client: EcrRepository,
       isOurMinion,
       compare: compare({
+        filterAll: pipe([omit(["tags"])]),
         filterLive: pipe([
           omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
+          omitIfEmpty(["lifecyclePolicyText", "policyText"]),
         ]),
       }),
       filterLive: ({ providerConfig }) =>
@@ -32,31 +34,34 @@ module.exports = () =>
             "policyText",
             "lifecyclePolicyText",
           ]),
-          assign({
-            policyText: pipe([
-              get("policyText"),
-              assign({
-                Statement: pipe([
-                  get("Statement"),
-                  map(
-                    assign({
-                      Principal: pipe([
-                        get("Principal.AWS"),
-                        callProp(
-                          "replace",
-                          providerConfig.accountId(),
-                          "${config.accountId()}"
-                        ),
-                        (principal) => ({
-                          AWS: () => "`" + principal + "`",
-                        }),
-                      ]),
-                    })
-                  ),
-                ]),
-              }),
-            ]),
-          }),
+          when(
+            get("policyText"),
+            assign({
+              policyText: pipe([
+                get("policyText"),
+                assign({
+                  Statement: pipe([
+                    get("Statement"),
+                    map(
+                      assign({
+                        Principal: pipe([
+                          get("Principal.AWS"),
+                          callProp(
+                            "replace",
+                            providerConfig.accountId(),
+                            "${config.accountId()}"
+                          ),
+                          (principal) => ({
+                            AWS: () => "`" + principal + "`",
+                          }),
+                        ]),
+                      })
+                    ),
+                  ]),
+                }),
+              ]),
+            })
+          ),
         ]),
     },
     {

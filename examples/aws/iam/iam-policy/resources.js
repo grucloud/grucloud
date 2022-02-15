@@ -22,18 +22,15 @@ exports.createResources = () => [
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+      ],
     }),
     dependencies: () => ({
-      policies: ["AmazonEKSWorkerNodePolicy", "policy-allow-ec2"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AmazonEKSWorkerNodePolicy",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      policies: ["policy-allow-ec2"],
     }),
   },
   {

@@ -191,18 +191,13 @@ exports.createResources = () => [
           PolicyName: "AppSyncNotesHandlerServiceRoleDefaultPolicy12C70C4F",
         },
       ],
-    }),
-    dependencies: () => ({
-      policies: ["AWSLambdaBasicExecutionRole"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AWSLambdaBasicExecutionRole",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      AttachedPolicies: [
+        {
+          PolicyName: "AWSLambdaBasicExecutionRole",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        },
+      ],
     }),
   },
   {

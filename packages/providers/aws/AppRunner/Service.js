@@ -1,6 +1,7 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { eq, pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, when, callProp, first, find } = require("rubico/x");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AppRunner",
@@ -21,7 +22,66 @@ const pickId = pick(["ServiceArn"]);
 exports.AppRunnerService = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
-  const findDependencies = ({ live, lives }) => [];
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Connection",
+      group: "AppRunner",
+      ids: [
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => live,
+          get("SourceConfiguration.AuthenticationConfiguration.ConnectionArn"),
+        ])(),
+      ],
+    },
+    {
+      type: "Repository",
+      group: "ECR",
+      ids: [
+        pipe([
+          () => live,
+          get("SourceConfiguration.ImageRepository.ImageIdentifier"),
+          tap((params) => {
+            assert(true);
+          }),
+          callProp("split", ":"),
+          first,
+          tap((params) => {
+            assert(true);
+          }),
+          (repositoryUri) =>
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "Repository",
+                  group: "ECR",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.repositoryUri"), repositoryUri)),
+            ])(),
+          tap((params) => {
+            assert(true);
+          }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [
+        pipe([
+          () => live,
+          get("SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      ],
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeService-property
   const getById = client.getById({
@@ -44,13 +104,13 @@ exports.AppRunnerService = ({ spec, config }) => {
   const create = client.create({
     method: "createService",
     //isInstanceUp,
-    //filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: (payload) => (result) =>
       pipe([
         tap((params) => {
           assert(payload);
         }),
         () => result,
+        get("Service"),
         pickId,
       ])(),
     pickId,
@@ -74,10 +134,33 @@ exports.AppRunnerService = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     dependencies,
   }) =>
-    defaultsDeep({
-      DomainName: name,
-      Tags: buildTags({ name, namespace, config, UserTags: Tags }),
-    })(otherProps);
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        ServiceName: name,
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+      }),
+      when(
+        () => dependencies.accessRole,
+        defaultsDeep({
+          SourceConfiguration: {
+            AuthenticationConfiguration: {
+              AccessRoleArn: getField(dependencies.accessRole, "Arn"),
+            },
+          },
+        })
+      ),
+      when(
+        () => dependencies.connection,
+        defaultsDeep({
+          SourceConfiguration: {
+            AuthenticationConfiguration: {
+              ConnectionArn: getField(dependencies.connection, "ConnectionArn"),
+            },
+          },
+        })
+      ),
+    ])();
 
   return {
     type: "Service",

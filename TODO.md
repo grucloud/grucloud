@@ -1,6 +1,35 @@
 ## Bugs
 
-- az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
+- ✖ Deploying  
+   ✖ AppRunner::Service 0/1 Error in assuming access role arn:aws:iam::840541460064:role/service-role/AppRunnerECRAccessRole
+- example vpc-use stull using make and use
+- check stage for all providers
+
+## Diagram
+
+- check git repo from frontend https://isomorphic-git.org/docs/en/getRemoteInfo
+  add k8s
+  backup data.
+  privacy policy
+  resource table styling
+
+## Common:
+
+- https://stackshare.io/terraform/alternatives
+
+- destroy: use live instead of id
+- const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
+
+- PROMPT='%4~ %# '
+- iam deal with deleted user
+
+## Web site
+
+## Cli
+
+## Kubernetes
+
+## Azure
 
 NetworkSecurityGroup defaultSecurityRules in gencode
 
@@ -43,36 +72,6 @@ remove aks-managed-createOperationID from tags
 "type": "PrivateEndpointConnection",
 "group": "KeyVault",
 
-- check stage for all providers
-- compare refactor
-- compare Tags
-
-## Diagram
-
-- check git repo from frontend https://isomorphic-git.org/docs/en/getRemoteInfo
-  add k8s
-  backup data.
-  privacy policy
-  resource table styling
-
-## Common:
-
-- https://stackshare.io/terraform/alternatives
-
-- destroy: use live instead of id
-- const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
-
-- PROMPT='%4~ %# '
-- iam deal with deleted user
-
-## Web site
-
-## Cli
-
-## Kubernetes
-
-## Azure
-
 - aks-vault:
   "error": {
   "code": "ConflictError",
@@ -90,6 +89,8 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - delete NSG : failed with status code 429 A retry
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
+- az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
+
 ## Aws2gc
 
 - ec2 image
@@ -97,8 +98,9 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- compare refactor
+- compare Tags
 - RDS DBCluster AvailabilityZones
-- document route53 record, add elastic ipaddress as a dependencies
 - ECR.makeRegistry delete
 - gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table
@@ -110,13 +112,9 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - Lambda env var dependencies with DynamoDB table
 - Policy dependencies with other resources: DynamoDB table
 
-- ✖ kms::Key 0/1 User: arn:aws:iam::840541460064:root is not authorized to perform: kms:DisableKey on resource: arn:aws:kms:us-east-1:84054146006
-  4:key/79507edb-c301-43a8-8217-524d24f6daa7
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
 - throw error => throw Error(error.message);
-- https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
-
 - UserData: ec2 update and displayResource
 - Resource pages
 

@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "mocha './test/*.test.js'",
-    "start": "node ./MockServerRun.js"
+    "start": "node ./MockServerRun.js",
+    "docker:build": "docker build . -t grucloud/mock-server",
+    "docker:run": "docker run -p 8089:8089 grucloud/mock-server"
   },
   "repository": {
     "type": "git",

@@ -22,18 +22,13 @@ exports.createResources = () => [
           },
         ],
       },
-    }),
-    dependencies: () => ({
-      policies: ["service-role/AmazonEC2ContainerServiceforEC2Role"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "service-role/AmazonEC2ContainerServiceforEC2Role",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+        },
+      ],
     }),
   },
   {

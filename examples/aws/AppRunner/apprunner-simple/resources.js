@@ -4,37 +4,22 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Connection",
-    group: "AppRunner",
-    name: "grucloud",
-    properties: ({}) => ({
-      ProviderType: "GITHUB",
-    }),
-  },
-  {
     type: "Service",
     group: "AppRunner",
-    name: "starhackit-api",
-    properties: ({}) => ({
+    name: "plantuml-server",
+    properties: ({ getId }) => ({
       SourceConfiguration: {
-        CodeRepository: {
-          RepositoryUrl: "https://github.com/FredericHeem/starhackit",
-          SourceCodeVersion: {
-            Type: "BRANCH",
-            Value: "master",
+        ImageRepository: {
+          ImageIdentifier: `${getId({
+            type: "Repository",
+            group: "ECR",
+            name: "plantuml",
+            path: "live.repositoryUri",
+          })}:jetty-v1.2021.15`,
+          ImageConfiguration: {
+            Port: "8080",
           },
-          CodeConfiguration: {
-            ConfigurationSource: "API",
-            CodeConfigurationValues: {
-              Runtime: "NODEJS_12",
-              BuildCommand: "npm install",
-              StartCommand: "npm run api",
-              Port: "9000",
-              RuntimeEnvironmentVariables: {
-                NODE_CONFIG: "'{}'",
-              },
-            },
-          },
+          ImageRepositoryType: "ECR",
         },
         AutoDeploymentsEnabled: false,
       },
@@ -50,6 +35,52 @@ exports.createResources = () => [
         HealthyThreshold: 1,
         UnhealthyThreshold: 5,
       },
+    }),
+    dependencies: () => ({
+      accessRole: "AppRunnerECRAccessRole",
+      repository: "plantuml",
+    }),
+  },
+  {
+    type: "Repository",
+    group: "ECR",
+    name: "plantuml",
+    properties: ({}) => ({
+      imageTagMutability: "MUTABLE",
+      imageScanningConfiguration: {
+        scanOnPush: false,
+      },
+      encryptionConfiguration: {
+        encryptionType: "AES256",
+      },
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "AppRunnerECRAccessRole",
+    properties: ({}) => ({
+      Description: "This role gives App Runner permission to access ECR",
+      Path: "/service-role/",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "build.apprunner.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AWSAppRunnerServicePolicyForECRAccess",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess",
+        },
+      ],
     }),
   },
 ];
