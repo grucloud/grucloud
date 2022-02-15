@@ -68,10 +68,13 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     dependencies,
   }) =>
-    defaultsDeep({
-      DomainName: name,
-      Tags: buildTags({ name, namespace, config, UserTags: Tags }),
-    })(otherProps);
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        DomainName: name,
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+      }),
+    ])();
 
   return {
     type: "Connection",

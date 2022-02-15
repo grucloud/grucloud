@@ -503,7 +503,7 @@ const buildGetId =
 exports.buildGetId = buildGetId;
 
 exports.replaceWithName =
-  ({ groupType, path = "name" }) =>
+  ({ groupType, pathLive = "id", path = "name" }) =>
   ({ lives, Id }) =>
     pipe([
       tap(() => {
@@ -512,7 +512,13 @@ exports.replaceWithName =
       }),
       () => lives,
       filter(eq(get("groupType"), groupType)),
-      find(({ id }) => Id.match(new RegExp(id))),
+      tap((params) => {
+        assert(true);
+      }),
+      find(pipe([get(pathLive), (id) => Id.match(new RegExp(id))])),
+      tap((params) => {
+        assert(true);
+      }),
       switchCase([
         isEmpty,
         () => Id,
@@ -520,9 +526,15 @@ exports.replaceWithName =
           pipe([
             () => resource,
             buildGetId({ path }),
+            tap((params) => {
+              assert(true);
+            }),
             (getId) => () =>
               "`" +
-              Id.replace(new RegExp(resource.id), "${" + getId + "}") +
+              Id.replace(
+                new RegExp(get(pathLive)(resource)),
+                "${" + getId + "}"
+              ) +
               "`",
           ])(),
       ]),

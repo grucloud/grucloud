@@ -189,6 +189,13 @@ exports.AwsIamRole = ({ spec, config }) => {
       })
     );
 
+  const attachRoleAttachedPolicies = ({ name }) =>
+    map(({ PolicyArn }) =>
+      iam().attachRolePolicy({
+        PolicyArn,
+        RoleName: name,
+      })
+    );
   const create = ({
     name,
     namespace,
@@ -200,7 +207,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         logger.info(`create role ${tos({ name, payload })}`);
       }),
       () => payload,
-      omit(["Policies"]),
+      omit(["Policies", "AttachedPolicies"]),
       assign({
         AssumeRolePolicyDocument: pipe([
           get("AssumeRolePolicyDocument"),
@@ -223,6 +230,11 @@ exports.AwsIamRole = ({ spec, config }) => {
         ),
       ]),
       pipe([() => policies, attachRolePolicies({ name })]),
+      pipe([
+        () => payload,
+        get("AttachedPolicies", []),
+        attachRoleAttachedPolicies({ name }),
+      ]),
       tap(() => {
         logger.info(`created role ${tos({ name })}`);
       }),

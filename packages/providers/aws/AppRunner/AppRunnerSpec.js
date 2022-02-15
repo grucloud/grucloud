@@ -1,7 +1,9 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick } = require("rubico");
+const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
+const { when } = require("rubico/x");
+
 const { isOurMinion } = require("../AwsCommon");
-const { compare } = require("@grucloud/core/Common");
+const { compare, replaceWithName } = require("@grucloud/core/Common");
 
 const { AppRunnerService } = require("./Service");
 const { AppRunnerConnection } = require("./Connection");
@@ -40,10 +42,29 @@ module.exports = () =>
     {
       type: "Service",
       Client: AppRunnerService,
-      dependsOn: ["AppRunner::Connection"],
-      dependencies: { connection: { type: "Connection", group: "AppRunner" } },
+      dependsOn: ["AppRunner::Connection", "IAM::Role", "ECR::Repository"],
+      dependencies: {
+        connection: { type: "Connection", group: "AppRunner" },
+        accessRole: { type: "Role", group: "IAM" },
+        repository: { type: "Repository", group: "ECR" },
+      },
       isOurMinion,
       compare: compare({
+        filterAll: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit([
+            "ServiceId",
+            "ServiceArn",
+            "ServiceUrl",
+            "CreatedAt",
+            "UpdatedAt",
+            "Status",
+            //TODO
+            "AutoScalingConfigurationSummary",
+          ]),
+        ]),
         filterTarget: pipe([
           tap((params) => {
             assert(true);
@@ -56,10 +77,10 @@ module.exports = () =>
           }),
         ]),
       }),
-      filterLive: () =>
+      filterLive: ({ lives }) =>
         pipe([
           tap((params) => {
-            assert(true);
+            assert(lives);
           }),
           pick([
             "SourceConfiguration",
@@ -67,6 +88,33 @@ module.exports = () =>
             "HealthCheckConfiguration",
           ]),
           omit(["SourceConfiguration.AuthenticationConfiguration"]),
+          assign({
+            SourceConfiguration: pipe([
+              get("SourceConfiguration"),
+              tap((params) => {
+                assert(true);
+              }),
+              assign({
+                ImageRepository: pipe([
+                  get("ImageRepository"),
+                  when(
+                    get("ImageIdentifier"),
+                    assign({
+                      ImageIdentifier: ({ ImageIdentifier }) =>
+                        pipe([
+                          () => ({ Id: ImageIdentifier, lives }),
+                          replaceWithName({
+                            groupType: "ECR::Repository",
+                            pathLive: "live.repositoryUri",
+                            path: "live.repositoryUri",
+                          }),
+                        ])(),
+                    })
+                  ),
+                ]),
+              }),
+            ]),
+          }),
         ]),
     },
   ]);

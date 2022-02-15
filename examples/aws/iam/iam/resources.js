@@ -60,18 +60,16 @@ exports.createResources = () => [
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEKSWorkerNodePolicy",
+        },
+      ],
     }),
     dependencies: () => ({
-      policies: ["AmazonEKSWorkerNodePolicy", "myPolicy-to-role"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AmazonEKSWorkerNodePolicy",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      policies: ["myPolicy-to-role"],
     }),
   },
   {

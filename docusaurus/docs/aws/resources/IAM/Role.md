@@ -5,36 +5,47 @@ title: Role
 
 Provides an Iam Role.
 
+## Sampke Code
+
+### Role with a pre-defined AWS policy
+
+Create an Iam Role and attach an pre-defined AWS Policy
+
 ```js
 exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "roleApiGatewayCloudWatch",
+    name: "ecsInstanceRole",
     properties: ({}) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
+        Version: "2008-10-17",
         Statement: [
           {
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: "ec2.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+        },
+      ],
     }),
-    dependencies: () => ({
-      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
-    }),
-  },
 ];
 ```
 
-### Attach a policy to a role
+### Attach a user defined policy to a role
+
+Create an Iam Role and attach an user-defined AWS Policy
 
 ```js
 exports.createResources = () => [
@@ -170,7 +181,6 @@ exports.createResources = () => [
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
-
 - [load balancer controller module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer-controller/iac.js#)
 
 ### Properties

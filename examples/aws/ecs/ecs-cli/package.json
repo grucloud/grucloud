@@ -8,8 +8,8 @@
     "test": "mocha",
     "tree": "gc tree",
     "list": "gc list -g",
-    "gencode": "gc gencode",
-    "ecs-cli-create": "ecs-cli up --cluster my-cluster --capability-iam --instance-type t2.small --launch-type EC2 --tags my-tag=my-value"
+    "gencode": "gc gencode --no-inventory-fetch",
+    "ecs-cli-create": "ecs-cli up --cluster my-cluster --capability-iam --instance-type t2.small --launch-type EC2 --tags my-tag=my-value --force"
   },
   "author": "",
   "license": "ISC",

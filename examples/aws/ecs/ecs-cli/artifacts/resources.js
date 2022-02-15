@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "AutoScalingGroup",
     group: "AutoScaling",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceAsg-FJVD23F7MHXY",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceAsg-E1YAIKY8YI41",
     properties: ({}) => ({
       MinSize: 0,
       MaxSize: 1,
@@ -16,18 +16,18 @@ exports.createResources = () => [
     dependencies: () => ({
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchConfiguration:
-        "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
     }),
   },
   {
     type: "LaunchConfiguration",
     group: "AutoScaling",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
     properties: ({}) => ({
       InstanceType: "t2.small",
-      ImageId: "ami-0e43fd2a4ef14f476",
+      ImageId: "ami-0a5e7c9183d1cea27",
       UserData:
-        'Content-Type: multipart/mixed; boundary="1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3"\nMIME-Version: 1.0\n\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--1f15191e3fe7ebb2094282e32ea108217183e16f27f6e8aa0b886ee04ec3--',
+        'Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"\nMIME-Version: 1.0\n\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--',
       InstanceMonitoring: {
         Enabled: true,
       },
@@ -37,8 +37,10 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       instanceProfile:
-        "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
-      securityGroups: ["EcsSecurityGroup"],
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
+      securityGroups: [
+        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+      ],
     }),
   },
   {
@@ -154,7 +156,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "EcsSecurityGroup",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     properties: ({}) => ({
       Description: "ECS Allowed Ports",
       Tags: [
@@ -171,7 +173,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -185,7 +187,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "EcsSecurityGroup",
+      securityGroup:
+        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
   },
   {
@@ -204,7 +207,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
     properties: ({}) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -219,6 +222,13 @@ exports.createResources = () => [
           },
         ],
       },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2ContainerServiceforEC2Role",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerServiceforEC2Role",
+        },
+      ],
       Tags: [
         {
           Key: "my-tag",
@@ -226,25 +236,13 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
-      policies: ["AmazonEC2ContainerServiceforEC2Role"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AmazonEC2ContainerServiceforEC2Role",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
-    }),
   },
   {
     type: "InstanceProfile",
     group: "IAM",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-ESJBS99JRKVK",
+    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
     dependencies: () => ({
-      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-14B4COKG08FT6"],
+      roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2"],
     }),
   },
 ];

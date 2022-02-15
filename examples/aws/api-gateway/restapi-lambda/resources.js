@@ -88,18 +88,13 @@ exports.createResources = () => [
           },
         ],
       },
-    }),
-    dependencies: () => ({
-      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AmazonAPIGatewayPushToCloudWatchLogs",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonAPIGatewayPushToCloudWatchLogs",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+        },
+      ],
     }),
   },
 ];

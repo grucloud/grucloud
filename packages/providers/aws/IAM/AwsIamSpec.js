@@ -10,8 +10,17 @@ const {
   switchCase,
   or,
   eq,
+  not,
+  filter,
 } = require("rubico");
-const { when, isString, prepend, callProp, last, find } = require("rubico/x");
+const {
+  when,
+  isString,
+  prepend,
+  callProp,
+  isEmpty,
+  find,
+} = require("rubico/x");
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const {
   hasDependency,
@@ -149,9 +158,40 @@ module.exports = () =>
             ]),
           }),
         ]),
-      filterLive: ({ providerConfig }) =>
+      filterLive: ({ lives, resource, providerConfig }) =>
         pipe([
-          pick(["Description", "Path", "AssumeRolePolicyDocument", "Policies"]),
+          tap((params) => {
+            assert(lives);
+            assert(resource);
+          }),
+          pick([
+            "Description",
+            "Path",
+            "AssumeRolePolicyDocument",
+            "Policies",
+            "AttachedPolicies",
+          ]),
+          when(
+            get("AttachedPolicies"),
+            assign({
+              AttachedPolicies: pipe([
+                get("AttachedPolicies"),
+                filter(
+                  not(({ PolicyArn }) =>
+                    pipe([
+                      () => PolicyArn,
+                      findLiveById({
+                        type: "Policy",
+                        group: "IAM",
+                        lives,
+                        providerName: resource.providerName,
+                      }),
+                    ])()
+                  )
+                ),
+              ]),
+            })
+          ),
           assign({
             Policies: pipe([
               get("Policies", []),
@@ -183,7 +223,7 @@ module.exports = () =>
               ),
             ]),
           }),
-          omitIfEmpty(["Description", "Policies"]),
+          omitIfEmpty(["Description", "Policies", "AttachedPolicies"]),
         ]),
       includeDefaultDependencies: true,
       dependencies: {
@@ -207,11 +247,12 @@ module.exports = () =>
                   }),
                   switchCase([
                     isEmpty,
-                    () => `"${id}"`,
+                    () => undefined,
                     ({ name }) => `'${name}'`,
                   ]),
                 ])()
               ),
+              filter(not(isEmpty)),
               (dependencyVarNames) => ({ list: true, dependencyVarNames }),
               tap((params) => {
                 assert(true);
