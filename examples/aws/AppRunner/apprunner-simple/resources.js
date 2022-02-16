@@ -6,18 +6,18 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "AppRunner",
-    name: "plantuml-server",
+    name: "mock-server",
     properties: ({ getId }) => ({
       SourceConfiguration: {
         ImageRepository: {
           ImageIdentifier: `${getId({
             type: "Repository",
             group: "ECR",
-            name: "plantuml",
+            name: "grucloud/mock-server",
             path: "live.repositoryUri",
-          })}:jetty-v1.2021.15`,
+          })}:latest`,
           ImageConfiguration: {
-            Port: "8080",
+            Port: "8089",
           },
           ImageRepositoryType: "ECR",
         },
@@ -38,13 +38,13 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       accessRole: "AppRunnerECRAccessRole",
-      repository: "plantuml",
+      repository: "grucloud/mock-server",
     }),
   },
   {
     type: "Repository",
     group: "ECR",
-    name: "plantuml",
+    name: "grucloud/mock-server",
     properties: ({}) => ({
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {

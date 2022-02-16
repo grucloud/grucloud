@@ -10,7 +10,46 @@ Provides an AppRunner Service.
 ### Create a AppRunner service from a docker image
 
 ```js
-
+exports.createResources = () => [
+  {
+    type: "Service",
+    group: "AppRunner",
+    name: "mock-server",
+    properties: ({ getId }) => ({
+      SourceConfiguration: {
+        ImageRepository: {
+          ImageIdentifier: `${getId({
+            type: "Repository",
+            group: "ECR",
+            name: "grucloud/mock-server",
+            path: "live.repositoryUri",
+          })}:latest`,
+          ImageConfiguration: {
+            Port: "8089",
+          },
+          ImageRepositoryType: "ECR",
+        },
+        AutoDeploymentsEnabled: false,
+      },
+      InstanceConfiguration: {
+        Cpu: "1024",
+        Memory: "2048",
+      },
+      HealthCheckConfiguration: {
+        Protocol: "TCP",
+        Path: "/",
+        Interval: 10,
+        Timeout: 5,
+        HealthyThreshold: 1,
+        UnhealthyThreshold: 5,
+      },
+    }),
+    dependencies: () => ({
+      accessRole: "AppRunnerECRAccessRole",
+      repository: "grucloud/mock-server",
+    }),
+  },
+];
 ```
 
 ### Create a AppRunner service from GitHub repository
@@ -22,6 +61,8 @@ Provides an AppRunner Service.
 ## Source Code Examples
 
 - [apprunner-simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/AppRunner/apprunner-simple/resources.js)
+
+- [apprunner-github](https://github.com/grucloud/grucloud/blob/main/examples/aws/AppRunner/apprunner-github/resources.js)
 
 ## Properties
 

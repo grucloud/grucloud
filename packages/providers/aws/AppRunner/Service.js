@@ -1,11 +1,14 @@
 const assert = require("assert");
 const { eq, pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, when, callProp, first, find } = require("rubico/x");
+const {
+  defaultsDeep,
+  when,
+  callProp,
+  first,
+  find,
+  includes,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const logger = require("@grucloud/core/logger")({
-  prefix: "AppRunner",
-});
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   buildTags,
@@ -43,14 +46,8 @@ exports.AppRunnerService = ({ spec, config }) => {
         pipe([
           () => live,
           get("SourceConfiguration.ImageRepository.ImageIdentifier"),
-          tap((params) => {
-            assert(true);
-          }),
           callProp("split", ":"),
           first,
-          tap((params) => {
-            assert(true);
-          }),
           (repositoryUri) =>
             pipe([
               () =>
@@ -61,9 +58,6 @@ exports.AppRunnerService = ({ spec, config }) => {
                 }),
               find(eq(get("live.repositoryUri"), repositoryUri)),
             ])(),
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
         ])(),
       ],
@@ -75,9 +69,6 @@ exports.AppRunnerService = ({ spec, config }) => {
         pipe([
           () => live,
           get("SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       ],
     },
@@ -88,7 +79,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     pickId,
     method: "describeService",
     getField: "Service",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listServices-property
@@ -105,14 +96,11 @@ exports.AppRunnerService = ({ spec, config }) => {
     method: "createService",
     //isInstanceUp,
     pickCreated: (payload) => (result) =>
-      pipe([
-        tap((params) => {
-          assert(payload);
-        }),
-        () => result,
-        get("Service"),
-        pickId,
-      ])(),
+      pipe([() => result, get("Service"), pickId])(),
+    shouldRetryOnException: pipe([
+      get("error.message"),
+      includes("Error in assuming access"),
+    ]),
     pickId,
     getById,
     config,
@@ -123,8 +111,8 @@ exports.AppRunnerService = ({ spec, config }) => {
     pickId,
     method: "deleteService",
     getById,
-    //TODO
-    ignoreErrorCodes: ["InvalidVpcID.NotFound"],
+    isInstanceDown: eq(get("Status"), "DELETED"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 
