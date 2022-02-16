@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-eks-load-balancer",
-  "version": "5.3.0",
+  "version": "5.3.1",
   "description": "Example for the AWS EKS with a load balancer",
   "main": "iac.js",
   "private": true,

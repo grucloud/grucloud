@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-kms-symmetric",
-  "version": "5.3.0",
+  "version": "5.3.1",
   "private": true,
   "description": "",
   "main": "iac.js",
