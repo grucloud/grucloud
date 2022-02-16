@@ -23,6 +23,8 @@ exports.AppRunnerConnection = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "listConnections",
+    getParam: "ConnectionSummaryList",
+
     // TODO
     ignoreErrorCodes: ["NotFoundException"],
   });
@@ -71,7 +73,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     pipe([
       () => otherProps,
       defaultsDeep({
-        DomainName: name,
+        ConnectionName: name,
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();

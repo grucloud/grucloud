@@ -3,6 +3,8 @@ const { eq, pipe, tap, get, pick } = require("rubico");
 const {
   defaultsDeep,
   when,
+  unless,
+  isEmpty,
   callProp,
   first,
   find,
@@ -46,19 +48,24 @@ exports.AppRunnerService = ({ spec, config }) => {
         pipe([
           () => live,
           get("SourceConfiguration.ImageRepository.ImageIdentifier"),
-          callProp("split", ":"),
-          first,
-          (repositoryUri) =>
+          unless(
+            isEmpty,
             pipe([
-              () =>
-                lives.getByType({
-                  type: "Repository",
-                  group: "ECR",
-                  providerName: config.providerName,
-                }),
-              find(eq(get("live.repositoryUri"), repositoryUri)),
-            ])(),
-          get("id"),
+              callProp("split", ":"),
+              first,
+              (repositoryUri) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "Repository",
+                      group: "ECR",
+                      providerName: config.providerName,
+                    }),
+                  find(eq(get("live.repositoryUri"), repositoryUri)),
+                ])(),
+              get("id"),
+            ])
+          ),
         ])(),
       ],
     },
