@@ -56,7 +56,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteConnection-property
   const destroy = client.destroy({
-    pickId,
+    pickId: pick(["ConnectionArn"]),
     method: "deleteConnection",
     getById,
     //TODO

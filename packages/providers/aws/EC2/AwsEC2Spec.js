@@ -320,6 +320,13 @@ module.exports = () =>
           defaultsDeep({
             MapPublicIpOnLaunch: false,
             MapCustomerOwnedIpOnLaunch: false,
+            EnableDns64: false,
+            Ipv6Native: false,
+            PrivateDnsNameOptionsOnLaunch: {
+              HostnameType: "ip-name",
+              EnableResourceNameDnsARecord: false,
+              EnableResourceNameDnsAAAARecord: false,
+            },
           }),
           filterTargetDefault,
         ]),

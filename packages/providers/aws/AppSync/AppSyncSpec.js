@@ -1,5 +1,17 @@
 const assert = require("assert");
-const { assign, map, pick, pipe, tap, omit, get, tryCatch } = require("rubico");
+const {
+  assign,
+  map,
+  pick,
+  pipe,
+  tap,
+  omit,
+  get,
+  tryCatch,
+  eq,
+} = require("rubico");
+const { when } = require("rubico/x");
+
 const fs = require("fs").promises;
 const path = require("path");
 
@@ -17,6 +29,11 @@ const isOurMinion = ({ live, config }) =>
 
 const graphqlSchemaFilePath = ({ programOptions, commandOptions, resource }) =>
   path.resolve(programOptions.workingDirectory, `${resource.name}.graphql`);
+
+const omitMaxBatchSize = when(
+  eq(get("maxBatchSize"), 0),
+  omit(["maxBatchSize"])
+);
 
 const writeGraphqlSchema =
   ({ programOptions, commandOptions }) =>
@@ -173,15 +190,20 @@ module.exports = () =>
             "requestMappingTemplate",
             "responseMappingTemplate",
           ]),
+          omitMaxBatchSize,
         ]),
       }),
       filterLive: () =>
-        pick([
-          "typeName",
-          "fieldName",
-          "requestMappingTemplate",
-          "responseMappingTemplate",
-          "kind",
+        pipe([
+          pick([
+            "typeName",
+            "fieldName",
+            "requestMappingTemplate",
+            "responseMappingTemplate",
+            "kind",
+            "maxBatchSize",
+          ]),
+          omitMaxBatchSize,
         ]),
       dependencies: {
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
