@@ -11,11 +11,9 @@ const {
   omit,
   pick,
   filter,
-  not,
 } = require("rubico");
 const { defaultsDeep, first, identity, isEmpty, prepend } = require("rubico/x");
 
-const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
@@ -46,6 +44,7 @@ exports.AwsSubnet = ({ spec, config }) => {
   const managedByOther = isDefault;
 
   const findId = get("live.SubnetId");
+  const pickId = pick(["SubnetId"]);
 
   const findName = switchCase([
     get("live.DefaultForAz"),
@@ -61,41 +60,31 @@ exports.AwsSubnet = ({ spec, config }) => {
     },
   ];
 
-  const describeSubnets = (params = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`describeSubnets ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeSubnets(params),
-      get("Subnets"),
-      tap((items) => {
-        logger.debug(`describeSubnets result: ${tos(items)}`);
-      }),
-    ])();
-
-  const getList = () => pipe([describeSubnets])();
+  const getList = client.getList({
+    method: "describeSubnets",
+    getParam: "Subnets",
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = ({ id }) =>
+  const getById = ({ SubnetId }) =>
     pipe([
+      tap(() => {
+        assert(SubnetId);
+      }),
       () => ({
         Filters: [
           {
             Name: "subnet-id",
-            Values: [id],
+            Values: [SubnetId],
           },
         ],
       }),
-      describeSubnets,
-      tap((params) => {
-        assert(true);
-      }),
+      //TODO use getList ?
+      ec2().describeSubnets,
+      get("Subnets"),
       first,
     ])();
-
-  const isUpById = pipe([getById, not(isEmpty)]);
-  const isDownById = pipe([getById, isEmpty]);
 
   const modifySubnetAttribute = ({ SubnetId }) =>
     pipe([
@@ -136,37 +125,27 @@ exports.AwsSubnet = ({ spec, config }) => {
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
-  const create = ({ payload, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create subnet ${JSON.stringify({ name })}`);
-        logger.debug(tos({ payload }));
-      }),
-      () => payload,
-      omit(SubnetAttributes),
-      ec2().createSubnet,
-      get("Subnet.SubnetId"),
-      tap((SubnetId) =>
-        retryCall({
-          name: `create subnet isDownById: ${name} SubnetId: ${SubnetId}`,
-          fn: () => isUpById({ id: SubnetId }),
-          config,
-        })
-      ),
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property
-      tap((SubnetId) =>
+  const create = client.create({
+    method: "createSubnet",
+    filterPayload: omit(SubnetAttributes),
+    pickCreated: (payload) => (result) =>
+      pipe([() => result, get("Subnet"), pickId])(),
+    pickId,
+    getById,
+    postCreate:
+      ({ payload }) =>
+      ({ SubnetId }) =>
         pipe([
+          tap(() => {
+            assert(SubnetId);
+          }),
           () => payload,
           pick(SubnetAttributes),
           filter(identity),
           modifySubnetAttribute({ SubnetId }),
-        ])()
-      ),
-      tap((SubnetId) => {
-        logger.info(`created subnet ${JSON.stringify({ name, SubnetId })}`);
-      }),
-      (id) => ({ id }),
-    ])();
+        ])(),
+    config,
+  });
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -181,35 +160,21 @@ exports.AwsSubnet = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = ({ id, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
-      }),
-      () => destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [id] }),
-      () =>
-        retryCall({
-          name: `destroy subnet isDownById: ${name} id: ${id}`,
-          fn: () => ec2().deleteSubnet({ SubnetId: id }), // TODO InvalidSubnetID.NotFound
-          shouldRetryOnException: ({ error, name }) =>
-            switchCase([
-              eq(get("code"), "DependencyViolation"),
-              () => true,
-              () => false,
-            ])(error),
-          config: { retryCount: 10, retryDelay: 5e3 },
-        }),
-      tap(() =>
-        retryCall({
-          name: `destroy subnet isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroyed subnet ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: tap(({ SubnetId }) =>
+      destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [SubnetId] })
+    ),
+    shouldRetryOnException: switchCase([
+      eq(get("error.code"), "DependencyViolation"),
+      () => true,
+      () => false,
+    ]),
+    method: "deleteSubnet",
+    getById,
+    ignoreErrorCodes: ["InvalidSubnetID.NotFound"],
+    config,
+  });
 
   const configDefault = async ({
     name,
