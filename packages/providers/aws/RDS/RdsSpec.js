@@ -59,6 +59,7 @@ module.exports = () =>
               SecondsBeforeTimeout: 300,
               TimeoutAction: "RollbackCapacityChange",
             },
+            AutoMinorVersionUpgrade: false,
           }),
         ]),
         filterLive: pipe([
@@ -156,6 +157,7 @@ module.exports = () =>
             AssociatedRoles: [],
             DBInstanceAutomatedBackupsReplications: [],
             CustomerOwnedIpEnabled: false,
+            BackupTarget: "region",
           }),
           omit([
             "MasterUserPassword",

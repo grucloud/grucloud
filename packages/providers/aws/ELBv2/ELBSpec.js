@@ -77,6 +77,7 @@ module.exports = () =>
             Matcher: { HttpCode: "200" },
             TargetType: "instance",
             ProtocolVersion: "HTTP1",
+            IpAddressType: "ipv4",
           }),
         ]),
         filterLive: pipe([

@@ -8,6 +8,8 @@ List of resources for provider aws:
 [DomainName](./resources/APIGateway/DomainName.md), [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md)
+* AppRunner: 
+[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md)
 * AppSync: 
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
 * AutoScaling: 
@@ -15,7 +17,7 @@ List of resources for provider aws:
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * CloudFront: 
-[Distribution](./resources/CloudFront/Distribution.md)
+[Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudWatchEvents: 
 [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md)
 * CloudWatchLogs: 

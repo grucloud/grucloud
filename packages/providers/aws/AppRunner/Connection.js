@@ -23,6 +23,8 @@ exports.AppRunnerConnection = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "listConnections",
+    getParam: "ConnectionSummaryList",
+
     // TODO
     ignoreErrorCodes: ["NotFoundException"],
   });
@@ -54,7 +56,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteConnection-property
   const destroy = client.destroy({
-    pickId,
+    pickId: pick(["ConnectionArn"]),
     method: "deleteConnection",
     getById,
     //TODO
@@ -71,7 +73,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     pipe([
       () => otherProps,
       defaultsDeep({
-        DomainName: name,
+        ConnectionName: name,
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();

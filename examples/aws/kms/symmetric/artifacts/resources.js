@@ -2,4 +2,6 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  { type: "Key", group: "KMS", name: "key-test" },
+];

@@ -19,6 +19,12 @@ module.exports = () =>
       Client: AppRunnerConnection,
       isOurMinion,
       compare: compare({
+        filterAll: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["ConnectionArn", "Status", "CreatedAt"]),
+        ]),
         filterTarget: pipe([
           tap((params) => {
             assert(true);
