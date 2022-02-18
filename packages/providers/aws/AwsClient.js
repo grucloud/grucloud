@@ -196,7 +196,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.info(`create ${type}, ${name}`);
           assert(method);
           assert(pickCreated);
-          assert(pickId);
           assert(getById);
         }),
         () =>
@@ -385,8 +384,8 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         tryCatch(
           pipe([
+            tap(() => preDestroy({ live, lives })),
             () => live,
-            tap(preDestroy),
             pickId,
             tap((params) => {
               logger.debug(

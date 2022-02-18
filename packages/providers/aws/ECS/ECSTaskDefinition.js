@@ -1,25 +1,12 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  or,
-  pick,
-  flatMap,
-} = require("rubico");
-const { defaultsDeep, isEmpty, includes, first } = require("rubico/x");
+const { map, pipe, tap, tryCatch, get, switchCase, eq, or } = require("rubico");
+const { defaultsDeep, first } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "ECSTaskDefinition",
 });
-const { getByNameCore } = require("@grucloud/core/Common");
 
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -47,12 +34,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const isNotFound = pipe([
     tap((params) => {

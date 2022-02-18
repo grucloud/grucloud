@@ -141,7 +141,7 @@ exports.Integration = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
-  const lambdaRemovePermission = (live) =>
+  const lambdaRemovePermission = ({ live }) =>
     pipe([
       tap(() => {
         assert(true);
@@ -175,7 +175,7 @@ exports.Integration = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteIntegration-property
   const destroy = client.destroy({
-    preDestroy: pipe([lambdaRemovePermission]),
+    preDestroy: lambdaRemovePermission,
     pickId,
     method: "deleteIntegration",
     getById,

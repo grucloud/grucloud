@@ -174,8 +174,6 @@ exports.ECSTask = ({ spec, config }) => {
       tap(() => {
         assert(cluster, "missing 'cluster' dependency");
         assert(taskDefinition, "missing 'taskDefinition' dependency");
-        //assert(subnets, "missing 'subnets' dependency");
-        //assert(securityGroups, "missing 'securityGroups' dependency");
       }),
       () => otherProps,
       defaultsDeep({
@@ -185,14 +183,6 @@ exports.ECSTask = ({ spec, config }) => {
           taskDefinition,
           "revision"
         )}`,
-        // networkConfiguration: {
-        //   awsvpcConfiguration: {
-        //     subnets: pluck((subnet) => getField(subnet, "SubnetId"))(subnets),
-        //     securityGroups: pluck((securityGroup) =>
-        //       getField(securityGroup, "GroupId")
-        //     )(securityGroups),
-        //   },
-        // },
         tags: buildTags({
           name,
           config,
