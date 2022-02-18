@@ -69,6 +69,7 @@ exports.DomainName = ({ spec, config }) => {
     pickId,
     method: "deleteDomainName",
     getById,
+    //TODO
     ignoreError: eq(get("code"), "NotFoundException"),
     config,
   });

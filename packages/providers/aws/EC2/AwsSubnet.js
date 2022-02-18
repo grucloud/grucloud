@@ -162,9 +162,8 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const destroy = client.destroy({
     pickId,
-    preDestroy: tap(({ SubnetId }) =>
-      destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [SubnetId] })
-    ),
+    preDestroy: ({ live: { SubnetId } }) =>
+      destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [SubnetId] }),
     shouldRetryOnException: switchCase([
       eq(get("error.code"), "DependencyViolation"),
       () => true,

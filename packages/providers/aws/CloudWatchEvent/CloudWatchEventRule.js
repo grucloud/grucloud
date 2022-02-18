@@ -127,6 +127,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   });
 
   const destroyTargets = pipe([
+    get("live"),
     ({ Targets, Name, EventBusName }) =>
       pipe([
         () => Targets,

@@ -281,6 +281,7 @@ exports.AwsVpc = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     preDestroy: pipe([
+      get("live"),
       tap(destroySubnets),
       tap(destroySecurityGroup),
       tap(destroyRouteTables),

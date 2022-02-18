@@ -8,23 +8,14 @@ const {
   switchCase,
   eq,
   or,
-  not,
   omit,
   pick,
   assign,
 } = require("rubico");
-const {
-  defaultsDeep,
-  isEmpty,
-  first,
-  includes,
-  unless,
-  size,
-} = require("rubico/x");
+const { defaultsDeep, isEmpty, includes, unless, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -38,9 +29,14 @@ const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
+const pickId = pipe([
+  tap(({ clusterName }) => {
+    assert(clusterName);
+  }),
+  ({ clusterName }) => ({ clusters: [clusterName] }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
 exports.ECSCluster = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
@@ -87,73 +83,54 @@ exports.ECSCluster = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeClusters-property
-  const describeClusters = (params = {}) =>
-    pipe([
-      () => params,
-      defaultsDeep({
-        include: [
-          "CONFIGURATIONS",
-          "ATTACHMENTS",
-          "STATISTICS",
-          "SETTINGS",
-          "TAGS",
-        ],
-      }),
-      ecs().describeClusters,
-      get("clusters"),
-      tap((clusters) => {
-        logger.debug(`describeClusters #cluster ${tos(clusters)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    extraParams: {
+      include: [
+        "CONFIGURATIONS",
+        "ATTACHMENTS",
+        "STATISTICS",
+        "SETTINGS",
+        "TAGS",
+      ],
+    },
+    method: "describeClusters",
+    getField: "clusters",
+    ignoreErrorCodes: ["ClusterNotFoundException"],
+  });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#getParameter-property
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ clusters: [name] }),
-        describeClusters,
-        first,
-      ]),
-      switchCase([
-        eq(get("code"), "ClusterNotFoundException"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
-
+  const getByName = pipe([({ name }) => ({ clusterName: name }), getById]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listClusters-property
-
-  const getList = () =>
-    pipe([
-      ecs().listClusters,
-      get("clusterArns"),
-      (clusters) => ({ clusters }),
-      describeClusters,
-    ])();
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-
-  const isInstanceDown = or([isEmpty, eq(get("status"), "INACTIVE")]);
-
-  const isDownByName = pipe([getByName, isInstanceDown]);
+  const getList = client.getList({
+    method: "listClusters",
+    getParam: "clusterArns",
+    decorate: () =>
+      pipe([
+        tap((clusters) => {
+          assert(clusters);
+        }),
+        (cluster) => ({ clusterName: cluster }),
+        getById,
+      ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCluster-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      omit(["Tags"]),
-      ecs().createCluster,
-      tap(() =>
-        retryCall({
-          name: `createCluster isUpByName: ${name}`,
-          fn: () => isUpByName({ name }),
-        })
-      ),
-    ])();
+  const create = client.create({
+    method: "createCluster",
+    filterPayload: omit(["Tags"]),
+    pickCreated:
+      ({ payload }) =>
+      (result) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => payload,
+        ])(),
+    pickId,
+    getById,
+    config,
+  });
 
   const destroyAutoScalingGroup = ({ live, lives }) =>
     pipe([
@@ -161,9 +138,6 @@ exports.ECSCluster = ({ spec, config }) => {
       get("capacityProviders"),
       map((name) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () =>
             lives.getByName({
               name,
@@ -171,9 +145,6 @@ exports.ECSCluster = ({ spec, config }) => {
               group: "ECS",
               providerName: config.providerName,
             }),
-          tap((params) => {
-            assert(true);
-          }),
           get("autoScalingGroupProvider.autoScalingGroupArn"),
           (id) =>
             lives.getById({
@@ -187,9 +158,6 @@ exports.ECSCluster = ({ spec, config }) => {
             isEmpty,
             pipe([
               (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
-              tap((params) => {
-                assert(true);
-              }),
               autoScalingGroup.destroy,
             ])
           ),
@@ -219,9 +187,6 @@ exports.ECSCluster = ({ spec, config }) => {
             ecs().deregisterContainerInstance,
           ])
         ),
-        tap((params) => {
-          assert(true);
-        }),
       ]),
       switchCase([
         eq(get("code"), "ClusterNotFoundException"),
@@ -242,64 +207,37 @@ exports.ECSCluster = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
-  const destroy = ({ live, lives }) =>
-    pipe([
-      () => ({ live, lives }),
+  const destroy = client.destroy({
+    pickId: ({ clusterName }) => ({ cluster: clusterName }),
+    preDestroy: pipe([
       tap(deregisterContainerInstance),
       tap(destroyAutoScalingGroup),
-      () => ({ cluster: live.clusterName }),
-      tap(({ cluster }) => {
-        assert(cluster);
+    ]),
+    method: "deleteCluster",
+    isInstanceDown: or([isEmpty, eq(get("status"), "INACTIVE")]),
+    getById,
+    ignoreError: pipe([
+      tap((error) => {
+        logger.info(`error deleteCluster ${tos({ error })}`);
       }),
-      tryCatch(
-        pipe([
-          ({ cluster }) =>
-            retryCall({
-              name: `deleteCluster isDownByName: ${live.clusterName}`,
-              fn: () => ecs().deleteCluster({ cluster }),
-              config,
-              shouldRetryOnException: ({ error }) =>
-                pipe([
-                  tap(() => {
-                    logger.error(
-                      `deleteCluster isExpectedException ${tos(error)}`
-                    );
-                  }),
-                  () => error,
-                  eq(get("code"), "ClusterContainsContainerInstancesException"),
-                ])(),
-            }),
-          () =>
-            retryCall({
-              name: `deleteCluster isDownByName: ${live.clusterName}`,
-              fn: () => isDownByName({ name: live.clusterName }),
-              config,
-            }),
-        ]),
-        (error, params) =>
+      switchCase([
+        or([
+          eq(get("code"), "ClusterNotFoundException"),
           pipe([
-            tap(() => {
-              logger.error(`error deleteCluster ${tos({ params, error })}`);
-            }),
-            () => error,
-            switchCase([
-              or([
-                eq(get("code"), "ClusterNotFoundException"),
-                pipe([
-                  get("message"),
-                  includes(
-                    "The specified cluster is inactive. Specify an active cluster and try again."
-                  ),
-                ]),
-              ]),
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+            get("message"),
+            includes(
+              "The specified cluster is inactive. Specify an active cluster and try again."
+            ),
+          ]),
+        ]),
+        () => undefined,
+        (error) => {
+          throw error;
+        },
+      ]),
+    ]),
+    config,
+  });
 
   const configDefault = ({
     name,

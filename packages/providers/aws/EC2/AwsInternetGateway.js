@@ -142,7 +142,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         }),
     ])();
 
-  const detachInternetGateways = ({ InternetGatewayId }) =>
+  const detachInternetGateways = ({ live: { InternetGatewayId } }) =>
     pipe([
       tap(() => {
         assert(InternetGatewayId);
@@ -178,7 +178,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     ])();
 
   const destroy = client.destroy({
-    preDestroy: pipe([detachInternetGateways]),
+    preDestroy: detachInternetGateways,
     pickId,
     method: "deleteInternetGateway",
     getById,

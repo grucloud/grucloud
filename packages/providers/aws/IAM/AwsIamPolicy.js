@@ -260,7 +260,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const detatchPolicy = ({ Arn: PolicyArn }) =>
+  const detatchPolicy = ({ live: { Arn: PolicyArn } }) =>
     pipe([
       tap(() => {
         assert(PolicyArn);
@@ -312,7 +312,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const detatchPolicyVersions = ({ Arn: PolicyArn, Versions = [] }) =>
+  const detatchPolicyVersions = ({ live: { Arn: PolicyArn, Versions = [] } }) =>
     pipe([
       tap(() => {
         assert(PolicyArn);

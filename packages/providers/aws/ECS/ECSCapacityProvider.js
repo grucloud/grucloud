@@ -1,28 +1,8 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-  omit,
-} = require("rubico");
-const { defaultsDeep, isEmpty, includes, first, unless } = require("rubico/x");
+const { pipe, tap, get, switchCase, eq, pick, omit } = require("rubico");
+const { defaultsDeep, isEmpty, includes, unless } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSCapacityProvider",
-});
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { shouldRetryOnException, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   AutoScalingAutoScalingGroup,
@@ -31,12 +11,11 @@ const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
+const pickId = pick(["capacityProviderArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
 exports.ECSCapacityProvider = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
   const autoScalingGroup = AutoScalingAutoScalingGroup({
     spec: { type: "AutoScalingGroup", group: "AutoScaling" },
     config,
@@ -54,29 +33,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
-
-  const notFound = eq(
-    get("message"),
-    "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
-  );
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
-  const describeCapacityProviders = (params = {}) =>
-    pipe([
-      () => params,
-      defaultsDeep({ include: ["TAGS"] }),
-      ecs().describeCapacityProviders,
-      get("capacityProviders"),
-      tap((capacityProviders) => {
-        logger.debug(`describeCapacityProviders ${tos(capacityProviders)}`);
-      }),
-    ])();
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
   const getById = client.getById({
@@ -86,38 +43,24 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     getField: "capacityProviders",
   });
 
-  const getByName = getById;
-
-  const getList = () => pipe([describeCapacityProviders])();
-
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([
-    getByName,
-    switchCase([
-      eq(get("updateStatus"), "DELETE_FAILED"),
-      () => {
-        throw Error(`DELETE_FAILED`);
-      },
-      eq(get("updateStatus"), "DELETE_COMPLETE"),
-      () => true,
-      isEmpty,
-      () => true,
-      () => false,
-    ]),
-  ]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
+  const getList = client.getList({
+    extraParams: { include: ["TAGS"] },
+    method: "describeCapacityProviders",
+    getParam: "capacityProviders",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      ecs().createCapacityProvider,
-      tap(() =>
-        retryCall({
-          name: `createCapacityProvider isUpByName: ${name}`,
-          fn: () => isUpByName({ name }),
-        })
-      ),
-    ])();
+  const create = client.create({
+    method: "createCapacityProvider",
+    pickCreated:
+      ({ name }) =>
+      (result) =>
+        pipe([() => ({ name })])(),
+    pickId,
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
   const update = client.update({
@@ -136,9 +79,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pipe([
       () => live,
       get("autoScalingGroupProvider.autoScalingGroupArn"),
-      tap((params) => {
-        assert(true);
-      }),
       (id) =>
         lives.getById({
           id,
@@ -154,48 +94,36 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
           autoScalingGroup.destroy,
         ])
       ),
-      tap((params) => {
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
+  const destroy = client.destroy({
+    pickId: ({ name }) => ({ capacityProvider: name }),
+    preDestroy: deleteAutoScalingGroup,
+    method: "deleteCapacityProvider",
+    isInstanceDown: switchCase([
+      eq(get("updateStatus"), "DELETE_FAILED"),
+      () => {
+        throw Error(`DELETE_FAILED`);
+      },
+      eq(get("updateStatus"), "DELETE_COMPLETE"),
+      () => true,
+      isEmpty,
+      () => true,
+      () => false,
+    ]),
+    getById,
+    ignoreError: pipe([
+      tap((error) => {
         assert(true);
       }),
-    ])();
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
-  const destroy = ({ live, lives }) =>
-    pipe([
-      () => ({ live, lives }),
-      deleteAutoScalingGroup,
-      () => live,
-      tap(({ name }) => {
-        assert(name);
-      }),
-      ({ name }) => ({ capacityProvider: name }),
-      tryCatch(
-        pipe([
-          ecs().deleteCapacityProvider,
-          () =>
-            retryCall({
-              name: `deleteCapacityProvider isDownByName: ${live.name}`,
-              fn: () => isDownByName({ name: live.name }),
-              config,
-            }),
-        ]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(
-                `error deleteCapacityProvider ${tos({ params, error })}`
-              );
-            }),
-            () => error,
-            switchCase([
-              notFound,
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
+      eq(
+        get("message"),
+        "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
       ),
-    ])();
+    ]),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -234,7 +162,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     findId,
     findNamespace,
     findDependencies,
-    getByName,
+    getByName: getById,
     findName,
     create,
     update,

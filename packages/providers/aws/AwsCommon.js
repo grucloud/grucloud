@@ -654,6 +654,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
               or([
                 eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
                 eq(get("code"), "InvalidParameterValue"),
+                eq(get("code"), "OperationNotPermitted"),
               ]),
               (error) => {
                 logger.error(
