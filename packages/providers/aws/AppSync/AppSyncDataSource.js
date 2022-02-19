@@ -5,19 +5,16 @@ const {
   tap,
   tryCatch,
   get,
-  switchCase,
   eq,
-  not,
   pick,
   flatMap,
   assign,
   omit,
 } = require("rubico");
-const { defaultsDeep, pluck, isEmpty, prepend } = require("rubico/x");
+const { defaultsDeep, pluck, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "DataSource" });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -26,7 +23,12 @@ const { AwsClient } = require("../AwsClient");
 const findId = get("live.dataSourceArn");
 const findName = get("live.name");
 
-const pickParam = pick(["apiId", "name"]);
+const pickId = pipe([
+  tap(({ apiId }) => {
+    assert(apiId);
+  }),
+  pick(["apiId", "name"]),
+]);
 
 const graphqlApiArn = ({ config, apiId }) =>
   `arn:aws:appsync:${config.region}:${config.accountId()}:apis/${apiId}`;
@@ -89,12 +91,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
   const getList = ({ lives }) =>
@@ -148,76 +145,51 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#getDataSource-property
-  const getById = pipe([
-    tap(({ name, apiId }) => {
-      assert(name);
-      assert(apiId);
-    }),
-    appSync().getDataSource,
-    get("dataSource"),
-  ]);
-
-  const isUpById = pipe([getById, not(isEmpty)]);
+  const getById = client.getById({
+    pickId,
+    method: "getDataSource",
+    getField: "dataSource",
+    ignoreErrorCodes: ["NotFoundException"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createDataSource-property
-  const create = ({ payload, name, resolvedDependencies: { graphqlApi } }) =>
-    pipe([
-      tap(() => {
-        assert(payload.apiId);
-        assert(graphqlApi.live.tags);
-        logger.debug(
-          `create dataSource, graphqlApi tags ${tos(graphqlApi.live.tags)}`
-        );
-      }),
-      () => payload,
-      appSync().createDataSource,
-      get("dataSource"),
-      tap(() =>
-        retryCall({
-          name: `dataSource isUpById: ${name}`,
-          fn: () => isUpById({ name, apiId: payload.apiId }),
-        })
-      ),
-      tap((params) => {
-        assert(true);
-      }),
+  const create = client.create({
+    pickCreated: ({ payload: { apiId } }) =>
       pipe([
-        ({ name }) => ({
+        tap((params) => {
+          assert(apiId);
+        }),
+        get("dataSource"),
+        defaultsDeep({ apiId }),
+      ]),
+    method: "createDataSource",
+    getById,
+    pickId,
+    config,
+    postCreate: ({ name, payload, resolvedDependencies: { graphqlApi } }) =>
+      pipe([
+        tap(({ apiId }) => {
+          assert(apiId);
+          assert(graphqlApi);
+        }),
+        ({ apiId }) => ({
           resourceArn: graphqlApiArn({
             config,
-            apiId: payload.apiId,
+            apiId,
           }),
           tags: { ...graphqlApi.live.tags, [buildTagKey({ name })]: name },
         }),
         appSync().tagResource,
       ]),
-    ])();
+  });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteDataSource-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.name);
-        assert(live.apiId);
-      }),
-      () => live,
-      pickParam,
-      tryCatch(appSync().deleteDataSource, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteDataSource ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "NotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteDataSource",
+    getById,
+    ignoreErrorCodes: ["NotFoundException"],
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -252,6 +224,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     findNamespace,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,
