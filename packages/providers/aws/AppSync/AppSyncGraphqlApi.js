@@ -46,12 +46,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const getIntrospectionSchema = tryCatch(
     pipe([

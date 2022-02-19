@@ -31,4 +31,14 @@ describe("AppSyncDataSource", async function () {
         }),
     ])
   );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        dataSource.getById({
+          name: "datasource-no-exist",
+          apiId: "12345",
+        }),
+    ])
+  );
 });

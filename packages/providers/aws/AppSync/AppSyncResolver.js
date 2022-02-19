@@ -58,12 +58,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
 
