@@ -371,6 +371,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       isInstanceDown = isEmpty,
       ignoreError = () => false,
       ignoreErrorCodes = [],
+      ignoreErrorMessages = [],
       shouldRetryOnException = eq(get("error.code"), "ResourceInUseException"),
       config,
     }) =>
@@ -422,7 +423,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           (error, params) =>
             pipe([
               tap(() => {
-                logger.error(
+                logger.info(
                   `error destroying ${type} ${name}, ${JSON.stringify({
                     params,
                     error,
@@ -433,12 +434,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
               switchCase([
                 or([
                   ignoreError,
+                  pipe([() => ignoreErrorCodes, includes(error.code)]),
                   pipe([
-                    () => ignoreErrorCodes,
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    includes(error.code),
+                    () => ignoreErrorMessages,
+                    any((message) =>
+                      pipe([() => error.message, includes(message)])
+                    ),
                   ]),
                 ]),
                 pipe([
