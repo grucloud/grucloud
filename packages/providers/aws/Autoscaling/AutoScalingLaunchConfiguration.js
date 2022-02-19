@@ -159,6 +159,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     method: "deleteLaunchConfiguration",
     getById,
     ignoreErrorMessages: ["Launch configuration name not found"],
+    config,
   });
 
   const configDefault = ({

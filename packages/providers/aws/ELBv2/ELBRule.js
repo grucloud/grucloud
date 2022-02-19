@@ -238,6 +238,7 @@ exports.ELBRule = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     method: "deleteRule",
+    ignoreErrorCodes: ["RuleNotFound"],
     getById,
     config,
   });

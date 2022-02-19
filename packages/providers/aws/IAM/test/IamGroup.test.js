@@ -2,22 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("ELB LoadBalancer", async function () {
+describe("IamGroup", async function () {
   let config;
   let provider;
-  let loadBalancer;
+  let group;
 
   before(async function () {
     provider = AwsProvider({ config });
-    loadBalancer = provider.getClient({
-      groupType: "ELBv2::LoadBalancer",
+    group = provider.getClient({
+      groupType: "IAM::Group",
     });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => loadBalancer.getList(),
+      () => group.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -27,20 +27,22 @@ describe("ELB LoadBalancer", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        loadBalancer.destroy({
+        group.destroy({
           live: {
-            LoadBalancerArn:
-              "arn:aws:elasticloadbalancing:us-east-1:840541460064:loadbalancer/app/load-balancer/e6f97c90654062f0",
+            GroupName: "groupname",
           },
         }),
+      tap((params) => {
+        assert(true);
+      }),
     ])
   );
   it(
     "getByName with invalid id",
     pipe([
       () =>
-        loadBalancer.getByName({
-          name: "invalid-loadBalancer",
+        group.getByName({
+          name: "invalid-group",
         }),
     ])
   );

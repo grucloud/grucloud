@@ -188,7 +188,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       filterPayload = identity,
       config,
       configIsUp,
-      pickCreated = ({ payload, pickId }) => pipe([() => payload, pickId]),
+      pickCreated = ({ payload }) => pipe([() => payload]),
       pickId,
       getById,
       isInstanceUp = not(isEmpty),
@@ -202,7 +202,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.info(`create ${type}, ${name}`);
           assert(method);
           assert(pickCreated);
-          assert(getById);
         }),
         () =>
           retryCall({
@@ -237,12 +236,14 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 `create isUpById: ${name}, ${JSON.stringify(params)}`
               );
             }),
-            tap((params) =>
-              retryCall({
-                name: `isUpById: ${name}`,
-                fn: pipe([() => params, getById, isInstanceUp]),
-                config: configIsUp,
-              })
+            tap.if(
+              () => isFunction(getById),
+              (params) =>
+                retryCall({
+                  name: `isUpById: ${name}`,
+                  fn: pipe([() => params, getById, isInstanceUp]),
+                  config: configIsUp,
+                })
             ),
             postCreate({
               name,

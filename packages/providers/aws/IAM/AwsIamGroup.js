@@ -5,24 +5,19 @@ const {
   tap,
   tryCatch,
   get,
-  switchCase,
   eq,
   any,
   assign,
+  pick,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-  mapPoolSize,
-} = require("@grucloud/core/Common");
+const { getByNameCore, mapPoolSize } = require("@grucloud/core/Common");
 const {
   IAMNew,
+  buildTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -30,6 +25,7 @@ const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.GroupName");
 const findId = findName;
+const pickId = pick(["GroupName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamGroup = ({ spec, config }) => {
@@ -88,68 +84,46 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.debug(`getById ${id}`);
-    }),
-    tryCatch(
-      ({ id }) => iam().getGroup({ GroupName: id }),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${result}`);
-    }),
-  ]);
-
-  //const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId,
+    method: "getGroup",
+    ignoreErrorCodes: ["NoSuchEntity"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
-
-  const create = async ({
-    name,
-    payload = {},
-    resolvedDependencies: { policies },
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create iam group ${tos({ name, payload })}`);
-      }),
-      () => iam().createGroup(payload),
-      get("Group"),
-      tap.if(
-        () => policies,
-        () =>
-          forEach(
-            pipe([
-              tap((policy) => {
-                logger.info(`attachGroupPolicy ${tos({ policy })}`);
-                assert(policy.live.Arn, `no live.Arn in ${tos(policy)}`);
-              }),
-              (policy) => ({
-                PolicyArn: policy.live.Arn,
-                GroupName: name,
-              }),
-              tap((params) => {
-                logger.info(`attachGroupPolicy ${tos({ params })}`);
-              }),
-              (params) => iam().attachGroupPolicy(params),
-            ])
-          )(policies)
-      ),
-      tap((Group) => {
-        logger.info(`created iam group ${tos({ name, Group })}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createGroup",
+    pickId,
+    getById,
+    config,
+    pickCreated: () => pipe([get("Group")]),
+    postCreate: ({ name, resolvedDependencies: { policies } }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        tap.if(
+          () => policies,
+          () =>
+            forEach(
+              pipe([
+                tap((policy) => {
+                  logger.debug(`attachGroupPolicy ${tos({ policy })}`);
+                  assert(policy.live.Arn, `no live.Arn in ${tos(policy)}`);
+                }),
+                (policy) => ({
+                  PolicyArn: policy.live.Arn,
+                  GroupName: name,
+                }),
+                tap((params) => {
+                  logger.debug(`attachGroupPolicy ${tos({ params })}`);
+                }),
+                iam().attachGroupPolicy,
+              ])
+            )(policies)
+        ),
+      ]),
+  });
 
   const removeUserFromGroup = ({ GroupName }) =>
     pipe([
@@ -168,11 +142,15 @@ exports.AwsIamGroup = ({ spec, config }) => {
           UserName,
         })
       ),
-    ]);
+    ])();
 
   const detachGroupPolicy = ({ GroupName }) =>
     pipe([
-      () => iam().listAttachedGroupPolicies({ GroupName, MaxItems: 1e3 }),
+      tap(() => {
+        assert(GroupName);
+      }),
+      () => ({ GroupName, MaxItems: 1e3 }),
+      iam().listAttachedGroupPolicies,
       get("AttachedPolicies"),
       forEach(({ PolicyArn }) => {
         iam().detachGroupPolicy({
@@ -180,35 +158,41 @@ exports.AwsIamGroup = ({ spec, config }) => {
           GroupName,
         });
       }),
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
-  const destroy = async ({ id, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy iam group ${JSON.stringify({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
-      }),
-      detachGroupPolicy({ GroupName: id }),
-      removeUserFromGroup({ GroupName: id }),
-      () =>
-        iam().deleteGroup({
-          GroupName: id,
-        }),
-      tap(() =>
-        retryCall({
-          name: `iam group isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroyed iam group, ${JSON.stringify({ name, id })}`);
-      }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({ GroupName: name, Path: "/" })(properties);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: pipe([
+      get("live"),
+      tap(detachGroupPolicy),
+      tap(removeUserFromGroup),
+    ]),
+    method: "deleteGroup",
+    ignoreErrorCodes: ["NoSuchEntity"],
+    getById,
+    config,
+  });
+
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        GroupName: name,
+        Path: "/",
+        // Tags: buildTags({
+        //   name,
+        //   config,
+        //   namespace,
+        //   UserTags: Tags,
+        // }),
+      }),
+    ])();
 
   return {
     spec,

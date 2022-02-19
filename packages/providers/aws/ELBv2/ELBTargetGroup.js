@@ -121,6 +121,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     method: "deleteTargetGroup",
+    ignoreErrorCodes: ["TargetGroupNotFound"],
     getById,
     config,
   });

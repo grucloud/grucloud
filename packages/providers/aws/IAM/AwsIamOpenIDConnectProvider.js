@@ -10,9 +10,8 @@ const {
   assign,
   pick,
   not,
-  filter,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
+const { defaultsDeep, isEmpty, find, identity } = require("rubico/x");
 const tls = require("tls");
 
 const logger = require("@grucloud/core/logger")({
@@ -32,7 +31,6 @@ const {
   mapPoolSize,
   getByNameCore,
   isUpByIdCore,
-  isDownByIdCore,
 } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -97,6 +95,8 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");
+  const pickId = pick(["OpenIDConnectProviderArn"]);
+
   const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live, lives }) => [
@@ -176,112 +176,36 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#getOpenIDConnectProvider-property
-  const getById = ({ id: OpenIDConnectProviderArn }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`getById ${OpenIDConnectProviderArn}`);
-      }),
-      tryCatch(
-        () => iam().getOpenIDConnectProvider({ OpenIDConnectProviderArn }),
-        switchCase([
-          eq(get("code"), "NoSuchEntity"),
-          (error) => {
-            logger.debug(`getById ${OpenIDConnectProviderArn} NoSuchEntity`);
-          },
-          (error) => {
-            logger.debug(`getById error: ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getById result: ${result}`);
-      }),
-    ])();
-
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId,
+    method: "getOpenIDConnectProvider",
+    ignoreErrorCodes: ["NoSuchEntity"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createOpenIDConnectProvider-property
-  const create = async ({
-    name,
-    namespace,
-    payload = {},
-    resolvedDependencies: {},
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create iam oidc ${name}, namespace: ${namespace}`);
-        logger.debug(`payload: ${tos(payload)}`);
-      }),
-      () => fetchThumbprint({ Url: payload.Url }),
-      (thumbprint) => defaultsDeep({ ThumbprintList: [thumbprint] })(payload),
-      tap((createParams) => {
-        logger.debug(`createParams: ${tos(createParams)}`);
-      }),
-      (createParams) => iam().createOpenIDConnectProvider(createParams),
-      tap((result) => {
-        logger.debug(`createOpenIDConnectProvider result: ${tos(result)}`);
-      }),
-      tap(({ OpenIDConnectProviderArn }) =>
-        retryCall({
-          name: `iam oidc isUpById: ${name} OpenIDConnectProviderArn: ${OpenIDConnectProviderArn}`,
-          fn: () => isUpById({ id: OpenIDConnectProviderArn }),
-          config,
-        })
-      ),
-      ({ OpenIDConnectProviderArn }) => ({
-        OpenIDConnectProviderArn,
-        Tags: buildTags({ config, namespace, name }),
-      }),
-      (tagParams) => iam().tagOpenIDConnectProvider(tagParams),
-      tap((oidcp) => {
-        logger.debug(`created iam oidc result ${tos({ name, oidcp })}`);
-        logger.info(`created iam oidc ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createOpenIDConnectProvider",
+    pickId,
+    filterPayload: (payload) =>
+      pipe([
+        tap(() => {
+          assert(Url);
+        }),
+        () => fetchThumbprint({ Url: payload.Url }),
+        (thumbprint) => defaultsDeep({ ThumbprintList: [thumbprint] })(payload),
+      ])(),
+    getById,
+    config,
+    pickCreated: () => identity,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteOpenIDConnectProvider-property
-  const destroy = async ({ live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy iam oidc`);
-      }),
-      () => ({
-        OpenIDConnectProviderArn: findId({ live }),
-        name: findName({ live }),
-      }),
-      ({ OpenIDConnectProviderArn, name }) =>
-        pipe([
-          tap(() => {
-            logger.info(
-              `destroy iam oidc ${JSON.stringify({
-                name,
-                OpenIDConnectProviderArn,
-              })}`
-            );
-          }),
-          () =>
-            iam().deleteOpenIDConnectProvider({
-              OpenIDConnectProviderArn,
-            }),
-          tap(() =>
-            retryCall({
-              name: `iam oidc isDownById: ${name} OpenIDConnectProviderArn: ${OpenIDConnectProviderArn}`,
-              fn: () => isDownById({ id: OpenIDConnectProviderArn }),
-              config,
-            })
-          ),
-          tap(() => {
-            logger.info(
-              `destroy iam oidc done, ${JSON.stringify({
-                name,
-                OpenIDConnectProviderArn,
-              })}`
-            );
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteOpenIDConnectProvider",
+    getById,
+    config,
+  });
 
   const clusterProperties = ({ cluster }) =>
     pipe([
@@ -297,12 +221,19 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = ({ name, properties, dependencies: { cluster } }) =>
+  const configDefault = ({
+    name,
+    properties: { Tags, ...otherProps },
+    dependencies: { cluster },
+  }) =>
     pipe([
       tap(() => {
         assert(name);
       }),
-      () => properties,
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+      }),
       defaultsDeep(clusterProperties({ cluster })),
       defaultsDeep({ ClientIDList: ["sts.amazonaws.com"] }),
     ])();

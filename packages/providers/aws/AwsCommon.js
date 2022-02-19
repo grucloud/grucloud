@@ -590,7 +590,13 @@ exports.removeRoleFromInstanceProfile =
   ({ iam }) =>
   (params) =>
     tryCatch(
-      () => iam().removeRoleFromInstanceProfile(params),
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => params,
+        iam().removeRoleFromInstanceProfile,
+      ]),
       switchCase([
         eq(get("code"), "NoSuchEntity"),
         () => undefined,

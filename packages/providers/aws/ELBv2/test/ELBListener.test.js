@@ -2,22 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("ELB LoadBalancer", async function () {
+describe("ELB Listener", async function () {
   let config;
   let provider;
-  let loadBalancer;
+  let listener;
 
   before(async function () {
     provider = AwsProvider({ config });
-    loadBalancer = provider.getClient({
-      groupType: "ELBv2::LoadBalancer",
+    listener = provider.getClient({
+      groupType: "ELBv2::Listener",
     });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => loadBalancer.getList(),
+      () => listener.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -27,10 +27,10 @@ describe("ELB LoadBalancer", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        loadBalancer.destroy({
+        listener.destroy({
           live: {
-            LoadBalancerArn:
-              "arn:aws:elasticloadbalancing:us-east-1:840541460064:loadbalancer/app/load-balancer/e6f97c90654062f0",
+            ListenerArn:
+              "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1",
           },
         }),
     ])
@@ -39,8 +39,8 @@ describe("ELB LoadBalancer", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        loadBalancer.getByName({
-          name: "invalid-loadBalancer",
+        listener.getByName({
+          name: "invalid-listener",
         }),
     ])
   );

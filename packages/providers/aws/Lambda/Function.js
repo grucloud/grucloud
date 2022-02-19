@@ -223,6 +223,7 @@ exports.Function = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = ({ live }) =>
     pipe([
