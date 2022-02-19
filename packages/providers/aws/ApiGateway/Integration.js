@@ -9,7 +9,7 @@ const {
   switchCase,
   and,
 } = require("rubico");
-const { pluck, defaultsDeep, when, find } = require("rubico/x");
+const { pluck, defaultsDeep, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Integration",
 });
@@ -18,13 +18,7 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  tagsExtractFromDescription,
-  tagsRemoveFromDescription,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -142,40 +136,39 @@ exports.Integration = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property
-  const create = ({
-    name,
-    payload,
-    resolvedDependencies: { restApi, lambdaFunction },
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create integration: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().putIntegration,
-      tap.if(
-        () => lambdaFunction,
-        ({ id }) =>
-          pipe([
-            () => ({
-              Action: "lambda:InvokeFunction",
-              FunctionName: lambdaFunction.resource.name,
-              Principal: "apigateway.amazonaws.com",
-              StatementId: id,
-              SourceArn: `arn:aws:execute-api:${
-                config.region
-              }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
-                lambdaFunction.resource.name
-              }`,
-            }),
-            lambda().addPermission,
-          ])()
-      ),
-      tap((params) => {
-        logger.info(`created integration ${name}`);
-      }),
-    ])();
+
+  const create = client.create({
+    method: "putIntegration",
+    //TODO
+    // pickCreated:
+    //   ({ payload }) =>
+    //   (result) =>
+    //     pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
+    pickId,
+    //getById,
+    config,
+    postCreate: ({ resolvedDependencies: { restApi, lambdaFunction } }) =>
+      pipe([
+        tap.if(
+          () => lambdaFunction,
+          ({ IntegrationId }) =>
+            pipe([
+              () => ({
+                Action: "lambda:InvokeFunction",
+                FunctionName: lambdaFunction.resource.name,
+                Principal: "apigateway.amazonaws.com",
+                StatementId: IntegrationId,
+                SourceArn: `arn:aws:execute-api:${
+                  config.region
+                }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
+                  lambdaFunction.resource.name
+                }`,
+              }),
+              lambda().addPermission,
+            ])()
+        ),
+      ]),
+  });
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -193,9 +186,6 @@ exports.Integration = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
   const lambdaRemovePermission = ({ live }) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
       () => live,
       tap.if(
         eq(get("integrationType"), "AWS_PROXY"),
@@ -219,41 +209,13 @@ exports.Integration = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteIntegration-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(true);
-      }),
-      () => lambdaRemovePermission({ live }),
-      () => live,
-      pickId,
-      tap((params) => {
-        logger.info(`destroy integration ${JSON.stringify({ params })}`);
-        assert(params.restApiId);
-        assert(params.resourceId);
-        assert(params.httpMethod);
-      }),
-      tryCatch(apiGateway().deleteIntegration, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(
-              `deleteIntegration ${JSON.stringify({ params, error })}`
-            );
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "NotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-      tap((params) => {
-        logger.debug(`destroyed integration ${JSON.stringify({ params })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    preDestroy: lambdaRemovePermission,
+    method: "deleteIntegration",
+    getById,
+    ignoreErrorCodes: ["NotFoundException"],
+    config,
+  });
 
   const configDefault = ({
     name,

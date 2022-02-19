@@ -136,8 +136,7 @@ exports.Deployment = ({ spec, config }) => {
     pickId,
     method: "deleteDeployment",
     getById,
-    ///TODO
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

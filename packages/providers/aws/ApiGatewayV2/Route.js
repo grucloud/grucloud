@@ -86,7 +86,7 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "deleteRoute",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -90,7 +90,7 @@ exports.Model = ({ spec, config }) => {
     pickId,
     method: "deleteModel",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -205,7 +205,7 @@ exports.KmsKey = ({ spec, config }) => {
     getById,
     isInstanceDown,
     config,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
   });
 
   const configDefault = ({ name, namespace, properties }) =>

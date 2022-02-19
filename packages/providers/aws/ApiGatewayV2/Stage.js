@@ -1,13 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ApiGatewayV2::Stage",
-});
-
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -18,8 +14,6 @@ const pickId = pick(["ApiId", "StageName"]);
 
 exports.Stage = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -74,25 +68,25 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "deleteStage",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { api, logGroup },
   }) =>
     pipe([
       tap(() => {
         assert(api, "missing 'api' dependency");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         StageName: name,
         ApiId: getField(api, "ApiId"),
-        Tags: buildTagsObject({ config, namespace, name }),
+        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
       when(
         () => logGroup,

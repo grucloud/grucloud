@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, pick, assign } = require("rubico");
-const { defaultsDeep, first, includes } = require("rubico/x");
+const { pipe, tap, get } = require("rubico");
+const { defaultsDeep, first } = require("rubico/x");
 
 const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
@@ -35,13 +35,7 @@ exports.ApiKey = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createApiKey-property
   const create = client.create({
     method: "createApiKey",
-    pickCreated: () => (result) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => result,
-      ])(),
+    pickCreated: () => (result) => pipe([() => result])(),
     pickId,
     getById,
     config,
@@ -66,8 +60,7 @@ exports.ApiKey = ({ spec, config }) => {
     pickId,
     method: "deleteApiKey",
     getById,
-    ignoreError: ({ code }) =>
-      pipe([() => ["NotFoundException"], includes(code)]),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 
