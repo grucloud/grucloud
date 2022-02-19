@@ -1,17 +1,6 @@
 const assert = require("assert");
-const {
-  tap,
-  get,
-  pipe,
-  filter,
-  map,
-  not,
-  eq,
-  tryCatch,
-  fork,
-  flatMap,
-} = require("rubico");
-const { defaultsDeep, first, find } = require("rubico/x");
+const { tap, get, pipe, filter, not, eq, fork, flatMap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
@@ -121,20 +110,15 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy route table assoc ${JSON.stringify({ live })}`);
-      }),
-      () => live,
-      ({ RouteTableAssociationId }) => ({
-        AssociationId: RouteTableAssociationId,
-      }),
-      ec2().disassociateRouteTable,
-      tap((result) => {
-        logger.info(`rt assoc destroyed ${JSON.stringify({ name, result })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId: ({ RouteTableAssociationId }) => ({
+      AssociationId: RouteTableAssociationId,
+    }),
+    method: "disassociateRouteTable",
+    //getById,
+    ignoreErrorCodes: ["InvalidAssociationID.NotFound"],
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -166,7 +150,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
     findName,
     findDependencies,
     getByName,
-    //getById,
     getList,
     create,
     destroy,

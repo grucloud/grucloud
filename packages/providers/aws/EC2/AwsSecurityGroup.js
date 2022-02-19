@@ -6,10 +6,11 @@ const {
   eq,
   or,
   tap,
-  fork,
+  pick,
   filter,
   not,
   omit,
+  switchCase,
 } = require("rubico");
 const {
   find,
@@ -80,6 +81,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     ])();
 
   const findId = get("live.GroupId");
+  const pickId = pick(["GroupId"]);
 
   const findDependencies = ({ live, lives }) => [
     { type: "Vpc", group: "EC2", ids: [live.VpcId] },
@@ -132,6 +134,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     getParam: "SecurityGroups",
   });
 
+  //TODO
   const getByName = ({ name, dependencies }) =>
     pipe([
       () => ({
@@ -158,9 +161,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     ignoreErrorCodes: ["InvalidGroup.NotFound"],
   });
 
-  const isUpById = pipe([getById, not(isEmpty)]);
-  const isDownById = pipe([getById, isEmpty]);
-
   const cannotBeDeleted = pipe([
     get("live"),
     or([
@@ -181,31 +181,15 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+  const create = client.create({
+    method: "createSecurityGroup",
+    pickCreated: (payload) => (result) => pipe([() => result])(),
+    pickId,
+    getById,
+    config,
+  });
 
-  const create = ({ payload, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create sg ${tos({ name })}`);
-      }),
-      () => payload,
-      ec2().createSecurityGroup,
-      get("GroupId"),
-      tap((GroupId) =>
-        pipe([
-          () =>
-            retryCall({
-              name: `sg create isUpById: ${name} id: ${GroupId}`,
-              fn: () => isUpById({ GroupId, name }),
-              config,
-            }),
-        ])()
-      ),
-      tap((GroupId) => {
-        logger.info(`created sg ${tos({ name, GroupId })}`);
-      }),
-    ])();
-
-  const revokeIngressRules = (live) =>
+  const revokeIngressRules = ({ live }) =>
     pipe([
       tap(() => {
         logger.debug(`revokeIngressRules`);
@@ -224,59 +208,32 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = ({ live, lives }) =>
-    pipe([
-      () => ({
-        name: findName({ live, lives }),
-        GroupId: findId({ live, lives }),
-      }),
-      ({ name, GroupId }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy sg ${JSON.stringify({ name, GroupId })}`);
-            logger.debug(`destroy sg ${JSON.stringify(live)}`);
-          }),
-          () => revokeIngressRules(live),
-          //() => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
-          () =>
-            retryCall({
-              name: `deleteSecurityGroup: ${name}`,
-              fn: () => ec2().deleteSecurityGroup({ GroupId }),
-              config: { retryCount: 20, repeatDelay: 5e3 },
-              isExpectedException: pipe([
-                tap((ex) => {
-                  logger.error(
-                    `delete sg ${name} isExpectedException ? ${tos(ex)}`
-                  );
-                }),
-                eq(get("code"), "InvalidGroup.NotFound"),
-              ]),
-              shouldRetryOnException: ({ error, name }) =>
-                pipe([
-                  () => error,
-                  tap(() => {
-                    logger.error(
-                      `delete sg ${name} shouldRetryOnException ? ${tos({
-                        name,
-                        error,
-                      })}`
-                    );
-                  }),
-                  eq(get("code"), "DependencyViolation"),
-                ])(),
-            }),
-          tap(() =>
-            retryCall({
-              name: `destroy sg isDownById: ${name} GroupId: ${GroupId}`,
-              fn: () => isDownById({ GroupId }),
-              config,
-            })
-          ),
-          tap(() => {
-            logger.debug(`destroyed sg ${JSON.stringify({ name, GroupId })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: revokeIngressRules,
+    shouldRetryOnException: switchCase([
+      eq(get("error.code"), "DependencyViolation"),
+      () => true,
+      () => false,
+    ]),
+    method: "deleteSecurityGroup",
+    getById,
+    ignoreErrorCodes: ["InvalidGroup.NotFound"],
+    shouldRetryOnException: ({ error, name }) =>
+      pipe([
+        () => error,
+        tap(() => {
+          logger.error(
+            `delete sg ${name} shouldRetryOnException ? ${tos({
+              name,
+              error,
+            })}`
+          );
+        }),
+        eq(get("code"), "DependencyViolation"),
+      ])(),
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -296,9 +253,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 

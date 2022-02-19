@@ -9,6 +9,7 @@ const {
   omit,
   or,
   any,
+  pick,
 } = require("rubico");
 const {
   isEmpty,
@@ -21,15 +22,9 @@ const {
 } = require("rubico/x");
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVolume" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { EC2Instance } = require("./EC2Instance");
 
-const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   findNameInTagsOrId,
@@ -44,8 +39,6 @@ const { AwsClient } = require("../AwsClient");
 
 exports.AwsVolume = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
-
   const awsEC2 = EC2Instance({ config, spec });
 
   const managedByOther = or([
@@ -75,6 +68,7 @@ exports.AwsVolume = ({ spec, config }) => {
   ]);
 
   const findId = get("live.VolumeId");
+  const pickId = pick(["VolumeId"]);
 
   const findNameKubernetes = switchCase([
     managedByOther,
@@ -125,82 +119,60 @@ exports.AwsVolume = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVolumes-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList volume ${JSON.stringify({ params })}`);
-      }),
-      () => ec2().describeVolumes(params),
-      get("Volumes"),
-    ])();
 
-  const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "VolumeIds", getList });
-  const isInstanceUp = eq(get("State"), "available");
-  const isUpById = isUpByIdCore({
-    isInstanceUp,
-    getById,
+  const getList = client.getList({
+    method: "describeVolumes",
+    getParam: "Volumes",
   });
 
-  const isDownById = isDownByIdCore({ getById });
+  const getByName = getByNameCore({ getList, findName });
+
+  const getById = pipe([
+    ({ VolumeId }) => ({ id: VolumeId }),
+    getByIdCore({ fieldIds: "VolumeIds", getList }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVolume-property
-
-  const create = ({ payload, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create volume ${tos({ name })}`);
-        logger.debug(tos({ payload }));
-      }),
-      () => ec2().createVolume(omit(["Device"])(payload)),
-      tap((result) => {
-        logger.info(`created volume ${tos({ result })}`);
-      }),
-      ({ VolumeId }) =>
-        retryCall({
-          name: `volume is available: ${name} VolumeId: ${VolumeId}`,
-          fn: () => isUpById({ name, id: VolumeId }),
-          config,
-        }),
-    ])();
+  const create = client.create({
+    filterPayload: omit(["Device"]),
+    method: "createVolume",
+    pickCreated: () => (result) => pipe([() => result])(),
+    pickId,
+    isInstanceUp: eq(get("State"), "available"),
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVolume-property
-  const destroy = ({ id, name }) =>
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteVolume",
+    getById,
+    ignoreErrorCodes: ["InvalidVolume.NotFound"],
+    config,
+  });
+
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies,
+  }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy volume ${JSON.stringify({ name, id })}`);
-      }),
-      tryCatch(
-        () => ec2().deleteVolume({ VolumeId: id }),
-        tap.if(not(eq(get("code"), "InvalidVolume.NotFound")), (error) => {
-          throw error;
-        })
-      ),
-      tap(() =>
-        retryCall({
-          name: `destroy volume isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`volume destroyed ${JSON.stringify({ name, id })}`);
+      () => otherProps,
+      defaultsDeep({
+        Size: 10,
+        Device: "/dev/sdf",
+        AvailabilityZone: config.zone(),
+        VolumeType: "standard",
+        TagSpecifications: [
+          {
+            ResourceType: "volume",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
       }),
     ])();
-
-  const configDefault = ({ name, namespace, properties, dependencies }) =>
-    defaultsDeep({
-      Size: 10,
-      Device: "/dev/sdf",
-      AvailabilityZone: config.zone(),
-      VolumeType: "standard",
-      TagSpecifications: [
-        {
-          ResourceType: "volume",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-    })(properties);
 
   const cannotBeDeleted = pipe([
     get("live.Attachments"),

@@ -2,22 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("EC2 KeyPair", async function () {
+describe("EC2 Volume", async function () {
   let config;
   let provider;
-  let keyPair;
+  let volume;
 
   before(async function () {
     provider = AwsProvider({ config });
-    keyPair = provider.getClient({
-      groupType: "EC2::KeyPair",
+    volume = provider.getClient({
+      groupType: "EC2::Volume",
     });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => keyPair.getList(),
+      () => volume.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -27,9 +27,9 @@ describe("EC2 KeyPair", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        keyPair.destroy({
+        volume.destroy({
           live: {
-            KeyName: "my-key",
+            VolumeId: "vol-035a2aa7c23edd8e0",
           },
         }),
       tap((params) => {
@@ -41,8 +41,8 @@ describe("EC2 KeyPair", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        keyPair.getByName({
-          name: "invalid-keyPair-id",
+        volume.getByName({
+          name: "vol-035a2aa7c23edd8e0",
         }),
     ])
   );
