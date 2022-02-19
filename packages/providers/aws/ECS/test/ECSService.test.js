@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const { tryCatch, pipe, tap } = require("rubico");
-const { ECSService } = require("../ECSService");
+const { pipe, tap } = require("rubico");
 
 describe("ECSService", async function () {
   let config;
@@ -46,8 +45,8 @@ describe("ECSService", async function () {
     pipe([
       () =>
         service.getById({
-          name: "124",
-          cluster: "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
+          serviceName: "124",
+          clusterArn: "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
         }),
     ])
   );

@@ -12,10 +12,9 @@ const {
   pick,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, includes, unless, size } = require("rubico/x");
+const { defaultsDeep, isEmpty, unless, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
-const { tos } = require("@grucloud/core/tos");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -75,12 +74,7 @@ exports.ECSCluster = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeClusters-property
   const getById = client.getById({
@@ -216,26 +210,10 @@ exports.ECSCluster = ({ spec, config }) => {
     method: "deleteCluster",
     isInstanceDown: or([isEmpty, eq(get("status"), "INACTIVE")]),
     getById,
-    ignoreError: pipe([
-      tap((error) => {
-        logger.info(`error deleteCluster ${tos({ error })}`);
-      }),
-      switchCase([
-        or([
-          eq(get("code"), "ClusterNotFoundException"),
-          pipe([
-            get("message"),
-            includes(
-              "The specified cluster is inactive. Specify an active cluster and try again."
-            ),
-          ]),
-        ]),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ]),
-    ]),
+    ignoreErrorCodes: ["ClusterNotFoundException"],
+    ignoreErrorMessages: [
+      "The specified cluster is inactive. Specify an active cluster and try again.",
+    ],
     config,
   });
 
@@ -261,9 +239,6 @@ exports.ECSCluster = ({ spec, config }) => {
           key: "key",
           value: "value",
         }),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 
