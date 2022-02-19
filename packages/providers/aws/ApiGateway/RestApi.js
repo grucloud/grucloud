@@ -715,7 +715,7 @@ exports.RestApi = ({ spec, config }) => {
     pickId,
     method: "deleteRestApi",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -1,14 +1,10 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, assign, omit, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-
-const logger = require("@grucloud/core/logger")({
-  prefix: "ApiGatewayV2::Api",
-});
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 
 const findId = get("live.ApiId");
 const findName = get("live.Name");
@@ -16,8 +12,6 @@ const pickId = pick(["ApiId"]);
 
 exports.Api = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
   const getById = client.getById({
@@ -62,17 +56,22 @@ exports.Api = ({ spec, config }) => {
     pickId,
     method: "deleteApi",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 
-  const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         Name: name,
         ProtocolType: "HTTP",
-        Tags: buildTagsObject({ config, namespace, name }),
+        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
     ])();
 

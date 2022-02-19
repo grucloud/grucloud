@@ -138,7 +138,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     method: "deleteResolver",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

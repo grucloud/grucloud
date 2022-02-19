@@ -166,7 +166,7 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "deleteStage",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

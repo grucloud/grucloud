@@ -201,7 +201,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pickId,
     method: "deleteGraphqlApi",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

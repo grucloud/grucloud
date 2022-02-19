@@ -73,7 +73,7 @@ exports.Authorizer = ({ spec, config }) => {
     pickId,
     method: "deleteAuthorizer",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -1,14 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, filter, or, pick } = require("rubico");
+const { pipe, tap, get, eq, filter, pick } = require("rubico");
 const { pluck, defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "DeploymentV2",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const findId = get("live.DeploymentId");
@@ -30,8 +25,6 @@ const findName = pipe([
 
 exports.Deployment = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -86,13 +79,7 @@ exports.Deployment = ({ spec, config }) => {
     pickCreated:
       ({ payload }) =>
       (result) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => result,
-          defaultsDeep({ ApiId: payload.ApiId }),
-        ])(),
+        pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
     pickId,
     getById,
     config,
@@ -111,15 +98,7 @@ exports.Deployment = ({ spec, config }) => {
     pickId,
     method: "deleteDeployment",
     getById,
-    ignoreError: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      or([
-        eq(get("code"), "NotFoundException"),
-        eq(get("code"), "BadRequestException"),
-      ]),
-    ]),
+    ignoreErrorCodes: ["NotFoundException", "BadRequestException"],
     config,
   });
 

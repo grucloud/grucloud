@@ -205,7 +205,7 @@ exports.Method = ({ spec, config }) => {
     pickId,
     method: "deleteMethod",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

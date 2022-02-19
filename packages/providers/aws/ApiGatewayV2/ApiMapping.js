@@ -1,12 +1,7 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, not, assign, omit, pick } = require("rubico");
+const { pipe, tap, get, assign, omit, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ApiMapping",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
@@ -28,8 +23,6 @@ const pickId = pick(["ApiMappingId", "DomainName"]);
 
 exports.ApiMapping = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -128,7 +121,7 @@ exports.ApiMapping = ({ spec, config }) => {
     pickId,
     method: "deleteApiMapping",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -126,7 +126,7 @@ exports.Resource = ({ spec, config }) => {
     pickId,
     method: "deleteResource",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

@@ -179,7 +179,7 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "deleteIntegration",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 

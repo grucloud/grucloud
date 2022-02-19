@@ -7,7 +7,7 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -17,8 +17,6 @@ const pickId = pick(["DomainName"]);
 
 exports.DomainName = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "ApiGatewayV2" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -83,21 +81,21 @@ exports.DomainName = ({ spec, config }) => {
     pickId,
     method: "deleteDomainName",
     getById,
-    ignoreError: eq(get("code"), "NotFoundException"),
+    ignoreErrorCodes: ["NotFoundException"],
     config,
   });
 
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { certificate },
   }) =>
     pipe([
       tap(() => {
         assert(certificate, "missing 'certificate' dependency");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         DomainName: name,
         DomainNameConfigurations: [
@@ -105,7 +103,7 @@ exports.DomainName = ({ spec, config }) => {
             CertificateArn: getField(certificate, "CertificateArn"),
           },
         ],
-        Tags: buildTagsObject({ config, namespace, name }),
+        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
     ])();
 
