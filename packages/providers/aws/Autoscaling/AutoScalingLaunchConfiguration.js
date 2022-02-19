@@ -127,28 +127,6 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     }),
   ]);
 
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ LaunchConfigurationNames: [name] }),
-        describeLaunchConfigurations,
-        tap((params) => {
-          assert(true);
-        }),
-        first,
-      ]),
-      switchCase([
-        notFound,
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
-
   const getById = client.getById({
     pickId: ({ LaunchConfigurationName }) => ({
       LaunchConfigurationNames: [LaunchConfigurationName],
@@ -157,6 +135,11 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     getField: "LaunchConfigurations",
     ignoreErrorMessages: ["Launch configuration name not found"],
   });
+
+  const getByName = pipe([
+    ({ name }) => ({ LaunchConfigurationName: name }),
+    getById,
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createLaunchConfiguration-property
   const create = client.create({
@@ -171,33 +154,12 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteLaunchConfiguration-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["LaunchConfigurationName"]),
-      tap(({ LaunchConfigurationName }) => {
-        assert(LaunchConfigurationName);
-      }),
-      tryCatch(
-        pipe([autoScaling().deleteLaunchConfiguration]),
-        (error, params) =>
-          pipe([
-            tap(() => {
-              logger.error(
-                `error deleteLaunchConfiguration ${tos({ params, error })}`
-              );
-            }),
-            () => error,
-            switchCase([
-              notFound,
-              () => undefined,
-              () => {
-                throw error;
-              },
-            ]),
-          ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteLaunchConfiguration",
+    getById,
+    ignoreErrorMessages: ["Launch configuration name not found"],
+  });
 
   const configDefault = ({
     name,

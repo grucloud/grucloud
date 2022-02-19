@@ -40,7 +40,6 @@ const pickId = pick(["TargetGroupArn"]);
 exports.ELBTargetGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
-  const autoScaling = AutoScalingNew(config);
 
   const managedByOther = hasKeyInTags({
     key: "elbv2.k8s.aws/cluster",
@@ -102,123 +101,29 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const getById = ({ id }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          logger.info(`getById ${id}`);
-        }),
-        () => ({ TargetGroupArns: [id] }),
-        (params) => elb().describeTargetGroups(params),
-        get("TargetGroups"),
-        first,
-        tap((result) => {
-          logger.debug(`getById ${id}, result: ${tos(result)}`);
-        }),
-      ]),
-      switchCase([
-        eq(get("code"), "TargetGroupNotFound"),
-        () => false,
-        (error) => {
-          logger.error(`getById ${id}, error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    )();
-
-  const isInstanceUp = not(isEmpty);
-
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  const isDownById = isDownByIdCore({ getById });
-
-  // const findAutoScalingGroup = ({ nodeGroup }) =>
-  //   pipe([
-  //     tap(() => {
-  //       logger.info(`findAutoScalingGroup: ${nodeGroup.name}`);
-  //       assert(nodeGroup);
-  //     }),
-  //     () => autoScaling().describeAutoScalingGroups({}),
-  //     get("AutoScalingGroups"),
-  //     tap((autoScalingGroups) => {
-  //       logger.debug(`findAutoScalingGroup: #asg: ${autoScalingGroups.length}`);
-  //       logger.debug(
-  //         `findAutoScalingGroup: asg: ${JSON.stringify(
-  //           autoScalingGroups,
-  //           null,
-  //           4
-  //         )}`
-  //       );
-  //     }),
-  //     find(
-  //       pipe([
-  //         get("Tags"),
-  //         find(
-  //           and([
-  //             eq(get("Key"), "eks:nodegroup-name"),
-  //             eq(get("Value"), nodeGroup.name),
-  //           ])
-  //         ),
-  //       ])
-  //     ),
-  //     tap.if(isEmpty, () => {
-  //       throw Error(
-  //         `Cannot find AutoScalingGroup for nodeGroup: ${nodeGroup.name}`
-  //       );
-  //     }),
-  //     tap((autoScalingGroup) => {
-  //       assert(autoScalingGroup.AutoScalingGroupName);
-  //       logger.info(`findAutoScalingGroup : ${tos(autoScalingGroup)}`);
-  //     }),
-  //   ])();
+  const getById = client.getById({
+    pickId: ({ TargetGroupArn }) => ({ TargetGroupArns: [TargetGroupArn] }),
+    method: "describeTargetGroups",
+    getField: "TargetGroups",
+    ignoreErrorCodes: ["TargetGroupNotFound"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const create = async ({ name, payload, dependencies }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create target group : ${name}`);
-        logger.debug(`${tos(payload)}`);
-      }),
-      () => elb().createTargetGroup(payload),
-      get("TargetGroups"),
-      first,
-      tap(({ TargetGroupArn }) =>
-        retryCall({
-          name: `target group isUpById: ${name}, TargetGroupArn: ${TargetGroupArn}`,
-          fn: () => isUpById({ name, id: TargetGroupArn }),
-          config,
-        })
-      ),
-
-      tap((result) => {
-        logger.info(`created target group ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createTargetGroup",
+    pickId,
+    getById,
+    config,
+    pickCreated: () => pipe([get("TargetGroups"), first]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteTargetGroup-property
-  const destroy = async ({ live }) =>
-    pipe([
-      () => ({ id: findId({ live }), name: findName({ live }) }),
-      ({ id, name }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy target group ${JSON.stringify({ id })}`);
-          }),
-          () => ({
-            TargetGroupArn: id,
-          }),
-          (params) => elb().deleteTargetGroup(params),
-          tap(() =>
-            retryCall({
-              name: `target group isDownById: ${id}`,
-              fn: () => isDownById({ id }),
-              config,
-            })
-          ),
-          tap(() => {
-            logger.info(`destroyed target group ${JSON.stringify({ name })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteTargetGroup",
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
   const configDefault = ({

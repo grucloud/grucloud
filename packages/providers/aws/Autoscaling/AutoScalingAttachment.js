@@ -10,13 +10,13 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-//const { AwsClient } = require("../AwsClient");
+const { AwsClient } = require("../AwsClient");
 
 exports.AutoScalingAttachment = ({ spec, config }) => {
   const autoScaling = () =>
     createEndpoint({ endpointName: "AutoScaling" })(config);
 
-  //const client = AwsClient({ spec, config });
+  const client = AwsClient({ spec, config });
   const findId = get("live.TargetGroupARN");
 
   const findName = ({ live, lives }) =>
@@ -33,9 +33,6 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
         assert(targetGroupName);
       }),
       (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const findDependencies = ({ live }) => [
@@ -80,6 +77,15 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
+  // const getById = client.getById({
+  //   pickId: ({ AutoScalingGroupName }) => ({
+  //     AutoScalingGroupNames: [AutoScalingGroupName],
+  //   }),
+  //   method: "describeAutoScalingGroups",
+  //   getField: "AutoScalingGroups",
+  //   decorate: () => pipe([get("TargetGroupARNs"), includes(TargetGroupARN)]),
+  // });
+
   const isUpById = ({ TargetGroupARN, AutoScalingGroupName }) =>
     pipe([
       tap(() => {
@@ -121,30 +127,18 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
           config,
         })
       ),
-      tap((params) => {
-        assert(true);
-      }),
       tap(() => dependencies().autoScalingGroup.getLive({ lives })),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#detachLoadBalancerTargetGroups-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(
-          `detachLoadBalancerTargetGroups ${JSON.stringify({ live })}`
-        );
-      }),
-      () => live,
-      ({ TargetGroupARN, AutoScalingGroupName }) => ({
-        AutoScalingGroupName,
-        TargetGroupARNs: [TargetGroupARN],
-      }),
-      autoScaling().detachLoadBalancerTargetGroups,
-      tap((result) => {
-        logger.info(`detached ${JSON.stringify({ name, result })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId: ({ TargetGroupARN, AutoScalingGroupName }) => ({
+      AutoScalingGroupName,
+      TargetGroupARNs: [TargetGroupARN],
+    }),
+    method: "detachLoadBalancerTargetGroups",
+    config,
+  });
 
   const configDefault = ({
     name,
