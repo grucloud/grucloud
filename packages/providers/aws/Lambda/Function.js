@@ -3,10 +3,8 @@ const {
   map,
   pipe,
   tap,
-  set,
   get,
   eq,
-  not,
   assign,
   filter,
   omit,
@@ -14,16 +12,7 @@ const {
   switchCase,
   pick,
 } = require("rubico");
-const {
-  pluck,
-  first,
-  identity,
-  defaultsDeep,
-  isEmpty,
-  size,
-  includes,
-  unless,
-} = require("rubico/x");
+const { pluck, identity, defaultsDeep, includes, unless } = require("rubico/x");
 const crypto = require("crypto");
 const path = require("path");
 const { detailedDiff } = require("deep-object-diff");
@@ -32,15 +21,25 @@ const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
-const findId = get("live.FunctionArn");
-const findName = get("live.FunctionName");
+const findId = get("live.Configuration.FunctionArn");
+const findName = get("live.Configuration.FunctionName");
+const pickId = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  tap(({ Configuration }) => {
+    assert(Configuration);
+  }),
+  ({ Configuration: { FunctionArn } }) => ({
+    FunctionName: FunctionArn,
+  }),
+]);
 
 exports.Function = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -93,7 +92,7 @@ exports.Function = ({ spec, config }) => {
             pipe([
               pick(["FunctionName"]),
               lambda().getFunction,
-              pick(["Code", "Tags"]),
+              pick(["Configuration", "Code", "Tags"]),
               assign({
                 Code: pipe([
                   get("Code"),
@@ -149,63 +148,42 @@ exports.Function = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList function`);
-      }),
-      listFunctions,
-    ])();
+  const getList = () => pipe([listFunctions])();
 
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      () => listFunctions({ FunctionName: name }),
-      first,
-      tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
-      }),
-    ])();
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
+  const getById = client.getById({
+    pickId,
+    method: "getFunction",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
+  const getByName = pipe([
+    ({ name }) => ({ Configuration: { FunctionArn: name } }),
+    getById,
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create lambda: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () =>
-        retryCall({
-          name: `createFunction: ${name}`,
-          fn: () => lambda().createFunction(payload),
-          config: { retryCount: 10, retryDelay: 2e3 },
-          shouldRetryOnException: ({ error }) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `createFunction isExpectedException ${tos(error)}`
-                );
-              }),
-              () => error,
-              eq(get("code"), "InvalidParameterValueException"),
-            ])(),
+  const create = client.create({
+    method: "createFunction",
+    pickCreated: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
         }),
-      get("Function"),
-      tap((FunctionName) =>
-        retryCall({
-          name: `key isUpByName: ${name}`,
-          fn: () => isUpByName({ name: FunctionName }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`created`);
-      }),
-    ])();
+        ({ FunctionArn }) => ({ Configuration: { FunctionArn: FunctionArn } }),
+      ]),
+    pickId,
+    shouldRetryOnException: ({ error }) =>
+      pipe([
+        tap(() => {
+          logger.error(`createFunction isExpectedException ${tos(error)}`);
+        }),
+        () => error,
+        eq(get("code"), "InvalidParameterValueException"),
+      ])(),
+    getById,
+    config,
+  });
 
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -223,22 +201,14 @@ exports.Function = ({ spec, config }) => {
       }),
     ])();
 
-  //TODO
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => ({ id: findId({ live }) }),
-      ({ id }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy ${JSON.stringify({ id })}`);
-          }),
-          () => lambda().deleteFunction({ FunctionName: id }),
-          tap(() => {
-            logger.info(`destroyed ${JSON.stringify({ id })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteFunction",
+    getById,
+    config,
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
 
   const configDefault = ({
     name,
@@ -271,9 +241,6 @@ exports.Function = ({ spec, config }) => {
             Code: { ZipFile },
           }),
         ])(),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   return {
@@ -284,6 +251,7 @@ exports.Function = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     shouldRetryOnException,

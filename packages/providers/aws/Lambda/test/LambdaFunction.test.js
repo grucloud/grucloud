@@ -2,20 +2,20 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("ECSCluster", async function () {
+describe.only("Function", async function () {
   let config;
   let provider;
-  let cluster;
+  let fun;
 
   before(async function () {
     provider = AwsProvider({ config });
-    cluster = provider.getClient({ groupType: "ECS::Cluster" });
+    fun = provider.getClient({ groupType: "Lambda::Function" });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => cluster.getList(),
+      () => fun.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -25,8 +25,17 @@ describe("ECSCluster", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        cluster.destroy({
-          live: { clusterName: "12345" },
+        fun.destroy({
+          live: { Configuration: { FunctionArn: "a12345" } },
+        }),
+    ])
+  );
+  it(
+    "delete with invalid id",
+    pipe([
+      () =>
+        fun.getById({
+          Configuration: { FunctionArn: "a12345" },
         }),
     ])
   );
@@ -34,7 +43,7 @@ describe("ECSCluster", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        cluster.getByName({
+        fun.getByName({
           name: "124",
         }),
     ])
