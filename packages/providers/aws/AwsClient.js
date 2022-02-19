@@ -101,7 +101,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       ])();
 
   const getList =
-    ({ method, getParam, decorate = () => identity }) =>
+    ({
+      method,
+      getParam,
+      decorate = () => identity,
+      filterResource = () => true,
+    }) =>
     ({ lives, params } = {}) =>
       pipe([
         tap(() => {
@@ -126,6 +131,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.info(`getList ${type} #items ${size(items)}`);
         }),
         filter(not(isEmpty)),
+        filter(filterResource),
       ])();
 
   const getListWithParent =
@@ -221,22 +227,34 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tap((params) => {
           assert(true);
         }),
-        pickCreated({ pickId, payload, name, resolvedDependencies }),
-        tap((params) => {
-          assert(isObject(params));
-          logger.debug(`create isUpById: ${name}, ${JSON.stringify(params)}`);
-        }),
-        tap((params) =>
-          retryCall({
-            name: `isUpById: ${name}`,
-            fn: pipe([() => params, getById, isInstanceUp]),
-            config: configIsUp,
-          })
-        ),
-        postCreate({ name, payload, programOptions, resolvedDependencies }),
-        tap(() => {
-          logger.info(`created ${type}, ${name}`);
-        }),
+        (created) =>
+          pipe([
+            () => created,
+            pickCreated({ pickId, payload, name, resolvedDependencies }),
+            tap((params) => {
+              assert(isObject(params));
+              logger.debug(
+                `create isUpById: ${name}, ${JSON.stringify(params)}`
+              );
+            }),
+            tap((params) =>
+              retryCall({
+                name: `isUpById: ${name}`,
+                fn: pipe([() => params, getById, isInstanceUp]),
+                config: configIsUp,
+              })
+            ),
+            postCreate({
+              name,
+              payload,
+              created,
+              programOptions,
+              resolvedDependencies,
+            }),
+            tap(() => {
+              logger.info(`created ${type}, ${name}`);
+            }),
+          ])(),
       ])();
 
   const update =

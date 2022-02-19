@@ -616,31 +616,17 @@ exports.RestApi = ({ spec, config }) => {
   const create = client.create({
     //TODO identity ?
     pickCreated: () => (result) => pipe([() => result])(),
-    filterPayload: pipe([
-      omit(["schemaFile", "schema", "deployment"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
+    filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
     method: "createRestApi",
     getById,
     pickId,
     config,
     postCreate: (params) =>
       pipe([
-        tap((live) => {
-          assert(true);
-        }),
         tap(putRestApi(params)),
-        tap((params) => {
-          assert(true);
-        }),
         ({ id }) => ({ restApiId: id, ...params.deployment }),
         omit(["stageName"]),
         apiGateway().createDeployment,
-        tap((params) => {
-          assert(true);
-        }),
       ]),
   });
 

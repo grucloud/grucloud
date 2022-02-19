@@ -3,9 +3,9 @@ const {
   pipe,
   filter,
   map,
+  or,
   tap,
   eq,
-  switchCase,
   not,
   pick,
   tryCatch,
@@ -15,12 +15,7 @@ const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   getByIdCore,
@@ -37,6 +32,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("live.NatGatewayId");
+  const pickId = pick(["NatGatewayId"]);
 
   const findName = findNameInTagsOrId({ findId });
 
@@ -80,51 +76,30 @@ exports.AwsNatGateway = ({ spec, config }) => {
     },
   ];
   //TODO handle deleting
-  const isInstanceUp = eq(get("State"), "available");
-  const isInstanceDown = eq(get("State"), "deleted");
+  const isInstanceDown = or([isEmpty, eq(get("State"), "deleted")]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNatGateways-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList nat ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeNatGateways(params),
-      get("NatGateways"),
-      filter(not(isInstanceDown)),
-    ])();
+
+  const getList = client.getList({
+    method: "describeNatGateways",
+    getParam: "NatGateways",
+    filterResource: not(isInstanceDown),
+  });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "NatGatewayIds", getList });
-
-  const isUpById = isUpByIdCore({
-    getById,
-    isInstanceUp,
-  });
-
-  const isDownById = isDownByIdCore({
-    getById,
-  });
+  const getById = pipe([
+    ({ NatGatewayId }) => ({ id: NatGatewayId }),
+    getByIdCore({ fieldIds: "NatGatewayIds", getList }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNatGateway-property
-
-  const create = ({ payload, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create nat ${tos({ name })}`);
-      }),
-      () => ec2().createNatGateway(payload),
-      get("NatGateway"),
-      tap((NatGateway) => {
-        logger.info(`nat created ${tos(NatGateway)}`);
-      }),
-      ({ NatGatewayId }) =>
-        retryCall({
-          name: `nat isUpById: ${name} id: ${NatGatewayId}`,
-          fn: () => isUpById({ name, id: NatGatewayId }),
-          config: { retryCount: 12 * 5, repeatDelay: 5e3 },
-        }),
-      ({ NatGatewayId }) => ({ id: NatGatewayId }),
-    ])();
+  const create = client.create({
+    method: "createNatGateway",
+    pickCreated: () => (result) => pipe([() => result, get("NatGateway")])(),
+    pickId,
+    isInstanceUp: eq(get("State"), "available"),
+    getById,
+    config,
+  });
 
   const disassociateAddress = (live) =>
     pipe([
@@ -150,13 +125,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
           get("Addresses"),
           map(
             tryCatch(
-              pipe([
-                pick(["AssociationId"]),
-                tap((params) => {
-                  assert(true);
-                }),
-                ec2().disassociateAddress,
-              ]),
+              pipe([pick(["AssociationId"]), ec2().disassociateAddress]),
               (error, address) =>
                 pipe([
                   tap(() => {
@@ -171,37 +140,15 @@ exports.AwsNatGateway = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteNatGateway-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy nat ${live.NatGatewayId}`);
-      }),
-      () => live,
-      tap(disassociateAddress),
-      pick(["NatGatewayId"]),
-      tap(
-        tryCatch(
-          ec2().deleteNatGateway,
-          switchCase([
-            eq(get("code"), "NatGatewayNotFound"),
-            () => null,
-            (error) => {
-              throw error;
-            },
-          ])
-        )
-      ),
-      tap(({ NatGatewayId }) =>
-        retryCall({
-          name: `destroy nat gateway isDownById: ${NatGatewayId}`,
-          fn: () => isDownById({ id: NatGatewayId, name }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.debug(`destroyed nat ${JSON.stringify({ name })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: disassociateAddress,
+    method: "deleteNatGateway",
+    getById,
+    isInstanceDown,
+    ignoreErrorCodes: ["NatGatewayNotFound"],
+    config,
+  });
 
   const configDefault = ({
     name,

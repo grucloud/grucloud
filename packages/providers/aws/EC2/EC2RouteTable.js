@@ -8,21 +8,16 @@ const {
   not,
   eq,
   any,
-  all,
   tryCatch,
   switchCase,
+  pick,
 } = require("rubico");
 const { isEmpty, defaultsDeep, pluck, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getByIdCore, buildTags } = require("../AwsCommon");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   findNameInTagsOrId,
@@ -37,6 +32,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const { providerName } = config;
   const ec2 = Ec2New(config);
   const findId = get("live.RouteTableId");
+  const pickId = pick(["RouteTableId"]);
 
   const isDefault = ({ live, lives }) =>
     pipe([() => live, get("Associations"), any(get("Main"))])();
@@ -129,49 +125,29 @@ exports.EC2RouteTable = ({ spec, config }) => {
   });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
-  const isUpById = isUpByIdCore({ getById });
-
-  const isDownById = isDownByIdCore({ getById });
+  const getById = pipe([
+    ({ RouteTableId }) => ({ id: RouteTableId }),
+    getByIdCore({ fieldIds: "RouteTableIds", getList }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = ({ payload, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create rt ${tos({ name })}`);
-      }),
-      () => ec2().createRouteTable(payload),
-      get("RouteTable"),
-      tap(({ RouteTableId }) =>
-        retryCall({
-          name: `create rt isUpById: ${name} id: ${RouteTableId}`,
-          fn: () => isUpById({ id: RouteTableId, name }),
-          config,
-        })
-      ),
-    ])();
+  const create = client.create({
+    method: "createRouteTable",
+    pickCreated: () => (result) => pipe([() => result, get("RouteTable")])(),
+    pickId,
+    getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = ({ id, name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy route table ${JSON.stringify({ name, id })}`);
-        assert(live);
-        assert(id);
-      }),
-      () => routesDelete({ live }),
-      () => ec2().deleteRouteTable({ RouteTableId: id }),
-      tap(() =>
-        retryCall({
-          name: `destroy rt isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id, name }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`rt destroyed ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: routesDelete,
+    method: "deleteRouteTable",
+    getById,
+    ignoreErrorCodes: ["InvalidRouteTableID.NotFound"],
+    config,
+  });
 
   const configDefault = ({
     name,

@@ -41,7 +41,6 @@ const {
   Ec2New,
   shouldRetryOnException,
   buildTags,
-  findNamespaceInTags,
   findNameInTags,
   findEksCluster,
 } = require("../AwsCommon");

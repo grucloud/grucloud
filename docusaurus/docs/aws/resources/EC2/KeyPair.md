@@ -20,10 +20,51 @@ exports.createResources = () => [
 
 - [EC2](./Instance.md)
 
-### Aws cli
+### List
 
 List the available key pairs:
 
 ```bash
-aws ec2 describe-key-pairs
+gc list -t KeyPair
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────┐
+│ 1 EC2::KeyPair from aws                                       │
+├───────────────────────────────────────────────────────────────┤
+│ name: kp                                                      │
+│ managedByUs: Yes                                              │
+│ live:                                                         │
+│   KeyPairId: key-0e6bc70ddde611e0c                            │
+│   KeyFingerprint: a7:08:53:0d:22:e2:90:5b:43:c3:62:9b:c5:23:… │
+│   KeyName: kp                                                 │
+│   KeyType: rsa                                                │
+│   Tags:                                                       │
+│     - Key: gc-created-by-provider                             │
+│       Value: aws                                              │
+│     - Key: gc-managed-by                                      │
+│       Value: grucloud                                         │
+│     - Key: gc-project-name                                    │
+│       Value: @grucloud/example-aws-ec2-keypair                │
+│     - Key: gc-stage                                           │
+│       Value: dev                                              │
+│     - Key: Name                                               │
+│       Value: kp                                               │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────┐
+│ aws                                                          │
+├──────────────┬───────────────────────────────────────────────┤
+│ EC2::KeyPair │ kp                                            │
+└──────────────┴───────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t KeyPair" executed in 2s
 ```
