@@ -21,6 +21,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
+- [certificate validated by DNS](https://github.com/grucloud/grucloud/blob/main/examples/aws/ACM/certificate/resources.js)
 - [https static website](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
 
 ## Properties

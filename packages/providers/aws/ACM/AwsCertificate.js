@@ -1,23 +1,8 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  assign,
-  eq,
-  pick,
-} = require("rubico");
-const { first, defaultsDeep, size } = require("rubico/x");
+const { pipe, tap, get, assign, pick } = require("rubico");
+const { first, defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "CertificateManager",
-});
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   ACMNew,
   buildTags,
@@ -28,6 +13,7 @@ const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.DomainName");
 const findId = get("live.CertificateArn");
+const pickId = pick(["CertificateArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
@@ -36,21 +22,29 @@ exports.AwsCertificate = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [];
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getCertificate-property
+  const getById = client.getById({
+    pickId,
+    method: "describeCertificate",
+    getField: "Certificate",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList certificate ${tos(params)}`);
-      }),
-      () => acm().listCertificates(params),
-      get("CertificateSummaryList"),
-      map(({ CertificateArn }) =>
+  const getList = client.getList({
+    method: "listCertificates",
+    getParam: "CertificateSummaryList",
+    decorate:
+      () =>
+      ({ CertificateArn }) =>
         pipe([
-          () =>
-            acm().describeCertificate({
-              CertificateArn,
-            }),
-          get("Certificate"),
+          tap(() => {
+            assert(CertificateArn);
+          }),
+          () => ({
+            CertificateArn,
+          }),
+          getById,
           assign({
             Tags: pipe([
               () =>
@@ -60,89 +54,33 @@ exports.AwsCertificate = ({ spec, config }) => {
               get("Tags"),
             ]),
           }),
-        ])()
-      ),
-    ])();
+        ])(),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getCertificate-property
-  const getById = ({ id }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getById ${id}`);
-      }),
-      tryCatch(
-        pipe([
-          () => acm().describeCertificate({ CertificateArn: id }),
-          get("Certificate"),
-        ]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => {
-            logger.debug(`getById ${id} ResourceNotFoundException`);
-          },
-          (error) => {
-            logger.debug(`getById error: ${id}, ${tos(error)}`);
-            throw Error(error.message);
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getById result: ${tos(result)}`);
-      }),
-    ])();
-
-  const isInstanceUp = pipe([
-    get("DomainValidationOptions"),
-    first,
-    get("ResourceRecord"),
-  ]);
-
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  //const isDownById = isDownByIdCore({ getById });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestCertificate-property
-  const create = async ({ name, payload = {} }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create certificate: ${name}`);
-        logger.debug(`${name} => ${tos(payload)}`);
-      }),
-      () => acm().requestCertificate(payload),
-      tap(({ CertificateArn }) => {
-        logger.debug(
-          `created certificate: ${name}, result: ${tos(CertificateArn)}`
-        );
-      }),
-      ({ CertificateArn }) =>
-        retryCall({
-          name: `certificate isUpById: ${name} id: ${CertificateArn}`,
-          fn: () => isUpById({ name, id: CertificateArn }),
-        }),
-      tap(({ CertificateArn }) => {
-        logger.info(`created CertificateArn: ${CertificateArn}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "requestCertificate",
+    pickCreated: () => (result) => pipe([() => result])(),
+    pickId,
+    getById,
+    isInstanceUp: pipe([
+      get("DomainValidationOptions"),
+      first,
+      get("ResourceRecord"),
+    ]),
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["CertificateArn"]),
-      tryCatch(
-        acm().deleteCertificate,
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => null,
-          (error) => {
-            throw error;
-          },
-        ])
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteCertificate",
+    getById,
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -157,7 +95,6 @@ exports.AwsCertificate = ({ spec, config }) => {
     })(otherProps);
 
   return {
-    type: "Certificate",
     spec,
     getById,
     findId,
