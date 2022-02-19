@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, or, pick, not, assign, omit } = require("rubico");
+const { map, pipe, tap, get, or, pick, assign } = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -94,7 +94,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
         ])(),
       ],
     },
-    // { type: "TargetGroup", group: "ELBv2", ids: live.TargetGroupARNs },
     {
       type: "Instance",
       group: "EC2",
@@ -113,9 +112,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   ];
 
   const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     findNamespaceInTagsOrEksCluster({
       config,
       key: "eks:cluster-name",
@@ -178,10 +174,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     },
     method: "deleteAutoScalingGroup",
     getById,
-    ignoreError: pipe([
-      get("message"),
-      includes("AutoScalingGroup name not found"),
-    ]),
+    ignoreErrorMessages: ["AutoScalingGroup name not found"],
     config: { retryCount: 12 * 15, retryDelay: 5e3 },
   });
 
@@ -230,9 +223,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
           callProp("join", ","),
         ])(),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 

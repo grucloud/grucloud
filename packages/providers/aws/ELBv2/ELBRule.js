@@ -12,6 +12,7 @@ const {
   assign,
   map,
   or,
+  pick,
 } = require("rubico");
 const {
   first,
@@ -37,6 +38,9 @@ const {
 } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
+
+const pickId = pick(["RuleArn"]);
+
 const { AwsClient } = require("../AwsClient");
 
 const { ELBListener } = require("./ELBListener");
@@ -214,80 +218,29 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const getById = ({ id }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getById ${id}`);
-      }),
-      () => ({ RuleArns: [id] }),
-      tryCatch(
-        pipe([elb().describeRules, get("Rules"), first]),
-        switchCase([
-          eq(get("code"), "RuleNotFound"),
-          () => undefined,
-          (error) => {
-            logger.error(`getById describeRules error ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getById ${id}, result: ${tos(result)}`);
-      }),
-    ])();
-
-  const isInstanceUp = not(isEmpty);
-
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId: ({ RuleArn }) => ({ RuleArns: [RuleArn] }),
+    method: "describeRules",
+    getField: "Rules",
+    ignoreErrorCodes: ["RuleNotFound"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
-  const create = async ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create rule : ${name}`);
-        logger.debug(`${tos(payload)}`);
-      }),
-      () => elb().createRule(payload),
-      get("Rules"),
-      first,
-      tap(({ RuleArn }) =>
-        retryCall({
-          name: `rule isUpById: ${name}, RuleArn: ${RuleArn}`,
-          fn: () => isUpById({ name, id: RuleArn }),
-          config,
-        })
-      ),
-      tap((result) => {
-        logger.info(`created rule ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createRule",
+    pickId,
+    getById,
+    config,
+    pickCreated: () => pipe([get("Rules"), first]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteRule-property
-  const destroy = async ({ live, lives }) =>
-    pipe([
-      () => ({ id: findId({ live }), name: findName({ live, lives }) }),
-      ({ id, name }) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy rule ${JSON.stringify({ id })}`);
-          }),
-          () => ({
-            RuleArn: id,
-          }),
-          (params) => elb().deleteRule(params),
-          tap(() =>
-            retryCall({
-              name: `rule isDownById: ${id}`,
-              fn: () => isDownById({ id, name }),
-              config,
-            })
-          ),
-          tap(() => {
-            logger.info(`destroyed rule ${JSON.stringify({ id, name })}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteRule",
+    getById,
+    config,
+  });
 
   const targetGroupProperties = ({ targetGroup }) =>
     switchCase([
