@@ -465,11 +465,10 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = ({ id, name, live, lives, resource }) =>
+  const destroy = ({ name, live, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy Route53Record ${name}, ${id} ${tos({ live })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
+        logger.info(`destroy Route53Record ${name}, ${tos({ live })}`);
         assert(name, "destroy name");
         //assert(resource, "resource");
         assert(lives);
@@ -522,9 +521,7 @@ exports.Route53Record = ({ spec, config }) => {
         },
       ]),
       tap((result) => {
-        logger.debug(
-          `destroyed Route53Record, ${JSON.stringify({ name, id })}`
-        );
+        logger.debug(`destroyed Route53Record, ${JSON.stringify({ name })}`);
       }),
     ])();
 

@@ -96,6 +96,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     pipe([() => payload, ecs().runContainerInstance])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deregisterContainerInstance-property
+  //TODO
   const destroy = ({ live }) => pipe([() => live])();
 
   const configDefault = ({

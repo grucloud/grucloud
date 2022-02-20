@@ -13,7 +13,7 @@ const {
   not,
   eq,
   and,
-  omit,
+  pick,
 } = require("rubico");
 const {
   first,
@@ -33,7 +33,6 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   getByNameCore,
-  isUpByIdCore,
   isDownByIdCore,
   logError,
   axiosErrorToJSON,
@@ -52,6 +51,7 @@ const { filterEmptyResourceRecords } = require("./Route53Utils");
 //Check for the final dot
 const findName = get("live.Name");
 const findId = get("live.Id");
+const pickId = pick(["Id"]);
 
 const canDeleteRecord = (zoneName) =>
   not(
@@ -70,8 +70,8 @@ const findDnsServers = (live) =>
     findNsRecordByName(live.Name),
     get("ResourceRecords"),
     pluck("Value"),
-    tap((xxx) => {
-      logger.debug(``);
+    tap((params) => {
+      assert(true);
     }),
   ])();
 
@@ -161,30 +161,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
-  const getById = pipe([
-    tap(({ id, name }) => {
-      logger.info(`getById ${id}, name: ${name}`);
-    }),
-    tryCatch(
-      ({ id }) => route53().getHostedZone({ Id: id }),
-      switchCase([
-        eq(get("code"), "NoSuchHostedZone"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchHostedZone`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
-    }),
-  ]);
-
-  //const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId,
+    method: "getHostedZone",
+    ignoreErrorCodes: ["NoSuchHostedZone"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
   const create = async ({
@@ -308,52 +289,44 @@ exports.Route53HostedZone = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = ({ id, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy hostedZone ${JSON.stringify({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
-        assert(name, "destroy name");
-      }),
-      () =>
-        route53().listResourceRecordSets({
-          HostedZoneId: id,
-        }),
-      get("ResourceRecordSets"),
-      tap((ResourceRecordSet) => {
-        logger.debug(`destroy ${tos(ResourceRecordSet)}`);
-      }),
-      filter(canDeleteRecord(name)),
-      map((ResourceRecordSet) => ({
-        Action: "DELETE",
-        ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
-      })),
-      tap((Changes) => {
-        logger.debug(`destroy ${tos(Changes)}`);
-      }),
-      tap.if(not(isEmpty), (Changes) =>
-        route53().changeResourceRecordSets({
-          HostedZoneId: id,
-          ChangeBatch: {
-            Changes,
-          },
-        })
-      ),
-      () =>
-        route53().deleteHostedZone({
-          Id: id,
-        }),
-      tap(() =>
-        retryCall({
-          name: `hostedZone isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id, name }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroy hostedZone done, ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: ({ live, name }) =>
+      pipe([
+        () => live,
+        ({ Id: HostedZoneId }) =>
+          pipe([
+            () => ({
+              HostedZoneId,
+            }),
+            route53().listResourceRecordSets,
+            get("ResourceRecordSets"),
+            tap((ResourceRecordSet) => {
+              logger.debug(`destroy ${tos(ResourceRecordSet)}`);
+            }),
+            filter(canDeleteRecord(name)),
+            map((ResourceRecordSet) => ({
+              Action: "DELETE",
+              ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
+            })),
+            tap((Changes) => {
+              logger.debug(`destroy ${tos(Changes)}`);
+            }),
+            tap.if(not(isEmpty), (Changes) =>
+              route53().changeResourceRecordSets({
+                HostedZoneId,
+                ChangeBatch: {
+                  Changes,
+                },
+              })
+            ),
+          ])(),
+      ])(),
+    method: "deleteHostedZone",
+    getById,
+    //ignoreErrorCodes: [""],
+    config,
+  });
 
   const update = ({ name, live, diff }) =>
     pipe([
