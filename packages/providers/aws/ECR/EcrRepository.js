@@ -25,24 +25,19 @@ const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.repositoryName");
 const findId = get("live.repositoryArn");
-const pickParam = pick(["repositoryName", "registryId"]);
+const pickId = pick(["repositoryName", "registryId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRepository = ({ spec, config }) => {
   const ecr = () => createEndpoint({ endpointName: "ECR" })(config);
+  const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live }) => [];
-
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
   const getRepositoryPolicy = tryCatch(
-    pipe([pickParam, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
+    pipe([pickId, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
     switchCase([
       eq(get("code"), "RepositoryPolicyNotFoundException"),
       () => undefined,
@@ -55,7 +50,7 @@ exports.EcrRepository = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
   const getLifecyclePolicy = tryCatch(
     pipe([
-      pickParam,
+      pickId,
       ecr().getLifecyclePolicy,
       get("lifecyclePolicyText"),
       JSON.parse,
@@ -120,7 +115,7 @@ exports.EcrRepository = ({ spec, config }) => {
     tap.if(
       () => payload.policyText,
       pipe([
-        pickParam,
+        pickId,
         assign({ policyText: () => JSON.stringify(payload.policyText) }),
         ecr().setRepositoryPolicy,
       ])
@@ -131,7 +126,7 @@ exports.EcrRepository = ({ spec, config }) => {
     tap.if(
       () => payload.lifecyclePolicyText,
       pipe([
-        pickParam,
+        pickId,
         assign({
           lifecyclePolicyText: () =>
             JSON.stringify(payload.lifecyclePolicyText),
@@ -150,7 +145,7 @@ exports.EcrRepository = ({ spec, config }) => {
       putLifecyclePolicy({ payload }),
     ])();
 
-  const update = async ({ payload, live, name, diff }) =>
+  const update = ({ payload, live, name, diff }) =>
     pipe([
       () => live,
       tap(() => {
@@ -164,31 +159,14 @@ exports.EcrRepository = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#deleteRepository-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        assert(live.repositoryName);
-      }),
-      () => live,
-      pickParam,
-      //TODO make it configurable
-      assign({ force: () => true }),
-      tryCatch(ecr().deleteRepository, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`error deleteRepository ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "RepositoryNotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+
+  const destroy = client.destroy({
+    pickId,
+    extraParam: { force: true },
+    method: "deleteRepository",
+    ignoreErrorCodes: ["RepositoryNotFoundException"],
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -226,5 +204,4 @@ exports.EcrRepository = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
-
 //TODO compare

@@ -366,40 +366,19 @@ exports.EC2Route = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy route ${JSON.stringify({ live })}`);
-      }),
-      () => live,
-      pick([
-        "DestinationCidrBlock",
-        "RouteTableId",
-        "DestinationIpv6CidrBlock",
-        "DestinationPrefixListId",
-      ]),
-      tap(
-        ({ DestinationCidrBlock, DestinationIpv6CidrBlock, RouteTableId }) => {
-          assert(DestinationCidrBlock || DestinationIpv6CidrBlock);
-          assert(RouteTableId);
-        }
-      ),
-      tryCatch(ec2().deleteRoute, (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(`deleteRoute ${tos({ params, error })}`);
-          }),
-          () => error,
-          switchCase([
-            eq(get("code"), "InvalidRoute.NotFound"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId: pick([
+      "DestinationCidrBlock",
+      "RouteTableId",
+      "DestinationIpv6CidrBlock",
+      "DestinationPrefixListId",
+    ]),
+    method: "deleteRoute",
+    //TODO
+    //getById,
+    ignoreErrorCodes: ["InvalidRoute.NotFound"],
+    config,
+  });
 
   const configDefault = ({ name, namespace, properties = {} }) =>
     pipe([

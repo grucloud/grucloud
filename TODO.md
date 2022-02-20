@@ -17,7 +17,6 @@
 
 - https://stackshare.io/terraform/alternatives
 
-- destroy: use live instead of id
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
 - PROMPT='%4~ %# '

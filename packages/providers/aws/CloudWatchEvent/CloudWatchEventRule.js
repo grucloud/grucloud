@@ -152,7 +152,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     pickId,
     method: "deleteRule",
     getById,
-    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 

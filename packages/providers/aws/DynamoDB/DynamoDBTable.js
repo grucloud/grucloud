@@ -96,7 +96,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     pickId,
     method: "deleteTable",
     getById,
-    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 

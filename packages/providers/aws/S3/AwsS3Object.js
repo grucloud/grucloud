@@ -288,24 +288,12 @@ exports.AwsS3Object = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["Bucket", "Key"]),
-      tap((params) => {
-        logger.info(`destroy s3 object ${JSON.stringify(params)}`);
-      }),
-      tryCatch(
-        s3().deleteObject,
-        switchCase([
-          eq(get("code"), "NoSuchBucket"),
-          () => undefined,
-          (error) => {
-            throw error;
-          },
-        ])
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId: pick(["Bucket", "Key"]),
+    method: "deleteObject",
+    ignoreErrorCodes: ["NoSuchBucket"],
+    config,
+  });
 
   const configDefault = ({
     name,

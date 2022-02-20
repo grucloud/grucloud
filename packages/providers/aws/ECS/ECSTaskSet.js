@@ -127,9 +127,21 @@ exports.ECSTaskSet = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createTaskSet-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([() => payload, ecs().createTaskSet])();
-
+  const create = client.create({
+    method: "createTaskSet",
+    //TODO
+    // pickCreated: () =>
+    //   pipe([
+    //     tap(({ Instances }) => {
+    //       assert(Instances);
+    //     }),
+    //     get("Instances"),
+    //     first,
+    //   ]),
+    // pickId,
+    // getById,
+    config,
+  });
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteTaskSet-property
   const destroy = client.destroy({
     pickId,

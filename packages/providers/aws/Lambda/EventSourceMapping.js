@@ -128,7 +128,7 @@ exports.EventSourceMapping = ({ spec, config }) => {
     pickId,
     method: "deleteEventSourceMapping",
     getById,
-    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 

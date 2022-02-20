@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
@@ -81,10 +81,11 @@ exports.DBCluster = ({ spec, config }) => {
     },
     method: "deleteDBCluster",
     getById,
-    ignoreError: eq(get("code"), "DBClusterNotFoundFault"),
+    ignoreErrorCodes: ["DBClusterNotFoundFault"],
     config,
   });
 
+  //TODO tags
   const configDefault = async ({
     name,
     namespace,

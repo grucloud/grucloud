@@ -1,7 +1,6 @@
 const assert = require("assert");
 const {
   map,
-  transform,
   get,
   tap,
   pipe,
@@ -13,6 +12,8 @@ const {
   switchCase,
   omit,
   assign,
+  fork,
+  pick,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -29,14 +30,8 @@ const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { detailedDiff } = require("deep-object-diff");
-
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-  convertError,
-} = require("@grucloud/core/Common");
+const { getByNameCore, convertError } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -51,8 +46,6 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-
-const { CheckAwsTags } = require("../AwsTagCheck");
 
 const StateRunning = "running";
 const StateTerminated = "terminated";
@@ -227,6 +220,7 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
 
   const findId = get("live.InstanceId");
+  const pickId = pick(["InstanceId"]);
 
   const findName = (params) => {
     assert(params.live);
@@ -276,17 +270,13 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
+  const getById = pipe([
+    ({ InstanceId }) => ({ id: InstanceId }),
+    getByIdCore({ fieldIds: "InstanceIds", getList }),
+  ]);
 
-  const isUpById = isUpByIdCore({
-    isInstanceUp,
-    getById,
-  });
-
-  const isDownById = isDownByIdCore({
-    isInstanceDown,
-    getById,
-  });
+  const isUpById = pipe([getById, isInstanceUp]);
+  const isDownById = pipe([getById, isInstanceDown]);
 
   const volumesAttach = ({ InstanceId, volumes = [] }) =>
     pipe([
@@ -377,7 +367,7 @@ exports.EC2Instance = ({ spec, config }) => {
       () =>
         retryCall({
           name: `startInstances: ${InstanceId}`,
-          fn: () => isUpById({ id: InstanceId }),
+          fn: () => isUpById({ InstanceId }),
           config,
         }),
     ])();
@@ -391,7 +381,7 @@ exports.EC2Instance = ({ spec, config }) => {
       () =>
         retryCall({
           name: `stopInstances: ${InstanceId}`,
-          fn: () => isDownById({ id: InstanceId }),
+          fn: () => isDownById({ InstanceId }),
           config,
         }),
     ])();
@@ -415,7 +405,7 @@ exports.EC2Instance = ({ spec, config }) => {
           tap(() => {
             logger.info(`ec2 updateNeedDestroy ${name}`);
           }),
-          () => destroy({ id: InstanceId }),
+          () => destroy({ live: { InstanceId } }),
           () => create({ name, payload, resolvedDependencies }),
         ]),
         get("updateNeedRestart"),
@@ -439,73 +429,59 @@ exports.EC2Instance = ({ spec, config }) => {
         logger.info(`ec2 updated ${name}`);
       }),
     ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
-  const create = async ({
-    name,
-    payload,
-    resolvedDependencies: { volumes, eip },
-  }) =>
+  const create = client.create({
+    method: "runInstances",
+    shouldRetryOnException: shouldRetryOnExceptionCreate,
+    isInstanceUp,
+    pickCreated: () =>
+      pipe([
+        tap(({ Instances }) => {
+          assert(Instances);
+        }),
+        get("Instances"),
+        first,
+      ]),
+    pickId,
+    getById,
+    postCreate:
+      ({ resolvedDependencies: { volumes, eip } }) =>
+      ({ InstanceId }) =>
+        //TODO fork
+        pipe([
+          tap(() => {
+            assert(InstanceId);
+          }),
+          tap(() => volumesAttach({ InstanceId, volumes })),
+          tap.if(
+            () => eip,
+            () => associateAddress({ InstanceId, eip })
+          ),
+        ])(),
+    config,
+  });
+
+  const disassociateAddress = ({ InstanceId }) =>
     pipe([
       tap(() => {
-        logger.info(`create ec2 ${tos({ name })}`);
-        logger.debug(`create ec2 ${tos({ name, payload })}`);
-        assert(name, "name");
-        assert(payload, "payload");
+        assert(InstanceId);
       }),
-      () =>
-        retryCall({
-          name: `ec2 runInstances: ${name}`,
-          fn: () => ec2().runInstances(payload),
-          shouldRetryOnException: shouldRetryOnExceptionCreate,
-          config,
-        }),
-      get("Instances"),
-      first,
-      get("InstanceId"),
-      (id) =>
-        retryCall({
-          name: `ec2 isUpById: ${name} id: ${id}`,
-          fn: () => isUpById({ name, id }),
-          config: clientConfig,
-        }),
-      tap((instance) => {
-        assert(instance, "instanceUp");
-        assert(instance.Tags, "instanceUp.Tags");
-        assert(
-          CheckAwsTags({
-            config,
-            tags: instance.Tags,
-            name,
-          }),
-          `missing tag for ${name}`
-        );
+      () => ({
+        Filters: [
+          {
+            Name: "instance-id",
+            Values: [InstanceId],
+          },
+        ],
       }),
-      tap(({ InstanceId }) => volumesAttach({ InstanceId, volumes })),
-      tap.if(
-        () => eip,
-        ({ InstanceId }) => associateAddress({ InstanceId, eip })
-      ),
-      tap(({ InstanceId }) => {
-        logger.info(`created ec2 ${name}, InstanceId: ${InstanceId}`);
-      }),
-    ])();
-
-  const disassociateAddress = ({ id }) =>
-    pipe([
-      () =>
-        ec2().describeAddresses({
-          Filters: [
-            {
-              Name: "instance-id",
-              Values: [id],
-            },
-          ],
-        }),
+      ec2().describeAddresses,
       get("Addresses"),
       tap((Addresses) => {
         logger.debug(`disassociateAddress ${tos({ Addresses })}`);
       }),
       first,
+      //TODO multiple addresses ?
       tap.if(not(isEmpty), ({ AssociationId }) =>
         ec2().disassociateAddress({
           AssociationId,
@@ -513,24 +489,27 @@ exports.EC2Instance = ({ spec, config }) => {
       ),
     ]);
 
-  const volumesDetach = ({ id }) =>
+  const volumesDetach = ({ InstanceId }) =>
     pipe([
-      () =>
-        ec2().describeVolumes({
-          Filters: [
-            {
-              Name: "attachment.instance-id",
-              Values: [id],
-            },
-            {
-              Name: "tag-key",
-              Values: [config.managedByKey],
-            },
-          ],
-        }),
+      tap(() => {
+        assert(InstanceId);
+      }),
+      () => ({
+        Filters: [
+          {
+            Name: "attachment.instance-id",
+            Values: [InstanceId],
+          },
+          {
+            Name: "tag-key",
+            Values: [config.managedByKey],
+          },
+        ],
+      }),
+      ec2().describeVolumes,
       get("Volumes"),
       tap((volumes) => {
-        logger.info(`destroy ec2, detachVolume #volumes: ${volumes.length}`);
+        logger.info(`destroy ec2, detachVolume #volumes: ${size(volumes)}`);
       }),
       map(
         tryCatch(
@@ -553,35 +532,17 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
     ]);
 
-  const destroyById = async ({ id, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(
-          `destroy ec2  ${tos({
-            name,
-            id,
-          })}`
-        );
-        assert(id, "destroyById missing id");
-      }),
-      disassociateAddress({ id }),
-      volumesDetach({ id }),
-      () =>
-        ec2().terminateInstances({
-          InstanceIds: [id],
-        }),
-      () =>
-        retryCall({
-          name: `ec2 isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        }),
-      tap(() => {
-        logger.info(`destroyed ec2  ${tos({ name, id })}`);
-      }),
-    ])();
-  //By live
-  const destroy = destroyById;
+  const destroy = client.destroy({
+    preDestroy: pipe([
+      get("live"),
+      fork({ address: disassociateAddress, volume: volumesDetach }),
+    ]),
+    pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
+    method: "terminateInstances",
+    getById,
+    ignoreErrorCodes: [],
+    config,
+  });
 
   return {
     spec,
@@ -592,7 +553,6 @@ exports.EC2Instance = ({ spec, config }) => {
     findName,
     create,
     update,
-    destroyById,
     destroy,
     getList,
     configDefault: configDefault({ config }),
@@ -613,9 +573,6 @@ const isInOurCluster =
 
 exports.isOurMinionEC2Instance = (item) =>
   pipe([
-    tap(() => {
-      assert(true);
-    }),
     () => item,
     or([isInOurCluster({ config: item.config }), isOurMinion]),
     tap((isOurMinion) => {

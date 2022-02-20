@@ -29,12 +29,7 @@ exports.EcrRegistry = ({ spec, config }) => {
 
   const findDependencies = ({ live }) => [];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRegistryPolicy-property
   const getRegistryPolicy = tryCatch(
@@ -53,9 +48,6 @@ exports.EcrRegistry = ({ spec, config }) => {
     pipe([
       () => ({}),
       ecr().describeRegistry,
-      tap((params) => {
-        assert(true);
-      }),
       //TODO omit if Empty
       when(
         pipe([get("replicationConfiguration.rules"), isEmpty]),
@@ -65,9 +57,6 @@ exports.EcrRegistry = ({ spec, config }) => {
         policyText: getRegistryPolicy,
       }),
       when(pipe([get("policyText"), isEmpty]), omit(["policyText"])),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const getList = () => pipe([describeRegistry, (registry) => [registry]])();

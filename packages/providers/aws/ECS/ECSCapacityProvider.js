@@ -113,15 +113,9 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       () => false,
     ]),
     getById,
-    ignoreError: pipe([
-      tap((error) => {
-        assert(true);
-      }),
-      eq(
-        get("message"),
-        "The specified capacity provider does not exist. Specify a valid name or ARN and try again."
-      ),
-    ]),
+    ignoreErrorMessages: [
+      "The specified capacity provider does not exist. Specify a valid name or ARN and try again.",
+    ],
     config,
   });
 

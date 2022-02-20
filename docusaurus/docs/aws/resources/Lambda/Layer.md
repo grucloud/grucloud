@@ -109,5 +109,48 @@ gc list -t Layer
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 1/1
+┌──────────────────────────────────────────────────────────────┐
+│ 1 Lambda::Layer from aws                                     │
+├──────────────────────────────────────────────────────────────┤
+│ name: lambda-layer                                           │
+│ managedByUs: Yes                                             │
+│ live:                                                        │
+│   LayerVersionArn: arn:aws:lambda:us-east-1:840541460064:la… │
+│   Version: 76                                                │
+│   Description: My Layer                                      │
+│   CreatedDate: 2022-02-20T04:43:59.382+0000                  │
+│   CompatibleRuntimes:                                        │
+│     - "nodejs"                                               │
+│   LicenseInfo: null                                          │
+│   LayerName: lambda-layer                                    │
+│   LayerArn: arn:aws:lambda:us-east-1:840541460064:layer:lam… │
+│   Tags:                                                      │
+│     Name: lambda-layer                                       │
+│     gc-managed-by: grucloud                                  │
+│     gc-created-by-provider: aws                              │
+│     gc-stage: dev                                            │
+│     gc-project-name: @grucloud/example-aws-lambda-nodejs-he… │
+│   Content:                                                   │
+│     Location: https://prod-04-2014-layers.s3.us-east-1.amaz… │
+│     CodeSha256: m0OVorKW9quIKFgQSOX3h27KIi2ckpGG3W1T6pqByYc= │
+│     CodeSize: 145                                            │
+│     SigningProfileVersionArn: null                           │
+│     SigningJobArn: null                                      │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────┐
+│ aws                                                         │
+├───────────────┬─────────────────────────────────────────────┤
+│ Lambda::Layer │ lambda-layer                                │
+└───────────────┴─────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc list -t Layer" executed in 3s
 ```

@@ -16,6 +16,7 @@ const {
   not,
   or,
   switchCase,
+  fork,
 } = require("rubico");
 const {
   isObject,
@@ -36,6 +37,8 @@ const {
   append,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
+const Diff = require("diff");
+
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
 
@@ -446,19 +449,26 @@ exports.compare = ({
     tap((params) => {
       assert(true);
     }),
-    ({ target, live }) => ({
-      targetDiff: pipe([
-        () => detailedDiff(target, live),
-        omitIfEmpty(["deleted", "updated", "added"]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-      liveDiff: pipe([
-        () => detailedDiff(live, target),
-        omitIfEmpty(["added", "updated", "deleted"]),
-      ])(),
-    }),
+    ({ target, live }) =>
+      fork({
+        targetDiff: pipe([
+          () => detailedDiff(target, live),
+          omitIfEmpty(["deleted", "updated", "added"]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+        liveDiff: pipe([
+          () => detailedDiff(live, target),
+          omitIfEmpty(["added", "updated", "deleted"]),
+        ]),
+        jsonDiff: pipe([
+          () => Diff.diffJson(live, target),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      })(),
     tap((diff) => {
       logger.debug(`compare ${tos(diff)}`);
     }),

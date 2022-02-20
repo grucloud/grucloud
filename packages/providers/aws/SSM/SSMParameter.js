@@ -87,8 +87,7 @@ exports.SSMParameter = ({ spec, config }) => {
     pickId,
     method: "deleteParameter",
     getById,
-    ignoreError: ({ code }) =>
-      pipe([() => ["ParameterNotFound"], includes(code)]),
+    ignoreErrorCodes: ["ParameterNotFound"],
     config,
   });
 

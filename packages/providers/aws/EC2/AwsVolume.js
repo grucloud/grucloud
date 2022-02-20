@@ -1,9 +1,7 @@
 const {
   get,
   switchCase,
-  tryCatch,
   pipe,
-  not,
   tap,
   eq,
   omit,
@@ -26,7 +24,6 @@ const { EC2Instance } = require("./EC2Instance");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  Ec2New,
   findNameInTagsOrId,
   shouldRetryOnException,
   getByIdCore,
