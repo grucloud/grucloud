@@ -197,7 +197,7 @@ exports.Integration = ({ spec, config }) => {
       defaultsDeep({
         ApiId: getField(api, "ApiId"),
         ...(lambdaFunction && {
-          IntegrationUri: getField(lambdaFunction, "FunctionArn"),
+          IntegrationUri: getField(lambdaFunction, "Configuration.FunctionArn"),
         }),
       }),
     ])();

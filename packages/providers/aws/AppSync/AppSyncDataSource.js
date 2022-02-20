@@ -212,7 +212,10 @@ exports.AppSyncDataSource = ({ spec, config }) => {
         serviceRoleArn: getField(serviceRole, "Arn"),
         ...(lambdaFunction && {
           lambdaConfig: {
-            lambdaFunctionArn: getField(lambdaFunction, "FunctionArn"),
+            lambdaFunctionArn: getField(
+              lambdaFunction,
+              "Configuration.FunctionArn"
+            ),
           },
         }),
       }),
