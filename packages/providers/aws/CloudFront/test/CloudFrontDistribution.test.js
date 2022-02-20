@@ -2,23 +2,33 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("CloudWatchLogsGroup", async function () {
+describe("CloudFrontDistribution", async function () {
   let config;
   let provider;
-  let logGroup;
+  let distribution;
 
   before(async function () {
     provider = AwsProvider({ config });
-    logGroup = provider.getClient({ groupType: "CloudWatchLogs::LogGroup" });
+    distribution = provider.getClient({
+      groupType: "CloudFront::Distribution",
+    });
     await provider.start();
   });
-  it("list", pipe([() => logGroup.getList()]));
+  it(
+    "list",
+    pipe([
+      () => distribution.getList(),
+      tap(({ items }) => {
+        assert(Array.isArray(items));
+      }),
+    ])
+  );
   it(
     "delete with invalid id",
     pipe([
       () =>
-        logGroup.destroy({
-          live: { logGroupName: "lg-12345" },
+        distribution.destroy({
+          live: { Id: "123" },
         }),
     ])
   );
@@ -26,8 +36,8 @@ describe("CloudWatchLogsGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        logGroup.getById({
-          logGroupName: "lg-124",
+        distribution.getById({
+          Id: "123",
         }),
     ])
   );
@@ -35,7 +45,7 @@ describe("CloudWatchLogsGroup", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        logGroup.getByName({
+        distribution.getByName({
           name: "124",
         }),
     ])

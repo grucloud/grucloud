@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("Function", async function () {
+describe("Function", async function () {
   let config;
   let provider;
   let fun;
@@ -31,7 +31,7 @@ describe.only("Function", async function () {
     ])
   );
   it(
-    "delete with invalid id",
+    "getById with invalid id",
     pipe([
       () =>
         fun.getById({
