@@ -4,9 +4,8 @@ const {
   flatMap,
   pipe,
   tap,
-  tryCatch,
   get,
-  switchCase,
+  pick,
   assign,
   eq,
   or,
@@ -25,6 +24,7 @@ const {
   includes,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
+const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "CloudFrontDistribution",
@@ -53,6 +53,7 @@ const findName = findNameInTagsOrId({ findId });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ spec, config }) => {
   const cloudfront = CloudFrontNew(config);
+  const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -141,90 +142,55 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getDistribution-property
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.info(`getById ${id}`);
-    }),
-    tryCatch(
-      pipe([
-        ({ id }) => cloudfront().getDistribution({ Id: id }),
-        get("Distribution"),
-      ]),
-      switchCase([
-        eq(get("code"), "NoSuchDistribution"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchDistribution`);
-        },
-        (error) => {
-          logger.error(`getById error: ${tos(error)}`);
-          throw Error(error.message);
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
-    }),
-  ]);
+  const pickId = pick(["Id"]);
 
-  const isInstanceUp = eq(get("Status"), "Deployed");
-  const isUpById = isUpByIdCore({
-    isInstanceUp,
-    getById,
+  const getById = client.getById({
+    pickId,
+    method: "getDistribution",
+    getField: "Distribution",
+    ignoreErrorCodes: ["NoSuchDistribution"],
   });
 
-  const isDownById = isDownByIdCore({ getById });
+  const isInstanceUp = eq(get("Status"), "Deployed");
+  const isUpById = pipe([getById, isInstanceUp]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property
-  const create = ({ name, payload = {} }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create distribution: ${name}`);
-        logger.debug(`${name} => ${tos(payload)}`);
-      }),
-      () =>
-        retryCall({
-          name: `createDistributionWithTags: ${name}`,
-          fn: () =>
-            cloudfront().createDistributionWithTags({
-              DistributionConfigWithTags: payload,
-            }),
-          config: { retryCount: 10, repeatDelay: 5e3 },
-          shouldRetryOnException: ({ error, name }) =>
-            pipe([
-              tap(() => {
-                logger.info(
-                  `createDistributionWithTags shouldRetryOnException ${tos({
-                    name,
-                    error,
-                  })}`
-                );
-              }),
-              () => error,
-              eq(get("code"), "InvalidViewerCertificate"),
-              tap((retry) => {
-                logger.info(
-                  `createDistributionWithTags shouldRetryOnException retry: ${retry}`
-                );
-              }),
-            ])(),
+
+  const create = client.create({
+    method: "createDistributionWithTags",
+    filterPayload: (payload) => ({
+      DistributionConfigWithTags: payload,
+    }),
+    isInstanceUp,
+    shouldRetryOnException: ({ error, name }) =>
+      pipe([
+        tap(() => {
+          logger.info(
+            `createDistributionWithTags shouldRetryOnException ${tos({
+              name,
+              error,
+            })}`
+          );
         }),
-      tap((result) => {
-        logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
-      }),
-      get("Id"),
-      tap((id) =>
-        retryCall({
-          name: `is distribution ${name} deployed ? name: ${name}`,
-          fn: () => isUpById({ id }),
-          config: { retryCount: 6 * 60, retryDelay: 10e3 },
-        })
-      ),
-      tap((id) => {
-        logger.info(`distribution created: ${name}, id: ${id}`);
-      }),
-    ])();
+        () => error,
+        eq(get("code"), "InvalidViewerCertificate"),
+        tap((retry) => {
+          logger.info(
+            `createDistributionWithTags shouldRetryOnException retry: ${retry}`
+          );
+        }),
+      ])(),
+    pickCreated: () => (result) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => result,
+      ])(),
+    pickId,
+    getById,
+    config,
+  });
 
   const update = ({ name, id, payload }) =>
     pipe([
@@ -255,7 +221,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `distribution isUpById : ${name} id: ${id}`,
-          fn: () => isUpById({ id }),
+          fn: () => isUpById({ Id: id }),
           config: { retryCount: 6 * 60, retryDelay: 10e3 },
         })
       ),
@@ -265,85 +231,77 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteDistribution-property
-  const destroy = ({ id, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy distribution ${JSON.stringify({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
-      }),
-      () =>
-        update({
-          id,
-          name,
-          payload: {
-            DistributionConfig: {
-              Enabled: false,
-              DefaultCacheBehavior: {
-                ForwardedValues: {
-                  QueryString: false,
-                  Cookies: {
-                    Forward: "none",
+  const destroy = client.destroy({
+    pickId: (live) =>
+      pipe([
+        tap(() => {
+          assert(live.Id);
+        }),
+        () => live,
+        pickId,
+        cloudfront().getDistributionConfig,
+        tap(({ ETag }) => {
+          assert(ETag);
+        }),
+        ({ ETag }) => ({ IfMatch: ETag, Id: live.Id }),
+      ])(),
+    preDestroy: ({ name, live }) =>
+      pipe([
+        () =>
+          update({
+            id: live.Id,
+            name,
+            payload: {
+              DistributionConfig: {
+                Enabled: false,
+                DefaultCacheBehavior: {
+                  ForwardedValues: {
+                    QueryString: false,
+                    Cookies: {
+                      Forward: "none",
+                    },
+                    Headers: {
+                      Quantity: 0,
+                      Items: [],
+                    },
+                    QueryStringCacheKeys: {
+                      Quantity: 0,
+                      Items: [],
+                    },
                   },
-                  Headers: {
-                    Quantity: 0,
-                    Items: [],
-                  },
-                  QueryStringCacheKeys: {
-                    Quantity: 0,
-                    Items: [],
-                  },
+                  MinTTL: 60,
+                  DefaultTTL: 86400,
+                  MaxTTL: 31536000,
+                  CachePolicyId: "",
                 },
-                MinTTL: 60,
-                DefaultTTL: 86400,
-                MaxTTL: 31536000,
-                CachePolicyId: "",
               },
             },
-          },
+          }),
+      ])(),
+    method: "deleteDistribution",
+    isExpectedResult: () => true,
+    shouldRetryOnException: ({ error, name }) =>
+      pipe([
+        tap(() => {
+          logger.info(
+            `deleteDistribution shouldRetryOnException ${tos({
+              name,
+              error,
+            })}`
+          );
         }),
-      () => cloudfront().getDistributionConfig({ Id: id }),
-      tap(({ ETag }) => {
-        assert(ETag);
-      }),
-      ({ ETag }) =>
-        retryCall({
-          name: `deleteDistribution: ${name} id: ${id}, IfMatch:${ETag}`,
-          fn: () =>
-            cloudfront().deleteDistribution({
-              Id: id,
-              IfMatch: ETag,
-            }),
-          isExpectedResult: () => true,
-          config,
-          shouldRetryOnException: ({ error, name }) =>
-            pipe([
-              tap(() => {
-                logger.info(
-                  `deleteDistribution shouldRetryOnException ${tos({
-                    name,
-                    error,
-                  })}`
-                );
-              }),
-              eq(get("code"), "DistributionNotDisabled"),
-              tap((result) => {
-                logger.info(
-                  `deleteDistribution shouldRetryOnException result: ${result}`
-                );
-              }),
-            ])(error),
+        () => error,
+        eq(get("code"), "DistributionNotDisabled"),
+        tap((result) => {
+          logger.info(
+            `deleteDistribution shouldRetryOnException result: ${result}`
+          );
         }),
-      tap(() =>
-        retryCall({
-          name: `distribution isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`distribution destroyed, ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+      ])(),
+    getById,
+    ignoreErrorCodes: ["NoSuchDistribution"],
+    config,
+  });
 
   //TODO Tags
   const configDefault = ({
@@ -417,7 +375,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
               tap((params) => {
                 logger.info(`createInvalidation params ${tos({ params })}`);
               }),
-              (params) => cloudfront().createInvalidation(params),
+              cloudfront().createInvalidation,
               tap((result) => {
                 logger.info(`createInvalidation done ${tos({ result })}`);
               }),
@@ -432,6 +390,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
+    getById,
     findName,
     create,
     update,
@@ -439,6 +398,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     getList,
     configDefault,
     onDeployed,
+    //TODO
     shouldRetryOnException: ({ name, error }) =>
       pipe([
         tap(() => {

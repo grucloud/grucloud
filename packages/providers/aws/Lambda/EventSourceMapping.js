@@ -144,7 +144,7 @@ exports.EventSourceMapping = ({ spec, config }) => {
       }),
       () => properties,
       defaultsDeep({
-        FunctionName: getField(lambdaFunction, "FunctionName"),
+        FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
         ...(sqsQueue && {
           EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
         }),

@@ -392,6 +392,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       ignoreErrorCodes = [],
       ignoreErrorMessages = [],
       shouldRetryOnException = eq(get("error.code"), "ResourceInUseException"),
+      isExpectedResult,
       config,
     }) =>
     ({ name, live, lives }) =>
@@ -404,7 +405,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         }),
         tryCatch(
           pipe([
-            tap(() => preDestroy({ live, lives })),
+            tap(() => preDestroy({ name, live, lives })),
             () => live,
             pickId,
             tap((params) => {
@@ -418,6 +419,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 name: `destroying ${type}`,
                 fn: pipe([() => params, endpoint()[method]]),
                 config,
+                isExpectedResult,
                 shouldRetryOnException,
               }),
             () => live,
