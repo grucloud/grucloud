@@ -1,8 +1,8 @@
 ![GruCloud](./docusaurus/static/img/grucloud-logo.png "GruCloud")
 
-**GruCloud** is a low/no code _infrastructure as code_ tool.
-It can generate code from live infrastructure, and deploy resources to the cloud from code.
-Benefit from infrastrucure as code without the hassle of manually authoring the infrastructure description.
+**GruCloud** is a low/no-code infrastructure as a code tool. 
+It can generate code from live infrastructure, and deploy resources to the cloud from code. 
+Benefit from infrastructure as code without the hassle of manually authoring the infrastructure description.
 
 # Getting Started
 
