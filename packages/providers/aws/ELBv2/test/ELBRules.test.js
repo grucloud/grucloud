@@ -2,20 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("ECSCluster", async function () {
+describe("ELB Rules", async function () {
   let config;
   let provider;
-  let cluster;
+  let rule;
 
   before(async function () {
     provider = AwsProvider({ config });
-    cluster = provider.getClient({ groupType: "ECS::Cluster" });
+    rule = provider.getClient({
+      groupType: "ELBv2::Rule",
+    });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => cluster.getList(),
+      () => rule.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -25,8 +27,11 @@ describe("ECSCluster", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        cluster.destroy({
-          live: { clusterName: "12345" },
+        rule.destroy({
+          live: {
+            RuleArn:
+              "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener-rule/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1/b902c6929ac9bcd7",
+          },
         }),
     ])
   );
@@ -34,8 +39,8 @@ describe("ECSCluster", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        cluster.getByName({
-          name: "124",
+        rule.getByName({
+          name: "invalid-rule",
         }),
     ])
   );

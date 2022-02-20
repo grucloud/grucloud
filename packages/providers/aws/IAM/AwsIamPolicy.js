@@ -205,21 +205,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property
-  const create = ({ name, payload = {} }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create policy ${name}`);
-        logger.debug(`payload: ${tos(payload)}`);
-      }),
-      () => payload,
-      filterPayload,
-      iam().createPolicy,
-      get("Policy"),
-      tap((Policy) => {
-        logger.debug(`created iam policy result ${tos({ name, Policy })}`);
-        logger.info(`created iam policy ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createPolicy",
+    filterPayload,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicyVersion-property
   const update = client.update({
@@ -344,7 +334,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     pickId,
     method: "deletePolicy",
     getById,
-    ignoreError: eq(get("code"), "NoSuchEntity"),
+    ignoreErrorCodes: ["NoSuchEntity"],
     config,
   });
 

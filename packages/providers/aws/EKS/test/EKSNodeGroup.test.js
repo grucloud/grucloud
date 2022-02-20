@@ -1,23 +1,42 @@
 const assert = require("assert");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
+const { AwsProvider } = require("../../AwsProvider");
+const { pipe, tap } = require("rubico");
 
 describe("EKSNodeGroup", async function () {
   let config;
+  let provider;
+  let nodeGroup;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
+    provider = AwsProvider({ config });
+    nodeGroup = provider.getClient({ groupType: "EKS::NodeGroup" });
+    await provider.start();
   });
-  after(async () => {});
-  it.skip("getById invalid clusterName", async function () {
-    const nodeGroup = provider.getClient({ groupType: "EKS::NodeGroup" });
-    const result = await nodeGroup.getById({
-      clusterName: "aaa",
-      nodegroupName: "xxx",
-    });
-    assert(!result);
-  });
+  it(
+    "list",
+    pipe([
+      () => nodeGroup.getList(),
+      tap(({ items }) => {
+        assert(Array.isArray(items));
+      }),
+    ])
+  );
+  it(
+    "delete with invalid id",
+    pipe([
+      () =>
+        nodeGroup.destroy({
+          live: { clusterName: "mycluster", nodegroupName: "12345" },
+        }),
+    ])
+  );
+  it(
+    "getByName with invalid id",
+    pipe([
+      () =>
+        nodeGroup.getByName({
+          name: "124",
+        }),
+    ])
+  );
 });

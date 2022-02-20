@@ -177,6 +177,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     pickId,
     method: "deleteLoadBalancer",
     getById,
+    ignoreErrorCodes: ["LoadBalancerNotFound"],
     config,
   });
 

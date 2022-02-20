@@ -188,6 +188,7 @@ exports.ELBListener = ({ spec, config }) => {
     pickId,
     method: "deleteListener",
     getById,
+    ignoreErrorCodes: ["ListenerNotFound"],
     config,
   });
 

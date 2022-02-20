@@ -2,20 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("ECSCluster", async function () {
+describe("IamPolicy", async function () {
   let config;
   let provider;
-  let cluster;
+  let policy;
 
   before(async function () {
     provider = AwsProvider({ config });
-    cluster = provider.getClient({ groupType: "ECS::Cluster" });
+    policy = provider.getClient({
+      groupType: "IAM::Policy",
+    });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => cluster.getList(),
+      () => policy.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -25,8 +27,10 @@ describe("ECSCluster", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        cluster.destroy({
-          live: { clusterName: "12345" },
+        policy.destroy({
+          live: {
+            Arn: "arn:aws:iam::aws:policy/service-role/blabla",
+          },
         }),
     ])
   );
@@ -34,8 +38,8 @@ describe("ECSCluster", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        cluster.getByName({
-          name: "124",
+        policy.getByName({
+          name: "arn:aws:iam::aws:policy/service-role/blabla",
         }),
     ])
   );

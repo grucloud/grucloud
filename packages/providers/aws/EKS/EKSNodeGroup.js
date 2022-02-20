@@ -1,11 +1,9 @@
 const assert = require("assert");
-
 const {
   map,
   flatMap,
   pipe,
   tap,
-  tryCatch,
   get,
   switchCase,
   pick,
@@ -13,11 +11,10 @@ const {
   eq,
   not,
 } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, find, when } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
@@ -31,6 +28,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { waitForUpdate } = require("./EKSCommon");
 const findName = get("live.nodegroupName");
 const findId = findName;
+const pickId = pick(["nodegroupName", "clusterName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSNodeGroup = ({ spec, config }) => {
@@ -106,79 +104,28 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeNodegroup-property
-  const getById = ({ clusterName, nodegroupName }) =>
-    pipe([
-      tap(() => {
-        logger.info(
-          `getById nodeGroup: ${JSON.stringify({ clusterName, nodegroupName })}`
-        );
-      }),
-      tryCatch(
-        pipe([
-          () => eks().describeNodegroup({ clusterName, nodegroupName }),
-          get("nodegroup"),
-        ]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => undefined,
-          (error) => {
-            logger.error(`getById describeNodegroup error: ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.info(`getById nodeGroup: has result: ${!!result}`);
-        logger.debug(`getById nodeGroup result: ${tos(result)}`);
-      }),
-    ])();
-
-  const isInstanceUp = eq(get("status"), "ACTIVE");
-
-  const isUpById = pipe([getById, isInstanceUp]);
-  const isDownById = pipe([
-    getById,
-    isEmpty,
-    tap((result) => {
-      logger.info(`nodeGroup isDownById: ${result}`);
-    }),
-  ]);
+  const getById = client.getById({
+    pickId,
+    method: "describeNodegroup",
+    getField: "nodegroup",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createNodegroup-property
-  const create = async ({
-    name,
-    payload = {},
-    resolvedDependencies: { cluster, subnets, role },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create nodeGroup: ${name}, ${tos(payload)}`);
-        assert(cluster, "cluster");
-        assert(subnets, "subnets");
-        assert(role, "role");
-      }),
-      () => payload,
-      tap((params) => {
-        logger.debug(`create nodeGroup: ${name}, params: ${tos(params)}`);
-      }),
-      eks().createNodegroup,
-      get("nodeGroup"),
-      () =>
-        retryCall({
-          name: `nodeGroup create isUpById: ${name}`,
-          fn: () =>
-            isUpById({
-              clusterName: cluster.resource.name,
-              nodegroupName: name,
-            }),
-          config: { retryCount: 12 * 25, retryDelay: 5e3 },
+  const create = client.create({
+    method: "createNodegroup",
+    pickId,
+    pickCreated: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
         }),
-      tap(() => {
-        logger.info(` nodeGroup created: ${name}`);
-      }),
-    ])();
+        get("nodegroup"),
+      ]),
+    isInstanceUp: eq(get("status"), "ACTIVE"),
+    getById,
+    configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },
+  });
 
   //TODO
   /*
@@ -227,47 +174,15 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteNodegroup-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["nodegroupName", "clusterName"]),
-      tap((params) => {
-        assert(true);
-      }),
-      ({ clusterName, nodegroupName }) =>
-        pipe([
-          tap(() => {
-            logger.info(
-              `destroy nodeGroup: ${clusterName}, nodegroupName: ${nodegroupName}`
-            );
-            logger.debug(`destroy ${JSON.stringify({ live })}`);
-            assert(live);
-            assert(nodegroupName);
-            assert(clusterName);
-          }),
-          () =>
-            eks().deleteNodegroup({
-              clusterName,
-              nodegroupName,
-            }),
-          tap(() =>
-            retryCall({
-              name: `destroy nodeGroup isDownById: ${nodegroupName}`,
-              fn: () =>
-                isDownById({
-                  clusterName,
-                  nodegroupName,
-                }),
-              config: { retryCount: 20 * 6, retryDelay: 10e3 },
-            })
-          ),
-          tap(() => {
-            logger.info(`nodeGroup destroyed ${nodegroupName}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteNodegroup",
+    getById,
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+    config,
+  });
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,

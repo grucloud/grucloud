@@ -1,23 +1,10 @@
 const assert = require("assert");
 const shell = require("shelljs");
 
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  not,
-  filter,
-  eq,
-  omit,
-  pick,
-} = require("rubico");
-const { defaultsDeep, includes, size, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
+const { defaultsDeep, includes, isEmpty } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -33,6 +20,7 @@ const { waitForUpdate } = require("./EKSCommon");
 
 const findName = get("live.name");
 const findId = findName;
+const pickId = pick(["name"]);
 
 const findDependencies = ({ live }) => [
   { type: "Vpc", group: "EC2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
@@ -79,34 +67,16 @@ exports.EKSCluster = ({ spec, config }) => {
       ),
     ])();
 
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName cluster: ${name}`);
-      }),
-      tryCatch(
-        pipe([() => eks().describeCluster({ name }), get("cluster")]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => {
-            logger.debug(`getByName ${name} ResourceNotFoundException`);
-          },
-          (error) => {
-            logger.debug(`getByName error: ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getByName cluster result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "describeCluster",
+    getField: "cluster",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
+
+  const getByName = getById;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-  const isInstanceUp = eq(get("status"), "ACTIVE");
-
-  const isUpByName = pipe([getByName, isInstanceUp]);
-  const isDownByName = pipe([getByName, isEmpty]);
 
   const kubeConfigUpdate = ({ name }) =>
     pipe([
@@ -167,51 +137,30 @@ exports.EKSCluster = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property
-  const create = ({
-    name,
-    payload = {},
-    resolvedDependencies: { subnets, securityGroups, role, key },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create cluster: ${name}, ${tos(payload)}`);
-        assert(Array.isArray(subnets), "subnets");
-        assert(Array.isArray(securityGroups), "securityGroups");
-        assert(role, "role");
-        assert(role.live.Arn, "role.live.Arn");
-      }),
-      () =>
-        retryCall({
-          name: `eks createCluster: ${name}`,
-          fn: () => eks().createCluster(payload),
-          config: { retryCount: 4, retryDelay: 5e3 },
-          shouldRetryOnException: ({ error }) =>
-            pipe([
-              tap(() => {
-                logger.error(`createCluster isExpectedException ${tos(error)}`);
-              }),
-              () => error,
-              get("message"),
-              or([
-                includes("The KeyArn in encryptionConfig provider"),
-                includes("Role with arn: "),
-              ]),
-            ])(),
+
+  const create = client.create({
+    method: "createCluster",
+    pickId,
+    isInstanceUp: eq(get("status"), "ACTIVE"),
+    shouldRetryOnException: ({ error }) =>
+      pipe([
+        tap(() => {
+          logger.error(`createCluster isExpectedException ${tos(error)}`);
         }),
-      get("cluster"),
+        () => error,
+        get("message"),
+        or([
+          includes("The KeyArn in encryptionConfig provider"),
+          includes("Role with arn: "),
+        ]),
+      ])(),
+    getById,
+    postCreate:
+      ({ name }) =>
       () =>
-        retryCall({
-          name: `cluster create isUpById: ${name}`,
-          fn: () => isUpByName({ name }),
-          config: { retryCount: 12 * 20, retryDelay: 5e3 },
-        }),
-      () => kubeConfigUpdate({ name }),
-      tap(() => {
-        logger.info(`cluster created: ${name}`);
-      }),
-    ])();
+        kubeConfigUpdate({ name }),
+    configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateClusterConfig-property
   const update = ({ name, payload, diff, live }) =>
@@ -242,37 +191,14 @@ exports.EKSCluster = ({ spec, config }) => {
   // https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
 
-  // ClientException: No cluster found for name
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      tap(kubeConfigRemove),
-      pick(["name"]),
-      ({ name }) =>
-        tryCatch(
-          pipe([
-            tap(() => {
-              logger.info(`destroy cluster ${name}`);
-            }),
-            () => ({ name }),
-            eks().deleteCluster,
-            () =>
-              retryCall({
-                name: `cluster isDownByName: ${name}`,
-                fn: () => isDownByName({ name }),
-                config,
-              }),
-          ]),
-          switchCase([
-            eq(get("code"), "ResourceNotFoundException"),
-            () => undefined,
-            (error) => {
-              logger.error(`deleteCluster error: ${tos(error)}`);
-              throw error;
-            },
-          ])
-        )(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteCluster",
+    getById,
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+    postDestroy: kubeConfigRemove,
+    config,
+  });
 
   const configDefault = ({
     name,

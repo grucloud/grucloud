@@ -1,24 +1,11 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  pick,
-  assign,
-  or,
-} = require("rubico");
+const { map, pipe, tap, get, eq, not, pick, assign, or } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
   forEach,
   find,
   first,
-  flatten,
   pluck,
   callProp,
   unless,
@@ -30,12 +17,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  mapPoolSize,
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 const {
   IAMNew,
   buildTags,
@@ -54,6 +36,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");
+  const pickId = pick(["InstanceProfileName"]);
 
   const findNameEks = ({ live, lives }) =>
     pipe([
@@ -124,37 +107,14 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   //TODO getById should be getByName
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.debug(`getById ${id}`);
-    }),
-    tryCatch(
-      ({ id }) =>
-        pipe([
-          () => iam().getInstanceProfile({ InstanceProfileName: id }),
-          get("InstanceProfile"),
-        ])(),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
-    }),
-  ]);
-
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId,
+    method: "getInstanceProfile",
+    getField: "InstanceProfile",
+    ignoreErrorCodes: ["NoSuchEntity"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
-
   const create = ({ name, payload = {}, dependencies }) =>
     pipe([
       tap(() => {
@@ -178,7 +138,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () =>
         retryCall({
           name: `create instance profile, getById: ${name}`,
-          fn: () => getById({ id: name }),
+          fn: () => getById({ InstanceProfileName: name }),
           isExpectedResult: pipe([get("Roles"), not(isEmpty)]),
           config: { retryDelay: 2e3 },
         }),
@@ -189,52 +149,30 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = ({ live, lives }) =>
-    pipe([
-      () => findName({ live, lives }),
-      (InstanceProfileName) =>
-        pipe([
-          tap(() => {
-            logger.info(`destroy iam instance profile ${InstanceProfileName}`);
-          }),
-          tap(
-            pipe([
-              () => live.Roles,
-              forEach(({ RoleName }) =>
-                removeRoleFromInstanceProfile({ iam })({
-                  RoleName,
-                  InstanceProfileName,
-                })
-              ),
-            ])
-          ),
-          tryCatch(
-            pipe([
-              () => iam().deleteInstanceProfile({ InstanceProfileName }),
-              tap(() =>
-                retryCall({
-                  name: `iam instance profile isDownById id: ${InstanceProfileName}`,
-                  fn: () => isDownById({ id: InstanceProfileName }),
-                  config,
-                })
-              ),
-            ]),
-            switchCase([
-              eq(get("code"), "NoSuchEntity"),
-              () => undefined,
-              (error) => {
-                logger.error(`deleteInstanceProfile ${tos(error)}`);
-                throw error;
-              },
-            ])
-          ),
-          tap(() => {
-            logger.info(
-              `destroy iam instance profile done, ${InstanceProfileName}`
-            );
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: ({ live }) =>
+      pipe([
+        () => live,
+        tap((params) => {
+          assert(true);
+        }),
+        ({ Roles, InstanceProfileName }) =>
+          pipe([
+            () => Roles,
+            forEach(({ RoleName }) =>
+              removeRoleFromInstanceProfile({ iam })({
+                RoleName,
+                InstanceProfileName,
+              })
+            ),
+          ])(),
+      ])(),
+    method: "deleteInstanceProfile",
+    ignoreErrorCodes: ["NoSuchEntity"],
+    getById,
+    config,
+  });
 
   const configDefault = ({
     name,

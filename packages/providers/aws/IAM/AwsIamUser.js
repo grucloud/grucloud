@@ -10,11 +10,11 @@ const {
   assign,
   fork,
   not,
+  pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
+const { defaultsDeep, forEach, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
@@ -24,11 +24,7 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
-const {
-  mapPoolSize,
-  getByNameCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -39,6 +35,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.UserName");
+  const pickId = pick(["UserName"]);
   const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live }) => [
@@ -134,77 +131,53 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.debug(`getById ${id}`);
-    }),
-    tryCatch(
-      ({ id }) => iam().getUser({ UserName: id }),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById result: ${result}`);
-    }),
-  ]);
-
-  //const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
+  const getById = client.getById({
+    pickId,
+    method: "getUser",
+    ignoreErrorCodes: ["NoSuchEntity"],
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
-
-  const create = async ({
-    name,
-    payload = {},
-    resolvedDependencies: { iamGroups, policies },
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create iam user ${name}`);
-        logger.debug(`${name} => ${tos(payload)}`);
-      }),
-      () => iam().createUser(payload),
-      get("User"),
-      tap.if(
-        () => iamGroups,
-        () =>
-          forEach((group) =>
-            iam().addUserToGroup({
-              GroupName: group.live.GroupName,
-              UserName: name,
-            })
-          )(iamGroups)
-      ),
-      tap.if(
-        () => policies,
-        () =>
-          forEach(
-            pipe([
-              tap((policy) => {
-                logger.debug(`attachUserPolicy: ${tos(policy)}`);
-                assert(policy.live.Arn);
-              }),
-              (policy) =>
-                iam().attachUserPolicy({
-                  PolicyArn: policy.live.Arn,
-                  UserName: name,
+  const create = client.create({
+    method: "createUser",
+    pickId,
+    getById,
+    config,
+    pickCreated: () => pipe([get("User")]),
+    postCreate: ({ name, resolvedDependencies: { policies, iamGroups } }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        tap.if(
+          () => iamGroups,
+          () =>
+            forEach((group) =>
+              iam().addUserToGroup({
+                GroupName: group.live.GroupName,
+                UserName: name,
+              })
+            )(iamGroups)
+        ),
+        tap.if(
+          () => policies,
+          () =>
+            forEach(
+              pipe([
+                tap((policy) => {
+                  logger.debug(`attachUserPolicy: ${tos(policy)}`);
+                  assert(policy.live.Arn);
                 }),
-            ])
-          )(policies)
-      ),
-      tap((User) => {
-        logger.debug(`created iam user result ${tos({ name, User })}`);
-        logger.info(`created iam user ${name}`);
-      }),
-    ])();
+                (policy) =>
+                  iam().attachUserPolicy({
+                    PolicyArn: policy.live.Arn,
+                    UserName: name,
+                  }),
+              ])
+            )(policies)
+        ),
+      ]),
+  });
 
   const destroyAccessKey = ({ UserName }) =>
     pipe([
@@ -272,42 +245,44 @@ exports.AwsIamUser = ({ spec, config }) => {
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
-  const destroy = async ({ id: UserName, name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy iam user ${JSON.stringify({ name, UserName })}`);
-      }),
+
+  const destroy = client.destroy({
+    pickId,
+    preDestroy: pipe([
+      get("live"),
+      pick(["UserName"]),
       fork({
-        userFromGroup: () => removeUserFromGroup({ UserName }),
-        deletePolicy: pipe([
-          () => detachUserPolicy({ UserName }),
-          () => deleteUserPolicy({ UserName }),
-        ]),
-        loginProfile: () => deleteLoginProfile({ UserName }),
-        accessKey: () => destroyAccessKey({ UserName }),
+        userFromGroup: removeUserFromGroup,
+        deletePolicy: pipe([tap(detachUserPolicy), deleteUserPolicy]),
+        loginProfile: deleteLoginProfile,
+        accessKey: destroyAccessKey,
       }),
-      () =>
-        iam().deleteUser({
-          UserName,
-        }),
-      tap(() =>
-        retryCall({
-          name: `iam user isDownById: UserName: ${UserName}`,
-          fn: () => isDownById({ id: UserName }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`destroy iam user done, ${JSON.stringify({ UserName })}`);
+    ]),
+    method: "deleteUser",
+    ignoreErrorCodes: ["NoSuchEntity"],
+    getById,
+    config,
+  });
+
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        UserName: name,
+        Path: "/",
+        // Tags: buildTags({
+        //   name,
+        //   config,
+        //   namespace,
+        //   UserTags: Tags,
+        // }),
       }),
     ])();
-
-  const configDefault = async ({ name, namespace, properties, dependencies }) =>
-    defaultsDeep({
-      UserName: name,
-      Path: "/",
-      Tags: buildTags({ name, namespace, config }),
-    })(properties);
 
   return {
     spec,
