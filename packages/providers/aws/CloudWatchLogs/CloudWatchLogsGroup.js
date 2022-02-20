@@ -117,7 +117,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     pickId,
     method: "deleteLogGroup",
     getById,
-    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 

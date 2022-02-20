@@ -5,24 +5,12 @@ const {
   tap,
   get,
   eq,
-  not,
   assign,
   tryCatch,
-  or,
   omit,
   switchCase,
 } = require("rubico");
-const {
-  callProp,
-  first,
-  last,
-  identity,
-  defaultsDeep,
-  isEmpty,
-  size,
-  includes,
-  unless,
-} = require("rubico/x");
+const { first, identity, defaultsDeep, unless } = require("rubico/x");
 const crypto = require("crypto");
 const path = require("path");
 
@@ -32,7 +20,6 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Layer",
 });
 
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
@@ -60,9 +47,6 @@ exports.Layer = ({ spec, config }) => {
       }),
       () => lambda().listLayers(params),
       get("Layers"),
-      tap((params) => {
-        assert(true);
-      }),
       map(({ LatestMatchingVersion, ...other }) => ({
         ...LatestMatchingVersion,
         ...other,
@@ -131,8 +115,6 @@ exports.Layer = ({ spec, config }) => {
       }),
     ])();
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishLayerVersion-property
   const create = ({ name, payload }) =>
     pipe([
@@ -166,19 +148,11 @@ exports.Layer = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteLayerVersion-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`deleteLayerVersion ${JSON.stringify({ name })}`);
-      }),
-      () => live,
-      get("Version"),
-      (VersionNumber) => ({ LayerName: name, VersionNumber }),
-      (params) => lambda().deleteLayerVersion(params),
-      tap(() => {
-        logger.info(`destroyed layer${JSON.stringify({ name })}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId: ({ Version, LayerName }) => ({ VersionNumber: Version, LayerName }),
+    method: "deleteLayerVersion",
+    config,
+  });
 
   const configDefault = ({
     name,
@@ -210,6 +184,7 @@ exports.Layer = ({ spec, config }) => {
     update,
     destroy,
     getByName,
+    //getById,
     getList,
     configDefault,
     shouldRetryOnException,

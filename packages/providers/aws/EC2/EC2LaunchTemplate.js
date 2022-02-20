@@ -1,17 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  or,
-  pick,
-  map,
-  omit,
-} = require("rubico");
+const { pipe, tap, get, map, omit, pick } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -38,6 +26,7 @@ const { AwsClient } = require("../AwsClient");
 const EC2Instance = require("./EC2Instance");
 
 const findId = get("live.LaunchTemplateId");
+const pickId = pick(["LaunchTemplateId"]);
 
 const findNameEks = pipe([
   tap((params) => {
@@ -58,9 +47,12 @@ const findName = (params) => {
   }
   assert(false, "should have a name");
 };
+const ignoreErrorCodes = [
+  "InvalidLaunchTemplateId.NotFound",
+  "InvalidLaunchTemplateName.NotFoundException",
+];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-
 exports.EC2LaunchTemplate = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ec2 = () => createEndpoint({ endpointName: "EC2" })(config);
@@ -74,7 +66,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [live.LaunchTemplateData.KeyName],
+      ids: [pipe([() => live, get("LaunchTemplateData.KeyName")])()],
     },
     {
       type: "SecurityGroup",
@@ -106,11 +98,22 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     config,
     key: "eks:cluster-name",
   });
-
-  const notFound = or([
-    eq(get("code"), "InvalidLaunchTemplateId.NotFound"),
-    eq(get("code"), "InvalidLaunchTemplateName.NotFoundException"),
-  ]);
+  const decorate = () => (launchTemplate) =>
+    pipe([
+      () => launchTemplate,
+      tap(({ LaunchTemplateId }) => {
+        assert(LaunchTemplateId);
+      }),
+      ({ LaunchTemplateId }) => ({
+        LaunchTemplateId,
+        Versions: ["$Latest"],
+      }),
+      ec2().describeLaunchTemplateVersions,
+      get("LaunchTemplateVersions"),
+      first,
+      omit(["LaunchTemplateData.TagSpecifications"]),
+      defaultsDeep(launchTemplate),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
   const describeLaunchTemplates = pipe([
@@ -118,94 +121,39 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       assert(true);
     }),
     ec2().describeLaunchTemplates,
-    tap((params) => {
-      assert(true);
-    }),
     get("LaunchTemplates"),
     tap((launchTemplates) => {
       logger.debug(
         `describeLaunchTemplates #launchTemplates ${size(launchTemplates)}`
       );
     }),
-    map((launchTemplate) =>
-      pipe([
-        () => launchTemplate,
-        ({ LaunchTemplateId }) => ({
-          LaunchTemplateId,
-          Versions: ["$Latest"],
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-        ec2().describeLaunchTemplateVersions,
-        tap((params) => {
-          assert(true);
-        }),
-        get("LaunchTemplateVersions"),
-        first,
-        tap((params) => {
-          assert(true);
-        }),
-        omit(["LaunchTemplateData.TagSpecifications"]),
-        defaultsDeep(launchTemplate),
-        tap((params) => {
-          assert(true);
-        }),
-      ])()
-    ),
+    map(decorate()),
   ]);
 
-  const getList = pipe([
-    tap((params) => {
-      assert(true);
+  const getList = pipe([() => ({}), describeLaunchTemplates]);
+
+  const getById = client.getById({
+    pickId: ({ LaunchTemplateName }) => ({
+      LaunchTemplateNames: [LaunchTemplateName],
     }),
-    () => ({}),
-    describeLaunchTemplates,
-    tap((params) => {
-      assert(true);
-    }),
+    method: "describeLaunchTemplates",
+    getField: "LaunchTemplates",
+    ignoreErrorCodes,
+    decorate,
+  });
+
+  const getByName = pipe([
+    ({ name }) => ({ LaunchTemplateName: name }),
+    getById,
   ]);
-
-  const getByName = ({ name }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(name);
-        }),
-        () => ({ LaunchTemplateNames: [name] }),
-        describeLaunchTemplates,
-        tap((params) => {
-          assert(true);
-        }),
-        first,
-      ]),
-      switchCase([
-        notFound,
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
-    )();
-
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplate-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      ec2().createLaunchTemplate,
-      // tap(() =>
-      //   retryCall({
-      //     name: `createCluster isUpByName: ${name}`,
-      //     fn: () => isUpByName({ name }),
-      //   })
-      // ),
-    ])();
+  const create = client.create({
+    method: "createLaunchTemplate",
+    config,
+  });
 
   // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property
-
   //TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
@@ -222,31 +170,13 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteLaunchTemplate-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      pick(["LaunchTemplateId"]),
-      tap(({ LaunchTemplateId }) => {
-        assert(LaunchTemplateId);
-      }),
-      tryCatch(pipe([ec2().deleteLaunchTemplate]), (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(
-              `error deleteLaunchTemplate ${tos({ params, error })}`
-            );
-          }),
-          () => error,
-          switchCase([
-            notFound,
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteLaunchTemplate",
+    getById,
+    ignoreErrorCodes,
+    config,
+  });
 
   const configDefault = ({
     name,

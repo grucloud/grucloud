@@ -1,12 +1,7 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, switchCase, eq, or } = require("rubico");
+const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSTaskDefinition",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const {
   createEndpoint,
   shouldRetryOnException,
@@ -17,9 +12,11 @@ const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
+const pickId = ({ taskDefinitionArn }) => ({
+  taskDefinition: taskDefinitionArn,
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
 exports.ECSTaskDefinition = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
@@ -35,16 +32,6 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   ];
 
   const findNamespace = pipe([() => ""]);
-
-  const isNotFound = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    or([
-      eq(get("message"), "The specified task definition does not exist."),
-      eq(get("code"), "InvalidParameterException"),
-    ]),
-  ]);
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
   const listTaskDefinitions = (params = {}) =>
@@ -82,38 +69,32 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#registerTaskDefinition-property
-  const create = ({ payload, name, namespace }) =>
-    pipe([() => payload, ecs().registerTaskDefinition])();
+  const create = client.create({
+    method: "registerTaskDefinition",
+    //TODO
+    // pickCreated: () =>
+    //   pipe([
+    //     tap(({ Instances }) => {
+    //       assert(Instances);
+    //     }),
+    //     get("Instances"),
+    //     first,
+    //   ]),
+    // pickId,
+    // getById,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deregisterTaskDefinition-property
-  const destroy = ({ live }) =>
-    pipe([
-      () => live,
-      tap((params) => {
-        assert(true);
-      }),
-      ({ taskDefinitionArn }) => ({ taskDefinition: taskDefinitionArn }),
-      tap(({ taskDefinition }) => {
-        assert(taskDefinition);
-      }),
-      tryCatch(pipe([ecs().deregisterTaskDefinition]), (error, params) =>
-        pipe([
-          tap(() => {
-            logger.error(
-              `error deregisterTaskDefinition ${tos({ params, error })}`
-            );
-          }),
-          () => error,
-          switchCase([
-            isNotFound,
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
-      ),
-    ])();
+
+  const destroy = client.destroy({
+    pickId,
+    method: "deregisterTaskDefinition",
+    //getById,
+    ignoreErrorCodes: ["InvalidParameterException"],
+    ignoreErrorMessages: ["The specified task definition does not exist."],
+    config,
+  });
 
   const configDefault = ({
     name,

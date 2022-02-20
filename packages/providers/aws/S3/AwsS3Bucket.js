@@ -334,7 +334,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList s3Bucket deep:${deep}`);
       }),
-      () => s3().listBuckets(),
+      s3().listBuckets,
       get("Buckets"),
       tap((Buckets) => {
         logger.info(`getList #s3Bucket ${size(Buckets)}`);
@@ -671,7 +671,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     } catch (error) {
       logger.error("s3 bucket put error");
       logger.error(error);
-      await destroy({ id: Bucket, name: Bucket });
+      await destroy({ live: { Bucket } });
       throw error;
     }
     logger.info(`created final ${Bucket}`);
@@ -680,50 +680,51 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  const destroy = ({ id: Bucket }) =>
+  const destroy = ({ live: { Name: Bucket } }) =>
     pipe([
       tap(() => {
-        assert(Bucket, `destroy invalid s3 id`);
-        logger.info(`destroy bucket ${tos({ Bucket })}`);
+        assert(Bucket, `destroy invalid s3`);
+        logger.debug(`destroy bucket ${tos({ Bucket })}`);
       }),
       async () => {
         do {
           var isTruncated = await pipe([
-            () => s3().listObjectsV2({ Bucket }),
+            () => ({ Bucket }),
+            s3().listObjectsV2,
             get("Contents"),
             tap((Contents) => {
-              logger.debug(`listObjects Contents: ${tos({ Contents })}`);
+              logger.debug(`listObjects Contents: ${size(Contents)}`);
             }),
             tap(
-              map.pool(mapPoolSize, async (content) => {
-                try {
-                  await s3().deleteObject({
-                    Bucket,
-                    Key: content.Key,
-                  });
-                } catch (error) {
-                  logger.error(`listObjects error: ${tos({ error })}`);
-                  //TODO
-                }
-              })
+              map.pool(
+                mapPoolSize,
+                tryCatch(
+                  pipe([
+                    ({ Key }) => ({
+                      Bucket,
+                      Key,
+                    }),
+                    s3().deleteObject,
+                  ]),
+                  (error) => ({ error })
+                )
+              )
             ),
             get("IsTruncated"),
-            tap((IsTruncated) => {
-              logger.debug(`listObjects IsTruncated: ${IsTruncated}`);
-            }),
           ])();
         } while (isTruncated);
       },
       async () => {
         do {
           var isTruncated = await pipe([
-            () => s3().listObjectVersions({ Bucket }),
+            () => ({ Bucket }),
+            s3().listObjectVersions,
             tap((result) => {
               logger.debug(`listObjectVersions: ${tos({ result })}`);
             }),
             tap(
               switchCase([
-                (object) => !isEmpty(object.Versions),
+                pipe([get("Versions"), not(isEmpty)]),
                 (object) =>
                   s3().deleteObjects({
                     Bucket,
@@ -741,7 +742,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             ),
             tap(
               switchCase([
-                (object) => !isEmpty(object.DeleteMarkers),
+                pipe([get("DeleteMarkers"), not(isEmpty)]),
                 (object) =>
                   s3().deleteObjects({
                     Bucket,

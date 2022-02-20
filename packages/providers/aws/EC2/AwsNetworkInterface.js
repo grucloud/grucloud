@@ -29,6 +29,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   const ec2 = Ec2New(config);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
+  const pickId = pick(["NetworkInterfaceId"]);
 
   const findName = findNameInTagsOrId({ findId });
   const findNamespace = ({ live, lives }) =>
@@ -81,36 +82,13 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       get("NetworkInterfaces"),
     ])();
 
-  const destroy = ({ live }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`destroy network interface`);
-      }),
-      () => ({ NetworkInterfaceId: findId({ live }) }),
-      ({ NetworkInterfaceId }) =>
-        pipe([
-          tap(() => {}),
-          tap(() => {
-            logger.debug(`network interface destroyed ${NetworkInterfaceId}`);
-          }),
-          tryCatch(
-            () => ec2().deleteNetworkInterface({ NetworkInterfaceId }),
-            switchCase([
-              eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
-              () => undefined,
-              (error) => {
-                logger.error(
-                  `deleteNetworkInterface error code: ${error.code}`
-                );
-                throw error;
-              },
-            ])
-          ),
-          tap(() => {
-            logger.debug(`network interface destroyed ${NetworkInterfaceId}`);
-          }),
-        ])(),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteNetworkInterface",
+    //getById,
+    ignoreErrorCodes: ["InvalidNetworkInterfaceID.NotFound"],
+    config,
+  });
 
   return {
     spec,

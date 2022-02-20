@@ -71,7 +71,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     pickId,
     method: "deleteEventBus",
     getById,
-    ignoreError: eq(get("code"), "ResourceNotFoundException"),
+    ignoreErrorCodes: ["ResourceNotFoundException"],
     config,
   });
 

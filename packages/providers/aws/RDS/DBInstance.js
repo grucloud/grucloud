@@ -80,11 +80,7 @@ exports.DBInstance = ({ spec, config }) => {
     },
     method: "deleteDBInstance",
     getById,
-    ignoreError: ({ code }) =>
-      pipe([
-        () => ["DBInstanceNotFound", "InvalidDBInstanceStateFault"],
-        includes(code),
-      ]),
+    ignoreErrorCodes: ["DBInstanceNotFound", "InvalidDBInstanceStateFault"],
     config,
   });
 

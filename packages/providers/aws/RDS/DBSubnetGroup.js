@@ -110,7 +110,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     pickId,
     method: "deleteDBSubnetGroup",
     getById,
-    ignoreError: eq(get("code"), "DBSubnetGroupNotFoundFault"),
+    ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
     config,
   });
 
