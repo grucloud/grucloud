@@ -1,6 +1,6 @@
 {
   "name": "vm-ad-login",
-  "version": "5.3.2",
+  "version": "5.4.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.3.0",
-    "@grucloud/provider-azure": "^5.3.2",
+    "@grucloud/core": "^5.4.0",
+    "@grucloud/provider-azure": "^5.4.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
