@@ -9,6 +9,7 @@ const {
   filter,
   eq,
   switchCase,
+  omit,
 } = require("rubico");
 const { isEmpty, find, when, callProp } = require("rubico/x");
 const {
@@ -18,13 +19,11 @@ const {
 } = require("@grucloud/core/Common");
 
 const { isOurMinion } = require("../AwsCommon");
-const {
-  CloudFrontDistribution,
-  compareDistribution,
-} = require("./CloudFrontDistribution");
+const { CloudFrontDistribution } = require("./CloudFrontDistribution");
 const {
   CloudFrontOriginAccessIdentity,
 } = require("./CloudFrontOriginAccessIdentity");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "CloudFront";
 
@@ -51,7 +50,36 @@ module.exports = () =>
       },
       Client: CloudFrontDistribution,
       isOurMinion,
-      compare: compareDistribution,
+      compare: compare({
+        filterTarget: pipe([
+          get("DistributionConfig"),
+          omit([
+            "CallerReference",
+            "ViewerCertificate.CloudFrontDefaultCertificate",
+          ]),
+          defaultsDeep({
+            OriginGroups: { Quantity: 0, Items: [] },
+            CacheBehaviors: { Quantity: 0, Items: [] },
+            CustomErrorResponses: { Quantity: 0, Items: [] },
+            ViewerCertificate: { CloudFrontDefaultCertificate: false },
+            HttpVersion: "http2",
+            IsIPV6Enabled: true,
+          }),
+        ]),
+        filterLive: pipe([
+          omit([
+            "Id",
+            "ARN",
+            "Status",
+            "LastModifiedTime",
+            "DomainName",
+            "CallerReference",
+            "WebACLId",
+            "AliasICPRecordals",
+            "Tags", //TODO
+          ]),
+        ]),
+      }),
       filterLive: ({ lives }) =>
         pipe([
           pick([

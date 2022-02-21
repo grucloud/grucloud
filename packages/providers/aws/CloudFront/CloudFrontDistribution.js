@@ -23,7 +23,7 @@ const {
   last,
   includes,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+
 const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({
@@ -31,11 +31,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   CloudFrontNew,
   buildTags,
@@ -418,38 +414,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       ]),
   };
 };
-
-const filterTarget = ({ config, target }) =>
-  pipe([
-    () => target,
-    get("DistributionConfig"),
-    omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
-  ])();
-
-const filterLive = ({ config, live }) => pipe([() => live])();
-
-exports.compareDistribution = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareDistribution ${tos(diff)}`);
-  }),
-]);
 
 const findS3ObjectUpdated = ({ plans = [], Id, OriginPath }) =>
   pipe([
