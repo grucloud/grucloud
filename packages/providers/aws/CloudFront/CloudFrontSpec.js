@@ -11,7 +11,7 @@ const {
   switchCase,
   omit,
 } = require("rubico");
-const { isEmpty, find, when, callProp } = require("rubico/x");
+const { isEmpty, find, when } = require("rubico/x");
 const {
   buildGetId,
   compare,

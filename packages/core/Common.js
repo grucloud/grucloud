@@ -416,8 +416,6 @@ const removeOurTags = pipe([
 
 exports.removeOurTags = removeOurTags;
 
-//TODO this is for AWS only
-const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
 const filterLiveDefault = identity;
 
 exports.compare = ({
@@ -449,26 +447,25 @@ exports.compare = ({
     tap((params) => {
       assert(true);
     }),
-    ({ target, live }) =>
-      fork({
-        targetDiff: pipe([
-          () => detailedDiff(target, live),
-          omitIfEmpty(["deleted", "updated", "added"]),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        liveDiff: pipe([
-          () => detailedDiff(live, target),
-          omitIfEmpty(["added", "updated", "deleted"]),
-        ]),
-        jsonDiff: pipe([
-          () => Diff.diffJson(live, target),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      })(),
+    assign({
+      targetDiff: pipe([
+        ({ target, live }) => detailedDiff(target, live),
+        omitIfEmpty(["deleted", "updated", "added"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      liveDiff: pipe([
+        ({ target, live }) => detailedDiff(live, target),
+        omitIfEmpty(["added", "updated", "deleted"]),
+      ]),
+      jsonDiff: pipe([
+        ({ target, live }) => Diff.diffJson(live, target),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
     tap((diff) => {
       logger.debug(`compare ${tos(diff)}`);
     }),

@@ -6,7 +6,7 @@ const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
-const { EcrRegistry, compareRegistry } = require("./EcrRegistry");
+const { EcrRegistry } = require("./EcrRegistry");
 
 const GROUP = "ECR";
 
@@ -68,19 +68,16 @@ module.exports = () =>
       type: "Registry",
       Client: EcrRegistry,
       isOurMinion,
-      compare: compareRegistry,
+      compare: compare({
+        //TODO tags or Tags ?
+        filterAll: pipe([omit(["Tags"])]),
+        filterLive: pipe([omit(["registryId"])]),
+      }),
       ignoreResource: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           get("live"),
           not(and([get("policyText"), get("replicationConfiguration")])),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
-
       filterLive: () =>
         pipe([pick(["policyText", "replicationConfiguration"])]),
     },

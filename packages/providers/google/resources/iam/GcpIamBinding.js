@@ -250,6 +250,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
   };
 };
 
+//TODO
 const filterTarget = ({ config, target }) => pipe([() => target])();
 const filterLive = ({ config, live }) => pipe([() => live])();
 

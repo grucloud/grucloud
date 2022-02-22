@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { detailedDiff } = require("deep-object-diff");
 const {
   switchCase,
   tryCatch,
@@ -10,13 +9,11 @@ const {
   assign,
   omit,
   eq,
-  or,
 } = require("rubico");
 const { defaultsDeep, isEmpty, when, isDeepEqual } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
-const { tos } = require("@grucloud/core/tos");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -64,7 +61,6 @@ exports.EcrRegistry = ({ spec, config }) => {
   const getByName = pipe([describeRegistry]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putRegistryPolicy-property
-
   const putRegistryPolicy = pipe([
     tap((params) => {
       logger.debug("putRegistryPolicy");
@@ -186,6 +182,7 @@ exports.EcrRegistry = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO Tags ?
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
     pipe([() => properties, defaultsDeep({})])();
 
@@ -203,24 +200,3 @@ exports.EcrRegistry = ({ spec, config }) => {
     cannotBeDeleted: () => true,
   };
 };
-
-const filterTarget = pipe([get("target", {}), omit(["Tags"])]);
-const filterLive = ({ live }) => pipe([() => live, omit(["registryId"])])();
-
-//TODO remove, use common one
-exports.compareRegistry = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([() => detailedDiff(target, live), omit([])])(),
-    liveDiff: pipe([() => detailedDiff(live, target), omit([])])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareRegistry ${tos(diff)}`);
-  }),
-]);

@@ -4,6 +4,7 @@ const { callProp } = require("rubico/x");
 const Axios = require("axios");
 const fs = require("fs").promises;
 const AdmZip = require("adm-zip");
+const crypto = require("crypto");
 
 exports.fetchZip =
   () =>
@@ -36,4 +37,14 @@ exports.createZipBuffer = ({ localPath }) =>
     () => new AdmZip(),
     tap(callProp("addLocalFolder", localPath, "")),
     callProp("toBuffer"),
+  ])();
+
+exports.computeHash256 = (ZipFile) =>
+  pipe([
+    tap(() => {
+      assert(ZipFile);
+    }),
+    () => crypto.createHash("sha256"),
+    (hash256) =>
+      pipe([() => hash256.update(ZipFile), () => hash256.digest("base64")])(),
   ])();

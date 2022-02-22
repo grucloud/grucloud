@@ -13,11 +13,22 @@
       "port": 9229
     },
     {
-      "name": "List -g -o",
+      "name": "List",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g", "--json", "inventory.json"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "list"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "GenCode",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "gencode"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

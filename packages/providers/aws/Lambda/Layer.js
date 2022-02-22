@@ -9,19 +9,17 @@ const {
   tryCatch,
   omit,
   switchCase,
+  pick,
 } = require("rubico");
-const { first, identity, defaultsDeep, unless } = require("rubico/x");
-const crypto = require("crypto");
+const { first, defaultsDeep } = require("rubico/x");
 const path = require("path");
-
-const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Layer",
 });
 
 const { tos } = require("@grucloud/core/tos");
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { buildTagsObject, compare } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const {
@@ -34,7 +32,7 @@ const {
 const findId = get("live.LayerArn");
 const findName = get("live.LayerName");
 
-const { fetchZip, createZipBuffer } = require("./LambdaCommon");
+const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
 exports.Layer = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -191,55 +189,64 @@ exports.Layer = ({ spec, config }) => {
   };
 };
 
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-const computeHash256 = ({ target }) =>
-  pipe([
-    () => crypto.createHash("sha256"),
-    (hash256) =>
-      pipe([
-        () => hash256.update(target.Content.ZipFile),
-        () => hash256.digest("base64"),
-      ])(),
-  ])();
-
-const isEqualHash256 = ({ target, live }) =>
-  pipe([
-    () => computeHash256({ target }),
-    eq(identity, live.Content.CodeSha256),
-  ])();
-
 exports.compareLayer = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
+  tap((params) => {
+    assert(true);
   }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      unless(
-        () => isEqualHash256({ target, live }),
-        assign({ updated: () => ({ CodeSha256: live.Content.CodeSha256 }) })
-      ),
+  compare({
+    filterAll: pipe([omit(["Tags"])]),
+    filterTarget: pipe([
       tap((params) => {
         assert(true);
       }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
+      assign({ CodeSha256: pipe([get("Content.ZipFile"), computeHash256]) }),
+      pick(["Description", "CompatibleRuntimes"]),
+    ]),
+    filterLive: pipe([
       tap((params) => {
         assert(true);
       }),
-      unless(
-        () => isEqualHash256({ target, live }),
-        assign({ updated: () => ({ CodeSha256: computeHash256({ target }) }) })
-      ),
-    ])(),
+      pick(["CompatibleRuntimes", "Description"]),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
   }),
   tap((diff) => {
     logger.debug(`compareLayer ${tos(diff)}`);
   }),
 ]);
+
+// exports.compareLayer = pipe([
+//   assign({
+//     target: filterTarget,
+//     live: filterLive,
+//   }),
+//   ({ target, live }) => ({
+//     targetDiff: pipe([
+//       () => detailedDiff(target, live),
+//       omit(["added", "deleted"]),
+//       unless(
+//         () => isEqualHash256({ target, live }),
+//         assign({ updated: () => ({ CodeSha256: live.Content.CodeSha256 }) })
+//       ),
+//       tap((params) => {
+//         assert(true);
+//       }),
+//     ])(),
+//     liveDiff: pipe([
+//       () => detailedDiff(target, live),
+//       omit(["added", "deleted"]),
+//       tap((params) => {
+//         assert(true);
+//       }),
+//       unless(
+//         () => isEqualHash256({ target, live }),
+//         assign({ updated: () => ({ CodeSha256: computeHash256({ target }) }) })
+//       ),
+//     ])(),
+//   }),
+//   tap((diff) => {
+//     logger.debug(`compareLayer ${tos(diff)}`);
+//   }),
+// ]);

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick } = require("rubico");
+const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
@@ -65,6 +65,18 @@ module.exports = () =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
+      //TODO
+      pickProperties: [
+        "Handler",
+        "PackageType",
+        "Runtime",
+        "Description",
+        "LicenseInfo",
+        "Timeout",
+        "MemorySize",
+        "Environment",
+        "CodeSha256",
+      ],
       filterLive:
         ({ resource, programOptions }) =>
         (live) =>
@@ -74,6 +86,7 @@ module.exports = () =>
               assert(live.Code.Data);
             }),
             () => live,
+            get("Configuration"),
             pick([
               "Handler",
               "PackageType",
