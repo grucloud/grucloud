@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  map,
-  get,
-  filter,
-  tryCatch,
-
-  switchCase,
-  assign,
-} = require("rubico");
+const { pipe, tap, map, get, switchCase, assign } = require("rubico");
 const { defaultsDeep, identity, when } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");

@@ -1,5 +1,5 @@
 const { pipe, assign, map, get, pick } = require("rubico");
-const { callProp } = require("rubico/x");
+const { callProp, defaultsDeep } = require("rubico/x");
 
 const assert = require("assert");
 const { md5FileBase64 } = require("@grucloud/core/Common");
@@ -28,6 +28,8 @@ module.exports = () =>
           assign({
             location: pipe([get("location"), callProp("toUpperCase")]),
           }),
+          //TODO use propertiesDefault
+          defaultsDeep({ storageClass: "STANDARD" }),
         ]),
       }),
     },

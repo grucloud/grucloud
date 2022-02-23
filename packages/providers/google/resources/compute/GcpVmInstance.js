@@ -24,7 +24,9 @@ const {
   isEmpty,
   flatten,
 } = require("rubico/x");
+
 const { detailedDiff } = require("deep-object-diff");
+const { compare } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("@grucloud/core/tos");
@@ -35,7 +37,7 @@ const { toTagName } = require("@grucloud/core/TagName");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { axiosErrorToJSON } = require("@grucloud/core/Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
-const { retryCall } = require("@grucloud/core//Retry");
+const { retryCall } = require("@grucloud/core/Retry");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1
 

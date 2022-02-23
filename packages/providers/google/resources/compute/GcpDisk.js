@@ -2,8 +2,6 @@ const assert = require("assert");
 const { get, eq, pipe, tap, any, assign } = require("rubico");
 const { defaultsDeep, find, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "GcpDisk" });
-const { tos } = require("@grucloud/core/tos");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 const { buildLabel } = require("../../GoogleCommon");

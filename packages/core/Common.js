@@ -421,7 +421,9 @@ const filterLiveDefault = identity;
 exports.compare = ({
   filterAll = identity,
   filterTarget = identity,
-  filterLive = filterLiveDefault,
+  filterTargetDefault = identity,
+  filterLive = identity,
+  filterLiveDefault = identity,
 } = {}) =>
   pipe([
     tap((params) => {
@@ -438,11 +440,18 @@ exports.compare = ({
           removeOurTags,
           filterTarget,
           filterAll,
+          filterTargetDefault,
           tap((params) => {
             assert(true);
           }),
         ])(),
-      live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
+      live: pipe([
+        get("live"),
+        removeOurTags,
+        filterLive,
+        filterAll,
+        filterLiveDefault,
+      ]),
     }),
     tap((params) => {
       assert(true);

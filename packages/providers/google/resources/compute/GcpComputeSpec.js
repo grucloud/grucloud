@@ -109,11 +109,13 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
+          defaultsDeep({ disabled: false }),
         ]),
         filterLive: pipe([
           tap((params) => {
             assert(true);
           }),
+          omit(["creationTimestamp"]),
         ]),
       }),
       filterLive: () =>

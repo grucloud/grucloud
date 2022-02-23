@@ -12,6 +12,7 @@ const {
   filter,
   reduce,
   set,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -33,7 +34,7 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { detailedDiff } = require("deep-object-diff");
+const { compare } = require("@grucloud/core/Common");
 
 const {
   compareK8s,
@@ -405,7 +406,19 @@ const fnSpecs = pipe([
           ]),
         ]),
       }),
-      compare: detailedDiff,
+      compare: compare({
+        filterTarget: pipe([omit(["apiVersion", "kind"])]),
+        filterLive: pipe([
+          omit([
+            "spec",
+            "metadata.uid",
+            "metadata.resourceVersion",
+            "metadata.creationTimestamp",
+            "metadata.labels",
+            "status",
+          ]),
+        ]),
+      }),
     },
     {
       type: "PersistentVolume",

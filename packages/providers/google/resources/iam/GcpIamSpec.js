@@ -14,7 +14,6 @@ const {
   switchCase,
 } = require("rubico");
 const { prepend, find, isEmpty, callProp, identity } = require("rubico/x");
-const { tos } = require("@grucloud/core/tos");
 const { camelCase } = require("change-case");
 const { compare } = require("../../GoogleCommon");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
@@ -30,8 +29,6 @@ const {
   isOurMinionIamBinding,
   compareIamBinding,
 } = require("./GcpIamBinding");
-
-const logger = require("@grucloud/core/logger")({ prefix: "GcpIamSpec" });
 
 const GROUP = "iam";
 

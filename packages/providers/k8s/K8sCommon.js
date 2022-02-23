@@ -77,6 +77,7 @@ const pickCompare = ({ metadata, spec, data }) => ({
   data,
 });
 
+//TODO
 exports.compareK8s = ({
   filterAll = identity,
   filterTarget = identity,
