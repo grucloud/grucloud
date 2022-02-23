@@ -216,37 +216,3 @@ exports.compareLayer = pipe([
     logger.debug(`compareLayer ${tos(diff)}`);
   }),
 ]);
-
-// exports.compareLayer = pipe([
-//   assign({
-//     target: filterTarget,
-//     live: filterLive,
-//   }),
-//   ({ target, live }) => ({
-//     targetDiff: pipe([
-//       () => detailedDiff(target, live),
-//       omit(["added", "deleted"]),
-//       unless(
-//         () => isEqualHash256({ target, live }),
-//         assign({ updated: () => ({ CodeSha256: live.Content.CodeSha256 }) })
-//       ),
-//       tap((params) => {
-//         assert(true);
-//       }),
-//     ])(),
-//     liveDiff: pipe([
-//       () => detailedDiff(target, live),
-//       omit(["added", "deleted"]),
-//       tap((params) => {
-//         assert(true);
-//       }),
-//       unless(
-//         () => isEqualHash256({ target, live }),
-//         assign({ updated: () => ({ CodeSha256: computeHash256({ target }) }) })
-//       ),
-//     ])(),
-//   }),
-//   tap((diff) => {
-//     logger.debug(`compareLayer ${tos(diff)}`);
-//   }),
-// ]);

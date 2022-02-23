@@ -11,7 +11,6 @@ const {
   filter,
   assign,
   fork,
-  or,
   not,
   eq,
   omit,
@@ -30,7 +29,7 @@ const {
   identity,
   unless,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { compare } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
@@ -711,29 +710,11 @@ exports.Route53Record = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
-//TODO ResourceRecords: [] ?
-const filterTarget = ({ config, target }) =>
-  pipe([() => target, defaultsDeep({ ResourceRecords: [] })])();
-
-const filterLive = ({ live }) => pipe([() => live, omitFieldRecord])();
-
 exports.compareRoute53Record = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
+  compare({
+    filterAll: pipe([omit(["Tags"])]),
+    filterTarget: pipe([defaultsDeep({ ResourceRecords: [] })]),
+    filterLive: pipe([omitFieldRecord]),
   }),
   tap((diff) => {
     logger.debug(`compareRoute53Record ${tos(diff)}`);

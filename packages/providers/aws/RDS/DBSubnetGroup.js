@@ -1,19 +1,6 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  assign,
-  tryCatch,
-  or,
-  omit,
-  pick,
-} = require("rubico");
-const { find, first, defaultsDeep, isEmpty, size, pluck } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
+const { map, pipe, tap, get, eq, not, assign, pick } = require("rubico");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "DBSubnetGroup",
