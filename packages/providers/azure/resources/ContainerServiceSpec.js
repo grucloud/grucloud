@@ -222,7 +222,15 @@ exports.fnSpecs = ({ config }) =>
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),
-                    map(pipe([omit(["provisioningState", "powerState"])])),
+                    map(
+                      pipe([
+                        omit([
+                          "provisioningState",
+                          "powerState",
+                          "nodeImageVersion",
+                        ]),
+                      ])
+                    ),
                   ]),
                   addonProfiles: pipe([
                     get("addonProfiles"),
