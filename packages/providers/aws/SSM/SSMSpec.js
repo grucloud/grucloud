@@ -15,18 +15,20 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterAll: omit(["Tags"]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Description", "Tier"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Version", "LastModifiedDate", "ARN"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Description", "Tier"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Version", "LastModifiedDate", "ARN"]),
+          ]),
       }),
       filterLive: () =>
         pick([

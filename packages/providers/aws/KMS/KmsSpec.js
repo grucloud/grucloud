@@ -15,32 +15,34 @@ module.exports = () =>
       Client: KmsKey,
       isOurMinion: isOurMinionFactory({ key: "TagKey", value: "TagValue" }),
       compare: compare({
-        filterTarget: pipe([
-          omit(["Tags", "KeyState"]),
-          defaultsDeep({
-            Enabled: true,
-            KeyManager: "CUSTOMER",
-            KeySpec: "SYMMETRIC_DEFAULT",
-            CustomerMasterKeySpec: "SYMMETRIC_DEFAULT",
-            MultiRegion: false,
-            Origin: "AWS_KMS",
-            Description: "",
-            KeyUsage: "ENCRYPT_DECRYPT",
-            EncryptionAlgorithms: ["SYMMETRIC_DEFAULT"],
-          }),
-        ]),
-        filterLive: pipe([
-          omit([
-            "AWSAccountId",
-            "KeyId",
-            "Arn",
-            "Alias",
-            "CreationDate",
-            "DeletionDate",
-            "KeyState",
-            "Tags",
+        filterTarget: () =>
+          pipe([
+            omit(["Tags", "KeyState"]),
+            defaultsDeep({
+              Enabled: true,
+              KeyManager: "CUSTOMER",
+              KeySpec: "SYMMETRIC_DEFAULT",
+              CustomerMasterKeySpec: "SYMMETRIC_DEFAULT",
+              MultiRegion: false,
+              Origin: "AWS_KMS",
+              Description: "",
+              KeyUsage: "ENCRYPT_DECRYPT",
+              EncryptionAlgorithms: ["SYMMETRIC_DEFAULT"],
+            }),
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "AWSAccountId",
+              "KeyId",
+              "Arn",
+              "Alias",
+              "CreationDate",
+              "DeletionDate",
+              "KeyState",
+              "Tags",
+            ]),
+          ]),
       }),
       filterLive: () => pick([""]),
       ignoreResource: ({ lives }) =>

@@ -75,24 +75,26 @@ module.exports = () =>
       isOurMinion,
       // TODO apiKeys
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["schemaFile"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["apiId", "arn", "uris", "wafWebAclArn"]),
-          assign({
-            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
-          }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["schemaFile"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["apiId", "arn", "uris", "wafWebAclArn"]),
+            assign({
+              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: (input) => (live) =>
         pipe([
@@ -182,16 +184,17 @@ module.exports = () =>
         ])(),
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["tags"])]),
-        filterLive: pipe([
-          omit(["arn", "resolverArn", "tags"]),
-          omitIfEmpty([
-            "description",
-            "requestMappingTemplate",
-            "responseMappingTemplate",
+        filterTarget: () => pipe([omit(["tags"])]),
+        filterLive: () =>
+          pipe([
+            omit(["arn", "resolverArn", "tags"]),
+            omitIfEmpty([
+              "description",
+              "requestMappingTemplate",
+              "responseMappingTemplate",
+            ]),
+            omitMaxBatchSize,
           ]),
-          omitMaxBatchSize,
-        ]),
       }),
       filterLive: () =>
         pipe([

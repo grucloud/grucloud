@@ -590,70 +590,72 @@ exports.compareEC2Instance = pipe([
   }),
   compare({
     filterAll: pipe([omit(["Tags"])]),
-    filterTarget: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      omit([
-        "NetworkInterfaces",
-        "TagSpecifications",
-        "MinCount",
-        "MaxCount",
-        "SubnetId",
-        "SecurityGroupIds",
+    filterTarget: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit([
+          "NetworkInterfaces",
+          "TagSpecifications",
+          "MinCount",
+          "MaxCount",
+          "SubnetId",
+          "SecurityGroupIds",
+        ]),
       ]),
-    ]),
-    filterLive: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      omit([
-        "PlatformDetails",
-        "PrivateDnsNameOptions",
-        "UsageOperation",
-        "UsageOperationUpdateTime",
+    filterLive: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit([
+          "PlatformDetails",
+          "PrivateDnsNameOptions",
+          "UsageOperation",
+          "UsageOperationUpdateTime",
 
-        "EnclaveOptions",
-        "MetadataOptions",
-        "Licenses",
-        "HibernationOptions",
-        "CapacityReservationSpecification",
-        "CpuOptions",
-        "VirtualizationType",
-        "SourceDestCheck",
-        "SecurityGroups",
-        "RootDeviceType",
-        "RootDeviceName",
-        "NetworkInterfaces",
-        "ElasticInferenceAcceleratorAssociations",
-        "ElasticGpuAssociations",
-        "Hypervisor",
-        "EnaSupport",
-        "EbsOptimized",
-        "ClientToken",
-        "BlockDeviceMappings",
-        "Architecture",
-        "VpcId",
-        "SubnetId",
-        "StateTransitionReason",
-        "State",
-        "PublicIpAddress",
-        "PublicDnsName",
-        "ProductCodes",
-        "PrivateIpAddress",
-        "PrivateDnsName",
-        "Monitoring",
-        "LaunchTime",
-        "InstanceId",
-        "AmiLaunchIndex",
-        //"Placement",
-        "IamInstanceProfile.Id",
+          "EnclaveOptions",
+          "MetadataOptions",
+          "Licenses",
+          "HibernationOptions",
+          "CapacityReservationSpecification",
+          "CpuOptions",
+          "VirtualizationType",
+          "SourceDestCheck",
+          "SecurityGroups",
+          "RootDeviceType",
+          "RootDeviceName",
+          "NetworkInterfaces",
+          "ElasticInferenceAcceleratorAssociations",
+          "ElasticGpuAssociations",
+          "Hypervisor",
+          "EnaSupport",
+          "EbsOptimized",
+          "ClientToken",
+          "BlockDeviceMappings",
+          "Architecture",
+          "VpcId",
+          "SubnetId",
+          "StateTransitionReason",
+          "State",
+          "PublicIpAddress",
+          "PublicDnsName",
+          "ProductCodes",
+          "PrivateIpAddress",
+          "PrivateDnsName",
+          "Monitoring",
+          "LaunchTime",
+          "InstanceId",
+          "AmiLaunchIndex",
+          //"Placement",
+          "IamInstanceProfile.Id",
+        ]),
+        omitIfEmpty(["UserData"]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
-      omitIfEmpty(["UserData"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
   }),
   tap((diff) => {
     logger.debug(`compareEC2Instance ${tos(diff)}`);

@@ -46,18 +46,20 @@ module.exports = () =>
           }),
         ]),
       compare: compare({
-        filterTarget: pipe([
-          tap(({ serviceAccount }) => {
-            assert(true);
-          }),
-          ({ serviceAccount }) => serviceAccount,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["displayName", "description"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap(({ serviceAccount }) => {
+              assert(true);
+            }),
+            ({ serviceAccount }) => serviceAccount,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["displayName", "description"]),
+          ]),
       }),
     },
     {

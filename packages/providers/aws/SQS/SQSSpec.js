@@ -30,24 +30,26 @@ module.exports = () =>
         },
       },
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["QueueName"]),
-        ]),
-        filterLive: pipe([
-          omit([
-            "QueueUrl",
-            "Attributes.QueueArn",
-            "Attributes.ApproximateNumberOfMessages",
-            "Attributes.ApproximateNumberOfMessagesNotVisible",
-            "Attributes.ApproximateNumberOfMessagesDelayed",
-            "Attributes.CreatedTimestamp",
-            "Attributes.LastModifiedTimestamp",
-            "Attributes.SqsManagedSseEnabled",
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["QueueName"]),
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "QueueUrl",
+              "Attributes.QueueArn",
+              "Attributes.ApproximateNumberOfMessages",
+              "Attributes.ApproximateNumberOfMessagesNotVisible",
+              "Attributes.ApproximateNumberOfMessagesDelayed",
+              "Attributes.CreatedTimestamp",
+              "Attributes.LastModifiedTimestamp",
+              "Attributes.SqsManagedSseEnabled",
+            ]),
+          ]),
       }),
       filterLive: () =>
         pipe([

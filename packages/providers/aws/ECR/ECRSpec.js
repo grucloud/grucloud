@@ -20,10 +20,11 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["tags"])]),
-        filterLive: pipe([
-          omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
-          omitIfEmpty(["lifecyclePolicyText", "policyText"]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
+            omitIfEmpty(["lifecyclePolicyText", "policyText"]),
+          ]),
       }),
       filterLive: ({ providerConfig }) =>
         pipe([
@@ -71,7 +72,7 @@ module.exports = () =>
       compare: compare({
         //TODO tags or Tags ?
         filterAll: pipe([omit(["Tags"])]),
-        filterLive: pipe([omit(["registryId"])]),
+        filterLive: () => pipe([omit(["registryId"])]),
       }),
       ignoreResource: () =>
         pipe([

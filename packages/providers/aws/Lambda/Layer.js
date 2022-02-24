@@ -195,22 +195,12 @@ exports.compareLayer = pipe([
   }),
   compare({
     filterAll: pipe([omit(["Tags"])]),
-    filterTarget: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      assign({ CodeSha256: pipe([get("Content.ZipFile"), computeHash256]) }),
-      pick(["Description", "CompatibleRuntimes"]),
-    ]),
-    filterLive: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      pick(["CompatibleRuntimes", "Description"]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
+    filterTarget: () =>
+      pipe([
+        assign({ CodeSha256: pipe([get("Content.ZipFile"), computeHash256]) }),
+        pick(["Description", "CompatibleRuntimes"]),
+      ]),
+    filterLive: () => pipe([pick(["CompatibleRuntimes", "Description"])]),
   }),
   tap((diff) => {
     logger.debug(`compareLayer ${tos(diff)}`);

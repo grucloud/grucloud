@@ -21,7 +21,7 @@ exports.createResources = () => [
     type: "RoleAssignment",
     group: "Authorization",
     properties: ({}) => ({
-      name: "319a9e85-e6aa-4b03-b207-7ef4297872f6",
+      name: "5ec41661-c294-4ae1-9a30-e9e1341266e1",
       properties: {
         roleName: "Contributor",
         principalName: "rg-aks-basic::cluster",
@@ -429,7 +429,6 @@ exports.createResources = () => [
             mode: "System",
             osType: "Linux",
             osSKU: "Ubuntu",
-            nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.24",
             enableFIPS: false,
           },
         ],
@@ -957,7 +956,7 @@ exports.createResources = () => [
               name: "plantuml",
               resources: {
                 cpu: 0.25,
-                memory: ".5Gi",
+                memory: "0.5Gi",
               },
             },
           ],

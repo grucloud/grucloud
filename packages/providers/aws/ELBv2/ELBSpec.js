@@ -34,20 +34,21 @@ module.exports = () =>
       Client: ELBLoadBalancerV2,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Name", "Subnets", "Tags"])]),
-        filterLive: pipe([
-          omit([
-            "LoadBalancerArn",
-            "DNSName",
-            "CanonicalHostedZoneId",
-            "CreatedTime",
-            "LoadBalancerName",
-            "VpcId",
-            "State",
-            "AvailabilityZones",
-            "Tags",
+        filterTarget: () => pipe([omit(["Name", "Subnets", "Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "LoadBalancerArn",
+              "DNSName",
+              "CanonicalHostedZoneId",
+              "CreatedTime",
+              "LoadBalancerName",
+              "VpcId",
+              "State",
+              "AvailabilityZones",
+              "Tags",
+            ]),
           ]),
-        ]),
       }),
       includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
@@ -64,30 +65,32 @@ module.exports = () =>
       Client: ELBTargetGroup,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          omit(["Name", "Tags"]),
-          defaultsDeep({
-            HealthCheckPath: "/",
-            HealthCheckPort: "traffic-port",
-            HealthCheckEnabled: true,
-            HealthCheckIntervalSeconds: 30,
-            HealthCheckTimeoutSeconds: 5,
-            HealthyThresholdCount: 5,
-            UnhealthyThresholdCount: 2,
-            Matcher: { HttpCode: "200" },
-            TargetType: "instance",
-            ProtocolVersion: "HTTP1",
-            IpAddressType: "ipv4",
-          }),
-        ]),
-        filterLive: pipe([
-          omit([
-            "TargetGroupArn",
-            "TargetGroupName",
-            "LoadBalancerArns",
-            "Tags",
+        filterTarget: () =>
+          pipe([
+            omit(["Name", "Tags"]),
+            defaultsDeep({
+              HealthCheckPath: "/",
+              HealthCheckPort: "traffic-port",
+              HealthCheckEnabled: true,
+              HealthCheckIntervalSeconds: 30,
+              HealthCheckTimeoutSeconds: 5,
+              HealthyThresholdCount: 5,
+              UnhealthyThresholdCount: 2,
+              Matcher: { HttpCode: "200" },
+              TargetType: "instance",
+              ProtocolVersion: "HTTP1",
+              IpAddressType: "ipv4",
+            }),
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "TargetGroupArn",
+              "TargetGroupName",
+              "LoadBalancerArns",
+              "Tags",
+            ]),
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -124,11 +127,12 @@ module.exports = () =>
       Client: ELBListener,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit(["ListenerArn", "SslPolicy", "Tags"]),
-          omitIfEmpty(["AlpnPolicy", "Certificates"]),
-        ]),
+        filterTarget: () => pipe([omit(["Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit(["ListenerArn", "SslPolicy", "Tags"]),
+            omitIfEmpty(["AlpnPolicy", "Certificates"]),
+          ]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -142,29 +146,30 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      filterLive: pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        ({ resource }) =>
-          (live) =>
-            pipe([
-              () => live,
-              //TODO when
-              switchCase([
-                () =>
-                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                    resource
-                  ),
-                omit(["DefaultActions"]),
-                identity,
-              ]),
-              tap((params) => {
-                assert(true);
-              }),
-              pick(["Port", "Protocol", "DefaultActions"]),
-            ])(),
-      ]),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          ({ resource }) =>
+            (live) =>
+              pipe([
+                () => live,
+                //TODO when
+                switchCase([
+                  () =>
+                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                      resource
+                    ),
+                  omit(["DefaultActions"]),
+                  identity,
+                ]),
+                tap((params) => {
+                  assert(true);
+                }),
+                pick(["Port", "Protocol", "DefaultActions"]),
+              ])(),
+        ]),
       dependencies: {
         loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
@@ -178,38 +183,40 @@ module.exports = () =>
       Client: ELBRule,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          omit(["Tags"]),
-          defaultsDeep({
-            IsDefault: false,
-          }),
-          unless(
-            get("Conditions[0].Values"),
-            assign({
-              Conditions: () => [
-                {
-                  Field: "path-pattern",
-                  Values: ["/*"],
-                },
-              ],
-            })
-          ),
-        ]),
-        filterLive: pipe([
-          omit([
-            "Tags",
-            "RuleArn",
-            "TargetGroupName",
-            "HealthCheckProtocol",
-            "LoadBalancerArns",
+        filterTarget: () =>
+          pipe([
+            omit(["Tags"]),
+            defaultsDeep({
+              IsDefault: false,
+            }),
+            unless(
+              get("Conditions[0].Values"),
+              assign({
+                Conditions: () => [
+                  {
+                    Field: "path-pattern",
+                    Values: ["/*"],
+                  },
+                ],
+              })
+            ),
           ]),
-          assign({
-            Conditions: pipe([
-              get("Conditions"),
-              map(omit(["PathPatternConfig"])),
+        filterLive: () =>
+          pipe([
+            omit([
+              "Tags",
+              "RuleArn",
+              "TargetGroupName",
+              "HealthCheckProtocol",
+              "LoadBalancerArns",
             ]),
-          }),
-        ]),
+            assign({
+              Conditions: pipe([
+                get("Conditions"),
+                map(omit(["PathPatternConfig"])),
+              ]),
+            }),
+          ]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -219,29 +226,30 @@ module.exports = () =>
           }),
           ({ listener }) => `rule::${listener.name}::${properties.Priority}`,
         ])(),
-      filterLive: pipe([
-        ({ resource }) =>
-          (live) =>
-            pipe([
-              () => live,
-              //TODO when
-              switchCase([
-                () =>
-                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                    resource
-                  ),
-                omit(["Actions"]),
-                identity,
-              ]),
-              pick(["Priority", "Conditions", "Actions"]),
-              assign({
-                Conditions: pipe([
-                  get("Conditions"),
-                  map(omit(["PathPatternConfig"])),
+      filterLive: () =>
+        pipe([
+          ({ resource }) =>
+            (live) =>
+              pipe([
+                () => live,
+                //TODO when
+                switchCase([
+                  () =>
+                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                      resource
+                    ),
+                  omit(["Actions"]),
+                  identity,
                 ]),
-              }),
-            ])(),
-      ]),
+                pick(["Priority", "Conditions", "Actions"]),
+                assign({
+                  Conditions: pipe([
+                    get("Conditions"),
+                    map(omit(["PathPatternConfig"])),
+                  ]),
+                }),
+              ])(),
+        ]),
       //TODO do we need this ?
       configBuildProperties: ({ properties, lives }) =>
         pipe([

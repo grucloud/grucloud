@@ -30,22 +30,23 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-        filterTarget: pipe([
-          defaultsDeep({
-            resourcesVpcConfig: {
-              endpointPublicAccess: true,
-              endpointPrivateAccess: false,
-            },
-          }),
-          omit([
-            "resourcesVpcConfig.clusterSecurityGroupId",
-            "resourcesVpcConfig.vpcId",
-            "resourcesVpcConfig.subnetIds",
-            "resourcesVpcConfig.publicAccessCidrs",
-            "version",
-            "encryptionConfig",
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({
+              resourcesVpcConfig: {
+                endpointPublicAccess: true,
+                endpointPrivateAccess: false,
+              },
+            }),
+            omit([
+              "resourcesVpcConfig.clusterSecurityGroupId",
+              "resourcesVpcConfig.vpcId",
+              "resourcesVpcConfig.subnetIds",
+              "resourcesVpcConfig.publicAccessCidrs",
+              "version",
+              "encryptionConfig",
+            ]),
           ]),
-        ]),
         filterLive: omit([
           "arn",
           "encryptionConfig",
@@ -112,22 +113,23 @@ module.exports = () =>
           "scalingConfig",
           "diskSize",
         ]),
-        filterLive: pipe([
-          pick([
-            "amiType",
-            "capacityType",
-            "diskSize",
-            "instanceTypes",
-            "scalingConfig",
-            "diskSize",
-            "launchTemplate",
+        filterLive: () =>
+          pipe([
+            pick([
+              "amiType",
+              "capacityType",
+              "diskSize",
+              "instanceTypes",
+              "scalingConfig",
+              "diskSize",
+              "launchTemplate",
+            ]),
+            when(
+              get("launchTemplate"),
+              omit(["instanceTypes", "amiType", "diskSize"])
+            ),
+            omit(["launchTemplate"]),
           ]),
-          when(
-            get("launchTemplate"),
-            omit(["instanceTypes", "amiType", "diskSize"])
-          ),
-          omit(["launchTemplate"]),
-        ]),
       }),
       filterLive: () =>
         pipe([

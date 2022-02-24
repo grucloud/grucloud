@@ -407,17 +407,18 @@ const fnSpecs = pipe([
         ]),
       }),
       compare: compare({
-        filterTarget: pipe([omit(["apiVersion", "kind"])]),
-        filterLive: pipe([
-          omit([
-            "spec",
-            "metadata.uid",
-            "metadata.resourceVersion",
-            "metadata.creationTimestamp",
-            "metadata.labels",
-            "status",
+        filterTarget: () => pipe([omit(["apiVersion", "kind"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "spec",
+              "metadata.uid",
+              "metadata.resourceVersion",
+              "metadata.creationTimestamp",
+              "metadata.labels",
+              "status",
+            ]),
           ]),
-        ]),
       }),
     },
     {

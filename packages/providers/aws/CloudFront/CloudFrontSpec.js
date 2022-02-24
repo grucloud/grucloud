@@ -51,34 +51,36 @@ module.exports = () =>
       Client: CloudFrontDistribution,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          get("DistributionConfig"),
-          omit([
-            "CallerReference",
-            "ViewerCertificate.CloudFrontDefaultCertificate",
+        filterTarget: () =>
+          pipe([
+            get("DistributionConfig"),
+            omit([
+              "CallerReference",
+              "ViewerCertificate.CloudFrontDefaultCertificate",
+            ]),
+            defaultsDeep({
+              OriginGroups: { Quantity: 0, Items: [] },
+              CacheBehaviors: { Quantity: 0, Items: [] },
+              CustomErrorResponses: { Quantity: 0, Items: [] },
+              ViewerCertificate: { CloudFrontDefaultCertificate: false },
+              HttpVersion: "http2",
+              IsIPV6Enabled: true,
+            }),
           ]),
-          defaultsDeep({
-            OriginGroups: { Quantity: 0, Items: [] },
-            CacheBehaviors: { Quantity: 0, Items: [] },
-            CustomErrorResponses: { Quantity: 0, Items: [] },
-            ViewerCertificate: { CloudFrontDefaultCertificate: false },
-            HttpVersion: "http2",
-            IsIPV6Enabled: true,
-          }),
-        ]),
-        filterLive: pipe([
-          omit([
-            "Id",
-            "ARN",
-            "Status",
-            "LastModifiedTime",
-            "DomainName",
-            "CallerReference",
-            "WebACLId",
-            "AliasICPRecordals",
-            "Tags", //TODO
+        filterLive: () =>
+          pipe([
+            omit([
+              "Id",
+              "ARN",
+              "Status",
+              "LastModifiedTime",
+              "DomainName",
+              "CallerReference",
+              "WebACLId",
+              "AliasICPRecordals",
+              "Tags", //TODO
+            ]),
           ]),
-        ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

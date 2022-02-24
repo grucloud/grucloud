@@ -269,43 +269,36 @@ exports.compareFunction = pipe([
   }),
   compare({
     filterAll: pipe([omit(["Tags"])]),
-    filterTarget: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),
-      pick([
-        "Handler",
-        "PackageType",
-        "Runtime",
-        "Description",
-        "LicenseInfo",
-        "Timeout",
-        "MemorySize",
-        "Environment",
-        "CodeSha256",
+    filterTarget: () =>
+      pipe([
+        assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),
+        pick([
+          "Handler",
+          "PackageType",
+          "Runtime",
+          "Description",
+          "LicenseInfo",
+          "Timeout",
+          "MemorySize",
+          "Environment",
+          "CodeSha256",
+        ]),
       ]),
-    ]),
-    filterLive: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("Configuration"),
-      pick([
-        "Handler",
-        "PackageType",
-        "Runtime",
-        "Description",
-        "LicenseInfo",
-        "Timeout",
-        "MemorySize",
-        "Environment",
-        "CodeSha256",
+    filterLive: () =>
+      pipe([
+        get("Configuration"),
+        pick([
+          "Handler",
+          "PackageType",
+          "Runtime",
+          "Description",
+          "LicenseInfo",
+          "Timeout",
+          "MemorySize",
+          "Environment",
+          "CodeSha256",
+        ]),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
   }),
   tap((diff) => {
     logger.debug(`compareFunction ${tos(diff)}`);

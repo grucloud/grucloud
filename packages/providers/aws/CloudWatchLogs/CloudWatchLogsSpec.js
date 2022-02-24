@@ -25,16 +25,18 @@ module.exports = () =>
           }),
           pick(["retentionInDays"]),
         ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () => pipe([pick(["retentionInDays"])]),
       dependencies: {

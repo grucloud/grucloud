@@ -27,21 +27,25 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ ApiMappingSelectionExpression: "$request.basepath" }),
-          omit(["DomainNameConfigurations"]),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["DomainNameConfigurations"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({
+              ApiMappingSelectionExpression: "$request.basepath",
+            }),
+            omit(["DomainNameConfigurations"]),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["DomainNameConfigurations"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -61,19 +65,21 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["ApiEndpoint", "ApiId", "CreatedDate"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["ApiEndpoint", "ApiId", "CreatedDate"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -95,26 +101,28 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({
-            RouteSettings: [],
-            DefaultRouteSettings: {
-              DetailedMetricsEnabled: false,
-            },
-            StageVariables: {},
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({
+              RouteSettings: [],
+              DefaultRouteSettings: {
+                DetailedMetricsEnabled: false,
+              },
+              StageVariables: {},
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -135,19 +143,21 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["AuthorizerId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["AuthorizerId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -193,19 +203,21 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["ApiMappingId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["ApiMappingId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
@@ -236,27 +248,29 @@ module.exports = () =>
           }),
         ])(),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ TimeoutInMillis: 30e3, Description: "" }),
-          filterTargetDefaut,
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["RouteId", "IntegrationId", "ApiName"]),
-          defaultsDeep({ Description: "" }),
-          filterLiveDefaut,
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({ TimeoutInMillis: 30e3, Description: "" }),
+            filterTargetDefaut,
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["RouteId", "IntegrationId", "ApiName"]),
+            defaultsDeep({ Description: "" }),
+            filterLiveDefaut,
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -295,19 +309,21 @@ module.exports = () =>
           }),
         ])(),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["RouteId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["RouteId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
@@ -346,22 +362,29 @@ module.exports = () =>
           }),
         ])(),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ AutoDeployed: false, Description: "" }),
-          omit(["StageName"]),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["CreatedDate", "DeploymentId", "DeploymentStatus", "ApiName"]),
-          defaultsDeep({ Description: "" }),
-          filterLiveDefaut,
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({ AutoDeployed: false, Description: "" }),
+            omit(["StageName"]),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "CreatedDate",
+              "DeploymentId",
+              "DeploymentStatus",
+              "ApiName",
+            ]),
+            defaultsDeep({ Description: "" }),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {

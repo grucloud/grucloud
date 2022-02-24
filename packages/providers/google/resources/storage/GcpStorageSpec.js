@@ -1,10 +1,9 @@
-const { pipe, assign, map, get, pick } = require("rubico");
-const { callProp, defaultsDeep } = require("rubico/x");
-
+const { tap, pipe, assign, map, get, pick } = require("rubico");
+const { callProp } = require("rubico/x");
+const path = require("path");
 const assert = require("assert");
 const { md5FileBase64 } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
-const logger = require("@grucloud/core/logger")({ prefix: "GcpStorageSpec" });
 const { compare } = require("../../GoogleCommon");
 
 const { GcpBucket } = require("./GcpBucket");
@@ -17,6 +16,7 @@ module.exports = () =>
     {
       type: "Bucket",
       Client: GcpBucket,
+      propertiesDefault: { storageClass: "STANDARD" },
       isOurMinion: GoogleTag.isOurMinion,
       filterLive: () =>
         pipe([
@@ -24,13 +24,12 @@ module.exports = () =>
           assign({ iam: pipe([get("iam"), pick(["bindings"])]) }),
         ]),
       compare: compare({
-        filterTarget: pipe([
-          assign({
-            location: pipe([get("location"), callProp("toUpperCase")]),
-          }),
-          //TODO use propertiesDefault
-          defaultsDeep({ storageClass: "STANDARD" }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            assign({
+              location: pipe([get("location"), callProp("toUpperCase")]),
+            }),
+          ]),
       }),
     },
     {
@@ -41,21 +40,26 @@ module.exports = () =>
       },
       Client: GcpObject,
       filterLive: () => pipe([pick(["contentType", "storageClass"])]),
-      compare: async ({ target, live }) => {
-        logger.debug(`compare object`);
-        assert(live.md5Hash);
-        if (target.source) {
-          const md5 = await md5FileBase64(target.source);
-          if (live.md5Hash !== md5) {
-            return {
-              liveDiff: { updated: { md5: live.md5Hash } },
-              targetDiff: { updated: { md5: md5 } },
-            };
-          }
-        }
-
-        return [];
-      },
+      compare: compare({
+        filterTarget: ({ programOptions }) =>
+          pipe([
+            (target) => ({
+              md5Hash: pipe([
+                tap(() => {
+                  assert(programOptions.workingDirectory);
+                  assert(target.source, "missing source");
+                }),
+                () =>
+                  path.resolve(programOptions.workingDirectory, target.source),
+                md5FileBase64,
+                tap((targetHash) => {
+                  assert(targetHash);
+                }),
+              ])(),
+            }),
+          ]),
+        filterLive: () => pipe([pick(["md5Hash"])]),
+      }),
       isOurMinion: isGcpObjectOurMinion,
     },
   ]);

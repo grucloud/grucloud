@@ -31,10 +31,11 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["tags"])]),
-        filterLive: pipe([
-          omit(["capacityProviderArn", "status", "updateStatus"]),
-          filterLiveDefault,
-        ]),
+        filterLive: () =>
+          pipe([
+            omit(["capacityProviderArn", "status", "updateStatus"]),
+            filterLiveDefault,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -51,24 +52,26 @@ module.exports = () =>
       Client: ECSCluster,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({ defaultCapacityProviderStrategy: [] }),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          omit([
-            "clusterArn",
-            "status",
-            "registeredContainerInstancesCount",
-            "runningTasksCount",
-            "pendingTasksCount",
-            "activeServicesCount",
-            "statistics",
-            "attachments",
-            "attachmentsStatus",
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({ defaultCapacityProviderStrategy: [] }),
+            filterTargetDefault,
           ]),
-          filterLiveDefault,
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "clusterArn",
+              "status",
+              "registeredContainerInstancesCount",
+              "runningTasksCount",
+              "pendingTasksCount",
+              "activeServicesCount",
+              "statistics",
+              "attachments",
+              "attachmentsStatus",
+            ]),
+            filterLiveDefault,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -93,19 +96,20 @@ module.exports = () =>
       Client: ECSTaskDefinition,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit([""]), filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "taskDefinitionArn",
-            "revision",
-            "status",
-            "compatibilities",
-            "registeredAt",
-            "registeredBy",
+        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "taskDefinitionArn",
+              "revision",
+              "status",
+              "compatibilities",
+              "registeredAt",
+              "registeredBy",
+            ]),
+            omitIfEmpty(["volumes"]),
+            filterLiveDefault,
           ]),
-          omitIfEmpty(["volumes"]),
-          filterLiveDefault,
-        ]),
       }),
       filterLive: () =>
         pick([
@@ -121,28 +125,30 @@ module.exports = () =>
       Client: ECSService,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({ propagateTags: "NONE" }),
-          omit(["taskDefinition"]),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          assign({ cluster: get("clusterArn") }),
-          omit([
-            "taskDefinition",
-            "clusterArn",
-            "createdAt",
-            "events",
-            "deployments",
-            "runningCount",
-            "pendingCount",
-            "status",
-            "serviceArn",
-            "createdBy",
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({ propagateTags: "NONE" }),
+            omit(["taskDefinition"]),
+            filterTargetDefault,
           ]),
-          omitIfEmpty(["loadBalancers", "serviceRegistries"]),
-          filterLiveDefault,
-        ]),
+        filterLive: () =>
+          pipe([
+            assign({ cluster: get("clusterArn") }),
+            omit([
+              "taskDefinition",
+              "clusterArn",
+              "createdAt",
+              "events",
+              "deployments",
+              "runningCount",
+              "pendingCount",
+              "status",
+              "serviceArn",
+              "createdBy",
+            ]),
+            omitIfEmpty(["loadBalancers", "serviceRegistries"]),
+            filterLiveDefault,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -176,8 +182,8 @@ module.exports = () =>
       Client: ECSTaskSet,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit([""]), filterTargetDefault]),
-        filterLive: pipe([omit([""]), filterLiveDefault]),
+        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
+        filterLive: () => pipe([omit([""]), filterLiveDefault]),
       }),
     },
     {
@@ -193,8 +199,8 @@ module.exports = () =>
       Client: ECSTask,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit([""]), filterTargetDefault]),
-        filterLive: pipe([omit([""]), filterLiveDefault]),
+        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
+        filterLive: () => pipe([omit([""]), filterLiveDefault]),
       }),
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),

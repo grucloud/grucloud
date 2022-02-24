@@ -416,13 +416,11 @@ const removeOurTags = pipe([
 
 exports.removeOurTags = removeOurTags;
 
-const filterLiveDefault = identity;
-
 exports.compare = ({
   filterAll = identity,
-  filterTarget = identity,
+  filterTarget = () => identity,
   filterTargetDefault = identity,
-  filterLive = identity,
+  filterLive = () => identity,
   filterLiveDefault = identity,
 } = {}) =>
   pipe([
@@ -430,7 +428,7 @@ exports.compare = ({
       assert(filterTarget);
     }),
     assign({
-      target: ({ target = {}, propertiesDefault }) =>
+      target: ({ target = {}, propertiesDefault, ...otherProps }) =>
         pipe([
           () => target,
           tap((params) => {
@@ -438,20 +436,21 @@ exports.compare = ({
           }),
           defaultsDeep(propertiesDefault),
           removeOurTags,
-          filterTarget,
+          filterTarget(otherProps),
           filterAll,
           filterTargetDefault,
           tap((params) => {
             assert(true);
           }),
         ])(),
-      live: pipe([
-        get("live"),
-        removeOurTags,
-        filterLive,
-        filterAll,
-        filterLiveDefault,
-      ]),
+      live: ({ live = {}, ...otherProps }) =>
+        pipe([
+          () => live,
+          removeOurTags,
+          filterLive(otherProps),
+          filterAll,
+          filterLiveDefault,
+        ])(),
     }),
     tap((params) => {
       assert(true);
@@ -469,7 +468,7 @@ exports.compare = ({
         omitIfEmpty(["added", "updated", "deleted"]),
       ]),
       jsonDiff: pipe([
-        ({ target, live }) => Diff.diffJson(live, target),
+        ({ target = {}, live = {} }) => Diff.diffJson(live, target),
         tap((params) => {
           assert(true);
         }),

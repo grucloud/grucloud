@@ -55,11 +55,12 @@ module.exports = () =>
       Client: AwsIamOpenIDConnectProvider,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          assign({ Url: pipe([get("Url"), prepend("https://")]) }),
-          omit(["ThumbprintList", "CreateDate", "Arn", "Tags"]),
-        ]),
+        filterTarget: () => pipe([omit(["Tags"])]),
+        filterLive: () =>
+          pipe([
+            assign({ Url: pipe([get("Url"), prepend("https://")]) }),
+            omit(["ThumbprintList", "CreateDate", "Arn", "Tags"]),
+          ]),
       }),
       filterLive: () => pick(["ClientIDList"]),
       dependencies: {
@@ -78,20 +79,21 @@ module.exports = () =>
       Client: AwsIamUser,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit([
-            "UserId",
-            "Arn",
-            "CreateDate",
-            "LoginProfile",
-            "Policies",
-            "AttachedPolicies",
-            "Groups",
-            "Tags",
-            "AccessKeys",
+        filterTarget: () => pipe([omit(["Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "UserId",
+              "Arn",
+              "CreateDate",
+              "LoginProfile",
+              "Policies",
+              "AttachedPolicies",
+              "Groups",
+              "Tags",
+              "AccessKeys",
+            ]),
           ]),
-        ]),
       }),
       filterLive: () => pick(["Path"]),
       dependencies: {
@@ -105,16 +107,17 @@ module.exports = () =>
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
       compare: compare({
-        filterTarget: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit([
-            "GroupId",
-            "Arn",
-            "CreateDate",
-            "Policies",
-            "AttachedPolicies",
+        filterTarget: () => pipe([omit(["Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "GroupId",
+              "Arn",
+              "CreateDate",
+              "Policies",
+              "AttachedPolicies",
+            ]),
           ]),
-        ]),
       }),
       filterLive: () => pick(["Path"]),
       dependencies: {
@@ -296,9 +299,10 @@ module.exports = () =>
       isOurMinion,
       compare: compare({
         filterAll: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit(["Path", "InstanceProfileId", "Arn", "CreateDate", "Roles"]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit(["Path", "InstanceProfileId", "Arn", "CreateDate", "Roles"]),
+          ]),
       }),
       filterLive: () => pick([]),
       dependencies: {

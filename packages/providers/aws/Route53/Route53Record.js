@@ -713,8 +713,8 @@ exports.Route53Record = ({ spec, config }) => {
 exports.compareRoute53Record = pipe([
   compare({
     filterAll: pipe([omit(["Tags"])]),
-    filterTarget: pipe([defaultsDeep({ ResourceRecords: [] })]),
-    filterLive: pipe([omitFieldRecord]),
+    filterTarget: () => pipe([defaultsDeep({ ResourceRecords: [] })]),
+    filterLive: () => pipe([omitFieldRecord]),
   }),
   tap((diff) => {
     logger.debug(`compareRoute53Record ${tos(diff)}`);

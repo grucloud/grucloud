@@ -124,36 +124,38 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({
-            BatchSize: 10,
-            MaximumBatchingWindowInSeconds: 0,
-            FunctionResponseTypes: [],
-          }),
-          omit(["FunctionName", "Tags"]),
-          omitIfEmpty(["FunctionResponseTypes"]),
-        ]),
-        filterLive: pipe([
-          omit([
-            "UUID",
-            "FunctionArn",
-            "LastModified",
-            "LastProcessingResult",
-            "StateTransitionReason",
-            "MaximumRecordAgeInSeconds",
-            "Tags",
-            "State",
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({
+              BatchSize: 10,
+              MaximumBatchingWindowInSeconds: 0,
+              FunctionResponseTypes: [],
+            }),
+            omit(["FunctionName", "Tags"]),
+            omitIfEmpty(["FunctionResponseTypes"]),
           ]),
-          omitIfEmpty([
-            "StartingPosition",
-            "StartingPositionTimestamp",
-            "ParallelizationFactor",
-            "BisectBatchOnFunctionError",
-            "MaximumRetryAttempts",
-            "TumblingWindowInSeconds",
-            "FunctionResponseTypes",
+        filterLive: () =>
+          pipe([
+            omit([
+              "UUID",
+              "FunctionArn",
+              "LastModified",
+              "LastProcessingResult",
+              "StateTransitionReason",
+              "MaximumRecordAgeInSeconds",
+              "Tags",
+              "State",
+            ]),
+            omitIfEmpty([
+              "StartingPosition",
+              "StartingPositionTimestamp",
+              "ParallelizationFactor",
+              "BisectBatchOnFunctionError",
+              "MaximumRetryAttempts",
+              "TumblingWindowInSeconds",
+              "FunctionResponseTypes",
+            ]),
           ]),
-        ]),
       }),
       filterLive:
         ({ resource }) =>

@@ -36,47 +36,49 @@ module.exports = () =>
       },
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "Bucket",
-            "ACL", //TODO
-            "Tags",
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "Bucket",
+              "ACL", //TODO
+              "Tags",
+            ]),
           ]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "Name",
-            "CreationDate",
-            "Tags",
-            "LocationConstraint",
-            "ACL", //TODO
-            "PolicyStatus.IsPublic",
-            "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "Name",
+              "CreationDate",
+              "Tags",
+              "LocationConstraint",
+              "ACL", //TODO
+              "PolicyStatus.IsPublic",
+              "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
+            ]),
+            omitIfEmpty([
+              "AccelerateConfiguration",
+              "ServerSideEncryptionConfiguration",
+              "PolicyStatus",
+              "RequestPaymentConfiguration",
+              "BucketLoggingStatus",
+              "ReplicationConfiguration",
+              "LifecycleConfiguration",
+              "LifecycleConfiguration.Rules[0].NoncurrentVersionTransitions",
+              "CORSConfiguration.CORSRules[0].ExposeHeaders",
+              "CORSConfiguration",
+              "Policy",
+              "WebsiteConfiguration",
+              "WebsiteConfiguration.RoutingRules",
+              "NotificationConfiguration",
+              "VersioningConfiguration",
+            ]),
           ]),
-          omitIfEmpty([
-            "AccelerateConfiguration",
-            "ServerSideEncryptionConfiguration",
-            "PolicyStatus",
-            "RequestPaymentConfiguration",
-            "BucketLoggingStatus",
-            "ReplicationConfiguration",
-            "LifecycleConfiguration",
-            "LifecycleConfiguration.Rules[0].NoncurrentVersionTransitions",
-            "CORSConfiguration.CORSRules[0].ExposeHeaders",
-            "CORSConfiguration",
-            "Policy",
-            "WebsiteConfiguration",
-            "WebsiteConfiguration.RoutingRules",
-            "NotificationConfiguration",
-            "VersioningConfiguration",
-          ]),
-        ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

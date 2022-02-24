@@ -21,8 +21,8 @@ module.exports = () =>
       Client: CloudWatchEventBus,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
-        filterLive: pipe([omit(["Arn"]), filterLiveDefault]),
+        filterTarget: () => pipe([filterTargetDefault]),
+        filterLive: () => pipe([omit(["Arn"]), filterLiveDefault]),
       }),
       filterLive: () => pipe([pick([])]),
     },
@@ -33,14 +33,13 @@ module.exports = () =>
       Client: CloudWatchEventRule,
       isOurMinion,
       compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({ EventBusName: "default" }),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          omit(["Arn", "CreatedBy", "Targets"]),
-          filterLiveDefault,
-        ]),
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({ EventBusName: "default" }),
+            filterTargetDefault,
+          ]),
+        filterLive: () =>
+          pipe([omit(["Arn", "CreatedBy", "Targets"]), filterLiveDefault]),
       }),
       filterLive: () =>
         pipe([omit(["Name", "Arn", "EventBusName"]), omitIfEmpty(["Targets"])]),

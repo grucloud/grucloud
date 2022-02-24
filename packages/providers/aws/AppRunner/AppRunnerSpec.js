@@ -25,17 +25,19 @@ module.exports = () =>
           }),
           omit(["ConnectionArn", "Status", "CreatedAt"]),
         ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Tags"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Tags"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -71,17 +73,19 @@ module.exports = () =>
             "AutoScalingConfigurationSummary",
           ]),
         ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Tags"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Tags"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

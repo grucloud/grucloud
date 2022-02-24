@@ -52,29 +52,30 @@ module.exports = () =>
           }),
           omit(["Tags", "TargetGroupARNs"]),
         ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "AutoScalingGroupARN",
-            "AvailabilityZones",
-            "Instances",
-            "CreatedTime",
-            "SuspendedProcesses",
-            "EnabledMetrics", //TODO
-            "TerminationPolicies", //TODO
-            "NewInstancesProtectedFromScaleIn", //TODO
-            "LaunchTemplate.LaunchTemplateName",
-            "TargetGroupARNs",
-            "ServiceLinkedRoleARN",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "AutoScalingGroupARN",
+              "AvailabilityZones",
+              "Instances",
+              "CreatedTime",
+              "SuspendedProcesses",
+              "EnabledMetrics", //TODO
+              "TerminationPolicies", //TODO
+              "NewInstancesProtectedFromScaleIn", //TODO
+              "LaunchTemplate.LaunchTemplateName",
+              "TargetGroupARNs",
+              "ServiceLinkedRoleARN",
+            ]),
+            omitIfEmpty(["LoadBalancerNames"]),
+            assign({ Tags: pipe([get("Tags"), filterTags]) }),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
-          omitIfEmpty(["LoadBalancerNames"]),
-          assign({ Tags: pipe([get("Tags"), filterTags]) }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       }),
       propertiesDefault: {
         HealthCheckType: "EC2",
@@ -123,8 +124,8 @@ module.exports = () =>
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
       compare: compare({
-        filterTarget: pipe([pick([])]),
-        filterLive: pipe([pick([])]),
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
       }),
       includeDefaultDependencies: true,
       inferName: ({ properties, dependencies }) =>
@@ -160,16 +161,17 @@ module.exports = () =>
       isOurMinion: () => true,
       compare: compare({
         filterAll: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit([
-            "LaunchConfigurationARN",
-            "KeyName",
-            "ClassicLinkVPCSecurityGroups",
-            "KernelId",
-            "RamdiskId",
-            "CreatedTime",
+        filterLive: () =>
+          pipe([
+            omit([
+              "LaunchConfigurationARN",
+              "KeyName",
+              "ClassicLinkVPCSecurityGroups",
+              "KernelId",
+              "RamdiskId",
+              "CreatedTime",
+            ]),
           ]),
-        ]),
       }),
       // propertiesDefault: {
       //   EbsOptimized: false,

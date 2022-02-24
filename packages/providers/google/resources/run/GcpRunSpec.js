@@ -60,18 +60,20 @@ module.exports = () =>
           }),
         ]),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["metadata.annotations"]),
-          omit(["status"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["metadata.annotations"]),
+            omit(["status"]),
+          ]),
       }),
     },
     {
@@ -105,17 +107,19 @@ module.exports = () =>
         ]),
 
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["policy.etag"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["policy.etag"]),
+          ]),
       }),
     },
   ]);

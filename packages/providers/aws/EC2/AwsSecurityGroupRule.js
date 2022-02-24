@@ -617,14 +617,15 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
 };
 
 exports.compareSecurityGroupRule = compare({
-  filterTarget: pipe([
-    ({ GroupId, IpPermissions }) => ({
-      GroupId,
-      IpPermission: IpPermissions[0],
-    }),
-  ]),
+  filterTarget: () =>
+    pipe([
+      ({ GroupId, IpPermissions }) => ({
+        GroupId,
+        IpPermission: IpPermissions[0],
+      }),
+    ]),
   filterAll: pipe([
     omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"]),
   ]),
-  filterLive: pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
+  filterLive: () => pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
 });

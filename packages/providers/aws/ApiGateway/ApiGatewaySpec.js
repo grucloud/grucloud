@@ -68,16 +68,18 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -96,20 +98,22 @@ module.exports = () =>
       Client: Account,
       isOurMinion: ({ live, config }) => true,
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({
-            features: ["UsagePlans"],
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["throttleSettings", "apiKeyVersion"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({
+              features: ["UsagePlans"],
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["throttleSettings", "apiKeyVersion"]),
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -130,17 +134,19 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
+          ]),
       }),
       propertiesDefault: { enabled: true },
       filterLive: () =>
@@ -157,19 +163,21 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["schemaFile", "deployment"]),
-          defaultsDeep({ disableExecuteApiEndpoint: false }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["id", "createdDate", "deployments", "version"]),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["schemaFile", "deployment"]),
+            defaultsDeep({ disableExecuteApiEndpoint: false }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["id", "createdDate", "deployments", "version"]),
+          ]),
       }),
       filterLive: (input) => (live) =>
         pipe([
@@ -216,26 +224,28 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
-          omit(["deploymentId"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "deploymentId",
-            "clientCertificateId",
-            "createdDate",
-            "lastUpdatedDate",
-            "cacheClusterStatus",
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
+            omit(["deploymentId"]),
           ]),
-          omitIfEmpty(["methodSettings"]),
-        ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "deploymentId",
+              "clientCertificateId",
+              "createdDate",
+              "lastUpdatedDate",
+              "cacheClusterStatus",
+            ]),
+            omitIfEmpty(["methodSettings"]),
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -269,16 +279,18 @@ module.exports = () =>
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
       compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pipe([

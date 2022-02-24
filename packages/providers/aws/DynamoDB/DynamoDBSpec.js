@@ -29,31 +29,32 @@ module.exports = () =>
             BillingModeSummary: { BillingMode },
           }),
         ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "TableSizeBytes",
-            "ItemCount",
-            "TableArn",
-            "TableId",
-            "ProvisionedThroughput.NumberOfDecreasesToday",
-            "ProvisionedThroughput.LastIncreaseDateTime",
-            "ProvisionedThroughput.LastDecreaseDateTime",
-            "CreationDateTime",
-            "TableStatus",
-            "SSEDescription",
-            "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "TableSizeBytes",
+              "ItemCount",
+              "TableArn",
+              "TableId",
+              "ProvisionedThroughput.NumberOfDecreasesToday",
+              "ProvisionedThroughput.LastIncreaseDateTime",
+              "ProvisionedThroughput.LastDecreaseDateTime",
+              "CreationDateTime",
+              "TableStatus",
+              "SSEDescription",
+              "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+            ]),
+            tap((params) => {
+              assert(true);
+            }),
+            omitIfEmpty([
+              "ProvisionedThroughput.ReadCapacityUnits",
+              "ProvisionedThroughput.WriteCapacityUnits",
+            ]),
           ]),
-          tap((params) => {
-            assert(true);
-          }),
-          omitIfEmpty([
-            "ProvisionedThroughput.ReadCapacityUnits",
-            "ProvisionedThroughput.WriteCapacityUnits",
-          ]),
-        ]),
       }),
       filterLive: () =>
         pipe([

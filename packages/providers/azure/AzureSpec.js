@@ -205,11 +205,12 @@ const buildDefaultSpec = fork({
     propertiesDefault = {},
   }) =>
     compare({
-      filterTarget: pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      filterTarget: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
       filterAll: pipe([
         tap((params) => {
           assert(pickProperties);
