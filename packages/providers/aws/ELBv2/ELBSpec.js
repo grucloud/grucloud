@@ -1,15 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  assign,
-  map,
-  omit,
-  pick,
-  tap,
-  get,
-  switchCase,
-} = require("rubico");
-const { defaultsDeep, identity, unless } = require("rubico/x");
+const { pipe, assign, map, omit, pick, tap, get } = require("rubico");
+const { defaultsDeep, unless, when } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
@@ -146,30 +137,27 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          ({ resource }) =>
-            (live) =>
-              pipe([
-                () => live,
-                //TODO when
-                switchCase([
-                  () =>
-                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                      resource
-                    ),
-                  omit(["DefaultActions"]),
-                  identity,
-                ]),
-                tap((params) => {
-                  assert(true);
-                }),
-                pick(["Port", "Protocol", "DefaultActions"]),
-              ])(),
-        ]),
+      filterLive: pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ resource }) =>
+          (live) =>
+            pipe([
+              () => live,
+              when(
+                () =>
+                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                    resource
+                  ),
+                omit(["DefaultActions"])
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+              pick(["Port", "Protocol", "DefaultActions"]),
+            ])(),
+      ]),
       dependencies: {
         loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
@@ -226,46 +214,43 @@ module.exports = () =>
           }),
           ({ listener }) => `rule::${listener.name}::${properties.Priority}`,
         ])(),
-      filterLive: () =>
-        pipe([
-          ({ resource }) =>
-            (live) =>
-              pipe([
-                () => live,
-                //TODO when
-                switchCase([
-                  () =>
-                    hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                      resource
-                    ),
-                  omit(["Actions"]),
-                  identity,
+      filterLive: pipe([
+        ({ resource }) =>
+          (live) =>
+            pipe([
+              () => live,
+              when(
+                () =>
+                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
+                    resource
+                  ),
+                omit(["Actions"])
+              ),
+              pick(["Priority", "Conditions", "Actions"]),
+              assign({
+                Conditions: pipe([
+                  get("Conditions"),
+                  map(omit(["PathPatternConfig"])),
                 ]),
-                pick(["Priority", "Conditions", "Actions"]),
-                assign({
-                  Conditions: pipe([
-                    get("Conditions"),
-                    map(omit(["PathPatternConfig"])),
-                  ]),
-                }),
-              ])(),
-        ]),
+              }),
+            ])(),
+      ]),
       //TODO do we need this ?
-      configBuildProperties: ({ properties, lives }) =>
-        pipe([
-          tap(() => {
-            assert(lives);
-          }),
-          () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
-        ])(),
-      codeBuildProperties: ({ group, type, resourceVarName }) =>
-        pipe([
-          tap(() => {
-            assert(true);
-          }),
-          () =>
-            `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
-        ])(),
+      // configBuildProperties: ({ properties, lives }) =>
+      //   pipe([
+      //     tap(() => {
+      //       assert(lives);
+      //     }),
+      //     () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+      //   ])(),
+      // codeBuildProperties: ({ group, type, resourceVarName }) =>
+      //   pipe([
+      //     tap(() => {
+      //       assert(true);
+      //     }),
+      //     () =>
+      //       `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
+      //   ])(),
       dependencies: {
         listener: { type: "Listener", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },

@@ -47,25 +47,26 @@ module.exports = () =>
               "encryptionConfig",
             ]),
           ]),
-        filterLive: omit([
-          "arn",
-          "encryptionConfig",
-          "createdAt",
-          "endpoint",
-          "resourcesVpcConfig.clusterSecurityGroupId",
-          "resourcesVpcConfig.vpcId",
-          "resourcesVpcConfig.subnetIds",
-          "resourcesVpcConfig.publicAccessCidrs",
-          "kubernetesNetworkConfig",
-          "identity",
-          "logging",
-          "status",
-          "certificateAuthority",
-          "clientRequestToken",
-          "eks.2",
-          "version",
-          "platformVersion",
-        ]),
+        filterLive: () =>
+          omit([
+            "arn",
+            "encryptionConfig",
+            "createdAt",
+            "endpoint",
+            "resourcesVpcConfig.clusterSecurityGroupId",
+            "resourcesVpcConfig.vpcId",
+            "resourcesVpcConfig.subnetIds",
+            "resourcesVpcConfig.publicAccessCidrs",
+            "kubernetesNetworkConfig",
+            "identity",
+            "logging",
+            "status",
+            "certificateAuthority",
+            "clientRequestToken",
+            "eks.2",
+            "version",
+            "platformVersion",
+          ]),
       }),
       filterLive: () => pick(["version"]),
       dependencies: {
@@ -105,14 +106,17 @@ module.exports = () =>
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compare({
-        filterTarget: pick([
-          "amiType",
-          "capacityType",
-          "diskSize",
-          "instanceTypes",
-          "scalingConfig",
-          "diskSize",
-        ]),
+        filterTarget: () =>
+          pipe([
+            pick([
+              "amiType",
+              "capacityType",
+              "diskSize",
+              "instanceTypes",
+              "scalingConfig",
+              "diskSize",
+            ]),
+          ]),
         filterLive: () =>
           pipe([
             pick([
