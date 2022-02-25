@@ -598,8 +598,6 @@ exports.compareEC2Instance = pipe([
         omit([
           "NetworkInterfaces",
           "TagSpecifications",
-          "MinCount",
-          "MaxCount",
           "SubnetId",
           "SecurityGroupIds",
         ]),

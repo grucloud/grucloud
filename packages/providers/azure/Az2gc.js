@@ -11,18 +11,15 @@ const {
   not,
   assign,
 } = require("rubico");
-const {
-  groupBy,
-  values,
-  find,
-  callProp,
-  unless,
-  isEmpty,
-} = require("rubico/x");
+const { find, callProp, unless, isEmpty } = require("rubico/x");
 const path = require("path");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { readModel, generatorMain } = require("@grucloud/core/generatorUtils");
+const {
+  readModel,
+  generatorMain,
+  createWriterSpec,
+} = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
 
 const {
@@ -106,7 +103,11 @@ const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
       assert(writersSpec);
     }),
     fork({
-      lives: readModel({ writersSpec, commandOptions, programOptions }),
+      lives: readModel({
+        writersSpec: createWriterSpec(spec),
+        commandOptions,
+        programOptions,
+      }),
     }),
     tap((params) => {
       assert(true);
@@ -128,40 +129,24 @@ exports.generateCode = ({
       assert(programOptions);
       assert(commandOptions);
     }),
-    () => specs,
-    groupBy("group"),
+    () =>
+      generatorMain({
+        name: "az2gc",
+        providerConfig,
+        providerType: "azure",
+        specs,
+        commandOptions,
+        programOptions,
+        configTpl,
+        filterModel,
+      }),
+    () =>
+      downloadAssets({
+        specs,
+        commandOptions,
+        programOptions,
+      }),
     tap((params) => {
       assert(true);
     }),
-    map.entries(([group, value]) => [group, { group, types: value }]),
-    values,
-    tap((params) => {
-      assert(true);
-    }),
-    (writersSpec) =>
-      pipe([
-        () =>
-          generatorMain({
-            name: "az2gc",
-            providerConfig,
-            providerType: "azure",
-            writersSpec,
-            commandOptions,
-            programOptions,
-            configTpl,
-            filterModel,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-        () =>
-          downloadAssets({
-            writersSpec,
-            commandOptions,
-            programOptions,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
   ])();

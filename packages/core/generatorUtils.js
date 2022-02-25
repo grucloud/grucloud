@@ -39,6 +39,7 @@ const {
   pluck,
   identity,
   values,
+  groupBy,
   flatten,
   defaultsDeep,
   keys,
@@ -1287,12 +1288,22 @@ const writeResources =
       ),
     ])();
 
+const createWritersSpec = pipe([
+  groupBy("group"),
+  tap((params) => {
+    assert(true);
+  }),
+  map.entries(([group, value]) => [group, { group, types: value }]),
+  values,
+]);
+exports.createWritersSpec = createWritersSpec;
+
 exports.generatorMain = ({
   name,
   providerConfig,
   commandOptions,
   programOptions,
-  writersSpec,
+  specs,
   providerType,
   iacTpl,
   filterModel,
@@ -1300,7 +1311,7 @@ exports.generatorMain = ({
   tryCatch(
     pipe([
       tap((xxx) => {
-        assert(writersSpec);
+        assert(specs);
       }),
       fork({
         lives: readModel({
@@ -1313,10 +1324,8 @@ exports.generatorMain = ({
       }),
       ({ lives, mapping }) =>
         pipe([
-          () => writersSpec,
-          tap((params) => {
-            assert(true);
-          }),
+          () => specs,
+          createWritersSpec,
           map(({ group, types }) => ({
             group,
             types: pipe([

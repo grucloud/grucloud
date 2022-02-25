@@ -14,22 +14,19 @@ const {
   not,
   omit,
 } = require("rubico");
-const {
-  find,
-  first,
-  isEmpty,
-  isFunction,
-  identity,
-  append,
-  unless,
-} = require("rubico/x");
+const { find, first, isEmpty, isFunction, identity } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
+
 const fs = require("fs");
 const https = require("https");
-const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sCommon" });
 const { tos } = require("@grucloud/core/tos");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
-const { isOurMinionObject, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  isOurMinionObject,
+  omitIfEmpty,
+  compare,
+} = require("@grucloud/core/Common");
 
 exports.inferNameNamespace = ({ properties }) =>
   pipe([
@@ -77,7 +74,6 @@ const pickCompare = ({ metadata, spec, data }) => ({
   data,
 });
 
-//TODO
 exports.compareK8s = ({
   filterAll = identity,
   filterTarget = identity,
@@ -122,6 +118,35 @@ exports.compareK8s = ({
     }),
   ]);
 
+// exports.compareK8s = ({
+//   filterAll = identity,
+//   filterTarget,
+//   filterLive,
+// } = {}) =>
+//   pipe([
+//     compare({
+//       filterAll,
+//       filterTarget,
+//       filterTargetDefault: pipe([pickCompare]),
+//       filterLive,
+//       filterLiveDefault: pipe([
+//         pickCompare,
+//         omitIfEmpty([
+//           "spec.template.spec.containers[0].env",
+//           "metadata.annotations",
+//         ]),
+//       ]),
+//     }),
+//     omit(["targetDiff.added", "targetDiff.deleted"]),
+//     omitIfEmpty(["targetDiff.updated"]),
+//     omit(["liveDiff.deleted"]),
+//     omitIfEmpty([
+//       "liveDiff.added",
+//       "liveDiff.updated",
+//       "liveDiff.updated.data",
+//     ]),
+//   ]);
+
 exports.displayNameResourceDefault = ({ name }) => name;
 exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
   pipe([
@@ -133,21 +158,13 @@ exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
     () => name,
   ])();
 
-exports.displayNameDefault = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  get("name"),
-]);
+exports.displayNameDefault = pipe([get("name")]);
 exports.displayNameNamespace = ({ name }) =>
   pipe([
     tap(() => {
       assert(name);
     }),
     () => name,
-    tap((name) => {
-      assert(name);
-    }),
   ])();
 
 exports.shouldRetryOnException = ({ error, name }) => {
