@@ -81,7 +81,20 @@ module.exports = () =>
       },
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
-      compare: compareIamBinding,
+      compare: compare({
+        filterTarget: () =>
+          pipe([
+            tap(({ serviceAccount }) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      }),
       filterLive: () => pipe([pick(["members"])]),
       dependencies: {
         serviceAccounts: { type: "ServiceAccount", group: "iam", list: true },

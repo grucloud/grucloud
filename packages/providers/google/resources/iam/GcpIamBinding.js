@@ -22,7 +22,6 @@ const {
   identity,
   callProp,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
 
 const { retryCallOnError } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -211,6 +210,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO use live
   const destroy = ({ id }) =>
     pipe([
       tap(() => {
@@ -249,27 +249,3 @@ exports.GcpIamBinding = ({ spec, config }) => {
     findDependencies,
   };
 };
-
-//TODO
-const filterTarget = ({ config, target }) => pipe([() => target])();
-const filterLive = ({ config, live }) => pipe([() => live])();
-
-exports.compareIamBinding = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
-  }),
-  tap((diff) => {
-    logger.debug(`compareIamBinding ${tos(diff)}`);
-  }),
-]);

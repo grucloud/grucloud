@@ -71,8 +71,12 @@ module.exports = () =>
             tap((params) => {
               assert(true);
             }),
-            omit(["metadata.annotations"]),
-            omit(["status"]),
+            omit([
+              "metadata.annotations",
+              "policy.etag",
+              "status",
+              ["metadata", "labels", "cloud.googleapis.com/location"],
+            ]),
           ]),
       }),
     },

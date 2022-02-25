@@ -171,6 +171,12 @@ module.exports = pipe([
       ],
       Client: GoogleVmInstance,
       compare: compareVmInstance,
+      omitProperties: [
+        "tags.fingerprint",
+        "labelFingerprint",
+        "cpuPlatform",
+        "fingerprint",
+      ],
       dependencies: {
         ip: { type: "Address", group: "compute" },
         subNetwork: { type: "SubNetwork", group: "compute" },

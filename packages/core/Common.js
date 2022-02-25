@@ -428,11 +428,11 @@ exports.compare = ({
       assert(filterTarget);
     }),
     assign({
-      target: ({ target = {}, propertiesDefault, ...otherProps }) =>
+      target: ({ target = {}, propertiesDefault = {}, ...otherProps }) =>
         pipe([
           () => target,
           tap((params) => {
-            assert(true);
+            assert(propertiesDefault);
           }),
           defaultsDeep(propertiesDefault),
           removeOurTags,
@@ -443,10 +443,11 @@ exports.compare = ({
             assert(true);
           }),
         ])(),
-      live: ({ live = {}, ...otherProps }) =>
+      live: ({ live = {}, propertiesDefault, ...otherProps }) =>
         pipe([
           () => live,
           removeOurTags,
+          defaultsDeep(propertiesDefault),
           filterLive(otherProps),
           filterAll,
           filterLiveDefault,
