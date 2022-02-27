@@ -461,28 +461,27 @@ const displayPlanItemUpdate =
         ]),
     ])();
 
+const itemHeader =
+  ({ tableItem, resource, color = "green" }) =>
+  () =>
+    tableItem.push([
+      {
+        colSpan: 2,
+        content: colors[color](
+          `${resource.action}: ${resource.resource.displayName}`
+        ),
+      },
+    ]);
+
 const displayPlanItemCreate =
   ({ tableItem }) =>
   (resource) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
+      itemHeader({ tableItem, resource }),
       () =>
         tableItem.push([
           {
             colSpan: 2,
-            content: colors.green(
-              `${resource.action}: ${resource.resource.displayName}`
-            ),
-          },
-        ]),
-
-      () =>
-        tableItem.push([
-          {
-            colSpan: 2,
-            //TODO limit size
             content: colors.green(stringifyLimit(resource.target)),
           },
         ]),
@@ -492,18 +491,7 @@ const displayPlanItemDestroy =
   ({ tableItem }) =>
   (resource) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
-      () =>
-        tableItem.push([
-          {
-            colSpan: 2,
-            content: colors.red(
-              `${resource.action} ${resource.resource.displayName}`
-            ),
-          },
-        ]),
+      itemHeader({ tableItem, resource, color: "red" }),
       () =>
         tableItem.push([
           {
@@ -516,20 +504,7 @@ const displayPlanItemDestroy =
 const displayPlanItemWaitAvailability =
   ({ tableItem }) =>
   (resource) =>
-    pipe([
-      tap(() => {
-        assert(true);
-      }),
-      () =>
-        tableItem.push([
-          {
-            colSpan: 2,
-            content: colors.green(
-              `${resource.action}: ${resource.resource.displayName}`
-            ),
-          },
-        ]),
-    ])();
+    pipe([itemHeader({ tableItem, resource })])();
 
 const displayError = switchCase([get("stack"), identity, YAML.stringify]);
 

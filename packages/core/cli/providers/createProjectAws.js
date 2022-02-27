@@ -12,7 +12,7 @@ const {
 } = require("rubico/x");
 const prompts = require("prompts");
 const shell = require("shelljs");
-const { execCommandShell } = require("./createProjectCommon");
+const { execCommandShell, createConfig } = require("./createProjectCommon");
 
 const awsExecCommand =
   ({ displayText } = {}) =>
@@ -186,21 +186,6 @@ const isAuthenticated = pipe([
       ])()
   ),
 ]);
-
-const createConfig = ({}) =>
-  pipe([
-    tap(() => {
-      assert(true);
-    }),
-    () => "",
-    append(`const pkg = require("./package.json");\n`),
-    append(`module.exports = () => ({\n`),
-    append("  projectName: pkg.name,\n"),
-    append("});"),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
 
 exports.createProjectAws = pipe([
   tap((params) => {

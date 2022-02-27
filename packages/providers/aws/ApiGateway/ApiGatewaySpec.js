@@ -134,21 +134,8 @@ module.exports = () =>
       Client: ApiKey,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["id", "createdDate", "lastUpdatedDate", "stageKeys"]),
-          ]),
-      }),
+      omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
+      compare: compareAws(),
       propertiesDefault: { enabled: true },
       filterLive: () =>
         pipe([
@@ -227,9 +214,6 @@ module.exports = () =>
       compare: compareAws({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
             omit(["deploymentId"]),
           ]),

@@ -105,89 +105,33 @@ const pickCompare = ({ metadata, spec, data }) => ({
 
 exports.compareK8s = ({
   filterAll = identity,
-  filterTarget = identity,
-  filterLive = identity,
+  filterTarget,
+  filterLive,
 } = {}) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      target: ({ target = {}, propertiesDefault }) =>
-        pipe([
-          () => target,
-          defaultsDeep(propertiesDefault),
-          filterTarget,
-          pickCompare,
-        ])(),
-      live: ({ live, omitProperties = [] }) =>
-        pipe([() => live, omit(omitProperties), filterLive, pickCompare])(),
-    }),
-    filterAll,
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      targetDiff: pipe([
-        ({ target, live }) => detailedDiff(target, live),
-        tap((params) => {
-          assert(true);
-        }),
-        omit(["added", "deleted"]),
-        omitIfEmpty(["deleted", "updated", "added"]),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      liveDiff: pipe([
-        ({ target, live }) => detailedDiff(live, target),
-        tap((params) => {
-          assert(true);
-        }),
-        omit(["deleted"]),
-        omitIfEmpty(["added", "updated", "deleted"]),
-      ]),
-      jsonDiff: pipe([
-        ({ target = {}, live = {} }) => Diff.diffJson(live, target),
-        tap((params) => {
-          assert(true);
-        }),
+    compare({
+      filterAll,
+      filterTarget,
+      filterTargetDefault: pipe([pickCompare]),
+      filterLive,
+      filterLiveDefault: pipe([
+        pickCompare,
+        omitIfEmpty([
+          //TODO remove
+          "spec.template.spec.containers[0].env",
+          "metadata.annotations",
+        ]),
       ]),
     }),
-    tap((diff) => {
-      logger.debug(`compare ${tos(diff)}`);
-    }),
+    omit(["targetDiff.added", "targetDiff.deleted"]),
+    omitIfEmpty(["targetDiff.updated"]),
+    omit(["liveDiff.deleted"]),
+    omitIfEmpty([
+      "liveDiff.added",
+      "liveDiff.updated",
+      "liveDiff.updated.data",
+    ]),
   ]);
-
-// TODO Out of Memory
-// exports.compareK8s = ({
-//   filterAll = identity,
-//   filterTarget,
-//   filterLive,
-// } = {}) =>
-//   pipe([
-//     compare({
-//       filterAll,
-//       filterTarget,
-//       filterTargetDefault: pipe([pickCompare]),
-//       filterLive,
-//       filterLiveDefault: pipe([
-//         pickCompare,
-//         omitIfEmpty([
-//           "spec.template.spec.containers[0].env",
-//           "metadata.annotations",
-//         ]),
-//       ]),
-//     }),
-//     omit(["targetDiff.added", "targetDiff.deleted"]),
-//     omitIfEmpty(["targetDiff.updated"]),
-//     omit(["liveDiff.deleted"]),
-//     omitIfEmpty([
-//       "liveDiff.added",
-//       "liveDiff.updated",
-//       "liveDiff.updated.data",
-//     ]),
-//   ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;
 exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>

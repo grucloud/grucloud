@@ -223,9 +223,6 @@ exports.generateCode = ({
     pipe([
       tap(() => {
         assert(specs);
-        assert(providerConfig);
-        assert(programOptions);
-        assert(commandOptions);
       }),
       () =>
         generatorMain({

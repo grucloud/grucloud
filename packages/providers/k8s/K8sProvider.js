@@ -294,86 +294,88 @@ const fnSpecs = pipe([
         "spec.template.spec.serviceAccount",
       ],
       compare: compareK8s({
-        filterTarget: pipe([
-          assign({
-            spec: pipe([
-              get("spec"),
-              assign({
-                template: pipe([
-                  get("template"),
-                  assign({
-                    spec: pipe([
-                      get("spec"),
-                      when(
-                        get("volumes"),
+        filterTarget: () =>
+          pipe([
+            assign({
+              spec: pipe([
+                get("spec"),
+                assign({
+                  template: pipe([
+                    get("template"),
+                    assign({
+                      spec: pipe([
+                        get("spec"),
+                        when(
+                          get("volumes"),
+                          assign({
+                            volumes: pipe([
+                              get("volumes"),
+                              map(
+                                pipe([
+                                  when(
+                                    get("configMap"),
+                                    defaultsDeep({
+                                      configMap: { defaultMode: 420 },
+                                    })
+                                  ),
+                                  when(
+                                    get("secret"),
+                                    defaultsDeep({
+                                      secret: { defaultMode: 420 },
+                                    })
+                                  ),
+                                ])
+                              ),
+                            ]),
+                          })
+                        ),
                         assign({
-                          volumes: pipe([
-                            get("volumes"),
+                          containers: pipe([
+                            get("containers"),
                             map(
                               pipe([
+                                omitIfEmpty(["env"]),
                                 when(
-                                  get("configMap"),
-                                  defaultsDeep({
-                                    configMap: { defaultMode: 420 },
+                                  get("volumeMounts"),
+                                  assign({
+                                    volumeMounts: pipe([
+                                      get("volumeMounts"),
+                                      map(
+                                        when(
+                                          eq(get("readOnly"), false),
+                                          omit(["readOnly"])
+                                        )
+                                      ),
+                                    ]),
                                   })
                                 ),
                                 when(
-                                  get("secret"),
-                                  defaultsDeep({
-                                    secret: { defaultMode: 420 },
+                                  get("ports"),
+                                  assign({
+                                    ports: pipe([
+                                      get("ports"),
+                                      map(defaultsDeep({ protocol: "TCP" })),
+                                    ]),
                                   })
                                 ),
+                                defaultsDeep({
+                                  imagePullPolicy: "IfNotPresent",
+                                  resources: {},
+                                  terminationMessagePath:
+                                    "/dev/termination-log",
+                                  terminationMessagePolicy: "File",
+                                }),
                               ])
                             ),
                           ]),
-                        })
-                      ),
-                      assign({
-                        containers: pipe([
-                          get("containers"),
-                          map(
-                            pipe([
-                              omitIfEmpty(["env"]),
-                              when(
-                                get("volumeMounts"),
-                                assign({
-                                  volumeMounts: pipe([
-                                    get("volumeMounts"),
-                                    map(
-                                      when(
-                                        eq(get("readOnly"), false),
-                                        omit(["readOnly"])
-                                      )
-                                    ),
-                                  ]),
-                                })
-                              ),
-                              when(
-                                get("ports"),
-                                assign({
-                                  ports: pipe([
-                                    get("ports"),
-                                    map(defaultsDeep({ protocol: "TCP" })),
-                                  ]),
-                                })
-                              ),
-                              defaultsDeep({
-                                imagePullPolicy: "IfNotPresent",
-                                resources: {},
-                                terminationMessagePath: "/dev/termination-log",
-                                terminationMessagePolicy: "File",
-                              }),
-                            ])
-                          ),
-                        ]),
-                      }),
-                    ]),
-                  }),
-                ]),
-              }),
-            ]),
-          }),
-        ]),
+                        }),
+                      ]),
+                    }),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
       }),
       Client: ({ config, spec }) =>
         createResourceNamespace({
@@ -827,9 +829,10 @@ const fnSpecs = pipe([
         },
       },
       compare: compareK8s({
-        filterTarget: pipe([
-          unless(eq(get("spec.clusterIP"), "None"), omit(["spec.clusterIP"])),
-        ]),
+        filterTarget: () =>
+          pipe([
+            unless(eq(get("spec.clusterIP"), "None"), omit(["spec.clusterIP"])),
+          ]),
       }),
       omitProperties: ["spec.clusterIPs", "spec.externalTrafficPolicy"],
       propertiesDefault: {
