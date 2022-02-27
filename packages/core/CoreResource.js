@@ -267,11 +267,11 @@ exports.ResourceMaker = ({
   const planUpdate = ({ resource, target, live }) =>
     pipe([
       tap(() => {
-        logger.debug(
-          `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
-            target
-          )}, live: ${tos(live)}`
-        );
+        // logger.debug(
+        //   `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
+        //     target
+        //   )}, live: ${tos(live)}`
+        // );
       }),
       () =>
         spec.compare({
@@ -286,7 +286,7 @@ exports.ResourceMaker = ({
           programOptions,
         }),
       tap((diff) => {
-        logger.debug(`planUpdate diff ${tos(diff)}`);
+        //logger.debug(`planUpdate diff ${tos(diff)}`);
       }),
       (diff) =>
         pipe([
@@ -312,7 +312,7 @@ exports.ResourceMaker = ({
                   },
                 ],
                 tap((updateItem) => {
-                  logger.debug(`updateItem ${tos(updateItem)}`);
+                  //logger.debug(`updateItem ${tos(updateItem)}`);
                 }),
               ])(),
             () => {

@@ -1433,7 +1433,7 @@ function CoreProvider({
       ),
       getTargetResources,
       tap((resources) => {
-        logger.debug(`planUpsert target #resources ${size(resources)}`);
+        //logger.debug(`planUpsert target #resources ${size(resources)}`);
       }),
       //filter(not(get("spec.listOnly"))),
       tap(
@@ -1528,17 +1528,11 @@ function CoreProvider({
             onStateChange,
           }),
       }),
-      tap((result) => {
-        assert(result);
-      }),
       assign({
         error: or([
           pipe([get("resultCreate"), any(get("error"))]),
           pipe([get("resultDestroy"), any(get("error"))]),
         ]),
-      }),
-      tap((result) => {
-        assert(result);
       }),
       tap(({ error }) =>
         onStateChange({

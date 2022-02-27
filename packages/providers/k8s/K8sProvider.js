@@ -37,7 +37,7 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { compare } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
   compareK8s,
@@ -291,6 +291,7 @@ const fnSpecs = pipe([
       omitProperties: [
         ["metadata", "annotations", "deployment.kubernetes.io/revision"],
         "spec.template.metadata.creationTimestamp",
+        "spec.template.spec.serviceAccount",
       ],
       compare: compareK8s({
         filterTarget: pipe([
@@ -303,11 +304,50 @@ const fnSpecs = pipe([
                   assign({
                     spec: pipe([
                       get("spec"),
+                      when(
+                        get("volumes"),
+                        assign({
+                          volumes: pipe([
+                            get("volumes"),
+                            map(
+                              pipe([
+                                when(
+                                  get("configMap"),
+                                  defaultsDeep({
+                                    configMap: { defaultMode: 420 },
+                                  })
+                                ),
+                                when(
+                                  get("secret"),
+                                  defaultsDeep({
+                                    secret: { defaultMode: 420 },
+                                  })
+                                ),
+                              ])
+                            ),
+                          ]),
+                        })
+                      ),
                       assign({
                         containers: pipe([
                           get("containers"),
                           map(
                             pipe([
+                              omitIfEmpty(["env"]),
+                              when(
+                                get("volumeMounts"),
+                                assign({
+                                  volumeMounts: pipe([
+                                    get("volumeMounts"),
+                                    map(
+                                      when(
+                                        eq(get("readOnly"), false),
+                                        omit(["readOnly"])
+                                      )
+                                    ),
+                                  ]),
+                                })
+                              ),
                               when(
                                 get("ports"),
                                 assign({
@@ -332,9 +372,6 @@ const fnSpecs = pipe([
                 ]),
               }),
             ]),
-          }),
-          tap((params) => {
-            assert(true);
           }),
         ]),
       }),
@@ -481,6 +518,7 @@ const fnSpecs = pipe([
           ]),
         ]),
       }),
+      //TODO use compareK8s
       compare: compare({
         filterTarget: () => pipe([omit(["apiVersion", "kind"])]),
         filterLive: () =>
@@ -758,9 +796,6 @@ const fnSpecs = pipe([
       compare: compareK8s({
         filterAll: ({ live, target }) =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => ({ live, target }),
             set(
               "live.data",
@@ -777,14 +812,9 @@ const fnSpecs = pipe([
                     switchCase([isEmpty, identity, () => value]),
                   ])(),
                 ]),
-                tap((params) => {
-                  assert(true);
-                }),
               ])()
             ),
-            tap((params) => {
-              assert(true);
-            }),
+            omitIfEmpty(["live.data", "target.data"]),
           ])(),
       }),
     },

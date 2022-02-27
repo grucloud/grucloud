@@ -289,7 +289,7 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const update = async ({ name, payload, dependencies, live, diff }) =>
+  const update = ({ name, payload, dependencies, live, diff }) =>
     tryCatch(
       pipe([
         tap(() => {

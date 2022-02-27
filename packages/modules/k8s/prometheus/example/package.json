@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "test": "mocha",
+    "plan": "gc plan",
     "graph-target": "gc graph --title 'Prometheus'",
     "graph-live": "gc list --graph --title 'Prometheus'"
   },
