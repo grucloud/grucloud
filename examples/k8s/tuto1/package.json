@@ -5,6 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "plan": "gc plan",
     "test": "mocha --exit",
     "graph-live": "gc list --our --all --graph"
   },

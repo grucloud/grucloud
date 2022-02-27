@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, omit, tap, not, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 const { isOurMinionFactory } = require("../AwsCommon");
 const { KmsKey } = require("./KmsKey");
 
@@ -14,7 +14,7 @@ module.exports = () =>
       type: "Key",
       Client: KmsKey,
       isOurMinion: isOurMinionFactory({ key: "TagKey", value: "TagValue" }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             omit(["Tags", "KeyState"]),

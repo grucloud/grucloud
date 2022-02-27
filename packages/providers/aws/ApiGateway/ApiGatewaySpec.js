@@ -16,8 +16,9 @@ const fs = require("fs").promises;
 const prettier = require("prettier");
 const path = require("path");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
+
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
 const { DomainName } = require("./DomainName");
@@ -67,7 +68,7 @@ module.exports = () =>
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -97,7 +98,7 @@ module.exports = () =>
       dependsOn: ["IAM::Role"],
       Client: Account,
       isOurMinion: ({ live, config }) => true,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -133,7 +134,7 @@ module.exports = () =>
       Client: ApiKey,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -162,7 +163,7 @@ module.exports = () =>
       Client: RestApi,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -223,7 +224,7 @@ module.exports = () =>
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -278,7 +279,7 @@ module.exports = () =>
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {

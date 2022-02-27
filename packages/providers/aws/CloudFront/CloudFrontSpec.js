@@ -12,13 +12,9 @@ const {
   omit,
 } = require("rubico");
 const { isEmpty, find, when } = require("rubico/x");
-const {
-  buildGetId,
-  compare,
-  replaceWithName,
-} = require("@grucloud/core/Common");
+const { buildGetId, replaceWithName } = require("@grucloud/core/Common");
 
-const { isOurMinion } = require("../AwsCommon");
+const { isOurMinion, compareAws } = require("../AwsCommon");
 const { CloudFrontDistribution } = require("./CloudFrontDistribution");
 const {
   CloudFrontOriginAccessIdentity,
@@ -50,7 +46,7 @@ module.exports = () =>
       },
       Client: CloudFrontDistribution,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             get("DistributionConfig"),
@@ -188,6 +184,6 @@ module.exports = () =>
       type: "OriginAccessIdentity",
       Client: CloudFrontOriginAccessIdentity,
       filterLive: ({ lives }) => pipe([pick([])]),
-      compare,
+      compare: compareAws,
     },
   ]);

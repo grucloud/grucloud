@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, eq } = require("rubico");
 const { when } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { isOurMinionObject } = require("../AwsCommon");
 
@@ -29,7 +29,7 @@ module.exports = () =>
           ReceiveMessageWaitTimeSeconds: "0",
         },
       },
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {

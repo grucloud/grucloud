@@ -1,7 +1,7 @@
 const { assign, map, pipe, get, omit, pick, eq } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
-const { isOurMinionFactory } = require("../AwsCommon");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionFactory } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
@@ -29,7 +29,7 @@ module.exports = () =>
       dependsOn: ["AutoScaling::AutoScalingGroup"],
       Client: ECSCapacityProvider,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["tags"])]),
         filterLive: () =>
           pipe([
@@ -51,7 +51,7 @@ module.exports = () =>
       dependsOn: ["ECS::CapacityProvider", "EC2::Instance"],
       Client: ECSCluster,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             defaultsDeep({ defaultCapacityProviderStrategy: [] }),
@@ -95,7 +95,7 @@ module.exports = () =>
       dependsOn: ["IAM::Role"],
       Client: ECSTaskDefinition,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit([""]), filterTargetDefault]),
         filterLive: () =>
           pipe([
@@ -124,7 +124,7 @@ module.exports = () =>
       dependsOnList: ["ECS::Cluster"],
       Client: ECSService,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             defaultsDeep({ propagateTags: "NONE" }),
@@ -181,7 +181,7 @@ module.exports = () =>
       },
       Client: ECSTaskSet,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit([""]), filterTargetDefault]),
         filterLive: () => pipe([omit([""]), filterLiveDefault]),
       }),
@@ -198,7 +198,7 @@ module.exports = () =>
       dependsOnList: ["ECS::Cluster"],
       Client: ECSTask,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit([""]), filterTargetDefault]),
         filterLive: () => pipe([omit([""]), filterLiveDefault]),
       }),

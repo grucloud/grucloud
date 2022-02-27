@@ -14,8 +14,16 @@ const {
   not,
   omit,
 } = require("rubico");
-const { find, first, isEmpty, isFunction, identity } = require("rubico/x");
+const {
+  find,
+  first,
+  isEmpty,
+  isFunction,
+  identity,
+  defaultsDeep,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
+const Diff = require("diff");
 
 const fs = require("fs");
 const https = require("https");
@@ -67,9 +75,30 @@ const pickCompare = ({ metadata, spec, data }) => ({
   metadata: pick(["annotations", "labels"])(metadata),
   spec: pipe([
     () => spec,
-    get("template.spec.containers[0].volumeMounts"),
-    map(omit(["readOnly"])),
-    (volumeMounts) => set("template.spec.containers[0]", volumeMounts)(spec),
+    //TODO move in compare
+    assign({
+      template: pipe([
+        get("template"),
+        assign({
+          spec: pipe([
+            get("spec"),
+            assign({
+              containers: pipe([
+                get("containers"),
+                map(
+                  assign({
+                    volumeMounts: pipe([
+                      get("volumeMounts"),
+                      omit(["readOnly"]),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+    }),
   ])(),
   data,
 });
@@ -84,40 +113,53 @@ exports.compareK8s = ({
       assert(true);
     }),
     assign({
-      target: pipe([get("target", {}), filterTarget, pickCompare]),
-      live: pipe([get("live"), filterLive, pickCompare]),
+      target: ({ target = {}, propertiesDefault }) =>
+        pipe([
+          () => target,
+          defaultsDeep(propertiesDefault),
+          filterTarget,
+          pickCompare,
+        ])(),
+      live: ({ live, omitProperties = [] }) =>
+        pipe([() => live, omit(omitProperties), filterLive, pickCompare])(),
     }),
     filterAll,
     tap((params) => {
       assert(true);
     }),
-    ({ target, live }) => ({
+    assign({
       targetDiff: pipe([
-        () => detailedDiff(target, live),
+        ({ target, live }) => detailedDiff(target, live),
+        tap((params) => {
+          assert(true);
+        }),
         omit(["added", "deleted"]),
-        omitIfEmpty(["updated"]),
+        omitIfEmpty(["deleted", "updated", "added"]),
         tap((params) => {
           assert(true);
         }),
-      ])(),
+      ]),
       liveDiff: pipe([
-        () => detailedDiff(live, target),
-        omit(["deleted"]),
-        omitIfEmpty([
-          "added.spec.template.spec.containers[0].env",
-          "added.metadata.annotations",
-        ]),
-        omitIfEmpty(["added", "updated", "updated.data"]),
+        ({ target, live }) => detailedDiff(live, target),
         tap((params) => {
           assert(true);
         }),
-      ])(),
+        omit(["deleted"]),
+        omitIfEmpty(["added", "updated", "deleted"]),
+      ]),
+      jsonDiff: pipe([
+        ({ target = {}, live = {} }) => Diff.diffJson(live, target),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
     }),
     tap((diff) => {
       logger.debug(`compare ${tos(diff)}`);
     }),
   ]);
 
+// TODO Out of Memory
 // exports.compareK8s = ({
 //   filterAll = identity,
 //   filterTarget,

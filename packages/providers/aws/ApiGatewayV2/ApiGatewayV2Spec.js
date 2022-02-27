@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, eq, get, pick } = require("rubico");
 const { when } = require("rubico/x");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
 const { Stage } = require("./Stage");
 const { Deployment } = require("./Deployment");
@@ -26,7 +26,7 @@ module.exports = () =>
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -64,7 +64,7 @@ module.exports = () =>
       Client: Api,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -100,7 +100,7 @@ module.exports = () =>
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -142,7 +142,7 @@ module.exports = () =>
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -202,7 +202,7 @@ module.exports = () =>
         ])(),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -247,7 +247,7 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -308,7 +308,7 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -361,7 +361,7 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {

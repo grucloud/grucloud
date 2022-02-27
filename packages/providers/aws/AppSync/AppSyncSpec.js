@@ -15,8 +15,8 @@ const { when } = require("rubico/x");
 const fs = require("fs").promises;
 const path = require("path");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
 
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
@@ -74,7 +74,7 @@ module.exports = () =>
       Client: AppSyncGraphqlApi,
       isOurMinion,
       // TODO apiKeys
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -127,7 +127,7 @@ module.exports = () =>
       dependsOnList: ["AppSync::GraphqlApi"],
       Client: AppSyncDataSource,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           omit(["apiId", "serviceRoleArn", "dataSourceArn", "tags"]),
           omitIfEmpty(["description"]),
@@ -183,7 +183,7 @@ module.exports = () =>
           }),
         ])(),
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["tags"])]),
         filterLive: () =>
           pipe([

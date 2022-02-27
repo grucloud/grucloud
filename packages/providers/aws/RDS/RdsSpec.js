@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
@@ -17,7 +17,7 @@ module.exports = () =>
       dependsOn: ["EC2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["Tags"])]),
         filterTarget: () => pipe([omit(["SubnetIds"])]),
         filterLive: () =>
@@ -35,7 +35,7 @@ module.exports = () =>
       dependsOn: ["RDS::DBSubnetGroup", "EC2::SecurityGroup", "KMS::Key"],
       Client: DBCluster,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["SubnetIds", "Tags"])]),
         filterTarget: () =>
           pipe([
@@ -135,7 +135,7 @@ module.exports = () =>
       ],
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compare({
+      compare: compareAws({
         filterAll: omit(["TagList"]),
         filterTarget: () =>
           pipe([

@@ -2,9 +2,9 @@ const assert = require("assert");
 const { tap, assign, map, pipe, omit, pick, get, not, and } = require("rubico");
 const { callProp, when } = require("rubico/x");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { isOurMinionFactory } = require("../AwsCommon");
+const { compareAws, isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
 const { EcrRegistry } = require("./EcrRegistry");
 
@@ -18,7 +18,7 @@ module.exports = () =>
       type: "Repository",
       Client: EcrRepository,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["tags"])]),
         filterLive: () =>
           pipe([
@@ -69,7 +69,7 @@ module.exports = () =>
       type: "Registry",
       Client: EcrRegistry,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         //TODO tags or Tags ?
         filterAll: pipe([omit(["Tags"])]),
         filterLive: () => pipe([omit(["registryId"])]),

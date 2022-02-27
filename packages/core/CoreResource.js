@@ -291,13 +291,12 @@ exports.ResourceMaker = ({
       (diff) =>
         pipe([
           () => diff,
-          get("liveDiff"),
           switchCase([
             or([
-              pipe([get("needUpdate")]),
-              pipe([get("added"), not(isEmpty)]),
-              pipe([get("updated"), not(isEmpty)]),
-              pipe([get("deleted"), not(isEmpty)]),
+              pipe([get("liveDiff.needUpdate")]),
+              pipe([get("liveDiff.added"), not(isEmpty)]),
+              pipe([get("liveDiff.updated"), not(isEmpty)]),
+              pipe([get("liveDiff.deleted"), not(isEmpty)]),
             ]),
             () =>
               pipe([

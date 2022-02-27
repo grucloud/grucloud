@@ -21,11 +21,10 @@ const {
   isEmpty,
   find,
 } = require("rubico/x");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
   hasDependency,
   findLiveById,
-  ResourceVarNameDefault,
 } = require("@grucloud/core/generatorUtils");
 const { AwsIamUser } = require("./AwsIamUser");
 const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
@@ -37,7 +36,7 @@ const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
 
-const { isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "IAM";
 
@@ -54,7 +53,7 @@ module.exports = () =>
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([
@@ -78,7 +77,7 @@ module.exports = () =>
       dependsOn: ["IAM::Policy", "IAM::Group"],
       Client: AwsIamUser,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([
@@ -106,7 +105,7 @@ module.exports = () =>
       dependsOn: ["IAM::Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([
@@ -129,7 +128,7 @@ module.exports = () =>
       dependsOn: ["IAM::Policy"],
       Client: AwsIamRole,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
       transformDependencies: ({ provider }) =>
@@ -277,7 +276,7 @@ module.exports = () =>
       type: "Policy",
       Client: AwsIamPolicy,
       isOurMinion: isOurMinionIamPolicy,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
@@ -297,7 +296,7 @@ module.exports = () =>
       dependsOn: ["IAM::Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([

@@ -4,15 +4,11 @@ const { when, includes, isObject } = require("rubico/x");
 
 const mime = require("mime-types");
 
-const {
-  compare,
-  omitIfEmpty,
-  replaceWithName,
-} = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
-const { isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "S3";
 
@@ -35,7 +31,7 @@ module.exports = () =>
         },
       },
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             tap((params) => {

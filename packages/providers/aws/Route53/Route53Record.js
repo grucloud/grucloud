@@ -29,7 +29,7 @@ const {
   identity,
   unless,
 } = require("rubico/x");
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
@@ -711,7 +711,7 @@ exports.Route53Record = ({ spec, config }) => {
   };
 };
 exports.compareRoute53Record = pipe([
-  compare({
+  compareAws({
     filterAll: pipe([omit(["Tags"])]),
     filterTarget: () => pipe([defaultsDeep({ ResourceRecords: [] })]),
     filterLive: () => pipe([omitFieldRecord]),

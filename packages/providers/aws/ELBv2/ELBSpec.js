@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, pick, tap, get } = require("rubico");
 const { defaultsDeep, unless, when } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
 const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const GROUP = "ELBv2";
@@ -24,7 +24,7 @@ module.exports = () =>
 
       Client: ELBLoadBalancerV2,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["Name", "Subnets", "Tags"])]),
         filterLive: () =>
           pipe([
@@ -55,7 +55,7 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc"],
       Client: ELBTargetGroup,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             omit(["Name", "Tags"]),
@@ -117,7 +117,7 @@ module.exports = () =>
       dependsOnList: ["ELBv2::LoadBalancer"],
       Client: ELBListener,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([
@@ -170,7 +170,7 @@ module.exports = () =>
       dependsOnList: ["ELBv2::Listener"],
       Client: ELBRule,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             omit(["Tags"]),

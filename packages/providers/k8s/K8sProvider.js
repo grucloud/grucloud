@@ -13,6 +13,7 @@ const {
   reduce,
   set,
   omit,
+  assign,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -24,6 +25,8 @@ const {
   isEmpty,
   identity,
   uniq,
+  unless,
+  when,
 } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
@@ -263,6 +266,78 @@ const fnSpecs = pipe([
         },
       },
       inferName: inferNameNamespace,
+      propertiesDefault: {
+        spec: {
+          template: {
+            spec: {
+              restartPolicy: "Always",
+              terminationGracePeriodSeconds: 30,
+              dnsPolicy: "ClusterFirst",
+              securityContext: {},
+              schedulerName: "default-scheduler",
+            },
+          },
+          strategy: {
+            type: "RollingUpdate",
+            rollingUpdate: {
+              maxUnavailable: "25%",
+              maxSurge: "25%",
+            },
+          },
+          revisionHistoryLimit: 10,
+          progressDeadlineSeconds: 600,
+        },
+      },
+      omitProperties: [
+        ["metadata", "annotations", "deployment.kubernetes.io/revision"],
+        "spec.template.metadata.creationTimestamp",
+      ],
+      compare: compareK8s({
+        filterTarget: pipe([
+          assign({
+            spec: pipe([
+              get("spec"),
+              assign({
+                template: pipe([
+                  get("template"),
+                  assign({
+                    spec: pipe([
+                      get("spec"),
+                      assign({
+                        containers: pipe([
+                          get("containers"),
+                          map(
+                            pipe([
+                              when(
+                                get("ports"),
+                                assign({
+                                  ports: pipe([
+                                    get("ports"),
+                                    map(defaultsDeep({ protocol: "TCP" })),
+                                  ]),
+                                })
+                              ),
+                              defaultsDeep({
+                                imagePullPolicy: "IfNotPresent",
+                                resources: {},
+                                terminationMessagePath: "/dev/termination-log",
+                                terminationMessagePolicy: "File",
+                              }),
+                            ])
+                          ),
+                        ]),
+                      }),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      }),
       Client: ({ config, spec }) =>
         createResourceNamespace({
           baseUrl: ({ namespace, apiVersion }) =>
@@ -719,6 +794,20 @@ const fnSpecs = pipe([
       dependencies: {
         namespace: {
           type: "Namespace",
+        },
+      },
+      compare: compareK8s({
+        filterTarget: pipe([
+          unless(eq(get("spec.clusterIP"), "None"), omit(["spec.clusterIP"])),
+        ]),
+      }),
+      omitProperties: ["spec.clusterIPs", "spec.externalTrafficPolicy"],
+      propertiesDefault: {
+        spec: {
+          sessionAffinity: "None",
+          ipFamilies: ["IPv4"],
+          ipFamilyPolicy: "SingleStack",
+          internalTrafficPolicy: "Cluster",
         },
       },
       inferName: inferNameNamespace,

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, omit, pick } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { SSMParameter } = require("./SSMParameter");
 
@@ -13,7 +13,7 @@ module.exports = () =>
       type: "Parameter",
       Client: SSMParameter,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: omit(["Tags"]),
         filterTarget: () =>
           pipe([

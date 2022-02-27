@@ -11,9 +11,9 @@ const {
   pick,
 } = require("rubico");
 const { includes } = require("rubico/x");
-const { isOurMinion, DecodeUserData } = require("../AwsCommon");
+const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
   AutoScalingAutoScalingGroup,
@@ -45,7 +45,7 @@ module.exports = () =>
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
@@ -123,7 +123,7 @@ module.exports = () =>
       dependsOnList: ["AutoScaling::AutoScalingGroup"],
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
@@ -159,7 +159,7 @@ module.exports = () =>
       ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([

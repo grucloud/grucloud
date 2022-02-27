@@ -74,7 +74,6 @@ const createResources = ({ provider, resources: { namespace } }) => {
   });
 
   provider.makeService({
-    //dependencies: () => ({ statefulSet: statefulSet.name }),
     properties: () => ({
       metadata: {
         name: redis.serviceName,

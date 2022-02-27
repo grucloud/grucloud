@@ -397,6 +397,19 @@ const displayLiveItem =
     ])();
   };
 
+const contentFromChange = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  switchCase([
+    get("added"),
+    ({ value }) => colors.bold(`+ ${value}`),
+    get("removed"),
+    ({ value }) => colors.red(`- ${value}`),
+    ({ value }) => colors.green(`${value}`),
+  ]),
+]);
+
 const displayPlanItemUpdate =
   ({ tableItem }) =>
   ({ diff, resource, id, action }) =>
@@ -433,75 +446,19 @@ const displayPlanItemUpdate =
             },
           ])
       ),
-      () => diff.liveDiff.updated,
-      tap.if(
-        not(isEmpty),
-        map.entries(([key, value]) => {
-          tableItem.push([
-            {
-              colSpan: 2,
-              content: colors.yellow(`Key: ${key}`),
-            },
-          ]);
-          tableItem.push([
-            {
-              content: colors.red(
-                `- ${YAML.stringify(
-                  diff.targetDiff.updated ? diff.targetDiff.updated[key] : ""
-                )}`
-              ),
-            },
-            {
-              content: colors.green(`+ ${YAML.stringify(value)}`),
-            },
-          ]);
-          return [key, value];
-        })
-      ),
-      () => diff.liveDiff.added,
-      tap.if(
-        not(isEmpty),
-        map.entries(([key, value]) => {
-          tableItem.push([
-            {
-              colSpan: 2,
-              content: colors.yellow(`Key: ${key}`),
-            },
-          ]);
-          tableItem.push([
-            {
-              content: colors.red(``),
-            },
-            {
-              content: colors.green(`+ ${YAML.stringify(value)}`),
-            },
-          ]);
-          return [key, value];
-        })
-      ),
-      () => diff.targetDiff.added,
-      tap.if(
-        not(isEmpty),
-        map.entries(([key, value]) => {
-          tableItem.push([
-            {
-              colSpan: 2,
-              content: colors.yellow(`Key: ${key}`),
-            },
-          ]);
-          tableItem.push([
-            {
-              content: colors.red(
-                `- ${YAML.stringify(diff.targetDiff.added[key])}`
-              ),
-            },
-            {
-              content: "",
-            },
-          ]);
-          return [key, value];
-        })
-      ),
+      () => diff.jsonDiff,
+      map(contentFromChange),
+      tap((params) => {
+        assert(true);
+      }),
+      callProp("join", ""),
+      (content) =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content,
+          },
+        ]),
     ])();
 
 const displayPlanItemCreate =

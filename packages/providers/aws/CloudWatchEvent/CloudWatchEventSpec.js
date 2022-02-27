@@ -2,8 +2,8 @@ const assert = require("assert");
 const { pipe, assign, map, omit, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { isOurMinion } = require("../AwsCommon");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinion } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
@@ -20,7 +20,7 @@ module.exports = () =>
       type: "EventBus",
       Client: CloudWatchEventBus,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () => pipe([filterTargetDefault]),
         filterLive: () => pipe([omit(["Arn"]), filterLiveDefault]),
       }),
@@ -32,7 +32,7 @@ module.exports = () =>
       dependsOnList: ["CloudWatchEvents::EventBus"],
       Client: CloudWatchEventRule,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             defaultsDeep({ EventBusName: "default" }),

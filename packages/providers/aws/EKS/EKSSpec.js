@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup } = require("./EKSNodeGroup");
@@ -24,7 +24,7 @@ module.exports = () =>
       ],
       Client: EKSCluster,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         fitterAll: pipe([
           tap((params) => {
             assert(true);
@@ -105,7 +105,7 @@ module.exports = () =>
       dependsOnList: ["EKS::Cluster"],
       Client: EKSNodeGroup,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterTarget: () =>
           pipe([
             pick([

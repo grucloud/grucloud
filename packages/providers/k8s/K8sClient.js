@@ -297,12 +297,13 @@ module.exports = K8sClient = ({
           assert(name);
           assert(payload);
           assert(live);
+          assert(payload.metadata.name);
         }),
         fork({
           fullPath: pipe([
             () =>
               pathUpdate({
-                name,
+                name: payload.metadata.name,
                 namespace:
                   payload.metadata.namespace ||
                   getNamespace(dependencies().namespace),

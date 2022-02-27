@@ -26,7 +26,7 @@ const {
   unless,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const {
@@ -341,7 +341,7 @@ exports.compareS3Object = pipe([
   tap((params) => {
     assert(true);
   }),
-  compare({
+  compareAws({
     filterAll: pipe([omit(["Tags"])]),
     filterTarget: ({ programOptions }) =>
       pipe([
@@ -365,16 +365,7 @@ exports.compareS3Object = pipe([
           },
         }),
       ]),
-    filterLive: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        pick(["Metadata.md5hash"]),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+    filterLive: () => pipe([pick(["Metadata.md5hash"])]),
   }),
   tap((params) => {
     assert(true);
