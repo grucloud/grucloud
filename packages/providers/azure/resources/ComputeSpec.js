@@ -37,6 +37,59 @@ const {
 
 const group = "Compute";
 
+const virtualMachineDependenciesCommon = {
+  resourceGroup: {
+    type: "ResourceGroup",
+    group: "Resources",
+    name: "resourceGroupName",
+    parent: true,
+  },
+  disks: {
+    type: "Disk",
+    group: "Compute",
+    list: true,
+    createOnly: true,
+  },
+  managedIdentities: {
+    type: "UserAssignedIdentity",
+    group: "ManagedIdentity",
+    createOnly: true,
+    list: true,
+  },
+  sshPublicKeys: {
+    type: "SshPublicKey",
+    group: "Compute",
+    list: true,
+    createOnly: true,
+  },
+  galleryImage: {
+    type: "GalleryImage",
+    group: "Compute",
+    createOnly: true,
+  },
+  networkSecurityGroups: {
+    type: "NetworkSecurityGroup",
+    group: "Network",
+    createOnly: true,
+    list: true,
+  },
+  proximityPlacementGroup: {
+    type: "ProximityPlacementGroup",
+    group: "Compute",
+    createOnly: true,
+  },
+  dedicatedHostGroup: {
+    type: "DedicatedHostGroup",
+    group: "Compute",
+    createOnly: true,
+  },
+  capacityReservationGroup: {
+    type: "CapacityReservationGroup",
+    group: "Compute",
+    createOnly: true,
+  },
+};
+
 const filterVirtualMachineProperties =
   ({ config }) =>
   ({ lives }) =>
@@ -496,67 +549,12 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "VirtualMachineScaleSet",
         dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
+          ...virtualMachineDependenciesCommon,
           subnets: {
             type: "Subnet",
             group: "Network",
             createOnly: true,
             list: true,
-          },
-          networkInterfaces: {
-            type: "NetworkInterface",
-            group: "Network",
-            list: true,
-            createOnly: true,
-          },
-          disks: {
-            type: "Disk",
-            group: "Compute",
-            list: true,
-            createOnly: true,
-          },
-          managedIdentities: {
-            type: "UserAssignedIdentity",
-            group: "ManagedIdentity",
-            createOnly: true,
-            list: true,
-          },
-          sshPublicKeys: {
-            type: "SshPublicKey",
-            group: "Compute",
-            list: true,
-            createOnly: true,
-          },
-          galleryImage: {
-            type: "GalleryImage",
-            group: "Compute",
-            createOnly: true,
-          },
-          networkSecurityGroups: {
-            type: "NetworkSecurityGroup",
-            group: "Network",
-            createOnly: true,
-            list: true,
-          },
-          proximityPlacementGroup: {
-            type: "ProximityPlacementGroup",
-            group: "Compute",
-            createOnly: true,
-          },
-          dedicatedHostGroup: {
-            type: "DedicatedHostGroup",
-            group: "Compute",
-            createOnly: true,
-          },
-          capacityReservationGroup: {
-            type: "CapacityReservationGroup",
-            group: "Compute",
-            createOnly: true,
           },
           loadBalancerBackendAddressPools: {
             type: "LoadBalancerBackendAddressPool",
@@ -749,49 +747,11 @@ exports.fnSpecs = ({ config }) =>
         // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
         type: "VirtualMachine",
         dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
+          ...virtualMachineDependenciesCommon,
           networkInterfaces: {
             type: "NetworkInterface",
             group: "Network",
             list: true,
-            createOnly: true,
-          },
-          disks: {
-            type: "Disk",
-            group: "Compute",
-            list: true,
-            createOnly: true,
-          },
-          managedIdentities: {
-            type: "UserAssignedIdentity",
-            group: "ManagedIdentity",
-            createOnly: true,
-            list: true,
-          },
-          sshPublicKeys: {
-            type: "SshPublicKey",
-            group: "Compute",
-            list: true,
-            createOnly: true,
-          },
-          galleryImage: {
-            type: "GalleryImage",
-            group: "Compute",
-            createOnly: true,
-          },
-          networkSecurityGroup: {
-            type: "NetworkSecurityGroup",
-            group: "Network",
-            createOnly: true,
-          },
-          dscpConfiguration: {
-            type: "DscpConfiguration",
-            group: "Network",
             createOnly: true,
           },
           availabilitySet: {
@@ -804,23 +764,8 @@ exports.fnSpecs = ({ config }) =>
             group: "Compute",
             createOnly: true,
           },
-          proximityPlacementGroup: {
-            type: "ProximityPlacementGroup",
-            group: "Compute",
-            createOnly: true,
-          },
-          dedicatedHostGroup: {
-            type: "DedicatedHostGroup",
-            group: "Compute",
-            createOnly: true,
-          },
           virtualMachineScaleSetVm: {
             type: "VirtualMachineScaleSetVM",
-            group: "Compute",
-            createOnly: true,
-          },
-          capacityReservationGroup: {
-            type: "CapacityReservationGroup",
             group: "Compute",
             createOnly: true,
           },

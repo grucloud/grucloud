@@ -22,6 +22,7 @@
     "test:example": "node test/testExamples.js",
     "start:mock": "nodemon node packages/tools/mockServer/MockServerRun.js",
     "cpd": "jscpd -i resource.js -i hook.js -i 'packages/core/template/**' -i '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages/core ./packages/providers",
+    "cpd:core": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/core",
     "cpd:aws": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/aws",
     "cpd:azure": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/azure",
     "cpd:gcp": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/google",

@@ -58,52 +58,52 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it("buildDependenciesFromBody disk", async function () {
-    await pipe([
-      () =>
-        path.resolve(
-          process.cwd(),
-          specDir,
-          "compute/resource-manager/Microsoft.Compute/stable/2021-04-01",
-          "disk.json"
-        ),
-      (filename) => SwaggerParser.dereference(filename, {}),
-      get("paths"),
-      get([
-        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
-      ]),
-      get("put.parameters"),
-      find(eq(get("in"), "body")),
-      get("schema.properties"),
-      buildDependenciesFromBody({}),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-  });
-  it("buildDependenciesFromBody vault", async function () {
-    await pipe([
-      () =>
-        path.resolve(
-          process.cwd(),
-          specDir,
-          "keyvault/resource-manager/Microsoft.KeyVault/preview/2021-06-01-preview/",
-          "keyvault.json"
-        ),
-      (filename) => SwaggerParser.dereference(filename, {}),
-      get("paths"),
-      get([
-        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
-      ]),
-      get("put.parameters"),
-      find(eq(get("in"), "body")),
-      get("schema.properties"),
-      buildDependenciesFromBody({}),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-  });
+  // it("buildDependenciesFromBody disk", async function () {
+  //   await pipe([
+  //     () =>
+  //       path.resolve(
+  //         process.cwd(),
+  //         specDir,
+  //         "compute/resource-manager/Microsoft.Compute/stable/2021-04-01",
+  //         "disk.json"
+  //       ),
+  //     (filename) => SwaggerParser.dereference(filename, {}),
+  //     get("paths"),
+  //     get([
+  //       "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+  //     ]),
+  //     get("put.parameters"),
+  //     find(eq(get("in"), "body")),
+  //     get("schema.properties"),
+  //     buildDependenciesFromBody({}),
+  //     tap((params) => {
+  //       assert(true);
+  //     }),
+  //   ])();
+  // });
+  // it("buildDependenciesFromBody vault", async function () {
+  //   await pipe([
+  //     () =>
+  //       path.resolve(
+  //         process.cwd(),
+  //         specDir,
+  //         "keyvault/resource-manager/Microsoft.KeyVault/preview/2021-06-01-preview/",
+  //         "keyvault.json"
+  //       ),
+  //     (filename) => SwaggerParser.dereference(filename, {}),
+  //     get("paths"),
+  //     get([
+  //       "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}",
+  //     ]),
+  //     get("put.parameters"),
+  //     find(eq(get("in"), "body")),
+  //     get("schema.properties"),
+  //     buildDependenciesFromBody({}),
+  //     tap((params) => {
+  //       assert(true);
+  //     }),
+  //   ])();
+  // });
   //
   it("processSwagger webapp", async function () {
     await pipe([
