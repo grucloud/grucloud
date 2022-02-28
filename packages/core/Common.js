@@ -443,7 +443,12 @@ exports.compare = ({
             assert(true);
           }),
         ])(),
-      live: ({ live = {}, propertiesDefault, ...otherProps }) =>
+      live: ({
+        live = {},
+        propertiesDefault,
+        omitProperties = [],
+        ...otherProps
+      }) =>
         pipe([
           () => live,
           removeOurTags,
@@ -451,6 +456,7 @@ exports.compare = ({
           filterLive(otherProps),
           filterAll,
           filterLiveDefault,
+          omit(omitProperties),
         ])(),
     }),
     tap((params) => {

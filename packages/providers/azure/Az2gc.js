@@ -1,24 +1,13 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  and,
-  map,
-  fork,
-  filter,
-  not,
-  assign,
-} = require("rubico");
-const { find, callProp, unless, isEmpty } = require("rubico/x");
+const { pipe, tap, get, eq, and, map, fork, filter } = require("rubico");
+const { find, callProp } = require("rubico/x");
 const path = require("path");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
   readModel,
   generatorMain,
   createWriterSpec,
+  filterModel,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
 
@@ -29,36 +18,6 @@ const {
   getBlobName,
   readStreamToLocalFileWithLogs,
 } = require("./resources/StorageUtils");
-
-// TODO
-const filterModel = pipe([
-  map(
-    assign({
-      live: pipe([
-        get("live"),
-        assign({
-          tags: pipe([
-            get("tags"),
-            unless(
-              isEmpty,
-              pipe([
-                map.entries(([key, value]) => [
-                  key,
-                  key.startsWith("gc-") ? undefined : value,
-                ]),
-                filter(not(isEmpty)),
-              ])
-            ),
-          ]),
-        }),
-        omitIfEmpty(["tags"]),
-      ]),
-    })
-  ),
-  tap((params) => {
-    assert(true);
-  }),
-]);
 
 const downloadBlobs = ({ lives, commandOptions, programOptions }) =>
   pipe([
@@ -135,7 +94,7 @@ exports.generateCode = ({
         commandOptions,
         programOptions,
         configTpl,
-        filterModel,
+        filterModel: filterModel({ field: "tags" }),
       }),
     () =>
       downloadAssets({

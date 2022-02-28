@@ -6,7 +6,7 @@ const prettier = require("prettier");
 const prompts = require("prompts");
 const { ESLint } = require("eslint");
 
-const { differenceObject } = require("./Common");
+const { differenceObject, omitIfEmpty } = require("./Common");
 const {
   pipe,
   tap,
@@ -53,6 +53,39 @@ const {
 } = require("rubico/x");
 const Diff = require("diff");
 const { resourcesTpl } = require("./resourcesTpl");
+
+exports.filterModel = ({ field }) =>
+  pipe([
+    map(
+      assign({
+        live: pipe([
+          get("live"),
+          when(
+            get(field),
+            assign({
+              [field]: pipe([
+                get(field),
+                unless(
+                  isEmpty,
+                  pipe([
+                    map.entries(([key, value]) => [
+                      key,
+                      key.startsWith("gc-") ? undefined : value,
+                    ]),
+                    filter(not(isEmpty)),
+                  ])
+                ),
+              ]),
+            })
+          ),
+          omitIfEmpty([field]),
+        ]),
+      })
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const ResourceVarNameDefault = pipe([
   tap((name) => {
@@ -1317,7 +1350,7 @@ exports.generatorMain = ({
         lives: readModel({
           commandOptions,
           programOptions,
-          writersSpec,
+          writersSpec: createWritersSpec(specs),
           filterModel,
         }),
         mapping: readMapping({ commandOptions, programOptions }),

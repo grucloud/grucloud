@@ -1,40 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, map, assign, filter, not, get } = require("rubico");
-const { unless, isEmpty } = require("rubico/x");
+const { pipe, tap } = require("rubico");
 
-const { generatorMain } = require("@grucloud/core/generatorUtils");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { generatorMain, filterModel } = require("@grucloud/core/generatorUtils");
 
 const { configTpl } = require("./configTpl");
-
-const filterModel = pipe([
-  map(
-    assign({
-      live: pipe([
-        get("live"),
-        assign({
-          labels: pipe([
-            get("labels"),
-            unless(
-              isEmpty,
-              pipe([
-                map.entries(([key, value]) => [
-                  key,
-                  key.startsWith("gc-") ? undefined : value,
-                ]),
-                filter(not(isEmpty)),
-              ])
-            ),
-          ]),
-        }),
-        omitIfEmpty(["labels"]),
-      ]),
-    })
-  ),
-  tap((params) => {
-    assert(true);
-  }),
-]);
 
 exports.generateCode = ({
   specs,
@@ -55,7 +24,7 @@ exports.generateCode = ({
         commandOptions,
         programOptions,
         configTpl,
-        filterModel,
+        filterModel: filterModel({ field: "labels" }),
       }),
     // () =>
     //   downloadAssets({
