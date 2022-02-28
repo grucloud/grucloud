@@ -1,6 +1,6 @@
 {
   "name": "iam-ecs",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.4.0",
-    "@grucloud/provider-aws": "^5.4.0",
+    "@grucloud/core": "^5.5.0",
+    "@grucloud/provider-aws": "^5.5.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
