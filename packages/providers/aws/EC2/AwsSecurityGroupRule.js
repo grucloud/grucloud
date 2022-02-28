@@ -31,7 +31,7 @@ const {
   when,
 } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
@@ -616,15 +616,16 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
   };
 };
 
-exports.compareSecurityGroupRule = compare({
-  filterTarget: pipe([
-    ({ GroupId, IpPermissions }) => ({
-      GroupId,
-      IpPermission: IpPermissions[0],
-    }),
-  ]),
+exports.compareSecurityGroupRule = compareAws({
   filterAll: pipe([
     omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"]),
   ]),
-  filterLive: pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
+  filterTarget: () =>
+    pipe([
+      ({ GroupId, IpPermissions }) => ({
+        GroupId,
+        IpPermission: IpPermissions[0],
+      }),
+    ]),
+  filterLive: () => pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
 });

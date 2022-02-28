@@ -2,8 +2,8 @@ const assert = require("assert");
 const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
 const { when } = require("rubico/x");
 
-const { isOurMinion } = require("../AwsCommon");
-const { compare, replaceWithName } = require("@grucloud/core/Common");
+const { compareAws, isOurMinion } = require("../AwsCommon");
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { AppRunnerService } = require("./Service");
 const { AppRunnerConnection } = require("./Connection");
@@ -18,24 +18,26 @@ module.exports = () =>
       type: "Connection",
       Client: AppRunnerConnection,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
           }),
           omit(["ConnectionArn", "Status", "CreatedAt"]),
         ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Tags"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Tags"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -55,7 +57,7 @@ module.exports = () =>
         repository: { type: "Repository", group: "ECR" },
       },
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
@@ -71,17 +73,19 @@ module.exports = () =>
             "AutoScalingConfigurationSummary",
           ]),
         ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["Tags"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["Tags"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

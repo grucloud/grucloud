@@ -289,7 +289,7 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const update = async ({ name, payload, dependencies, live, diff }) =>
+  const update = ({ name, payload, dependencies, live, diff }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -297,12 +297,13 @@ module.exports = K8sClient = ({
           assert(name);
           assert(payload);
           assert(live);
+          assert(payload.metadata.name);
         }),
         fork({
           fullPath: pipe([
             () =>
               pathUpdate({
-                name,
+                name: payload.metadata.name,
                 namespace:
                   payload.metadata.namespace ||
                   getNamespace(dependencies().namespace),

@@ -122,7 +122,9 @@ exports.fnSpecs = ({ config }) =>
           },
         },
         propertiesDefault: {
-          properties: { maxAgentPools: 100 },
+          properties: {
+            maxAgentPools: 100,
+          },
         },
         postCreate: () => kubeConfigUpdate,
         postDestroy: () => kubeConfigRemove,
@@ -155,7 +157,15 @@ exports.fnSpecs = ({ config }) =>
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),
-                    map(pipe([omit(["provisioningState", "powerState"])])),
+                    map(
+                      pipe([
+                        omit([
+                          "provisioningState",
+                          "powerState",
+                          "nodeImageVersion",
+                        ]),
+                      ])
+                    ),
                   ]),
                   addonProfiles: pipe([
                     get("addonProfiles"),
@@ -214,7 +224,15 @@ exports.fnSpecs = ({ config }) =>
                 assign({
                   agentPoolProfiles: pipe([
                     get("agentPoolProfiles"),
-                    map(pipe([omit(["provisioningState", "powerState"])])),
+                    map(
+                      pipe([
+                        omit([
+                          "provisioningState",
+                          "powerState",
+                          "nodeImageVersion",
+                        ]),
+                      ])
+                    ),
                   ]),
                   addonProfiles: pipe([
                     get("addonProfiles"),

@@ -89,6 +89,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
 - az vm gc a : ✖ Compute::VirtualMachine 0/1 Request failed with status code 503 The request timed out. Diagnostic information: timestamp '20220204T234950Z', subscription id 'e012cd34-c794-4e35-916f-f38dcd8ac45c', tracking id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f', request correlation id '30c0a10d-83ab-42d6-a3f0-0253ee81c31f'.
+- application-gateway: gc a -f: Network::Subnet 0/2 Request failed with status code 409 Another operation on this or dependent resource is in progress. To retrieve status of the operation use uri:
 
 ## Aws2gc
 

@@ -11,9 +11,9 @@ const {
   pick,
 } = require("rubico");
 const { includes } = require("rubico/x");
-const { isOurMinion, DecodeUserData } = require("../AwsCommon");
+const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
   AutoScalingAutoScalingGroup,
@@ -45,36 +45,37 @@ module.exports = () =>
       ],
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
           }),
           omit(["Tags", "TargetGroupARNs"]),
         ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "AutoScalingGroupARN",
-            "AvailabilityZones",
-            "Instances",
-            "CreatedTime",
-            "SuspendedProcesses",
-            "EnabledMetrics", //TODO
-            "TerminationPolicies", //TODO
-            "NewInstancesProtectedFromScaleIn", //TODO
-            "LaunchTemplate.LaunchTemplateName",
-            "TargetGroupARNs",
-            "ServiceLinkedRoleARN",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "AutoScalingGroupARN",
+              "AvailabilityZones",
+              "Instances",
+              "CreatedTime",
+              "SuspendedProcesses",
+              "EnabledMetrics", //TODO
+              "TerminationPolicies", //TODO
+              "NewInstancesProtectedFromScaleIn", //TODO
+              "LaunchTemplate.LaunchTemplateName",
+              "TargetGroupARNs",
+              "ServiceLinkedRoleARN",
+            ]),
+            omitIfEmpty(["LoadBalancerNames"]),
+            assign({ Tags: pipe([get("Tags"), filterTags]) }),
+            tap((params) => {
+              assert(true);
+            }),
           ]),
-          omitIfEmpty(["LoadBalancerNames"]),
-          assign({ Tags: pipe([get("Tags"), filterTags]) }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       }),
       propertiesDefault: {
         HealthCheckType: "EC2",
@@ -122,9 +123,9 @@ module.exports = () =>
       dependsOnList: ["AutoScaling::AutoScalingGroup"],
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
-      compare: compare({
-        filterTarget: pipe([pick([])]),
-        filterLive: pipe([pick([])]),
+      compare: compareAws({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
       }),
       includeDefaultDependencies: true,
       inferName: ({ properties, dependencies }) =>
@@ -158,18 +159,19 @@ module.exports = () =>
       ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit([
-            "LaunchConfigurationARN",
-            "KeyName",
-            "ClassicLinkVPCSecurityGroups",
-            "KernelId",
-            "RamdiskId",
-            "CreatedTime",
+        filterLive: () =>
+          pipe([
+            omit([
+              "LaunchConfigurationARN",
+              "KeyName",
+              "ClassicLinkVPCSecurityGroups",
+              "KernelId",
+              "RamdiskId",
+              "CreatedTime",
+            ]),
           ]),
-        ]),
       }),
       // propertiesDefault: {
       //   EbsOptimized: false,

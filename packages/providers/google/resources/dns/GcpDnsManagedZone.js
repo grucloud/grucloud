@@ -13,7 +13,7 @@ const {
   or,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, isDeepEqual, isEmpty, find } = require("rubico/x");
+const { defaultsDeep, isEmpty, find } = require("rubico/x");
 const { differenceWith, isEqual } = require("lodash/fp");
 const { GCP_DNS_BASE_URL } = require("./GcpDnsCommon");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");

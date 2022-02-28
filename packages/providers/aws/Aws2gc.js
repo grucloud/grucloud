@@ -6,7 +6,6 @@ const {
   eq,
   switchCase,
   not,
-  and,
   assign,
   map,
   fork,
@@ -16,7 +15,7 @@ const {
   or,
 } = require("rubico");
 const Axios = require("axios");
-const { pluck, when, callProp, isEmpty, values, groupBy } = require("rubico/x");
+const { pluck, when, callProp, isEmpty } = require("rubico/x");
 const mime = require("mime-types");
 
 const path = require("path");
@@ -31,6 +30,7 @@ const {
   generatorMain,
   readModel,
   readMapping,
+  createWritersSpec,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
 
@@ -145,13 +145,17 @@ const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
     ),
   ])();
 
-const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
+const downloadAssets = ({ specs, commandOptions, programOptions }) =>
   pipe([
     tap((params) => {
-      assert(writersSpec);
+      assert(specs);
     }),
     fork({
-      lives: readModel({ writersSpec, commandOptions, programOptions }),
+      lives: readModel({
+        writersSpec: createWritersSpec(specs),
+        commandOptions,
+        programOptions,
+      }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),
     tap((params) => {
@@ -219,46 +223,30 @@ exports.generateCode = ({
     pipe([
       tap(() => {
         assert(specs);
-        assert(providerConfig);
-        assert(programOptions);
-        assert(commandOptions);
       }),
-      () => specs,
-      groupBy("group"),
+      () =>
+        generatorMain({
+          name: "aws2gc",
+          providerType: "aws",
+          specs,
+          providerConfig,
+          commandOptions,
+          programOptions,
+          configTpl,
+          filterModel,
+        }),
       tap((params) => {
         assert(true);
       }),
-      map.entries(([key, value]) => [key, { group: key, types: value }]),
-      values,
-      tap((params) => {
-        assert(true);
-      }),
-      (writersSpec) =>
-        pipe([
-          () =>
-            generatorMain({
-              name: "aws2gc",
-              providerType: "aws",
-              writersSpec,
-              providerConfig,
-              commandOptions,
-              programOptions,
-              configTpl,
-              filterModel,
-            }),
-          tap((params) => {
-            assert(true);
-          }),
-          tap.if(
-            () => commandOptions.download,
-            () =>
-              downloadAssets({
-                writersSpec,
-                commandOptions,
-                programOptions,
-              })
-          ),
-        ])(),
+      tap.if(
+        () => commandOptions.download,
+        () =>
+          downloadAssets({
+            specs,
+            commandOptions,
+            programOptions,
+          })
+      ),
     ]),
     (error) => {
       console.error(error);

@@ -4,15 +4,11 @@ const { when, includes, isObject } = require("rubico/x");
 
 const mime = require("mime-types");
 
-const {
-  compare,
-  omitIfEmpty,
-  replaceWithName,
-} = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
-const { isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "S3";
 
@@ -35,48 +31,50 @@ module.exports = () =>
         },
       },
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "Bucket",
-            "ACL", //TODO
-            "Tags",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "Bucket",
+              "ACL", //TODO
+              "Tags",
+            ]),
           ]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "Name",
-            "CreationDate",
-            "Tags",
-            "LocationConstraint",
-            "ACL", //TODO
-            "PolicyStatus.IsPublic",
-            "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "Name",
+              "CreationDate",
+              "Tags",
+              "LocationConstraint",
+              "ACL", //TODO
+              "PolicyStatus.IsPublic",
+              "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
+            ]),
+            omitIfEmpty([
+              "AccelerateConfiguration",
+              "ServerSideEncryptionConfiguration",
+              "PolicyStatus",
+              "RequestPaymentConfiguration",
+              "BucketLoggingStatus",
+              "ReplicationConfiguration",
+              "LifecycleConfiguration",
+              "LifecycleConfiguration.Rules[0].NoncurrentVersionTransitions",
+              "CORSConfiguration.CORSRules[0].ExposeHeaders",
+              "CORSConfiguration",
+              "Policy",
+              "WebsiteConfiguration",
+              "WebsiteConfiguration.RoutingRules",
+              "NotificationConfiguration",
+              "VersioningConfiguration",
+            ]),
           ]),
-          omitIfEmpty([
-            "AccelerateConfiguration",
-            "ServerSideEncryptionConfiguration",
-            "PolicyStatus",
-            "RequestPaymentConfiguration",
-            "BucketLoggingStatus",
-            "ReplicationConfiguration",
-            "LifecycleConfiguration",
-            "LifecycleConfiguration.Rules[0].NoncurrentVersionTransitions",
-            "CORSConfiguration.CORSRules[0].ExposeHeaders",
-            "CORSConfiguration",
-            "Policy",
-            "WebsiteConfiguration",
-            "WebsiteConfiguration.RoutingRules",
-            "NotificationConfiguration",
-            "VersioningConfiguration",
-          ]),
-        ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

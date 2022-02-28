@@ -27,8 +27,8 @@ const {
   append,
   defaultsDeep,
 } = require("rubico/x");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinion, DecodeUserData } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
 
 const {
   hasDependency,
@@ -159,15 +159,11 @@ module.exports = () =>
       type: "KeyPair",
       Client: AwsClientKeyPair,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({ KeyType: "rsa" }),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          filterLiveDefault,
-          omit(["KeyPairId", "KeyFingerprint"]),
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([defaultsDeep({ KeyType: "rsa" }), filterTargetDefault]),
+        filterLive: () =>
+          pipe([filterLiveDefault, omit(["KeyPairId", "KeyFingerprint"])]),
       }),
       filterLive: () => pick([""]),
     },
@@ -182,20 +178,21 @@ module.exports = () =>
       Client: AwsVolume,
       isOurMinion,
       setupEbsVolume,
-      compare: compare({
-        filterTarget: pipe([omit(["Device"]), filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "Attachments",
-            "CreateTime",
-            "Encrypted",
-            "SnapshotId",
-            "State",
-            "VolumeId",
-            "MultiAttachEnabled",
+      compare: compareAws({
+        filterTarget: () => pipe([omit(["Device"]), filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "Attachments",
+              "CreateTime",
+              "Encrypted",
+              "SnapshotId",
+              "State",
+              "VolumeId",
+              "MultiAttachEnabled",
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       filterLive: () =>
         pipe([
@@ -242,27 +239,29 @@ module.exports = () =>
       //dependsOn: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({ DnsSupport: true, DnsHostnames: false }),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterLiveDefault,
-          omit([
-            "DhcpOptionsId",
-            "State",
-            "OwnerId",
-            "InstanceTenancy",
-            "Ipv6CidrBlockAssociationSet",
-            "CidrBlockAssociationSet",
-            "IsDefault",
-            "VpcId",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({ DnsSupport: true, DnsHostnames: false }),
+            filterTargetDefault,
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterLiveDefault,
+            omit([
+              "DhcpOptionsId",
+              "State",
+              "OwnerId",
+              "InstanceTenancy",
+              "Ipv6CidrBlockAssociationSet",
+              "CidrBlockAssociationSet",
+              "IsDefault",
+              "VpcId",
+            ]),
+          ]),
       }),
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
@@ -272,12 +271,13 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc"],
       Client: AwsInternetGateway,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([filterTargetDefault]),
-        filterLive: pipe([
-          omit(["Attachments", "InternetGatewayId", "OwnerId"]),
-          filterLiveDefault,
-        ]),
+      compare: compareAws({
+        filterTarget: () => pipe([filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit(["Attachments", "InternetGatewayId", "OwnerId"]),
+            filterLiveDefault,
+          ]),
       }),
       filterLive: () => pick([]),
       dependencies: { vpc: { type: "Vpc", group: "EC2" } },
@@ -287,22 +287,23 @@ module.exports = () =>
       dependsOn: ["EC2::ElasticIpAddress", "EC2::Subnet"],
       Client: AwsNatGateway,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit(["AllocationId"]), filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "CreateTime",
-            "NatGatewayAddresses",
-            "NatGatewayId",
-            "State",
-            "VpcId",
-            "ConnectivityType",
-            "DeleteTime",
-            "FailureCode",
-            "FailureMessage",
+      compare: compareAws({
+        filterTarget: () => pipe([omit(["AllocationId"]), filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "CreateTime",
+              "NatGatewayAddresses",
+              "NatGatewayId",
+              "State",
+              "VpcId",
+              "ConnectivityType",
+              "DeleteTime",
+              "FailureCode",
+              "FailureMessage",
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       filterLive: () => pick([]),
       dependencies: {
@@ -317,36 +318,38 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc", "EC2::InternetGateway"],
       Client: AwsSubnet,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["VpcId"])]),
-        filterTarget: pipe([
-          defaultsDeep({
-            MapPublicIpOnLaunch: false,
-            MapCustomerOwnedIpOnLaunch: false,
-            EnableDns64: false,
-            Ipv6Native: false,
-            PrivateDnsNameOptionsOnLaunch: {
-              HostnameType: "ip-name",
-              EnableResourceNameDnsARecord: false,
-              EnableResourceNameDnsAAAARecord: false,
-            },
-          }),
-          filterTargetDefault,
-        ]),
-        filterLive: pipe([
-          omit([
-            "AvailabilityZoneId",
-            "AvailableIpAddressCount",
-            "DefaultForAz",
-            "State",
-            "SubnetId",
-            "OwnerId",
-            "AssignIpv6AddressOnCreation",
-            "Ipv6CidrBlockAssociationSet",
-            "SubnetArn",
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({
+              MapPublicIpOnLaunch: false,
+              MapCustomerOwnedIpOnLaunch: false,
+              EnableDns64: false,
+              Ipv6Native: false,
+              PrivateDnsNameOptionsOnLaunch: {
+                HostnameType: "ip-name",
+                EnableResourceNameDnsARecord: false,
+                EnableResourceNameDnsAAAARecord: false,
+              },
+            }),
+            filterTargetDefault,
           ]),
-          filterLiveDefault,
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "AvailabilityZoneId",
+              "AvailableIpAddressCount",
+              "DefaultForAz",
+              "State",
+              "SubnetId",
+              "OwnerId",
+              "AssignIpv6AddressOnCreation",
+              "Ipv6CidrBlockAssociationSet",
+              "SubnetArn",
+            ]),
+            filterLiveDefault,
+          ]),
       }),
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
@@ -377,19 +380,20 @@ module.exports = () =>
       dependsOnList: ["EC2::Vpc"],
       Client: EC2RouteTable,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["VpcId"])]),
-        filterTarget: pipe([filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "Associations",
-            "PropagatingVgws",
-            "RouteTableId",
-            "OwnerId",
-            "Routes",
+        filterTarget: () => pipe([filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "Associations",
+              "PropagatingVgws",
+              "RouteTableId",
+              "OwnerId",
+              "Routes",
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
@@ -419,12 +423,10 @@ module.exports = () =>
 
       Client: EC2RouteTableAssociation,
       isOurMinion: () => () => true,
-      compare: compare({
-        filterTarget: filterTargetDefault,
-        filterLive: pipe([
-          pick(["RouteTableId", "SubnetId"]),
-          filterLiveDefault,
-        ]),
+      compare: compareAws({
+        //filterTarget: filterTargetDefault,
+        filterLive: () =>
+          pipe([pick(["RouteTableId", "SubnetId"]), filterLiveDefault]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -449,19 +451,20 @@ module.exports = () =>
       dependsOnList: ["EC2::RouteTable"],
       Client: EC2Route,
       isOurMinion,
-      compare: compare({
-        filterTarget: filterTargetDefault,
-        filterLive: pipe([
-          omit([
-            "GatewayId",
-            "NatGatewayId",
-            "Origin",
-            "State",
-            "name",
-            "RouteTableId",
+      compare: compareAws({
+        //filterTarget: filterTargetDefault,
+        filterLive: () =>
+          pipe([
+            omit([
+              "GatewayId",
+              "NatGatewayId",
+              "Origin",
+              "State",
+              "name",
+              "RouteTableId",
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       filterLive: () => pick(["DestinationCidrBlock"]),
       inferName: ({ properties, dependencies }) =>
@@ -504,9 +507,9 @@ module.exports = () =>
       isOurMinion,
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
-      compare: compare({
-        filterTarget: pipe([pick(["Description"]), filterTargetDefault]),
-        filterLive: pipe([pick(["Description"])]),
+      compare: compareAws({
+        filterTarget: () => pipe([pick(["Description"]), filterTargetDefault]),
+        filterLive: () => pipe([pick(["Description"])]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {
@@ -609,22 +612,23 @@ module.exports = () =>
       dependsOn: ["EC2::InternetGateway", "EC2::InternetGateway"],
       Client: AwsElasticIpAddress,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit([""]), filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "InstanceId",
-            "PublicIp",
-            "AllocationId",
-            "AssociationId",
-            "NetworkInterfaceId",
-            "NetworkInterfaceOwnerId",
-            "PrivateIpAddress",
-            "PublicIpv4Pool",
-            "NetworkBorderGroup",
+      compare: compareAws({
+        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "InstanceId",
+              "PublicIp",
+              "AllocationId",
+              "AssociationId",
+              "NetworkInterfaceId",
+              "NetworkInterfaceOwnerId",
+              "PrivateIpAddress",
+              "PublicIpv4Pool",
+              "NetworkBorderGroup",
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       filterLive: () => pick([]),
     },
@@ -678,21 +682,23 @@ module.exports = () =>
       Client: EC2LaunchTemplate,
       includeDefaultDependencies: true,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit(["LaunchTemplateData"]), filterTargetDefault]),
-        filterLive: pipe([
-          omit([
-            "LaunchTemplateId",
-            "VersionNumber",
-            "CreateTime",
-            "CreatedBy",
-            "DefaultVersion",
-            "DefaultVersionNumber",
-            "LatestVersionNumber",
-            "LaunchTemplateData", //TODO
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([omit(["LaunchTemplateData"]), filterTargetDefault]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "LaunchTemplateId",
+              "VersionNumber",
+              "CreateTime",
+              "CreatedBy",
+              "DefaultVersion",
+              "DefaultVersionNumber",
+              "LatestVersionNumber",
+              "LaunchTemplateData", //TODO
+            ]),
+            filterLiveDefault,
           ]),
-          filterLiveDefault,
-        ]),
       }),
       propertiesDefault: {
         LaunchTemplateData: { EbsOptimized: false },
@@ -729,9 +735,9 @@ module.exports = () =>
     //   //dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
     //   Client: AwsNetworkInterface,
     //   isOurMinion,
-    //   compare: compare({
-    //     filterTarget: pipe([filterTargetDefault]),
-    //     filterLive: pipe([filterLiveDefault]),
+    //   compare: compareAws({
+    //     filterTarget: () => pipe([filterTargetDefault]),
+    //     filterLive: () => pipe([filterLiveDefault]),
     //   }),
     // },
     {

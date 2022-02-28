@@ -8,6 +8,7 @@
     "graph-target": "gc graph --title 'EKS Load Balancer'",
     "list": "gc list --graph --title 'EKS Balancer' --default-exclude -e Key",
     "test": "mocha",
+    "plan": "gc plan",
     "gencode": "gc gencode"
   },
   "author": "",

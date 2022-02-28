@@ -23,19 +23,23 @@ const {
   size,
   isEmpty,
   flatten,
+  keys,
 } = require("rubico/x");
-const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("@grucloud/core/tos");
 
 const GoogleClient = require("../../GoogleClient");
-const { buildLabel, createAxiosMakerGoogle } = require("../../GoogleCommon");
+const {
+  compareGoogle,
+  buildLabel,
+  createAxiosMakerGoogle,
+} = require("../../GoogleCommon");
 const { toTagName } = require("@grucloud/core/TagName");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { axiosErrorToJSON } = require("@grucloud/core/Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
-const { retryCall } = require("@grucloud/core//Retry");
+const { retryCall } = require("@grucloud/core/Retry");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1
 
@@ -376,13 +380,12 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   return { ...client, update, create };
 };
 
-const filterItem = ({ config, item }) =>
+const filterItem = ({ config }) =>
   pipe([
-    tap(() => {
+    tap((item) => {
       assert(config.zone);
       assert(config.projectId);
     }),
-    () => item,
     omit(["disks", "networkInterfaces", "scheduling", "serviceAccounts"]),
     assign({
       machineType: ({ machineType }) =>
@@ -394,7 +397,7 @@ const filterItem = ({ config, item }) =>
     tap((xxx) => {
       assert(true);
     }),
-  ])();
+  ]);
 
 // See https://cloud.google.com/compute/docs/instances/update-instance-properties#updatable-properties
 const VM_INSTANCE_ATTRIBUTES_RESTART = [
@@ -422,19 +425,10 @@ exports.compareVmInstance = pipe([
   tap(({ config }) => {
     assert(config);
   }),
-  assign({
-    target: ({ target, config }) => filterItem({ config, item: target }),
-    live: ({ live, config }) => filterItem({ config, item: live }),
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
+  //TODO
+  compareGoogle({
+    filterTarget: ({ config }) => pipe([filterItem({ config })]),
+    filterLive: ({ config }) => pipe([filterItem({ config })]),
   }),
   assign({
     // TODO change image ?
@@ -445,12 +439,12 @@ exports.compareVmInstance = pipe([
     // ]),
     updateNeedRefresh: pipe([
       get("liveDiff.updated"),
-      Object.keys,
+      keys,
       or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_REFRESH))]),
     ]),
     updateNeedRestart: pipe([
       get("liveDiff.updated"),
-      Object.keys,
+      keys,
       or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_RESTART))]),
     ]),
   }),

@@ -14,6 +14,7 @@ const {
   any,
   eq,
   pick,
+  omit,
 } = require("rubico");
 const {
   append,
@@ -25,6 +26,8 @@ const {
   unless,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
+const { compareAws } = require("../AwsCommon");
+
 const { retryCall } = require("@grucloud/core/Retry");
 const {
   S3New,
@@ -338,34 +341,32 @@ exports.compareS3Object = pipe([
   tap((params) => {
     assert(true);
   }),
-  fork({
-    liveHash: pipe([
-      get("live.Metadata.md5hash"),
-      tap((liveHash) => {
-        assert(liveHash);
-      }),
-    ]),
-    targetHash: ({ target, programOptions }) =>
+  compareAws({
+    filterAll: pipe([omit(["Tags"])]),
+    filterTarget: ({ programOptions }) =>
       pipe([
         tap(() => {
-          assert(programOptions.workingDirectory);
-          assert(target.source, "missing source");
+          assert(programOptions);
         }),
-        () => path.resolve(programOptions.workingDirectory, target.source),
-        md5FileBase64,
-        tap((targetHash) => {
-          assert(targetHash);
+        (target) => ({
+          Metadata: {
+            md5hash: pipe([
+              tap(() => {
+                assert(programOptions.workingDirectory);
+                assert(target.source, "missing source");
+              }),
+              () =>
+                path.resolve(programOptions.workingDirectory, target.source),
+              md5FileBase64,
+              tap((targetHash) => {
+                assert(targetHash);
+              }),
+            ])(),
+          },
         }),
-      ])(),
+      ]),
+    filterLive: () => pipe([pick(["Metadata.md5hash"])]),
   }),
-  switchCase([
-    ({ liveHash, targetHash }) => liveHash != targetHash,
-    ({ liveHash, targetHash }) => ({
-      liveDiff: { updated: { md5: liveHash } },
-      targetDiff: { updated: { md5: targetHash } },
-    }),
-    () => ({}),
-  ]),
   tap((params) => {
     assert(true);
   }),

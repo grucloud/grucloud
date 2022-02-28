@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, eq } = require("rubico");
 const { when } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { isOurMinionObject } = require("../AwsCommon");
 
@@ -29,25 +29,27 @@ module.exports = () =>
           ReceiveMessageWaitTimeSeconds: "0",
         },
       },
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["QueueName"]),
-        ]),
-        filterLive: pipe([
-          omit([
-            "QueueUrl",
-            "Attributes.QueueArn",
-            "Attributes.ApproximateNumberOfMessages",
-            "Attributes.ApproximateNumberOfMessagesNotVisible",
-            "Attributes.ApproximateNumberOfMessagesDelayed",
-            "Attributes.CreatedTimestamp",
-            "Attributes.LastModifiedTimestamp",
-            "Attributes.SqsManagedSseEnabled",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["QueueName"]),
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "QueueUrl",
+              "Attributes.QueueArn",
+              "Attributes.ApproximateNumberOfMessages",
+              "Attributes.ApproximateNumberOfMessagesNotVisible",
+              "Attributes.ApproximateNumberOfMessagesDelayed",
+              "Attributes.CreatedTimestamp",
+              "Attributes.LastModifiedTimestamp",
+              "Attributes.SqsManagedSseEnabled",
+            ]),
+          ]),
       }),
       filterLive: () =>
         pipe([

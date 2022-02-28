@@ -2,10 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, assign, omit } = require("rubico");
 const { identity } = require("rubico/x");
 const urljoin = require("url-join");
-const { detailedDiff } = require("deep-object-diff");
-const { omitIfEmpty } = require("@grucloud/core/Common");
-const logger = require("@grucloud/core/logger")({ prefix: "GoogleCommon" });
-const { tos } = require("@grucloud/core/tos");
+const { omitIfEmpty, compare } = require("@grucloud/core/Common");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 exports.buildLabel = ({
@@ -36,53 +33,57 @@ exports.createAxiosMakerGoogle = ({
     },
   });
 
-const filterTargetDefault = identity;
-const filterLiveDefault = identity;
-
-exports.compare = ({
+exports.compareGoogle = ({
   filterAll = identity,
-  filterTarget = filterTargetDefault,
-  filterLive = filterLiveDefault,
+  filterTarget,
+  filterLive,
 } = {}) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      target: pipe([
-        get("target", {}),
-        //removeOurTagObject,
-        filterTarget,
-        filterAll,
+    compare({
+      filterAll,
+      filterTarget,
+      filterTargetDefault: pipe([
+        omit(["kind", "name", "zone", "metadata.name", "metadata.kind"]),
+        omitIfEmpty(["metadata"]),
       ]),
-      live: pipe([
-        get("live"), // removeOurTagObject,
-        filterLive,
-        filterAll,
-      ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-    ({ target, live }) => ({
-      targetDiff: pipe([
-        () => detailedDiff(target, live),
-        omit(["added"]),
-        omitIfEmpty(["deleted", "updated" /*, "added"*/]),
+      filterLive,
+      filterLiveDefault: pipe([
+        omit([
+          "kind",
+          "selfLink",
+          "id",
+          "creationTimestamp",
+          "selfLink",
+          "status",
+          "fingerprint",
+          "lastStartTimestamp",
+          "metageneration",
+          "etag",
+          "timeCreated",
+          "iamConfiguration",
+          "projectNumber",
+          "locationType",
+          "iam",
+          "updated",
+          "metadata.kind",
+          "metadata.fingerprint",
+          "metadata.name",
+          "metadata.namespace",
+          "metadata.selfLink",
+          "metadata.uid",
+          "metadata.resourceVersion",
+          "metadata.generation",
+          "metadata.creationTimestamp",
+          "tags.fingerprint",
+          "name",
+        ]),
+        omitIfEmpty(["tags", "metadata.labels", "metadata"]),
         tap((params) => {
           assert(true);
         }),
-      ])(),
-      liveDiff: pipe([
-        () => detailedDiff(live, target),
-        omit(["deleted"]),
-        omitIfEmpty(["added", "updated" /*, "deleted"*/]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+      ]),
     }),
-    tap((diff) => {
+    tap((params) => {
       assert(true);
     }),
   ]);

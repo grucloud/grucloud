@@ -15,8 +15,8 @@ const { when } = require("rubico/x");
 const fs = require("fs").promises;
 const path = require("path");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
 
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
@@ -74,25 +74,27 @@ module.exports = () =>
       Client: AppSyncGraphqlApi,
       isOurMinion,
       // TODO apiKeys
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["schemaFile"]),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["apiId", "arn", "uris", "wafWebAclArn"]),
-          assign({
-            apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
-          }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["schemaFile"]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["apiId", "arn", "uris", "wafWebAclArn"]),
+            assign({
+              apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: (input) => (live) =>
         pipe([
@@ -125,7 +127,7 @@ module.exports = () =>
       dependsOnList: ["AppSync::GraphqlApi"],
       Client: AppSyncDataSource,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           omit(["apiId", "serviceRoleArn", "dataSourceArn", "tags"]),
           omitIfEmpty(["description"]),
@@ -181,17 +183,18 @@ module.exports = () =>
           }),
         ])(),
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit(["tags"])]),
-        filterLive: pipe([
-          omit(["arn", "resolverArn", "tags"]),
-          omitIfEmpty([
-            "description",
-            "requestMappingTemplate",
-            "responseMappingTemplate",
+      compare: compareAws({
+        filterTarget: () => pipe([omit(["tags"])]),
+        filterLive: () =>
+          pipe([
+            omit(["arn", "resolverArn", "tags"]),
+            omitIfEmpty([
+              "description",
+              "requestMappingTemplate",
+              "responseMappingTemplate",
+            ]),
+            omitMaxBatchSize,
           ]),
-          omitMaxBatchSize,
-        ]),
       }),
       filterLive: () =>
         pipe([

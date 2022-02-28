@@ -20,16 +20,21 @@ const {
   isEmpty,
   isFunction,
   identity,
-  append,
-  unless,
+  defaultsDeep,
 } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
+const Diff = require("diff");
+
 const fs = require("fs");
 const https = require("https");
-const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sCommon" });
 const { tos } = require("@grucloud/core/tos");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
-const { isOurMinionObject, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  isOurMinionObject,
+  omitIfEmpty,
+  compare,
+} = require("@grucloud/core/Common");
 
 exports.inferNameNamespace = ({ properties }) =>
   pipe([
@@ -70,55 +75,62 @@ const pickCompare = ({ metadata, spec, data }) => ({
   metadata: pick(["annotations", "labels"])(metadata),
   spec: pipe([
     () => spec,
-    get("template.spec.containers[0].volumeMounts"),
-    map(omit(["readOnly"])),
-    (volumeMounts) => set("template.spec.containers[0]", volumeMounts)(spec),
+    //TODO move in compare
+    assign({
+      template: pipe([
+        get("template"),
+        assign({
+          spec: pipe([
+            get("spec"),
+            assign({
+              containers: pipe([
+                get("containers"),
+                map(
+                  assign({
+                    volumeMounts: pipe([
+                      get("volumeMounts"),
+                      omit(["readOnly"]),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ]),
+        }),
+      ]),
+    }),
   ])(),
   data,
 });
 
 exports.compareK8s = ({
   filterAll = identity,
-  filterTarget = identity,
-  filterLive = identity,
+  filterTarget,
+  filterLive,
 } = {}) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assign({
-      target: pipe([get("target", {}), filterTarget, pickCompare]),
-      live: pipe([get("live"), filterLive, pickCompare]),
-    }),
-    filterAll,
-    tap((params) => {
-      assert(true);
-    }),
-    ({ target, live }) => ({
-      targetDiff: pipe([
-        () => detailedDiff(target, live),
-        omit(["added", "deleted"]),
-        omitIfEmpty(["updated"]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-      liveDiff: pipe([
-        () => detailedDiff(live, target),
-        omit(["deleted"]),
+    compare({
+      filterAll,
+      filterTarget,
+      filterTargetDefault: pipe([pickCompare]),
+      filterLive,
+      filterLiveDefault: pipe([
+        pickCompare,
         omitIfEmpty([
-          "added.spec.template.spec.containers[0].env",
-          "added.metadata.annotations",
+          //TODO remove
+          "spec.template.spec.containers[0].env",
+          "metadata.annotations",
         ]),
-        omitIfEmpty(["added", "updated", "updated.data"]),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+      ]),
     }),
-    tap((diff) => {
-      logger.debug(`compare ${tos(diff)}`);
-    }),
+    omit(["targetDiff.added", "targetDiff.deleted"]),
+    omitIfEmpty(["targetDiff.updated"]),
+    omit(["liveDiff.deleted"]),
+    omitIfEmpty([
+      "liveDiff.added",
+      "liveDiff.updated",
+      "liveDiff.updated.data",
+    ]),
   ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;
@@ -132,21 +144,13 @@ exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
     () => name,
   ])();
 
-exports.displayNameDefault = pipe([
-  tap((xxx) => {
-    assert(true);
-  }),
-  get("name"),
-]);
+exports.displayNameDefault = pipe([get("name")]);
 exports.displayNameNamespace = ({ name }) =>
   pipe([
     tap(() => {
       assert(name);
     }),
     () => name,
-    tap((name) => {
-      assert(name);
-    }),
   ])();
 
 exports.shouldRetryOnException = ({ error, name }) => {

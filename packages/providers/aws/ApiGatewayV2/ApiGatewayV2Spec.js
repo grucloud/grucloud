@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, eq, get, pick } = require("rubico");
 const { when } = require("rubico/x");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
 const { Stage } = require("./Stage");
 const { Deployment } = require("./Deployment");
@@ -26,22 +26,26 @@ module.exports = () =>
       Client: DomainName,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ ApiMappingSelectionExpression: "$request.basepath" }),
-          omit(["DomainNameConfigurations"]),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["DomainNameConfigurations"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({
+              ApiMappingSelectionExpression: "$request.basepath",
+            }),
+            omit(["DomainNameConfigurations"]),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["DomainNameConfigurations"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -60,20 +64,22 @@ module.exports = () =>
       Client: Api,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["ApiEndpoint", "ApiId", "CreatedDate"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["ApiEndpoint", "ApiId", "CreatedDate"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -94,27 +100,29 @@ module.exports = () =>
       Client: Stage,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({
-            RouteSettings: [],
-            DefaultRouteSettings: {
-              DetailedMetricsEnabled: false,
-            },
-            StageVariables: {},
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({
+              RouteSettings: [],
+              DefaultRouteSettings: {
+                DetailedMetricsEnabled: false,
+              },
+              StageVariables: {},
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([
@@ -134,20 +142,22 @@ module.exports = () =>
       Client: Authorizer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["AuthorizerId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["AuthorizerId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -192,20 +202,22 @@ module.exports = () =>
         ])(),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["ApiMappingId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["ApiMappingId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
@@ -235,28 +247,30 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ TimeoutInMillis: 30e3, Description: "" }),
-          filterTargetDefaut,
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["RouteId", "IntegrationId", "ApiName"]),
-          defaultsDeep({ Description: "" }),
-          filterLiveDefaut,
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({ TimeoutInMillis: 30e3, Description: "" }),
+            filterTargetDefaut,
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["RouteId", "IntegrationId", "ApiName"]),
+            defaultsDeep({ Description: "" }),
+            filterLiveDefaut,
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -294,20 +308,22 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["RouteId", "ApiName"]),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["RouteId", "ApiName"]),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
@@ -345,23 +361,30 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      compare: compare({
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          defaultsDeep({ AutoDeployed: false, Description: "" }),
-          omit(["StageName"]),
-          filterTargetDefaut,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["CreatedDate", "DeploymentId", "DeploymentStatus", "ApiName"]),
-          defaultsDeep({ Description: "" }),
-          filterLiveDefaut,
-        ]),
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            defaultsDeep({ AutoDeployed: false, Description: "" }),
+            omit(["StageName"]),
+            filterTargetDefaut,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "CreatedDate",
+              "DeploymentId",
+              "DeploymentStatus",
+              "ApiName",
+            ]),
+            defaultsDeep({ Description: "" }),
+            filterLiveDefaut,
+          ]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {

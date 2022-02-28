@@ -416,59 +416,83 @@ const removeOurTags = pipe([
 
 exports.removeOurTags = removeOurTags;
 
-//TODO this is for AWS only
-const filterTargetDefault = pipe([omit(["TagSpecifications"])]);
-const filterLiveDefault = identity;
-
 exports.compare = ({
   filterAll = identity,
-  filterTarget = identity,
-  filterLive = filterLiveDefault,
+  filterTarget = () => identity,
+  filterTargetDefault = identity,
+  filterLive = () => identity,
+  filterLiveDefault = identity,
 } = {}) =>
   pipe([
     tap((params) => {
       assert(filterTarget);
     }),
     assign({
-      target: ({ target = {}, propertiesDefault }) =>
+      target: ({
+        target = {},
+        propertiesDefault = {},
+        omitProperties = [],
+        ...otherProps
+      }) =>
         pipe([
           () => target,
           tap((params) => {
-            assert(true);
+            assert(propertiesDefault);
           }),
           defaultsDeep(propertiesDefault),
           removeOurTags,
-          filterTarget,
+          filterTarget(otherProps),
           filterAll,
+          filterTargetDefault,
+          omit(omitProperties),
           tap((params) => {
             assert(true);
           }),
         ])(),
-      live: pipe([get("live"), removeOurTags, filterLive, filterAll]),
+      live: ({
+        live = {},
+        propertiesDefault,
+        omitProperties = [],
+        ...otherProps
+      }) =>
+        pipe([
+          tap((params) => {
+            assert(omitProperties);
+          }),
+          () => live,
+          removeOurTags,
+          defaultsDeep(propertiesDefault),
+          filterLive(otherProps),
+          filterAll,
+          filterLiveDefault,
+          omit(omitProperties),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     }),
     tap((params) => {
       assert(true);
     }),
-    ({ target, live }) =>
-      fork({
-        targetDiff: pipe([
-          () => detailedDiff(target, live),
-          omitIfEmpty(["deleted", "updated", "added"]),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        liveDiff: pipe([
-          () => detailedDiff(live, target),
-          omitIfEmpty(["added", "updated", "deleted"]),
-        ]),
-        jsonDiff: pipe([
-          () => Diff.diffJson(live, target),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      })(),
+    assign({
+      targetDiff: pipe([
+        ({ target, live }) => detailedDiff(target, live),
+        omitIfEmpty(["deleted", "updated", "added"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      liveDiff: pipe([
+        ({ target, live }) => detailedDiff(live, target),
+        omitIfEmpty(["added", "updated", "deleted"]),
+      ]),
+      jsonDiff: pipe([
+        ({ target = {}, live = {} }) => Diff.diffJson(live, target),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
     tap((diff) => {
       logger.debug(`compare ${tos(diff)}`);
     }),

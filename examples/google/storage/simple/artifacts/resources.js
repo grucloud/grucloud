@@ -8,7 +8,6 @@ exports.createResources = () => [
     group: "storage",
     name: "grucloud-test",
     properties: ({}) => ({
-      storageClass: "STANDARD",
       iamConfiguration: {
         bucketPolicyOnly: {
           enabled: false,

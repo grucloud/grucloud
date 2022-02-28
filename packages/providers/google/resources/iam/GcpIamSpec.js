@@ -14,9 +14,8 @@ const {
   switchCase,
 } = require("rubico");
 const { prepend, find, isEmpty, callProp, identity } = require("rubico/x");
-const { tos } = require("@grucloud/core/tos");
 const { camelCase } = require("change-case");
-const { compare } = require("../../GoogleCommon");
+const { compareGoogle } = require("../../GoogleCommon");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const {
@@ -30,8 +29,6 @@ const {
   isOurMinionIamBinding,
   compareIamBinding,
 } = require("./GcpIamBinding");
-
-const logger = require("@grucloud/core/logger")({ prefix: "GcpIamSpec" });
 
 const GROUP = "iam";
 
@@ -48,19 +45,21 @@ module.exports = () =>
             serviceAccount: { displayName, description },
           }),
         ]),
-      compare: compare({
-        filterTarget: pipe([
-          tap(({ serviceAccount }) => {
-            assert(true);
-          }),
-          ({ serviceAccount }) => serviceAccount,
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["displayName", "description"]),
-        ]),
+      compare: compareGoogle({
+        filterTarget: () =>
+          pipe([
+            tap(({ serviceAccount }) => {
+              assert(true);
+            }),
+            ({ serviceAccount }) => serviceAccount,
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["displayName", "description"]),
+          ]),
       }),
     },
     {
@@ -82,7 +81,20 @@ module.exports = () =>
       },
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
-      compare: compareIamBinding,
+      compare: compareGoogle({
+        filterTarget: () =>
+          pipe([
+            tap(({ serviceAccount }) => {
+              assert(true);
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      }),
       filterLive: () => pipe([pick(["members"])]),
       dependencies: {
         serviceAccounts: { type: "ServiceAccount", group: "iam", list: true },

@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { assign, map, omit, pipe, tap, pick, eq, get } = require("rubico");
 const { when, defaultsDeep } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinion } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { DynamoDBTable } = require("./DynamoDBTable");
 
@@ -14,7 +14,7 @@ module.exports = () =>
       type: "Table",
       Client: DynamoDBTable,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           omit(["Tags"]),
           defaultsDeep({
@@ -29,31 +29,32 @@ module.exports = () =>
             BillingModeSummary: { BillingMode },
           }),
         ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit([
-            "TableSizeBytes",
-            "ItemCount",
-            "TableArn",
-            "TableId",
-            "ProvisionedThroughput.NumberOfDecreasesToday",
-            "ProvisionedThroughput.LastIncreaseDateTime",
-            "ProvisionedThroughput.LastDecreaseDateTime",
-            "CreationDateTime",
-            "TableStatus",
-            "SSEDescription",
-            "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([
+              "TableSizeBytes",
+              "ItemCount",
+              "TableArn",
+              "TableId",
+              "ProvisionedThroughput.NumberOfDecreasesToday",
+              "ProvisionedThroughput.LastIncreaseDateTime",
+              "ProvisionedThroughput.LastDecreaseDateTime",
+              "CreationDateTime",
+              "TableStatus",
+              "SSEDescription",
+              "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+            ]),
+            tap((params) => {
+              assert(true);
+            }),
+            omitIfEmpty([
+              "ProvisionedThroughput.ReadCapacityUnits",
+              "ProvisionedThroughput.WriteCapacityUnits",
+            ]),
           ]),
-          tap((params) => {
-            assert(true);
-          }),
-          omitIfEmpty([
-            "ProvisionedThroughput.ReadCapacityUnits",
-            "ProvisionedThroughput.WriteCapacityUnits",
-          ]),
-        ]),
       }),
       filterLive: () =>
         pipe([

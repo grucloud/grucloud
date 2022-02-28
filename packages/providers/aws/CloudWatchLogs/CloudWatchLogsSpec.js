@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, assign, map, tap, pick } = require("rubico");
 const { isOurMinionObject } = require("../AwsCommon");
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 const { CloudWatchLogsGroup } = require("./CloudWatchLogsGroup");
 
@@ -18,22 +18,12 @@ module.exports = () =>
       Client: CloudWatchLogsGroup,
       dependsOn: ["kms::Key"],
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([
           tap((params) => {
             assert(true);
           }),
           pick(["retentionInDays"]),
-        ]),
-        filterTarget: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        filterLive: pipe([
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       }),
       filterLive: () => pipe([pick(["retentionInDays"])]),

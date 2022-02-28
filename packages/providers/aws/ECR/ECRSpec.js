@@ -2,11 +2,11 @@ const assert = require("assert");
 const { tap, assign, map, pipe, omit, pick, get, not, and } = require("rubico");
 const { callProp, when } = require("rubico/x");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { isOurMinionFactory } = require("../AwsCommon");
+const { compareAws, isOurMinionFactory } = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
-const { EcrRegistry, compareRegistry } = require("./EcrRegistry");
+const { EcrRegistry } = require("./EcrRegistry");
 
 const GROUP = "ECR";
 
@@ -18,12 +18,13 @@ module.exports = () =>
       type: "Repository",
       Client: EcrRepository,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         filterAll: pipe([omit(["tags"])]),
-        filterLive: pipe([
-          omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
-          omitIfEmpty(["lifecyclePolicyText", "policyText"]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
+            omitIfEmpty(["lifecyclePolicyText", "policyText"]),
+          ]),
       }),
       filterLive: ({ providerConfig }) =>
         pipe([
@@ -68,19 +69,16 @@ module.exports = () =>
       type: "Registry",
       Client: EcrRegistry,
       isOurMinion,
-      compare: compareRegistry,
+      compare: compareAws({
+        //TODO tags or Tags ?
+        filterAll: pipe([omit(["Tags"])]),
+        filterLive: () => pipe([omit(["registryId"])]),
+      }),
       ignoreResource: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           get("live"),
           not(and([get("policyText"), get("replicationConfiguration")])),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
-
       filterLive: () =>
         pipe([pick(["policyText", "replicationConfiguration"])]),
     },

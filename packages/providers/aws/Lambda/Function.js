@@ -12,17 +12,15 @@ const {
   switchCase,
   pick,
 } = require("rubico");
-const { pluck, identity, defaultsDeep, includes, unless } = require("rubico/x");
-const crypto = require("crypto");
+const { pluck, defaultsDeep, includes } = require("rubico/x");
 const path = require("path");
-const { detailedDiff } = require("deep-object-diff");
-const { fetchZip, createZipBuffer } = require("./LambdaCommon");
+const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 const { tos } = require("@grucloud/core/tos");
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { compare, buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -49,15 +47,16 @@ exports.Function = ({ spec, config }) => {
     {
       type: "Role",
       group: "IAM",
-      ids: [live.Role],
+      ids: [live.Configuration.Role],
     },
     {
       type: "Layer",
       group: "Lambda",
       ids: pipe([
         () => live,
-        get("Layers"),
-        (layersFunction) =>
+        get("Configuration.Layers"),
+        pluck("Arn"),
+        (layersArn) =>
           pipe([
             () =>
               lives.getByType({
@@ -69,7 +68,7 @@ exports.Function = ({ spec, config }) => {
               pipe([
                 get("live.LayerVersionArn"),
                 (layerVersionArn) =>
-                  pipe([() => layersFunction, includes(layerVersionArn)])(),
+                  pipe([() => layersArn, includes(layerVersionArn)])(),
               ])
             ),
           ])(),
@@ -104,24 +103,29 @@ exports.Function = ({ spec, config }) => {
             ]),
             (error) => pipe([() => ({ error })])()
           ),
-          defaultsDeep(fun),
         ])()
       ),
       map(
         assign({
-          Layers: pipe([get("Layers"), pluck("Arn")]),
-          CodeSigningConfigArn: pipe([
-            pick(["FunctionName"]),
-            lambda().getFunctionCodeSigningConfig,
-            get("CodeSigningConfigArn"),
-          ]),
-          ReservedConcurrentExecutions: pipe([
-            pick(["FunctionName"]),
-            lambda().getFunctionConcurrency,
-            get("ReservedConcurrentExecutions"),
-          ]),
+          //TODO
+          // CodeSigningConfigArn: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionCodeSigningConfig,
+          //   get("CodeSigningConfigArn"),
+          // ]),
+          // ReservedConcurrentExecutions: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionConcurrency,
+          //   get("ReservedConcurrentExecutions"),
+          // ]),
           Policy: tryCatch(
             pipe([
+              get("Configuration"),
+              tap((params) => {
+                assert(true);
+              }),
               pick(["FunctionName"]),
               lambda().getPolicy,
               get("Policy"),
@@ -259,50 +263,42 @@ exports.Function = ({ spec, config }) => {
   };
 };
 
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
-
-const computeHash256 = ({ target }) =>
-  pipe([
-    () => crypto.createHash("sha256"),
-    (hash256) =>
-      pipe([
-        () => hash256.update(target.Code.ZipFile),
-        () => hash256.digest("base64"),
-      ])(),
-  ])();
-
-const isEqualHash256 = ({ target, live }) =>
-  pipe([() => computeHash256({ target }), eq(identity, live.CodeSha256)])();
-
 exports.compareFunction = pipe([
-  assign({
-    target: filterTarget,
-    live: filterLive,
+  tap((params) => {
+    assert(true);
   }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      unless(
-        () => isEqualHash256({ target, live }),
-        assign({ updated: () => ({ CodeSha256: live.CodeSha256 }) })
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-      tap((params) => {
-        assert(true);
-      }),
-      unless(
-        () => isEqualHash256({ target, live }),
-        assign({ updated: () => ({ CodeSha256: computeHash256({ target }) }) })
-      ),
-    ])(),
+  compare({
+    filterAll: pipe([omit(["Tags"])]),
+    filterTarget: () =>
+      pipe([
+        assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),
+        pick([
+          "Handler",
+          "PackageType",
+          "Runtime",
+          "Description",
+          "LicenseInfo",
+          "Timeout",
+          "MemorySize",
+          "Environment",
+          "CodeSha256",
+        ]),
+      ]),
+    filterLive: () =>
+      pipe([
+        get("Configuration"),
+        pick([
+          "Handler",
+          "PackageType",
+          "Runtime",
+          "Description",
+          "LicenseInfo",
+          "Timeout",
+          "MemorySize",
+          "Environment",
+          "CodeSha256",
+        ]),
+      ]),
   }),
   tap((diff) => {
     logger.debug(`compareFunction ${tos(diff)}`);

@@ -1,12 +1,12 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick } = require("rubico");
+const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject } = require("../AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+const { compareAws, isOurMinionObject } = require("../AwsCommon");
 
 const { Function, compareFunction } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
@@ -65,6 +65,18 @@ module.exports = () =>
         isOurMinionObject({ tags: live.Tags, config }),
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
+      //TODO
+      pickProperties: [
+        "Handler",
+        "PackageType",
+        "Runtime",
+        "Description",
+        "LicenseInfo",
+        "Timeout",
+        "MemorySize",
+        "Environment",
+        "CodeSha256",
+      ],
       filterLive:
         ({ resource, programOptions }) =>
         (live) =>
@@ -74,6 +86,7 @@ module.exports = () =>
               assert(live.Code.Data);
             }),
             () => live,
+            get("Configuration"),
             pick([
               "Handler",
               "PackageType",
@@ -110,37 +123,39 @@ module.exports = () =>
       Client: EventSourceMapping,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compare({
-        filterTarget: pipe([
-          defaultsDeep({
-            BatchSize: 10,
-            MaximumBatchingWindowInSeconds: 0,
-            FunctionResponseTypes: [],
-          }),
-          omit(["FunctionName", "Tags"]),
-          omitIfEmpty(["FunctionResponseTypes"]),
-        ]),
-        filterLive: pipe([
-          omit([
-            "UUID",
-            "FunctionArn",
-            "LastModified",
-            "LastProcessingResult",
-            "StateTransitionReason",
-            "MaximumRecordAgeInSeconds",
-            "Tags",
-            "State",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({
+              BatchSize: 10,
+              MaximumBatchingWindowInSeconds: 0,
+              FunctionResponseTypes: [],
+            }),
+            omit(["FunctionName", "Tags"]),
+            omitIfEmpty(["FunctionResponseTypes"]),
           ]),
-          omitIfEmpty([
-            "StartingPosition",
-            "StartingPositionTimestamp",
-            "ParallelizationFactor",
-            "BisectBatchOnFunctionError",
-            "MaximumRetryAttempts",
-            "TumblingWindowInSeconds",
-            "FunctionResponseTypes",
+        filterLive: () =>
+          pipe([
+            omit([
+              "UUID",
+              "FunctionArn",
+              "LastModified",
+              "LastProcessingResult",
+              "StateTransitionReason",
+              "MaximumRecordAgeInSeconds",
+              "Tags",
+              "State",
+            ]),
+            omitIfEmpty([
+              "StartingPosition",
+              "StartingPositionTimestamp",
+              "ParallelizationFactor",
+              "BisectBatchOnFunctionError",
+              "MaximumRetryAttempts",
+              "TumblingWindowInSeconds",
+              "FunctionResponseTypes",
+            ]),
           ]),
-        ]),
       }),
       filterLive:
         ({ resource }) =>

@@ -34,7 +34,6 @@ exports.createResources = () => [
             mode: "System",
             osType: "Linux",
             osSKU: "Ubuntu",
-            nodeImageVersion: "AKSUbuntu-1804gen2containerd-2022.01.24",
             enableFIPS: false,
           },
         ],

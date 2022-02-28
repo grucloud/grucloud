@@ -6,7 +6,7 @@ const prettier = require("prettier");
 const prompts = require("prompts");
 const { ESLint } = require("eslint");
 
-const { differenceObject } = require("./Common");
+const { differenceObject, omitIfEmpty } = require("./Common");
 const {
   pipe,
   tap,
@@ -39,6 +39,7 @@ const {
   pluck,
   identity,
   values,
+  groupBy,
   flatten,
   defaultsDeep,
   keys,
@@ -52,6 +53,39 @@ const {
 } = require("rubico/x");
 const Diff = require("diff");
 const { resourcesTpl } = require("./resourcesTpl");
+
+exports.filterModel = ({ field }) =>
+  pipe([
+    map(
+      assign({
+        live: pipe([
+          get("live"),
+          when(
+            get(field),
+            assign({
+              [field]: pipe([
+                get(field),
+                unless(
+                  isEmpty,
+                  pipe([
+                    map.entries(([key, value]) => [
+                      key,
+                      key.startsWith("gc-") ? undefined : value,
+                    ]),
+                    filter(not(isEmpty)),
+                  ])
+                ),
+              ]),
+            })
+          ),
+          omitIfEmpty([field]),
+        ]),
+      })
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const ResourceVarNameDefault = pipe([
   tap((name) => {
@@ -1287,12 +1321,22 @@ const writeResources =
       ),
     ])();
 
+const createWritersSpec = pipe([
+  groupBy("group"),
+  tap((params) => {
+    assert(true);
+  }),
+  map.entries(([group, value]) => [group, { group, types: value }]),
+  values,
+]);
+exports.createWritersSpec = createWritersSpec;
+
 exports.generatorMain = ({
   name,
   providerConfig,
   commandOptions,
   programOptions,
-  writersSpec,
+  specs,
   providerType,
   iacTpl,
   filterModel,
@@ -1300,23 +1344,21 @@ exports.generatorMain = ({
   tryCatch(
     pipe([
       tap((xxx) => {
-        assert(writersSpec);
+        assert(specs);
       }),
       fork({
         lives: readModel({
           commandOptions,
           programOptions,
-          writersSpec,
+          writersSpec: createWritersSpec(specs),
           filterModel,
         }),
         mapping: readMapping({ commandOptions, programOptions }),
       }),
       ({ lives, mapping }) =>
         pipe([
-          () => writersSpec,
-          tap((params) => {
-            assert(true);
-          }),
+          () => specs,
+          createWritersSpec,
           map(({ group, types }) => ({
             group,
             types: pipe([

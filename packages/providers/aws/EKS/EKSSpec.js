@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup } = require("./EKSNodeGroup");
@@ -24,47 +24,49 @@ module.exports = () =>
       ],
       Client: EKSCluster,
       isOurMinion,
-      compare: compare({
+      compare: compareAws({
         fitterAll: pipe([
           tap((params) => {
             assert(true);
           }),
         ]),
-        filterTarget: pipe([
-          defaultsDeep({
-            resourcesVpcConfig: {
-              endpointPublicAccess: true,
-              endpointPrivateAccess: false,
-            },
-          }),
+        filterTarget: () =>
+          pipe([
+            defaultsDeep({
+              resourcesVpcConfig: {
+                endpointPublicAccess: true,
+                endpointPrivateAccess: false,
+              },
+            }),
+            omit([
+              "resourcesVpcConfig.clusterSecurityGroupId",
+              "resourcesVpcConfig.vpcId",
+              "resourcesVpcConfig.subnetIds",
+              "resourcesVpcConfig.publicAccessCidrs",
+              "version",
+              "encryptionConfig",
+            ]),
+          ]),
+        filterLive: () =>
           omit([
+            "arn",
+            "encryptionConfig",
+            "createdAt",
+            "endpoint",
             "resourcesVpcConfig.clusterSecurityGroupId",
             "resourcesVpcConfig.vpcId",
             "resourcesVpcConfig.subnetIds",
             "resourcesVpcConfig.publicAccessCidrs",
+            "kubernetesNetworkConfig",
+            "identity",
+            "logging",
+            "status",
+            "certificateAuthority",
+            "clientRequestToken",
+            "eks.2",
             "version",
-            "encryptionConfig",
+            "platformVersion",
           ]),
-        ]),
-        filterLive: omit([
-          "arn",
-          "encryptionConfig",
-          "createdAt",
-          "endpoint",
-          "resourcesVpcConfig.clusterSecurityGroupId",
-          "resourcesVpcConfig.vpcId",
-          "resourcesVpcConfig.subnetIds",
-          "resourcesVpcConfig.publicAccessCidrs",
-          "kubernetesNetworkConfig",
-          "identity",
-          "logging",
-          "status",
-          "certificateAuthority",
-          "clientRequestToken",
-          "eks.2",
-          "version",
-          "platformVersion",
-        ]),
       }),
       filterLive: () => pick(["version"]),
       dependencies: {
@@ -103,31 +105,35 @@ module.exports = () =>
       dependsOnList: ["EKS::Cluster"],
       Client: EKSNodeGroup,
       isOurMinion,
-      compare: compare({
-        filterTarget: pick([
-          "amiType",
-          "capacityType",
-          "diskSize",
-          "instanceTypes",
-          "scalingConfig",
-          "diskSize",
-        ]),
-        filterLive: pipe([
-          pick([
-            "amiType",
-            "capacityType",
-            "diskSize",
-            "instanceTypes",
-            "scalingConfig",
-            "diskSize",
-            "launchTemplate",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            pick([
+              "amiType",
+              "capacityType",
+              "diskSize",
+              "instanceTypes",
+              "scalingConfig",
+              "diskSize",
+            ]),
           ]),
-          when(
-            get("launchTemplate"),
-            omit(["instanceTypes", "amiType", "diskSize"])
-          ),
-          omit(["launchTemplate"]),
-        ]),
+        filterLive: () =>
+          pipe([
+            pick([
+              "amiType",
+              "capacityType",
+              "diskSize",
+              "instanceTypes",
+              "scalingConfig",
+              "diskSize",
+              "launchTemplate",
+            ]),
+            when(
+              get("launchTemplate"),
+              omit(["instanceTypes", "amiType", "diskSize"])
+            ),
+            omit(["launchTemplate"]),
+          ]),
       }),
       filterLive: () =>
         pipe([

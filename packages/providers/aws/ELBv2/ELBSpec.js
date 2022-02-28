@@ -1,21 +1,12 @@
 const assert = require("assert");
-const {
-  pipe,
-  assign,
-  map,
-  omit,
-  pick,
-  tap,
-  get,
-  switchCase,
-} = require("rubico");
-const { defaultsDeep, identity, unless } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
+const { pipe, assign, map, omit, pick, tap, get } = require("rubico");
+const { defaultsDeep, unless, when } = require("rubico/x");
+const { compareAws, isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
 const { ELBListener } = require("./ELBListener");
 const { ELBRule } = require("./ELBRule");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const GROUP = "ELBv2";
@@ -33,21 +24,22 @@ module.exports = () =>
 
       Client: ELBLoadBalancerV2,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit(["Name", "Subnets", "Tags"])]),
-        filterLive: pipe([
-          omit([
-            "LoadBalancerArn",
-            "DNSName",
-            "CanonicalHostedZoneId",
-            "CreatedTime",
-            "LoadBalancerName",
-            "VpcId",
-            "State",
-            "AvailabilityZones",
-            "Tags",
+      compare: compareAws({
+        filterTarget: () => pipe([omit(["Name", "Subnets", "Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "LoadBalancerArn",
+              "DNSName",
+              "CanonicalHostedZoneId",
+              "CreatedTime",
+              "LoadBalancerName",
+              "VpcId",
+              "State",
+              "AvailabilityZones",
+              "Tags",
+            ]),
           ]),
-        ]),
       }),
       includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
@@ -63,31 +55,33 @@ module.exports = () =>
       dependsOn: ["EC2::Vpc"],
       Client: ELBTargetGroup,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([
-          omit(["Name", "Tags"]),
-          defaultsDeep({
-            HealthCheckPath: "/",
-            HealthCheckPort: "traffic-port",
-            HealthCheckEnabled: true,
-            HealthCheckIntervalSeconds: 30,
-            HealthCheckTimeoutSeconds: 5,
-            HealthyThresholdCount: 5,
-            UnhealthyThresholdCount: 2,
-            Matcher: { HttpCode: "200" },
-            TargetType: "instance",
-            ProtocolVersion: "HTTP1",
-            IpAddressType: "ipv4",
-          }),
-        ]),
-        filterLive: pipe([
-          omit([
-            "TargetGroupArn",
-            "TargetGroupName",
-            "LoadBalancerArns",
-            "Tags",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            omit(["Name", "Tags"]),
+            defaultsDeep({
+              HealthCheckPath: "/",
+              HealthCheckPort: "traffic-port",
+              HealthCheckEnabled: true,
+              HealthCheckIntervalSeconds: 30,
+              HealthCheckTimeoutSeconds: 5,
+              HealthyThresholdCount: 5,
+              UnhealthyThresholdCount: 2,
+              Matcher: { HttpCode: "200" },
+              TargetType: "instance",
+              ProtocolVersion: "HTTP1",
+              IpAddressType: "ipv4",
+            }),
           ]),
-        ]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "TargetGroupArn",
+              "TargetGroupName",
+              "LoadBalancerArns",
+              "Tags",
+            ]),
+          ]),
       }),
       filterLive: () =>
         pick([
@@ -123,12 +117,13 @@ module.exports = () =>
       dependsOnList: ["ELBv2::LoadBalancer"],
       Client: ELBListener,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([omit(["Tags"])]),
-        filterLive: pipe([
-          omit(["ListenerArn", "SslPolicy", "Tags"]),
-          omitIfEmpty(["AlpnPolicy", "Certificates"]),
-        ]),
+      compare: compareAws({
+        filterTarget: () => pipe([omit(["Tags"])]),
+        filterLive: () =>
+          pipe([
+            omit(["ListenerArn", "SslPolicy", "Tags"]),
+            omitIfEmpty(["AlpnPolicy", "Certificates"]),
+          ]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -150,15 +145,13 @@ module.exports = () =>
           (live) =>
             pipe([
               () => live,
-              //TODO when
-              switchCase([
+              when(
                 () =>
                   hasDependency({ type: "TargetGroup", group: "ELBv2" })(
                     resource
                   ),
-                omit(["DefaultActions"]),
-                identity,
-              ]),
+                omit(["DefaultActions"])
+              ),
               tap((params) => {
                 assert(true);
               }),
@@ -177,39 +170,41 @@ module.exports = () =>
       dependsOnList: ["ELBv2::Listener"],
       Client: ELBRule,
       isOurMinion,
-      compare: compare({
-        filterTarget: pipe([
-          omit(["Tags"]),
-          defaultsDeep({
-            IsDefault: false,
-          }),
-          unless(
-            get("Conditions[0].Values"),
-            assign({
-              Conditions: () => [
-                {
-                  Field: "path-pattern",
-                  Values: ["/*"],
-                },
-              ],
-            })
-          ),
-        ]),
-        filterLive: pipe([
-          omit([
-            "Tags",
-            "RuleArn",
-            "TargetGroupName",
-            "HealthCheckProtocol",
-            "LoadBalancerArns",
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            omit(["Tags"]),
+            defaultsDeep({
+              IsDefault: false,
+            }),
+            unless(
+              get("Conditions[0].Values"),
+              assign({
+                Conditions: () => [
+                  {
+                    Field: "path-pattern",
+                    Values: ["/*"],
+                  },
+                ],
+              })
+            ),
           ]),
-          assign({
-            Conditions: pipe([
-              get("Conditions"),
-              map(omit(["PathPatternConfig"])),
+        filterLive: () =>
+          pipe([
+            omit([
+              "Tags",
+              "RuleArn",
+              "TargetGroupName",
+              "HealthCheckProtocol",
+              "LoadBalancerArns",
             ]),
-          }),
-        ]),
+            assign({
+              Conditions: pipe([
+                get("Conditions"),
+                map(omit(["PathPatternConfig"])),
+              ]),
+            }),
+          ]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -224,15 +219,13 @@ module.exports = () =>
           (live) =>
             pipe([
               () => live,
-              //TODO when
-              switchCase([
+              when(
                 () =>
                   hasDependency({ type: "TargetGroup", group: "ELBv2" })(
                     resource
                   ),
-                omit(["Actions"]),
-                identity,
-              ]),
+                omit(["Actions"])
+              ),
               pick(["Priority", "Conditions", "Actions"]),
               assign({
                 Conditions: pipe([
@@ -243,21 +236,21 @@ module.exports = () =>
             ])(),
       ]),
       //TODO do we need this ?
-      configBuildProperties: ({ properties, lives }) =>
-        pipe([
-          tap(() => {
-            assert(lives);
-          }),
-          () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
-        ])(),
-      codeBuildProperties: ({ group, type, resourceVarName }) =>
-        pipe([
-          tap(() => {
-            assert(true);
-          }),
-          () =>
-            `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
-        ])(),
+      // configBuildProperties: ({ properties, lives }) =>
+      //   pipe([
+      //     tap(() => {
+      //       assert(lives);
+      //     }),
+      //     () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+      //   ])(),
+      // codeBuildProperties: ({ group, type, resourceVarName }) =>
+      //   pipe([
+      //     tap(() => {
+      //       assert(true);
+      //     }),
+      //     () =>
+      //       `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
+      //   ])(),
       dependencies: {
         listener: { type: "Listener", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },

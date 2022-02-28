@@ -25,13 +25,17 @@ const {
   find,
   includes,
   when,
+  keys,
 } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { detailedDiff } = require("deep-object-diff");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const { getByNameCore, convertError } = require("@grucloud/core/Common");
+const {
+  getByNameCore,
+  convertError,
+  compare,
+} = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -580,72 +584,76 @@ exports.isOurMinionEC2Instance = (item) =>
     }),
   ])();
 
-const filterTarget = ({ target }) =>
-  pipe([
-    () => target,
-    omit(["NetworkInterfaces", "TagSpecifications", "MinCount", "MaxCount"]),
-  ])();
-
-const filterLive = pipe([
-  get("live"),
-  omit([
-    "EnclaveOptions",
-    "MetadataOptions",
-    "Licenses",
-    "HibernationOptions",
-    "CapacityReservationSpecification",
-    "CpuOptions",
-    "VirtualizationType",
-    "SourceDestCheck",
-    "SecurityGroups",
-    "RootDeviceType",
-    "RootDeviceName",
-    "NetworkInterfaces",
-    "ElasticInferenceAcceleratorAssociations",
-    "ElasticGpuAssociations",
-    "Hypervisor",
-    "EnaSupport",
-    "EbsOptimized",
-    "ClientToken",
-    "BlockDeviceMappings",
-    "Architecture",
-    "VpcId",
-    "SubnetId",
-    "StateTransitionReason",
-    "State",
-    "PublicIpAddress",
-    "PublicDnsName",
-    "ProductCodes",
-    "PrivateIpAddress",
-    "PrivateDnsName",
-    "Monitoring",
-    "LaunchTime",
-    "InstanceId",
-    "AmiLaunchIndex",
-    "Placement",
-    "IamInstanceProfile.Id",
-    "Tags",
-  ]),
-  omitIfEmpty(["UserData"]),
-]);
-
 exports.compareEC2Instance = pipe([
   tap((xxx) => {
     assert(true);
   }),
-  assign({
-    target: filterTarget,
-    live: filterLive,
-  }),
-  ({ target, live }) => ({
-    targetDiff: pipe([
-      () => detailedDiff(target, live),
-      omit(["added", "deleted"]),
-    ])(),
-    liveDiff: pipe([
-      () => detailedDiff(live, target),
-      omit(["added", "deleted"]),
-    ])(),
+  compare({
+    filterAll: pipe([omit(["Tags"])]),
+    filterTarget: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit([
+          "NetworkInterfaces",
+          "TagSpecifications",
+          "SubnetId",
+          "SecurityGroupIds",
+        ]),
+      ]),
+    filterLive: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        omit([
+          "PlatformDetails",
+          "PrivateDnsNameOptions",
+          "UsageOperation",
+          "UsageOperationUpdateTime",
+
+          "EnclaveOptions",
+          "MetadataOptions",
+          "Licenses",
+          "HibernationOptions",
+          "CapacityReservationSpecification",
+          "CpuOptions",
+          "VirtualizationType",
+          "SourceDestCheck",
+          "SecurityGroups",
+          "RootDeviceType",
+          "RootDeviceName",
+          "NetworkInterfaces",
+          "ElasticInferenceAcceleratorAssociations",
+          "ElasticGpuAssociations",
+          "Hypervisor",
+          "EnaSupport",
+          "EbsOptimized",
+          "ClientToken",
+          "BlockDeviceMappings",
+          "Architecture",
+          "VpcId",
+          "SubnetId",
+          "StateTransitionReason",
+          "State",
+          "PublicIpAddress",
+          "PublicDnsName",
+          "ProductCodes",
+          "PrivateIpAddress",
+          "PrivateDnsName",
+          "Monitoring",
+          "LaunchTime",
+          "InstanceId",
+          "AmiLaunchIndex",
+          //"Placement",
+          "IamInstanceProfile.Id",
+        ]),
+        omitIfEmpty(["UserData"]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   }),
   tap((diff) => {
     logger.debug(`compareEC2Instance ${tos(diff)}`);
@@ -653,12 +661,12 @@ exports.compareEC2Instance = pipe([
   assign({
     updateNeedDestroy: pipe([
       get("liveDiff.updated"),
-      Object.keys,
+      keys,
       or([find((key) => includes(key)(["ImageId"]))]),
     ]),
     updateNeedRestart: pipe([
       get("liveDiff.updated"),
-      Object.keys,
+      keys,
       or([find((key) => includes(key)(["InstanceType"]))]),
     ]),
   }),

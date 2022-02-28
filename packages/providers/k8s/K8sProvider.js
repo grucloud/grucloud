@@ -12,6 +12,8 @@ const {
   filter,
   reduce,
   set,
+  omit,
+  assign,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -23,6 +25,8 @@ const {
   isEmpty,
   identity,
   uniq,
+  unless,
+  when,
 } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
@@ -33,7 +37,7 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { detailedDiff } = require("deep-object-diff");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
   compareK8s,
@@ -262,6 +266,117 @@ const fnSpecs = pipe([
         },
       },
       inferName: inferNameNamespace,
+      propertiesDefault: {
+        spec: {
+          template: {
+            spec: {
+              restartPolicy: "Always",
+              terminationGracePeriodSeconds: 30,
+              dnsPolicy: "ClusterFirst",
+              securityContext: {},
+              schedulerName: "default-scheduler",
+            },
+          },
+          strategy: {
+            type: "RollingUpdate",
+            rollingUpdate: {
+              maxUnavailable: "25%",
+              maxSurge: "25%",
+            },
+          },
+          revisionHistoryLimit: 10,
+          progressDeadlineSeconds: 600,
+        },
+      },
+      omitProperties: [
+        ["metadata", "annotations", "deployment.kubernetes.io/revision"],
+        "spec.template.metadata.creationTimestamp",
+        "spec.template.spec.serviceAccount",
+      ],
+      compare: compareK8s({
+        filterTarget: () =>
+          pipe([
+            assign({
+              spec: pipe([
+                get("spec"),
+                assign({
+                  template: pipe([
+                    get("template"),
+                    assign({
+                      spec: pipe([
+                        get("spec"),
+                        when(
+                          get("volumes"),
+                          assign({
+                            volumes: pipe([
+                              get("volumes"),
+                              map(
+                                pipe([
+                                  when(
+                                    get("configMap"),
+                                    defaultsDeep({
+                                      configMap: { defaultMode: 420 },
+                                    })
+                                  ),
+                                  when(
+                                    get("secret"),
+                                    defaultsDeep({
+                                      secret: { defaultMode: 420 },
+                                    })
+                                  ),
+                                ])
+                              ),
+                            ]),
+                          })
+                        ),
+                        assign({
+                          containers: pipe([
+                            get("containers"),
+                            map(
+                              pipe([
+                                omitIfEmpty(["env"]),
+                                when(
+                                  get("volumeMounts"),
+                                  assign({
+                                    volumeMounts: pipe([
+                                      get("volumeMounts"),
+                                      map(
+                                        when(
+                                          eq(get("readOnly"), false),
+                                          omit(["readOnly"])
+                                        )
+                                      ),
+                                    ]),
+                                  })
+                                ),
+                                when(
+                                  get("ports"),
+                                  assign({
+                                    ports: pipe([
+                                      get("ports"),
+                                      map(defaultsDeep({ protocol: "TCP" })),
+                                    ]),
+                                  })
+                                ),
+                                defaultsDeep({
+                                  imagePullPolicy: "IfNotPresent",
+                                  resources: {},
+                                  terminationMessagePath:
+                                    "/dev/termination-log",
+                                  terminationMessagePolicy: "File",
+                                }),
+                              ])
+                            ),
+                          ]),
+                        }),
+                      ]),
+                    }),
+                  ]),
+                }),
+              ]),
+            }),
+          ]),
+      }),
       Client: ({ config, spec }) =>
         createResourceNamespace({
           baseUrl: ({ namespace, apiVersion }) =>
@@ -405,7 +520,21 @@ const fnSpecs = pipe([
           ]),
         ]),
       }),
-      compare: detailedDiff,
+      //TODO use compareK8s
+      compare: compare({
+        filterTarget: () => pipe([omit(["apiVersion", "kind"])]),
+        filterLive: () =>
+          pipe([
+            omit([
+              "spec",
+              "metadata.uid",
+              "metadata.resourceVersion",
+              "metadata.creationTimestamp",
+              "metadata.labels",
+              "status",
+            ]),
+          ]),
+      }),
     },
     {
       type: "PersistentVolume",
@@ -669,9 +798,6 @@ const fnSpecs = pipe([
       compare: compareK8s({
         filterAll: ({ live, target }) =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => ({ live, target }),
             set(
               "live.data",
@@ -688,14 +814,9 @@ const fnSpecs = pipe([
                     switchCase([isEmpty, identity, () => value]),
                   ])(),
                 ]),
-                tap((params) => {
-                  assert(true);
-                }),
               ])()
             ),
-            tap((params) => {
-              assert(true);
-            }),
+            omitIfEmpty(["live.data", "target.data"]),
           ])(),
       }),
     },
@@ -705,6 +826,21 @@ const fnSpecs = pipe([
       dependencies: {
         namespace: {
           type: "Namespace",
+        },
+      },
+      compare: compareK8s({
+        filterTarget: () =>
+          pipe([
+            unless(eq(get("spec.clusterIP"), "None"), omit(["spec.clusterIP"])),
+          ]),
+      }),
+      omitProperties: ["spec.clusterIPs", "spec.externalTrafficPolicy"],
+      propertiesDefault: {
+        spec: {
+          sessionAffinity: "None",
+          ipFamilies: ["IPv4"],
+          ipFamilyPolicy: "SingleStack",
+          internalTrafficPolicy: "Cluster",
         },
       },
       inferName: inferNameNamespace,

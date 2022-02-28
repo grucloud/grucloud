@@ -7,6 +7,7 @@
   "scripts": {
     "test": "mocha",
     "tree": "gc tree",
+    "plan": "gc plan",
     "list": "gc list -g",
     "gencode": "gc gencode"
   },

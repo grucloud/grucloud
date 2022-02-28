@@ -11,7 +11,7 @@ exports.createResources = ({ provider }) => {
     }),
   });
 
-  const resourcesRedis = RedisStack.createResources({
+  RedisStack.createResources({
     provider,
     resources: { namespace },
   });

@@ -45,7 +45,7 @@ exports.createResources = () => [
               name: "plantuml",
               resources: {
                 cpu: 0.25,
-                memory: ".5Gi",
+                memory: "0.5Gi",
               },
             },
           ],

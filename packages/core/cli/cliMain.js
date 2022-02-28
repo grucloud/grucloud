@@ -19,11 +19,12 @@ exports.main = async ({ argv, onExit }) => {
     const startDate = new Date();
     const commmand = await program.parseAsync(argv);
     const duration = new Duration(startDate, new Date());
+    const used = Math.ceil(process.memoryUsage().heapUsed / 1024 / 1024);
     if (!["output", "new", "gencode"].includes(commmand.args[0])) {
       console.log(
         `Command "${executableName} ${commmand.args.join(
           " "
-        )}" executed in ${duration.toString(1, 1)}`
+        )}" executed in ${duration.toString(1, 1)}, ${used} MB`
       );
     }
     await onExit({ code: 0 });

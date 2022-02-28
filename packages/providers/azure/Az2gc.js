@@ -1,28 +1,14 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  and,
-  map,
-  fork,
-  filter,
-  not,
-  assign,
-} = require("rubico");
-const {
-  groupBy,
-  values,
-  find,
-  callProp,
-  unless,
-  isEmpty,
-} = require("rubico/x");
+const { pipe, tap, get, eq, and, map, fork, filter } = require("rubico");
+const { find, callProp } = require("rubico/x");
 const path = require("path");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
-const { readModel, generatorMain } = require("@grucloud/core/generatorUtils");
+const {
+  readModel,
+  generatorMain,
+  createWriterSpec,
+  filterModel,
+} = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
 
 const {
@@ -32,36 +18,6 @@ const {
   getBlobName,
   readStreamToLocalFileWithLogs,
 } = require("./resources/StorageUtils");
-
-// TODO
-const filterModel = pipe([
-  map(
-    assign({
-      live: pipe([
-        get("live"),
-        assign({
-          tags: pipe([
-            get("tags"),
-            unless(
-              isEmpty,
-              pipe([
-                map.entries(([key, value]) => [
-                  key,
-                  key.startsWith("gc-") ? undefined : value,
-                ]),
-                filter(not(isEmpty)),
-              ])
-            ),
-          ]),
-        }),
-        omitIfEmpty(["tags"]),
-      ]),
-    })
-  ),
-  tap((params) => {
-    assert(true);
-  }),
-]);
 
 const downloadBlobs = ({ lives, commandOptions, programOptions }) =>
   pipe([
@@ -106,7 +62,11 @@ const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
       assert(writersSpec);
     }),
     fork({
-      lives: readModel({ writersSpec, commandOptions, programOptions }),
+      lives: readModel({
+        writersSpec: createWriterSpec(spec),
+        commandOptions,
+        programOptions,
+      }),
     }),
     tap((params) => {
       assert(true);
@@ -124,44 +84,25 @@ exports.generateCode = ({
   pipe([
     tap(() => {
       assert(specs);
-      assert(providerConfig);
-      assert(programOptions);
-      assert(commandOptions);
     }),
-    () => specs,
-    groupBy("group"),
+    () =>
+      generatorMain({
+        name: "az2gc",
+        providerConfig,
+        providerType: "azure",
+        specs,
+        commandOptions,
+        programOptions,
+        configTpl,
+        filterModel: filterModel({ field: "tags" }),
+      }),
+    () =>
+      downloadAssets({
+        specs,
+        commandOptions,
+        programOptions,
+      }),
     tap((params) => {
       assert(true);
     }),
-    map.entries(([group, value]) => [group, { group, types: value }]),
-    values,
-    tap((params) => {
-      assert(true);
-    }),
-    (writersSpec) =>
-      pipe([
-        () =>
-          generatorMain({
-            name: "az2gc",
-            providerConfig,
-            providerType: "azure",
-            writersSpec,
-            commandOptions,
-            programOptions,
-            configTpl,
-            filterModel,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-        () =>
-          downloadAssets({
-            writersSpec,
-            commandOptions,
-            programOptions,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
   ])();

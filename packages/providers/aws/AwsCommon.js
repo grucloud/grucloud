@@ -29,9 +29,20 @@ const {
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const { configProviderDefault } = require("@grucloud/core/Common");
+const { configProviderDefault, compare } = require("@grucloud/core/Common");
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
+
+exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
+  pipe([
+    compare({
+      filterAll,
+      filterTarget,
+      //filterTargetDefault,
+      filterLive,
+      //filterLiveDefault,
+    }),
+  ]);
 
 const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {

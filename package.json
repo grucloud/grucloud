@@ -21,7 +21,10 @@
     "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
     "test:example": "node test/testExamples.js",
     "start:mock": "nodemon node packages/tools/mockServer/MockServerRun.js",
-    "cpd": "jscpd --ignore resource.js --ignore '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages",
+    "cpd": "jscpd -i resource.js -i hook.js -i 'packages/core/template/**' -i '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages/core ./packages/providers",
+    "cpd:aws": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/aws",
+    "cpd:azure": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/azure",
+    "cpd:gcp": "jscpd  -i '**/node_modules/**' -r console --format 'javascript,typescript'  ./packages/providers/google",
     "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
     "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh",
     "np": "np --test-script  test:mock"
@@ -36,17 +39,17 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
-    "jscpd": "^3.3.23",
+    "jscpd": "^3.4.5",
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "dotenv": "^8.2.0",
-    "dotenv-cli": "^4.0.0",
+    "axios": "^0.26.0",
+    "dotenv": "^16.0.0",
+    "dotenv-cli": "^5.0.0",
     "lerna": "^4.0.0",
-    "mocha": "^8.2.1",
-    "mocha-junit-reporter": "^2.0.0",
-    "rubico": "^1.7.2"
+    "mocha": "^9.2.1",
+    "mocha-junit-reporter": "^2.0.2",
+    "rubico": "^1.8.9"
   },
   "repository": {
     "type": "git",
