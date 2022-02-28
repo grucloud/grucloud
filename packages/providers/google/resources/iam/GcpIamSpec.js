@@ -15,7 +15,7 @@ const {
 } = require("rubico");
 const { prepend, find, isEmpty, callProp, identity } = require("rubico/x");
 const { camelCase } = require("change-case");
-const { compare } = require("../../GoogleCommon");
+const { compareGoogle } = require("../../GoogleCommon");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const {
@@ -45,7 +45,7 @@ module.exports = () =>
             serviceAccount: { displayName, description },
           }),
         ]),
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: () =>
           pipe([
             tap(({ serviceAccount }) => {
@@ -81,7 +81,7 @@ module.exports = () =>
       },
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: () =>
           pipe([
             tap(({ serviceAccount }) => {

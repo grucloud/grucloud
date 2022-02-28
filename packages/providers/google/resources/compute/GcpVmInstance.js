@@ -31,7 +31,7 @@ const { tos } = require("@grucloud/core/tos");
 
 const GoogleClient = require("../../GoogleClient");
 const {
-  compare,
+  compareGoogle,
   buildLabel,
   createAxiosMakerGoogle,
 } = require("../../GoogleCommon");
@@ -425,11 +425,10 @@ exports.compareVmInstance = pipe([
   tap(({ config }) => {
     assert(config);
   }),
-  compare({
-    filterTarget: ({ config, propertiesDefault }) =>
-      pipe([defaultsDeep(propertiesDefault), filterItem({ config })]),
-    filterLive: ({ config, omitProperties = [] }) =>
-      pipe([filterItem({ config }), omit(omitProperties)]),
+  //TODO
+  compareGoogle({
+    filterTarget: ({ config }) => pipe([filterItem({ config })]),
+    filterLive: ({ config }) => pipe([filterItem({ config })]),
   }),
   assign({
     // TODO change image ?

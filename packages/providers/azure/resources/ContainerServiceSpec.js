@@ -122,7 +122,9 @@ exports.fnSpecs = ({ config }) =>
           },
         },
         propertiesDefault: {
-          properties: { maxAgentPools: 100 },
+          properties: {
+            maxAgentPools: 100,
+          },
         },
         postCreate: () => kubeConfigUpdate,
         postDestroy: () => kubeConfigRemove,

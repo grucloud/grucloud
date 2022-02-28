@@ -13,10 +13,8 @@ const {
 const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
 const { camelCase } = require("change-case");
 
-const logger = require("@grucloud/core/logger")({ prefix: "GcpComputeSpec" });
-
 const GoogleTag = require("../../GoogleTag");
-const { compare } = require("../../GoogleCommon");
+const { compareGoogle } = require("../../GoogleCommon");
 
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
@@ -104,7 +102,7 @@ module.exports = pipe([
       dependencies: {
         network: { type: "Network", group: "compute" },
       },
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -172,10 +170,25 @@ module.exports = pipe([
       Client: GoogleVmInstance,
       compare: compareVmInstance,
       omitProperties: [
-        "tags.fingerprint",
-        "labelFingerprint",
+        "disks",
+        "networkInterfaces",
+        "scheduling",
+        "serviceAccounts",
+        "id",
+        "creationTimestamp",
+        "name",
+        "status",
+        "selfLink",
         "cpuPlatform",
+        "labelFingerprint",
         "fingerprint",
+        "lastStartTimestamp",
+        "lastStopTimestamp",
+        "kind",
+        "zone",
+        "tags.fingerprint",
+        "metadata.fingerprint",
+        "metadata.kind",
       ],
       dependencies: {
         ip: { type: "Address", group: "compute" },
@@ -210,7 +223,7 @@ module.exports = pipe([
           updateAutoLearnPolicy: true,
         },
       },
-      filterLive: ({ providerConfig, lives }) =>
+      filterLive: ({ providerConfig, lives, omitProperties }) =>
         pipe([
           assign({
             sourceImage: pipe([
@@ -222,32 +235,12 @@ module.exports = pipe([
                   () => lives,
                   filter(eq(get("groupType"), "compute::Disk")),
                   find(eq(get("live.selfLink"), source)),
-                  get("live.sourceImage"),
+                  get("live.sourceImage", ""),
                   callProp("replace", `${GCP_COMPUTE_BASE_URL}/`, ""),
                 ])(),
             ]),
           }),
-          omit([
-            "disks",
-            "networkInterfaces",
-            "scheduling",
-            "serviceAccounts",
-            "id",
-            "creationTimestamp",
-            "name",
-            "status",
-            "selfLink",
-            "cpuPlatform",
-            "labelFingerprint",
-            "fingerprint",
-            "lastStartTimestamp",
-            "lastStopTimestamp",
-            "kind",
-            "zone",
-            "tags.fingerprint",
-            "metadata.fingerprint",
-            "metadata.kind",
-          ]),
+          omit(omitProperties),
           omitIfEmpty(["tags", "description", "metadata"]),
           assign({
             machineType: pipe([
@@ -259,16 +252,16 @@ module.exports = pipe([
               ),
             ]),
           }),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
     },
   ],
   map(
     pipe([
       assign({ group: () => GROUP }),
-      defaultsDeep({ isOurMinion: GoogleTag.isOurMinion, compare }),
+      defaultsDeep({
+        isOurMinion: GoogleTag.isOurMinion,
+        compare: compareGoogle,
+      }),
     ])
   ),
 ]);

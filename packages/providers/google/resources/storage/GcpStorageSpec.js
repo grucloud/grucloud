@@ -4,7 +4,7 @@ const path = require("path");
 const assert = require("assert");
 const { md5FileBase64 } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
-const { compare } = require("../../GoogleCommon");
+const { compareGoogle } = require("../../GoogleCommon");
 
 const { GcpBucket } = require("./GcpBucket");
 const { GcpObject, isGcpObjectOurMinion } = require("./GcpObject");
@@ -23,7 +23,7 @@ module.exports = () =>
           pick(["storageClass", "iamConfiguration", "iam"]),
           assign({ iam: pipe([get("iam"), pick(["bindings"])]) }),
         ]),
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: () =>
           pipe([
             assign({
@@ -40,7 +40,7 @@ module.exports = () =>
       },
       Client: GcpObject,
       filterLive: () => pipe([pick(["contentType", "storageClass"])]),
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: ({ programOptions }) =>
           pipe([
             (target) => ({

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, assign, map, tap, omit, set, get } = require("rubico");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compare } = require("../../GoogleCommon");
+const { compareGoogle } = require("../../GoogleCommon");
 
 const { GcpRunService } = require("./GcpRunService");
 const { GcpRunServiceIamMember } = require("./GcpRunServiceIamMember");
@@ -59,7 +59,7 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-      compare: compare({
+      compare: compareGoogle({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -109,21 +109,8 @@ module.exports = () =>
             assert(true);
           }),
         ]),
-
-      compare: compare({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["policy.etag"]),
-          ]),
+      compare: compareGoogle({
+        filterLive: () => pipe([omit(["policy.etag"])]),
       }),
     },
   ]);

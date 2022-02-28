@@ -33,13 +33,17 @@ exports.createAxiosMakerGoogle = ({
     },
   });
 
-exports.compare = ({ filterAll = identity, filterTarget, filterLive } = {}) =>
+exports.compareGoogle = ({
+  filterAll = identity,
+  filterTarget,
+  filterLive,
+} = {}) =>
   pipe([
     compare({
       filterAll,
       filterTarget,
       filterTargetDefault: pipe([
-        omit(["kind", "metadata.name", "metadata.kind"]),
+        omit(["kind", "name", "zone", "metadata.name", "metadata.kind"]),
         omitIfEmpty(["metadata"]),
       ]),
       filterLive,
@@ -70,8 +74,16 @@ exports.compare = ({ filterAll = identity, filterTarget, filterLive } = {}) =>
           "metadata.resourceVersion",
           "metadata.generation",
           "metadata.creationTimestamp",
+          "tags.fingerprint",
+          "name",
         ]),
         omitIfEmpty(["tags", "metadata.labels", "metadata"]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ]);

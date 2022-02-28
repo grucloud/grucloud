@@ -286,6 +286,7 @@ exports.ResourceMaker = ({
           programOptions,
         }),
       tap((diff) => {
+        assert(diff);
         //logger.debug(`planUpdate diff ${tos(diff)}`);
       }),
       (diff) =>

@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "plan": "gc plan",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "gencode": "gc gencode"
