@@ -26,7 +26,7 @@ const { getByNameCore, logError, axiosErrorToJSON } = require("./Common");
 
 const shouldRetryOnExceptionCreateDefault = pipe([
   get("error.response.status"),
-  (status) => pipe([() => [429], includes(status)])(),
+  (status) => pipe([() => [409, 429], includes(status)])(),
 ]);
 
 const shouldRetryOnExceptionDeleteDefault = pipe([
