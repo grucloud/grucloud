@@ -9,7 +9,7 @@
     "tree": "gc tree",
     "plan": "gc plan",
     "list": "gc list -g",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode --no-inventory-fetch"
   },
   "author": "",
   "license": "ISC",
