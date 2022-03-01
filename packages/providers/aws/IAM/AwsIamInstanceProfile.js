@@ -115,6 +115,25 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        InstanceProfileName: name,
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+    ])();
+
   const create = ({ name, payload = {}, dependencies }) =>
     pipe([
       tap(() => {
@@ -173,25 +192,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     getById,
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        InstanceProfileName: name,
-        Tags: buildTags({
-          name,
-          config,
-          namespace,
-          UserTags: Tags,
-        }),
-      }),
-    ])();
 
   return {
     spec,

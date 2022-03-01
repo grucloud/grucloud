@@ -50,6 +50,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
+const { findDependenciesVpc } = require("./EC2Common");
 
 const StateRunning = "running";
 const StateTerminated = "terminated";
@@ -142,6 +143,7 @@ exports.EC2Instance = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live, lives }) => [
+    findDependenciesVpc({ live }),
     {
       type: "Image",
       group: "EC2",
@@ -156,7 +158,6 @@ exports.EC2Instance = ({ spec, config }) => {
       group: "EC2",
       ids: [live.KeyName],
     },
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {
       type: "Volume",

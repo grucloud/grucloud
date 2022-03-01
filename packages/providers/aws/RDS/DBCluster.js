@@ -56,6 +56,26 @@ exports.DBCluster = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
+  //TODO tags
+
+  const configDefault = async ({
+    name,
+    namespace,
+    properties,
+    dependencies: { dbSubnetGroup, securityGroups },
+  }) =>
+    pipe([
+      () => properties,
+      defaultsDeep({
+        DBClusterIdentifier: name,
+        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+          securityGroups
+        ),
+        Tags: buildTags({ config, namespace, name }),
+      }),
+    ])();
+
   const create = client.create({
     pickCreated: () => pick(["DBCluster"]),
     method: "createDBCluster",
@@ -84,25 +104,6 @@ exports.DBCluster = ({ spec, config }) => {
     ignoreErrorCodes: ["DBClusterNotFoundFault"],
     config,
   });
-
-  //TODO tags
-  const configDefault = async ({
-    name,
-    namespace,
-    properties,
-    dependencies: { dbSubnetGroup, securityGroups },
-  }) =>
-    pipe([
-      () => properties,
-      defaultsDeep({
-        DBClusterIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
-        Tags: buildTags({ config, namespace, name }),
-      }),
-    ])();
 
   return {
     spec,

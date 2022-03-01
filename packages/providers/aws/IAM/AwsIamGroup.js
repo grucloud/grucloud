@@ -91,6 +91,26 @@ exports.AwsIamGroup = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        GroupName: name,
+        Path: "/",
+        // Tags: buildTags({
+        //   name,
+        //   config,
+        //   namespace,
+        //   UserTags: Tags,
+        // }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createGroup",
     pickId,
@@ -173,26 +193,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     getById,
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        GroupName: name,
-        Path: "/",
-        // Tags: buildTags({
-        //   name,
-        //   config,
-        //   namespace,
-        //   UserTags: Tags,
-        // }),
-      }),
-    ])();
 
   return {
     spec,

@@ -4,10 +4,11 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
 const { tos } = require("@grucloud/core/tos");
+
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEndpoint } = require("../AwsCommon");
 const { findDependenciesGraphqlApi } = require("./AppSyncCommon");
 
 const findId = get("live.resolverArn");

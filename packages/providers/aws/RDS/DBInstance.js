@@ -52,6 +52,31 @@ exports.DBInstance = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(
+          !isEmpty(properties.MasterUserPassword),
+          "MasterUserPassword is empty"
+        );
+      }),
+      () => properties,
+      defaultsDeep({
+        DBInstanceIdentifier: name,
+        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+          securityGroups
+        ),
+        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
+        Tags: buildTags({ config, namespace, name }),
+      }),
+    ])();
+
   const create = client.create({
     pickCreated: () => pick(["DBInstance"]),
     method: "createDBInstance",
@@ -83,31 +108,6 @@ exports.DBInstance = ({ spec, config }) => {
     ignoreErrorCodes: ["DBInstanceNotFound", "InvalidDBInstanceStateFault"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(
-          !isEmpty(properties.MasterUserPassword),
-          "MasterUserPassword is empty"
-        );
-      }),
-      () => properties,
-      defaultsDeep({
-        DBInstanceIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
-        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
-        Tags: buildTags({ config, namespace, name }),
-      }),
-    ])();
 
   return {
     spec,

@@ -30,7 +30,6 @@ const { AwsClient } = require("../AwsClient");
 exports.ELBRule = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
-  const { providerName } = config;
 
   const findName = ({ live, lives }) =>
     pipe([
@@ -43,7 +42,7 @@ exports.ELBRule = ({ spec, config }) => {
           type: "Listener",
           group: "ELBv2",
           id: live.ListenerArn,
-          providerName,
+          providerName: config.providerName,
         }),
       tap((listener) => {
         assert(listener);
@@ -78,7 +77,7 @@ exports.ELBRule = ({ spec, config }) => {
             lives.getById({
               type: "Listener",
               group: "ELBv2",
-              providerName,
+              providerName: config.providerName,
               id: live.ListenerArn,
             }),
           tap((listener) => {
@@ -92,7 +91,7 @@ exports.ELBRule = ({ spec, config }) => {
             lives.getById({
               type: "LoadBalancer",
               group: "ELBv2",
-              providerName,
+              providerName: config.providerName,
               id: LoadBalancerArn,
             }),
           get("managedByOther"),

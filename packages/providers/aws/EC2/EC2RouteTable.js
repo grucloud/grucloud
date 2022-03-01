@@ -26,6 +26,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
 
 exports.EC2RouteTable = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -68,12 +69,8 @@ exports.EC2RouteTable = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([() => live, get("Associations"), pluck("SubnetId")])(),
-    },
+    findDependenciesVpc({ live }),
+    findDependenciesSubnet({ live }),
   ];
 
   const routesDelete = ({ live }) =>

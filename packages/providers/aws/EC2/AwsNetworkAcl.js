@@ -19,14 +19,10 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
   const findName = findNameInTagsOrId({ findId });
   const isDefault = get("live.IsDefault");
 
-  // findDependenciesSubnet
+  // findDependencies for NetworkAcl
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([() => live, get("Associations"), pluck("SubnetId")])(),
-    },
+    findDependenciesVpc({ live }),
+    findDependenciesSubnet({ live }),
   ];
 
   const getList = ({ params } = {}) =>

@@ -30,6 +30,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     createEndpoint({ endpointName: "CloudWatchEvents" })(config);
   const client = AwsClient({ spec, config });
 
+  // findDependencies for CloudWatchEventRule
   const findDependencies = ({ live, lives }) => [
     {
       type: "EventBus",

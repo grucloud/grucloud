@@ -219,20 +219,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         filter(not(get("IsDefaultVersion"))),
         tap.if(
           gte(size, 4),
-          tryCatch(
-            pipe([
-              last,
-              ({ VersionId }) => ({ PolicyArn: Arn, VersionId }),
-              iam().deletePolicyVersion,
-            ]),
-            (error) =>
-              pipe([
-                () => error,
-                tap((params) => {
-                  assert(true);
-                }),
-              ])()
-          )
+          pipe([last, deletePolicyVersion({ PolicyArn: Arn })])
         ),
       ]),
     pickId,
@@ -302,6 +289,24 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
+  const deletePolicyVersion = ({ PolicyArn }) =>
+    tryCatch(
+      pipe([
+        tap(({ VersionId }) => {
+          assert(PolicyArn);
+          assert(VersionId);
+        }),
+        ({ VersionId }) => ({ PolicyArn, VersionId }),
+        iam().deletePolicyVersion,
+      ]),
+      pipe([
+        tap((error) => {
+          logger.error(`error in deletePolicyVersion ${PolicyArn}`);
+          logger.error(error);
+        }),
+      ])
+    );
+
   const detatchPolicyVersions = ({ live: { Arn: PolicyArn, Versions = [] } }) =>
     pipe([
       tap(() => {
@@ -309,24 +314,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       () => Versions,
       filter(not(get("IsDefaultVersion"))),
-      tap((params) => {
-        assert(true);
-      }),
-      map(
-        tryCatch(
-          pipe([
-            ({ VersionId }) => ({ PolicyArn, VersionId }),
-            iam().deletePolicyVersion,
-          ]),
-          (error) =>
-            pipe([
-              () => error,
-              tap((params) => {
-                assert(true);
-              }),
-            ])()
-        )
-      ),
+      map(deletePolicyVersion({ PolicyArn })),
     ])();
 
   const destroy = client.destroy({

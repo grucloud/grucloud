@@ -64,6 +64,21 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBSubnetGroup-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { subnets },
+  }) =>
+    pipe([
+      () => properties,
+      defaultsDeep({
+        DBSubnetGroupName: name,
+        SubnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+        Tags: buildTags({ config, namespace, name }),
+      }),
+    ])();
+
   const create = ({ name, payload }) =>
     pipe([
       tap(() => {
@@ -100,21 +115,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { subnets },
-  }) =>
-    pipe([
-      () => properties,
-      defaultsDeep({
-        DBSubnetGroupName: name,
-        SubnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-        Tags: buildTags({ config, namespace, name }),
-      }),
-    ])();
 
   return {
     spec,

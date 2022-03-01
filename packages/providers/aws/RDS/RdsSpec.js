@@ -10,6 +10,11 @@ const { DBSubnetGroup } = require("./DBSubnetGroup");
 
 const GROUP = "RDS";
 
+const environmentVariables = [
+  { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+  { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+];
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -111,10 +116,7 @@ module.exports = () =>
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
           omit(["ScalingConfigurationInfo"]),
         ]),
-      environmentVariables: [
-        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
-        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-      ],
+      environmentVariables,
       dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
@@ -211,10 +213,7 @@ module.exports = () =>
           "PreferredMaintenanceWindow",
           "BackupRetentionPeriod",
         ]),
-      environmentVariables: [
-        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
-        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-      ],
+      environmentVariables,
       dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
