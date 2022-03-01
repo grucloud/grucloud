@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-s3-simple",
-  "version": "5.5.0",
+  "version": "5.5.1",
   "private": true,
   "description": "S3 example",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.5.0",
-    "@grucloud/provider-aws": "^5.5.0"
+    "@grucloud/core": "^5.5.1",
+    "@grucloud/provider-aws": "^5.5.1"
   },
   "devDependencies": {
     "mocha": "^9.0.3",
