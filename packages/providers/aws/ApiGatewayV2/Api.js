@@ -29,6 +29,21 @@ exports.Api = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApi-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Name: name,
+        ProtocolType: "HTTP",
+        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createApi",
     pickCreated: () => (result) =>
@@ -59,21 +74,6 @@ exports.Api = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        Name: name,
-        ProtocolType: "HTTP",
-        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
-      }),
-    ])();
 
   return {
     spec,

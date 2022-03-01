@@ -35,12 +35,15 @@ const {
   size,
 } = require("rubico/x");
 
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
+const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+
+const { diffToPatch } = require("./ApiGatewayCommon");
+
 const findId = get("live.id");
 const findName = get("live.name");
 
@@ -631,36 +634,6 @@ exports.RestApi = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateRestApi-property
-  const diffToPatch = ({ diff }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => diff,
-      fork({
-        add: pipe([
-          get("liveDiff.added", {}),
-          map.entries(([key, value]) => [
-            key,
-            { op: "add", path: `/${key}`, value },
-          ]),
-          values,
-        ]),
-        //remove: pipe([]),
-        replace: pipe([
-          get("liveDiff.updated", {}),
-          map.entries(([key, value]) => [
-            key,
-            { op: "replace", path: `/${key}`, value: `${value.toString()}` },
-          ]),
-          values,
-        ]),
-      }),
-      values,
-      flatten,
-      filter(not(eq(get("path"), "/schema"))),
-    ])();
-
   const update = client.update({
     preUpdate: ({ name, payload, live, diff, programOptions }) =>
       pipe([
@@ -700,9 +673,12 @@ exports.RestApi = ({ spec, config }) => {
         tap((params) => {
           assert(diff);
         }),
-        () => ({
+        () => ({ diff }),
+        diffToPatch,
+        filter(not(eq(get("path"), "/schema"))),
+        (patchOperations) => ({
           restApiId: live.id,
-          patchOperations: diffToPatch({ diff }),
+          patchOperations,
         }),
       ])(),
     method: "updateRestApi",

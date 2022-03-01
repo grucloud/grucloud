@@ -83,6 +83,23 @@ exports.Authorizer = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createAuthorizer-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { restApi },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(restApi, "missing 'restApi' dependency");
+      }),
+      () => properties,
+      defaultsDeep({
+        name,
+        restApiId: getField(restApi, "id"),
+      }),
+    ])();
+
   const create = client.create({
     method: "createAuthorizer",
     pickId,
@@ -106,23 +123,6 @@ exports.Authorizer = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { restApi },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-      }),
-      () => properties,
-      defaultsDeep({
-        name,
-        restApiId: getField(restApi, "id"),
-      }),
-    ])();
 
   return {
     spec,

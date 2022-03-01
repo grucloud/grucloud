@@ -5,7 +5,7 @@ const { defaultsDeep, flatten, values, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-
+const { diffToPatch } = require("./ApiGatewayCommon");
 const findName = () => "default";
 const findId = findName;
 
@@ -33,44 +33,18 @@ exports.Account = ({ spec, config }) => {
     }),
   ]);
 
-  const diffToPatch = ({ diff }) =>
-    pipe([
-      () => diff,
-      fork({
-        add: pipe([
-          get("liveDiff.added", {}),
-          map.entries(([key, value]) => [
-            key,
-            { op: "replace", path: `/${key}`, value },
-          ]),
-          values,
-        ]),
-        replace: pipe([
-          get("liveDiff.updated", {}),
-          map.entries(([key, value]) => [
-            key,
-            { op: "replace", path: `/${key}`, value: `${value.toString()}` },
-          ]),
-          values,
-        ]),
-      }),
-      values,
-      flatten,
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateAccount-property
   const update = client.update({
     pickId: () => ({}),
     filterParams: ({ payload, live, diff }) =>
       pipe([
-        tap((params) => {
+        tap(() => {
           assert(diff);
         }),
-        () => ({
-          patchOperations: diffToPatch({ diff, live, payload }),
+        () => ({ diff }),
+        diffToPatch,
+        (patchOperations) => ({
+          patchOperations,
         }),
       ])(),
     method: "updateAccount",
