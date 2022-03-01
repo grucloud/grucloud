@@ -144,13 +144,25 @@ exports.KmsKey = ({ spec, config }) => {
       () => live,
       tap.if(
         isInstanceDown,
-        tryCatch(pipe([pickId, kms().cancelKeyDeletion]), (error) =>
+        tryCatch(
           pipe([
-            tap(() => {
-              // Ignore error
-              logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
-            }),
-          ])()
+            pickId,
+            kms().cancelKeyDeletion,
+            tap(({ KeyId }) =>
+              retryCall({
+                name: `key isInstanceDisabled: ${name} id: ${KeyId}`,
+                fn: pipe([() => getById({ KeyId }), isInstanceDisabled]),
+                config,
+              })
+            ),
+          ]),
+          (error) =>
+            pipe([
+              tap(() => {
+                // Ignore error
+                logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
+              }),
+            ])()
         )
       ),
       tap.if(
