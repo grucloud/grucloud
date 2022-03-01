@@ -709,3 +709,22 @@ exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
         ])()
     ),
   ]);
+
+exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
+  pipe([
+    (id) =>
+      lives.getById({
+        id,
+        providerName: config.providerName,
+        type: "AutoScalingGroup",
+        group: "AutoScaling",
+      }),
+    get("name"),
+    unless(
+      isEmpty,
+      pipe([
+        (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
+        autoScalingGroup.destroy,
+      ])
+    ),
+  ]);

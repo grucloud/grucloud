@@ -174,6 +174,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
             map(decorate({ parent: live, lives })),
           ])()
         ),
+        filter(not(isEmpty)),
         tap((items) => {
           logger.info(`getListWithParent ${type} #items ${size(items)}`);
         }),
@@ -455,7 +456,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   pipe([
                     () => ignoreErrorMessages,
                     any((message) =>
-                      pipe([() => error.message, includes(message)])
+                      pipe([() => error.message, includes(message)])()
                     ),
                   ]),
                 ]),

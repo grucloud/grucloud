@@ -2,13 +2,10 @@ const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { buildTagsEcs } = require("./ECSCommon");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
@@ -111,13 +108,11 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
         ...(executionRole && {
           executionRoleArn: getField(executionRole, "Arn"),
         }),
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
       }),
     ])();

@@ -17,14 +17,11 @@ const logger = require("@grucloud/core/logger")({
   prefix: "ECSService",
 });
 const { tos } = require("@grucloud/core/tos");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
+const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
 
 const findId = get("live.serviceArn");
 const findName = get("live.serviceName");
@@ -34,12 +31,9 @@ exports.ECSService = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
+  // findDependencies for ECSService
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "ECS",
-      ids: [live.clusterArn],
-    },
+    findDependenciesCluster({ live }),
     {
       type: "TaskDefinition",
       group: "ECS",
@@ -210,13 +204,11 @@ exports.ECSService = ({ spec, config }) => {
         serviceName: name,
         cluster: getField(cluster, "clusterArn"),
         taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
       }),
     ])();

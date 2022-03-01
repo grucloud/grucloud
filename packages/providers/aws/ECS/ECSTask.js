@@ -12,10 +12,10 @@ const { AwsClient } = require("../AwsClient");
 const {
   createEndpoint,
   shouldRetryOnException,
-  buildTags,
   findNameInTagsOrId,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
 
 const findId = get("live.taskArn");
 const findName = findNameInTagsOrId({ findId });
@@ -37,12 +37,9 @@ exports.ECSTask = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
+  // findDependencies for ECSTask
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "ECS",
-      ids: [live.clusterArn],
-    },
+    findDependenciesCluster({ live }),
     {
       type: "TaskDefinition",
       group: "ECS",
@@ -115,31 +112,15 @@ exports.ECSTask = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Cluster",
-          group: "ECS",
-        }),
-      flatMap(
-        pipe([
-          get("id"),
-          (cluster) =>
-            pipe([
-              () => ({ cluster }),
-              ecs().listTasks,
-              get("taskArns"),
-              unless(
-                isEmpty,
-                pipe([(tasks) => ({ cluster, tasks }), describeTasks])
-              ),
-            ])(),
-        ])
-      ),
-      filter(not(isEmpty)),
-    ])();
+  const getList = client.getListWithParent({
+    parent: { type: "Cluster", group: "ECS" },
+    pickKey: pipe([({ id }) => ({ cluster: id })]),
+    method: "listTasks",
+    getParam: "taskArns",
+    config,
+    decorate: ({ lives, parent: { id: cluster, Tags } }) =>
+      unless(isEmpty, pipe([(tasks) => ({ cluster, tasks }), describeTasks])),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -183,13 +164,11 @@ exports.ECSTask = ({ spec, config }) => {
           taskDefinition,
           "revision"
         )}`,
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
       }),
     ])();
