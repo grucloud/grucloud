@@ -19,33 +19,9 @@ module.exports = () =>
       Client: AppRunnerConnection,
       isOurMinion,
       compare: compareAws({
-        filterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["ConnectionArn", "Status", "CreatedAt"]),
-        ]),
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["Tags"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+        filterAll: pipe([omit(["ConnectionArn", "Status", "CreatedAt"])]),
       }),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["ProviderType"]),
-        ]),
+      filterLive: () => pipe([pick(["ProviderType"])]),
     },
     {
       type: "Service",
@@ -59,9 +35,6 @@ module.exports = () =>
       isOurMinion,
       compare: compareAws({
         filterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
           omit([
             "ServiceId",
             "ServiceArn",
@@ -73,25 +46,9 @@ module.exports = () =>
             "AutoScalingConfigurationSummary",
           ]),
         ]),
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["Tags"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
       }),
       filterLive: ({ lives }) =>
         pipe([
-          tap((params) => {
-            assert(lives);
-          }),
           pick([
             "SourceConfiguration",
             "InstanceConfiguration",
@@ -101,9 +58,6 @@ module.exports = () =>
           assign({
             SourceConfiguration: pipe([
               get("SourceConfiguration"),
-              tap((params) => {
-                assert(true);
-              }),
               assign({
                 ImageRepository: pipe([
                   get("ImageRepository"),

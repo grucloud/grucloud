@@ -192,6 +192,7 @@ exports.Method = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {

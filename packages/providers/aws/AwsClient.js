@@ -78,9 +78,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   any((ignoreMessage) =>
                     pipe([() => message, includes(ignoreMessage)])()
                   ),
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ])(),
               ({ code }) => pipe([() => ignoreErrorCodes, includes(code)])(),
             ]),
@@ -327,12 +324,11 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 isExpectedException,
                 shouldRetryOnException,
               }),
-            () => live,
-            (params) =>
+            () =>
               retryCall({
                 name: `isUpById: ${name}`,
                 fn: pipe([
-                  () => params,
+                  () => live,
                   getById,
                   tap((params) => {
                     assert(true);

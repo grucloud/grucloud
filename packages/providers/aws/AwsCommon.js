@@ -12,6 +12,7 @@ const {
   or,
   any,
   not,
+  omit,
 } = require("rubico");
 const {
   callProp,
@@ -38,9 +39,9 @@ exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
     compare({
       filterAll,
       filterTarget,
-      //filterTargetDefault,
+      filterTargetDefault: omit(["Tags"]),
       filterLive,
-      //filterLiveDefault,
+      filterLiveDefault: omit(["Tags"]),
     }),
   ]);
 
@@ -690,3 +691,21 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       )
     ),
   ])();
+
+exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
+  pipe([
+    tap.if(
+      () => lambdaFunction,
+      ({ IntegrationId }) =>
+        pipe([
+          () => ({
+            Action: "lambda:InvokeFunction",
+            FunctionName: lambdaFunction.resource.name,
+            Principal: "apigateway.amazonaws.com",
+            StatementId: IntegrationId,
+            SourceArn,
+          }),
+          lambda().addPermission,
+        ])()
+    ),
+  ]);

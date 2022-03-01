@@ -59,7 +59,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         () => live,
         get("ViewerCertificate.ACMCertificateArn"),
         (arn) => [arn],
-        filter(not(isEmpty)),
       ])(),
     },
     {
@@ -81,7 +80,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             get("id"),
           ])()
         ),
-        filter(not(isEmpty)),
       ])(),
     },
     {
@@ -106,7 +104,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             get("id"),
           ])
         ),
-        filter(not(isEmpty)),
       ])(),
     },
   ];
@@ -188,6 +185,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     config,
   });
 
+  // TODO update
   const update = ({ name, id, payload }) =>
     pipe([
       tap(() => {

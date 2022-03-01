@@ -6,7 +6,7 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-
+const { findDependenciesApi } = require("./ApiGatewayCommon");
 const findId = get("live.StageName");
 const findName = get("live.StageName");
 
@@ -16,11 +16,7 @@ exports.Stage = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
+    findDependenciesApi({ live }),
     {
       type: "LogGroup",
       group: "CloudWatchLogs",

@@ -15,3 +15,9 @@ exports.buildPayloadDescriptionTags = pipe([
   }),
   omit(["Tags"]),
 ]);
+
+exports.findDependenciesApi = ({ live, lives }) => ({
+  type: "Api",
+  group: "ApiGatewayV2",
+  ids: [live.ApiId],
+});

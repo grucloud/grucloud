@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, eq, get, pick } = require("rubico");
+const { pipe, map, omit, tap, eq, get, pick } = require("rubico");
 const { when } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
@@ -15,37 +15,21 @@ const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "ApiGatewayV2";
 
-const filterTargetDefaut = omit(["Tags"]);
-const filterLiveDefaut = omit(["Tags"]);
-
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "DomainName",
       dependsOn: ["ACM::Certificate"],
       Client: DomainName,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareAws({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             defaultsDeep({
               ApiMappingSelectionExpression: "$request.basepath",
             }),
             omit(["DomainNameConfigurations"]),
-            filterTargetDefaut,
           ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["DomainNameConfigurations"]),
-            filterLiveDefaut,
-          ]),
+        filterLive: () => pipe([omit(["DomainNameConfigurations"])]),
       }),
       filterLive: () =>
         pipe([
@@ -62,24 +46,8 @@ module.exports = () =>
     {
       type: "Api",
       Client: Api,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            filterTargetDefaut,
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["ApiEndpoint", "ApiId", "CreatedDate"]),
-            filterLiveDefaut,
-          ]),
+        filterLive: () => pipe([omit(["ApiEndpoint", "ApiId", "CreatedDate"])]),
       }),
       filterLive: () =>
         pipe([
@@ -98,8 +66,6 @@ module.exports = () =>
       dependsOn: ["ApiGatewayV2::Api", "CloudWatchLogs::LogGroup"],
       dependsOnList: ["ApiGatewayV2::Api"],
       Client: Stage,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareAws({
         filterTarget: () =>
           pipe([
@@ -113,16 +79,9 @@ module.exports = () =>
               },
               StageVariables: {},
             }),
-            filterTargetDefaut,
           ]),
         filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"]),
-            filterLiveDefaut,
-          ]),
+          pipe([omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"])]),
       }),
       filterLive: () =>
         pipe([
@@ -140,24 +99,8 @@ module.exports = () =>
       dependsOn: ["ApiGatewayV2::Api"],
       dependsOnList: ["ApiGatewayV2::Api"],
       Client: Authorizer,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            filterTargetDefaut,
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["AuthorizerId", "ApiName"]),
-            filterLiveDefaut,
-          ]),
+        filterLive: () => pipe([omit(["AuthorizerId", "ApiName"])]),
       }),
       filterLive: () =>
         pick([
@@ -170,7 +113,7 @@ module.exports = () =>
           "JwtConfiguration",
         ]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: filterTargetDefaut },
+        api: { type: "Api", group: "ApiGatewayV2", parent: true },
       },
     },
     {
@@ -184,10 +127,6 @@ module.exports = () =>
       Client: ApiMapping,
       inferName: ({ properties, dependencies }) =>
         pipe([
-          tap((params) => {
-            assert(dependencies);
-            assert(properties);
-          }),
           dependencies,
           tap(({ domainName, api, stage }) => {
             assert(domainName);
@@ -196,28 +135,9 @@ module.exports = () =>
           }),
           ({ domainName, api, stage }) =>
             `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            filterTargetDefaut,
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["ApiMappingId", "ApiName"]),
-            filterLiveDefaut,
-          ]),
+        filterLive: () => pipe([omit(["ApiMappingId", "ApiName"])]),
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
@@ -231,45 +151,20 @@ module.exports = () =>
       dependsOn: ["ApiGatewayV2::Api", "Lambda::Function"],
       dependsOnList: ["ApiGatewayV2::Api"],
       Client: Integration,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       inferName: ({ properties, dependencies }) =>
         pipe([
-          tap((params) => {
-            assert(dependencies);
-            assert(properties);
-          }),
           //TODO other target
           dependencies,
           ({ api, lambdaFunction }) =>
             `integration::${api.name}::${lambdaFunction.name}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       compare: compareAws({
         filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            defaultsDeep({ TimeoutInMillis: 30e3, Description: "" }),
-            filterTargetDefaut,
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+          pipe([defaultsDeep({ TimeoutInMillis: 30e3, Description: "" })]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit(["RouteId", "IntegrationId", "ApiName"]),
             defaultsDeep({ Description: "" }),
-            filterLiveDefaut,
-            tap((params) => {
-              assert(true);
-            }),
           ]),
       }),
       filterLive: () =>
@@ -294,36 +189,13 @@ module.exports = () =>
       ],
       dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Integration"],
       Client: Route,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       inferName: ({ properties, dependencies }) =>
         pipe([
-          tap((params) => {
-            assert(dependencies);
-            assert(properties);
-          }),
           dependencies,
           ({ api }) => `route::${api.name}::${properties.RouteKey}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            filterTargetDefaut,
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["RouteId", "ApiName"]),
-            filterLiveDefaut,
-          ]),
+        filterLive: () => pipe([omit(["RouteId", "ApiName"])]),
       }),
       filterLive: () =>
         pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
@@ -347,35 +219,16 @@ module.exports = () =>
       ],
       dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Stage"],
       Client: Deployment,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       inferName: ({ properties, dependencies }) =>
-        pipe([
-          tap((params) => {
-            assert(dependencies);
-            assert(properties);
-          }),
-          dependencies,
-          ({ api }) => `deployment::${api.name}`,
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+        pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),
       compare: compareAws({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             defaultsDeep({ AutoDeployed: false, Description: "" }),
             omit(["StageName"]),
-            filterTargetDefaut,
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "CreatedDate",
               "DeploymentId",
@@ -383,7 +236,6 @@ module.exports = () =>
               "ApiName",
             ]),
             defaultsDeep({ Description: "" }),
-            filterLiveDefaut,
           ]),
       }),
       filterLive: () => pick(["Description"]),
@@ -392,4 +244,13 @@ module.exports = () =>
         stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
       },
     },
-  ]);
+  ],
+
+  map(
+    defaultsDeep({
+      group: GROUP,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+    })
+  ),
+]);

@@ -1,23 +1,10 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  eq,
-  pick,
-  flatMap,
-  assign,
-  omit,
-} = require("rubico");
-const { defaultsDeep, pluck, prepend } = require("rubico/x");
+const { pipe, tap, get, eq, pick, assign, omit } = require("rubico");
+const { defaultsDeep, prepend } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "DataSource" });
-const { tos } = require("@grucloud/core/tos");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.dataSourceArn");
@@ -94,53 +81,37 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "GraphqlApi",
-          group: "AppSync",
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
+  const getList = client.getListWithParent({
+    parent: { type: "GraphqlApi", group: "AppSync" },
+    pickKey: pick(["apiId"]),
+    method: "listDataSources",
+    getParam: "dataSources",
+    config,
+    decorate: ({ lives, parent: { apiId, Tags } }) =>
+      pipe([
+        tap((params) => {
+          assert(apiId);
         }),
-      pluck("id"),
-      flatMap((apiId) =>
-        tryCatch(
-          pipe([
-            () => appSync().listDataSources({ apiId }),
-            get("dataSources"),
-            map(defaultsDeep({ apiId })),
-            map(
-              assign({
-                tags: ({ name }) =>
-                  pipe([
-                    () => ({
-                      resourceArn: graphqlApiArn({
-                        config,
-                        apiId,
-                      }),
-                    }),
-                    appSync().listTagsForResource,
-                    get("tags"),
-                    assign({ name: get(buildTagKey({ name })) }),
-                    omit([buildTagKey({ name })]),
-                  ])(),
-              })
-            ),
-          ]),
-          (error) =>
+        defaultsDeep({ apiId, Tags }),
+        assign({
+          tags: ({ name }) =>
             pipe([
-              tap(() => {
-                logger.error(
-                  `error getList data source: ${tos({ apiId, error })}`
-                );
-              }),
               () => ({
-                error,
+                resourceArn: graphqlApiArn({
+                  config,
+                  apiId,
+                }),
               }),
-            ])()
-        )()
-      ),
-    ])();
+              appSync().listTagsForResource,
+              get("tags"),
+              assign({ name: get(buildTagKey({ name })) }),
+              omit([buildTagKey({ name })]),
+            ])(),
+        }),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -233,6 +204,5 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

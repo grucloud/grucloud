@@ -53,9 +53,6 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
 
   const decorate = () =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       assign({
         Targets: pipe([
           ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
@@ -70,9 +67,6 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
           cloudWatchEvents().listTagsForResource,
           get("Tags"),
         ]),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ]);
 

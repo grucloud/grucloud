@@ -144,6 +144,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   // TODO instanceTypes needs a destroy
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateNodegroupConfig-property
+  // TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {

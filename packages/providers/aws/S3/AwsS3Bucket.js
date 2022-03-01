@@ -73,7 +73,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             get("id"),
           ])
         ),
-        filter(not(isEmpty)),
       ])(),
     },
   ];

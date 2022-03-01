@@ -1,5 +1,5 @@
-const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { pluck, includes } = require("rubico/x");
+const { get, pipe, tap } = require("rubico");
+const { pluck } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkAcl",
 });
@@ -18,6 +18,8 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
   const findId = get("live.NetworkAclId");
   const findName = findNameInTagsOrId({ findId });
   const isDefault = get("live.IsDefault");
+
+  // findDependenciesSubnet
   const findDependencies = ({ live }) => [
     { type: "Vpc", group: "EC2", ids: [live.VpcId] },
     {

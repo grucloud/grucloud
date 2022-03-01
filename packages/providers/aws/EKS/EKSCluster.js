@@ -163,6 +163,7 @@ exports.EKSCluster = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateClusterConfig-property
+  // TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {

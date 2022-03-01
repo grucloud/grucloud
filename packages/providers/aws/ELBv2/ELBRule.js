@@ -127,12 +127,7 @@ exports.ELBRule = ({ spec, config }) => {
     {
       type: "TargetGroup",
       group: "ELBv2",
-      ids: pipe([
-        () => live,
-        get("Actions"),
-        pluck("TargetGroupArn"),
-        filter(not(isEmpty)),
-      ])(),
+      ids: pipe([() => live, get("Actions"), pluck("TargetGroupArn"), ,])(),
     },
   ];
 

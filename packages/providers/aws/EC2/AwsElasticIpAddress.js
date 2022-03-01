@@ -27,7 +27,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
         () => live,
         get("NetworkInterfaceId"),
         (NetworkInterfaceId) => [NetworkInterfaceId],
-        filter(not(isEmpty)),
       ])(),
     },
   ];

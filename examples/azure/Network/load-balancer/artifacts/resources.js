@@ -130,9 +130,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-load-balancer",
-      subnets: ["rg-load-balancer::vnet::default"],
       sshPublicKeys: ["rg-load-balancer::vmss_key"],
       networkSecurityGroups: ["rg-load-balancer::basicnsgvnet-nic01"],
+      subnets: ["rg-load-balancer::vnet::default"],
       loadBalancerBackendAddressPools: [
         "rg-load-balancer::load-balancer::backendpool",
       ],

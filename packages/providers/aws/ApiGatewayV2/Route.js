@@ -3,9 +3,10 @@ const { pipe, tap, get, eq, not, filter, pick } = require("rubico");
 const { isEmpty, callProp, defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesApi } = require("./ApiGatewayCommon");
 
 const findId = get("live.RouteId");
 const findName = pipe([
@@ -19,11 +20,7 @@ exports.Route = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
+    findDependenciesApi({ live }),
     {
       type: "Integration",
       group: "ApiGatewayV2",
@@ -32,7 +29,6 @@ exports.Route = ({ spec, config }) => {
         get("Target", ""),
         callProp("replace", "integrations/", ""),
         (target) => [target],
-        filter(not(isEmpty)),
       ])(),
     },
     {
@@ -59,6 +55,7 @@ exports.Route = ({ spec, config }) => {
       pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
   });
 
+  // Get Route by name
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property

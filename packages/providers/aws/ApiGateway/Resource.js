@@ -1,10 +1,9 @@
 const assert = require("assert");
-const { map, pipe, tap, get } = require("rubico");
+const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 
@@ -124,7 +123,6 @@ exports.Resource = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
     cannotBeDeleted,
   };

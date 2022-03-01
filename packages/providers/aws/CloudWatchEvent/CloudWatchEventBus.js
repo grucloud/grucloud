@@ -37,9 +37,6 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
           get("Tags"),
         ]),
       }),
-      tap((params) => {
-        assert(true);
-      }),
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listEventBuses-property

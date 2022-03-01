@@ -72,12 +72,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
     {
       type: "Subnet",
       group: "EC2",
-      ids: pipe([
-        () => live,
-        get("Associations"),
-        pluck("SubnetId"),
-        filter(not(isEmpty)),
-      ])(),
+      ids: pipe([() => live, get("Associations"), pluck("SubnetId")])(),
     },
   ];
 

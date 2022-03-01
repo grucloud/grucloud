@@ -98,12 +98,7 @@ exports.ELBListener = ({ spec, config }) => {
     {
       type: "TargetGroup",
       group: "ELBv2",
-      ids: pipe([
-        () => live,
-        get("DefaultActions"),
-        pluck("TargetGroupArn"),
-        filter(not(isEmpty)),
-      ])(),
+      ids: pipe([() => live, get("DefaultActions"), pluck("TargetGroupArn")])(),
     },
     {
       type: "Certificate",

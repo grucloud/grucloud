@@ -12,7 +12,7 @@ const {
   switchCase,
   pick,
 } = require("rubico");
-const { pluck, defaultsDeep, includes } = require("rubico/x");
+const { pluck, defaultsDeep, includes, callProp } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
@@ -20,8 +20,12 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 const { tos } = require("@grucloud/core/tos");
-const { compare, buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { buildTagsObject } = require("@grucloud/core/Common");
+const {
+  compareAws,
+  createEndpoint,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -37,6 +41,11 @@ const pickId = pipe([
   ({ Configuration: { FunctionArn } }) => ({
     FunctionName: FunctionArn,
   }),
+]);
+const removeVersion = pipe([
+  callProp("split", ":"),
+  callProp("slice", 0, -1),
+  callProp("join", ":"),
 ]);
 
 exports.Function = ({ spec, config }) => {
@@ -67,8 +76,13 @@ exports.Function = ({ spec, config }) => {
             filter(
               pipe([
                 get("live.LayerVersionArn"),
+                removeVersion,
                 (layerVersionArn) =>
-                  pipe([() => layersArn, includes(layerVersionArn)])(),
+                  pipe([
+                    () => layersArn,
+                    map(removeVersion),
+                    includes(layerVersionArn),
+                  ])(),
               ])
             ),
           ])(),
@@ -189,6 +203,7 @@ exports.Function = ({ spec, config }) => {
     config,
   });
 
+  // TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
@@ -267,8 +282,7 @@ exports.compareFunction = pipe([
   tap((params) => {
     assert(true);
   }),
-  compare({
-    filterAll: pipe([omit(["Tags"])]),
+  compareAws({
     filterTarget: () =>
       pipe([
         assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),

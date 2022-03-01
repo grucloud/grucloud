@@ -14,7 +14,6 @@ const {
   tryCatch,
   not,
   or,
-  and,
   switchCase,
   fork,
   reduce,
@@ -31,7 +30,6 @@ const {
   last,
   prepend,
   isObject,
-  flatten,
   size,
 } = require("rubico/x");
 
@@ -54,13 +52,15 @@ exports.RestApi = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
+  const buildName = pipe([callProp("split", "."), last]);
+
   const buildRequestParameters = ({ requestParameters, extra }) =>
     pipe([
       () => requestParameters,
       map.entries(([key, value]) => [
         key,
         {
-          name: pipe([() => key, callProp("split", "."), last])(),
+          name: buildName(key),
           in: pipe([
             () => key,
             callProp("replace", "method.request.", ""),
@@ -77,22 +77,21 @@ exports.RestApi = ({ spec, config }) => {
       values,
     ])();
 
-  const buildIntegrationRequestParameters = ({ requestParameters }) =>
+  const buildIntegrationRequestParameters = ({
+    integrationRequestParameters,
+  }) =>
     pipe([
-      () => requestParameters,
+      () => integrationRequestParameters,
       map.entries(([key, value]) => [
         key,
         {
-          name: pipe([() => key, callProp("split", "."), last])(),
+          name: buildName(key),
           in: pipe([
             () => key,
             callProp("replace", "integration.request.", ""),
             callProp("split", "."),
             first,
             callProp("replace", "querystring", "query"),
-            tap((params) => {
-              assert(true);
-            }),
           ])(),
           required: true,
           schema: {
@@ -374,7 +373,7 @@ exports.RestApi = ({ spec, config }) => {
                         assign({
                           parameters: () =>
                             buildIntegrationRequestParameters({
-                              requestParameters:
+                              integrationRequestParameters:
                                 method.methodIntegration.requestParameters,
                             }),
                         })

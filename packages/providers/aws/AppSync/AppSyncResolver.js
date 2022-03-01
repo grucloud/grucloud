@@ -4,22 +4,16 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
 const { tos } = require("@grucloud/core/tos");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.resolverArn");
 
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
   ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
 const pickId = pick(["apiId", "fieldName", "typeName"]);
@@ -168,6 +162,5 @@ exports.AppSyncResolver = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

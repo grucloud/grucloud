@@ -153,6 +153,8 @@ exports.ECSService = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateService-property
+  // TODO update
+
   const update = ({
     payload,
     name,
@@ -216,9 +218,6 @@ exports.ECSService = ({ spec, config }) => {
           key: "key",
           value: "value",
         }),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 

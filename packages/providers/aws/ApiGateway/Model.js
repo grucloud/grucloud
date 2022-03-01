@@ -1,20 +1,18 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 
-const findId = get("live.id");
-const findName = get("live.name");
-
-const pickId = ({ restApiId, name }) => ({ restApiId, modelName: name });
-
 exports.Model = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
+
+  const findId = get("live.id");
+  const findName = get("live.name");
+
+  const pickId = ({ restApiId, name }) => ({ restApiId, modelName: name });
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesRestApi({ live }),
@@ -96,7 +94,6 @@ exports.Model = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };
