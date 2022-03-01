@@ -13,6 +13,7 @@ const {
   or,
   and,
   filter,
+  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -105,7 +106,9 @@ exports.fnSpecs = ({ config }) =>
               (scope) =>
                 pipe([
                   () => lives,
-                  find(eq(pipe([get("id"), callProp("toUpperCase")]), scope)),
+                  not(
+                    any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))
+                  ),
                 ])(),
             ]),
           ]),

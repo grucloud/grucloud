@@ -83,9 +83,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-user-managed-identity",
-      networkInterfaces: ["rg-user-managed-identity::vm180"],
       managedIdentities: ["rg-user-managed-identity::identity-vault"],
       sshPublicKeys: ["rg-user-managed-identity::keypair"],
+      networkInterfaces: ["rg-user-managed-identity::vm180"],
     }),
   },
   {

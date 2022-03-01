@@ -131,9 +131,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-ag",
-      subnets: ["rg-ag::vnet::default"],
       sshPublicKeys: ["rg-ag::admingrucloud"],
       networkSecurityGroups: ["rg-ag::basicnsgvnet-nic01"],
+      subnets: ["rg-ag::vnet::default"],
       applicationGateways: ["rg-ag::ag"],
     }),
   },
