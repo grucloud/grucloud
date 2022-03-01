@@ -6,6 +6,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesGraphqlApi } = require("./AppSyncCommon");
 
 const findId = get("live.dataSourceArn");
 const findName = get("live.name");
@@ -33,12 +34,9 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
+  // findDependencies for AppSyncDataSource
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "GraphqlApi",
-      group: "AppSync",
-      ids: [live.apiId],
-    },
+    findDependenciesGraphqlApi({ live }),
     {
       type: "Role",
       group: "IAM",

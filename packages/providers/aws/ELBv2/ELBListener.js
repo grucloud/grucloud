@@ -1,20 +1,10 @@
 const assert = require("assert");
-const {
-  flatMap,
-  assign,
-  map,
-  pipe,
-  tap,
-  get,
-  not,
-  eq,
-  filter,
-  pick,
-} = require("rubico");
+const { assign, pipe, tap, get, not, eq, pick } = require("rubico");
 const { first, defaultsDeep, isEmpty, pluck, find, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -107,51 +97,29 @@ exports.ELBListener = ({ spec, config }) => {
     },
   ];
 
-  const describeAllListeners = pipe([
-    () => elb().describeLoadBalancers({}),
-    get("LoadBalancers"),
-    pluck("LoadBalancerArn"),
-    flatMap(
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
+  const getList = client.getListWithParent({
+    parent: { type: "LoadBalancer", group: "ELBv2" },
+    pickKey: pick(["LoadBalancerArn"]),
+    method: "describeListeners",
+    getParam: "Listeners",
+    config,
+    decorate: ({ lives, parent }) =>
       pipe([
-        (LoadBalancerArn) => elb().describeListeners({ LoadBalancerArn }),
-        get("Listeners"),
-        map(
-          assign({
-            Tags: pipe([
-              ({ ListenerArn }) =>
-                elb().describeTags({ ResourceArns: [ListenerArn] }),
-              get("TagDescriptions"),
-              first,
-              get("Tags"),
-            ]),
-          })
-        ),
-      ])
-    ),
-    filter(not(isEmpty)),
-  ]);
+        assign({
+          Tags: pipe([
+            ({ ListenerArn }) => ({ ResourceArns: [ListenerArn] }),
+            elb().describeTags,
+            get("TagDescriptions"),
+            first,
+            get("Tags"),
+          ]),
+        }),
+      ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList listener`);
-      }),
-      describeAllListeners,
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getByName = ({ name, lives }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      describeAllListeners,
-      find(eq((live) => findName({ live, lives }), name)),
-      tap((result) => {
-        logger.debug(`getByName ${name}, result: ${tos(result)}`);
-      }),
-    ])();
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = client.getById({
     pickId: ({ ListenerArn }) => ({ ListenerArns: [ListenerArn] }),
@@ -170,7 +138,7 @@ exports.ELBListener = ({ spec, config }) => {
     shouldRetryOnException: ({ error }) =>
       pipe([
         tap(() => {
-          logger.error(`listener create isExpectedException ${tos(error)}`);
+          logger.info(`listener create isExpectedException ${tos(error)}`);
         }),
         () => error,
         eq(get("code"), "UnsupportedCertificate"),

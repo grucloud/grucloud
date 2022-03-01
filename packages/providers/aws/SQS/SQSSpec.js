@@ -17,7 +17,6 @@ module.exports = pipe([
     {
       type: "Queue",
       Client: SQSQueue,
-      isOurMinion,
       propertiesDefault: {
         Attributes: {
           VisibilityTimeout: "30",
