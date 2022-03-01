@@ -149,6 +149,9 @@ exports.Integration = ({ spec, config }) => {
     config,
     postCreate: ({ resolvedDependencies: { restApi, lambdaFunction } }) =>
       pipe([
+        tap(() => {
+          assert(restApi);
+        }),
         tap.if(
           () => lambdaFunction,
           ({ IntegrationId }) =>

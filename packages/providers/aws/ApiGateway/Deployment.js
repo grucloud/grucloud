@@ -1,27 +1,16 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  filter,
-  tryCatch,
-  flatMap,
-} = require("rubico");
+const { pipe, tap, get, eq, filter } = require("rubico");
 const { pluck, defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "Deployment",
-});
-
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
 const {
   createEndpoint,
   shouldRetryOnException,
   findNameInTagsOrId,
 } = require("../AwsCommon");
-const { getField } = require("@grucloud/core/ProviderCommon");
+
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.id");
@@ -36,8 +25,6 @@ const pickId = pipe([
 
 exports.Deployment = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -69,38 +56,36 @@ exports.Deployment = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getDeployments-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "RestApi",
-          group: "APIGateway",
-        }),
-      pluck("live"),
-      flatMap(({ id: restApiId, tags }) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getDeployments({ restApiId }),
-            get("items"),
-            map(defaultsDeep({ restApiId, tags })),
-          ]),
-          (error) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  const getList = client.getListWithParent({
+    parent: { type: "RestApi", group: "APIGateway" },
+    pickKey: pipe([({ id }) => ({ restApiId: id })]),
+    method: "getDeployments",
+    getParam: "items",
+    config,
+    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
+      defaultsDeep({ restApiId, Tags }),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createDeployment-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { restApi },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(restApi, "missing 'restApi' dependency");
+      }),
+      () => properties,
+      defaultsDeep({
+        restApiId: getField(restApi, "id"),
+        //stageName: getField(stage, "name"),
+      }),
+    ])();
+
   const create = client.create({
     pickCreated:
       ({ resolvedDependencies }) =>
@@ -139,23 +124,6 @@ exports.Deployment = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { restApi },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-      }),
-      () => properties,
-      defaultsDeep({
-        restApiId: getField(restApi, "id"),
-        //stageName: getField(stage, "name"),
-      }),
-    ])();
 
   return {
     spec,

@@ -26,7 +26,7 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-
+const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 const findId = get("live.stageName");
 const findName = get("live.stageName");
 
@@ -53,12 +53,9 @@ exports.Stage = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
+  // Find dependencies for APIGateway::Stage
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "RestApi",
-      group: "APIGateway",
-      ids: [live.restApiId],
-    },
+    findDependenciesRestApi({ live }),
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property
@@ -69,47 +66,39 @@ exports.Stage = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStages-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList stage`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "RestApi",
-          group: "APIGateway",
-        }),
-      pluck("live"),
-      flatMap(({ id: restApiId, tags }) =>
-        tryCatch(
-          pipe([
-            tap(() => {
-              assert(restApiId);
-            }),
-            () => ({ restApiId }),
-            apiGateway().getStages,
-            // All other apis have 'items'
-            get("item"),
-            map(defaultsDeep({ restApiId, tags })),
-          ]),
-          (error) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  const getList = client.getListWithParent({
+    parent: { type: "RestApi", group: "APIGateway" },
+    pickKey: pipe([({ id }) => ({ restApiId: id })]),
+    method: "getStages",
+    // All other apis have 'items'
+    getParam: "item",
+    config,
+    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
+      defaultsDeep({ restApiId, Tags }),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createStage-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { restApi },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(restApi, "missing 'restApi' dependency");
+      }),
+      () => properties,
+      defaultsDeep({
+        stageName: name,
+        restApiId: getField(restApi, "id"),
+        deploymentId: getField(restApi, "deployments[0].id"),
+        tags: buildTagsObject({ config, namespace, name }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createStage",
     filterPayload: omit(["methodSettings"]),
@@ -169,25 +158,6 @@ exports.Stage = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { restApi },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-      }),
-      () => properties,
-      defaultsDeep({
-        stageName: name,
-        restApiId: getField(restApi, "id"),
-        deploymentId: getField(restApi, "deployments[0].id"),
-        tags: buildTagsObject({ config, namespace, name }),
-      }),
-    ])();
 
   return {
     spec,

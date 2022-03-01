@@ -20,6 +20,7 @@ exports.DomainName = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
+  // Find dependencies for APIGateway::DomainName
   const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",

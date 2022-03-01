@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, fork, tap, get, map, not } = require("rubico");
-const { defaultsDeep, flatten, values, includes } = require("rubico/x");
+const { pipe, tap, get, not } = require("rubico");
+const { defaultsDeep, includes } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
@@ -26,6 +26,21 @@ exports.Account = ({ spec, config }) => {
   const getList = () => pipe([getAccount, (account) => [account]])();
   const getByName = getAccount;
   const getById = getAccount;
+
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { cloudwatchRole },
+  }) =>
+    pipe([
+      () => properties,
+      defaultsDeep({
+        ...(cloudwatchRole && {
+          cloudwatchRoleArn: getField(cloudwatchRole, "Arn"),
+        }),
+      }),
+    ])();
 
   const create = pipe([
     tap((params) => {
@@ -68,21 +83,6 @@ exports.Account = ({ spec, config }) => {
     }),
     apiGateway().updateAccount,
   ]);
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { cloudwatchRole },
-  }) =>
-    pipe([
-      () => properties,
-      defaultsDeep({
-        ...(cloudwatchRole && {
-          cloudwatchRoleArn: getField(cloudwatchRole, "Arn"),
-        }),
-      }),
-    ])();
 
   return {
     spec,

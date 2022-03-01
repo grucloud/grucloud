@@ -14,7 +14,7 @@ const {
   pick,
   flatMap,
 } = require("rubico");
-const { pluck, defaultsDeep, size, append, isEmpty } = require("rubico/x");
+const { pluck, defaultsDeep, append, isEmpty } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Method",
 });
@@ -92,7 +92,6 @@ exports.Method = ({ spec, config }) => {
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
-        assert(lives);
         logger.info(`getList method`);
       }),
       () =>
@@ -102,15 +101,9 @@ exports.Method = ({ spec, config }) => {
           group: "APIGateway",
         }),
       pluck("live"),
-      tap((params) => {
-        assert(true);
-      }),
       flatMap(({ restApiId, restApiName, id, path }) =>
         tryCatch(
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             map((httpMethod) =>
               tryCatch(
@@ -122,9 +115,6 @@ exports.Method = ({ spec, config }) => {
                   }),
                   apiGateway().getMethod,
                   defaultsDeep({ path }),
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ]),
                 (error) =>
                   pipe([
@@ -140,9 +130,6 @@ exports.Method = ({ spec, config }) => {
               )()
             ),
             filter(not(isEmpty)),
-            tap((params) => {
-              assert(true);
-            }),
             map(
               defaultsDeep({
                 restApiId,
@@ -159,9 +146,6 @@ exports.Method = ({ spec, config }) => {
           ]),
           (error) =>
             pipe([
-              tap((params) => {
-                assert(true);
-              }),
               () => ({
                 error,
               }),
@@ -174,6 +158,27 @@ exports.Method = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putMethod-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { resource, authorizer },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(resource, "missing 'resource' dependency");
+      }),
+      () => otherProps,
+      defaultsDeep({
+        restApiId: getField(resource, "restApiId"),
+        resource: getField(resource, "id"),
+        ...(authorizer && {
+          authorizerId: getField(authorizer, "authorizerId"),
+        }),
+        tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
+      }),
+    ])();
+
   const create = ({ name, payload, resolvedDependencies: { restApi } }) =>
     pipe([
       tap(() => {
@@ -208,27 +213,6 @@ exports.Method = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
     config,
   });
-
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: { resource, authorizer },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(resource, "missing 'resource' dependency");
-      }),
-      () => otherProps,
-      defaultsDeep({
-        restApiId: getField(resource, "restApiId"),
-        resource: getField(resource, "id"),
-        ...(authorizer && {
-          authorizerId: getField(authorizer, "authorizerId"),
-        }),
-        tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
-      }),
-    ])();
 
   return {
     spec,

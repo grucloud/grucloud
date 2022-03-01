@@ -2,6 +2,12 @@ const assert = require("assert");
 const { pipe, omit, tap, assign, fork, map, get } = require("rubico");
 const { callProp, values, flatten } = require("rubico/x");
 
+exports.findDependenciesRestApi = ({ live, lives }) => ({
+  type: "RestApi",
+  group: "APIGateway",
+  ids: [live.restApiId],
+});
+
 exports.buildPayloadDescriptionTags = pipe([
   tap((params) => {
     assert(true);
