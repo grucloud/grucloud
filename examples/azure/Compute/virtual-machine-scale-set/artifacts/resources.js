@@ -123,11 +123,11 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-virtual-machine-scale-set",
-      subnets: ["rg-virtual-machine-scale-set::virtual-network::default"],
       sshPublicKeys: ["rg-virtual-machine-scale-set::keypair"],
       networkSecurityGroups: [
         "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
       ],
+      subnets: ["rg-virtual-machine-scale-set::virtual-network::default"],
     }),
   },
   {

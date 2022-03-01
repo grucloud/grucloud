@@ -85,6 +85,60 @@ const kubeConfigRemove = ({ name }) =>
     ),
   ])();
 
+const assignContainerProp = assign({
+  agentPoolProfiles: pipe([
+    get("agentPoolProfiles"),
+    map(pipe([omit(["provisioningState", "powerState", "nodeImageVersion"])])),
+  ]),
+  addonProfiles: pipe([
+    get("addonProfiles"),
+    when(
+      get("ingressApplicationGateway"),
+      assign({
+        ingressApplicationGateway: pipe([
+          get("ingressApplicationGateway"),
+          pick(["enabled", "config"]),
+          assign({
+            config: pipe([
+              get("config"),
+              pick(["applicationGatewayName", "subnetCIDR"]),
+            ]),
+          }),
+        ]),
+      })
+    ),
+    when(
+      get("httpApplicationRouting"),
+      assign({
+        httpApplicationRouting: pipe([
+          get("httpApplicationRouting"),
+          pick(["enabled"]),
+        ]),
+      })
+    ),
+    //TODO check
+    when(
+      get("azureKeyvaultSecretsProvider"),
+      assign({
+        ingressApplicationGateway: pipe([
+          get("azureKeyvaultSecretsProvider"),
+          omit(["identity"]),
+        ]),
+      })
+    ),
+  ]),
+  networkProfile: pipe([
+    get("networkProfile"),
+    omit(["podCidrs", "serviceCidrs", "ipFamilies"]),
+    assign({
+      loadBalancerProfile: pipe([
+        get("loadBalancerProfile"),
+        pick(["managedOutboundIPs"]),
+      ]),
+    }),
+  ]),
+});
+
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
@@ -154,47 +208,7 @@ exports.fnSpecs = ({ config }) =>
                   "diskEncryptionSetID",
                 ]),
                 omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
-                assign({
-                  agentPoolProfiles: pipe([
-                    get("agentPoolProfiles"),
-                    map(
-                      pipe([
-                        omit([
-                          "provisioningState",
-                          "powerState",
-                          "nodeImageVersion",
-                        ]),
-                      ])
-                    ),
-                  ]),
-                  addonProfiles: pipe([
-                    get("addonProfiles"),
-                    when(
-                      get("ingressApplicationGateway"),
-                      assign({
-                        ingressApplicationGateway: pipe([
-                          get("ingressApplicationGateway"),
-                          pick(["enabled", "config"]),
-                          assign({
-                            config: pipe([
-                              get("config"),
-                              pick(["applicationGatewayName", "subnetCIDR"]),
-                            ]),
-                          }),
-                        ]),
-                      })
-                    ),
-                    when(
-                      get("azureKeyvaultSecretsProvider"),
-                      assign({
-                        ingressApplicationGateway: pipe([
-                          get("azureKeyvaultSecretsProvider"),
-                          omit(["identity"]),
-                        ]),
-                      })
-                    ),
-                  ]),
-                }),
+                assignContainerProp,
               ]),
             }),
             tap((params) => {
@@ -221,59 +235,7 @@ exports.fnSpecs = ({ config }) =>
                   "nodeResourceGroup",
                   "windowsProfile", // For now no windows need to add the password as env var
                 ]),
-                assign({
-                  agentPoolProfiles: pipe([
-                    get("agentPoolProfiles"),
-                    map(
-                      pipe([
-                        omit([
-                          "provisioningState",
-                          "powerState",
-                          "nodeImageVersion",
-                        ]),
-                      ])
-                    ),
-                  ]),
-                  addonProfiles: pipe([
-                    get("addonProfiles"),
-                    when(
-                      get("ingressApplicationGateway"),
-                      assign({
-                        ingressApplicationGateway: pipe([
-                          get("ingressApplicationGateway"),
-                          pick(["enabled", "config"]),
-                          assign({
-                            config: pipe([
-                              get("config"),
-                              pick(["applicationGatewayName", "subnetCIDR"]),
-                            ]),
-                          }),
-                        ]),
-                      })
-                    ),
-                    when(
-                      get("httpApplicationRouting"),
-                      assign({
-                        httpApplicationRouting: pipe([
-                          get("httpApplicationRouting"),
-                          pick(["enabled"]),
-                        ]),
-                      })
-                    ),
-                  ]),
-                }),
-                assign({
-                  networkProfile: pipe([
-                    get("networkProfile"),
-                    omit(["podCidrs", "serviceCidrs", "ipFamilies"]),
-                    assign({
-                      loadBalancerProfile: pipe([
-                        get("loadBalancerProfile"),
-                        pick(["managedOutboundIPs"]),
-                      ]),
-                    }),
-                  ]),
-                }),
+                assignContainerProp,
               ]),
             }),
           ]),

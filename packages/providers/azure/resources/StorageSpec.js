@@ -24,6 +24,7 @@ const {
   setBlobServiceProperties,
   upsertBlob,
   getBlobName,
+  upsert,
 } = require("./StorageUtils");
 
 const { findDependenciesResourceGroup } = require("../AzureCommon");
@@ -84,45 +85,8 @@ exports.fnSpecs = ({ config }) =>
                   ids: [pipe([() => live, get("id")])()],
                 },
               ],
-              //TODO merge create and update
-              create: ({ name, payload, lives }) =>
-                pipe([
-                  tap((params) => {
-                    assert(name);
-                    assert(payload);
-                    assert(lives);
-                  }),
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "StorageAccount",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
-                  tap((storageAccount) => {
-                    assert(storageAccount);
-                  }),
-                  setBlobServiceProperties({ payload }),
-                ])(),
-              update: ({ name, payload, lives }) =>
-                pipe([
-                  tap((params) => {
-                    assert(name);
-                    assert(payload);
-                    assert(lives);
-                  }),
-                  () =>
-                    lives.getByName({
-                      name,
-                      type: "StorageAccount",
-                      group: "Storage",
-                      providerName: config.providerName,
-                    }),
-                  tap((storageAccount) => {
-                    assert(storageAccount);
-                  }),
-                  setBlobServiceProperties({ payload }),
-                ])(),
+              create: upsert({ config }),
+              update: upsert({ config }),
               getByName: ({ lives, name }) =>
                 pipe([
                   () =>

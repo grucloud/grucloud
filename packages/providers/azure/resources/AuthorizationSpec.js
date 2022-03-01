@@ -13,6 +13,7 @@ const {
   or,
   and,
   filter,
+  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -26,6 +27,18 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const group = "Authorization";
+
+const roleAssignmentFilterDep =
+  ({ resource }) =>
+  (dependency) =>
+    pipe([
+      () => dependency,
+      get("id"),
+      callProp(
+        "match",
+        new RegExp(`^${resource.live.properties.scope}$`, "ig")
+      ),
+    ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -49,22 +62,13 @@ exports.fnSpecs = ({ config }) =>
             type: "ResourceGroup",
             group: "Resources",
             createOnly: true,
+            filterDependency: roleAssignmentFilterDep,
           },
           scopeVirtualMachine: {
             type: "VirtualMachine",
             group: "Compute",
             createOnly: true,
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  () => dependency,
-                  get("id"),
-                  callProp(
-                    "match",
-                    new RegExp(`^${resource.live.properties.scope}$`, "ig")
-                  ),
-                ])(),
+            filterDependency: roleAssignmentFilterDep,
           },
           roleDefinition: {
             type: "RoleDefinition",
@@ -86,19 +90,7 @@ exports.fnSpecs = ({ config }) =>
             type: "VirtualMachine",
             group: "Compute",
             createOnly: true,
-            filterDependency:
-              ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  () => dependency,
-                  get("id"),
-                  not(
-                    callProp(
-                      "match",
-                      new RegExp(`^${resource.live.properties.scope}$`, "ig")
-                    )
-                  ),
-                ])(),
+            filterDependency: roleAssignmentFilterDep,
           },
         },
         cannotBeDeleted: eq(get("live.properties.roleName"), "Owner"),
@@ -107,6 +99,17 @@ exports.fnSpecs = ({ config }) =>
             and([
               eq(get("live.properties.principalType"), "ServicePrincipal"),
               not(get("live.properties.principalName")),
+            ]),
+            pipe([
+              get("live.properties.scope"),
+              callProp("toUpperCase"),
+              (scope) =>
+                pipe([
+                  () => lives,
+                  not(
+                    any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))
+                  ),
+                ])(),
             ]),
           ]),
         decorate:

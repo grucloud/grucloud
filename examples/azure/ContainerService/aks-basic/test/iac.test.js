@@ -9,6 +9,7 @@ const title = pkg.name;
 describe(title, async function () {
   it("run", async function () {
     await testEnd2End({
+      destroyAll: false,
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
       steps: [{ createStack, configs: [config] }],

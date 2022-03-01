@@ -97,8 +97,8 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-vm-ad-login",
-      networkInterfaces: ["rg-vm-ad-login::vm514"],
       sshPublicKeys: ["rg-vm-ad-login::keypair"],
+      networkInterfaces: ["rg-vm-ad-login::vm514"],
     }),
   },
   {

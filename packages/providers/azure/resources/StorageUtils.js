@@ -124,6 +124,24 @@ exports.getBlobServiceProperties = ({ live, name }) =>
     }),
   ])();
 
+const getStorageAccountByName = ({ lives, config }) =>
+  pipe([
+    tap((name) => {
+      assert(name);
+    }),
+    (name) =>
+      lives.getByName({
+        name,
+        type: "StorageAccount",
+        group: "Storage",
+        providerName: config.providerName,
+      }),
+    tap((storageAccount) => {
+      assert(storageAccount);
+    }),
+    get("live"),
+  ]);
+
 exports.getBlobsByContainer =
   ({ config, lives }) =>
   ({ live, name }) =>
@@ -133,20 +151,9 @@ exports.getBlobsByContainer =
         assert(config);
         assert(lives);
       }),
-      //TODO ude storageAccountName ?
       () => live,
       storageAccountNameFromId,
-      (name) =>
-        lives.getByName({
-          name,
-          type: "StorageAccount",
-          group: "Storage",
-          providerName: config.providerName,
-        }),
-      tap((storageAccount) => {
-        assert(storageAccount);
-      }),
-      get("live"),
+      getStorageAccountByName({ lives, config }),
       createContainerClient({ containerName: live.name }),
       callProp("listBlobsFlat"),
       async (blobsIt) => {
@@ -175,17 +182,7 @@ const getContainerClient = ({ name, config, lives }) =>
     }),
     () => name,
     getStorageAccountName,
-    (name) =>
-      lives.getByName({
-        name,
-        type: "StorageAccount",
-        group: "Storage",
-        providerName: config.providerName,
-      }),
-    tap((storageAccount) => {
-      assert(storageAccount);
-    }),
-    get("live"),
+    getStorageAccountByName({ lives, config }),
     createContainerClient({
       containerName: getContainerName(name),
     }),
@@ -193,7 +190,7 @@ const getContainerClient = ({ name, config, lives }) =>
 
 exports.getContainerClient = getContainerClient;
 
-exports.setBlobServiceProperties =
+const setBlobServiceProperties =
   ({ payload }) =>
   ({ live }) =>
     pipe([
@@ -206,6 +203,7 @@ exports.setBlobServiceProperties =
       createBlobServiceClient,
       callProp("setProperties", payload.properties),
     ])();
+exports.setBlobServiceProperties = setBlobServiceProperties;
 
 exports.upsertBlob =
   ({ config }) =>
@@ -274,3 +272,25 @@ exports.readStreamToLocalFileWithLogs = async ({ readStream, fileName }) =>
 
     readStream.pipe(writeStream);
   });
+
+exports.upsert =
+  ({ config }) =>
+  ({ name, payload, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(name);
+        assert(payload);
+        assert(lives);
+      }),
+      () =>
+        lives.getByName({
+          name,
+          type: "StorageAccount",
+          group: "Storage",
+          providerName: config.providerName,
+        }),
+      tap((storageAccount) => {
+        assert(storageAccount);
+      }),
+      setBlobServiceProperties({ payload }),
+    ])();

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, tap, switchCase, eq, tryCatch } = require("rubico");
-const { identity, isFunction } = require("rubico/x");
+const { identity, isFunction, append } = require("rubico/x");
 const shell = require("shelljs");
 
 const Spinnies = require("spinnies");
