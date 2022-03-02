@@ -42,7 +42,6 @@ const {
   Route53DomainsNew,
   buildTags,
   findNamespaceInTags,
-  shouldRetryOnException,
   getNewCallerReference,
 } = require("../AwsCommon");
 
@@ -387,7 +386,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     findNamespace: findNamespaceInTags(config),
   };
 };

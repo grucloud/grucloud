@@ -5,14 +5,13 @@ const {
   pipe,
   filter,
   map,
-  not,
   eq,
   any,
   tryCatch,
   switchCase,
   pick,
 } = require("rubico");
-const { isEmpty, defaultsDeep, pluck, prepend } = require("rubico/x");
+const { defaultsDeep, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -21,7 +20,6 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   findNameInTagsOrId,
-  shouldRetryOnException,
   findNamespaceInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -180,6 +178,5 @@ exports.EC2RouteTable = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

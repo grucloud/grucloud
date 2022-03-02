@@ -8,11 +8,7 @@ const logger = require("@grucloud/core/logger")({
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore } = require("@grucloud/core/Common");
-const {
-  createEndpoint,
-  buildTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { createEndpoint, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -126,7 +122,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

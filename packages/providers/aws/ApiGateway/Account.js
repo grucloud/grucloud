@@ -3,7 +3,7 @@ const { pipe, tap, get, not } = require("rubico");
 const { defaultsDeep, includes } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { diffToPatch } = require("./ApiGatewayCommon");
 const findName = () => "default";
@@ -95,7 +95,6 @@ exports.Account = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     isDefault,
     managedByOther: isDefault,
   };

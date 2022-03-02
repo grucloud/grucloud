@@ -12,21 +12,14 @@ const {
   or,
   pick,
 } = require("rubico");
-const {
-  find,
-  first,
-  defaultsDeep,
-  isEmpty,
-  size,
-  callProp,
-} = require("rubico/x");
+const { find, first, defaultsDeep, isEmpty, callProp } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
+const { KmsNew, buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
@@ -261,6 +254,5 @@ exports.KmsKey = ({ spec, config }) => {
     cannotBeDeleted,
     isDefault,
     managedByOther: isDefault,
-    shouldRetryOnException,
   };
 };

@@ -23,7 +23,6 @@ const {
   identity,
   isEmpty,
   values,
-  pluck,
   callProp,
   when,
   first,
@@ -38,7 +37,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 
 const { diffToPatch } = require("./ApiGatewayCommon");
 
@@ -743,7 +742,5 @@ exports.RestApi = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
-    //onDeployed,
   };
 };

@@ -25,7 +25,6 @@ const { AwsClient } = require("../AwsClient");
 
 const {
   createEndpoint,
-  shouldRetryOnException,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
 } = require("../AwsCommon");
@@ -226,7 +225,6 @@ exports.Method = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

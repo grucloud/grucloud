@@ -24,7 +24,6 @@ const { AwsClient } = require("../AwsClient");
 
 const {
   createEndpoint,
-  shouldRetryOnException,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
   compareAws,
@@ -207,7 +206,6 @@ exports.Layer = ({ spec, config }) => {
     //getById,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };
 

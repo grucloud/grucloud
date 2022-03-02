@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  tryCatch,
-  pick,
-  flatMap,
-  omit,
-} = require("rubico");
+const { map, pipe, tap, get, pick, omit } = require("rubico");
 const {
   pluck,
   defaultsDeep,
@@ -18,13 +8,10 @@ const {
   when,
   isEmpty,
 } = require("rubico/x");
-const logger = require("@grucloud/core/logger")({
-  prefix: "Stage",
-});
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 const findId = get("live.stageName");
@@ -170,7 +157,6 @@ exports.Stage = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

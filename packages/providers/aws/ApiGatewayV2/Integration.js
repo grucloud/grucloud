@@ -19,11 +19,7 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  lambdaAddPermission,
-} = require("../AwsCommon");
+const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesApi } = require("./ApiGatewayCommon");
@@ -209,7 +205,6 @@ exports.Integration = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

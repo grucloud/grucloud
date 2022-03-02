@@ -1,12 +1,9 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const logger = require("@grucloud/core/logger")({
-  prefix: "DBInstance",
-});
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags, shouldRetryOnException } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -119,7 +116,6 @@ exports.DBInstance = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

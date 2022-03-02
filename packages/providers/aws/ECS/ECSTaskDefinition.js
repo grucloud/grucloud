@@ -2,7 +2,6 @@ const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
-const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsEcs } = require("./ECSCommon");
@@ -137,6 +136,5 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

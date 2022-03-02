@@ -4,7 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { shouldRetryOnException } = require("../AwsCommon");
 
 const findId = get("live.ApiId");
 const findName = get("live.Name");
@@ -86,6 +85,5 @@ exports.Api = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

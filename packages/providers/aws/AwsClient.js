@@ -393,7 +393,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       ignoreError = () => false,
       ignoreErrorCodes = [],
       ignoreErrorMessages = [],
-      shouldRetryOnException = eq(get("error.code"), "ResourceInUseException"),
+      shouldRetryOnException = or([
+        eq(get("error.code"), "ResourceInUseException"),
+        eq(get("error.code"), "DeleteConflict"),
+      ]),
       isExpectedResult,
       config,
     }) =>

@@ -18,11 +18,8 @@ const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
-  buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
@@ -270,8 +267,6 @@ exports.AwsIamUser = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
     findNamespace: findNamespaceInTags(config),
   };
 };

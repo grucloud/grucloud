@@ -5,12 +5,7 @@ const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  IAMNew,
-  buildTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
-} = require("../AwsCommon");
+const { IAMNew } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.GroupName");
@@ -180,8 +175,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
   };
 };
 

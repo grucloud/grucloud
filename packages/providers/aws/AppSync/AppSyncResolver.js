@@ -114,9 +114,6 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     config,
     shouldRetryOnException: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       eq(get("error.code"), "ConcurrentModificationException"),
     ]),
   });

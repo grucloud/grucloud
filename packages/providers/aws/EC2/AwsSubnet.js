@@ -22,7 +22,6 @@ const {
   Ec2New,
   findNameInTagsOrId,
   findNamespaceInTags,
-  shouldRetryOnException,
   buildTags,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
@@ -159,11 +158,6 @@ exports.AwsSubnet = ({ spec, config }) => {
     pickId,
     preDestroy: ({ live: { SubnetId } }) =>
       destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [SubnetId] }),
-    shouldRetryOnException: switchCase([
-      eq(get("error.code"), "DependencyViolation"),
-      () => true,
-      () => false,
-    ]),
     method: "deleteSubnet",
     getById,
     ignoreErrorCodes: ["InvalidSubnetID.NotFound"],
@@ -204,6 +198,5 @@ exports.AwsSubnet = ({ spec, config }) => {
     update,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -7,22 +7,16 @@ const {
   get,
   switchCase,
   not,
-  filter,
   eq,
-  pick,
 } = require("rubico");
-const { defaultsDeep, includes, size, isEmpty } = require("rubico/x");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "UserPool" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const {
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-  createEndpoint,
-} = require("../AwsCommon");
+const { findNamespaceInTagsObject, createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Id");
@@ -143,6 +137,5 @@ exports.UserPool = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

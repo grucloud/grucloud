@@ -22,7 +22,7 @@ const {
 } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Attributes.QueueArn");
@@ -135,24 +135,15 @@ exports.SQSQueue = ({ spec, config }) => {
     pickId,
     getById,
     isInstanceUp: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       (live) => ({ live }),
       findName,
       (QueueNamePrefix) =>
         pipe([
           () => ({ QueueNamePrefix }),
           sqs().listQueues,
-          tap((params) => {
-            assert(true);
-          }),
           get("QueueUrls"),
           first,
           not(isEmpty),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
     ]),
     config: { retryDelay: 65e3, retryCount: 2 },
@@ -213,7 +204,6 @@ exports.SQSQueue = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

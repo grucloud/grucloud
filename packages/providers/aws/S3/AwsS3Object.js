@@ -29,11 +29,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { compareAws } = require("../AwsCommon");
 
 const { retryCall } = require("@grucloud/core/Retry");
-const {
-  S3New,
-  shouldRetryOnException,
-  findNamespaceInTags,
-} = require("../AwsCommon");
+const { S3New, findNamespaceInTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -273,7 +269,6 @@ exports.AwsS3Object = ({ spec, config }) => {
               retryCall({
                 name: `s3 putObject: ${name}`,
                 fn: () => s3().putObject(params),
-                shouldRetryOnException,
                 config,
               }),
             tap(() =>
@@ -333,7 +328,6 @@ exports.AwsS3Object = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };
 

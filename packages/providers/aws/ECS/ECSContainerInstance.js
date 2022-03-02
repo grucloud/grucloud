@@ -1,12 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, not, flatMap, filter } = require("rubico");
+const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, isEmpty, unless } = require("rubico/x");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, findNameInTagsOrId } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -109,7 +105,6 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther: () => true,
     cannotBeDeleted: () => true,
   };

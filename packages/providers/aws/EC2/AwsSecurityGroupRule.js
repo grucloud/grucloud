@@ -39,7 +39,6 @@ const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   Ec2New,
-  shouldRetryOnException,
   buildTags,
   findNameInTags,
   findEksCluster,
@@ -566,7 +565,6 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
       revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
     }),
     configDefault,
-    shouldRetryOnException,
     managedByOther: managedByOther({ IsEgress: false }),
     isDefault: isDefault({ IsEgress: false }),
   };
@@ -610,7 +608,6 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
       revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
     }),
     configDefault,
-    shouldRetryOnException,
     managedByOther: managedByOther({ IsEgress: true }),
     isDefault: isDefault({ IsEgress: true }),
   };

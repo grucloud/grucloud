@@ -2,10 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, switchCase, eq, pick, omit } = require("rubico");
 const { defaultsDeep, isEmpty, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  shouldRetryOnException,
-  destroyAutoScalingGroupById,
-} = require("../AwsCommon");
+const { destroyAutoScalingGroupById } = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
@@ -150,7 +147,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,
     isDefault: cannotBeDeleted,

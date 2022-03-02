@@ -15,11 +15,7 @@ const { defaultsDeep, first } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRepository" });
 const { tos } = require("@grucloud/core/tos");
-const {
-  buildTags,
-  createEndpoint,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { buildTags, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -201,7 +197,6 @@ exports.EcrRepository = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };
 //TODO compare

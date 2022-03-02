@@ -15,7 +15,6 @@ const {
   ELBv2New,
   buildTags,
   findNamespaceInTagsOrEksCluster,
-  shouldRetryOnException,
   hasKeyInTags,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
@@ -163,7 +162,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

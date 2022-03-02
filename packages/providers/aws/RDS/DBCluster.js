@@ -3,11 +3,8 @@ const { map, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const logger = require("@grucloud/core/logger")({
-  prefix: "DBCluster",
-});
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags, shouldRetryOnException } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.DBClusterIdentifier");
@@ -115,7 +112,6 @@ exports.DBCluster = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

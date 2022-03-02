@@ -7,11 +7,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const {
-  EKSNew,
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-} = require("../AwsCommon");
+const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { waitForUpdate } = require("./EKSCommon");
@@ -202,6 +198,5 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

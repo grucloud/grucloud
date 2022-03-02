@@ -9,11 +9,7 @@ const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const {
-  EKSNew,
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-} = require("../AwsCommon");
+const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const { waitForUpdate } = require("./EKSCommon");
@@ -237,6 +233,5 @@ exports.EKSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

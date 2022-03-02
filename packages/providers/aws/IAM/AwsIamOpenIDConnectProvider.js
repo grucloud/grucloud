@@ -17,21 +17,14 @@ const tls = require("tls");
 const logger = require("@grucloud/core/logger")({
   prefix: "IamOIDC",
 });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
-const {
-  mapPoolSize,
-  getByNameCore,
-  isUpByIdCore,
-} = require("@grucloud/core/Common");
+const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -249,7 +242,5 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
   };
 };

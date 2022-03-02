@@ -18,11 +18,7 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  lambdaAddPermission,
-} = require("../AwsCommon");
+const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -244,7 +240,6 @@ exports.Integration = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

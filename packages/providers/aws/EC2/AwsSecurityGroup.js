@@ -25,17 +25,13 @@ const {
 } = require("rubico/x");
 const {
   Ec2New,
-  shouldRetryOnException,
   buildTags,
-  findNameInTags,
   findNamespaceInTagsOrEksCluster,
   revokeSecurityGroupIngress,
 } = require("../AwsCommon");
-const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
 
-const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 const { AwsClient } = require("../AwsClient");
@@ -211,27 +207,9 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     preDestroy: revokeIngressRules,
-    shouldRetryOnException: switchCase([
-      eq(get("error.code"), "DependencyViolation"),
-      () => true,
-      () => false,
-    ]),
     method: "deleteSecurityGroup",
     getById,
     ignoreErrorCodes: ["InvalidGroup.NotFound"],
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        () => error,
-        tap(() => {
-          logger.error(
-            `delete sg ${name} shouldRetryOnException ? ${tos({
-              name,
-              error,
-            })}`
-          );
-        }),
-        eq(get("code"), "DependencyViolation"),
-      ])(),
     config,
   });
 
@@ -270,6 +248,5 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -34,8 +34,6 @@ const {
   IAMNew,
   buildTags,
   findNamespaceInTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
   isOurMinion,
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
@@ -360,8 +358,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,
   };

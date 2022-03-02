@@ -1,20 +1,17 @@
 const assert = require("assert");
 const {
-  map,
   pipe,
   tap,
-  tryCatch,
   get,
   switchCase,
-  eq,
   not,
   filter,
   flatMap,
   pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck, when } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
 
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
@@ -43,12 +40,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const ignoreErrorCodes = [
     "ClusterNotFoundException",
@@ -56,6 +48,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
+  //TODO remove
   const describeTaskSets = (params = {}) =>
     pipe([
       tap((params) => {
@@ -180,6 +173,5 @@ exports.ECSTaskSet = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

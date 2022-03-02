@@ -20,7 +20,6 @@ const {
   Ec2New,
   getByIdCore,
   findNameInTagsOrId,
-  shouldRetryOnException,
   buildTags,
   findNamespaceInTags,
 } = require("../AwsCommon");
@@ -183,6 +182,5 @@ exports.AwsNatGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

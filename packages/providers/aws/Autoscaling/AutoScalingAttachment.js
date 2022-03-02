@@ -8,7 +8,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { shouldRetryOnException, createEndpoint } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -178,6 +178,5 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

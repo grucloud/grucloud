@@ -1,5 +1,5 @@
 const { get, pipe, tap } = require("rubico");
-const { findNameInTagsOrId, shouldRetryOnException } = require("../AwsCommon");
+const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 exports.AwsNetworkAcl = ({ spec, config }) => {
@@ -27,6 +27,5 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     findName,
     findDependencies,
     getList,
-    shouldRetryOnException,
   };
 };

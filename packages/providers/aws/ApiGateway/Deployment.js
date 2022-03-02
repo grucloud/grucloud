@@ -5,11 +5,7 @@ const { pluck, defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { findNameInTagsOrId } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -136,7 +132,6 @@ exports.Deployment = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

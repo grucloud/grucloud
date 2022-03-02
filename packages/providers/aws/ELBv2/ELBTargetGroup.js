@@ -8,7 +8,6 @@ const {
   ELBv2New,
   buildTags,
   findNamespaceInTagsOrEksCluster,
-  shouldRetryOnException,
   hasKeyInTags,
 } = require("../AwsCommon");
 
@@ -121,7 +120,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

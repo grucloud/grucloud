@@ -2,11 +2,7 @@ const assert = require("assert");
 const { assign, pipe, tap, get, eq, or, omit } = require("rubico");
 const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSService",
-});
-const { tos } = require("@grucloud/core/tos");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
@@ -190,6 +186,5 @@ exports.ECSService = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

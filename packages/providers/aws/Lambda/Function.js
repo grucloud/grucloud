@@ -21,11 +21,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const {
-  compareAws,
-  createEndpoint,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { compareAws, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -273,7 +269,6 @@ exports.Function = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

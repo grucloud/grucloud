@@ -20,7 +20,6 @@ const { tos } = require("@grucloud/core/tos");
 const {
   Ec2New,
   findNameInTagsOrId,
-  shouldRetryOnException,
   getByIdCore,
   buildTags,
 } = require("../AwsCommon");
@@ -109,7 +108,6 @@ exports.AwsImage = ({ spec, config }) => {
     findName,
     getList,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted: () => true,
   };
 };

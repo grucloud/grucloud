@@ -15,7 +15,6 @@ const logger = require("@grucloud/core/logger")({
 const { tos } = require("@grucloud/core/tos");
 const {
   createEndpoint,
-  shouldRetryOnException,
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
@@ -217,6 +216,5 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -17,11 +17,7 @@ const { defaultsDeep, isEmpty, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  destroyAutoScalingGroupById,
-} = require("../AwsCommon");
+const { createEndpoint, destroyAutoScalingGroupById } = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
@@ -240,6 +236,5 @@ exports.ECSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -3,10 +3,7 @@ const { map, pipe, tap, get, not, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const {
-  shouldRetryOnException,
-  getNewCallerReference,
-} = require("../AwsCommon");
+const { getNewCallerReference } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = pipe([
@@ -98,6 +95,5 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

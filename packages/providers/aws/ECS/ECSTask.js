@@ -5,11 +5,7 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, findNameInTagsOrId } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
 
@@ -161,6 +157,5 @@ exports.ECSTask = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

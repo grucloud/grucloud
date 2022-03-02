@@ -35,7 +35,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { Route53New, shouldRetryOnException } = require("../AwsCommon");
+const { Route53New } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 const omitFieldRecord = omit(["Tags", "HostedZoneId", "namespace"]);
@@ -707,7 +707,6 @@ exports.Route53Record = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted,
-    shouldRetryOnException,
   };
 };
 exports.compareRoute53Record = pipe([

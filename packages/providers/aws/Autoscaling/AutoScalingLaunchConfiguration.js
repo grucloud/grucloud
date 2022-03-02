@@ -5,7 +5,7 @@ const { defaultsDeep, isEmpty, size, includes, callProp } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchConfiguration",
 });
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -156,6 +156,5 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

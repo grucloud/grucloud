@@ -4,7 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesApi } = require("./ApiGatewayCommon");
 
@@ -101,7 +100,6 @@ exports.Authorizer = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

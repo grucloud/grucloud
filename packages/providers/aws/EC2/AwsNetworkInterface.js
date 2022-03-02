@@ -1,26 +1,11 @@
-const {
-  get,
-  pipe,
-  filter,
-  map,
-  tap,
-  eq,
-  switchCase,
-  not,
-  tryCatch,
-} = require("rubico");
-const { defaultsDeep, isEmpty, first, identity, pluck } = require("rubico/x");
 const assert = require("assert");
+const { get, pipe, filter, map, tap, switchCase } = require("rubico");
+const { isEmpty, first, identity, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkInterface",
 });
-const { tos } = require("@grucloud/core/tos");
-const {
-  Ec2New,
-  findNameInTagsOrId,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { Ec2New, findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
@@ -99,6 +84,5 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     findName,
     getList,
     destroy,
-    shouldRetryOnException,
   };
 };

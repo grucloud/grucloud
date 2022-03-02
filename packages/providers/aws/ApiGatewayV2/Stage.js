@@ -3,7 +3,6 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { findDependenciesApi } = require("./ApiGatewayCommon");
@@ -107,7 +106,6 @@ exports.Stage = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

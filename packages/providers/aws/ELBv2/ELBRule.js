@@ -13,12 +13,7 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
-const {
-  ELBv2New,
-  buildTags,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
 
@@ -254,7 +249,6 @@ exports.ELBRule = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     isDefault,
     cannotBeDeleted,
     managedByOther,

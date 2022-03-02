@@ -7,12 +7,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { tos } = require("@grucloud/core/tos");
-const {
-  ELBv2New,
-  buildTags,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.ListenerArn");
@@ -223,7 +218,6 @@ exports.ELBListener = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

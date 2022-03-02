@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
-const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
@@ -90,6 +89,5 @@ exports.ApiKey = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

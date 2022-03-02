@@ -1,14 +1,10 @@
 const assert = require("assert");
-const { get, pipe, tap, filter, pick, not } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { get, pipe, tap, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  findNameInTagsOrId,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 exports.AwsElasticIpAddress = ({ spec, config }) => {
@@ -93,6 +89,5 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

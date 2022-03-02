@@ -3,11 +3,7 @@ const { assign, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, isEmpty, pluck, unless, append } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  createEndpoint,
-  buildTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { createEndpoint, buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Name");
@@ -176,7 +172,6 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,

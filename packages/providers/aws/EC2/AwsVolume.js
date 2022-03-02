@@ -25,7 +25,6 @@ const { EC2Instance } = require("./EC2Instance");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   findNameInTagsOrId,
-  shouldRetryOnException,
   getByIdCore,
   buildTags,
   findNamespaceInTags,
@@ -217,7 +216,6 @@ exports.AwsVolume = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted,
     managedByOther,
   };

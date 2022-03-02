@@ -30,8 +30,6 @@ const {
   IAMNew,
   buildTags,
   findNamespaceInTags,
-  shouldRetryOnExceptionDelete,
-  shouldRetryOnException,
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
@@ -357,7 +355,5 @@ exports.AwsIamRole = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
   };
 };
