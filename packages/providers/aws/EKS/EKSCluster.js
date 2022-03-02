@@ -1,5 +1,4 @@
 const assert = require("assert");
-const shell = require("shelljs");
 
 const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
 const { defaultsDeep, includes, isEmpty } = require("rubico/x");
@@ -8,7 +7,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { buildTagsObject, shellRun } = require("@grucloud/core/Common");
 const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -73,23 +72,7 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
       tap.if(
         () => !process.env.CONTINUOUS_INTEGRATION,
-        pipe([
-          () => `aws eks update-kubeconfig --name ${name}`,
-          //TODO shell exec
-          (command) =>
-            pipe([
-              () =>
-                shell.exec(command, {
-                  silent: true,
-                }),
-              tap.if(not(eq(get("code"), 0)), (result) => {
-                throw {
-                  message: `command '${command}' failed`,
-                  ...result,
-                };
-              }),
-            ])(),
-        ])
+        pipe([() => `aws eks update-kubeconfig --name ${name}`, shellRun])
       ),
     ])();
 
@@ -104,23 +87,7 @@ exports.EKSCluster = ({ spec, config }) => {
         pipe([
           () =>
             `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
-          //TODO shell exec
-          (command) =>
-            pipe([
-              () =>
-                shell.exec(command, {
-                  silent: true,
-                }),
-              tap.if(not(eq(get("code"), 0)), (result) => {
-                logger.error(
-                  `command '${command}' failed, ${JSON.stringify(
-                    result,
-                    4,
-                    null
-                  )}`
-                );
-              }),
-            ])(),
+          shellRun,
         ])
       ),
     ])();

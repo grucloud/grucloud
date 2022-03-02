@@ -1,5 +1,4 @@
 const assert = require("assert");
-const shell = require("shelljs");
 const {
   pipe,
   tap,
@@ -13,7 +12,7 @@ const {
   eq,
 } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 
@@ -35,26 +34,11 @@ const kubeConfigUpdate = ({ id, name }) =>
         }),
         ({ resourceGroup }) =>
           `az aks get-credentials --resource-group ${resourceGroup} --name ${name} --overwrite-existing`,
-        (command) =>
-          pipe([
-            tap((params) => {
-              logger.info(`kubeConfigUpdate: command: ${command}`);
-            }),
-            //TODO shell exec
-            () =>
-              shell.exec(command, {
-                silent: true,
-              }),
-            tap.if(not(eq(get("code"), 0)), (result) => {
-              throw {
-                message: `command '${command}' failed`,
-                ...result,
-              };
-            }),
-          ])(),
+        shellRun,
       ])
     ),
   ])();
+
 const kubeConfigRemove = ({ name }) =>
   pipe([
     tap(() => {
@@ -66,23 +50,7 @@ const kubeConfigRemove = ({ name }) =>
       pipe([
         () =>
           `kubectl config delete-context ${name}; kubectl config delete-cluster ${name}`,
-        //TODO shell exec
-        (command) =>
-          pipe([
-            () =>
-              shell.exec(command, {
-                silent: true,
-              }),
-            tap.if(not(eq(get("code"), 0)), (result) => {
-              logger.error(
-                `command '${command}' failed, ${JSON.stringify(
-                  result,
-                  4,
-                  null
-                )}`
-              );
-            }),
-          ])(),
+        shellRun,
       ])
     ),
   ])();
